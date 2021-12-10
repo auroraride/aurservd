@@ -5,7 +5,6 @@
 
 package ar
 
-
 import (
     _ "embed"
     "github.com/auroraride/aurservd/pkg/utils"
@@ -34,10 +33,6 @@ type config struct {
     Database struct {
         Postgres struct {
             Dsn string
-        }
-        Mongo struct {
-            Uri string
-            Db  string
         }
     }
     ThirdParty struct {

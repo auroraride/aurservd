@@ -13,9 +13,6 @@ nsq:
   url: 127.0.0.1:4150
 
 database:
-  mongo:
-    uri: '127.0.0.1:27017'
-    db: db
   postgres:
     dsn: 'host=localhost user=user password=password dbname=db port=5432 sslmode=disable TimeZone=Asia/Shanghai'
 
