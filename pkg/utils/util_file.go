@@ -30,7 +30,7 @@ func (f *file) IsExist() bool {
 func (f *file) CreateDirectoryIfNotExist() error {
     d := filepath.Dir(f.Path)
     if _, err := os.Stat(d); os.IsNotExist(err) {
-        return os.MkdirAll(d, 0644)
+        return os.MkdirAll(d, 0755)
     }
     return nil
 }
