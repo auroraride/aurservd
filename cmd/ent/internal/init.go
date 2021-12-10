@@ -20,7 +20,7 @@ import (
 )
 
 const (
-    defaultSchema = "internal/ent/schema"
+    defaultSchema = "./internal/ent/schema"
 )
 
 // schema template for the "init" command.
@@ -52,6 +52,10 @@ func ({{ . }}) Mixin() []ent.Mixin {
         internal.TimeMixin{},
         internal.DeleteMixin{},
     }
+}
+
+func ({{ . }}) Indexes() []ent.Index {
+    return nil
 }
 `))
 

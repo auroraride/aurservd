@@ -14,6 +14,8 @@ func main() {
     cmd := &cobra.Command{Use: "ent"}
     cmd.AddCommand(
         internal.InitCmd(),
+        internal.GenerateCmd(),
+        internal.CleanCmd(),
     )
     _ = cmd.Execute()
 }
