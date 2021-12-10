@@ -8,6 +8,7 @@ package internal
 import (
     "entgo.io/ent"
     "entgo.io/ent/schema/field"
+    "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
     "time"
 )
@@ -30,5 +31,11 @@ type DeleteMixin struct {
 func (DeleteMixin) Fields() []ent.Field {
     return []ent.Field{
         field.Time("deleted_at").Nillable().Optional(),
+    }
+}
+
+func (DeleteMixin) Indexes() []ent.Index {
+    return []ent.Index{
+        index.Fields("deleted_at"),
     }
 }
