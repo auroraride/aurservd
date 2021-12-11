@@ -133,6 +133,45 @@ func (ru *RiderUpdate) ClearContact() *RiderUpdate {
 	return ru
 }
 
+// SetClientType sets the "client_type" field.
+func (ru *RiderUpdate) SetClientType(u uint8) *RiderUpdate {
+	ru.mutation.ResetClientType()
+	ru.mutation.SetClientType(u)
+	return ru
+}
+
+// AddClientType adds u to the "client_type" field.
+func (ru *RiderUpdate) AddClientType(u uint8) *RiderUpdate {
+	ru.mutation.AddClientType(u)
+	return ru
+}
+
+// SetClientSn sets the "client_sn" field.
+func (ru *RiderUpdate) SetClientSn(s string) *RiderUpdate {
+	ru.mutation.SetClientSn(s)
+	return ru
+}
+
+// SetClientID sets the "client_id" field.
+func (ru *RiderUpdate) SetClientID(s string) *RiderUpdate {
+	ru.mutation.SetClientID(s)
+	return ru
+}
+
+// SetNillableClientID sets the "client_id" field if the given value is not nil.
+func (ru *RiderUpdate) SetNillableClientID(s *string) *RiderUpdate {
+	if s != nil {
+		ru.SetClientID(*s)
+	}
+	return ru
+}
+
+// ClearClientID clears the value of the "client_id" field.
+func (ru *RiderUpdate) ClearClientID() *RiderUpdate {
+	ru.mutation.ClearClientID()
+	return ru
+}
+
 // SetPerson sets the "person" edge to the Person entity.
 func (ru *RiderUpdate) SetPerson(p *Person) *RiderUpdate {
 	return ru.SetPersonID(p.ID)
@@ -225,6 +264,16 @@ func (ru *RiderUpdate) check() error {
 			return &ValidationError{Name: "phone", err: fmt.Errorf("ent: validator failed for field \"phone\": %w", err)}
 		}
 	}
+	if v, ok := ru.mutation.ClientSn(); ok {
+		if err := rider.ClientSnValidator(v); err != nil {
+			return &ValidationError{Name: "client_sn", err: fmt.Errorf("ent: validator failed for field \"client_sn\": %w", err)}
+		}
+	}
+	if v, ok := ru.mutation.ClientID(); ok {
+		if err := rider.ClientIDValidator(v); err != nil {
+			return &ValidationError{Name: "client_id", err: fmt.Errorf("ent: validator failed for field \"client_id\": %w", err)}
+		}
+	}
 	return nil
 }
 
@@ -310,6 +359,40 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: rider.FieldContact,
+		})
+	}
+	if value, ok := ru.mutation.ClientType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: rider.FieldClientType,
+		})
+	}
+	if value, ok := ru.mutation.AddedClientType(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: rider.FieldClientType,
+		})
+	}
+	if value, ok := ru.mutation.ClientSn(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldClientSn,
+		})
+	}
+	if value, ok := ru.mutation.ClientID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldClientID,
+		})
+	}
+	if ru.mutation.ClientIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: rider.FieldClientID,
 		})
 	}
 	if ru.mutation.PersonCleared() {
@@ -470,6 +553,45 @@ func (ruo *RiderUpdateOne) ClearContact() *RiderUpdateOne {
 	return ruo
 }
 
+// SetClientType sets the "client_type" field.
+func (ruo *RiderUpdateOne) SetClientType(u uint8) *RiderUpdateOne {
+	ruo.mutation.ResetClientType()
+	ruo.mutation.SetClientType(u)
+	return ruo
+}
+
+// AddClientType adds u to the "client_type" field.
+func (ruo *RiderUpdateOne) AddClientType(u uint8) *RiderUpdateOne {
+	ruo.mutation.AddClientType(u)
+	return ruo
+}
+
+// SetClientSn sets the "client_sn" field.
+func (ruo *RiderUpdateOne) SetClientSn(s string) *RiderUpdateOne {
+	ruo.mutation.SetClientSn(s)
+	return ruo
+}
+
+// SetClientID sets the "client_id" field.
+func (ruo *RiderUpdateOne) SetClientID(s string) *RiderUpdateOne {
+	ruo.mutation.SetClientID(s)
+	return ruo
+}
+
+// SetNillableClientID sets the "client_id" field if the given value is not nil.
+func (ruo *RiderUpdateOne) SetNillableClientID(s *string) *RiderUpdateOne {
+	if s != nil {
+		ruo.SetClientID(*s)
+	}
+	return ruo
+}
+
+// ClearClientID clears the value of the "client_id" field.
+func (ruo *RiderUpdateOne) ClearClientID() *RiderUpdateOne {
+	ruo.mutation.ClearClientID()
+	return ruo
+}
+
 // SetPerson sets the "person" edge to the Person entity.
 func (ruo *RiderUpdateOne) SetPerson(p *Person) *RiderUpdateOne {
 	return ruo.SetPersonID(p.ID)
@@ -567,6 +689,16 @@ func (ruo *RiderUpdateOne) check() error {
 	if v, ok := ruo.mutation.Phone(); ok {
 		if err := rider.PhoneValidator(v); err != nil {
 			return &ValidationError{Name: "phone", err: fmt.Errorf("ent: validator failed for field \"phone\": %w", err)}
+		}
+	}
+	if v, ok := ruo.mutation.ClientSn(); ok {
+		if err := rider.ClientSnValidator(v); err != nil {
+			return &ValidationError{Name: "client_sn", err: fmt.Errorf("ent: validator failed for field \"client_sn\": %w", err)}
+		}
+	}
+	if v, ok := ruo.mutation.ClientID(); ok {
+		if err := rider.ClientIDValidator(v); err != nil {
+			return &ValidationError{Name: "client_id", err: fmt.Errorf("ent: validator failed for field \"client_id\": %w", err)}
 		}
 	}
 	return nil
@@ -671,6 +803,40 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: rider.FieldContact,
+		})
+	}
+	if value, ok := ruo.mutation.ClientType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: rider.FieldClientType,
+		})
+	}
+	if value, ok := ruo.mutation.AddedClientType(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: rider.FieldClientType,
+		})
+	}
+	if value, ok := ruo.mutation.ClientSn(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldClientSn,
+		})
+	}
+	if value, ok := ruo.mutation.ClientID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldClientID,
+		})
+	}
+	if ruo.mutation.ClientIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: rider.FieldClientID,
 		})
 	}
 	if ruo.mutation.PersonCleared() {

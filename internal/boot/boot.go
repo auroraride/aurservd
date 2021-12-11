@@ -25,4 +25,5 @@ func init() {
 
     // 加载数据库
     ar.OpenDatabase().AutoMigrate()
+    ar.NewCache()
 }

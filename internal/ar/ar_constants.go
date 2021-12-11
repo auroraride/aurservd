@@ -4,3 +4,9 @@
 // Based on aurservd by liasica, magicrolan@qq.com.
 
 package ar
+
+// http headers
+const (
+    // HeaderCaptchaID 图片验证码ID
+    HeaderCaptchaID = "X-Captcha-Id"
+)

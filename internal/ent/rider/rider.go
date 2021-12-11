@@ -27,6 +27,12 @@ const (
 	FieldPhone = "phone"
 	// FieldContact holds the string denoting the contact field in the database.
 	FieldContact = "contact"
+	// FieldClientType holds the string denoting the client_type field in the database.
+	FieldClientType = "client_type"
+	// FieldClientSn holds the string denoting the client_sn field in the database.
+	FieldClientSn = "client_sn"
+	// FieldClientID holds the string denoting the client_id field in the database.
+	FieldClientID = "client_id"
 	// EdgePerson holds the string denoting the person edge name in mutations.
 	EdgePerson = "person"
 	// Table holds the table name of the rider in the database.
@@ -51,6 +57,9 @@ var Columns = []string{
 	FieldPersonID,
 	FieldPhone,
 	FieldContact,
+	FieldClientType,
+	FieldClientSn,
+	FieldClientID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -72,4 +81,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
 	PhoneValidator func(string) error
+	// ClientSnValidator is a validator for the "client_sn" field. It is called by the builders before save.
+	ClientSnValidator func(string) error
+	// ClientIDValidator is a validator for the "client_id" field. It is called by the builders before save.
+	ClientIDValidator func(string) error
 )

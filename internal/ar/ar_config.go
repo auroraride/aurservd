@@ -17,8 +17,7 @@ const (
     configFile = "./config/config.yaml"
 )
 
-var     Config    *config
-
+var Config *config
 
 // defaultConfigStr 默认配置
 //go:embed default_config.yml
@@ -29,6 +28,9 @@ type config struct {
         Address   string
         BodyLimit string
         RateLimit float64
+        Captcha   struct {
+            Names map[string]string
+        }
     }
     Nsq struct {
         Url string
@@ -36,6 +38,11 @@ type config struct {
     Database struct {
         Postgres struct {
             Dsn string
+        }
+        Redis struct {
+            Addr     string
+            Password string
+            DB       int `mapstructure:"db"`
         }
     }
     ThirdParty struct {

@@ -2,6 +2,9 @@ app:
   address: :5533
   bodylimit: 50M
   ratelimit: 20
+  captcha:
+    names:
+      - 'rider-signin': 'RIDER_SIGNIN'
 
 logging:
   color: true
@@ -15,6 +18,10 @@ nsq:
 database:
   postgres:
     dsn: 'host=localhost user=user password=password dbname=db port=5432 sslmode=disable TimeZone=Asia/Shanghai'
+  redis:
+    addr: 'localhost:6379'
+    password: ''
+    db: 0
 
 third_party:
   yunfuture:

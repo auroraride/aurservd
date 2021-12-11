@@ -76,4 +76,12 @@ func init() {
 	riderDescPhone := riderFields[1].Descriptor()
 	// rider.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
 	rider.PhoneValidator = riderDescPhone.Validators[0].(func(string) error)
+	// riderDescClientSn is the schema descriptor for client_sn field.
+	riderDescClientSn := riderFields[4].Descriptor()
+	// rider.ClientSnValidator is a validator for the "client_sn" field. It is called by the builders before save.
+	rider.ClientSnValidator = riderDescClientSn.Validators[0].(func(string) error)
+	// riderDescClientID is the schema descriptor for client_id field.
+	riderDescClientID := riderFields[5].Descriptor()
+	// rider.ClientIDValidator is a validator for the "client_id" field. It is called by the builders before save.
+	rider.ClientIDValidator = riderDescClientID.Validators[0].(func(string) error)
 }

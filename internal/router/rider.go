@@ -1,10 +1,10 @@
 // Copyright (C) liasica. 2021-present.
 //
-// Created at 2021-12-10
+// Created at 2021/12/11
 // Based on aurservd by liasica, magicrolan@qq.com.
 
-package ar
+package router
 
-type (
-    Map map[string]interface{}
-)
+func (r *router) rideRoute() {
+
+}

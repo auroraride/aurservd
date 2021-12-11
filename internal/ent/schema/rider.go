@@ -9,14 +9,14 @@ import (
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
-// Rider holds the schema definition for the Rider entity.
-type Rider struct {
-    ent.Schema
-}
-
 type RiderContact struct {
     Name  string
     Phone string
+}
+
+// Rider holds the schema definition for the Rider entity.
+type Rider struct {
+    ent.Schema
 }
 
 // Annotations of the Rider.
@@ -33,6 +33,9 @@ func (Rider) Fields() []ent.Field {
         // field.Uint8("status").Default(0).Comment("业务状态"),
         field.String("phone").MaxLen(11).Unique().Comment("手机号"),
         field.JSON("contact", &RiderContact{}).Optional().Comment("紧急联系人"),
+        field.Uint8("client_type").Comment("登录设备类型: 1iOS 2Android"),
+        field.String("client_sn").MaxLen(60).Unique().Comment("登录设备ID"),
+        field.String("client_id").MaxLen(60).Unique().Optional().Nillable().Comment("登录设备推送ID"),
     }
 }
 

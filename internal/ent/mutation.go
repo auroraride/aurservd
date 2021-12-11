@@ -1140,22 +1140,26 @@ func (m *PersonMutation) ResetEdge(name string) error {
 // RiderMutation represents an operation that mutates the Rider nodes in the graph.
 type RiderMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint64
-	created_at    *time.Time
-	updated_at    *time.Time
-	deleted_at    *time.Time
-	last_modify   *time.Time
-	remark        *string
-	phone         *string
-	contact       **schema.RiderContact
-	clearedFields map[string]struct{}
-	person        *uint64
-	clearedperson bool
-	done          bool
-	oldValue      func(context.Context) (*Rider, error)
-	predicates    []predicate.Rider
+	op             Op
+	typ            string
+	id             *uint64
+	created_at     *time.Time
+	updated_at     *time.Time
+	deleted_at     *time.Time
+	last_modify    *time.Time
+	remark         *string
+	phone          *string
+	contact        **schema.RiderContact
+	client_type    *uint8
+	addclient_type *uint8
+	client_sn      *string
+	client_id      *string
+	clearedFields  map[string]struct{}
+	person         *uint64
+	clearedperson  bool
+	done           bool
+	oldValue       func(context.Context) (*Rider, error)
+	predicates     []predicate.Rider
 }
 
 var _ ent.Mutation = (*RiderMutation)(nil)
@@ -1590,6 +1594,147 @@ func (m *RiderMutation) ResetContact() {
 	delete(m.clearedFields, rider.FieldContact)
 }
 
+// SetClientType sets the "client_type" field.
+func (m *RiderMutation) SetClientType(u uint8) {
+	m.client_type = &u
+	m.addclient_type = nil
+}
+
+// ClientType returns the value of the "client_type" field in the mutation.
+func (m *RiderMutation) ClientType() (r uint8, exists bool) {
+	v := m.client_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldClientType returns the old "client_type" field's value of the Rider entity.
+// If the Rider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderMutation) OldClientType(ctx context.Context) (v uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldClientType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldClientType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldClientType: %w", err)
+	}
+	return oldValue.ClientType, nil
+}
+
+// AddClientType adds u to the "client_type" field.
+func (m *RiderMutation) AddClientType(u uint8) {
+	if m.addclient_type != nil {
+		*m.addclient_type += u
+	} else {
+		m.addclient_type = &u
+	}
+}
+
+// AddedClientType returns the value that was added to the "client_type" field in this mutation.
+func (m *RiderMutation) AddedClientType() (r uint8, exists bool) {
+	v := m.addclient_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetClientType resets all changes to the "client_type" field.
+func (m *RiderMutation) ResetClientType() {
+	m.client_type = nil
+	m.addclient_type = nil
+}
+
+// SetClientSn sets the "client_sn" field.
+func (m *RiderMutation) SetClientSn(s string) {
+	m.client_sn = &s
+}
+
+// ClientSn returns the value of the "client_sn" field in the mutation.
+func (m *RiderMutation) ClientSn() (r string, exists bool) {
+	v := m.client_sn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldClientSn returns the old "client_sn" field's value of the Rider entity.
+// If the Rider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderMutation) OldClientSn(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldClientSn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldClientSn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldClientSn: %w", err)
+	}
+	return oldValue.ClientSn, nil
+}
+
+// ResetClientSn resets all changes to the "client_sn" field.
+func (m *RiderMutation) ResetClientSn() {
+	m.client_sn = nil
+}
+
+// SetClientID sets the "client_id" field.
+func (m *RiderMutation) SetClientID(s string) {
+	m.client_id = &s
+}
+
+// ClientID returns the value of the "client_id" field in the mutation.
+func (m *RiderMutation) ClientID() (r string, exists bool) {
+	v := m.client_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldClientID returns the old "client_id" field's value of the Rider entity.
+// If the Rider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderMutation) OldClientID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldClientID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldClientID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldClientID: %w", err)
+	}
+	return oldValue.ClientID, nil
+}
+
+// ClearClientID clears the value of the "client_id" field.
+func (m *RiderMutation) ClearClientID() {
+	m.client_id = nil
+	m.clearedFields[rider.FieldClientID] = struct{}{}
+}
+
+// ClientIDCleared returns if the "client_id" field was cleared in this mutation.
+func (m *RiderMutation) ClientIDCleared() bool {
+	_, ok := m.clearedFields[rider.FieldClientID]
+	return ok
+}
+
+// ResetClientID resets all changes to the "client_id" field.
+func (m *RiderMutation) ResetClientID() {
+	m.client_id = nil
+	delete(m.clearedFields, rider.FieldClientID)
+}
+
 // ClearPerson clears the "person" edge to the Person entity.
 func (m *RiderMutation) ClearPerson() {
 	m.clearedperson = true
@@ -1635,7 +1780,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -1659,6 +1804,15 @@ func (m *RiderMutation) Fields() []string {
 	}
 	if m.contact != nil {
 		fields = append(fields, rider.FieldContact)
+	}
+	if m.client_type != nil {
+		fields = append(fields, rider.FieldClientType)
+	}
+	if m.client_sn != nil {
+		fields = append(fields, rider.FieldClientSn)
+	}
+	if m.client_id != nil {
+		fields = append(fields, rider.FieldClientID)
 	}
 	return fields
 }
@@ -1684,6 +1838,12 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.Phone()
 	case rider.FieldContact:
 		return m.Contact()
+	case rider.FieldClientType:
+		return m.ClientType()
+	case rider.FieldClientSn:
+		return m.ClientSn()
+	case rider.FieldClientID:
+		return m.ClientID()
 	}
 	return nil, false
 }
@@ -1709,6 +1869,12 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldPhone(ctx)
 	case rider.FieldContact:
 		return m.OldContact(ctx)
+	case rider.FieldClientType:
+		return m.OldClientType(ctx)
+	case rider.FieldClientSn:
+		return m.OldClientSn(ctx)
+	case rider.FieldClientID:
+		return m.OldClientID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Rider field %s", name)
 }
@@ -1774,6 +1940,27 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetContact(v)
 		return nil
+	case rider.FieldClientType:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetClientType(v)
+		return nil
+	case rider.FieldClientSn:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetClientSn(v)
+		return nil
+	case rider.FieldClientID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetClientID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)
 }
@@ -1782,6 +1969,9 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *RiderMutation) AddedFields() []string {
 	var fields []string
+	if m.addclient_type != nil {
+		fields = append(fields, rider.FieldClientType)
+	}
 	return fields
 }
 
@@ -1790,6 +1980,8 @@ func (m *RiderMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *RiderMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case rider.FieldClientType:
+		return m.AddedClientType()
 	}
 	return nil, false
 }
@@ -1799,6 +1991,13 @@ func (m *RiderMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *RiderMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case rider.FieldClientType:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddClientType(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Rider numeric field %s", name)
 }
@@ -1821,6 +2020,9 @@ func (m *RiderMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(rider.FieldContact) {
 		fields = append(fields, rider.FieldContact)
+	}
+	if m.FieldCleared(rider.FieldClientID) {
+		fields = append(fields, rider.FieldClientID)
 	}
 	return fields
 }
@@ -1850,6 +2052,9 @@ func (m *RiderMutation) ClearField(name string) error {
 		return nil
 	case rider.FieldContact:
 		m.ClearContact()
+		return nil
+	case rider.FieldClientID:
+		m.ClearClientID()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider nullable field %s", name)
@@ -1882,6 +2087,15 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldContact:
 		m.ResetContact()
+		return nil
+	case rider.FieldClientType:
+		m.ResetClientType()
+		return nil
+	case rider.FieldClientSn:
+		m.ResetClientSn()
+		return nil
+	case rider.FieldClientID:
+		m.ResetClientID()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)

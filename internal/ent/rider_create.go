@@ -118,6 +118,32 @@ func (rc *RiderCreate) SetContact(sc *schema.RiderContact) *RiderCreate {
 	return rc
 }
 
+// SetClientType sets the "client_type" field.
+func (rc *RiderCreate) SetClientType(u uint8) *RiderCreate {
+	rc.mutation.SetClientType(u)
+	return rc
+}
+
+// SetClientSn sets the "client_sn" field.
+func (rc *RiderCreate) SetClientSn(s string) *RiderCreate {
+	rc.mutation.SetClientSn(s)
+	return rc
+}
+
+// SetClientID sets the "client_id" field.
+func (rc *RiderCreate) SetClientID(s string) *RiderCreate {
+	rc.mutation.SetClientID(s)
+	return rc
+}
+
+// SetNillableClientID sets the "client_id" field if the given value is not nil.
+func (rc *RiderCreate) SetNillableClientID(s *string) *RiderCreate {
+	if s != nil {
+		rc.SetClientID(*s)
+	}
+	return rc
+}
+
 // SetPerson sets the "person" edge to the Person entity.
 func (rc *RiderCreate) SetPerson(p *Person) *RiderCreate {
 	return rc.SetPersonID(p.ID)
@@ -220,6 +246,22 @@ func (rc *RiderCreate) check() error {
 			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "phone": %w`, err)}
 		}
 	}
+	if _, ok := rc.mutation.ClientType(); !ok {
+		return &ValidationError{Name: "client_type", err: errors.New(`ent: missing required field "client_type"`)}
+	}
+	if _, ok := rc.mutation.ClientSn(); !ok {
+		return &ValidationError{Name: "client_sn", err: errors.New(`ent: missing required field "client_sn"`)}
+	}
+	if v, ok := rc.mutation.ClientSn(); ok {
+		if err := rider.ClientSnValidator(v); err != nil {
+			return &ValidationError{Name: "client_sn", err: fmt.Errorf(`ent: validator failed for field "client_sn": %w`, err)}
+		}
+	}
+	if v, ok := rc.mutation.ClientID(); ok {
+		if err := rider.ClientIDValidator(v); err != nil {
+			return &ValidationError{Name: "client_id", err: fmt.Errorf(`ent: validator failed for field "client_id": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -302,6 +344,30 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			Column: rider.FieldContact,
 		})
 		_node.Contact = value
+	}
+	if value, ok := rc.mutation.ClientType(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: rider.FieldClientType,
+		})
+		_node.ClientType = value
+	}
+	if value, ok := rc.mutation.ClientSn(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldClientSn,
+		})
+		_node.ClientSn = value
+	}
+	if value, ok := rc.mutation.ClientID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldClientID,
+		})
+		_node.ClientID = &value
 	}
 	if nodes := rc.mutation.PersonIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

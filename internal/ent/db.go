@@ -28,7 +28,7 @@ func OpenPgx(dsn string) (c *Client) {
 
 func (c *Client) AutoMigrate() {
     ctx := context.Background()
-    if err := c.Debug().Schema.Create(
+    if err := c.Schema.Create(
         ctx,
         migrate.WithDropIndex(true),
         migrate.WithDropColumn(true),

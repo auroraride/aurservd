@@ -142,6 +142,27 @@ func Phone(v string) predicate.Rider {
 	})
 }
 
+// ClientType applies equality check predicate on the "client_type" field. It's identical to ClientTypeEQ.
+func ClientType(v uint8) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldClientType), v))
+	})
+}
+
+// ClientSn applies equality check predicate on the "client_sn" field. It's identical to ClientSnEQ.
+func ClientSn(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldClientSn), v))
+	})
+}
+
+// ClientID applies equality check predicate on the "client_id" field. It's identical to ClientIDEQ.
+func ClientID(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldClientID), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
@@ -783,6 +804,318 @@ func ContactIsNil() predicate.Rider {
 func ContactNotNil() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldContact)))
+	})
+}
+
+// ClientTypeEQ applies the EQ predicate on the "client_type" field.
+func ClientTypeEQ(v uint8) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldClientType), v))
+	})
+}
+
+// ClientTypeNEQ applies the NEQ predicate on the "client_type" field.
+func ClientTypeNEQ(v uint8) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldClientType), v))
+	})
+}
+
+// ClientTypeIn applies the In predicate on the "client_type" field.
+func ClientTypeIn(vs ...uint8) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldClientType), v...))
+	})
+}
+
+// ClientTypeNotIn applies the NotIn predicate on the "client_type" field.
+func ClientTypeNotIn(vs ...uint8) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldClientType), v...))
+	})
+}
+
+// ClientTypeGT applies the GT predicate on the "client_type" field.
+func ClientTypeGT(v uint8) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldClientType), v))
+	})
+}
+
+// ClientTypeGTE applies the GTE predicate on the "client_type" field.
+func ClientTypeGTE(v uint8) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldClientType), v))
+	})
+}
+
+// ClientTypeLT applies the LT predicate on the "client_type" field.
+func ClientTypeLT(v uint8) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldClientType), v))
+	})
+}
+
+// ClientTypeLTE applies the LTE predicate on the "client_type" field.
+func ClientTypeLTE(v uint8) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldClientType), v))
+	})
+}
+
+// ClientSnEQ applies the EQ predicate on the "client_sn" field.
+func ClientSnEQ(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldClientSn), v))
+	})
+}
+
+// ClientSnNEQ applies the NEQ predicate on the "client_sn" field.
+func ClientSnNEQ(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldClientSn), v))
+	})
+}
+
+// ClientSnIn applies the In predicate on the "client_sn" field.
+func ClientSnIn(vs ...string) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldClientSn), v...))
+	})
+}
+
+// ClientSnNotIn applies the NotIn predicate on the "client_sn" field.
+func ClientSnNotIn(vs ...string) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldClientSn), v...))
+	})
+}
+
+// ClientSnGT applies the GT predicate on the "client_sn" field.
+func ClientSnGT(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldClientSn), v))
+	})
+}
+
+// ClientSnGTE applies the GTE predicate on the "client_sn" field.
+func ClientSnGTE(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldClientSn), v))
+	})
+}
+
+// ClientSnLT applies the LT predicate on the "client_sn" field.
+func ClientSnLT(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldClientSn), v))
+	})
+}
+
+// ClientSnLTE applies the LTE predicate on the "client_sn" field.
+func ClientSnLTE(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldClientSn), v))
+	})
+}
+
+// ClientSnContains applies the Contains predicate on the "client_sn" field.
+func ClientSnContains(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldClientSn), v))
+	})
+}
+
+// ClientSnHasPrefix applies the HasPrefix predicate on the "client_sn" field.
+func ClientSnHasPrefix(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldClientSn), v))
+	})
+}
+
+// ClientSnHasSuffix applies the HasSuffix predicate on the "client_sn" field.
+func ClientSnHasSuffix(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldClientSn), v))
+	})
+}
+
+// ClientSnEqualFold applies the EqualFold predicate on the "client_sn" field.
+func ClientSnEqualFold(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldClientSn), v))
+	})
+}
+
+// ClientSnContainsFold applies the ContainsFold predicate on the "client_sn" field.
+func ClientSnContainsFold(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldClientSn), v))
+	})
+}
+
+// ClientIDEQ applies the EQ predicate on the "client_id" field.
+func ClientIDEQ(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldClientID), v))
+	})
+}
+
+// ClientIDNEQ applies the NEQ predicate on the "client_id" field.
+func ClientIDNEQ(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldClientID), v))
+	})
+}
+
+// ClientIDIn applies the In predicate on the "client_id" field.
+func ClientIDIn(vs ...string) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldClientID), v...))
+	})
+}
+
+// ClientIDNotIn applies the NotIn predicate on the "client_id" field.
+func ClientIDNotIn(vs ...string) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldClientID), v...))
+	})
+}
+
+// ClientIDGT applies the GT predicate on the "client_id" field.
+func ClientIDGT(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldClientID), v))
+	})
+}
+
+// ClientIDGTE applies the GTE predicate on the "client_id" field.
+func ClientIDGTE(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldClientID), v))
+	})
+}
+
+// ClientIDLT applies the LT predicate on the "client_id" field.
+func ClientIDLT(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldClientID), v))
+	})
+}
+
+// ClientIDLTE applies the LTE predicate on the "client_id" field.
+func ClientIDLTE(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldClientID), v))
+	})
+}
+
+// ClientIDContains applies the Contains predicate on the "client_id" field.
+func ClientIDContains(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldClientID), v))
+	})
+}
+
+// ClientIDHasPrefix applies the HasPrefix predicate on the "client_id" field.
+func ClientIDHasPrefix(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldClientID), v))
+	})
+}
+
+// ClientIDHasSuffix applies the HasSuffix predicate on the "client_id" field.
+func ClientIDHasSuffix(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldClientID), v))
+	})
+}
+
+// ClientIDIsNil applies the IsNil predicate on the "client_id" field.
+func ClientIDIsNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldClientID)))
+	})
+}
+
+// ClientIDNotNil applies the NotNil predicate on the "client_id" field.
+func ClientIDNotNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldClientID)))
+	})
+}
+
+// ClientIDEqualFold applies the EqualFold predicate on the "client_id" field.
+func ClientIDEqualFold(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldClientID), v))
+	})
+}
+
+// ClientIDContainsFold applies the ContainsFold predicate on the "client_id" field.
+func ClientIDContainsFold(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldClientID), v))
 	})
 }
 
