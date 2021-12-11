@@ -25,6 +25,7 @@ const (
 
 var (
     removeNotable = map[string]FileInfoType{
+        "db.go":    FileInfoTypeFile,
         "internal": FileInfoTypeDir,
         "schema":   FileInfoTypeDir,
     }

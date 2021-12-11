@@ -6,10 +6,12 @@
 package internal
 
 import (
+    "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/entc"
     "entgo.io/ent/entc/gen"
     "entgo.io/ent/schema/field"
     "fmt"
+    "github.com/auroraride/aurservd/pkg/utils"
     "github.com/spf13/cobra"
     "log"
     "strings"
@@ -104,6 +106,9 @@ func GenerateCmd(postRun ...func(*gen.Config)) *cobra.Command {
                 if len(path) > 0 {
                     p = path[0]
                 }
+                // cfg.Hooks = []gen.Hook{
+                //     SingularTableName(),
+                // }
                 if err := entc.Generate(p, &cfg, opts...); err != nil {
                     log.Fatalln(err)
                 }
@@ -120,4 +125,23 @@ func GenerateCmd(postRun ...func(*gen.Config)) *cobra.Command {
     cmd.Flags().StringSliceVarP(&features, "feature", "", nil, "extend codegen with additional features")
     cmd.Flags().StringSliceVarP(&templates, "template", "", nil, "external templates to execute")
     return cmd
+}
+
+// SingularTableName ensures all nodes have a singular table name..
+func SingularTableName() gen.Hook {
+    return func(next gen.Generator) gen.Generator {
+        return gen.GenerateFunc(func(g *gen.Graph) error {
+            for _, n := range g.Nodes {
+                ant := n.EntSQL()
+                n.Annotations = make(map[string]interface{})
+
+                if ant == nil {
+                    ant = &entsql.Annotation{}
+                    n.Annotations[ant.Name()] = ant
+                }
+                ant.Table = utils.StrToSnakeCase(n.Name)
+            }
+            return next.Generate(g)
+        })
+    }
 }

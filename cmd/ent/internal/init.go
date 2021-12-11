@@ -29,32 +29,42 @@ var tmpl = template.Must(template.New("schema").
 
 import (
     "entgo.io/ent"
+    "entgo.io/ent/dialect/entsql"
+    "entgo.io/ent/schema"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
-// {{ . }} holds the schema definition for the {{ . }} entity.
-type {{ . }} struct {
+// {{ .name }} holds the schema definition for the {{ .name }} entity.
+type {{ .name }} struct {
     ent.Schema
 }
 
-// Fields of the {{ . }}.
-func ({{ . }}) Fields() []ent.Field {
-    return []ent.Field{}
-}
-
-// Edges of the {{ . }}.
-func ({{ . }}) Edges() []ent.Edge {
-    return nil
-}
-
-func ({{ . }}) Mixin() []ent.Mixin {
-    return []ent.Mixin{
-        internal.TimeMixin{},
-        internal.DeleteMixin{},
+// Annotations of the {{ .name }}.
+func ({{ .name }}) Annotations() []schema.Annotation {
+    return []schema.Annotation{
+        entsql.Annotation{Table: "{{ .tableName }}"},
     }
 }
 
-func ({{ . }}) Indexes() []ent.Index {
+// Fields of the {{ .name }}.
+func ({{ .name }}) Fields() []ent.Field {
+    return []ent.Field{}
+}
+
+// Edges of the {{ .name }}.
+func ({{ .name }}) Edges() []ent.Edge {
+    return nil
+}
+
+func ({{ .name }}) Mixin() []ent.Mixin {
+    return []ent.Mixin{
+        internal.TimeMixin{},
+        internal.DeleteMixin{},
+        internal.LastModify{},
+    }
+}
+
+func ({{ .name }}) Indexes() []ent.Index {
     return nil
 }
 `))
@@ -91,7 +101,10 @@ func initEnv(target string, names []string) error {
             return fmt.Errorf("init schema %s: %w", name, err)
         }
         b := bytes.NewBuffer(nil)
-        if err := tmpl.Execute(b, name); err != nil {
+        if err := tmpl.Execute(b, map[string]string{
+            "name":      name,
+            "tableName": strings.ToLower(utils.StrToSnakeCase(name)),
+        }); err != nil {
             return fmt.Errorf("executing template %s: %w", name, err)
         }
         newFileTarget := filepath.Join(target, strings.ToLower(name+".go"))

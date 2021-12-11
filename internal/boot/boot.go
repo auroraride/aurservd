@@ -22,4 +22,7 @@ func init() {
         Age:   l.Age,
         Json:  l.Json,
     })
+
+    // 加载数据库
+    ar.OpenDatabase().AutoMigrate()
 }

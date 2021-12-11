@@ -17,6 +17,9 @@ const (
     configFile = "./config/config.yaml"
 )
 
+var     Config    *config
+
+
 // defaultConfigStr 默认配置
 //go:embed default_config.yml
 var defaultConfigStr string
@@ -71,6 +74,7 @@ func LoadConfig() {
     if err != nil {
         log.Fatalf("配置读取失败: %v", err)
     }
+    Config = new(config)
     err = viper.Unmarshal(Config)
     if err != nil {
         log.Fatalf("配置解析失败: %v", err)

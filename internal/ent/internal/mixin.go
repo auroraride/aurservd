@@ -39,3 +39,14 @@ func (DeleteMixin) Indexes() []ent.Index {
         index.Fields("deleted_at"),
     }
 }
+
+type LastModify struct {
+    mixin.Schema
+}
+
+func (LastModify) Fields() []ent.Field {
+    return []ent.Field{
+        field.Time("last_modify").Nillable().Optional().Comment("最后修改人"),
+        field.String("remark").Nillable().Optional().Comment("备注"),
+    }
+}
