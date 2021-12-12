@@ -14,12 +14,13 @@ const (
     StatusOK                  = iota << 8 // 请求成功 0x00
     StatusError                           // 请求失败 0x100
     StatusUnauthorized                    // 需要认证 0x200 (需要登录)
-    StatusRequestTimeout                  // 请求过期 0x300
+    StatusForbidden                       // 没有权限 0x300
     StatusNotFound                        // 资源未获 0x400
     StatusInternalServerError             // 未知错误 0x500
     StatusNotAcceptable                   // 需要实名 0x600
-    StatusForbidden                       // 需要验证 0x700 (更换设备需要人脸验证)
+    StatusLocked                          // 需要验证 0x700 (更换设备需要人脸验证)
     StatusTooManyRequests                 // 触发限流 0x800
+    StatusRequestTimeout                  // 请求过期 0x300
 )
 
 type response struct {

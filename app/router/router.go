@@ -36,9 +36,9 @@ func Run() {
     // 加载全局中间件
     r.Use(
         func(next echo.HandlerFunc) echo.HandlerFunc {
-            return func(c echo.Context) error {
-                ctx := &app.Context{Context: c}
-                return next(ctx)
+            return func(ctx echo.Context) error {
+                c := &app.Context{Context: ctx}
+                return next(c)
             }
         },
         mw.LoggerWithConfig(mw.LoggerConfig{
@@ -61,7 +61,12 @@ func Run() {
     r.Validator = request.NewGlobalValidator()
 
     r.HTTPErrorHandler = func(err error, c echo.Context) {
-        _ = response.New(c).Error(response.StatusError).SetMessage(err.Error()).Send()
+        code := response.StatusError
+        errCode, ok := c.Get("errCode").(int)
+        if ok {
+            code = errCode
+        }
+        _ = response.New(c).Error(code).SetMessage(err.Error()).Send()
     }
 
     // 载入路由

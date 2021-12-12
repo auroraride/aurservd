@@ -12,15 +12,25 @@ import (
 // http headers
 const (
     // HeaderCaptchaID 图片验证码ID
-    HeaderCaptchaID    = "X-Captcha-Id"
+    HeaderCaptchaID = "X-Captcha-Id"
+    // HeaderDeviceSerial 骑手设备序列号 (由此判定是否更换了设备)
     HeaderDeviceSerial = "X-Device-Serial"
-    HeaderDeviceType   = "X-Device-Type"
+    // HeaderDeviceType 骑手设备类型
+    HeaderDeviceType = "X-Device-Type"
+    // HeaderRiderToken 骑手token
+    HeaderRiderToken = "X-Rider-Token"
 )
 
 type Context struct {
     echo.Context
 
     Device *Device
+}
+
+type RiderContext struct {
+    *Context
+
+    Id uint64
 }
 
 func (c *Context) BindValidate(ptr interface{}) error {

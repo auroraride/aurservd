@@ -10,6 +10,7 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/response"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/rider"
@@ -89,6 +90,19 @@ func (r *riderService) GetTokenPermission(u *ent.Rider, device *app.Device) mode
         perm = model.RiderTokenPermissionNewDevice
     }
     return perm
+}
+
+// GetTokenPermissionResponse 获取token权限响应
+func (r *riderService) GetTokenPermissionResponse(perm model.RiderTokenPermission) (status int, message string) {
+    switch perm {
+    case model.RiderTokenPermissionAuth:
+        status = response.StatusNotAcceptable
+        message = "需要实名认证"
+    case model.RiderTokenPermissionNewDevice:
+        status = response.StatusLocked
+        message = "需要人脸验证"
+    }
+    return
 }
 
 // SetDevice 更新用户设备

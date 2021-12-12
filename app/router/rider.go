@@ -10,9 +10,15 @@ import (
     "github.com/auroraride/aurservd/app/middleware"
 )
 
+// rideRoute 骑手路由
 func (r *router) rideRoute() {
     g := r.Group("/rider")
     g.Use(middleware.DeviceMiddleware)
-    // 骑手登录
+    // 登录
     g.POST("/signin", rapi.Rider.Signin)
+    // 引入骑手认证中间件
+    g.Use(middleware.RiderMiddleware)
+    // 认证
+    g.POST("/authentication", rapi.Rider.Authentication)
+    // 更换设备扫脸
 }

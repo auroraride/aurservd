@@ -43,16 +43,21 @@ func (*rider) Signin(ctx echo.Context) (err error) {
 
     // 注册+登录
     var data *model.RiderSigninRes
-    data, err = service.NewRider().Signin(req.Phone, c.Device)
+    s := service.NewRider()
+    data, err = s.Signin(req.Phone, c.Device)
     if err != nil {
         return
     }
     res := response.New(ctx).SetData(data)
-    switch data.TokenPermission {
-    case model.RiderTokenPermissionAuth:
-        res.Error(response.StatusNotAcceptable).SetMessage("需要实名认证")
-    case model.RiderTokenPermissionNewDevice:
-        res.Error(response.StatusForbidden).SetMessage("需要验证本人")
+    status, message := s.GetTokenPermissionResponse(data.TokenPermission)
+    if status > 0 {
+        res.Error(status).SetMessage(message)
     }
     return res.Send()
+}
+
+// Authentication 实名认证
+// TODO 直接进行扫脸
+func (*rider) Authentication(ctx echo.Context) error {
+    return nil
 }

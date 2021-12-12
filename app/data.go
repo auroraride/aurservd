@@ -4,6 +4,3 @@
 // Based on aurservd by liasica, magicrolan@qq.com.
 
 package app
-
-type RiderContext struct {
-}
