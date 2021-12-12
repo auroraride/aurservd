@@ -7,7 +7,8 @@ package main
 
 import (
     _ "github.com/auroraride/aurservd/internal/boot"
-    "github.com/auroraride/aurservd/internal/router"
+
+    "github.com/auroraride/aurservd/app/router"
 )
 
 func main() {

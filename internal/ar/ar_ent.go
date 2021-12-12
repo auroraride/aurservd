@@ -7,13 +7,13 @@ package ar
 
 import "github.com/auroraride/aurservd/internal/ent"
 
-var OrmClient *ent.Client
+var Ent *ent.Client
 
 type orm struct {
     *ent.Client
 }
 
 func OpenDatabase() *orm {
-    OrmClient = ent.OpenPgx(Config.Database.Postgres.Dsn)
-    return &orm{OrmClient}
+    Ent = ent.OpenPgx(Config.Database.Postgres.Dsn)
+    return &orm{Ent}
 }

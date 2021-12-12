@@ -142,24 +142,24 @@ func Phone(v string) predicate.Rider {
 	})
 }
 
-// ClientType applies equality check predicate on the "client_type" field. It's identical to ClientTypeEQ.
-func ClientType(v uint8) predicate.Rider {
+// DeviceType applies equality check predicate on the "device_type" field. It's identical to DeviceTypeEQ.
+func DeviceType(v uint8) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldClientType), v))
+		s.Where(sql.EQ(s.C(FieldDeviceType), v))
 	})
 }
 
-// ClientSn applies equality check predicate on the "client_sn" field. It's identical to ClientSnEQ.
-func ClientSn(v string) predicate.Rider {
+// DeviceSn applies equality check predicate on the "device_sn" field. It's identical to DeviceSnEQ.
+func DeviceSn(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldClientSn), v))
+		s.Where(sql.EQ(s.C(FieldDeviceSn), v))
 	})
 }
 
-// ClientID applies equality check predicate on the "client_id" field. It's identical to ClientIDEQ.
-func ClientID(v string) predicate.Rider {
+// DevicePushID applies equality check predicate on the "device_push_id" field. It's identical to DevicePushIDEQ.
+func DevicePushID(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldClientID), v))
+		s.Where(sql.EQ(s.C(FieldDevicePushID), v))
 	})
 }
 
@@ -807,22 +807,22 @@ func ContactNotNil() predicate.Rider {
 	})
 }
 
-// ClientTypeEQ applies the EQ predicate on the "client_type" field.
-func ClientTypeEQ(v uint8) predicate.Rider {
+// DeviceTypeEQ applies the EQ predicate on the "device_type" field.
+func DeviceTypeEQ(v uint8) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldClientType), v))
+		s.Where(sql.EQ(s.C(FieldDeviceType), v))
 	})
 }
 
-// ClientTypeNEQ applies the NEQ predicate on the "client_type" field.
-func ClientTypeNEQ(v uint8) predicate.Rider {
+// DeviceTypeNEQ applies the NEQ predicate on the "device_type" field.
+func DeviceTypeNEQ(v uint8) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldClientType), v))
+		s.Where(sql.NEQ(s.C(FieldDeviceType), v))
 	})
 }
 
-// ClientTypeIn applies the In predicate on the "client_type" field.
-func ClientTypeIn(vs ...uint8) predicate.Rider {
+// DeviceTypeIn applies the In predicate on the "device_type" field.
+func DeviceTypeIn(vs ...uint8) predicate.Rider {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -834,12 +834,12 @@ func ClientTypeIn(vs ...uint8) predicate.Rider {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldClientType), v...))
+		s.Where(sql.In(s.C(FieldDeviceType), v...))
 	})
 }
 
-// ClientTypeNotIn applies the NotIn predicate on the "client_type" field.
-func ClientTypeNotIn(vs ...uint8) predicate.Rider {
+// DeviceTypeNotIn applies the NotIn predicate on the "device_type" field.
+func DeviceTypeNotIn(vs ...uint8) predicate.Rider {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -851,54 +851,54 @@ func ClientTypeNotIn(vs ...uint8) predicate.Rider {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldClientType), v...))
+		s.Where(sql.NotIn(s.C(FieldDeviceType), v...))
 	})
 }
 
-// ClientTypeGT applies the GT predicate on the "client_type" field.
-func ClientTypeGT(v uint8) predicate.Rider {
+// DeviceTypeGT applies the GT predicate on the "device_type" field.
+func DeviceTypeGT(v uint8) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldClientType), v))
+		s.Where(sql.GT(s.C(FieldDeviceType), v))
 	})
 }
 
-// ClientTypeGTE applies the GTE predicate on the "client_type" field.
-func ClientTypeGTE(v uint8) predicate.Rider {
+// DeviceTypeGTE applies the GTE predicate on the "device_type" field.
+func DeviceTypeGTE(v uint8) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldClientType), v))
+		s.Where(sql.GTE(s.C(FieldDeviceType), v))
 	})
 }
 
-// ClientTypeLT applies the LT predicate on the "client_type" field.
-func ClientTypeLT(v uint8) predicate.Rider {
+// DeviceTypeLT applies the LT predicate on the "device_type" field.
+func DeviceTypeLT(v uint8) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldClientType), v))
+		s.Where(sql.LT(s.C(FieldDeviceType), v))
 	})
 }
 
-// ClientTypeLTE applies the LTE predicate on the "client_type" field.
-func ClientTypeLTE(v uint8) predicate.Rider {
+// DeviceTypeLTE applies the LTE predicate on the "device_type" field.
+func DeviceTypeLTE(v uint8) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldClientType), v))
+		s.Where(sql.LTE(s.C(FieldDeviceType), v))
 	})
 }
 
-// ClientSnEQ applies the EQ predicate on the "client_sn" field.
-func ClientSnEQ(v string) predicate.Rider {
+// DeviceSnEQ applies the EQ predicate on the "device_sn" field.
+func DeviceSnEQ(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldClientSn), v))
+		s.Where(sql.EQ(s.C(FieldDeviceSn), v))
 	})
 }
 
-// ClientSnNEQ applies the NEQ predicate on the "client_sn" field.
-func ClientSnNEQ(v string) predicate.Rider {
+// DeviceSnNEQ applies the NEQ predicate on the "device_sn" field.
+func DeviceSnNEQ(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldClientSn), v))
+		s.Where(sql.NEQ(s.C(FieldDeviceSn), v))
 	})
 }
 
-// ClientSnIn applies the In predicate on the "client_sn" field.
-func ClientSnIn(vs ...string) predicate.Rider {
+// DeviceSnIn applies the In predicate on the "device_sn" field.
+func DeviceSnIn(vs ...string) predicate.Rider {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -910,12 +910,12 @@ func ClientSnIn(vs ...string) predicate.Rider {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldClientSn), v...))
+		s.Where(sql.In(s.C(FieldDeviceSn), v...))
 	})
 }
 
-// ClientSnNotIn applies the NotIn predicate on the "client_sn" field.
-func ClientSnNotIn(vs ...string) predicate.Rider {
+// DeviceSnNotIn applies the NotIn predicate on the "device_sn" field.
+func DeviceSnNotIn(vs ...string) predicate.Rider {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -927,89 +927,89 @@ func ClientSnNotIn(vs ...string) predicate.Rider {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldClientSn), v...))
+		s.Where(sql.NotIn(s.C(FieldDeviceSn), v...))
 	})
 }
 
-// ClientSnGT applies the GT predicate on the "client_sn" field.
-func ClientSnGT(v string) predicate.Rider {
+// DeviceSnGT applies the GT predicate on the "device_sn" field.
+func DeviceSnGT(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldClientSn), v))
+		s.Where(sql.GT(s.C(FieldDeviceSn), v))
 	})
 }
 
-// ClientSnGTE applies the GTE predicate on the "client_sn" field.
-func ClientSnGTE(v string) predicate.Rider {
+// DeviceSnGTE applies the GTE predicate on the "device_sn" field.
+func DeviceSnGTE(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldClientSn), v))
+		s.Where(sql.GTE(s.C(FieldDeviceSn), v))
 	})
 }
 
-// ClientSnLT applies the LT predicate on the "client_sn" field.
-func ClientSnLT(v string) predicate.Rider {
+// DeviceSnLT applies the LT predicate on the "device_sn" field.
+func DeviceSnLT(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldClientSn), v))
+		s.Where(sql.LT(s.C(FieldDeviceSn), v))
 	})
 }
 
-// ClientSnLTE applies the LTE predicate on the "client_sn" field.
-func ClientSnLTE(v string) predicate.Rider {
+// DeviceSnLTE applies the LTE predicate on the "device_sn" field.
+func DeviceSnLTE(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldClientSn), v))
+		s.Where(sql.LTE(s.C(FieldDeviceSn), v))
 	})
 }
 
-// ClientSnContains applies the Contains predicate on the "client_sn" field.
-func ClientSnContains(v string) predicate.Rider {
+// DeviceSnContains applies the Contains predicate on the "device_sn" field.
+func DeviceSnContains(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldClientSn), v))
+		s.Where(sql.Contains(s.C(FieldDeviceSn), v))
 	})
 }
 
-// ClientSnHasPrefix applies the HasPrefix predicate on the "client_sn" field.
-func ClientSnHasPrefix(v string) predicate.Rider {
+// DeviceSnHasPrefix applies the HasPrefix predicate on the "device_sn" field.
+func DeviceSnHasPrefix(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldClientSn), v))
+		s.Where(sql.HasPrefix(s.C(FieldDeviceSn), v))
 	})
 }
 
-// ClientSnHasSuffix applies the HasSuffix predicate on the "client_sn" field.
-func ClientSnHasSuffix(v string) predicate.Rider {
+// DeviceSnHasSuffix applies the HasSuffix predicate on the "device_sn" field.
+func DeviceSnHasSuffix(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldClientSn), v))
+		s.Where(sql.HasSuffix(s.C(FieldDeviceSn), v))
 	})
 }
 
-// ClientSnEqualFold applies the EqualFold predicate on the "client_sn" field.
-func ClientSnEqualFold(v string) predicate.Rider {
+// DeviceSnEqualFold applies the EqualFold predicate on the "device_sn" field.
+func DeviceSnEqualFold(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldClientSn), v))
+		s.Where(sql.EqualFold(s.C(FieldDeviceSn), v))
 	})
 }
 
-// ClientSnContainsFold applies the ContainsFold predicate on the "client_sn" field.
-func ClientSnContainsFold(v string) predicate.Rider {
+// DeviceSnContainsFold applies the ContainsFold predicate on the "device_sn" field.
+func DeviceSnContainsFold(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldClientSn), v))
+		s.Where(sql.ContainsFold(s.C(FieldDeviceSn), v))
 	})
 }
 
-// ClientIDEQ applies the EQ predicate on the "client_id" field.
-func ClientIDEQ(v string) predicate.Rider {
+// DevicePushIDEQ applies the EQ predicate on the "device_push_id" field.
+func DevicePushIDEQ(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldClientID), v))
+		s.Where(sql.EQ(s.C(FieldDevicePushID), v))
 	})
 }
 
-// ClientIDNEQ applies the NEQ predicate on the "client_id" field.
-func ClientIDNEQ(v string) predicate.Rider {
+// DevicePushIDNEQ applies the NEQ predicate on the "device_push_id" field.
+func DevicePushIDNEQ(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldClientID), v))
+		s.Where(sql.NEQ(s.C(FieldDevicePushID), v))
 	})
 }
 
-// ClientIDIn applies the In predicate on the "client_id" field.
-func ClientIDIn(vs ...string) predicate.Rider {
+// DevicePushIDIn applies the In predicate on the "device_push_id" field.
+func DevicePushIDIn(vs ...string) predicate.Rider {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1021,12 +1021,12 @@ func ClientIDIn(vs ...string) predicate.Rider {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldClientID), v...))
+		s.Where(sql.In(s.C(FieldDevicePushID), v...))
 	})
 }
 
-// ClientIDNotIn applies the NotIn predicate on the "client_id" field.
-func ClientIDNotIn(vs ...string) predicate.Rider {
+// DevicePushIDNotIn applies the NotIn predicate on the "device_push_id" field.
+func DevicePushIDNotIn(vs ...string) predicate.Rider {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1038,84 +1038,84 @@ func ClientIDNotIn(vs ...string) predicate.Rider {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldClientID), v...))
+		s.Where(sql.NotIn(s.C(FieldDevicePushID), v...))
 	})
 }
 
-// ClientIDGT applies the GT predicate on the "client_id" field.
-func ClientIDGT(v string) predicate.Rider {
+// DevicePushIDGT applies the GT predicate on the "device_push_id" field.
+func DevicePushIDGT(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldClientID), v))
+		s.Where(sql.GT(s.C(FieldDevicePushID), v))
 	})
 }
 
-// ClientIDGTE applies the GTE predicate on the "client_id" field.
-func ClientIDGTE(v string) predicate.Rider {
+// DevicePushIDGTE applies the GTE predicate on the "device_push_id" field.
+func DevicePushIDGTE(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldClientID), v))
+		s.Where(sql.GTE(s.C(FieldDevicePushID), v))
 	})
 }
 
-// ClientIDLT applies the LT predicate on the "client_id" field.
-func ClientIDLT(v string) predicate.Rider {
+// DevicePushIDLT applies the LT predicate on the "device_push_id" field.
+func DevicePushIDLT(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldClientID), v))
+		s.Where(sql.LT(s.C(FieldDevicePushID), v))
 	})
 }
 
-// ClientIDLTE applies the LTE predicate on the "client_id" field.
-func ClientIDLTE(v string) predicate.Rider {
+// DevicePushIDLTE applies the LTE predicate on the "device_push_id" field.
+func DevicePushIDLTE(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldClientID), v))
+		s.Where(sql.LTE(s.C(FieldDevicePushID), v))
 	})
 }
 
-// ClientIDContains applies the Contains predicate on the "client_id" field.
-func ClientIDContains(v string) predicate.Rider {
+// DevicePushIDContains applies the Contains predicate on the "device_push_id" field.
+func DevicePushIDContains(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldClientID), v))
+		s.Where(sql.Contains(s.C(FieldDevicePushID), v))
 	})
 }
 
-// ClientIDHasPrefix applies the HasPrefix predicate on the "client_id" field.
-func ClientIDHasPrefix(v string) predicate.Rider {
+// DevicePushIDHasPrefix applies the HasPrefix predicate on the "device_push_id" field.
+func DevicePushIDHasPrefix(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldClientID), v))
+		s.Where(sql.HasPrefix(s.C(FieldDevicePushID), v))
 	})
 }
 
-// ClientIDHasSuffix applies the HasSuffix predicate on the "client_id" field.
-func ClientIDHasSuffix(v string) predicate.Rider {
+// DevicePushIDHasSuffix applies the HasSuffix predicate on the "device_push_id" field.
+func DevicePushIDHasSuffix(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldClientID), v))
+		s.Where(sql.HasSuffix(s.C(FieldDevicePushID), v))
 	})
 }
 
-// ClientIDIsNil applies the IsNil predicate on the "client_id" field.
-func ClientIDIsNil() predicate.Rider {
+// DevicePushIDIsNil applies the IsNil predicate on the "device_push_id" field.
+func DevicePushIDIsNil() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldClientID)))
+		s.Where(sql.IsNull(s.C(FieldDevicePushID)))
 	})
 }
 
-// ClientIDNotNil applies the NotNil predicate on the "client_id" field.
-func ClientIDNotNil() predicate.Rider {
+// DevicePushIDNotNil applies the NotNil predicate on the "device_push_id" field.
+func DevicePushIDNotNil() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldClientID)))
+		s.Where(sql.NotNull(s.C(FieldDevicePushID)))
 	})
 }
 
-// ClientIDEqualFold applies the EqualFold predicate on the "client_id" field.
-func ClientIDEqualFold(v string) predicate.Rider {
+// DevicePushIDEqualFold applies the EqualFold predicate on the "device_push_id" field.
+func DevicePushIDEqualFold(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldClientID), v))
+		s.Where(sql.EqualFold(s.C(FieldDevicePushID), v))
 	})
 }
 
-// ClientIDContainsFold applies the ContainsFold predicate on the "client_id" field.
-func ClientIDContainsFold(v string) predicate.Rider {
+// DevicePushIDContainsFold applies the ContainsFold predicate on the "device_push_id" field.
+func DevicePushIDContainsFold(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldClientID), v))
+		s.Where(sql.ContainsFold(s.C(FieldDevicePushID), v))
 	})
 }
 

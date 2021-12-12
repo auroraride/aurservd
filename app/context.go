@@ -9,8 +9,18 @@ import (
     "github.com/labstack/echo/v4"
 )
 
+// http headers
+const (
+    // HeaderCaptchaID 图片验证码ID
+    HeaderCaptchaID  = "X-Captcha-Id"
+    HeaderDeviceSn   = "X-Device-Sn"
+    HeaderDeviceType = "X-Device-Type"
+)
+
 type Context struct {
     echo.Context
+
+    Device *Device
 }
 
 func (c *Context) BindValidate(ptr interface{}) error {

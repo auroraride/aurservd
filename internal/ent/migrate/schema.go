@@ -53,9 +53,9 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true},
 		{Name: "phone", Type: field.TypeString, Unique: true, Size: 11},
 		{Name: "contact", Type: field.TypeJSON, Nullable: true},
-		{Name: "client_type", Type: field.TypeUint8},
-		{Name: "client_sn", Type: field.TypeString, Unique: true, Size: 60},
-		{Name: "client_id", Type: field.TypeString, Unique: true, Nullable: true, Size: 60},
+		{Name: "device_type", Type: field.TypeUint8},
+		{Name: "device_sn", Type: field.TypeString, Unique: true, Size: 60},
+		{Name: "device_push_id", Type: field.TypeString, Unique: true, Nullable: true, Size: 60},
 		{Name: "person_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// RiderTable holds the schema information for the "rider" table.

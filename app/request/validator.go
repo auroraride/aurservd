@@ -14,6 +14,7 @@ import (
     zhTranslations "github.com/go-playground/validator/v10/translations/zh"
     "github.com/iancoleman/strcase"
     "reflect"
+    "strings"
 )
 
 type GlobalValidator struct {
@@ -25,11 +26,11 @@ func (v *GlobalValidator) Validate(i interface{}) error {
     err := v.validator.Struct(i)
     if err != nil {
         errs := err.(validator.ValidationErrors)
-        msg := ""
+        var msg []string
         for _, e := range errs {
-            msg += e.Translate(v.trans)
+            msg = append(msg, e.Translate(v.trans))
         }
-        err = errors.New(msg)
+        err = errors.New(strings.Join(msg, "，"))
     }
     return err
 }

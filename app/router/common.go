@@ -5,11 +5,13 @@
 
 package router
 
-import "github.com/auroraride/aurservd/internal/controller/v1/common"
+import (
+    "github.com/auroraride/aurservd/app/controller/v1/common"
+)
 
 func (r *router) commonRoute() {
     g := r.Group("/common")
     g.GET("/captcha", common.CaptchaGenerate)
     g.POST("/captcha", common.CaptchaVerify)
-    g.POST("/sms/:name", common.SendSmsCode)
+    g.POST("/sms", common.SendSmsCode)
 }

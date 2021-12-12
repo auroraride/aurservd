@@ -6,9 +6,9 @@
 package router
 
 import (
-    "github.com/auroraride/aurservd/internal/app"
-    "github.com/auroraride/aurservd/internal/app/request"
-    "github.com/auroraride/aurservd/internal/app/response"
+    "github.com/auroraride/aurservd/app"
+    "github.com/auroraride/aurservd/app/request"
+    "github.com/auroraride/aurservd/app/response"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/labstack/echo/v4"
     mw "github.com/labstack/echo/v4/middleware"
@@ -23,15 +23,31 @@ type router struct {
 }
 
 func Run() {
-
-    r = &router{echo.New()}
+    e := echo.New()
+    // e.Logger.SetHeader(`[time] ${time_rfc3339_nano}` + "\n")
+    r = &router{e}
     cfg := ar.Config.App
     corsConfig := mw.DefaultCORSConfig
     corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, []string{
-        ar.HeaderCaptchaID,
+        app.HeaderCaptchaID,
+        app.HeaderDeviceSn,
+        app.HeaderDeviceType,
     }...)
     // 加载全局中间件
     r.Use(
+        func(next echo.HandlerFunc) echo.HandlerFunc {
+            return func(c echo.Context) error {
+                ctx := &app.Context{Context: c}
+                return next(ctx)
+            }
+        },
+        mw.LoggerWithConfig(mw.LoggerConfig{
+            Format: `{"time":"${time_custom}","id":"${id}","remote_ip":"${remote_ip}",` +
+                `"host":"${host}","method":"${method}","uri":"${uri}",` +
+                `"status":${status},"error":"${error}","latency":${latency},"latency_human":"${latency_human}"` +
+                `,"bytes_in":${bytes_in},"bytes_out":${bytes_out}}` + "\n",
+            CustomTimeFormat: "2006-01-02 15:04:05.00000",
+        }),
         mw.Recover(),
         mw.BodyLimit(cfg.BodyLimit),
         mw.CORSWithConfig(corsConfig),
@@ -40,19 +56,6 @@ func Run() {
         }),
         mw.RequestID(),
         mw.RateLimiter(mw.NewRateLimiterMemoryStore(rate.Limit(cfg.RateLimit))),
-        mw.LoggerWithConfig(mw.LoggerConfig{
-            Format: `{"time":"${time_custom}","id":"${id}","remote_ip":"${remote_ip}",` +
-                `"host":"${host}","method":"${method}","uri":"${uri}",` +
-                `"status":${status},"error":"${error}","latency":${latency},"latency_human":"${latency_human}"` +
-                `,"bytes_in":${bytes_in},"bytes_out":${bytes_out}}` + "\n",
-            CustomTimeFormat: "2006-01-02 15:04:05.00000",
-        }),
-        func(next echo.HandlerFunc) echo.HandlerFunc {
-            return func(c echo.Context) error {
-                ctx := &app.Context{Context: c}
-                return next(ctx)
-            }
-        },
     )
 
     r.Validator = request.NewGlobalValidator()

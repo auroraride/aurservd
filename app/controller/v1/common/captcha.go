@@ -8,9 +8,9 @@ package common
 import (
     "bytes"
     "errors"
-    "github.com/auroraride/aurservd/internal/app/response"
-    "github.com/auroraride/aurservd/internal/ar"
-    "github.com/auroraride/aurservd/internal/service"
+    "github.com/auroraride/aurservd/app"
+    "github.com/auroraride/aurservd/app/response"
+    "github.com/auroraride/aurservd/app/service"
     "github.com/labstack/echo/v4"
     "net/http"
 )
@@ -28,7 +28,7 @@ func CaptchaGenerate(c echo.Context) error {
         return err
     }
 
-    c.Response().Header().Set(ar.HeaderCaptchaID, id)
+    c.Response().Header().Set(app.HeaderCaptchaID, id)
 
     return c.Stream(http.StatusOK, "image/png", b)
 }
@@ -44,7 +44,7 @@ func CaptchaVerify(c echo.Context) error {
     if err != nil {
         return err
     }
-    id := c.Request().Header.Get(ar.HeaderCaptchaID)
+    id := c.Request().Header.Get(app.HeaderCaptchaID)
     if !service.NewCaptcha().Verify(id, r.Code, false) {
         return errors.New("验证码校验失败")
     }

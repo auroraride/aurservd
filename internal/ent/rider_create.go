@@ -118,28 +118,28 @@ func (rc *RiderCreate) SetContact(sc *schema.RiderContact) *RiderCreate {
 	return rc
 }
 
-// SetClientType sets the "client_type" field.
-func (rc *RiderCreate) SetClientType(u uint8) *RiderCreate {
-	rc.mutation.SetClientType(u)
+// SetDeviceType sets the "device_type" field.
+func (rc *RiderCreate) SetDeviceType(u uint8) *RiderCreate {
+	rc.mutation.SetDeviceType(u)
 	return rc
 }
 
-// SetClientSn sets the "client_sn" field.
-func (rc *RiderCreate) SetClientSn(s string) *RiderCreate {
-	rc.mutation.SetClientSn(s)
+// SetDeviceSn sets the "device_sn" field.
+func (rc *RiderCreate) SetDeviceSn(s string) *RiderCreate {
+	rc.mutation.SetDeviceSn(s)
 	return rc
 }
 
-// SetClientID sets the "client_id" field.
-func (rc *RiderCreate) SetClientID(s string) *RiderCreate {
-	rc.mutation.SetClientID(s)
+// SetDevicePushID sets the "device_push_id" field.
+func (rc *RiderCreate) SetDevicePushID(s string) *RiderCreate {
+	rc.mutation.SetDevicePushID(s)
 	return rc
 }
 
-// SetNillableClientID sets the "client_id" field if the given value is not nil.
-func (rc *RiderCreate) SetNillableClientID(s *string) *RiderCreate {
+// SetNillableDevicePushID sets the "device_push_id" field if the given value is not nil.
+func (rc *RiderCreate) SetNillableDevicePushID(s *string) *RiderCreate {
 	if s != nil {
-		rc.SetClientID(*s)
+		rc.SetDevicePushID(*s)
 	}
 	return rc
 }
@@ -246,20 +246,20 @@ func (rc *RiderCreate) check() error {
 			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "phone": %w`, err)}
 		}
 	}
-	if _, ok := rc.mutation.ClientType(); !ok {
-		return &ValidationError{Name: "client_type", err: errors.New(`ent: missing required field "client_type"`)}
+	if _, ok := rc.mutation.DeviceType(); !ok {
+		return &ValidationError{Name: "device_type", err: errors.New(`ent: missing required field "device_type"`)}
 	}
-	if _, ok := rc.mutation.ClientSn(); !ok {
-		return &ValidationError{Name: "client_sn", err: errors.New(`ent: missing required field "client_sn"`)}
+	if _, ok := rc.mutation.DeviceSn(); !ok {
+		return &ValidationError{Name: "device_sn", err: errors.New(`ent: missing required field "device_sn"`)}
 	}
-	if v, ok := rc.mutation.ClientSn(); ok {
-		if err := rider.ClientSnValidator(v); err != nil {
-			return &ValidationError{Name: "client_sn", err: fmt.Errorf(`ent: validator failed for field "client_sn": %w`, err)}
+	if v, ok := rc.mutation.DeviceSn(); ok {
+		if err := rider.DeviceSnValidator(v); err != nil {
+			return &ValidationError{Name: "device_sn", err: fmt.Errorf(`ent: validator failed for field "device_sn": %w`, err)}
 		}
 	}
-	if v, ok := rc.mutation.ClientID(); ok {
-		if err := rider.ClientIDValidator(v); err != nil {
-			return &ValidationError{Name: "client_id", err: fmt.Errorf(`ent: validator failed for field "client_id": %w`, err)}
+	if v, ok := rc.mutation.DevicePushID(); ok {
+		if err := rider.DevicePushIDValidator(v); err != nil {
+			return &ValidationError{Name: "device_push_id", err: fmt.Errorf(`ent: validator failed for field "device_push_id": %w`, err)}
 		}
 	}
 	return nil
@@ -345,29 +345,29 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 		})
 		_node.Contact = value
 	}
-	if value, ok := rc.mutation.ClientType(); ok {
+	if value, ok := rc.mutation.DeviceType(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeUint8,
 			Value:  value,
-			Column: rider.FieldClientType,
+			Column: rider.FieldDeviceType,
 		})
-		_node.ClientType = value
+		_node.DeviceType = value
 	}
-	if value, ok := rc.mutation.ClientSn(); ok {
+	if value, ok := rc.mutation.DeviceSn(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: rider.FieldClientSn,
+			Column: rider.FieldDeviceSn,
 		})
-		_node.ClientSn = value
+		_node.DeviceSn = value
 	}
-	if value, ok := rc.mutation.ClientID(); ok {
+	if value, ok := rc.mutation.DevicePushID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: rider.FieldClientID,
+			Column: rider.FieldDevicePushID,
 		})
-		_node.ClientID = &value
+		_node.DevicePushID = &value
 	}
 	if nodes := rc.mutation.PersonIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

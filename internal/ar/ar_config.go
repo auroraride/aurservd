@@ -83,8 +83,6 @@ func readConfig() error {
     }
     Config = new(config)
     err = viper.Unmarshal(Config)
-    c := Config
-    log.Println(c)
     return err
 }
 
