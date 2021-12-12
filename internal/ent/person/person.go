@@ -23,6 +23,8 @@ const (
 	FieldRemark = "remark"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldBlock holds the string denoting the block field in the database.
+	FieldBlock = "block"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldIcNumber holds the string denoting the ic_number field in the database.
@@ -57,6 +59,7 @@ var Columns = []string{
 	FieldLastModify,
 	FieldRemark,
 	FieldStatus,
+	FieldBlock,
 	FieldName,
 	FieldIcNumber,
 	FieldIcType,
@@ -84,6 +87,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus uint8
+	// DefaultBlock holds the default value on creation for the "block" field.
+	DefaultBlock bool
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
 	// IcNumberValidator is a validator for the "ic_number" field. It is called by the builders before save.

@@ -115,6 +115,20 @@ func (pu *PersonUpdate) AddStatus(u uint8) *PersonUpdate {
 	return pu
 }
 
+// SetBlock sets the "block" field.
+func (pu *PersonUpdate) SetBlock(b bool) *PersonUpdate {
+	pu.mutation.SetBlock(b)
+	return pu
+}
+
+// SetNillableBlock sets the "block" field if the given value is not nil.
+func (pu *PersonUpdate) SetNillableBlock(b *bool) *PersonUpdate {
+	if b != nil {
+		pu.SetBlock(*b)
+	}
+	return pu
+}
+
 // SetName sets the "name" field.
 func (pu *PersonUpdate) SetName(s string) *PersonUpdate {
 	pu.mutation.SetName(s)
@@ -384,6 +398,13 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: person.FieldStatus,
 		})
 	}
+	if value, ok := pu.mutation.Block(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: person.FieldBlock,
+		})
+	}
 	if value, ok := pu.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -590,6 +611,20 @@ func (puo *PersonUpdateOne) SetNillableStatus(u *uint8) *PersonUpdateOne {
 // AddStatus adds u to the "status" field.
 func (puo *PersonUpdateOne) AddStatus(u uint8) *PersonUpdateOne {
 	puo.mutation.AddStatus(u)
+	return puo
+}
+
+// SetBlock sets the "block" field.
+func (puo *PersonUpdateOne) SetBlock(b bool) *PersonUpdateOne {
+	puo.mutation.SetBlock(b)
+	return puo
+}
+
+// SetNillableBlock sets the "block" field if the given value is not nil.
+func (puo *PersonUpdateOne) SetNillableBlock(b *bool) *PersonUpdateOne {
+	if b != nil {
+		puo.SetBlock(*b)
+	}
 	return puo
 }
 
@@ -884,6 +919,13 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 			Type:   field.TypeUint8,
 			Value:  value,
 			Column: person.FieldStatus,
+		})
+	}
+	if value, ok := puo.mutation.Block(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: person.FieldBlock,
 		})
 	}
 	if value, ok := puo.mutation.Name(); ok {

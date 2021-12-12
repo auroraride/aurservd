@@ -133,6 +133,45 @@ func (ru *RiderUpdate) ClearContact() *RiderUpdate {
 	return ru
 }
 
+// SetDeviceType sets the "device_type" field.
+func (ru *RiderUpdate) SetDeviceType(u uint8) *RiderUpdate {
+	ru.mutation.ResetDeviceType()
+	ru.mutation.SetDeviceType(u)
+	return ru
+}
+
+// AddDeviceType adds u to the "device_type" field.
+func (ru *RiderUpdate) AddDeviceType(u uint8) *RiderUpdate {
+	ru.mutation.AddDeviceType(u)
+	return ru
+}
+
+// SetLastDevice sets the "last_device" field.
+func (ru *RiderUpdate) SetLastDevice(s string) *RiderUpdate {
+	ru.mutation.SetLastDevice(s)
+	return ru
+}
+
+// SetPushID sets the "push_id" field.
+func (ru *RiderUpdate) SetPushID(s string) *RiderUpdate {
+	ru.mutation.SetPushID(s)
+	return ru
+}
+
+// SetNillablePushID sets the "push_id" field if the given value is not nil.
+func (ru *RiderUpdate) SetNillablePushID(s *string) *RiderUpdate {
+	if s != nil {
+		ru.SetPushID(*s)
+	}
+	return ru
+}
+
+// ClearPushID clears the value of the "push_id" field.
+func (ru *RiderUpdate) ClearPushID() *RiderUpdate {
+	ru.mutation.ClearPushID()
+	return ru
+}
+
 // SetPerson sets the "person" edge to the Person entity.
 func (ru *RiderUpdate) SetPerson(p *Person) *RiderUpdate {
 	return ru.SetPersonID(p.ID)
@@ -225,6 +264,16 @@ func (ru *RiderUpdate) check() error {
 			return &ValidationError{Name: "phone", err: fmt.Errorf("ent: validator failed for field \"phone\": %w", err)}
 		}
 	}
+	if v, ok := ru.mutation.LastDevice(); ok {
+		if err := rider.LastDeviceValidator(v); err != nil {
+			return &ValidationError{Name: "last_device", err: fmt.Errorf("ent: validator failed for field \"last_device\": %w", err)}
+		}
+	}
+	if v, ok := ru.mutation.PushID(); ok {
+		if err := rider.PushIDValidator(v); err != nil {
+			return &ValidationError{Name: "push_id", err: fmt.Errorf("ent: validator failed for field \"push_id\": %w", err)}
+		}
+	}
 	return nil
 }
 
@@ -310,6 +359,40 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: rider.FieldContact,
+		})
+	}
+	if value, ok := ru.mutation.DeviceType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: rider.FieldDeviceType,
+		})
+	}
+	if value, ok := ru.mutation.AddedDeviceType(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: rider.FieldDeviceType,
+		})
+	}
+	if value, ok := ru.mutation.LastDevice(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldLastDevice,
+		})
+	}
+	if value, ok := ru.mutation.PushID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldPushID,
+		})
+	}
+	if ru.mutation.PushIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: rider.FieldPushID,
 		})
 	}
 	if ru.mutation.PersonCleared() {
@@ -470,6 +553,45 @@ func (ruo *RiderUpdateOne) ClearContact() *RiderUpdateOne {
 	return ruo
 }
 
+// SetDeviceType sets the "device_type" field.
+func (ruo *RiderUpdateOne) SetDeviceType(u uint8) *RiderUpdateOne {
+	ruo.mutation.ResetDeviceType()
+	ruo.mutation.SetDeviceType(u)
+	return ruo
+}
+
+// AddDeviceType adds u to the "device_type" field.
+func (ruo *RiderUpdateOne) AddDeviceType(u uint8) *RiderUpdateOne {
+	ruo.mutation.AddDeviceType(u)
+	return ruo
+}
+
+// SetLastDevice sets the "last_device" field.
+func (ruo *RiderUpdateOne) SetLastDevice(s string) *RiderUpdateOne {
+	ruo.mutation.SetLastDevice(s)
+	return ruo
+}
+
+// SetPushID sets the "push_id" field.
+func (ruo *RiderUpdateOne) SetPushID(s string) *RiderUpdateOne {
+	ruo.mutation.SetPushID(s)
+	return ruo
+}
+
+// SetNillablePushID sets the "push_id" field if the given value is not nil.
+func (ruo *RiderUpdateOne) SetNillablePushID(s *string) *RiderUpdateOne {
+	if s != nil {
+		ruo.SetPushID(*s)
+	}
+	return ruo
+}
+
+// ClearPushID clears the value of the "push_id" field.
+func (ruo *RiderUpdateOne) ClearPushID() *RiderUpdateOne {
+	ruo.mutation.ClearPushID()
+	return ruo
+}
+
 // SetPerson sets the "person" edge to the Person entity.
 func (ruo *RiderUpdateOne) SetPerson(p *Person) *RiderUpdateOne {
 	return ruo.SetPersonID(p.ID)
@@ -567,6 +689,16 @@ func (ruo *RiderUpdateOne) check() error {
 	if v, ok := ruo.mutation.Phone(); ok {
 		if err := rider.PhoneValidator(v); err != nil {
 			return &ValidationError{Name: "phone", err: fmt.Errorf("ent: validator failed for field \"phone\": %w", err)}
+		}
+	}
+	if v, ok := ruo.mutation.LastDevice(); ok {
+		if err := rider.LastDeviceValidator(v); err != nil {
+			return &ValidationError{Name: "last_device", err: fmt.Errorf("ent: validator failed for field \"last_device\": %w", err)}
+		}
+	}
+	if v, ok := ruo.mutation.PushID(); ok {
+		if err := rider.PushIDValidator(v); err != nil {
+			return &ValidationError{Name: "push_id", err: fmt.Errorf("ent: validator failed for field \"push_id\": %w", err)}
 		}
 	}
 	return nil
@@ -671,6 +803,40 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: rider.FieldContact,
+		})
+	}
+	if value, ok := ruo.mutation.DeviceType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: rider.FieldDeviceType,
+		})
+	}
+	if value, ok := ruo.mutation.AddedDeviceType(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: rider.FieldDeviceType,
+		})
+	}
+	if value, ok := ruo.mutation.LastDevice(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldLastDevice,
+		})
+	}
+	if value, ok := ruo.mutation.PushID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldPushID,
+		})
+	}
+	if ruo.mutation.PushIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: rider.FieldPushID,
 		})
 	}
 	if ruo.mutation.PersonCleared() {

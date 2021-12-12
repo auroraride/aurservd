@@ -27,7 +27,6 @@ var (
 
 type Device struct {
     Serial string     `json:"serial"`
-    PushId string     `json:"pushId"`
     Type   DeviceType `json:"type"`
 }
 

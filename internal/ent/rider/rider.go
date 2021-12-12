@@ -27,6 +27,12 @@ const (
 	FieldPhone = "phone"
 	// FieldContact holds the string denoting the contact field in the database.
 	FieldContact = "contact"
+	// FieldDeviceType holds the string denoting the device_type field in the database.
+	FieldDeviceType = "device_type"
+	// FieldLastDevice holds the string denoting the last_device field in the database.
+	FieldLastDevice = "last_device"
+	// FieldPushID holds the string denoting the push_id field in the database.
+	FieldPushID = "push_id"
 	// EdgePerson holds the string denoting the person edge name in mutations.
 	EdgePerson = "person"
 	// Table holds the table name of the rider in the database.
@@ -51,6 +57,9 @@ var Columns = []string{
 	FieldPersonID,
 	FieldPhone,
 	FieldContact,
+	FieldDeviceType,
+	FieldLastDevice,
+	FieldPushID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -72,4 +81,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
 	PhoneValidator func(string) error
+	// LastDeviceValidator is a validator for the "last_device" field. It is called by the builders before save.
+	LastDeviceValidator func(string) error
+	// PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
+	PushIDValidator func(string) error
 )

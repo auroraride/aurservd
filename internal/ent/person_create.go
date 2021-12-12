@@ -105,6 +105,20 @@ func (pc *PersonCreate) SetNillableStatus(u *uint8) *PersonCreate {
 	return pc
 }
 
+// SetBlock sets the "block" field.
+func (pc *PersonCreate) SetBlock(b bool) *PersonCreate {
+	pc.mutation.SetBlock(b)
+	return pc
+}
+
+// SetNillableBlock sets the "block" field if the given value is not nil.
+func (pc *PersonCreate) SetNillableBlock(b *bool) *PersonCreate {
+	if b != nil {
+		pc.SetBlock(*b)
+	}
+	return pc
+}
+
 // SetName sets the "name" field.
 func (pc *PersonCreate) SetName(s string) *PersonCreate {
 	pc.mutation.SetName(s)
@@ -247,6 +261,10 @@ func (pc *PersonCreate) defaults() {
 		v := person.DefaultStatus
 		pc.mutation.SetStatus(v)
 	}
+	if _, ok := pc.mutation.Block(); !ok {
+		v := person.DefaultBlock
+		pc.mutation.SetBlock(v)
+	}
 	if _, ok := pc.mutation.IcType(); !ok {
 		v := person.DefaultIcType
 		pc.mutation.SetIcType(v)
@@ -263,6 +281,9 @@ func (pc *PersonCreate) check() error {
 	}
 	if _, ok := pc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "status"`)}
+	}
+	if _, ok := pc.mutation.Block(); !ok {
+		return &ValidationError{Name: "block", err: errors.New(`ent: missing required field "block"`)}
 	}
 	if _, ok := pc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
@@ -381,6 +402,14 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 			Column: person.FieldStatus,
 		})
 		_node.Status = value
+	}
+	if value, ok := pc.mutation.Block(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: person.FieldBlock,
+		})
+		_node.Block = value
 	}
 	if value, ok := pc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

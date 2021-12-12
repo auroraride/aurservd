@@ -14,7 +14,6 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/pkg/utils"
-    log "github.com/sirupsen/logrus"
     "time"
 )
 
@@ -29,65 +28,69 @@ func NewRider() *riderService {
 func (r *riderService) Signin(phone string, device *app.Device) (res *model.RiderSigninRes, err error) {
     ctx := context.Background()
     orm := ar.Ent.Rider
-    var m *ent.Rider
-    m, err = orm.Query().Where(rider.Phone(phone)).Only(ctx)
+    var u *ent.Rider
+    u, err = orm.Query().Where(rider.Phone(phone)).WithPerson().Only(ctx)
     if err != nil {
         // 创建骑手
-        m, err = orm.Create().SetPhone(phone).Save(ctx)
+        u, err = orm.Create().
+            SetPhone(phone).
+            SetLastDevice(device.Serial).
+            SetDeviceType(device.Type.Raw()).
+            Save(ctx)
         if err != nil {
             return
         }
     }
 
-    r.SetDevice(m, device)
     // 判定是否更换了设备
-    isNewDevice := r.IsNewDevice(m, device)
     var token string
 
-    if !isNewDevice {
-        token = utils.RandTokenString()
-        cache := ar.Cache
-        key := fmt.Sprintf("RIDER_%d", m.ID)
+    token = utils.RandTokenString()
+    cache := ar.Cache
+    key := fmt.Sprintf("RIDER_%d", u.ID)
 
-        // 删除旧的token
-        if old := cache.Get(ctx, key).Val(); old != "" {
-            cache.Del(ctx, key)
-            cache.Del(ctx, old)
-        }
-
-        // 设置登录token
-        cache.Set(ctx, key, token, 7*24*time.Hour)
-        cache.Set(ctx, token, m.ID, 7*24*time.Hour)
-
-        // 更新设备信息
-        r.SetDevice(m, device)
+    // 删除旧的token
+    if old := cache.Get(ctx, key).Val(); old != "" {
+        cache.Del(ctx, key)
+        cache.Del(ctx, old)
     }
+
+    // 设置登录token
+    cache.Set(ctx, key, token, 7*24*time.Hour)
+    cache.Set(ctx, token, u.ID, 7*24*time.Hour)
 
     res = &model.RiderSigninRes{
-        Id:          m.ID,
+        Id:          u.ID,
+        IsNewDevice: false,
         Token:       token,
-        IsNewDevice: isNewDevice,
     }
+
+    // 判断是否实名
+    p := u.Edges.Person
+    if p == nil || model.PersonAuthStatus(p.Status).RequireAuth() {
+        res.TokenPermission = model.TokenPermissionAuth
+        return
+    }
+
+    // 判断是否新设备
+    if r.IsNewDevice(u, device) {
+        res.TokenPermission = model.TokenPermissionNewDevice
+    }
+
     return
 }
 
-// SetDevice 设置用户设备
-func (r *riderService) SetDevice(m *ent.Rider, device *app.Device) {
-    key := fmt.Sprintf("DEVICE_%d", m.ID)
-    err := ar.Cache.Set(context.Background(), key, device, -1).Err()
-    log.Println(err)
+// SetDevice 更新用户设备
+func (r *riderService) SetDevice(u *ent.Rider, device *app.Device) error {
+    orm := ar.Ent.Rider
+    _, err := orm.UpdateOneID(u.ID).
+        SetLastDevice(device.Serial).
+        SetDeviceType(device.Type.Raw()).
+        Save(context.Background())
+    return err
 }
 
 // IsNewDevice 检查是否是新设备
-func (r *riderService) IsNewDevice(m *ent.Rider, device *app.Device) bool {
-    cache := ar.Cache
-    ctx := context.Background()
-    key := fmt.Sprintf("DEVICE_%d", m.ID)
-    d := new(app.Device)
-    err := cache.Get(ctx, key).Scan(d)
-    if err != nil {
-        log.Errorf("获取用户 %d 设备失败: %v", m.ID, err)
-        return true
-    }
-    return d.Serial != device.Serial
+func (r *riderService) IsNewDevice(u *ent.Rider, device *app.Device) bool {
+    return u.LastDevice == device.Serial
 }

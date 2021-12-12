@@ -5,6 +5,14 @@
 
 package model
 
+const (
+    TokenPermissionCommon    RiderTokenPermission = iota // 普通权限
+    TokenPermissionAuth                                  // 需要实名验证
+    TokenPermissionNewDevice                             // 更换设备需要人脸验证
+)
+
+type RiderTokenPermission uint8
+
 // RiderSignupReq 骑手登录请求数据
 type RiderSignupReq struct {
     Phone   string `json:"phone" validate:"required"`
@@ -14,7 +22,8 @@ type RiderSignupReq struct {
 
 // RiderSigninRes 骑手登录数据返回
 type RiderSigninRes struct {
-    Id          uint64 `json:"id"`
-    Token       string `json:"token"`
-    IsNewDevice bool   `json:"isNewDevice"`
+    Id              uint64               `json:"id"`
+    Token           string               `json:"token"`
+    TokenPermission RiderTokenPermission `json:"-"`
+    IsNewDevice     bool                 `json:"isNewDevice"`
 }

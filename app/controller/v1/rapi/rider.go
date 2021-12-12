@@ -42,10 +42,17 @@ func (*rider) Signin(ctx echo.Context) (err error) {
     }
 
     // 注册+登录
-    var res *model.RiderSigninRes
-    res, err = service.NewRider().Signin(req.Phone, c.Device)
+    var data *model.RiderSigninRes
+    data, err = service.NewRider().Signin(req.Phone, c.Device)
     if err != nil {
         return
     }
-    return response.New(ctx).Success().SetData(res).Send()
+    res := response.New(ctx).SetData(data)
+    switch data.TokenPermission {
+    case model.TokenPermissionAuth:
+        res.Error(response.StatusNotAcceptable).SetMessage("需要实名认证")
+    case model.TokenPermissionNewDevice:
+        res.Error(response.StatusForbidden).SetMessage("需要验证本人")
+    }
+    return res.Send()
 }

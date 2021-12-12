@@ -42,6 +42,7 @@ type PersonMutation struct {
 	remark        *string
 	status        *uint8
 	addstatus     *uint8
+	block         *bool
 	name          *string
 	ic_number     *string
 	ic_type       *uint8
@@ -412,6 +413,42 @@ func (m *PersonMutation) ResetStatus() {
 	m.addstatus = nil
 }
 
+// SetBlock sets the "block" field.
+func (m *PersonMutation) SetBlock(b bool) {
+	m.block = &b
+}
+
+// Block returns the value of the "block" field in the mutation.
+func (m *PersonMutation) Block() (r bool, exists bool) {
+	v := m.block
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBlock returns the old "block" field's value of the Person entity.
+// If the Person object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PersonMutation) OldBlock(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldBlock is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldBlock requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBlock: %w", err)
+	}
+	return oldValue.Block, nil
+}
+
+// ResetBlock resets all changes to the "block" field.
+func (m *PersonMutation) ResetBlock() {
+	m.block = nil
+}
+
 // SetName sets the "name" field.
 func (m *PersonMutation) SetName(s string) {
 	m.name = &s
@@ -721,7 +758,7 @@ func (m *PersonMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PersonMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, person.FieldCreatedAt)
 	}
@@ -739,6 +776,9 @@ func (m *PersonMutation) Fields() []string {
 	}
 	if m.status != nil {
 		fields = append(fields, person.FieldStatus)
+	}
+	if m.block != nil {
+		fields = append(fields, person.FieldBlock)
 	}
 	if m.name != nil {
 		fields = append(fields, person.FieldName)
@@ -778,6 +818,8 @@ func (m *PersonMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case person.FieldStatus:
 		return m.Status()
+	case person.FieldBlock:
+		return m.Block()
 	case person.FieldName:
 		return m.Name()
 	case person.FieldIcNumber:
@@ -811,6 +853,8 @@ func (m *PersonMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldRemark(ctx)
 	case person.FieldStatus:
 		return m.OldStatus(ctx)
+	case person.FieldBlock:
+		return m.OldBlock(ctx)
 	case person.FieldName:
 		return m.OldName(ctx)
 	case person.FieldIcNumber:
@@ -873,6 +917,13 @@ func (m *PersonMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatus(v)
+		return nil
+	case person.FieldBlock:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBlock(v)
 		return nil
 	case person.FieldName:
 		v, ok := value.(string)
@@ -1031,6 +1082,9 @@ func (m *PersonMutation) ResetField(name string) error {
 	case person.FieldStatus:
 		m.ResetStatus()
 		return nil
+	case person.FieldBlock:
+		m.ResetBlock()
+		return nil
 	case person.FieldName:
 		m.ResetName()
 		return nil
@@ -1140,22 +1194,26 @@ func (m *PersonMutation) ResetEdge(name string) error {
 // RiderMutation represents an operation that mutates the Rider nodes in the graph.
 type RiderMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint64
-	created_at    *time.Time
-	updated_at    *time.Time
-	deleted_at    *time.Time
-	last_modify   *time.Time
-	remark        *string
-	phone         *string
-	contact       **schema.RiderContact
-	clearedFields map[string]struct{}
-	person        *uint64
-	clearedperson bool
-	done          bool
-	oldValue      func(context.Context) (*Rider, error)
-	predicates    []predicate.Rider
+	op             Op
+	typ            string
+	id             *uint64
+	created_at     *time.Time
+	updated_at     *time.Time
+	deleted_at     *time.Time
+	last_modify    *time.Time
+	remark         *string
+	phone          *string
+	contact        **schema.RiderContact
+	device_type    *uint8
+	adddevice_type *uint8
+	last_device    *string
+	push_id        *string
+	clearedFields  map[string]struct{}
+	person         *uint64
+	clearedperson  bool
+	done           bool
+	oldValue       func(context.Context) (*Rider, error)
+	predicates     []predicate.Rider
 }
 
 var _ ent.Mutation = (*RiderMutation)(nil)
@@ -1590,6 +1648,147 @@ func (m *RiderMutation) ResetContact() {
 	delete(m.clearedFields, rider.FieldContact)
 }
 
+// SetDeviceType sets the "device_type" field.
+func (m *RiderMutation) SetDeviceType(u uint8) {
+	m.device_type = &u
+	m.adddevice_type = nil
+}
+
+// DeviceType returns the value of the "device_type" field in the mutation.
+func (m *RiderMutation) DeviceType() (r uint8, exists bool) {
+	v := m.device_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeviceType returns the old "device_type" field's value of the Rider entity.
+// If the Rider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderMutation) OldDeviceType(ctx context.Context) (v uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDeviceType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDeviceType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeviceType: %w", err)
+	}
+	return oldValue.DeviceType, nil
+}
+
+// AddDeviceType adds u to the "device_type" field.
+func (m *RiderMutation) AddDeviceType(u uint8) {
+	if m.adddevice_type != nil {
+		*m.adddevice_type += u
+	} else {
+		m.adddevice_type = &u
+	}
+}
+
+// AddedDeviceType returns the value that was added to the "device_type" field in this mutation.
+func (m *RiderMutation) AddedDeviceType() (r uint8, exists bool) {
+	v := m.adddevice_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDeviceType resets all changes to the "device_type" field.
+func (m *RiderMutation) ResetDeviceType() {
+	m.device_type = nil
+	m.adddevice_type = nil
+}
+
+// SetLastDevice sets the "last_device" field.
+func (m *RiderMutation) SetLastDevice(s string) {
+	m.last_device = &s
+}
+
+// LastDevice returns the value of the "last_device" field in the mutation.
+func (m *RiderMutation) LastDevice() (r string, exists bool) {
+	v := m.last_device
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastDevice returns the old "last_device" field's value of the Rider entity.
+// If the Rider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderMutation) OldLastDevice(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldLastDevice is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldLastDevice requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastDevice: %w", err)
+	}
+	return oldValue.LastDevice, nil
+}
+
+// ResetLastDevice resets all changes to the "last_device" field.
+func (m *RiderMutation) ResetLastDevice() {
+	m.last_device = nil
+}
+
+// SetPushID sets the "push_id" field.
+func (m *RiderMutation) SetPushID(s string) {
+	m.push_id = &s
+}
+
+// PushID returns the value of the "push_id" field in the mutation.
+func (m *RiderMutation) PushID() (r string, exists bool) {
+	v := m.push_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPushID returns the old "push_id" field's value of the Rider entity.
+// If the Rider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderMutation) OldPushID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldPushID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldPushID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPushID: %w", err)
+	}
+	return oldValue.PushID, nil
+}
+
+// ClearPushID clears the value of the "push_id" field.
+func (m *RiderMutation) ClearPushID() {
+	m.push_id = nil
+	m.clearedFields[rider.FieldPushID] = struct{}{}
+}
+
+// PushIDCleared returns if the "push_id" field was cleared in this mutation.
+func (m *RiderMutation) PushIDCleared() bool {
+	_, ok := m.clearedFields[rider.FieldPushID]
+	return ok
+}
+
+// ResetPushID resets all changes to the "push_id" field.
+func (m *RiderMutation) ResetPushID() {
+	m.push_id = nil
+	delete(m.clearedFields, rider.FieldPushID)
+}
+
 // ClearPerson clears the "person" edge to the Person entity.
 func (m *RiderMutation) ClearPerson() {
 	m.clearedperson = true
@@ -1635,7 +1834,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -1659,6 +1858,15 @@ func (m *RiderMutation) Fields() []string {
 	}
 	if m.contact != nil {
 		fields = append(fields, rider.FieldContact)
+	}
+	if m.device_type != nil {
+		fields = append(fields, rider.FieldDeviceType)
+	}
+	if m.last_device != nil {
+		fields = append(fields, rider.FieldLastDevice)
+	}
+	if m.push_id != nil {
+		fields = append(fields, rider.FieldPushID)
 	}
 	return fields
 }
@@ -1684,6 +1892,12 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.Phone()
 	case rider.FieldContact:
 		return m.Contact()
+	case rider.FieldDeviceType:
+		return m.DeviceType()
+	case rider.FieldLastDevice:
+		return m.LastDevice()
+	case rider.FieldPushID:
+		return m.PushID()
 	}
 	return nil, false
 }
@@ -1709,6 +1923,12 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldPhone(ctx)
 	case rider.FieldContact:
 		return m.OldContact(ctx)
+	case rider.FieldDeviceType:
+		return m.OldDeviceType(ctx)
+	case rider.FieldLastDevice:
+		return m.OldLastDevice(ctx)
+	case rider.FieldPushID:
+		return m.OldPushID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Rider field %s", name)
 }
@@ -1774,6 +1994,27 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetContact(v)
 		return nil
+	case rider.FieldDeviceType:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeviceType(v)
+		return nil
+	case rider.FieldLastDevice:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastDevice(v)
+		return nil
+	case rider.FieldPushID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPushID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)
 }
@@ -1782,6 +2023,9 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *RiderMutation) AddedFields() []string {
 	var fields []string
+	if m.adddevice_type != nil {
+		fields = append(fields, rider.FieldDeviceType)
+	}
 	return fields
 }
 
@@ -1790,6 +2034,8 @@ func (m *RiderMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *RiderMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case rider.FieldDeviceType:
+		return m.AddedDeviceType()
 	}
 	return nil, false
 }
@@ -1799,6 +2045,13 @@ func (m *RiderMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *RiderMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case rider.FieldDeviceType:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeviceType(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Rider numeric field %s", name)
 }
@@ -1821,6 +2074,9 @@ func (m *RiderMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(rider.FieldContact) {
 		fields = append(fields, rider.FieldContact)
+	}
+	if m.FieldCleared(rider.FieldPushID) {
+		fields = append(fields, rider.FieldPushID)
 	}
 	return fields
 }
@@ -1850,6 +2106,9 @@ func (m *RiderMutation) ClearField(name string) error {
 		return nil
 	case rider.FieldContact:
 		m.ClearContact()
+		return nil
+	case rider.FieldPushID:
+		m.ClearPushID()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider nullable field %s", name)
@@ -1882,6 +2141,15 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldContact:
 		m.ResetContact()
+		return nil
+	case rider.FieldDeviceType:
+		m.ResetDeviceType()
+		return nil
+	case rider.FieldLastDevice:
+		m.ResetLastDevice()
+		return nil
+	case rider.FieldPushID:
+		m.ResetPushID()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)

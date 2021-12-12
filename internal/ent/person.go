@@ -31,6 +31,9 @@ type Person struct {
 	// Status holds the value of the "status" field.
 	// 认证状态
 	Status uint8 `json:"status,omitempty"`
+	// Block holds the value of the "block" field.
+	// 封禁
+	Block bool `json:"block,omitempty"`
 	// Name holds the value of the "name" field.
 	// 真实姓名
 	Name string `json:"name,omitempty"`
@@ -77,6 +80,8 @@ func (*Person) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case person.FieldBlock:
+			values[i] = new(sql.NullBool)
 		case person.FieldID, person.FieldStatus, person.FieldIcType:
 			values[i] = new(sql.NullInt64)
 		case person.FieldRemark, person.FieldName, person.FieldIcNumber, person.FieldIcPortrait, person.FieldIcNational, person.FieldIcHandheld:
@@ -142,6 +147,12 @@ func (pe *Person) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
 				pe.Status = uint8(value.Int64)
+			}
+		case person.FieldBlock:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field block", values[i])
+			} else if value.Valid {
+				pe.Block = value.Bool
 			}
 		case person.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -230,6 +241,8 @@ func (pe *Person) String() string {
 	}
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", pe.Status))
+	builder.WriteString(", block=")
+	builder.WriteString(fmt.Sprintf("%v", pe.Block))
 	builder.WriteString(", name=")
 	builder.WriteString(pe.Name)
 	builder.WriteString(", ic_number=")

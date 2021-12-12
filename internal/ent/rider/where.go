@@ -142,6 +142,27 @@ func Phone(v string) predicate.Rider {
 	})
 }
 
+// DeviceType applies equality check predicate on the "device_type" field. It's identical to DeviceTypeEQ.
+func DeviceType(v uint8) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeviceType), v))
+	})
+}
+
+// LastDevice applies equality check predicate on the "last_device" field. It's identical to LastDeviceEQ.
+func LastDevice(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLastDevice), v))
+	})
+}
+
+// PushID applies equality check predicate on the "push_id" field. It's identical to PushIDEQ.
+func PushID(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPushID), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
@@ -783,6 +804,318 @@ func ContactIsNil() predicate.Rider {
 func ContactNotNil() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldContact)))
+	})
+}
+
+// DeviceTypeEQ applies the EQ predicate on the "device_type" field.
+func DeviceTypeEQ(v uint8) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeviceType), v))
+	})
+}
+
+// DeviceTypeNEQ applies the NEQ predicate on the "device_type" field.
+func DeviceTypeNEQ(v uint8) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDeviceType), v))
+	})
+}
+
+// DeviceTypeIn applies the In predicate on the "device_type" field.
+func DeviceTypeIn(vs ...uint8) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDeviceType), v...))
+	})
+}
+
+// DeviceTypeNotIn applies the NotIn predicate on the "device_type" field.
+func DeviceTypeNotIn(vs ...uint8) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDeviceType), v...))
+	})
+}
+
+// DeviceTypeGT applies the GT predicate on the "device_type" field.
+func DeviceTypeGT(v uint8) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDeviceType), v))
+	})
+}
+
+// DeviceTypeGTE applies the GTE predicate on the "device_type" field.
+func DeviceTypeGTE(v uint8) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDeviceType), v))
+	})
+}
+
+// DeviceTypeLT applies the LT predicate on the "device_type" field.
+func DeviceTypeLT(v uint8) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDeviceType), v))
+	})
+}
+
+// DeviceTypeLTE applies the LTE predicate on the "device_type" field.
+func DeviceTypeLTE(v uint8) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDeviceType), v))
+	})
+}
+
+// LastDeviceEQ applies the EQ predicate on the "last_device" field.
+func LastDeviceEQ(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLastDevice), v))
+	})
+}
+
+// LastDeviceNEQ applies the NEQ predicate on the "last_device" field.
+func LastDeviceNEQ(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLastDevice), v))
+	})
+}
+
+// LastDeviceIn applies the In predicate on the "last_device" field.
+func LastDeviceIn(vs ...string) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldLastDevice), v...))
+	})
+}
+
+// LastDeviceNotIn applies the NotIn predicate on the "last_device" field.
+func LastDeviceNotIn(vs ...string) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldLastDevice), v...))
+	})
+}
+
+// LastDeviceGT applies the GT predicate on the "last_device" field.
+func LastDeviceGT(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldLastDevice), v))
+	})
+}
+
+// LastDeviceGTE applies the GTE predicate on the "last_device" field.
+func LastDeviceGTE(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldLastDevice), v))
+	})
+}
+
+// LastDeviceLT applies the LT predicate on the "last_device" field.
+func LastDeviceLT(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldLastDevice), v))
+	})
+}
+
+// LastDeviceLTE applies the LTE predicate on the "last_device" field.
+func LastDeviceLTE(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldLastDevice), v))
+	})
+}
+
+// LastDeviceContains applies the Contains predicate on the "last_device" field.
+func LastDeviceContains(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldLastDevice), v))
+	})
+}
+
+// LastDeviceHasPrefix applies the HasPrefix predicate on the "last_device" field.
+func LastDeviceHasPrefix(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldLastDevice), v))
+	})
+}
+
+// LastDeviceHasSuffix applies the HasSuffix predicate on the "last_device" field.
+func LastDeviceHasSuffix(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldLastDevice), v))
+	})
+}
+
+// LastDeviceEqualFold applies the EqualFold predicate on the "last_device" field.
+func LastDeviceEqualFold(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldLastDevice), v))
+	})
+}
+
+// LastDeviceContainsFold applies the ContainsFold predicate on the "last_device" field.
+func LastDeviceContainsFold(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldLastDevice), v))
+	})
+}
+
+// PushIDEQ applies the EQ predicate on the "push_id" field.
+func PushIDEQ(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPushID), v))
+	})
+}
+
+// PushIDNEQ applies the NEQ predicate on the "push_id" field.
+func PushIDNEQ(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPushID), v))
+	})
+}
+
+// PushIDIn applies the In predicate on the "push_id" field.
+func PushIDIn(vs ...string) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldPushID), v...))
+	})
+}
+
+// PushIDNotIn applies the NotIn predicate on the "push_id" field.
+func PushIDNotIn(vs ...string) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldPushID), v...))
+	})
+}
+
+// PushIDGT applies the GT predicate on the "push_id" field.
+func PushIDGT(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPushID), v))
+	})
+}
+
+// PushIDGTE applies the GTE predicate on the "push_id" field.
+func PushIDGTE(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPushID), v))
+	})
+}
+
+// PushIDLT applies the LT predicate on the "push_id" field.
+func PushIDLT(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPushID), v))
+	})
+}
+
+// PushIDLTE applies the LTE predicate on the "push_id" field.
+func PushIDLTE(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPushID), v))
+	})
+}
+
+// PushIDContains applies the Contains predicate on the "push_id" field.
+func PushIDContains(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldPushID), v))
+	})
+}
+
+// PushIDHasPrefix applies the HasPrefix predicate on the "push_id" field.
+func PushIDHasPrefix(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldPushID), v))
+	})
+}
+
+// PushIDHasSuffix applies the HasSuffix predicate on the "push_id" field.
+func PushIDHasSuffix(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldPushID), v))
+	})
+}
+
+// PushIDIsNil applies the IsNil predicate on the "push_id" field.
+func PushIDIsNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPushID)))
+	})
+}
+
+// PushIDNotNil applies the NotNil predicate on the "push_id" field.
+func PushIDNotNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPushID)))
+	})
+}
+
+// PushIDEqualFold applies the EqualFold predicate on the "push_id" field.
+func PushIDEqualFold(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldPushID), v))
+	})
+}
+
+// PushIDContainsFold applies the ContainsFold predicate on the "push_id" field.
+func PushIDContainsFold(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldPushID), v))
 	})
 }
 

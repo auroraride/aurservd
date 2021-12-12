@@ -135,6 +135,13 @@ func Status(v uint8) predicate.Person {
 	})
 }
 
+// Block applies equality check predicate on the "block" field. It's identical to BlockEQ.
+func Block(v bool) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBlock), v))
+	})
+}
+
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
@@ -707,6 +714,20 @@ func StatusLT(v uint8) predicate.Person {
 func StatusLTE(v uint8) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldStatus), v))
+	})
+}
+
+// BlockEQ applies the EQ predicate on the "block" field.
+func BlockEQ(v bool) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBlock), v))
+	})
+}
+
+// BlockNEQ applies the NEQ predicate on the "block" field.
+func BlockNEQ(v bool) predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldBlock), v))
 	})
 }
 

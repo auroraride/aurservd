@@ -26,6 +26,7 @@ func (Person) Annotations() []schema.Annotation {
 func (Person) Fields() []ent.Field {
     return []ent.Field{
         field.Uint8("status").Default(0).Comment("认证状态"),
+        field.Bool("block").Default(false).Comment("封禁"),
         field.String("name").MaxLen(40).Comment("真实姓名"),
         field.String("ic_number").MaxLen(40).Unique().Comment("证件号码"),
         field.Uint8("ic_type").Default(1).Comment("证件类别"),

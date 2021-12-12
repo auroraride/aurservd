@@ -33,28 +33,32 @@ func init() {
 	personDescStatus := personFields[0].Descriptor()
 	// person.DefaultStatus holds the default value on creation for the status field.
 	person.DefaultStatus = personDescStatus.Default.(uint8)
+	// personDescBlock is the schema descriptor for block field.
+	personDescBlock := personFields[1].Descriptor()
+	// person.DefaultBlock holds the default value on creation for the block field.
+	person.DefaultBlock = personDescBlock.Default.(bool)
 	// personDescName is the schema descriptor for name field.
-	personDescName := personFields[1].Descriptor()
+	personDescName := personFields[2].Descriptor()
 	// person.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	person.NameValidator = personDescName.Validators[0].(func(string) error)
 	// personDescIcNumber is the schema descriptor for ic_number field.
-	personDescIcNumber := personFields[2].Descriptor()
+	personDescIcNumber := personFields[3].Descriptor()
 	// person.IcNumberValidator is a validator for the "ic_number" field. It is called by the builders before save.
 	person.IcNumberValidator = personDescIcNumber.Validators[0].(func(string) error)
 	// personDescIcType is the schema descriptor for ic_type field.
-	personDescIcType := personFields[3].Descriptor()
+	personDescIcType := personFields[4].Descriptor()
 	// person.DefaultIcType holds the default value on creation for the ic_type field.
 	person.DefaultIcType = personDescIcType.Default.(uint8)
 	// personDescIcPortrait is the schema descriptor for ic_portrait field.
-	personDescIcPortrait := personFields[4].Descriptor()
+	personDescIcPortrait := personFields[5].Descriptor()
 	// person.IcPortraitValidator is a validator for the "ic_portrait" field. It is called by the builders before save.
 	person.IcPortraitValidator = personDescIcPortrait.Validators[0].(func(string) error)
 	// personDescIcNational is the schema descriptor for ic_national field.
-	personDescIcNational := personFields[5].Descriptor()
+	personDescIcNational := personFields[6].Descriptor()
 	// person.IcNationalValidator is a validator for the "ic_national" field. It is called by the builders before save.
 	person.IcNationalValidator = personDescIcNational.Validators[0].(func(string) error)
 	// personDescIcHandheld is the schema descriptor for ic_handheld field.
-	personDescIcHandheld := personFields[6].Descriptor()
+	personDescIcHandheld := personFields[7].Descriptor()
 	// person.IcHandheldValidator is a validator for the "ic_handheld" field. It is called by the builders before save.
 	person.IcHandheldValidator = personDescIcHandheld.Validators[0].(func(string) error)
 	riderMixin := schema.Rider{}.Mixin()
@@ -76,4 +80,12 @@ func init() {
 	riderDescPhone := riderFields[1].Descriptor()
 	// rider.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
 	rider.PhoneValidator = riderDescPhone.Validators[0].(func(string) error)
+	// riderDescLastDevice is the schema descriptor for last_device field.
+	riderDescLastDevice := riderFields[4].Descriptor()
+	// rider.LastDeviceValidator is a validator for the "last_device" field. It is called by the builders before save.
+	rider.LastDeviceValidator = riderDescLastDevice.Validators[0].(func(string) error)
+	// riderDescPushID is the schema descriptor for push_id field.
+	riderDescPushID := riderFields[5].Descriptor()
+	// rider.PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
+	rider.PushIDValidator = riderDescPushID.Validators[0].(func(string) error)
 }
