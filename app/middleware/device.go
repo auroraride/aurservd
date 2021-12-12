@@ -14,7 +14,7 @@ import (
 func DeviceMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
     return func(ctx echo.Context) error {
         c := ctx.(*app.Context)
-        sn := c.Request().Header.Get(app.HeaderDeviceSn)
+        sn := c.Request().Header.Get(app.HeaderDeviceSerial)
         dt := c.Request().Header.Get(app.HeaderDeviceType)
         if sn == "" || dt == "" {
             return errors.New("设备校验失败")

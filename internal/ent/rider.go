@@ -40,15 +40,6 @@ type Rider struct {
 	// Contact holds the value of the "contact" field.
 	// 紧急联系人
 	Contact *schema.RiderContact `json:"contact,omitempty"`
-	// DeviceType holds the value of the "device_type" field.
-	// 登录设备类型: 1iOS 2Android
-	DeviceType uint8 `json:"device_type,omitempty"`
-	// DeviceSn holds the value of the "device_sn" field.
-	// 登录设备ID
-	DeviceSn string `json:"device_sn,omitempty"`
-	// DevicePushID holds the value of the "device_push_id" field.
-	// 登录设备推送ID
-	DevicePushID *string `json:"device_push_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RiderQuery when eager-loading is set.
 	Edges RiderEdges `json:"edges"`
@@ -84,9 +75,9 @@ func (*Rider) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case rider.FieldContact:
 			values[i] = new([]byte)
-		case rider.FieldID, rider.FieldPersonID, rider.FieldDeviceType:
+		case rider.FieldID, rider.FieldPersonID:
 			values[i] = new(sql.NullInt64)
-		case rider.FieldRemark, rider.FieldPhone, rider.FieldDeviceSn, rider.FieldDevicePushID:
+		case rider.FieldRemark, rider.FieldPhone:
 			values[i] = new(sql.NullString)
 		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastModify:
 			values[i] = new(sql.NullTime)
@@ -165,25 +156,6 @@ func (r *Rider) assignValues(columns []string, values []interface{}) error {
 					return fmt.Errorf("unmarshal field contact: %w", err)
 				}
 			}
-		case rider.FieldDeviceType:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field device_type", values[i])
-			} else if value.Valid {
-				r.DeviceType = uint8(value.Int64)
-			}
-		case rider.FieldDeviceSn:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field device_sn", values[i])
-			} else if value.Valid {
-				r.DeviceSn = value.String
-			}
-		case rider.FieldDevicePushID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field device_push_id", values[i])
-			} else if value.Valid {
-				r.DevicePushID = new(string)
-				*r.DevicePushID = value.String
-			}
 		}
 	}
 	return nil
@@ -241,14 +213,6 @@ func (r *Rider) String() string {
 	builder.WriteString(r.Phone)
 	builder.WriteString(", contact=")
 	builder.WriteString(fmt.Sprintf("%v", r.Contact))
-	builder.WriteString(", device_type=")
-	builder.WriteString(fmt.Sprintf("%v", r.DeviceType))
-	builder.WriteString(", device_sn=")
-	builder.WriteString(r.DeviceSn)
-	if v := r.DevicePushID; v != nil {
-		builder.WriteString(", device_push_id=")
-		builder.WriteString(*v)
-	}
 	builder.WriteByte(')')
 	return builder.String()
 }

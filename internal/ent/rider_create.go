@@ -118,32 +118,6 @@ func (rc *RiderCreate) SetContact(sc *schema.RiderContact) *RiderCreate {
 	return rc
 }
 
-// SetDeviceType sets the "device_type" field.
-func (rc *RiderCreate) SetDeviceType(u uint8) *RiderCreate {
-	rc.mutation.SetDeviceType(u)
-	return rc
-}
-
-// SetDeviceSn sets the "device_sn" field.
-func (rc *RiderCreate) SetDeviceSn(s string) *RiderCreate {
-	rc.mutation.SetDeviceSn(s)
-	return rc
-}
-
-// SetDevicePushID sets the "device_push_id" field.
-func (rc *RiderCreate) SetDevicePushID(s string) *RiderCreate {
-	rc.mutation.SetDevicePushID(s)
-	return rc
-}
-
-// SetNillableDevicePushID sets the "device_push_id" field if the given value is not nil.
-func (rc *RiderCreate) SetNillableDevicePushID(s *string) *RiderCreate {
-	if s != nil {
-		rc.SetDevicePushID(*s)
-	}
-	return rc
-}
-
 // SetPerson sets the "person" edge to the Person entity.
 func (rc *RiderCreate) SetPerson(p *Person) *RiderCreate {
 	return rc.SetPersonID(p.ID)
@@ -246,22 +220,6 @@ func (rc *RiderCreate) check() error {
 			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "phone": %w`, err)}
 		}
 	}
-	if _, ok := rc.mutation.DeviceType(); !ok {
-		return &ValidationError{Name: "device_type", err: errors.New(`ent: missing required field "device_type"`)}
-	}
-	if _, ok := rc.mutation.DeviceSn(); !ok {
-		return &ValidationError{Name: "device_sn", err: errors.New(`ent: missing required field "device_sn"`)}
-	}
-	if v, ok := rc.mutation.DeviceSn(); ok {
-		if err := rider.DeviceSnValidator(v); err != nil {
-			return &ValidationError{Name: "device_sn", err: fmt.Errorf(`ent: validator failed for field "device_sn": %w`, err)}
-		}
-	}
-	if v, ok := rc.mutation.DevicePushID(); ok {
-		if err := rider.DevicePushIDValidator(v); err != nil {
-			return &ValidationError{Name: "device_push_id", err: fmt.Errorf(`ent: validator failed for field "device_push_id": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -344,30 +302,6 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			Column: rider.FieldContact,
 		})
 		_node.Contact = value
-	}
-	if value, ok := rc.mutation.DeviceType(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: rider.FieldDeviceType,
-		})
-		_node.DeviceType = value
-	}
-	if value, ok := rc.mutation.DeviceSn(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldDeviceSn,
-		})
-		_node.DeviceSn = value
-	}
-	if value, ok := rc.mutation.DevicePushID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldDevicePushID,
-		})
-		_node.DevicePushID = &value
 	}
 	if nodes := rc.mutation.PersonIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

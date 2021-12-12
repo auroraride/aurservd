@@ -12,9 +12,9 @@ import (
 // http headers
 const (
     // HeaderCaptchaID 图片验证码ID
-    HeaderCaptchaID  = "X-Captcha-Id"
-    HeaderDeviceSn   = "X-Device-Sn"
-    HeaderDeviceType = "X-Device-Type"
+    HeaderCaptchaID    = "X-Captcha-Id"
+    HeaderDeviceSerial = "X-Device-Serial"
+    HeaderDeviceType   = "X-Device-Type"
 )
 
 type Context struct {

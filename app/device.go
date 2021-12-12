@@ -7,6 +7,7 @@ package app
 
 import (
     "errors"
+    jsoniter "github.com/json-iterator/go"
     "strings"
 )
 
@@ -25,8 +26,9 @@ var (
 )
 
 type Device struct {
-    Sn   string
-    Type DeviceType
+    Serial string     `json:"serial"`
+    PushId string     `json:"pushId"`
+    Type   DeviceType `json:"type"`
 }
 
 func NewDevice(sn, dt string) (d *Device, err error) {
@@ -35,8 +37,8 @@ func NewDevice(sn, dt string) (d *Device, err error) {
         err = errors.New("设备类型错误")
     }
     d = &Device{
-        Sn:   sn,
-        Type: DeviceType(t),
+        Serial: sn,
+        Type:   DeviceType(t),
     }
     return
 }
@@ -53,4 +55,12 @@ func (d DeviceType) String() string {
 
 func (d DeviceType) Raw() uint8 {
     return uint8(d)
+}
+
+func (d *Device) MarshalBinary() ([]byte, error) {
+    return jsoniter.Marshal(d)
+}
+
+func (d *Device) UnmarshalBinary(data []byte) error {
+    return jsoniter.Unmarshal(data, d)
 }

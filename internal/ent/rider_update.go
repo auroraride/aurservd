@@ -133,45 +133,6 @@ func (ru *RiderUpdate) ClearContact() *RiderUpdate {
 	return ru
 }
 
-// SetDeviceType sets the "device_type" field.
-func (ru *RiderUpdate) SetDeviceType(u uint8) *RiderUpdate {
-	ru.mutation.ResetDeviceType()
-	ru.mutation.SetDeviceType(u)
-	return ru
-}
-
-// AddDeviceType adds u to the "device_type" field.
-func (ru *RiderUpdate) AddDeviceType(u uint8) *RiderUpdate {
-	ru.mutation.AddDeviceType(u)
-	return ru
-}
-
-// SetDeviceSn sets the "device_sn" field.
-func (ru *RiderUpdate) SetDeviceSn(s string) *RiderUpdate {
-	ru.mutation.SetDeviceSn(s)
-	return ru
-}
-
-// SetDevicePushID sets the "device_push_id" field.
-func (ru *RiderUpdate) SetDevicePushID(s string) *RiderUpdate {
-	ru.mutation.SetDevicePushID(s)
-	return ru
-}
-
-// SetNillableDevicePushID sets the "device_push_id" field if the given value is not nil.
-func (ru *RiderUpdate) SetNillableDevicePushID(s *string) *RiderUpdate {
-	if s != nil {
-		ru.SetDevicePushID(*s)
-	}
-	return ru
-}
-
-// ClearDevicePushID clears the value of the "device_push_id" field.
-func (ru *RiderUpdate) ClearDevicePushID() *RiderUpdate {
-	ru.mutation.ClearDevicePushID()
-	return ru
-}
-
 // SetPerson sets the "person" edge to the Person entity.
 func (ru *RiderUpdate) SetPerson(p *Person) *RiderUpdate {
 	return ru.SetPersonID(p.ID)
@@ -264,16 +225,6 @@ func (ru *RiderUpdate) check() error {
 			return &ValidationError{Name: "phone", err: fmt.Errorf("ent: validator failed for field \"phone\": %w", err)}
 		}
 	}
-	if v, ok := ru.mutation.DeviceSn(); ok {
-		if err := rider.DeviceSnValidator(v); err != nil {
-			return &ValidationError{Name: "device_sn", err: fmt.Errorf("ent: validator failed for field \"device_sn\": %w", err)}
-		}
-	}
-	if v, ok := ru.mutation.DevicePushID(); ok {
-		if err := rider.DevicePushIDValidator(v); err != nil {
-			return &ValidationError{Name: "device_push_id", err: fmt.Errorf("ent: validator failed for field \"device_push_id\": %w", err)}
-		}
-	}
 	return nil
 }
 
@@ -359,40 +310,6 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: rider.FieldContact,
-		})
-	}
-	if value, ok := ru.mutation.DeviceType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: rider.FieldDeviceType,
-		})
-	}
-	if value, ok := ru.mutation.AddedDeviceType(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: rider.FieldDeviceType,
-		})
-	}
-	if value, ok := ru.mutation.DeviceSn(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldDeviceSn,
-		})
-	}
-	if value, ok := ru.mutation.DevicePushID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldDevicePushID,
-		})
-	}
-	if ru.mutation.DevicePushIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: rider.FieldDevicePushID,
 		})
 	}
 	if ru.mutation.PersonCleared() {
@@ -553,45 +470,6 @@ func (ruo *RiderUpdateOne) ClearContact() *RiderUpdateOne {
 	return ruo
 }
 
-// SetDeviceType sets the "device_type" field.
-func (ruo *RiderUpdateOne) SetDeviceType(u uint8) *RiderUpdateOne {
-	ruo.mutation.ResetDeviceType()
-	ruo.mutation.SetDeviceType(u)
-	return ruo
-}
-
-// AddDeviceType adds u to the "device_type" field.
-func (ruo *RiderUpdateOne) AddDeviceType(u uint8) *RiderUpdateOne {
-	ruo.mutation.AddDeviceType(u)
-	return ruo
-}
-
-// SetDeviceSn sets the "device_sn" field.
-func (ruo *RiderUpdateOne) SetDeviceSn(s string) *RiderUpdateOne {
-	ruo.mutation.SetDeviceSn(s)
-	return ruo
-}
-
-// SetDevicePushID sets the "device_push_id" field.
-func (ruo *RiderUpdateOne) SetDevicePushID(s string) *RiderUpdateOne {
-	ruo.mutation.SetDevicePushID(s)
-	return ruo
-}
-
-// SetNillableDevicePushID sets the "device_push_id" field if the given value is not nil.
-func (ruo *RiderUpdateOne) SetNillableDevicePushID(s *string) *RiderUpdateOne {
-	if s != nil {
-		ruo.SetDevicePushID(*s)
-	}
-	return ruo
-}
-
-// ClearDevicePushID clears the value of the "device_push_id" field.
-func (ruo *RiderUpdateOne) ClearDevicePushID() *RiderUpdateOne {
-	ruo.mutation.ClearDevicePushID()
-	return ruo
-}
-
 // SetPerson sets the "person" edge to the Person entity.
 func (ruo *RiderUpdateOne) SetPerson(p *Person) *RiderUpdateOne {
 	return ruo.SetPersonID(p.ID)
@@ -689,16 +567,6 @@ func (ruo *RiderUpdateOne) check() error {
 	if v, ok := ruo.mutation.Phone(); ok {
 		if err := rider.PhoneValidator(v); err != nil {
 			return &ValidationError{Name: "phone", err: fmt.Errorf("ent: validator failed for field \"phone\": %w", err)}
-		}
-	}
-	if v, ok := ruo.mutation.DeviceSn(); ok {
-		if err := rider.DeviceSnValidator(v); err != nil {
-			return &ValidationError{Name: "device_sn", err: fmt.Errorf("ent: validator failed for field \"device_sn\": %w", err)}
-		}
-	}
-	if v, ok := ruo.mutation.DevicePushID(); ok {
-		if err := rider.DevicePushIDValidator(v); err != nil {
-			return &ValidationError{Name: "device_push_id", err: fmt.Errorf("ent: validator failed for field \"device_push_id\": %w", err)}
 		}
 	}
 	return nil
@@ -803,40 +671,6 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: rider.FieldContact,
-		})
-	}
-	if value, ok := ruo.mutation.DeviceType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: rider.FieldDeviceType,
-		})
-	}
-	if value, ok := ruo.mutation.AddedDeviceType(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint8,
-			Value:  value,
-			Column: rider.FieldDeviceType,
-		})
-	}
-	if value, ok := ruo.mutation.DeviceSn(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldDeviceSn,
-		})
-	}
-	if value, ok := ruo.mutation.DevicePushID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldDevicePushID,
-		})
-	}
-	if ruo.mutation.DevicePushIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: rider.FieldDevicePushID,
 		})
 	}
 	if ruo.mutation.PersonCleared() {

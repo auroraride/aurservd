@@ -30,7 +30,7 @@ func Run() {
     corsConfig := mw.DefaultCORSConfig
     corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, []string{
         app.HeaderCaptchaID,
-        app.HeaderDeviceSn,
+        app.HeaderDeviceSerial,
         app.HeaderDeviceType,
     }...)
     // 加载全局中间件
