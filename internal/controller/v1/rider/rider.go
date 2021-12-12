@@ -5,13 +5,19 @@
 
 package rider
 
-import "github.com/labstack/echo/v4"
+import (
+    "github.com/labstack/echo/v4"
+)
 
 var ApiRider = new(apiRider)
 
 type apiRider struct {
 }
 
-func (*apiRider) SignUp(c *echo.Context) {
+type signupReq struct {
+    Phone string `json:"phone"`
+    Sms   string `json:"sms"`
+}
 
+func (*apiRider) Signup(c echo.Context) {
 }

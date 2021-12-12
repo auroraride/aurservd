@@ -8,8 +8,9 @@ package ar
 import (
     _ "embed"
     "github.com/auroraride/aurservd/pkg/utils"
+    "github.com/fsnotify/fsnotify"
+    log "github.com/sirupsen/logrus"
     "github.com/spf13/viper"
-    "log"
     "os"
 )
 
@@ -56,6 +57,35 @@ type config struct {
         Age   int    // 日志保存时间（小时）
         Json  bool   // 日志以json格式保存
     }
+    Aliyun struct {
+        Sms struct {
+            AccessId     string
+            AccessSecret string
+            Endpoint     string
+            Sign         string
+            Template     struct {
+                General struct {
+                    Code string
+                }
+            }
+        }
+    }
+    Trans map[string]string
+}
+
+func readConfig() error {
+    viper.SetConfigFile(configFile)
+    viper.AutomaticEnv()
+    // 读取配置
+    err := viper.ReadInConfig()
+    if err != nil {
+        return err
+    }
+    Config = new(config)
+    err = viper.Unmarshal(Config)
+    c := Config
+    log.Println(c)
+    return err
 }
 
 func LoadConfig() {
@@ -74,16 +104,13 @@ func LoadConfig() {
         }
     }
 
-    viper.SetConfigFile(configFile)
-    viper.AutomaticEnv()
-    // 读取配置
-    err := viper.ReadInConfig()
+    err := readConfig()
     if err != nil {
         log.Fatalf("配置读取失败: %v", err)
     }
-    Config = new(config)
-    err = viper.Unmarshal(Config)
-    if err != nil {
-        log.Fatalf("配置解析失败: %v", err)
-    }
+
+    viper.OnConfigChange(func(e fsnotify.Event) {
+        log.Infof("配置已改动: %s, 重载配置: %v", e.Name, readConfig())
+    })
+    viper.WatchConfig()
 }

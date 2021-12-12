@@ -11,4 +11,5 @@ func (r *router) commonRoute() {
     g := r.Group("/common")
     g.GET("/captcha", common.CaptchaGenerate)
     g.POST("/captcha", common.CaptchaVerify)
+    g.POST("/sms/:name", common.SendSmsCode)
 }

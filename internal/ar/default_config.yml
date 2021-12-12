@@ -26,3 +26,13 @@ database:
 third_party:
   yunfuture:
     token: mUVvyHyZFBzWqwjSyXtVfmpCFxAUMHMK
+
+aliyun:
+  sms:
+    accessId: ''
+    accessSecret: ''
+    endpoint: 'dysmsapi.aliyuncs.com'
+    sign: 时光驹
+    template:
+      general: # 通用验证码模板
+        code: ''

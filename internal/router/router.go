@@ -6,6 +6,8 @@
 package router
 
 import (
+    "github.com/auroraride/aurservd/internal/app"
+    "github.com/auroraride/aurservd/internal/app/request"
     "github.com/auroraride/aurservd/internal/app/response"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/labstack/echo/v4"
@@ -14,20 +16,21 @@ import (
     "golang.org/x/time/rate"
 )
 
+var r *router
+
 type router struct {
     *echo.Echo
 }
 
-var r *router
-
 func Run() {
+
     r = &router{echo.New()}
     cfg := ar.Config.App
-    // 加载全局中间件
     corsConfig := mw.DefaultCORSConfig
     corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, []string{
         ar.HeaderCaptchaID,
     }...)
+    // 加载全局中间件
     r.Use(
         mw.Recover(),
         mw.BodyLimit(cfg.BodyLimit),
@@ -44,7 +47,15 @@ func Run() {
                 `,"bytes_in":${bytes_in},"bytes_out":${bytes_out}}` + "\n",
             CustomTimeFormat: "2006-01-02 15:04:05.00000",
         }),
+        func(next echo.HandlerFunc) echo.HandlerFunc {
+            return func(c echo.Context) error {
+                ctx := &app.Context{Context: c}
+                return next(ctx)
+            }
+        },
     )
+
+    r.Validator = request.NewGlobalValidator()
 
     r.HTTPErrorHandler = func(err error, c echo.Context) {
         _ = response.New(c).Error(response.StatusError).SetMessage(err.Error()).Send()

@@ -4,3 +4,14 @@
 // Based on aurservd by liasica, magicrolan@qq.com.
 
 package service
+
+type rider struct {
+}
+
+func NewRiderService() *rider {
+    return &rider{}
+}
+
+func (*rider) SendSignSms(phone string, captchaCode string) {
+
+}
