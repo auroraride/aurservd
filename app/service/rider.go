@@ -55,29 +55,40 @@ func (r *riderService) Signin(phone string, device *app.Device) (res *model.Ride
         cache.Del(ctx, old)
     }
 
+    res = &model.RiderSigninRes{
+        Id:              u.ID,
+        IsNewDevice:     false,
+        Token:           token,
+        TokenPermission: r.GetTokenPermission(u, device),
+    }
+
     // 设置登录token
     cache.Set(ctx, key, token, 7*24*time.Hour)
     cache.Set(ctx, token, u.ID, 7*24*time.Hour)
 
-    res = &model.RiderSigninRes{
-        Id:          u.ID,
-        IsNewDevice: false,
-        Token:       token,
-    }
+    return
+}
 
+// GetRiderById 根据ID获取骑手及其实名状态
+func (r *riderService) GetRiderById(id uint64) (u *ent.Rider, err error) {
+    return ar.Ent.Rider.Query().
+        WithPerson().
+        Where(rider.ID(id)).
+        Only(context.Background())
+}
+
+// GetTokenPermission 获取token权限
+func (r *riderService) GetTokenPermission(u *ent.Rider, device *app.Device) model.RiderTokenPermission {
+    perm := model.RiderTokenPermissionCommon
     // 判断是否实名
     p := u.Edges.Person
     if p == nil || model.PersonAuthStatus(p.Status).RequireAuth() {
-        res.TokenPermission = model.TokenPermissionAuth
-        return
+        perm = model.RiderTokenPermissionAuth
+    } else if r.IsNewDevice(u, device) {
+        // 判断是否新设备
+        perm = model.RiderTokenPermissionNewDevice
     }
-
-    // 判断是否新设备
-    if r.IsNewDevice(u, device) {
-        res.TokenPermission = model.TokenPermissionNewDevice
-    }
-
-    return
+    return perm
 }
 
 // SetDevice 更新用户设备

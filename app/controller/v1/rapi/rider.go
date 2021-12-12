@@ -49,9 +49,9 @@ func (*rider) Signin(ctx echo.Context) (err error) {
     }
     res := response.New(ctx).SetData(data)
     switch data.TokenPermission {
-    case model.TokenPermissionAuth:
+    case model.RiderTokenPermissionAuth:
         res.Error(response.StatusNotAcceptable).SetMessage("需要实名认证")
-    case model.TokenPermissionNewDevice:
+    case model.RiderTokenPermissionNewDevice:
         res.Error(response.StatusForbidden).SetMessage("需要验证本人")
     }
     return res.Send()

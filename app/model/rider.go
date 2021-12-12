@@ -6,9 +6,9 @@
 package model
 
 const (
-    TokenPermissionCommon    RiderTokenPermission = iota // 普通权限
-    TokenPermissionAuth                                  // 需要实名验证
-    TokenPermissionNewDevice                             // 更换设备需要人脸验证
+    RiderTokenPermissionCommon    RiderTokenPermission = iota // 普通权限
+    RiderTokenPermissionAuth                                  // 需要实名验证
+    RiderTokenPermissionNewDevice                             // 更换设备需要人脸验证
 )
 
 type RiderTokenPermission uint8
