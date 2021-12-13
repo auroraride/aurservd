@@ -16,6 +16,8 @@ func (r *router) rideRoute() {
     // 引入骑手api需要的中间件
     g.Use(middleware.DeviceMiddleware(), middleware.RiderMiddleware())
 
+    g.GET("/callback", rapi.Callback.RiderCallback) // 骑手api回调中心
+
     g.POST("/signin", rapi.Rider.Signin)                  // 登录
     g.POST("/authenticator", rapi.Rider.Authenticator)    // 认证
     g.GET("/authenticator/:token", rapi.Rider.AuthResult) // 获取认证结果

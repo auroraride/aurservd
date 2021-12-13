@@ -101,7 +101,7 @@ func (r *riderService) IsNewDevice(u *ent.Rider, device *app.Device) bool {
 
 // FaceAuthResult 获取并更新人脸实名验证结果
 func (r *riderService) FaceAuthResult(u *ent.Rider, token string) (success bool, err error) {
-    data, err := baidu.New().FaceprintResult(token)
+    data, err := baidu.New().AuthenticatorResult(token)
     if err != nil {
         return
     }

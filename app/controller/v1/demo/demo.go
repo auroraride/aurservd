@@ -16,7 +16,7 @@ import (
 )
 
 func BaiduFace(c echo.Context) error {
-    return response.New(c).Success().SetData(baidu.New().Faceprint()).Send()
+    return response.New(c).Success().SetData(baidu.New().GetAuthenticatorUrl()).Send()
 }
 
 func BaiduFaceResult(c echo.Context) error {

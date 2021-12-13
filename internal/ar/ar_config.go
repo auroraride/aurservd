@@ -79,11 +79,11 @@ type config struct {
     }
     Baidu struct {
         Face struct {
-            PlanId     string
             ApiKey     string
             SecretKey  string
-            SuccessUrl string
-            FailedUrl  string
+            Callback   string
+            AuthPlanId string
+            FacePlanId string
         }
     }
     Trans map[string]string

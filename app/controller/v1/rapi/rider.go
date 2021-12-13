@@ -66,7 +66,7 @@ func (*rider) Authenticator(c echo.Context) error {
     // 更新紧急联系人
     service.NewRider().UpdateContact(ctx.Rider, contact)
     // 获取人脸识别URL
-    return response.New(c).Success().SetData(map[string]string{"url": baidu.New().Faceprint()}).Send()
+    return response.New(c).Success().SetData(map[string]string{"url": baidu.New().GetAuthenticatorUrl()}).Send()
 }
 
 // AuthResult 实名认证结果

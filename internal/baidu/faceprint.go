@@ -14,17 +14,27 @@ import (
 )
 
 const (
+    // TypeAuth 实名认证
+    TypeAuth = "authenticator"
+    // TypeFace 人脸校验
+    TypeFace = "face"
+)
+
+const (
     // faceprintTokenUrl 获取人脸识别 verify_token 接口URL
     faceprintTokenUrl = `https://aip.baidubce.com/rpc/2.0/brain/solution/faceprint/verifyToken/generate?access_token=%s`
 
-    // faceprintAuthUrl 获取人脸识别认证 URL
+    // faceprintAuthUrl 获取人脸识别认证接口URL
     faceprintAuthUrl = `https://brain.baidu.com/face/print/?token=%s&successUrl=%s&failedUrl=%s`
 
-    // faceprintSimpleUrl 获取人脸图片
+    // faceprintSimpleUrl 获取人脸图片接口URL
     faceprintSimpleUrl = `https://aip.baidubce.com/rpc/2.0/brain/solution/faceprint/result/simple?access_token=%s`
 
-    // faceprintResultUrl 获取人脸识别认证结果详细信息
+    // faceprintResultUrl 获取人脸识别认证结果详细信息接口URL
     faceprintResultUrl = `https://aip.baidubce.com/rpc/2.0/brain/solution/faceprint/result/detail?access_token=%s`
+
+    // faceprintSubmitUrl 指定用户信息上报接口URL
+    faceprintSubmitUrl = `https://brain.baidu.com/solution/faceprint/idcard/submit?access_token=%s`
 )
 
 // faceprintTokenResp 人脸识别 verify_token 返回体
@@ -78,15 +88,32 @@ type faceprintDetailResp struct {
     } `json:"result"`
 }
 
-// Faceprint 人脸识别
-func (b *baiduClient) Faceprint() (url string) {
+// faceprintSubmitResp 指定用户信息上报返回
+type faceprintSubmitResp struct {
+    VerifyToken     string `json:"verify_token"`
+    IdName          string `json:"id_name"`
+    IdNo            string `json:"id_no"`
+    CertificateType int    `json:"certificate_type"`
+}
+
+// getFaceprintUrl 获取人脸核验URL
+// TODO 验证页面随便跳转到那个页面, flutter前端进行webview路由拦截获取token请求验证结果, 成功或失败进行弹窗提示
+func (b *baiduClient) getFaceprintUrl(typ string) (url string, token string) {
     var err error
+    var planId string
     cfg := ar.Config.Baidu.Face
+    switch typ {
+    case TypeAuth:
+        planId = cfg.AuthPlanId
+    case TypeFace:
+        planId = cfg.FacePlanId
+    }
+
     // 获取 verify_token
     res := new(faceprintTokenResp)
     _, err = resty.New().R().
         SetResult(res).
-        SetBody(map[string]string{"plan_id": cfg.PlanId}).
+        SetBody(map[string]string{"plan_id": planId}).
         Post(fmt.Sprintf(faceprintTokenUrl, b.accessToken))
     if err != nil {
         panic(response.NewError(err))
@@ -94,12 +121,13 @@ func (b *baiduClient) Faceprint() (url string) {
     if !res.Success {
         panic(response.NewError("人脸识别请求失败"))
     }
-    token := res.Result.VerifyToken
+    token = res.Result.VerifyToken
+    str := fmt.Sprintf("%s?type=%s&token=%s&state=", cfg.Callback, typ, token)
     url = fmt.Sprintf(
         faceprintAuthUrl,
         token,
-        utils.EncodeURIComponent(cfg.SuccessUrl+"?token="+token),
-        utils.EncodeURIComponent(cfg.FailedUrl+"?token="+token),
+        utils.EncodeURIComponent(str+"success"),
+        utils.EncodeURIComponent(str+"failed"),
     )
     return
 }
@@ -109,13 +137,40 @@ func (b *baiduClient) faceprintFace(token string) (res *faceprintFaceResp, err e
     res = new(faceprintFaceResp)
     _, err = resty.New().R().
         SetResult(res).
-        SetBody(map[string]string{"verify_token": token}).
+        SetBody(ar.Map{"verify_token": token}).
         Post(fmt.Sprintf(faceprintSimpleUrl, b.accessToken))
     return
 }
 
-// FaceprintResult 获取人脸识别验证结果
-func (b *baiduClient) FaceprintResult(token string) (res *faceprintDetailResp, err error) {
+// GetFaceUrl 获取人脸校验URL
+// TODO 缓存token和用户对应关系, token只能请求一次
+func (b *baiduClient) GetFaceUrl(name, icNum string) string {
+    uri, token := b.getFaceprintUrl(TypeFace)
+    res := new(faceprintSubmitResp)
+    _, err := resty.New().R().
+        SetResult(res).
+        SetBody(ar.Map{
+            "verify_token":     token,
+            "id_name":          name,
+            "id_no":            icNum,
+            "certificate_type": 0,
+        }).
+        Post(fmt.Sprintf(faceprintSubmitUrl, b.accessToken))
+    if err != nil {
+        panic(response.NewError(err))
+    }
+    return uri
+}
+
+// GetAuthenticatorUrl 实名认证
+// TODO 缓存token和用户对应关系, token只能请求一次
+func (b *baiduClient) GetAuthenticatorUrl() string {
+    uri, _ := b.getFaceprintUrl(TypeAuth)
+    return uri
+}
+
+// AuthenticatorResult 获取实名认证结果
+func (b *baiduClient) AuthenticatorResult(token string) (res *faceprintDetailResp, err error) {
     simple := new(faceprintFaceResp)
     res = new(faceprintDetailResp)
     simple, err = b.faceprintFace(token)
