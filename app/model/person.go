@@ -48,7 +48,7 @@ func (s PersonAuthStatus) Raw() uint8 {
 // RequireAuth 是否需要认证
 func (s PersonAuthStatus) RequireAuth() bool {
     switch s {
-    case PersonAuthNot, PersonAuthFailed:
+    case PersonAuthPending, PersonAuthNot, PersonAuthFailed:
         return true
     }
     return false

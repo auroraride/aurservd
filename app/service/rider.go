@@ -159,3 +159,11 @@ func (r *riderService) FaceAuthResult(u *ent.Rider, token string) (success bool,
     }
     return
 }
+
+// UpdateContact 更新紧急联系人
+func (r *riderService) UpdateContact(u *ent.Rider, contact *model.RiderContact) {
+    err := ar.Ent.Rider.UpdateOneID(u.ID).SetContact(contact).Exec(context.Background())
+    if err != nil {
+        panic(response.NewError(err))
+    }
+}

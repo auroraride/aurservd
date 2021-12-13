@@ -13,16 +13,16 @@ import (
 )
 
 const (
-    StatusOK                  = iota << 8 // 请求成功 0x00
-    StatusError                           // 请求失败 0x100
-    StatusUnauthorized                    // 需要认证 0x200 (需要登录)
-    StatusForbidden                       // 没有权限 0x300
-    StatusNotFound                        // 资源未获 0x400
-    StatusInternalServerError             // 未知错误 0x500
-    StatusNotAcceptable                   // 需要实名 0x600
-    StatusLocked                          // 需要验证 0x700 (更换设备需要人脸验证)
-    StatusTooManyRequests                 // 触发限流 0x800
-    StatusRequestTimeout                  // 请求过期 0x300
+    StatusOK                  = iota << 8 //  0x000 请求成功
+    StatusError                           //  0x100 请求失败
+    StatusUnauthorized                    //  0x200 需要认证 (需要登录)
+    StatusForbidden                       //  0x300 没有权限
+    StatusNotFound                        //  0x400 资源未获
+    StatusInternalServerError             //  0x500 未知错误
+    StatusRequireAuth                     //  0x600 需要实名
+    StatusLocked                          //  0x700 需要验证 (更换设备需要人脸验证)
+    StatusRequireContact                  //  0x800 需要联系人
+    StatusRequestTimeout                  //  0x900 请求过期
 )
 
 type response struct {

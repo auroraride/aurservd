@@ -6,13 +6,11 @@
 package rapi
 
 import (
-    "context"
     "errors"
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/response"
     "github.com/auroraride/aurservd/app/service"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/baidu"
     "github.com/labstack/echo/v4"
 )
@@ -31,10 +29,10 @@ type rider struct {
 }
 
 // Signin 骑手登录
-func (*rider) Signin(ctx echo.Context) (err error) {
+func (*rider) Signin(c echo.Context) (err error) {
     req := new(model.RiderSignupReq)
-    c := ctx.(*app.GlobalContext)
-    c.BindValidate(req)
+    ctx := c.(*app.GlobalContext)
+    ctx.BindValidate(req)
 
     // 校验短信
     if !debugPhones[req.Phone] && !service.NewSms().VerifyCode(req.SmsId, req.SmsCode) {
@@ -44,34 +42,35 @@ func (*rider) Signin(ctx echo.Context) (err error) {
     // 注册+登录
     var data *model.RiderSigninRes
     s := service.NewRider()
-    data, err = s.Signin(req.Phone, c.Device)
+    data, err = s.Signin(req.Phone, ctx.Device)
     if err != nil {
         return
     }
-    return response.New(ctx).SetData(data).Send()
+    return response.New(c).SetData(data).Send()
 }
 
 // Contact 添加紧急联系人
-func (r *rider) Contact(ctx echo.Context) error {
-    c := ctx.(*app.RiderContext)
+func (r *rider) Contact(c echo.Context) error {
+    ctx := c.(*app.RiderContext)
     contact := new(model.RiderContact)
-    c.BindValidate(contact)
-    // 更新紧急联系人
-    err := ar.Ent.Rider.UpdateOneID(c.Rider.ID).SetContact(contact).Exec(context.Background())
-    if err != nil {
-        return err
-    }
-    return nil
+    ctx.BindValidate(contact)
+    service.NewRider().UpdateContact(ctx.Rider, contact)
+    return response.New(c).Success().Send()
 }
 
 // Authenticator 实名认证
-// TODO 若携带联系人信息则保存联系人
-func (*rider) Authenticator(ctx echo.Context) error {
+func (*rider) Authenticator(c echo.Context) error {
+    ctx := c.(*app.RiderContext)
+    contact := new(model.RiderContact)
+    ctx.BindValidate(contact)
+    // 更新紧急联系人
+    service.NewRider().UpdateContact(ctx.Rider, contact)
     // 获取人脸识别URL
-    return response.New(ctx).Success().SetData(map[string]string{"url": baidu.New().Faceprint()}).Send()
+    return response.New(c).Success().SetData(map[string]string{"url": baidu.New().Faceprint()}).Send()
 }
 
-// AuthResult 人脸实名认证结果
+// AuthResult 实名认证结果
+// TODO 测试认证失败逻辑
 func (r *rider) AuthResult(c echo.Context) error {
     u := c.(*app.RiderContext).Rider
     token := c.Param("token")
