@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/schema"
 )
 
 // Rider is the model entity for the Rider schema.
@@ -39,7 +39,7 @@ type Rider struct {
 	Phone string `json:"phone,omitempty"`
 	// Contact holds the value of the "contact" field.
 	// 紧急联系人
-	Contact *schema.RiderContact `json:"contact,omitempty"`
+	Contact *model.RiderContact `json:"contact,omitempty"`
 	// DeviceType holds the value of the "device_type" field.
 	// 登录设备类型: 1iOS 2Android
 	DeviceType uint8 `json:"device_type,omitempty"`

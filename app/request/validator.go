@@ -8,6 +8,7 @@ package request
 import (
     "errors"
     "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/pkg/utils"
     zhLocales "github.com/go-playground/locales/zh"
     ut "github.com/go-playground/universal-translator"
     "github.com/go-playground/validator/v10"
@@ -22,6 +23,13 @@ type GlobalValidator struct {
     trans     ut.Translator
 }
 
+type RegisterValidationFunc func(fn validator.Func)
+
+var (
+    validate *validator.Validate
+    trans    ut.Translator
+)
+
 func (v *GlobalValidator) Validate(i interface{}) error {
     err := v.validator.Struct(i)
     if err != nil {
@@ -35,13 +43,21 @@ func (v *GlobalValidator) Validate(i interface{}) error {
     return err
 }
 
+// NewGlobalValidator 校验方法
 func NewGlobalValidator() *GlobalValidator {
-    val := validator.New()
+    validate = validator.New()
     zh := zhLocales.New()
     uni := ut.New(zh, zh)
-    trans, _ := uni.GetTranslator("zh")
-    _ = zhTranslations.RegisterDefaultTranslations(val, trans)
-    val.RegisterTagNameFunc(func(field reflect.StructField) string {
+    trans, _ = uni.GetTranslator("zh")
+    _ = zhTranslations.RegisterDefaultTranslations(validate, trans)
+
+    // 校验手机号
+    customValidation("phone")(func(fl validator.FieldLevel) bool {
+        return utils.NewRegex().MatchPhone(fl.Field().String())
+    })
+
+    // 从字段tag中获取字段翻译
+    validate.RegisterTagNameFunc(func(field reflect.StructField) string {
         t := field.Tag.Get("trans")
         m := ar.Config.Trans
         if t != "" {
@@ -52,5 +68,27 @@ func NewGlobalValidator() *GlobalValidator {
         }
         return field.Name
     })
-    return &GlobalValidator{validator: val, trans: trans}
+
+    return &GlobalValidator{validator: validate, trans: trans}
+}
+
+// customValidation 自定义验证规则
+func customValidation(tag string, message ...string) RegisterValidationFunc {
+    return func(fn validator.Func) {
+        _ = validate.RegisterValidation(tag, fn)
+        _ = validate.RegisterTranslation(
+            tag,
+            trans,
+            func(ut ut.Translator) error {
+                text := "{0}验证失败"
+                if len(message) > 0 {
+                    text = message[0]
+                }
+                return ut.Add(tag, text, true)
+            }, func(ut ut.Translator, fe validator.FieldError) string {
+                t, _ := ut.T(tag, fe.Field())
+                return t
+            },
+        )
+    }
 }

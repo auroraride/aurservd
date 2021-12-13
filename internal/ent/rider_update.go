@@ -10,10 +10,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/schema"
 )
 
 // RiderUpdate is the builder for updating Rider entities.
@@ -122,8 +122,8 @@ func (ru *RiderUpdate) SetPhone(s string) *RiderUpdate {
 }
 
 // SetContact sets the "contact" field.
-func (ru *RiderUpdate) SetContact(sc *schema.RiderContact) *RiderUpdate {
-	ru.mutation.SetContact(sc)
+func (ru *RiderUpdate) SetContact(mc *model.RiderContact) *RiderUpdate {
+	ru.mutation.SetContact(mc)
 	return ru
 }
 
@@ -542,8 +542,8 @@ func (ruo *RiderUpdateOne) SetPhone(s string) *RiderUpdateOne {
 }
 
 // SetContact sets the "contact" field.
-func (ruo *RiderUpdateOne) SetContact(sc *schema.RiderContact) *RiderUpdateOne {
-	ruo.mutation.SetContact(sc)
+func (ruo *RiderUpdateOne) SetContact(mc *model.RiderContact) *RiderUpdateOne {
+	ruo.mutation.SetContact(mc)
 	return ruo
 }
 

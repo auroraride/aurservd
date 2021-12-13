@@ -8,11 +8,12 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/schema"
 )
 
 // RiderCreate is the builder for creating a Rider entity.
@@ -20,6 +21,7 @@ type RiderCreate struct {
 	config
 	mutation *RiderMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -113,8 +115,8 @@ func (rc *RiderCreate) SetPhone(s string) *RiderCreate {
 }
 
 // SetContact sets the "contact" field.
-func (rc *RiderCreate) SetContact(sc *schema.RiderContact) *RiderCreate {
-	rc.mutation.SetContact(sc)
+func (rc *RiderCreate) SetContact(mc *model.RiderContact) *RiderCreate {
+	rc.mutation.SetContact(mc)
 	return rc
 }
 
@@ -289,6 +291,7 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	_spec.OnConflict = rc.conflict
 	if value, ok := rc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -392,10 +395,501 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.Rider.Create().
+//		SetCreatedAt(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.RiderUpsert) {
+//			SetCreatedAt(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (rc *RiderCreate) OnConflict(opts ...sql.ConflictOption) *RiderUpsertOne {
+	rc.conflict = opts
+	return &RiderUpsertOne{
+		create: rc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.Rider.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (rc *RiderCreate) OnConflictColumns(columns ...string) *RiderUpsertOne {
+	rc.conflict = append(rc.conflict, sql.ConflictColumns(columns...))
+	return &RiderUpsertOne{
+		create: rc,
+	}
+}
+
+type (
+	// RiderUpsertOne is the builder for "upsert"-ing
+	//  one Rider node.
+	RiderUpsertOne struct {
+		create *RiderCreate
+	}
+
+	// RiderUpsert is the "OnConflict" setter.
+	RiderUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetCreatedAt sets the "created_at" field.
+func (u *RiderUpsert) SetCreatedAt(v time.Time) *RiderUpsert {
+	u.Set(rider.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateCreatedAt() *RiderUpsert {
+	u.SetExcluded(rider.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *RiderUpsert) SetUpdatedAt(v time.Time) *RiderUpsert {
+	u.Set(rider.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateUpdatedAt() *RiderUpsert {
+	u.SetExcluded(rider.FieldUpdatedAt)
+	return u
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (u *RiderUpsert) SetDeletedAt(v time.Time) *RiderUpsert {
+	u.Set(rider.FieldDeletedAt, v)
+	return u
+}
+
+// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateDeletedAt() *RiderUpsert {
+	u.SetExcluded(rider.FieldDeletedAt)
+	return u
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (u *RiderUpsert) ClearDeletedAt() *RiderUpsert {
+	u.SetNull(rider.FieldDeletedAt)
+	return u
+}
+
+// SetLastModify sets the "last_modify" field.
+func (u *RiderUpsert) SetLastModify(v time.Time) *RiderUpsert {
+	u.Set(rider.FieldLastModify, v)
+	return u
+}
+
+// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateLastModify() *RiderUpsert {
+	u.SetExcluded(rider.FieldLastModify)
+	return u
+}
+
+// ClearLastModify clears the value of the "last_modify" field.
+func (u *RiderUpsert) ClearLastModify() *RiderUpsert {
+	u.SetNull(rider.FieldLastModify)
+	return u
+}
+
+// SetRemark sets the "remark" field.
+func (u *RiderUpsert) SetRemark(v string) *RiderUpsert {
+	u.Set(rider.FieldRemark, v)
+	return u
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateRemark() *RiderUpsert {
+	u.SetExcluded(rider.FieldRemark)
+	return u
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *RiderUpsert) ClearRemark() *RiderUpsert {
+	u.SetNull(rider.FieldRemark)
+	return u
+}
+
+// SetPersonID sets the "person_id" field.
+func (u *RiderUpsert) SetPersonID(v uint64) *RiderUpsert {
+	u.Set(rider.FieldPersonID, v)
+	return u
+}
+
+// UpdatePersonID sets the "person_id" field to the value that was provided on create.
+func (u *RiderUpsert) UpdatePersonID() *RiderUpsert {
+	u.SetExcluded(rider.FieldPersonID)
+	return u
+}
+
+// ClearPersonID clears the value of the "person_id" field.
+func (u *RiderUpsert) ClearPersonID() *RiderUpsert {
+	u.SetNull(rider.FieldPersonID)
+	return u
+}
+
+// SetPhone sets the "phone" field.
+func (u *RiderUpsert) SetPhone(v string) *RiderUpsert {
+	u.Set(rider.FieldPhone, v)
+	return u
+}
+
+// UpdatePhone sets the "phone" field to the value that was provided on create.
+func (u *RiderUpsert) UpdatePhone() *RiderUpsert {
+	u.SetExcluded(rider.FieldPhone)
+	return u
+}
+
+// SetContact sets the "contact" field.
+func (u *RiderUpsert) SetContact(v *model.RiderContact) *RiderUpsert {
+	u.Set(rider.FieldContact, v)
+	return u
+}
+
+// UpdateContact sets the "contact" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateContact() *RiderUpsert {
+	u.SetExcluded(rider.FieldContact)
+	return u
+}
+
+// ClearContact clears the value of the "contact" field.
+func (u *RiderUpsert) ClearContact() *RiderUpsert {
+	u.SetNull(rider.FieldContact)
+	return u
+}
+
+// SetDeviceType sets the "device_type" field.
+func (u *RiderUpsert) SetDeviceType(v uint8) *RiderUpsert {
+	u.Set(rider.FieldDeviceType, v)
+	return u
+}
+
+// UpdateDeviceType sets the "device_type" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateDeviceType() *RiderUpsert {
+	u.SetExcluded(rider.FieldDeviceType)
+	return u
+}
+
+// SetLastDevice sets the "last_device" field.
+func (u *RiderUpsert) SetLastDevice(v string) *RiderUpsert {
+	u.Set(rider.FieldLastDevice, v)
+	return u
+}
+
+// UpdateLastDevice sets the "last_device" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateLastDevice() *RiderUpsert {
+	u.SetExcluded(rider.FieldLastDevice)
+	return u
+}
+
+// SetPushID sets the "push_id" field.
+func (u *RiderUpsert) SetPushID(v string) *RiderUpsert {
+	u.Set(rider.FieldPushID, v)
+	return u
+}
+
+// UpdatePushID sets the "push_id" field to the value that was provided on create.
+func (u *RiderUpsert) UpdatePushID() *RiderUpsert {
+	u.SetExcluded(rider.FieldPushID)
+	return u
+}
+
+// ClearPushID clears the value of the "push_id" field.
+func (u *RiderUpsert) ClearPushID() *RiderUpsert {
+	u.SetNull(rider.FieldPushID)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create.
+// Using this option is equivalent to using:
+//
+//	client.Rider.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+//
+func (u *RiderUpsertOne) UpdateNewValues() *RiderUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.Rider.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *RiderUpsertOne) Ignore() *RiderUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *RiderUpsertOne) DoNothing() *RiderUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the RiderCreate.OnConflict
+// documentation for more info.
+func (u *RiderUpsertOne) Update(set func(*RiderUpsert)) *RiderUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&RiderUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *RiderUpsertOne) SetCreatedAt(v time.Time) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateCreatedAt() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *RiderUpsertOne) SetUpdatedAt(v time.Time) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateUpdatedAt() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (u *RiderUpsertOne) SetDeletedAt(v time.Time) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetDeletedAt(v)
+	})
+}
+
+// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateDeletedAt() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateDeletedAt()
+	})
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (u *RiderUpsertOne) ClearDeletedAt() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearDeletedAt()
+	})
+}
+
+// SetLastModify sets the "last_modify" field.
+func (u *RiderUpsertOne) SetLastModify(v time.Time) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetLastModify(v)
+	})
+}
+
+// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateLastModify() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateLastModify()
+	})
+}
+
+// ClearLastModify clears the value of the "last_modify" field.
+func (u *RiderUpsertOne) ClearLastModify() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearLastModify()
+	})
+}
+
+// SetRemark sets the "remark" field.
+func (u *RiderUpsertOne) SetRemark(v string) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetRemark(v)
+	})
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateRemark() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateRemark()
+	})
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *RiderUpsertOne) ClearRemark() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearRemark()
+	})
+}
+
+// SetPersonID sets the "person_id" field.
+func (u *RiderUpsertOne) SetPersonID(v uint64) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetPersonID(v)
+	})
+}
+
+// UpdatePersonID sets the "person_id" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdatePersonID() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdatePersonID()
+	})
+}
+
+// ClearPersonID clears the value of the "person_id" field.
+func (u *RiderUpsertOne) ClearPersonID() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearPersonID()
+	})
+}
+
+// SetPhone sets the "phone" field.
+func (u *RiderUpsertOne) SetPhone(v string) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetPhone(v)
+	})
+}
+
+// UpdatePhone sets the "phone" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdatePhone() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdatePhone()
+	})
+}
+
+// SetContact sets the "contact" field.
+func (u *RiderUpsertOne) SetContact(v *model.RiderContact) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetContact(v)
+	})
+}
+
+// UpdateContact sets the "contact" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateContact() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateContact()
+	})
+}
+
+// ClearContact clears the value of the "contact" field.
+func (u *RiderUpsertOne) ClearContact() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearContact()
+	})
+}
+
+// SetDeviceType sets the "device_type" field.
+func (u *RiderUpsertOne) SetDeviceType(v uint8) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetDeviceType(v)
+	})
+}
+
+// UpdateDeviceType sets the "device_type" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateDeviceType() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateDeviceType()
+	})
+}
+
+// SetLastDevice sets the "last_device" field.
+func (u *RiderUpsertOne) SetLastDevice(v string) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetLastDevice(v)
+	})
+}
+
+// UpdateLastDevice sets the "last_device" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateLastDevice() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateLastDevice()
+	})
+}
+
+// SetPushID sets the "push_id" field.
+func (u *RiderUpsertOne) SetPushID(v string) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetPushID(v)
+	})
+}
+
+// UpdatePushID sets the "push_id" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdatePushID() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdatePushID()
+	})
+}
+
+// ClearPushID clears the value of the "push_id" field.
+func (u *RiderUpsertOne) ClearPushID() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearPushID()
+	})
+}
+
+// Exec executes the query.
+func (u *RiderUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for RiderCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *RiderUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *RiderUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *RiderUpsertOne) IDX(ctx context.Context) uint64 {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // RiderCreateBulk is the builder for creating many Rider entities in bulk.
 type RiderCreateBulk struct {
 	config
 	builders []*RiderCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the Rider entities in the database.
@@ -422,6 +916,7 @@ func (rcb *RiderCreateBulk) Save(ctx context.Context) ([]*Rider, error) {
 					_, err = mutators[i+1].Mutate(root, rcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = rcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, rcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -472,6 +967,307 @@ func (rcb *RiderCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (rcb *RiderCreateBulk) ExecX(ctx context.Context) {
 	if err := rcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.Rider.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.RiderUpsert) {
+//			SetCreatedAt(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (rcb *RiderCreateBulk) OnConflict(opts ...sql.ConflictOption) *RiderUpsertBulk {
+	rcb.conflict = opts
+	return &RiderUpsertBulk{
+		create: rcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.Rider.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (rcb *RiderCreateBulk) OnConflictColumns(columns ...string) *RiderUpsertBulk {
+	rcb.conflict = append(rcb.conflict, sql.ConflictColumns(columns...))
+	return &RiderUpsertBulk{
+		create: rcb,
+	}
+}
+
+// RiderUpsertBulk is the builder for "upsert"-ing
+// a bulk of Rider nodes.
+type RiderUpsertBulk struct {
+	create *RiderCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.Rider.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+//
+func (u *RiderUpsertBulk) UpdateNewValues() *RiderUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.Rider.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *RiderUpsertBulk) Ignore() *RiderUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *RiderUpsertBulk) DoNothing() *RiderUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the RiderCreateBulk.OnConflict
+// documentation for more info.
+func (u *RiderUpsertBulk) Update(set func(*RiderUpsert)) *RiderUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&RiderUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *RiderUpsertBulk) SetCreatedAt(v time.Time) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateCreatedAt() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *RiderUpsertBulk) SetUpdatedAt(v time.Time) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateUpdatedAt() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (u *RiderUpsertBulk) SetDeletedAt(v time.Time) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetDeletedAt(v)
+	})
+}
+
+// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateDeletedAt() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateDeletedAt()
+	})
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (u *RiderUpsertBulk) ClearDeletedAt() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearDeletedAt()
+	})
+}
+
+// SetLastModify sets the "last_modify" field.
+func (u *RiderUpsertBulk) SetLastModify(v time.Time) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetLastModify(v)
+	})
+}
+
+// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateLastModify() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateLastModify()
+	})
+}
+
+// ClearLastModify clears the value of the "last_modify" field.
+func (u *RiderUpsertBulk) ClearLastModify() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearLastModify()
+	})
+}
+
+// SetRemark sets the "remark" field.
+func (u *RiderUpsertBulk) SetRemark(v string) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetRemark(v)
+	})
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateRemark() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateRemark()
+	})
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *RiderUpsertBulk) ClearRemark() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearRemark()
+	})
+}
+
+// SetPersonID sets the "person_id" field.
+func (u *RiderUpsertBulk) SetPersonID(v uint64) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetPersonID(v)
+	})
+}
+
+// UpdatePersonID sets the "person_id" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdatePersonID() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdatePersonID()
+	})
+}
+
+// ClearPersonID clears the value of the "person_id" field.
+func (u *RiderUpsertBulk) ClearPersonID() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearPersonID()
+	})
+}
+
+// SetPhone sets the "phone" field.
+func (u *RiderUpsertBulk) SetPhone(v string) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetPhone(v)
+	})
+}
+
+// UpdatePhone sets the "phone" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdatePhone() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdatePhone()
+	})
+}
+
+// SetContact sets the "contact" field.
+func (u *RiderUpsertBulk) SetContact(v *model.RiderContact) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetContact(v)
+	})
+}
+
+// UpdateContact sets the "contact" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateContact() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateContact()
+	})
+}
+
+// ClearContact clears the value of the "contact" field.
+func (u *RiderUpsertBulk) ClearContact() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearContact()
+	})
+}
+
+// SetDeviceType sets the "device_type" field.
+func (u *RiderUpsertBulk) SetDeviceType(v uint8) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetDeviceType(v)
+	})
+}
+
+// UpdateDeviceType sets the "device_type" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateDeviceType() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateDeviceType()
+	})
+}
+
+// SetLastDevice sets the "last_device" field.
+func (u *RiderUpsertBulk) SetLastDevice(v string) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetLastDevice(v)
+	})
+}
+
+// UpdateLastDevice sets the "last_device" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateLastDevice() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateLastDevice()
+	})
+}
+
+// SetPushID sets the "push_id" field.
+func (u *RiderUpsertBulk) SetPushID(v string) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetPushID(v)
+	})
+}
+
+// UpdatePushID sets the "push_id" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdatePushID() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdatePushID()
+	})
+}
+
+// ClearPushID clears the value of the "push_id" field.
+func (u *RiderUpsertBulk) ClearPushID() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearPushID()
+	})
+}
+
+// Exec executes the query.
+func (u *RiderUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the RiderCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for RiderCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *RiderUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

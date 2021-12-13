@@ -3,11 +3,13 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/person"
 )
 
@@ -49,9 +51,12 @@ type Person struct {
 	// IcNational holds the value of the "ic_national" field.
 	// 证件国徽面
 	IcNational string `json:"ic_national,omitempty"`
-	// IcHandheld holds the value of the "ic_handheld" field.
-	// 证件手持照
-	IcHandheld string `json:"ic_handheld,omitempty"`
+	// FaceImg holds the value of the "face_img" field.
+	// 人脸照片
+	FaceImg string `json:"face_img,omitempty"`
+	// FaceVerifyResult holds the value of the "face_verify_result" field.
+	// 人脸识别验证结果详情
+	FaceVerifyResult *model.FaceVerifyResult `json:"face_verify_result,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PersonQuery when eager-loading is set.
 	Edges PersonEdges `json:"edges"`
@@ -80,11 +85,13 @@ func (*Person) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case person.FieldFaceVerifyResult:
+			values[i] = new([]byte)
 		case person.FieldBlock:
 			values[i] = new(sql.NullBool)
 		case person.FieldID, person.FieldStatus, person.FieldIcType:
 			values[i] = new(sql.NullInt64)
-		case person.FieldRemark, person.FieldName, person.FieldIcNumber, person.FieldIcPortrait, person.FieldIcNational, person.FieldIcHandheld:
+		case person.FieldRemark, person.FieldName, person.FieldIcNumber, person.FieldIcPortrait, person.FieldIcNational, person.FieldFaceImg:
 			values[i] = new(sql.NullString)
 		case person.FieldCreatedAt, person.FieldUpdatedAt, person.FieldDeletedAt, person.FieldLastModify:
 			values[i] = new(sql.NullTime)
@@ -184,11 +191,19 @@ func (pe *Person) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				pe.IcNational = value.String
 			}
-		case person.FieldIcHandheld:
+		case person.FieldFaceImg:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field ic_handheld", values[i])
+				return fmt.Errorf("unexpected type %T for field face_img", values[i])
 			} else if value.Valid {
-				pe.IcHandheld = value.String
+				pe.FaceImg = value.String
+			}
+		case person.FieldFaceVerifyResult:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field face_verify_result", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pe.FaceVerifyResult); err != nil {
+					return fmt.Errorf("unmarshal field face_verify_result: %w", err)
+				}
 			}
 		}
 	}
@@ -253,8 +268,10 @@ func (pe *Person) String() string {
 	builder.WriteString(pe.IcPortrait)
 	builder.WriteString(", ic_national=")
 	builder.WriteString(pe.IcNational)
-	builder.WriteString(", ic_handheld=")
-	builder.WriteString(pe.IcHandheld)
+	builder.WriteString(", face_img=")
+	builder.WriteString(pe.FaceImg)
+	builder.WriteString(", face_verify_result=")
+	builder.WriteString(fmt.Sprintf("%v", pe.FaceVerifyResult))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -57,10 +57,10 @@ func init() {
 	personDescIcNational := personFields[6].Descriptor()
 	// person.IcNationalValidator is a validator for the "ic_national" field. It is called by the builders before save.
 	person.IcNationalValidator = personDescIcNational.Validators[0].(func(string) error)
-	// personDescIcHandheld is the schema descriptor for ic_handheld field.
-	personDescIcHandheld := personFields[7].Descriptor()
-	// person.IcHandheldValidator is a validator for the "ic_handheld" field. It is called by the builders before save.
-	person.IcHandheldValidator = personDescIcHandheld.Validators[0].(func(string) error)
+	// personDescFaceImg is the schema descriptor for face_img field.
+	personDescFaceImg := personFields[7].Descriptor()
+	// person.FaceImgValidator is a validator for the "face_img" field. It is called by the builders before save.
+	person.FaceImgValidator = personDescFaceImg.Validators[0].(func(string) error)
 	riderMixin := schema.Rider{}.Mixin()
 	riderMixinFields0 := riderMixin[0].Fields()
 	_ = riderMixinFields0

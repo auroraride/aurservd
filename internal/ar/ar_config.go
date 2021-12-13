@@ -58,6 +58,13 @@ type config struct {
         Json  bool   // 日志以json格式保存
     }
     Aliyun struct {
+        Oss struct {
+            AccessKeyId     string
+            AccessKeySecret string
+            Bucket          string
+            Endpoint        string
+            Url             string
+        }
         Sms struct {
             AccessId     string
             AccessSecret string
@@ -68,6 +75,15 @@ type config struct {
                     Code string
                 }
             }
+        }
+    }
+    Baidu struct {
+        Face struct {
+            PlanId     string
+            ApiKey     string
+            SecretKey  string
+            SuccessUrl string
+            FailedUrl  string
         }
     }
     Trans map[string]string

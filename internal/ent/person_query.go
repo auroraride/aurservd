@@ -28,6 +28,7 @@ type PersonQuery struct {
 	predicates []predicate.Person
 	// eager-loading edges.
 	withRider *RiderQuery
+	modifiers []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -367,6 +368,9 @@ func (pq *PersonQuery) sqlAll(ctx context.Context) ([]*Person, error) {
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(pq.modifiers) > 0 {
+		_spec.Modifiers = pq.modifiers
+	}
 	if err := sqlgraph.QueryNodes(ctx, pq.driver, _spec); err != nil {
 		return nil, err
 	}
@@ -407,6 +411,9 @@ func (pq *PersonQuery) sqlAll(ctx context.Context) ([]*Person, error) {
 
 func (pq *PersonQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := pq.querySpec()
+	if len(pq.modifiers) > 0 {
+		_spec.Modifiers = pq.modifiers
+	}
 	return sqlgraph.CountNodes(ctx, pq.driver, _spec)
 }
 
@@ -478,6 +485,9 @@ func (pq *PersonQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = pq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
+	for _, m := range pq.modifiers {
+		m(selector)
+	}
 	for _, p := range pq.predicates {
 		p(selector)
 	}
@@ -493,6 +503,12 @@ func (pq *PersonQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (pq *PersonQuery) Modify(modifiers ...func(s *sql.Selector)) *PersonSelect {
+	pq.modifiers = append(pq.modifiers, modifiers...)
+	return pq.Select()
 }
 
 // PersonGroupBy is the group-by builder for Person entities.
@@ -983,4 +999,10 @@ func (ps *PersonSelect) sqlScan(ctx context.Context, v interface{}) error {
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (ps *PersonSelect) Modify(modifiers ...func(s *sql.Selector)) *PersonSelect {
+	ps.modifiers = append(ps.modifiers, modifiers...)
+	return ps
 }

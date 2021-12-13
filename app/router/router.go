@@ -7,6 +7,8 @@ package router
 
 import (
     "github.com/auroraride/aurservd/app"
+    "github.com/auroraride/aurservd/app/controller/v1/demo"
+    "github.com/auroraride/aurservd/app/middleware"
     "github.com/auroraride/aurservd/app/request"
     "github.com/auroraride/aurservd/app/response"
     "github.com/auroraride/aurservd/internal/ar"
@@ -37,7 +39,7 @@ func Run() {
     r.Use(
         func(next echo.HandlerFunc) echo.HandlerFunc {
             return func(ctx echo.Context) error {
-                c := &app.Context{Context: ctx}
+                c := &app.GlobalContext{Context: ctx}
                 return next(c)
             }
         },
@@ -48,7 +50,8 @@ func Run() {
                 `,"bytes_in":${bytes_in},"bytes_out":${bytes_out}}` + "\n",
             CustomTimeFormat: "2006-01-02 15:04:05.00000",
         }),
-        mw.Recover(),
+        // mw.Recover(),
+        middleware.Recover(),
         mw.BodyLimit(cfg.BodyLimit),
         mw.CORSWithConfig(corsConfig),
         mw.GzipWithConfig(mw.GzipConfig{
@@ -70,11 +73,17 @@ func Run() {
     }
 
     // 载入路由
-    // 公共API
-    r.commonRoute()
-
-    // 骑手api
-    r.rideRoute()
+    {
+        // demo
+        dg := r.Group("/demo")
+        dg.GET("/baidu/face", demo.BaiduFace)
+        dg.GET("/baidu/face/:token", demo.BaiduFaceResult)
+        dg.GET("/baidu/face/success", demo.BaiduFaceSuccess)
+        dg.GET("/baidu/face/fail", demo.BaiduFacefail)
+        dg.GET("/aliyun/oss", demo.AliyunOss)
+    }
+    r.commonRoute() // 公共API
+    r.rideRoute()   // 骑手路由
 
     log.Fatal(r.Start(cfg.Address))
 }

@@ -20,18 +20,17 @@ type smsReq struct {
 
 // SendSmsCode 发送短信验证码
 func SendSmsCode(ctx echo.Context) error {
-    c := ctx.(*app.Context)
+    c := ctx.(*app.GlobalContext)
     r := new(smsReq)
-    err := c.BindValidate(r)
-    if err != nil {
-        return err
-    }
+    c.BindValidate(r)
     id := c.Request().Header.Get(app.HeaderCaptchaID)
     if !service.NewCaptcha().Verify(id, r.CaptchaCode, false) {
         return errors.New("图形验证码校验失败")
     }
     // 发送短信
-    var smsId string
-    smsId, err = service.NewSms().SendCode(r.Phone)
+    smsId, err := service.NewSms().SendCode(r.Phone)
+    if err != nil {
+        return err
+    }
     return response.New(c).SetData(map[string]string{"id": smsId}).Success().Send()
 }

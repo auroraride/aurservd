@@ -177,10 +177,10 @@ func IcNational(v string) predicate.Person {
 	})
 }
 
-// IcHandheld applies equality check predicate on the "ic_handheld" field. It's identical to IcHandheldEQ.
-func IcHandheld(v string) predicate.Person {
+// FaceImg applies equality check predicate on the "face_img" field. It's identical to FaceImgEQ.
+func FaceImg(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIcHandheld), v))
+		s.Where(sql.EQ(s.C(FieldFaceImg), v))
 	})
 }
 
@@ -1251,22 +1251,22 @@ func IcNationalContainsFold(v string) predicate.Person {
 	})
 }
 
-// IcHandheldEQ applies the EQ predicate on the "ic_handheld" field.
-func IcHandheldEQ(v string) predicate.Person {
+// FaceImgEQ applies the EQ predicate on the "face_img" field.
+func FaceImgEQ(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIcHandheld), v))
+		s.Where(sql.EQ(s.C(FieldFaceImg), v))
 	})
 }
 
-// IcHandheldNEQ applies the NEQ predicate on the "ic_handheld" field.
-func IcHandheldNEQ(v string) predicate.Person {
+// FaceImgNEQ applies the NEQ predicate on the "face_img" field.
+func FaceImgNEQ(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldIcHandheld), v))
+		s.Where(sql.NEQ(s.C(FieldFaceImg), v))
 	})
 }
 
-// IcHandheldIn applies the In predicate on the "ic_handheld" field.
-func IcHandheldIn(vs ...string) predicate.Person {
+// FaceImgIn applies the In predicate on the "face_img" field.
+func FaceImgIn(vs ...string) predicate.Person {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1278,12 +1278,12 @@ func IcHandheldIn(vs ...string) predicate.Person {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldIcHandheld), v...))
+		s.Where(sql.In(s.C(FieldFaceImg), v...))
 	})
 }
 
-// IcHandheldNotIn applies the NotIn predicate on the "ic_handheld" field.
-func IcHandheldNotIn(vs ...string) predicate.Person {
+// FaceImgNotIn applies the NotIn predicate on the "face_img" field.
+func FaceImgNotIn(vs ...string) predicate.Person {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1295,70 +1295,84 @@ func IcHandheldNotIn(vs ...string) predicate.Person {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldIcHandheld), v...))
+		s.Where(sql.NotIn(s.C(FieldFaceImg), v...))
 	})
 }
 
-// IcHandheldGT applies the GT predicate on the "ic_handheld" field.
-func IcHandheldGT(v string) predicate.Person {
+// FaceImgGT applies the GT predicate on the "face_img" field.
+func FaceImgGT(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldIcHandheld), v))
+		s.Where(sql.GT(s.C(FieldFaceImg), v))
 	})
 }
 
-// IcHandheldGTE applies the GTE predicate on the "ic_handheld" field.
-func IcHandheldGTE(v string) predicate.Person {
+// FaceImgGTE applies the GTE predicate on the "face_img" field.
+func FaceImgGTE(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldIcHandheld), v))
+		s.Where(sql.GTE(s.C(FieldFaceImg), v))
 	})
 }
 
-// IcHandheldLT applies the LT predicate on the "ic_handheld" field.
-func IcHandheldLT(v string) predicate.Person {
+// FaceImgLT applies the LT predicate on the "face_img" field.
+func FaceImgLT(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldIcHandheld), v))
+		s.Where(sql.LT(s.C(FieldFaceImg), v))
 	})
 }
 
-// IcHandheldLTE applies the LTE predicate on the "ic_handheld" field.
-func IcHandheldLTE(v string) predicate.Person {
+// FaceImgLTE applies the LTE predicate on the "face_img" field.
+func FaceImgLTE(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldIcHandheld), v))
+		s.Where(sql.LTE(s.C(FieldFaceImg), v))
 	})
 }
 
-// IcHandheldContains applies the Contains predicate on the "ic_handheld" field.
-func IcHandheldContains(v string) predicate.Person {
+// FaceImgContains applies the Contains predicate on the "face_img" field.
+func FaceImgContains(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldIcHandheld), v))
+		s.Where(sql.Contains(s.C(FieldFaceImg), v))
 	})
 }
 
-// IcHandheldHasPrefix applies the HasPrefix predicate on the "ic_handheld" field.
-func IcHandheldHasPrefix(v string) predicate.Person {
+// FaceImgHasPrefix applies the HasPrefix predicate on the "face_img" field.
+func FaceImgHasPrefix(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldIcHandheld), v))
+		s.Where(sql.HasPrefix(s.C(FieldFaceImg), v))
 	})
 }
 
-// IcHandheldHasSuffix applies the HasSuffix predicate on the "ic_handheld" field.
-func IcHandheldHasSuffix(v string) predicate.Person {
+// FaceImgHasSuffix applies the HasSuffix predicate on the "face_img" field.
+func FaceImgHasSuffix(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldIcHandheld), v))
+		s.Where(sql.HasSuffix(s.C(FieldFaceImg), v))
 	})
 }
 
-// IcHandheldEqualFold applies the EqualFold predicate on the "ic_handheld" field.
-func IcHandheldEqualFold(v string) predicate.Person {
+// FaceImgEqualFold applies the EqualFold predicate on the "face_img" field.
+func FaceImgEqualFold(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldIcHandheld), v))
+		s.Where(sql.EqualFold(s.C(FieldFaceImg), v))
 	})
 }
 
-// IcHandheldContainsFold applies the ContainsFold predicate on the "ic_handheld" field.
-func IcHandheldContainsFold(v string) predicate.Person {
+// FaceImgContainsFold applies the ContainsFold predicate on the "face_img" field.
+func FaceImgContainsFold(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldIcHandheld), v))
+		s.Where(sql.ContainsFold(s.C(FieldFaceImg), v))
+	})
+}
+
+// FaceVerifyResultIsNil applies the IsNil predicate on the "face_verify_result" field.
+func FaceVerifyResultIsNil() predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldFaceVerifyResult)))
+	})
+}
+
+// FaceVerifyResultNotNil applies the NotNil predicate on the "face_verify_result" field.
+func FaceVerifyResultNotNil() predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldFaceVerifyResult)))
 	})
 }
 

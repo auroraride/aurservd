@@ -8,8 +8,10 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
@@ -19,6 +21,7 @@ type PersonCreate struct {
 	config
 	mutation *PersonMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -157,9 +160,15 @@ func (pc *PersonCreate) SetIcNational(s string) *PersonCreate {
 	return pc
 }
 
-// SetIcHandheld sets the "ic_handheld" field.
-func (pc *PersonCreate) SetIcHandheld(s string) *PersonCreate {
-	pc.mutation.SetIcHandheld(s)
+// SetFaceImg sets the "face_img" field.
+func (pc *PersonCreate) SetFaceImg(s string) *PersonCreate {
+	pc.mutation.SetFaceImg(s)
+	return pc
+}
+
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (pc *PersonCreate) SetFaceVerifyResult(mvr *model.FaceVerifyResult) *PersonCreate {
+	pc.mutation.SetFaceVerifyResult(mvr)
 	return pc
 }
 
@@ -320,12 +329,12 @@ func (pc *PersonCreate) check() error {
 			return &ValidationError{Name: "ic_national", err: fmt.Errorf(`ent: validator failed for field "ic_national": %w`, err)}
 		}
 	}
-	if _, ok := pc.mutation.IcHandheld(); !ok {
-		return &ValidationError{Name: "ic_handheld", err: errors.New(`ent: missing required field "ic_handheld"`)}
+	if _, ok := pc.mutation.FaceImg(); !ok {
+		return &ValidationError{Name: "face_img", err: errors.New(`ent: missing required field "face_img"`)}
 	}
-	if v, ok := pc.mutation.IcHandheld(); ok {
-		if err := person.IcHandheldValidator(v); err != nil {
-			return &ValidationError{Name: "ic_handheld", err: fmt.Errorf(`ent: validator failed for field "ic_handheld": %w`, err)}
+	if v, ok := pc.mutation.FaceImg(); ok {
+		if err := person.FaceImgValidator(v); err != nil {
+			return &ValidationError{Name: "face_img", err: fmt.Errorf(`ent: validator failed for field "face_img": %w`, err)}
 		}
 	}
 	return nil
@@ -355,6 +364,7 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	_spec.OnConflict = pc.conflict
 	if value, ok := pc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -451,13 +461,21 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 		})
 		_node.IcNational = value
 	}
-	if value, ok := pc.mutation.IcHandheld(); ok {
+	if value, ok := pc.mutation.FaceImg(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: person.FieldIcHandheld,
+			Column: person.FieldFaceImg,
 		})
-		_node.IcHandheld = value
+		_node.FaceImg = value
+	}
+	if value, ok := pc.mutation.FaceVerifyResult(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: person.FieldFaceVerifyResult,
+		})
+		_node.FaceVerifyResult = value
 	}
 	if nodes := pc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -481,10 +499,553 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.Person.Create().
+//		SetCreatedAt(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.PersonUpsert) {
+//			SetCreatedAt(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (pc *PersonCreate) OnConflict(opts ...sql.ConflictOption) *PersonUpsertOne {
+	pc.conflict = opts
+	return &PersonUpsertOne{
+		create: pc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.Person.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (pc *PersonCreate) OnConflictColumns(columns ...string) *PersonUpsertOne {
+	pc.conflict = append(pc.conflict, sql.ConflictColumns(columns...))
+	return &PersonUpsertOne{
+		create: pc,
+	}
+}
+
+type (
+	// PersonUpsertOne is the builder for "upsert"-ing
+	//  one Person node.
+	PersonUpsertOne struct {
+		create *PersonCreate
+	}
+
+	// PersonUpsert is the "OnConflict" setter.
+	PersonUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetCreatedAt sets the "created_at" field.
+func (u *PersonUpsert) SetCreatedAt(v time.Time) *PersonUpsert {
+	u.Set(person.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateCreatedAt() *PersonUpsert {
+	u.SetExcluded(person.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *PersonUpsert) SetUpdatedAt(v time.Time) *PersonUpsert {
+	u.Set(person.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateUpdatedAt() *PersonUpsert {
+	u.SetExcluded(person.FieldUpdatedAt)
+	return u
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (u *PersonUpsert) SetDeletedAt(v time.Time) *PersonUpsert {
+	u.Set(person.FieldDeletedAt, v)
+	return u
+}
+
+// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateDeletedAt() *PersonUpsert {
+	u.SetExcluded(person.FieldDeletedAt)
+	return u
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (u *PersonUpsert) ClearDeletedAt() *PersonUpsert {
+	u.SetNull(person.FieldDeletedAt)
+	return u
+}
+
+// SetLastModify sets the "last_modify" field.
+func (u *PersonUpsert) SetLastModify(v time.Time) *PersonUpsert {
+	u.Set(person.FieldLastModify, v)
+	return u
+}
+
+// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateLastModify() *PersonUpsert {
+	u.SetExcluded(person.FieldLastModify)
+	return u
+}
+
+// ClearLastModify clears the value of the "last_modify" field.
+func (u *PersonUpsert) ClearLastModify() *PersonUpsert {
+	u.SetNull(person.FieldLastModify)
+	return u
+}
+
+// SetRemark sets the "remark" field.
+func (u *PersonUpsert) SetRemark(v string) *PersonUpsert {
+	u.Set(person.FieldRemark, v)
+	return u
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateRemark() *PersonUpsert {
+	u.SetExcluded(person.FieldRemark)
+	return u
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *PersonUpsert) ClearRemark() *PersonUpsert {
+	u.SetNull(person.FieldRemark)
+	return u
+}
+
+// SetStatus sets the "status" field.
+func (u *PersonUpsert) SetStatus(v uint8) *PersonUpsert {
+	u.Set(person.FieldStatus, v)
+	return u
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateStatus() *PersonUpsert {
+	u.SetExcluded(person.FieldStatus)
+	return u
+}
+
+// SetBlock sets the "block" field.
+func (u *PersonUpsert) SetBlock(v bool) *PersonUpsert {
+	u.Set(person.FieldBlock, v)
+	return u
+}
+
+// UpdateBlock sets the "block" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateBlock() *PersonUpsert {
+	u.SetExcluded(person.FieldBlock)
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *PersonUpsert) SetName(v string) *PersonUpsert {
+	u.Set(person.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateName() *PersonUpsert {
+	u.SetExcluded(person.FieldName)
+	return u
+}
+
+// SetIcNumber sets the "ic_number" field.
+func (u *PersonUpsert) SetIcNumber(v string) *PersonUpsert {
+	u.Set(person.FieldIcNumber, v)
+	return u
+}
+
+// UpdateIcNumber sets the "ic_number" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateIcNumber() *PersonUpsert {
+	u.SetExcluded(person.FieldIcNumber)
+	return u
+}
+
+// SetIcType sets the "ic_type" field.
+func (u *PersonUpsert) SetIcType(v uint8) *PersonUpsert {
+	u.Set(person.FieldIcType, v)
+	return u
+}
+
+// UpdateIcType sets the "ic_type" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateIcType() *PersonUpsert {
+	u.SetExcluded(person.FieldIcType)
+	return u
+}
+
+// SetIcPortrait sets the "ic_portrait" field.
+func (u *PersonUpsert) SetIcPortrait(v string) *PersonUpsert {
+	u.Set(person.FieldIcPortrait, v)
+	return u
+}
+
+// UpdateIcPortrait sets the "ic_portrait" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateIcPortrait() *PersonUpsert {
+	u.SetExcluded(person.FieldIcPortrait)
+	return u
+}
+
+// SetIcNational sets the "ic_national" field.
+func (u *PersonUpsert) SetIcNational(v string) *PersonUpsert {
+	u.Set(person.FieldIcNational, v)
+	return u
+}
+
+// UpdateIcNational sets the "ic_national" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateIcNational() *PersonUpsert {
+	u.SetExcluded(person.FieldIcNational)
+	return u
+}
+
+// SetFaceImg sets the "face_img" field.
+func (u *PersonUpsert) SetFaceImg(v string) *PersonUpsert {
+	u.Set(person.FieldFaceImg, v)
+	return u
+}
+
+// UpdateFaceImg sets the "face_img" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateFaceImg() *PersonUpsert {
+	u.SetExcluded(person.FieldFaceImg)
+	return u
+}
+
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (u *PersonUpsert) SetFaceVerifyResult(v *model.FaceVerifyResult) *PersonUpsert {
+	u.Set(person.FieldFaceVerifyResult, v)
+	return u
+}
+
+// UpdateFaceVerifyResult sets the "face_verify_result" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateFaceVerifyResult() *PersonUpsert {
+	u.SetExcluded(person.FieldFaceVerifyResult)
+	return u
+}
+
+// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
+func (u *PersonUpsert) ClearFaceVerifyResult() *PersonUpsert {
+	u.SetNull(person.FieldFaceVerifyResult)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create.
+// Using this option is equivalent to using:
+//
+//	client.Person.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+//
+func (u *PersonUpsertOne) UpdateNewValues() *PersonUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.Person.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *PersonUpsertOne) Ignore() *PersonUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *PersonUpsertOne) DoNothing() *PersonUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the PersonCreate.OnConflict
+// documentation for more info.
+func (u *PersonUpsertOne) Update(set func(*PersonUpsert)) *PersonUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&PersonUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *PersonUpsertOne) SetCreatedAt(v time.Time) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateCreatedAt() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *PersonUpsertOne) SetUpdatedAt(v time.Time) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateUpdatedAt() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (u *PersonUpsertOne) SetDeletedAt(v time.Time) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetDeletedAt(v)
+	})
+}
+
+// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateDeletedAt() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateDeletedAt()
+	})
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (u *PersonUpsertOne) ClearDeletedAt() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearDeletedAt()
+	})
+}
+
+// SetLastModify sets the "last_modify" field.
+func (u *PersonUpsertOne) SetLastModify(v time.Time) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetLastModify(v)
+	})
+}
+
+// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateLastModify() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateLastModify()
+	})
+}
+
+// ClearLastModify clears the value of the "last_modify" field.
+func (u *PersonUpsertOne) ClearLastModify() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearLastModify()
+	})
+}
+
+// SetRemark sets the "remark" field.
+func (u *PersonUpsertOne) SetRemark(v string) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetRemark(v)
+	})
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateRemark() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateRemark()
+	})
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *PersonUpsertOne) ClearRemark() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearRemark()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *PersonUpsertOne) SetStatus(v uint8) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateStatus() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// SetBlock sets the "block" field.
+func (u *PersonUpsertOne) SetBlock(v bool) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetBlock(v)
+	})
+}
+
+// UpdateBlock sets the "block" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateBlock() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateBlock()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *PersonUpsertOne) SetName(v string) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateName() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetIcNumber sets the "ic_number" field.
+func (u *PersonUpsertOne) SetIcNumber(v string) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetIcNumber(v)
+	})
+}
+
+// UpdateIcNumber sets the "ic_number" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateIcNumber() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateIcNumber()
+	})
+}
+
+// SetIcType sets the "ic_type" field.
+func (u *PersonUpsertOne) SetIcType(v uint8) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetIcType(v)
+	})
+}
+
+// UpdateIcType sets the "ic_type" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateIcType() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateIcType()
+	})
+}
+
+// SetIcPortrait sets the "ic_portrait" field.
+func (u *PersonUpsertOne) SetIcPortrait(v string) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetIcPortrait(v)
+	})
+}
+
+// UpdateIcPortrait sets the "ic_portrait" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateIcPortrait() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateIcPortrait()
+	})
+}
+
+// SetIcNational sets the "ic_national" field.
+func (u *PersonUpsertOne) SetIcNational(v string) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetIcNational(v)
+	})
+}
+
+// UpdateIcNational sets the "ic_national" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateIcNational() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateIcNational()
+	})
+}
+
+// SetFaceImg sets the "face_img" field.
+func (u *PersonUpsertOne) SetFaceImg(v string) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetFaceImg(v)
+	})
+}
+
+// UpdateFaceImg sets the "face_img" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateFaceImg() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateFaceImg()
+	})
+}
+
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (u *PersonUpsertOne) SetFaceVerifyResult(v *model.FaceVerifyResult) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetFaceVerifyResult(v)
+	})
+}
+
+// UpdateFaceVerifyResult sets the "face_verify_result" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateFaceVerifyResult() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateFaceVerifyResult()
+	})
+}
+
+// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
+func (u *PersonUpsertOne) ClearFaceVerifyResult() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearFaceVerifyResult()
+	})
+}
+
+// Exec executes the query.
+func (u *PersonUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for PersonCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *PersonUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *PersonUpsertOne) ID(ctx context.Context) (id uint64, err error) {
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *PersonUpsertOne) IDX(ctx context.Context) uint64 {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // PersonCreateBulk is the builder for creating many Person entities in bulk.
 type PersonCreateBulk struct {
 	config
 	builders []*PersonCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the Person entities in the database.
@@ -511,6 +1072,7 @@ func (pcb *PersonCreateBulk) Save(ctx context.Context) ([]*Person, error) {
 					_, err = mutators[i+1].Mutate(root, pcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = pcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, pcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -561,6 +1123,335 @@ func (pcb *PersonCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (pcb *PersonCreateBulk) ExecX(ctx context.Context) {
 	if err := pcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.Person.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.PersonUpsert) {
+//			SetCreatedAt(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (pcb *PersonCreateBulk) OnConflict(opts ...sql.ConflictOption) *PersonUpsertBulk {
+	pcb.conflict = opts
+	return &PersonUpsertBulk{
+		create: pcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.Person.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (pcb *PersonCreateBulk) OnConflictColumns(columns ...string) *PersonUpsertBulk {
+	pcb.conflict = append(pcb.conflict, sql.ConflictColumns(columns...))
+	return &PersonUpsertBulk{
+		create: pcb,
+	}
+}
+
+// PersonUpsertBulk is the builder for "upsert"-ing
+// a bulk of Person nodes.
+type PersonUpsertBulk struct {
+	create *PersonCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.Person.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+//
+func (u *PersonUpsertBulk) UpdateNewValues() *PersonUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.Person.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *PersonUpsertBulk) Ignore() *PersonUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *PersonUpsertBulk) DoNothing() *PersonUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the PersonCreateBulk.OnConflict
+// documentation for more info.
+func (u *PersonUpsertBulk) Update(set func(*PersonUpsert)) *PersonUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&PersonUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *PersonUpsertBulk) SetCreatedAt(v time.Time) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateCreatedAt() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *PersonUpsertBulk) SetUpdatedAt(v time.Time) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateUpdatedAt() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (u *PersonUpsertBulk) SetDeletedAt(v time.Time) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetDeletedAt(v)
+	})
+}
+
+// UpdateDeletedAt sets the "deleted_at" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateDeletedAt() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateDeletedAt()
+	})
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (u *PersonUpsertBulk) ClearDeletedAt() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearDeletedAt()
+	})
+}
+
+// SetLastModify sets the "last_modify" field.
+func (u *PersonUpsertBulk) SetLastModify(v time.Time) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetLastModify(v)
+	})
+}
+
+// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateLastModify() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateLastModify()
+	})
+}
+
+// ClearLastModify clears the value of the "last_modify" field.
+func (u *PersonUpsertBulk) ClearLastModify() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearLastModify()
+	})
+}
+
+// SetRemark sets the "remark" field.
+func (u *PersonUpsertBulk) SetRemark(v string) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetRemark(v)
+	})
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateRemark() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateRemark()
+	})
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *PersonUpsertBulk) ClearRemark() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearRemark()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *PersonUpsertBulk) SetStatus(v uint8) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateStatus() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// SetBlock sets the "block" field.
+func (u *PersonUpsertBulk) SetBlock(v bool) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetBlock(v)
+	})
+}
+
+// UpdateBlock sets the "block" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateBlock() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateBlock()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *PersonUpsertBulk) SetName(v string) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateName() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetIcNumber sets the "ic_number" field.
+func (u *PersonUpsertBulk) SetIcNumber(v string) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetIcNumber(v)
+	})
+}
+
+// UpdateIcNumber sets the "ic_number" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateIcNumber() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateIcNumber()
+	})
+}
+
+// SetIcType sets the "ic_type" field.
+func (u *PersonUpsertBulk) SetIcType(v uint8) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetIcType(v)
+	})
+}
+
+// UpdateIcType sets the "ic_type" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateIcType() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateIcType()
+	})
+}
+
+// SetIcPortrait sets the "ic_portrait" field.
+func (u *PersonUpsertBulk) SetIcPortrait(v string) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetIcPortrait(v)
+	})
+}
+
+// UpdateIcPortrait sets the "ic_portrait" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateIcPortrait() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateIcPortrait()
+	})
+}
+
+// SetIcNational sets the "ic_national" field.
+func (u *PersonUpsertBulk) SetIcNational(v string) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetIcNational(v)
+	})
+}
+
+// UpdateIcNational sets the "ic_national" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateIcNational() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateIcNational()
+	})
+}
+
+// SetFaceImg sets the "face_img" field.
+func (u *PersonUpsertBulk) SetFaceImg(v string) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetFaceImg(v)
+	})
+}
+
+// UpdateFaceImg sets the "face_img" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateFaceImg() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateFaceImg()
+	})
+}
+
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (u *PersonUpsertBulk) SetFaceVerifyResult(v *model.FaceVerifyResult) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetFaceVerifyResult(v)
+	})
+}
+
+// UpdateFaceVerifyResult sets the "face_verify_result" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateFaceVerifyResult() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateFaceVerifyResult()
+	})
+}
+
+// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
+func (u *PersonUpsertBulk) ClearFaceVerifyResult() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearFaceVerifyResult()
+	})
+}
+
+// Exec executes the query.
+func (u *PersonUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the PersonCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for PersonCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *PersonUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

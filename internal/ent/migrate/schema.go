@@ -24,7 +24,8 @@ var (
 		{Name: "ic_type", Type: field.TypeUint8, Default: 1},
 		{Name: "ic_portrait", Type: field.TypeString, Size: 100},
 		{Name: "ic_national", Type: field.TypeString, Size: 100},
-		{Name: "ic_handheld", Type: field.TypeString, Size: 100},
+		{Name: "face_img", Type: field.TypeString, Size: 100},
+		{Name: "face_verify_result", Type: field.TypeJSON, Nullable: true},
 	}
 	// PersonTable holds the schema information for the "person" table.
 	PersonTable = &schema.Table{

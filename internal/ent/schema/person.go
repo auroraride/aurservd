@@ -7,6 +7,7 @@ import (
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -32,7 +33,8 @@ func (Person) Fields() []ent.Field {
         field.Uint8("ic_type").Default(1).Comment("证件类别"),
         field.String("ic_portrait").MaxLen(100).Comment("证件人像面"),
         field.String("ic_national").MaxLen(100).Comment("证件国徽面"),
-        field.String("ic_handheld").MaxLen(100).Comment("证件手持照"),
+        field.String("face_img").MaxLen(100).Comment("人脸照片"),
+        field.JSON("face_verify_result", &model.FaceVerifyResult{}).Optional().Comment("人脸识别验证结果详情"),
     }
 }
 

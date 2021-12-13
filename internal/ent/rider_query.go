@@ -27,6 +27,7 @@ type RiderQuery struct {
 	predicates []predicate.Rider
 	// eager-loading edges.
 	withPerson *PersonQuery
+	modifiers  []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -366,6 +367,9 @@ func (rq *RiderQuery) sqlAll(ctx context.Context) ([]*Rider, error) {
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
+	if len(rq.modifiers) > 0 {
+		_spec.Modifiers = rq.modifiers
+	}
 	if err := sqlgraph.QueryNodes(ctx, rq.driver, _spec); err != nil {
 		return nil, err
 	}
@@ -407,6 +411,9 @@ func (rq *RiderQuery) sqlAll(ctx context.Context) ([]*Rider, error) {
 
 func (rq *RiderQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := rq.querySpec()
+	if len(rq.modifiers) > 0 {
+		_spec.Modifiers = rq.modifiers
+	}
 	return sqlgraph.CountNodes(ctx, rq.driver, _spec)
 }
 
@@ -478,6 +485,9 @@ func (rq *RiderQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = rq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
+	for _, m := range rq.modifiers {
+		m(selector)
+	}
 	for _, p := range rq.predicates {
 		p(selector)
 	}
@@ -493,6 +503,12 @@ func (rq *RiderQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (rq *RiderQuery) Modify(modifiers ...func(s *sql.Selector)) *RiderSelect {
+	rq.modifiers = append(rq.modifiers, modifiers...)
+	return rq.Select()
 }
 
 // RiderGroupBy is the group-by builder for Rider entities.
@@ -983,4 +999,10 @@ func (rs *RiderSelect) sqlScan(ctx context.Context, v interface{}) error {
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
+}
+
+// Modify adds a query modifier for attaching custom logic to queries.
+func (rs *RiderSelect) Modify(modifiers ...func(s *sql.Selector)) *RiderSelect {
+	rs.modifiers = append(rs.modifiers, modifiers...)
+	return rs
 }

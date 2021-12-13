@@ -8,10 +8,10 @@ import (
 	"sync"
 	"time"
 
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/schema"
 
 	"entgo.io/ent"
 )
@@ -32,31 +32,32 @@ const (
 // PersonMutation represents an operation that mutates the Person nodes in the graph.
 type PersonMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint64
-	created_at    *time.Time
-	updated_at    *time.Time
-	deleted_at    *time.Time
-	last_modify   *time.Time
-	remark        *string
-	status        *uint8
-	addstatus     *uint8
-	block         *bool
-	name          *string
-	ic_number     *string
-	ic_type       *uint8
-	addic_type    *uint8
-	ic_portrait   *string
-	ic_national   *string
-	ic_handheld   *string
-	clearedFields map[string]struct{}
-	rider         map[uint64]struct{}
-	removedrider  map[uint64]struct{}
-	clearedrider  bool
-	done          bool
-	oldValue      func(context.Context) (*Person, error)
-	predicates    []predicate.Person
+	op                 Op
+	typ                string
+	id                 *uint64
+	created_at         *time.Time
+	updated_at         *time.Time
+	deleted_at         *time.Time
+	last_modify        *time.Time
+	remark             *string
+	status             *uint8
+	addstatus          *uint8
+	block              *bool
+	name               *string
+	ic_number          *string
+	ic_type            *uint8
+	addic_type         *uint8
+	ic_portrait        *string
+	ic_national        *string
+	face_img           *string
+	face_verify_result **model.FaceVerifyResult
+	clearedFields      map[string]struct{}
+	rider              map[uint64]struct{}
+	removedrider       map[uint64]struct{}
+	clearedrider       bool
+	done               bool
+	oldValue           func(context.Context) (*Person, error)
+	predicates         []predicate.Person
 }
 
 var _ ent.Mutation = (*PersonMutation)(nil)
@@ -649,40 +650,89 @@ func (m *PersonMutation) ResetIcNational() {
 	m.ic_national = nil
 }
 
-// SetIcHandheld sets the "ic_handheld" field.
-func (m *PersonMutation) SetIcHandheld(s string) {
-	m.ic_handheld = &s
+// SetFaceImg sets the "face_img" field.
+func (m *PersonMutation) SetFaceImg(s string) {
+	m.face_img = &s
 }
 
-// IcHandheld returns the value of the "ic_handheld" field in the mutation.
-func (m *PersonMutation) IcHandheld() (r string, exists bool) {
-	v := m.ic_handheld
+// FaceImg returns the value of the "face_img" field in the mutation.
+func (m *PersonMutation) FaceImg() (r string, exists bool) {
+	v := m.face_img
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldIcHandheld returns the old "ic_handheld" field's value of the Person entity.
+// OldFaceImg returns the old "face_img" field's value of the Person entity.
 // If the Person object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldIcHandheld(ctx context.Context) (v string, err error) {
+func (m *PersonMutation) OldFaceImg(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldIcHandheld is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldFaceImg is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldIcHandheld requires an ID field in the mutation")
+		return v, fmt.Errorf("OldFaceImg requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIcHandheld: %w", err)
+		return v, fmt.Errorf("querying old value for OldFaceImg: %w", err)
 	}
-	return oldValue.IcHandheld, nil
+	return oldValue.FaceImg, nil
 }
 
-// ResetIcHandheld resets all changes to the "ic_handheld" field.
-func (m *PersonMutation) ResetIcHandheld() {
-	m.ic_handheld = nil
+// ResetFaceImg resets all changes to the "face_img" field.
+func (m *PersonMutation) ResetFaceImg() {
+	m.face_img = nil
+}
+
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (m *PersonMutation) SetFaceVerifyResult(mvr *model.FaceVerifyResult) {
+	m.face_verify_result = &mvr
+}
+
+// FaceVerifyResult returns the value of the "face_verify_result" field in the mutation.
+func (m *PersonMutation) FaceVerifyResult() (r *model.FaceVerifyResult, exists bool) {
+	v := m.face_verify_result
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFaceVerifyResult returns the old "face_verify_result" field's value of the Person entity.
+// If the Person object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PersonMutation) OldFaceVerifyResult(ctx context.Context) (v *model.FaceVerifyResult, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldFaceVerifyResult is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldFaceVerifyResult requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFaceVerifyResult: %w", err)
+	}
+	return oldValue.FaceVerifyResult, nil
+}
+
+// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
+func (m *PersonMutation) ClearFaceVerifyResult() {
+	m.face_verify_result = nil
+	m.clearedFields[person.FieldFaceVerifyResult] = struct{}{}
+}
+
+// FaceVerifyResultCleared returns if the "face_verify_result" field was cleared in this mutation.
+func (m *PersonMutation) FaceVerifyResultCleared() bool {
+	_, ok := m.clearedFields[person.FieldFaceVerifyResult]
+	return ok
+}
+
+// ResetFaceVerifyResult resets all changes to the "face_verify_result" field.
+func (m *PersonMutation) ResetFaceVerifyResult() {
+	m.face_verify_result = nil
+	delete(m.clearedFields, person.FieldFaceVerifyResult)
 }
 
 // AddRiderIDs adds the "rider" edge to the Rider entity by ids.
@@ -758,7 +808,7 @@ func (m *PersonMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PersonMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, person.FieldCreatedAt)
 	}
@@ -795,8 +845,11 @@ func (m *PersonMutation) Fields() []string {
 	if m.ic_national != nil {
 		fields = append(fields, person.FieldIcNational)
 	}
-	if m.ic_handheld != nil {
-		fields = append(fields, person.FieldIcHandheld)
+	if m.face_img != nil {
+		fields = append(fields, person.FieldFaceImg)
+	}
+	if m.face_verify_result != nil {
+		fields = append(fields, person.FieldFaceVerifyResult)
 	}
 	return fields
 }
@@ -830,8 +883,10 @@ func (m *PersonMutation) Field(name string) (ent.Value, bool) {
 		return m.IcPortrait()
 	case person.FieldIcNational:
 		return m.IcNational()
-	case person.FieldIcHandheld:
-		return m.IcHandheld()
+	case person.FieldFaceImg:
+		return m.FaceImg()
+	case person.FieldFaceVerifyResult:
+		return m.FaceVerifyResult()
 	}
 	return nil, false
 }
@@ -865,8 +920,10 @@ func (m *PersonMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldIcPortrait(ctx)
 	case person.FieldIcNational:
 		return m.OldIcNational(ctx)
-	case person.FieldIcHandheld:
-		return m.OldIcHandheld(ctx)
+	case person.FieldFaceImg:
+		return m.OldFaceImg(ctx)
+	case person.FieldFaceVerifyResult:
+		return m.OldFaceVerifyResult(ctx)
 	}
 	return nil, fmt.Errorf("unknown Person field %s", name)
 }
@@ -960,12 +1017,19 @@ func (m *PersonMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIcNational(v)
 		return nil
-	case person.FieldIcHandheld:
+	case person.FieldFaceImg:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetIcHandheld(v)
+		m.SetFaceImg(v)
+		return nil
+	case person.FieldFaceVerifyResult:
+		v, ok := value.(*model.FaceVerifyResult)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFaceVerifyResult(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Person field %s", name)
@@ -1033,6 +1097,9 @@ func (m *PersonMutation) ClearedFields() []string {
 	if m.FieldCleared(person.FieldRemark) {
 		fields = append(fields, person.FieldRemark)
 	}
+	if m.FieldCleared(person.FieldFaceVerifyResult) {
+		fields = append(fields, person.FieldFaceVerifyResult)
+	}
 	return fields
 }
 
@@ -1055,6 +1122,9 @@ func (m *PersonMutation) ClearField(name string) error {
 		return nil
 	case person.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case person.FieldFaceVerifyResult:
+		m.ClearFaceVerifyResult()
 		return nil
 	}
 	return fmt.Errorf("unknown Person nullable field %s", name)
@@ -1100,8 +1170,11 @@ func (m *PersonMutation) ResetField(name string) error {
 	case person.FieldIcNational:
 		m.ResetIcNational()
 		return nil
-	case person.FieldIcHandheld:
-		m.ResetIcHandheld()
+	case person.FieldFaceImg:
+		m.ResetFaceImg()
+		return nil
+	case person.FieldFaceVerifyResult:
+		m.ResetFaceVerifyResult()
 		return nil
 	}
 	return fmt.Errorf("unknown Person field %s", name)
@@ -1203,7 +1276,7 @@ type RiderMutation struct {
 	last_modify    *time.Time
 	remark         *string
 	phone          *string
-	contact        **schema.RiderContact
+	contact        **model.RiderContact
 	device_type    *uint8
 	adddevice_type *uint8
 	last_device    *string
@@ -1600,12 +1673,12 @@ func (m *RiderMutation) ResetPhone() {
 }
 
 // SetContact sets the "contact" field.
-func (m *RiderMutation) SetContact(sc *schema.RiderContact) {
-	m.contact = &sc
+func (m *RiderMutation) SetContact(mc *model.RiderContact) {
+	m.contact = &mc
 }
 
 // Contact returns the value of the "contact" field in the mutation.
-func (m *RiderMutation) Contact() (r *schema.RiderContact, exists bool) {
+func (m *RiderMutation) Contact() (r *model.RiderContact, exists bool) {
 	v := m.contact
 	if v == nil {
 		return
@@ -1616,7 +1689,7 @@ func (m *RiderMutation) Contact() (r *schema.RiderContact, exists bool) {
 // OldContact returns the old "contact" field's value of the Rider entity.
 // If the Rider object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RiderMutation) OldContact(ctx context.Context) (v *schema.RiderContact, err error) {
+func (m *RiderMutation) OldContact(ctx context.Context) (v *model.RiderContact, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldContact is only allowed on UpdateOne operations")
 	}
@@ -1988,7 +2061,7 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 		m.SetPhone(v)
 		return nil
 	case rider.FieldContact:
-		v, ok := value.(*schema.RiderContact)
+		v, ok := value.(*model.RiderContact)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

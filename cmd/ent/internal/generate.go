@@ -72,6 +72,9 @@ func GenerateCmd(postRun ...func(*gen.Config)) *cobra.Command {
             ),
             // Args: cobra.ExactArgs(1),
             Run: func(cmd *cobra.Command, path []string) {
+                if features == nil {
+                    features = []string{"sql/modifier", "sql/upsert", "privacy", "entql"}
+                }
                 opts := []entc.Option{
                     entc.Storage(storage),
                     entc.FeatureNames(features...),

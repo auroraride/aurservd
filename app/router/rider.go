@@ -13,12 +13,11 @@ import (
 // rideRoute 骑手路由
 func (r *router) rideRoute() {
     g := r.Group("/rider")
-    g.Use(middleware.DeviceMiddleware)
-    // 登录
-    g.POST("/signin", rapi.Rider.Signin)
-    // 引入骑手认证中间件
-    g.Use(middleware.RiderMiddleware)
-    // 认证
-    g.POST("/authentication", rapi.Rider.Authentication)
+    // 引入骑手api需要的中间件
+    g.Use(middleware.DeviceMiddleware(), middleware.RiderMiddleware())
+
+    g.POST("/signin", rapi.Rider.Signin)               // 登录
+    g.POST("/contact", rapi.Rider.Contact)             // 添加紧急联系人
+    g.POST("/authenticator", rapi.Rider.Authenticator) // 认证
     // 更换设备扫脸
 }

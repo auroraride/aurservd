@@ -6,13 +6,10 @@ import (
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
-type RiderContact struct {
-    Name  string
-    Phone string
-}
 
 // Rider holds the schema definition for the Rider entity.
 type Rider struct {
@@ -32,7 +29,7 @@ func (Rider) Fields() []ent.Field {
         field.Uint64("person_id").Optional().Nillable().Comment("实人"),
         // field.Uint8("status").Default(0).Comment("业务状态"),
         field.String("phone").MaxLen(11).Unique().Comment("手机号"),
-        field.JSON("contact", &RiderContact{}).Optional().Comment("紧急联系人"),
+        field.JSON("contact", &model.RiderContact{}).Optional().Comment("紧急联系人"),
         field.Uint8("device_type").Comment("登录设备类型: 1iOS 2Android"),
         field.String("last_device").MaxLen(60).Unique().Comment("上次登录设备ID"),
         field.String("push_id").MaxLen(60).Unique().Optional().Nillable().Comment("推送ID"),

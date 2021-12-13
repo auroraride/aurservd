@@ -11,10 +11,14 @@ import (
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/response"
+    "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/internal/baidu"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/pkg/utils"
+    "github.com/rs/xid"
     "time"
 )
 
@@ -46,7 +50,7 @@ func (r *riderService) Signin(phone string, device *app.Device) (res *model.Ride
     // 判定是否更换了设备
     var token string
 
-    token = utils.RandTokenString()
+    token = xid.New().String() + utils.RandTokenString()
     cache := ar.Cache
     key := fmt.Sprintf("RIDER_%d", u.ID)
 
@@ -58,9 +62,11 @@ func (r *riderService) Signin(phone string, device *app.Device) (res *model.Ride
 
     res = &model.RiderSigninRes{
         Id:              u.ID,
-        IsNewDevice:     false,
         Token:           token,
-        TokenPermission: r.GetTokenPermission(u, device),
+        IsNewDevice:     r.IsNewDevice(u, device),
+        IsContactFilled: u.Contact != nil,
+        Contact:         u.Contact,
+        IsAuthed:        u.Edges.Person != nil && model.PersonAuthStatus(u.Edges.Person.Status).RequireAuth(),
     }
 
     // 设置登录token
@@ -78,33 +84,6 @@ func (r *riderService) GetRiderById(id uint64) (u *ent.Rider, err error) {
         Only(context.Background())
 }
 
-// GetTokenPermission 获取token权限
-func (r *riderService) GetTokenPermission(u *ent.Rider, device *app.Device) model.RiderTokenPermission {
-    perm := model.RiderTokenPermissionCommon
-    // 判断是否实名
-    p := u.Edges.Person
-    if p == nil || model.PersonAuthStatus(p.Status).RequireAuth() {
-        perm = model.RiderTokenPermissionAuth
-    } else if r.IsNewDevice(u, device) {
-        // 判断是否新设备
-        perm = model.RiderTokenPermissionNewDevice
-    }
-    return perm
-}
-
-// GetTokenPermissionResponse 获取token权限响应
-func (r *riderService) GetTokenPermissionResponse(perm model.RiderTokenPermission) (status int, message string) {
-    switch perm {
-    case model.RiderTokenPermissionAuth:
-        status = response.StatusNotAcceptable
-        message = "需要实名认证"
-    case model.RiderTokenPermissionNewDevice:
-        status = response.StatusLocked
-        message = "需要人脸验证"
-    }
-    return
-}
-
 // SetDevice 更新用户设备
 func (r *riderService) SetDevice(u *ent.Rider, device *app.Device) error {
     orm := ar.Ent.Rider
@@ -118,4 +97,52 @@ func (r *riderService) SetDevice(u *ent.Rider, device *app.Device) error {
 // IsNewDevice 检查是否是新设备
 func (r *riderService) IsNewDevice(u *ent.Rider, device *app.Device) bool {
     return u.LastDevice == device.Serial
+}
+
+// FaceAuthResult 获取并更新人脸验证结果 // TODO 更新
+func (r *riderService) FaceAuthResult(u *ent.Rider, token string) {
+    b := baidu.New()
+    res := b.FaceprintResult(token).Result
+    oss := ali.NewOss()
+    prefix := fmt.Sprintf("%s-%s/", res.IdcardOcrResult.Name, res.IdcardOcrResult.IdCardNumber)
+    detail := res.IdcardOcrResult
+    vr := &model.FaceVerifyResult{
+        Birthday:       detail.Birthday,
+        IssueAuthority: detail.IssueAuthority,
+        Address:        detail.Address,
+        Gender:         detail.Gender,
+        Nation:         detail.Nation,
+        ExpireTime:     detail.ExpireTime,
+        Name:           detail.Name,
+        IssueTime:      detail.IssueTime,
+        IdCardNumber:   detail.IdCardNumber,
+        Score:          res.VerifyResult.Score,
+        LivenessScore:  res.VerifyResult.LivenessScore,
+        Spoofing:       res.VerifyResult.Spoofing,
+    }
+
+    fm := oss.UploadUrlFile(prefix+"face.jpg", res.FaceImg)
+    pm := oss.UploadBase64ImageJpeg(prefix+"portrait.jpg", res.IdcardImages.FrontBase64)
+    nm := oss.UploadBase64ImageJpeg(prefix+"national.jpg", res.IdcardImages.BackBase64)
+
+    icNum := vr.IdCardNumber
+    id, err := ar.Ent.Person.Create().
+        SetStatus(model.PersonAuthSuccess.Raw()).
+        SetIcNumber(icNum).
+        SetName(vr.Name).
+        SetFaceImg(fm).
+        SetIcNational(nm).
+        SetIcPortrait(pm).
+        SetFaceVerifyResult(vr).
+        OnConflictColumns(person.FieldIcNumber).
+        UpdateNewValues().
+        ID(context.Background())
+    if err != nil {
+        panic(response.NewError(err))
+    }
+
+    err = ar.Ent.Rider.UpdateOneID(u.ID).SetPersonID(id).Exec(context.Background())
+    if err != nil {
+        panic(response.NewError(err))
+    }
 }

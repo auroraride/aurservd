@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -174,9 +175,21 @@ func (pu *PersonUpdate) SetIcNational(s string) *PersonUpdate {
 	return pu
 }
 
-// SetIcHandheld sets the "ic_handheld" field.
-func (pu *PersonUpdate) SetIcHandheld(s string) *PersonUpdate {
-	pu.mutation.SetIcHandheld(s)
+// SetFaceImg sets the "face_img" field.
+func (pu *PersonUpdate) SetFaceImg(s string) *PersonUpdate {
+	pu.mutation.SetFaceImg(s)
+	return pu
+}
+
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (pu *PersonUpdate) SetFaceVerifyResult(mvr *model.FaceVerifyResult) *PersonUpdate {
+	pu.mutation.SetFaceVerifyResult(mvr)
+	return pu
+}
+
+// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
+func (pu *PersonUpdate) ClearFaceVerifyResult() *PersonUpdate {
+	pu.mutation.ClearFaceVerifyResult()
 	return pu
 }
 
@@ -312,9 +325,9 @@ func (pu *PersonUpdate) check() error {
 			return &ValidationError{Name: "ic_national", err: fmt.Errorf("ent: validator failed for field \"ic_national\": %w", err)}
 		}
 	}
-	if v, ok := pu.mutation.IcHandheld(); ok {
-		if err := person.IcHandheldValidator(v); err != nil {
-			return &ValidationError{Name: "ic_handheld", err: fmt.Errorf("ent: validator failed for field \"ic_handheld\": %w", err)}
+	if v, ok := pu.mutation.FaceImg(); ok {
+		if err := person.FaceImgValidator(v); err != nil {
+			return &ValidationError{Name: "face_img", err: fmt.Errorf("ent: validator failed for field \"face_img\": %w", err)}
 		}
 	}
 	return nil
@@ -447,11 +460,24 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: person.FieldIcNational,
 		})
 	}
-	if value, ok := pu.mutation.IcHandheld(); ok {
+	if value, ok := pu.mutation.FaceImg(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: person.FieldIcHandheld,
+			Column: person.FieldFaceImg,
+		})
+	}
+	if value, ok := pu.mutation.FaceVerifyResult(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: person.FieldFaceVerifyResult,
+		})
+	}
+	if pu.mutation.FaceVerifyResultCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: person.FieldFaceVerifyResult,
 		})
 	}
 	if pu.mutation.RiderCleared() {
@@ -673,9 +699,21 @@ func (puo *PersonUpdateOne) SetIcNational(s string) *PersonUpdateOne {
 	return puo
 }
 
-// SetIcHandheld sets the "ic_handheld" field.
-func (puo *PersonUpdateOne) SetIcHandheld(s string) *PersonUpdateOne {
-	puo.mutation.SetIcHandheld(s)
+// SetFaceImg sets the "face_img" field.
+func (puo *PersonUpdateOne) SetFaceImg(s string) *PersonUpdateOne {
+	puo.mutation.SetFaceImg(s)
+	return puo
+}
+
+// SetFaceVerifyResult sets the "face_verify_result" field.
+func (puo *PersonUpdateOne) SetFaceVerifyResult(mvr *model.FaceVerifyResult) *PersonUpdateOne {
+	puo.mutation.SetFaceVerifyResult(mvr)
+	return puo
+}
+
+// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
+func (puo *PersonUpdateOne) ClearFaceVerifyResult() *PersonUpdateOne {
+	puo.mutation.ClearFaceVerifyResult()
 	return puo
 }
 
@@ -818,9 +856,9 @@ func (puo *PersonUpdateOne) check() error {
 			return &ValidationError{Name: "ic_national", err: fmt.Errorf("ent: validator failed for field \"ic_national\": %w", err)}
 		}
 	}
-	if v, ok := puo.mutation.IcHandheld(); ok {
-		if err := person.IcHandheldValidator(v); err != nil {
-			return &ValidationError{Name: "ic_handheld", err: fmt.Errorf("ent: validator failed for field \"ic_handheld\": %w", err)}
+	if v, ok := puo.mutation.FaceImg(); ok {
+		if err := person.FaceImgValidator(v); err != nil {
+			return &ValidationError{Name: "face_img", err: fmt.Errorf("ent: validator failed for field \"face_img\": %w", err)}
 		}
 	}
 	return nil
@@ -970,11 +1008,24 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 			Column: person.FieldIcNational,
 		})
 	}
-	if value, ok := puo.mutation.IcHandheld(); ok {
+	if value, ok := puo.mutation.FaceImg(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: person.FieldIcHandheld,
+			Column: person.FieldFaceImg,
+		})
+	}
+	if value, ok := puo.mutation.FaceVerifyResult(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: person.FieldFaceVerifyResult,
+		})
+	}
+	if puo.mutation.FaceVerifyResultCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: person.FieldFaceVerifyResult,
 		})
 	}
 	if puo.mutation.RiderCleared() {

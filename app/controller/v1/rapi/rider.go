@@ -6,11 +6,14 @@
 package rapi
 
 import (
+    "context"
     "errors"
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/response"
     "github.com/auroraride/aurservd/app/service"
+    "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/internal/baidu"
     "github.com/labstack/echo/v4"
 )
 
@@ -30,11 +33,8 @@ type rider struct {
 // Signin 骑手登录
 func (*rider) Signin(ctx echo.Context) (err error) {
     req := new(model.RiderSignupReq)
-    c := ctx.(*app.Context)
-    err = c.BindValidate(req)
-    if err != nil {
-        return
-    }
+    c := ctx.(*app.GlobalContext)
+    c.BindValidate(req)
 
     // 校验短信
     if !debugPhones[req.Phone] && !service.NewSms().VerifyCode(req.SmsId, req.SmsCode) {
@@ -48,16 +48,24 @@ func (*rider) Signin(ctx echo.Context) (err error) {
     if err != nil {
         return
     }
-    res := response.New(ctx).SetData(data)
-    status, message := s.GetTokenPermissionResponse(data.TokenPermission)
-    if status > 0 {
-        res.Error(status).SetMessage(message)
-    }
-    return res.Send()
+    return response.New(ctx).SetData(data).Send()
 }
 
-// Authentication 实名认证
-// TODO 直接进行扫脸
-func (*rider) Authentication(ctx echo.Context) error {
+// Contact 添加紧急联系人
+func (r *rider) Contact(ctx echo.Context) error {
+    c := ctx.(*app.RiderContext)
+    contact := new(model.RiderContact)
+    c.BindValidate(contact)
+    // 更新紧急联系人
+    err := ar.Ent.Rider.UpdateOneID(c.Rider.ID).SetContact(contact).Exec(context.Background())
+    if err != nil {
+        return err
+    }
     return nil
+}
+
+// Authenticator 实名认证
+func (*rider) Authenticator(ctx echo.Context) error {
+    // 获取人脸识别URL
+    return response.New(ctx).Success().SetData(map[string]string{"url": baidu.New().Faceprint()}).Send()
 }

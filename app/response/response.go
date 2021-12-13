@@ -6,6 +6,8 @@
 package response
 
 import (
+    "bytes"
+    jsoniter "github.com/json-iterator/go"
     "github.com/labstack/echo/v4"
     "net/http"
 )
@@ -63,7 +65,7 @@ func (r *response) SetHeaders(m map[string]string) *response {
     return r
 }
 
-// Error 错误
+// NewError 错误
 func (r *response) Error(code int) *response {
     r.Code = code
     return r
@@ -79,5 +81,9 @@ func (r *response) Send() error {
     if r.Code == StatusOK && r.Message == "" {
         r.Message = "OK"
     }
-    return r.JSON(http.StatusOK, r)
+    buffer := &bytes.Buffer{}
+    encoder := jsoniter.NewEncoder(buffer)
+    encoder.SetEscapeHTML(false)
+    _ = encoder.Encode(r)
+    return r.JSONBlob(http.StatusOK, buffer.Bytes())
 }

@@ -11,6 +11,7 @@ const (
     RiderTokenPermissionNewDevice                             // 更换设备需要人脸验证
 )
 
+// RiderTokenPermission 骑手token权限, 以此判定登陆后动作
 type RiderTokenPermission uint8
 
 // RiderSignupReq 骑手登录请求数据
@@ -22,8 +23,16 @@ type RiderSignupReq struct {
 
 // RiderSigninRes 骑手登录数据返回
 type RiderSigninRes struct {
-    Id              uint64               `json:"id"`
-    Token           string               `json:"token"`
-    TokenPermission RiderTokenPermission `json:"-"`
-    IsNewDevice     bool                 `json:"isNewDevice"`
+    Id              uint64        `json:"id"`
+    Token           string        `json:"token"`
+    IsNewDevice     bool          `json:"isNewDevice"`
+    IsAuthed        bool          `json:"isAuthed"`        // 是否已认证
+    IsContactFilled bool          `json:"isContactFilled"` // 联系人是否添加
+    Contact         *RiderContact `json:"contact,omitempty"`
+}
+
+// RiderContact 紧急联系人
+type RiderContact struct {
+    Name  string `json:"name" validate:"required" trans:"联系人姓名"`
+    Phone string `json:"phone" validate:"required,phone" trans:"联系人电话"`
 }

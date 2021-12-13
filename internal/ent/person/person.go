@@ -35,8 +35,10 @@ const (
 	FieldIcPortrait = "ic_portrait"
 	// FieldIcNational holds the string denoting the ic_national field in the database.
 	FieldIcNational = "ic_national"
-	// FieldIcHandheld holds the string denoting the ic_handheld field in the database.
-	FieldIcHandheld = "ic_handheld"
+	// FieldFaceImg holds the string denoting the face_img field in the database.
+	FieldFaceImg = "face_img"
+	// FieldFaceVerifyResult holds the string denoting the face_verify_result field in the database.
+	FieldFaceVerifyResult = "face_verify_result"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// Table holds the table name of the person in the database.
@@ -65,7 +67,8 @@ var Columns = []string{
 	FieldIcType,
 	FieldIcPortrait,
 	FieldIcNational,
-	FieldIcHandheld,
+	FieldFaceImg,
+	FieldFaceVerifyResult,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -99,6 +102,6 @@ var (
 	IcPortraitValidator func(string) error
 	// IcNationalValidator is a validator for the "ic_national" field. It is called by the builders before save.
 	IcNationalValidator func(string) error
-	// IcHandheldValidator is a validator for the "ic_handheld" field. It is called by the builders before save.
-	IcHandheldValidator func(string) error
+	// FaceImgValidator is a validator for the "face_img" field. It is called by the builders before save.
+	FaceImgValidator func(string) error
 )
