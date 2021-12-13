@@ -99,10 +99,17 @@ func (r *riderService) IsNewDevice(u *ent.Rider, device *app.Device) bool {
     return u.LastDevice == device.Serial
 }
 
-// FaceAuthResult 获取并更新人脸验证结果 // TODO 更新
-func (r *riderService) FaceAuthResult(u *ent.Rider, token string) {
-    b := baidu.New()
-    res := b.FaceprintResult(token).Result
+// FaceAuthResult 获取并更新人脸实名验证结果
+func (r *riderService) FaceAuthResult(u *ent.Rider, token string) (success bool, err error) {
+    data, err := baidu.New().FaceprintResult(token)
+    if err != nil {
+        return
+    }
+    success = data.Success
+    if !success {
+        return
+    }
+    res := data.Result
     oss := ali.NewOss()
     prefix := fmt.Sprintf("%s-%s/", res.IdcardOcrResult.Name, res.IdcardOcrResult.IdCardNumber)
     detail := res.IdcardOcrResult
@@ -121,6 +128,7 @@ func (r *riderService) FaceAuthResult(u *ent.Rider, token string) {
         Spoofing:       res.VerifyResult.Spoofing,
     }
 
+    // 上传图片到七牛云
     fm := oss.UploadUrlFile(prefix+"face.jpg", res.FaceImg)
     pm := oss.UploadBase64ImageJpeg(prefix+"portrait.jpg", res.IdcardImages.FrontBase64)
     nm := oss.UploadBase64ImageJpeg(prefix+"national.jpg", res.IdcardImages.BackBase64)
@@ -145,4 +153,5 @@ func (r *riderService) FaceAuthResult(u *ent.Rider, token string) {
     if err != nil {
         panic(response.NewError(err))
     }
+    return
 }

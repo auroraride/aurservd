@@ -115,23 +115,22 @@ func (b *baiduClient) faceprintFace(token string) (res *faceprintFaceResp, err e
 }
 
 // FaceprintResult 获取人脸识别验证结果
-func (b *baiduClient) FaceprintResult(token string) (res *faceprintDetailResp) {
-    var err error
+func (b *baiduClient) FaceprintResult(token string) (res *faceprintDetailResp, err error) {
     simple := new(faceprintFaceResp)
     res = new(faceprintDetailResp)
     simple, err = b.faceprintFace(token)
     if err != nil {
-        panic(response.NewError(err))
+        return
     }
     if !simple.Success {
-        panic(response.NewError("认证失败"))
+        return
     }
     _, err = resty.New().R().
         SetResult(res).
         SetBody(map[string]string{"verify_token": token}).
         Post(fmt.Sprintf(faceprintResultUrl, b.accessToken))
     if err != nil {
-        panic(response.NewError(err))
+        return
     }
     res.Result.FaceImg = simple.Result.Image
     return

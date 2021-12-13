@@ -76,10 +76,6 @@ func Run() {
     {
         // demo
         dg := r.Group("/demo")
-        dg.GET("/baidu/face", demo.BaiduFace)
-        dg.GET("/baidu/face/:token", demo.BaiduFaceResult)
-        dg.GET("/baidu/face/success", demo.BaiduFaceSuccess)
-        dg.GET("/baidu/face/fail", demo.BaiduFacefail)
         dg.GET("/aliyun/oss", demo.AliyunOss)
     }
     r.commonRoute() // 公共API

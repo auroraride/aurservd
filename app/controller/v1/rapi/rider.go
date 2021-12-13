@@ -65,7 +65,19 @@ func (r *rider) Contact(ctx echo.Context) error {
 }
 
 // Authenticator 实名认证
+// TODO 若携带联系人信息则保存联系人
 func (*rider) Authenticator(ctx echo.Context) error {
     // 获取人脸识别URL
     return response.New(ctx).Success().SetData(map[string]string{"url": baidu.New().Faceprint()}).Send()
+}
+
+// AuthResult 人脸实名认证结果
+func (r *rider) AuthResult(c echo.Context) error {
+    u := c.(*app.RiderContext).Rider
+    token := c.Param("token")
+    success, err := service.NewRider().FaceAuthResult(u, token)
+    if err != nil {
+        return err
+    }
+    return response.New(c).Success().SetData(map[string]bool{"status": success}).Send()
 }
