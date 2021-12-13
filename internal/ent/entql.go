@@ -64,6 +64,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldContact:    {Type: field.TypeJSON, Column: rider.FieldContact},
 			rider.FieldDeviceType: {Type: field.TypeUint8, Column: rider.FieldDeviceType},
 			rider.FieldLastDevice: {Type: field.TypeString, Column: rider.FieldLastDevice},
+			rider.FieldLastFace:   {Type: field.TypeString, Column: rider.FieldLastFace},
 			rider.FieldPushID:     {Type: field.TypeString, Column: rider.FieldPushID},
 		},
 	}
@@ -310,6 +311,11 @@ func (f *RiderFilter) WhereDeviceType(p entql.Uint8P) {
 // WhereLastDevice applies the entql string predicate on the last_device field.
 func (f *RiderFilter) WhereLastDevice(p entql.StringP) {
 	f.Where(p.Field(rider.FieldLastDevice))
+}
+
+// WhereLastFace applies the entql string predicate on the last_face field.
+func (f *RiderFilter) WhereLastFace(p entql.StringP) {
+	f.Where(p.Field(rider.FieldLastFace))
 }
 
 // WherePushID applies the entql string predicate on the push_id field.

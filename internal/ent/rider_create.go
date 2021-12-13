@@ -132,6 +132,20 @@ func (rc *RiderCreate) SetLastDevice(s string) *RiderCreate {
 	return rc
 }
 
+// SetLastFace sets the "last_face" field.
+func (rc *RiderCreate) SetLastFace(s string) *RiderCreate {
+	rc.mutation.SetLastFace(s)
+	return rc
+}
+
+// SetNillableLastFace sets the "last_face" field if the given value is not nil.
+func (rc *RiderCreate) SetNillableLastFace(s *string) *RiderCreate {
+	if s != nil {
+		rc.SetLastFace(*s)
+	}
+	return rc
+}
+
 // SetPushID sets the "push_id" field.
 func (rc *RiderCreate) SetPushID(s string) *RiderCreate {
 	rc.mutation.SetPushID(s)
@@ -259,6 +273,11 @@ func (rc *RiderCreate) check() error {
 			return &ValidationError{Name: "last_device", err: fmt.Errorf(`ent: validator failed for field "last_device": %w`, err)}
 		}
 	}
+	if v, ok := rc.mutation.LastFace(); ok {
+		if err := rider.LastFaceValidator(v); err != nil {
+			return &ValidationError{Name: "last_face", err: fmt.Errorf(`ent: validator failed for field "last_face": %w`, err)}
+		}
+	}
 	if v, ok := rc.mutation.PushID(); ok {
 		if err := rider.PushIDValidator(v); err != nil {
 			return &ValidationError{Name: "push_id", err: fmt.Errorf(`ent: validator failed for field "push_id": %w`, err)}
@@ -363,6 +382,14 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			Column: rider.FieldLastDevice,
 		})
 		_node.LastDevice = value
+	}
+	if value, ok := rc.mutation.LastFace(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldLastFace,
+		})
+		_node.LastFace = &value
 	}
 	if value, ok := rc.mutation.PushID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -593,6 +620,24 @@ func (u *RiderUpsert) SetLastDevice(v string) *RiderUpsert {
 // UpdateLastDevice sets the "last_device" field to the value that was provided on create.
 func (u *RiderUpsert) UpdateLastDevice() *RiderUpsert {
 	u.SetExcluded(rider.FieldLastDevice)
+	return u
+}
+
+// SetLastFace sets the "last_face" field.
+func (u *RiderUpsert) SetLastFace(v string) *RiderUpsert {
+	u.Set(rider.FieldLastFace, v)
+	return u
+}
+
+// UpdateLastFace sets the "last_face" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateLastFace() *RiderUpsert {
+	u.SetExcluded(rider.FieldLastFace)
+	return u
+}
+
+// ClearLastFace clears the value of the "last_face" field.
+func (u *RiderUpsert) ClearLastFace() *RiderUpsert {
+	u.SetNull(rider.FieldLastFace)
 	return u
 }
 
@@ -828,6 +873,27 @@ func (u *RiderUpsertOne) SetLastDevice(v string) *RiderUpsertOne {
 func (u *RiderUpsertOne) UpdateLastDevice() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.UpdateLastDevice()
+	})
+}
+
+// SetLastFace sets the "last_face" field.
+func (u *RiderUpsertOne) SetLastFace(v string) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetLastFace(v)
+	})
+}
+
+// UpdateLastFace sets the "last_face" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateLastFace() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateLastFace()
+	})
+}
+
+// ClearLastFace clears the value of the "last_face" field.
+func (u *RiderUpsertOne) ClearLastFace() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearLastFace()
 	})
 }
 
@@ -1228,6 +1294,27 @@ func (u *RiderUpsertBulk) SetLastDevice(v string) *RiderUpsertBulk {
 func (u *RiderUpsertBulk) UpdateLastDevice() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.UpdateLastDevice()
+	})
+}
+
+// SetLastFace sets the "last_face" field.
+func (u *RiderUpsertBulk) SetLastFace(v string) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetLastFace(v)
+	})
+}
+
+// UpdateLastFace sets the "last_face" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateLastFace() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateLastFace()
+	})
+}
+
+// ClearLastFace clears the value of the "last_face" field.
+func (u *RiderUpsertBulk) ClearLastFace() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearLastFace()
 	})
 }
 

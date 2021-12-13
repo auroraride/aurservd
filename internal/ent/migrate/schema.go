@@ -57,6 +57,7 @@ var (
 		{Name: "contact", Type: field.TypeJSON, Nullable: true},
 		{Name: "device_type", Type: field.TypeUint8},
 		{Name: "last_device", Type: field.TypeString, Unique: true, Size: 60},
+		{Name: "last_face", Type: field.TypeString, Nullable: true, Size: 60},
 		{Name: "push_id", Type: field.TypeString, Unique: true, Nullable: true, Size: 60},
 		{Name: "person_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -68,7 +69,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "rider_person_rider",
-				Columns:    []*schema.Column{RiderColumns[11]},
+				Columns:    []*schema.Column{RiderColumns[12]},
 				RefColumns: []*schema.Column{PersonColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

@@ -10,7 +10,6 @@ import (
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
-
 // Rider holds the schema definition for the Rider entity.
 type Rider struct {
     ent.Schema
@@ -32,6 +31,7 @@ func (Rider) Fields() []ent.Field {
         field.JSON("contact", &model.RiderContact{}).Optional().Comment("紧急联系人"),
         field.Uint8("device_type").Comment("登录设备类型: 1iOS 2Android"),
         field.String("last_device").MaxLen(60).Unique().Comment("上次登录设备ID"),
+        field.String("last_face").MaxLen(60).Optional().Nillable().Comment("上次登录人脸"),
         field.String("push_id").MaxLen(60).Unique().Optional().Nillable().Comment("推送ID"),
     }
 }

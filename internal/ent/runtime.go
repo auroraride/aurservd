@@ -84,8 +84,12 @@ func init() {
 	riderDescLastDevice := riderFields[4].Descriptor()
 	// rider.LastDeviceValidator is a validator for the "last_device" field. It is called by the builders before save.
 	rider.LastDeviceValidator = riderDescLastDevice.Validators[0].(func(string) error)
+	// riderDescLastFace is the schema descriptor for last_face field.
+	riderDescLastFace := riderFields[5].Descriptor()
+	// rider.LastFaceValidator is a validator for the "last_face" field. It is called by the builders before save.
+	rider.LastFaceValidator = riderDescLastFace.Validators[0].(func(string) error)
 	// riderDescPushID is the schema descriptor for push_id field.
-	riderDescPushID := riderFields[5].Descriptor()
+	riderDescPushID := riderFields[6].Descriptor()
 	// rider.PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
 	rider.PushIDValidator = riderDescPushID.Validators[0].(func(string) error)
 }

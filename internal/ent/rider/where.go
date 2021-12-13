@@ -156,6 +156,13 @@ func LastDevice(v string) predicate.Rider {
 	})
 }
 
+// LastFace applies equality check predicate on the "last_face" field. It's identical to LastFaceEQ.
+func LastFace(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLastFace), v))
+	})
+}
+
 // PushID applies equality check predicate on the "push_id" field. It's identical to PushIDEQ.
 func PushID(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
@@ -991,6 +998,131 @@ func LastDeviceEqualFold(v string) predicate.Rider {
 func LastDeviceContainsFold(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldLastDevice), v))
+	})
+}
+
+// LastFaceEQ applies the EQ predicate on the "last_face" field.
+func LastFaceEQ(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLastFace), v))
+	})
+}
+
+// LastFaceNEQ applies the NEQ predicate on the "last_face" field.
+func LastFaceNEQ(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLastFace), v))
+	})
+}
+
+// LastFaceIn applies the In predicate on the "last_face" field.
+func LastFaceIn(vs ...string) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldLastFace), v...))
+	})
+}
+
+// LastFaceNotIn applies the NotIn predicate on the "last_face" field.
+func LastFaceNotIn(vs ...string) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldLastFace), v...))
+	})
+}
+
+// LastFaceGT applies the GT predicate on the "last_face" field.
+func LastFaceGT(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldLastFace), v))
+	})
+}
+
+// LastFaceGTE applies the GTE predicate on the "last_face" field.
+func LastFaceGTE(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldLastFace), v))
+	})
+}
+
+// LastFaceLT applies the LT predicate on the "last_face" field.
+func LastFaceLT(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldLastFace), v))
+	})
+}
+
+// LastFaceLTE applies the LTE predicate on the "last_face" field.
+func LastFaceLTE(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldLastFace), v))
+	})
+}
+
+// LastFaceContains applies the Contains predicate on the "last_face" field.
+func LastFaceContains(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldLastFace), v))
+	})
+}
+
+// LastFaceHasPrefix applies the HasPrefix predicate on the "last_face" field.
+func LastFaceHasPrefix(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldLastFace), v))
+	})
+}
+
+// LastFaceHasSuffix applies the HasSuffix predicate on the "last_face" field.
+func LastFaceHasSuffix(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldLastFace), v))
+	})
+}
+
+// LastFaceIsNil applies the IsNil predicate on the "last_face" field.
+func LastFaceIsNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldLastFace)))
+	})
+}
+
+// LastFaceNotNil applies the NotNil predicate on the "last_face" field.
+func LastFaceNotNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldLastFace)))
+	})
+}
+
+// LastFaceEqualFold applies the EqualFold predicate on the "last_face" field.
+func LastFaceEqualFold(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldLastFace), v))
+	})
+}
+
+// LastFaceContainsFold applies the ContainsFold predicate on the "last_face" field.
+func LastFaceContainsFold(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldLastFace), v))
 	})
 }
 

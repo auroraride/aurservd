@@ -46,6 +46,9 @@ type Rider struct {
 	// LastDevice holds the value of the "last_device" field.
 	// 上次登录设备ID
 	LastDevice string `json:"last_device,omitempty"`
+	// LastFace holds the value of the "last_face" field.
+	// 上次登录人脸
+	LastFace *string `json:"last_face,omitempty"`
 	// PushID holds the value of the "push_id" field.
 	// 推送ID
 	PushID *string `json:"push_id,omitempty"`
@@ -86,7 +89,7 @@ func (*Rider) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case rider.FieldID, rider.FieldPersonID, rider.FieldDeviceType:
 			values[i] = new(sql.NullInt64)
-		case rider.FieldRemark, rider.FieldPhone, rider.FieldLastDevice, rider.FieldPushID:
+		case rider.FieldRemark, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID:
 			values[i] = new(sql.NullString)
 		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastModify:
 			values[i] = new(sql.NullTime)
@@ -177,6 +180,13 @@ func (r *Rider) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				r.LastDevice = value.String
 			}
+		case rider.FieldLastFace:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field last_face", values[i])
+			} else if value.Valid {
+				r.LastFace = new(string)
+				*r.LastFace = value.String
+			}
 		case rider.FieldPushID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field push_id", values[i])
@@ -245,6 +255,10 @@ func (r *Rider) String() string {
 	builder.WriteString(fmt.Sprintf("%v", r.DeviceType))
 	builder.WriteString(", last_device=")
 	builder.WriteString(r.LastDevice)
+	if v := r.LastFace; v != nil {
+		builder.WriteString(", last_face=")
+		builder.WriteString(*v)
+	}
 	if v := r.PushID; v != nil {
 		builder.WriteString(", push_id=")
 		builder.WriteString(*v)

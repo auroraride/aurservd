@@ -149,7 +149,11 @@ func (r *riderService) FaceAuthResult(u *ent.Rider, token string) (success bool,
         panic(response.NewError(err))
     }
 
-    err = ar.Ent.Rider.UpdateOneID(u.ID).SetPersonID(id).Exec(context.Background())
+    err = ar.Ent.Rider.
+        UpdateOneID(u.ID).
+        SetPersonID(id).
+        SetLastFace(fm).
+        Exec(context.Background())
     if err != nil {
         panic(response.NewError(err))
     }

@@ -152,6 +152,26 @@ func (ru *RiderUpdate) SetLastDevice(s string) *RiderUpdate {
 	return ru
 }
 
+// SetLastFace sets the "last_face" field.
+func (ru *RiderUpdate) SetLastFace(s string) *RiderUpdate {
+	ru.mutation.SetLastFace(s)
+	return ru
+}
+
+// SetNillableLastFace sets the "last_face" field if the given value is not nil.
+func (ru *RiderUpdate) SetNillableLastFace(s *string) *RiderUpdate {
+	if s != nil {
+		ru.SetLastFace(*s)
+	}
+	return ru
+}
+
+// ClearLastFace clears the value of the "last_face" field.
+func (ru *RiderUpdate) ClearLastFace() *RiderUpdate {
+	ru.mutation.ClearLastFace()
+	return ru
+}
+
 // SetPushID sets the "push_id" field.
 func (ru *RiderUpdate) SetPushID(s string) *RiderUpdate {
 	ru.mutation.SetPushID(s)
@@ -269,6 +289,11 @@ func (ru *RiderUpdate) check() error {
 			return &ValidationError{Name: "last_device", err: fmt.Errorf("ent: validator failed for field \"last_device\": %w", err)}
 		}
 	}
+	if v, ok := ru.mutation.LastFace(); ok {
+		if err := rider.LastFaceValidator(v); err != nil {
+			return &ValidationError{Name: "last_face", err: fmt.Errorf("ent: validator failed for field \"last_face\": %w", err)}
+		}
+	}
 	if v, ok := ru.mutation.PushID(); ok {
 		if err := rider.PushIDValidator(v); err != nil {
 			return &ValidationError{Name: "push_id", err: fmt.Errorf("ent: validator failed for field \"push_id\": %w", err)}
@@ -380,6 +405,19 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: rider.FieldLastDevice,
+		})
+	}
+	if value, ok := ru.mutation.LastFace(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldLastFace,
+		})
+	}
+	if ru.mutation.LastFaceCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: rider.FieldLastFace,
 		})
 	}
 	if value, ok := ru.mutation.PushID(); ok {
@@ -572,6 +610,26 @@ func (ruo *RiderUpdateOne) SetLastDevice(s string) *RiderUpdateOne {
 	return ruo
 }
 
+// SetLastFace sets the "last_face" field.
+func (ruo *RiderUpdateOne) SetLastFace(s string) *RiderUpdateOne {
+	ruo.mutation.SetLastFace(s)
+	return ruo
+}
+
+// SetNillableLastFace sets the "last_face" field if the given value is not nil.
+func (ruo *RiderUpdateOne) SetNillableLastFace(s *string) *RiderUpdateOne {
+	if s != nil {
+		ruo.SetLastFace(*s)
+	}
+	return ruo
+}
+
+// ClearLastFace clears the value of the "last_face" field.
+func (ruo *RiderUpdateOne) ClearLastFace() *RiderUpdateOne {
+	ruo.mutation.ClearLastFace()
+	return ruo
+}
+
 // SetPushID sets the "push_id" field.
 func (ruo *RiderUpdateOne) SetPushID(s string) *RiderUpdateOne {
 	ruo.mutation.SetPushID(s)
@@ -694,6 +752,11 @@ func (ruo *RiderUpdateOne) check() error {
 	if v, ok := ruo.mutation.LastDevice(); ok {
 		if err := rider.LastDeviceValidator(v); err != nil {
 			return &ValidationError{Name: "last_device", err: fmt.Errorf("ent: validator failed for field \"last_device\": %w", err)}
+		}
+	}
+	if v, ok := ruo.mutation.LastFace(); ok {
+		if err := rider.LastFaceValidator(v); err != nil {
+			return &ValidationError{Name: "last_face", err: fmt.Errorf("ent: validator failed for field \"last_face\": %w", err)}
 		}
 	}
 	if v, ok := ruo.mutation.PushID(); ok {
@@ -824,6 +887,19 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 			Type:   field.TypeString,
 			Value:  value,
 			Column: rider.FieldLastDevice,
+		})
+	}
+	if value, ok := ruo.mutation.LastFace(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldLastFace,
+		})
+	}
+	if ruo.mutation.LastFaceCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: rider.FieldLastFace,
 		})
 	}
 	if value, ok := ruo.mutation.PushID(); ok {

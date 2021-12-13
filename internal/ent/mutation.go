@@ -1280,6 +1280,7 @@ type RiderMutation struct {
 	device_type    *uint8
 	adddevice_type *uint8
 	last_device    *string
+	last_face      *string
 	push_id        *string
 	clearedFields  map[string]struct{}
 	person         *uint64
@@ -1813,6 +1814,55 @@ func (m *RiderMutation) ResetLastDevice() {
 	m.last_device = nil
 }
 
+// SetLastFace sets the "last_face" field.
+func (m *RiderMutation) SetLastFace(s string) {
+	m.last_face = &s
+}
+
+// LastFace returns the value of the "last_face" field in the mutation.
+func (m *RiderMutation) LastFace() (r string, exists bool) {
+	v := m.last_face
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastFace returns the old "last_face" field's value of the Rider entity.
+// If the Rider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderMutation) OldLastFace(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldLastFace is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldLastFace requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastFace: %w", err)
+	}
+	return oldValue.LastFace, nil
+}
+
+// ClearLastFace clears the value of the "last_face" field.
+func (m *RiderMutation) ClearLastFace() {
+	m.last_face = nil
+	m.clearedFields[rider.FieldLastFace] = struct{}{}
+}
+
+// LastFaceCleared returns if the "last_face" field was cleared in this mutation.
+func (m *RiderMutation) LastFaceCleared() bool {
+	_, ok := m.clearedFields[rider.FieldLastFace]
+	return ok
+}
+
+// ResetLastFace resets all changes to the "last_face" field.
+func (m *RiderMutation) ResetLastFace() {
+	m.last_face = nil
+	delete(m.clearedFields, rider.FieldLastFace)
+}
+
 // SetPushID sets the "push_id" field.
 func (m *RiderMutation) SetPushID(s string) {
 	m.push_id = &s
@@ -1907,7 +1957,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -1937,6 +1987,9 @@ func (m *RiderMutation) Fields() []string {
 	}
 	if m.last_device != nil {
 		fields = append(fields, rider.FieldLastDevice)
+	}
+	if m.last_face != nil {
+		fields = append(fields, rider.FieldLastFace)
 	}
 	if m.push_id != nil {
 		fields = append(fields, rider.FieldPushID)
@@ -1969,6 +2022,8 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.DeviceType()
 	case rider.FieldLastDevice:
 		return m.LastDevice()
+	case rider.FieldLastFace:
+		return m.LastFace()
 	case rider.FieldPushID:
 		return m.PushID()
 	}
@@ -2000,6 +2055,8 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldDeviceType(ctx)
 	case rider.FieldLastDevice:
 		return m.OldLastDevice(ctx)
+	case rider.FieldLastFace:
+		return m.OldLastFace(ctx)
 	case rider.FieldPushID:
 		return m.OldPushID(ctx)
 	}
@@ -2081,6 +2138,13 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetLastDevice(v)
 		return nil
+	case rider.FieldLastFace:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastFace(v)
+		return nil
 	case rider.FieldPushID:
 		v, ok := value.(string)
 		if !ok {
@@ -2148,6 +2212,9 @@ func (m *RiderMutation) ClearedFields() []string {
 	if m.FieldCleared(rider.FieldContact) {
 		fields = append(fields, rider.FieldContact)
 	}
+	if m.FieldCleared(rider.FieldLastFace) {
+		fields = append(fields, rider.FieldLastFace)
+	}
 	if m.FieldCleared(rider.FieldPushID) {
 		fields = append(fields, rider.FieldPushID)
 	}
@@ -2179,6 +2246,9 @@ func (m *RiderMutation) ClearField(name string) error {
 		return nil
 	case rider.FieldContact:
 		m.ClearContact()
+		return nil
+	case rider.FieldLastFace:
+		m.ClearLastFace()
 		return nil
 	case rider.FieldPushID:
 		m.ClearPushID()
@@ -2220,6 +2290,9 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldLastDevice:
 		m.ResetLastDevice()
+		return nil
+	case rider.FieldLastFace:
+		m.ResetLastFace()
 		return nil
 	case rider.FieldPushID:
 		m.ResetPushID()

@@ -31,6 +31,8 @@ const (
 	FieldDeviceType = "device_type"
 	// FieldLastDevice holds the string denoting the last_device field in the database.
 	FieldLastDevice = "last_device"
+	// FieldLastFace holds the string denoting the last_face field in the database.
+	FieldLastFace = "last_face"
 	// FieldPushID holds the string denoting the push_id field in the database.
 	FieldPushID = "push_id"
 	// EdgePerson holds the string denoting the person edge name in mutations.
@@ -59,6 +61,7 @@ var Columns = []string{
 	FieldContact,
 	FieldDeviceType,
 	FieldLastDevice,
+	FieldLastFace,
 	FieldPushID,
 }
 
@@ -83,6 +86,8 @@ var (
 	PhoneValidator func(string) error
 	// LastDeviceValidator is a validator for the "last_device" field. It is called by the builders before save.
 	LastDeviceValidator func(string) error
+	// LastFaceValidator is a validator for the "last_face" field. It is called by the builders before save.
+	LastFaceValidator func(string) error
 	// PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
 	PushIDValidator func(string) error
 )
