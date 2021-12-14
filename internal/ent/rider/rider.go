@@ -86,8 +86,6 @@ var (
 	PhoneValidator func(string) error
 	// LastDeviceValidator is a validator for the "last_device" field. It is called by the builders before save.
 	LastDeviceValidator func(string) error
-	// LastFaceValidator is a validator for the "last_face" field. It is called by the builders before save.
-	LastFaceValidator func(string) error
 	// PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
 	PushIDValidator func(string) error
 )

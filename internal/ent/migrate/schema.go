@@ -22,9 +22,9 @@ var (
 		{Name: "name", Type: field.TypeString, Size: 40},
 		{Name: "ic_number", Type: field.TypeString, Unique: true, Size: 40},
 		{Name: "ic_type", Type: field.TypeUint8, Default: 1},
-		{Name: "ic_portrait", Type: field.TypeString, Size: 100},
-		{Name: "ic_national", Type: field.TypeString, Size: 100},
-		{Name: "face_img", Type: field.TypeString, Size: 100},
+		{Name: "ic_portrait", Type: field.TypeString},
+		{Name: "ic_national", Type: field.TypeString},
+		{Name: "face_img", Type: field.TypeString},
 		{Name: "face_verify_result", Type: field.TypeJSON, Nullable: true},
 	}
 	// PersonTable holds the schema information for the "person" table.
@@ -57,7 +57,7 @@ var (
 		{Name: "contact", Type: field.TypeJSON, Nullable: true},
 		{Name: "device_type", Type: field.TypeUint8},
 		{Name: "last_device", Type: field.TypeString, Unique: true, Size: 60},
-		{Name: "last_face", Type: field.TypeString, Nullable: true, Size: 60},
+		{Name: "last_face", Type: field.TypeString, Nullable: true},
 		{Name: "push_id", Type: field.TypeString, Unique: true, Nullable: true, Size: 60},
 		{Name: "person_id", Type: field.TypeUint64, Nullable: true},
 	}

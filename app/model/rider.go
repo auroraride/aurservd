@@ -33,6 +33,7 @@ type RiderSigninRes struct {
 
 // RiderContact 紧急联系人
 type RiderContact struct {
-    Name  string `json:"name" validate:"required" trans:"联系人姓名"`
-    Phone string `json:"phone" validate:"required,phone" trans:"联系人电话"`
+    Name     string `json:"name" validate:"required" trans:"联系人姓名"`
+    Phone    string `json:"phone" validate:"required,phone" trans:"联系人电话"`
+    Relation string `json:"relation" validate:"required" trans:"关系"`
 }

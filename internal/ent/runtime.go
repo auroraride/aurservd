@@ -49,18 +49,6 @@ func init() {
 	personDescIcType := personFields[4].Descriptor()
 	// person.DefaultIcType holds the default value on creation for the ic_type field.
 	person.DefaultIcType = personDescIcType.Default.(uint8)
-	// personDescIcPortrait is the schema descriptor for ic_portrait field.
-	personDescIcPortrait := personFields[5].Descriptor()
-	// person.IcPortraitValidator is a validator for the "ic_portrait" field. It is called by the builders before save.
-	person.IcPortraitValidator = personDescIcPortrait.Validators[0].(func(string) error)
-	// personDescIcNational is the schema descriptor for ic_national field.
-	personDescIcNational := personFields[6].Descriptor()
-	// person.IcNationalValidator is a validator for the "ic_national" field. It is called by the builders before save.
-	person.IcNationalValidator = personDescIcNational.Validators[0].(func(string) error)
-	// personDescFaceImg is the schema descriptor for face_img field.
-	personDescFaceImg := personFields[7].Descriptor()
-	// person.FaceImgValidator is a validator for the "face_img" field. It is called by the builders before save.
-	person.FaceImgValidator = personDescFaceImg.Validators[0].(func(string) error)
 	riderMixin := schema.Rider{}.Mixin()
 	riderMixinFields0 := riderMixin[0].Fields()
 	_ = riderMixinFields0
@@ -84,10 +72,6 @@ func init() {
 	riderDescLastDevice := riderFields[4].Descriptor()
 	// rider.LastDeviceValidator is a validator for the "last_device" field. It is called by the builders before save.
 	rider.LastDeviceValidator = riderDescLastDevice.Validators[0].(func(string) error)
-	// riderDescLastFace is the schema descriptor for last_face field.
-	riderDescLastFace := riderFields[5].Descriptor()
-	// rider.LastFaceValidator is a validator for the "last_face" field. It is called by the builders before save.
-	rider.LastFaceValidator = riderDescLastFace.Validators[0].(func(string) error)
 	// riderDescPushID is the schema descriptor for push_id field.
 	riderDescPushID := riderFields[6].Descriptor()
 	// rider.PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.

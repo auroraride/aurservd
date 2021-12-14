@@ -273,11 +273,6 @@ func (rc *RiderCreate) check() error {
 			return &ValidationError{Name: "last_device", err: fmt.Errorf(`ent: validator failed for field "last_device": %w`, err)}
 		}
 	}
-	if v, ok := rc.mutation.LastFace(); ok {
-		if err := rider.LastFaceValidator(v); err != nil {
-			return &ValidationError{Name: "last_face", err: fmt.Errorf(`ent: validator failed for field "last_face": %w`, err)}
-		}
-	}
 	if v, ok := rc.mutation.PushID(); ok {
 		if err := rider.PushIDValidator(v); err != nil {
 			return &ValidationError{Name: "push_id", err: fmt.Errorf(`ent: validator failed for field "push_id": %w`, err)}

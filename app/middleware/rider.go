@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/app/response"
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/internal/baidu"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/labstack/echo/v4"
 )
@@ -61,8 +62,9 @@ func RiderRequireAuthAndContact() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
             ctx := c.(*app.RiderContext)
+            uri := c.Request().RequestURI
             p := ctx.Rider.Edges.Person
-            if ctx.Rider.Contact == nil {
+            if ctx.Rider.Contact == nil && uri != "/rider/contact" {
                 ctx.Set("errCode", response.StatusRequireContact)
                 return errors.New("需要补充紧急联系人")
             }
@@ -80,8 +82,11 @@ func RiderFaceMiddleware() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
             ctx := c.(*app.RiderContext)
-            if ctx.Device.Serial != ctx.Rider.LastDevice {
+            r := ctx.Rider
+            p := r.Edges.Person
+            if ctx.Device.Serial != r.LastDevice {
                 ctx.Set("errCode", response.StatusLocked)
+                ctx.Set("errData", ar.Map{"url": baidu.New().GetFaceUrl(p.Name, p.IcNumber)})
                 return errors.New("需要人脸验证")
             }
             return next(ctx)

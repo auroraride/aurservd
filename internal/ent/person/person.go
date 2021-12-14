@@ -98,10 +98,4 @@ var (
 	IcNumberValidator func(string) error
 	// DefaultIcType holds the default value on creation for the "ic_type" field.
 	DefaultIcType uint8
-	// IcPortraitValidator is a validator for the "ic_portrait" field. It is called by the builders before save.
-	IcPortraitValidator func(string) error
-	// IcNationalValidator is a validator for the "ic_national" field. It is called by the builders before save.
-	IcNationalValidator func(string) error
-	// FaceImgValidator is a validator for the "face_img" field. It is called by the builders before save.
-	FaceImgValidator func(string) error
 )

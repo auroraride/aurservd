@@ -5,12 +5,22 @@
 
 package rapi
 
-import "github.com/labstack/echo/v4"
+import (
+    "github.com/labstack/echo/v4"
+)
 
-type callback struct {}
+type callback struct{}
 
 var Callback = new(callback)
 
+type callbackReq struct {
+    Type  string `query:"type"`
+    Token string `query:"token"`
+    State string `query:"state"`
+}
+
 func (*callback) RiderCallback(c echo.Context) error {
+    req := new(callbackReq)
+    _ = c.Bind(req)
     return nil
 }

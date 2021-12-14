@@ -69,7 +69,7 @@ func Run() {
         if ok {
             code = errCode
         }
-        _ = response.New(c).Error(code).SetMessage(err.Error()).Send()
+        _ = response.New(c).Error(code).SetMessage(err.Error()).SetData(c.Get("errData")).Send()
     }
 
     // 载入路由

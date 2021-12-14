@@ -96,7 +96,7 @@ func (r *riderService) SetDevice(u *ent.Rider, device *app.Device) error {
 
 // IsNewDevice 检查是否是新设备
 func (r *riderService) IsNewDevice(u *ent.Rider, device *app.Device) bool {
-    return u.LastDevice == device.Serial
+    return u.LastDevice != device.Serial
 }
 
 // FaceAuthResult 获取并更新人脸实名验证结果
@@ -160,8 +160,37 @@ func (r *riderService) FaceAuthResult(u *ent.Rider, token string) (success bool,
     return
 }
 
+// FaceResult 获取人脸比对结果
+func (r *riderService) FaceResult(u *ent.Rider, token, sn string) (success bool, err error) {
+    res, resErr := baidu.New().FaceResult(token)
+    err = resErr
+    if err != nil {
+        return
+    }
+    success = res.Success
+    if !success {
+        return
+    }
+    // 上传人脸图
+    p := u.Edges.Person
+    fm := ali.NewOss().UploadUrlFile(fmt.Sprintf("%s-%s/face-%s.jpg", p.Name, p.IcNumber, sn), res.Result.Image)
+    err = ar.Ent.Rider.
+        UpdateOneID(u.ID).
+        SetLastFace(fm).
+        SetLastDevice(sn).
+        Exec(context.Background())
+    if err != nil {
+        panic(response.NewError(err))
+    }
+    return
+}
+
 // UpdateContact 更新紧急联系人
 func (r *riderService) UpdateContact(u *ent.Rider, contact *model.RiderContact) {
+    // 判断紧急联系人手机号是否和当前骑手手机号一样
+    if u.Phone == contact.Phone {
+        panic(response.NewError("紧急联系人手机号不能是当前手机号"))
+    }
     err := ar.Ent.Rider.UpdateOneID(u.ID).SetContact(contact).Exec(context.Background())
     if err != nil {
         panic(response.NewError(err))

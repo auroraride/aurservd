@@ -289,11 +289,6 @@ func (ru *RiderUpdate) check() error {
 			return &ValidationError{Name: "last_device", err: fmt.Errorf("ent: validator failed for field \"last_device\": %w", err)}
 		}
 	}
-	if v, ok := ru.mutation.LastFace(); ok {
-		if err := rider.LastFaceValidator(v); err != nil {
-			return &ValidationError{Name: "last_face", err: fmt.Errorf("ent: validator failed for field \"last_face\": %w", err)}
-		}
-	}
 	if v, ok := ru.mutation.PushID(); ok {
 		if err := rider.PushIDValidator(v); err != nil {
 			return &ValidationError{Name: "push_id", err: fmt.Errorf("ent: validator failed for field \"push_id\": %w", err)}
@@ -752,11 +747,6 @@ func (ruo *RiderUpdateOne) check() error {
 	if v, ok := ruo.mutation.LastDevice(); ok {
 		if err := rider.LastDeviceValidator(v); err != nil {
 			return &ValidationError{Name: "last_device", err: fmt.Errorf("ent: validator failed for field \"last_device\": %w", err)}
-		}
-	}
-	if v, ok := ruo.mutation.LastFace(); ok {
-		if err := rider.LastFaceValidator(v); err != nil {
-			return &ValidationError{Name: "last_face", err: fmt.Errorf("ent: validator failed for field \"last_face\": %w", err)}
 		}
 	}
 	if v, ok := ruo.mutation.PushID(); ok {

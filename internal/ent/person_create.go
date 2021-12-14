@@ -316,26 +316,11 @@ func (pc *PersonCreate) check() error {
 	if _, ok := pc.mutation.IcPortrait(); !ok {
 		return &ValidationError{Name: "ic_portrait", err: errors.New(`ent: missing required field "ic_portrait"`)}
 	}
-	if v, ok := pc.mutation.IcPortrait(); ok {
-		if err := person.IcPortraitValidator(v); err != nil {
-			return &ValidationError{Name: "ic_portrait", err: fmt.Errorf(`ent: validator failed for field "ic_portrait": %w`, err)}
-		}
-	}
 	if _, ok := pc.mutation.IcNational(); !ok {
 		return &ValidationError{Name: "ic_national", err: errors.New(`ent: missing required field "ic_national"`)}
 	}
-	if v, ok := pc.mutation.IcNational(); ok {
-		if err := person.IcNationalValidator(v); err != nil {
-			return &ValidationError{Name: "ic_national", err: fmt.Errorf(`ent: validator failed for field "ic_national": %w`, err)}
-		}
-	}
 	if _, ok := pc.mutation.FaceImg(); !ok {
 		return &ValidationError{Name: "face_img", err: errors.New(`ent: missing required field "face_img"`)}
-	}
-	if v, ok := pc.mutation.FaceImg(); ok {
-		if err := person.FaceImgValidator(v); err != nil {
-			return &ValidationError{Name: "face_img", err: fmt.Errorf(`ent: validator failed for field "face_img": %w`, err)}
-		}
 	}
 	return nil
 }

@@ -315,21 +315,6 @@ func (pu *PersonUpdate) check() error {
 			return &ValidationError{Name: "ic_number", err: fmt.Errorf("ent: validator failed for field \"ic_number\": %w", err)}
 		}
 	}
-	if v, ok := pu.mutation.IcPortrait(); ok {
-		if err := person.IcPortraitValidator(v); err != nil {
-			return &ValidationError{Name: "ic_portrait", err: fmt.Errorf("ent: validator failed for field \"ic_portrait\": %w", err)}
-		}
-	}
-	if v, ok := pu.mutation.IcNational(); ok {
-		if err := person.IcNationalValidator(v); err != nil {
-			return &ValidationError{Name: "ic_national", err: fmt.Errorf("ent: validator failed for field \"ic_national\": %w", err)}
-		}
-	}
-	if v, ok := pu.mutation.FaceImg(); ok {
-		if err := person.FaceImgValidator(v); err != nil {
-			return &ValidationError{Name: "face_img", err: fmt.Errorf("ent: validator failed for field \"face_img\": %w", err)}
-		}
-	}
 	return nil
 }
 
@@ -844,21 +829,6 @@ func (puo *PersonUpdateOne) check() error {
 	if v, ok := puo.mutation.IcNumber(); ok {
 		if err := person.IcNumberValidator(v); err != nil {
 			return &ValidationError{Name: "ic_number", err: fmt.Errorf("ent: validator failed for field \"ic_number\": %w", err)}
-		}
-	}
-	if v, ok := puo.mutation.IcPortrait(); ok {
-		if err := person.IcPortraitValidator(v); err != nil {
-			return &ValidationError{Name: "ic_portrait", err: fmt.Errorf("ent: validator failed for field \"ic_portrait\": %w", err)}
-		}
-	}
-	if v, ok := puo.mutation.IcNational(); ok {
-		if err := person.IcNationalValidator(v); err != nil {
-			return &ValidationError{Name: "ic_national", err: fmt.Errorf("ent: validator failed for field \"ic_national\": %w", err)}
-		}
-	}
-	if v, ok := puo.mutation.FaceImg(); ok {
-		if err := person.FaceImgValidator(v); err != nil {
-			return &ValidationError{Name: "face_img", err: fmt.Errorf("ent: validator failed for field \"face_img\": %w", err)}
 		}
 	}
 	return nil

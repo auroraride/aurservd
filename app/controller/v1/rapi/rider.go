@@ -80,3 +80,11 @@ func (r *rider) AuthResult(c echo.Context) error {
     }
     return response.New(c).Success().SetData(map[string]bool{"status": success}).Send()
 }
+
+// FaceResult 获取人脸验证结果
+func (r *rider) FaceResult(c echo.Context) error {
+    token := c.Param("token")
+    ctx := c.(*app.RiderContext)
+    service.NewRider().FaceResult(ctx.Rider, token, ctx.Device.Serial)
+    return nil
+}

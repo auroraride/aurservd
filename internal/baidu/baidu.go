@@ -44,15 +44,15 @@ type accessTokenResp struct {
 func New() *baiduClient {
     cfg := ar.Config.Baidu.Face
     b := &baiduClient{
-        apiKey:    cfg.ApiKey,
-        secretKey: cfg.SecretKey,
+        apiKey:      cfg.ApiKey,
+        secretKey:   cfg.SecretKey,
     }
-    b.getAccessToken()
+    b.accessToken = b.getAccessToken()
     return b
 }
 
 // requestAccessToken 从服务器请求百度 access_token
-func (b *baiduClient) requestAccessToken() {
+func (b *baiduClient) requestAccessToken() string {
     var err error
     res := new(accessTokenResp)
     url := fmt.Sprintf(accessTokenUrl, b.apiKey, b.secretKey)
@@ -66,15 +66,14 @@ func (b *baiduClient) requestAccessToken() {
         panic(response.NewError(res.ErrorDescription))
     }
     ar.Cache.Set(context.Background(), accessTokenKey, res.AccessToken, time.Second*time.Duration(res.ExpiresIn-120))
-    b.accessToken = res.AccessToken
-    return
+    return res.AccessToken
 }
 
 // getAccessToken 获取 access_token
-func (b *baiduClient) getAccessToken() {
+func (b *baiduClient) getAccessToken() string {
     t := ar.Cache.Get(context.Background(), accessTokenKey).Val()
     if t == "" {
-        b.requestAccessToken()
+        t = b.requestAccessToken()
     }
-    b.accessToken = t
+    return t
 }

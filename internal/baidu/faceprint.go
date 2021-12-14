@@ -119,7 +119,7 @@ func (b *baiduClient) getFaceprintUrl(typ string) (url string, token string) {
         panic(response.NewError(err))
     }
     if !res.Success {
-        panic(response.NewError("人脸识别请求失败"))
+        panic(response.NewError("实名认证请求失败"))
     }
     token = res.Result.VerifyToken
     str := fmt.Sprintf("%s?type=%s&token=%s&state=", cfg.Callback, typ, token)
@@ -129,16 +129,6 @@ func (b *baiduClient) getFaceprintUrl(typ string) (url string, token string) {
         utils.EncodeURIComponent(str+"success"),
         utils.EncodeURIComponent(str+"failed"),
     )
-    return
-}
-
-// faceprintFace 获取人脸照片
-func (b *baiduClient) faceprintFace(token string) (res *faceprintFaceResp, err error) {
-    res = new(faceprintFaceResp)
-    _, err = resty.New().R().
-        SetResult(res).
-        SetBody(ar.Map{"verify_token": token}).
-        Post(fmt.Sprintf(faceprintSimpleUrl, b.accessToken))
     return
 }
 
@@ -169,17 +159,28 @@ func (b *baiduClient) GetAuthenticatorUrl() string {
     return uri
 }
 
-// AuthenticatorResult 获取实名认证结果
-func (b *baiduClient) AuthenticatorResult(token string) (res *faceprintDetailResp, err error) {
-    simple := new(faceprintFaceResp)
-    res = new(faceprintDetailResp)
-    simple, err = b.faceprintFace(token)
+// FaceResult 获取人脸照片
+func (b *baiduClient) FaceResult(token string) (res *faceprintFaceResp, err error) {
+    res = new(faceprintFaceResp)
+    _, err = resty.New().R().
+        SetResult(res).
+        SetBody(ar.Map{"verify_token": token}).
+        Post(fmt.Sprintf(faceprintSimpleUrl, b.accessToken))
     if err != nil {
         return
     }
-    if !simple.Success {
+    return
+}
+
+// AuthenticatorResult 获取实名认证结果
+func (b *baiduClient) AuthenticatorResult(token string) (res *faceprintDetailResp, err error) {
+    simple := new(faceprintFaceResp)
+    simple, err = b.FaceResult(token)
+    if err != nil {
         return
     }
+
+    res = new(faceprintDetailResp)
     _, err = resty.New().R().
         SetResult(res).
         SetBody(map[string]string{"verify_token": token}).
