@@ -193,23 +193,23 @@ func (pu *PersonUpdate) ClearFaceVerifyResult() *PersonUpdate {
 	return pu
 }
 
-// SetSuccessAt sets the "success_at" field.
-func (pu *PersonUpdate) SetSuccessAt(t time.Time) *PersonUpdate {
-	pu.mutation.SetSuccessAt(t)
+// SetResultAt sets the "result_at" field.
+func (pu *PersonUpdate) SetResultAt(t time.Time) *PersonUpdate {
+	pu.mutation.SetResultAt(t)
 	return pu
 }
 
-// SetNillableSuccessAt sets the "success_at" field if the given value is not nil.
-func (pu *PersonUpdate) SetNillableSuccessAt(t *time.Time) *PersonUpdate {
+// SetNillableResultAt sets the "result_at" field if the given value is not nil.
+func (pu *PersonUpdate) SetNillableResultAt(t *time.Time) *PersonUpdate {
 	if t != nil {
-		pu.SetSuccessAt(*t)
+		pu.SetResultAt(*t)
 	}
 	return pu
 }
 
-// ClearSuccessAt clears the value of the "success_at" field.
-func (pu *PersonUpdate) ClearSuccessAt() *PersonUpdate {
-	pu.mutation.ClearSuccessAt()
+// ClearResultAt clears the value of the "result_at" field.
+func (pu *PersonUpdate) ClearResultAt() *PersonUpdate {
+	pu.mutation.ClearResultAt()
 	return pu
 }
 
@@ -485,17 +485,17 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: person.FieldFaceVerifyResult,
 		})
 	}
-	if value, ok := pu.mutation.SuccessAt(); ok {
+	if value, ok := pu.mutation.ResultAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: person.FieldSuccessAt,
+			Column: person.FieldResultAt,
 		})
 	}
-	if pu.mutation.SuccessAtCleared() {
+	if pu.mutation.ResultAtCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
-			Column: person.FieldSuccessAt,
+			Column: person.FieldResultAt,
 		})
 	}
 	if pu.mutation.RiderCleared() {
@@ -735,23 +735,23 @@ func (puo *PersonUpdateOne) ClearFaceVerifyResult() *PersonUpdateOne {
 	return puo
 }
 
-// SetSuccessAt sets the "success_at" field.
-func (puo *PersonUpdateOne) SetSuccessAt(t time.Time) *PersonUpdateOne {
-	puo.mutation.SetSuccessAt(t)
+// SetResultAt sets the "result_at" field.
+func (puo *PersonUpdateOne) SetResultAt(t time.Time) *PersonUpdateOne {
+	puo.mutation.SetResultAt(t)
 	return puo
 }
 
-// SetNillableSuccessAt sets the "success_at" field if the given value is not nil.
-func (puo *PersonUpdateOne) SetNillableSuccessAt(t *time.Time) *PersonUpdateOne {
+// SetNillableResultAt sets the "result_at" field if the given value is not nil.
+func (puo *PersonUpdateOne) SetNillableResultAt(t *time.Time) *PersonUpdateOne {
 	if t != nil {
-		puo.SetSuccessAt(*t)
+		puo.SetResultAt(*t)
 	}
 	return puo
 }
 
-// ClearSuccessAt clears the value of the "success_at" field.
-func (puo *PersonUpdateOne) ClearSuccessAt() *PersonUpdateOne {
-	puo.mutation.ClearSuccessAt()
+// ClearResultAt clears the value of the "result_at" field.
+func (puo *PersonUpdateOne) ClearResultAt() *PersonUpdateOne {
+	puo.mutation.ClearResultAt()
 	return puo
 }
 
@@ -1051,17 +1051,17 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 			Column: person.FieldFaceVerifyResult,
 		})
 	}
-	if value, ok := puo.mutation.SuccessAt(); ok {
+	if value, ok := puo.mutation.ResultAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: person.FieldSuccessAt,
+			Column: person.FieldResultAt,
 		})
 	}
-	if puo.mutation.SuccessAtCleared() {
+	if puo.mutation.ResultAtCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
-			Column: person.FieldSuccessAt,
+			Column: person.FieldResultAt,
 		})
 	}
 	if puo.mutation.RiderCleared() {

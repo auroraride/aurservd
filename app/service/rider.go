@@ -196,7 +196,7 @@ func (r *riderService) FaceAuthResult(c *app.RiderContext) (success bool, err er
         SetIcNational(nm).
         SetIcPortrait(pm).
         SetFaceVerifyResult(vr).
-        SetLastModify(time.Now()).
+        SetResultAt(time.Now()).
         OnConflictColumns(person.FieldIcNumber).
         UpdateNewValues().
         ID(context.Background())

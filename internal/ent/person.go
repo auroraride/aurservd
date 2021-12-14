@@ -57,9 +57,9 @@ type Person struct {
 	// FaceVerifyResult holds the value of the "face_verify_result" field.
 	// 人脸识别验证结果详情
 	FaceVerifyResult *model.FaceVerifyResult `json:"face_verify_result,omitempty"`
-	// SuccessAt holds the value of the "success_at" field.
-	// 认证通过时间
-	SuccessAt *time.Time `json:"success_at,omitempty"`
+	// ResultAt holds the value of the "result_at" field.
+	// 结果获取时间
+	ResultAt *time.Time `json:"result_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PersonQuery when eager-loading is set.
 	Edges PersonEdges `json:"edges"`
@@ -96,7 +96,7 @@ func (*Person) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case person.FieldRemark, person.FieldName, person.FieldIcNumber, person.FieldIcPortrait, person.FieldIcNational, person.FieldFaceImg:
 			values[i] = new(sql.NullString)
-		case person.FieldCreatedAt, person.FieldUpdatedAt, person.FieldDeletedAt, person.FieldLastModify, person.FieldSuccessAt:
+		case person.FieldCreatedAt, person.FieldUpdatedAt, person.FieldDeletedAt, person.FieldLastModify, person.FieldResultAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Person", columns[i])
@@ -208,12 +208,12 @@ func (pe *Person) assignValues(columns []string, values []interface{}) error {
 					return fmt.Errorf("unmarshal field face_verify_result: %w", err)
 				}
 			}
-		case person.FieldSuccessAt:
+		case person.FieldResultAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field success_at", values[i])
+				return fmt.Errorf("unexpected type %T for field result_at", values[i])
 			} else if value.Valid {
-				pe.SuccessAt = new(time.Time)
-				*pe.SuccessAt = value.Time
+				pe.ResultAt = new(time.Time)
+				*pe.ResultAt = value.Time
 			}
 		}
 	}
@@ -282,8 +282,8 @@ func (pe *Person) String() string {
 	builder.WriteString(pe.FaceImg)
 	builder.WriteString(", face_verify_result=")
 	builder.WriteString(fmt.Sprintf("%v", pe.FaceVerifyResult))
-	if v := pe.SuccessAt; v != nil {
-		builder.WriteString(", success_at=")
+	if v := pe.ResultAt; v != nil {
+		builder.WriteString(", result_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteByte(')')

@@ -53,7 +53,7 @@ type PersonMutation struct {
 	ic_national        *string
 	face_img           *string
 	face_verify_result **model.FaceVerifyResult
-	success_at         *time.Time
+	result_at          *time.Time
 	clearedFields      map[string]struct{}
 	rider              map[uint64]struct{}
 	removedrider       map[uint64]struct{}
@@ -738,53 +738,53 @@ func (m *PersonMutation) ResetFaceVerifyResult() {
 	delete(m.clearedFields, person.FieldFaceVerifyResult)
 }
 
-// SetSuccessAt sets the "success_at" field.
-func (m *PersonMutation) SetSuccessAt(t time.Time) {
-	m.success_at = &t
+// SetResultAt sets the "result_at" field.
+func (m *PersonMutation) SetResultAt(t time.Time) {
+	m.result_at = &t
 }
 
-// SuccessAt returns the value of the "success_at" field in the mutation.
-func (m *PersonMutation) SuccessAt() (r time.Time, exists bool) {
-	v := m.success_at
+// ResultAt returns the value of the "result_at" field in the mutation.
+func (m *PersonMutation) ResultAt() (r time.Time, exists bool) {
+	v := m.result_at
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldSuccessAt returns the old "success_at" field's value of the Person entity.
+// OldResultAt returns the old "result_at" field's value of the Person entity.
 // If the Person object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldSuccessAt(ctx context.Context) (v *time.Time, err error) {
+func (m *PersonMutation) OldResultAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldSuccessAt is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldResultAt is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldSuccessAt requires an ID field in the mutation")
+		return v, fmt.Errorf("OldResultAt requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSuccessAt: %w", err)
+		return v, fmt.Errorf("querying old value for OldResultAt: %w", err)
 	}
-	return oldValue.SuccessAt, nil
+	return oldValue.ResultAt, nil
 }
 
-// ClearSuccessAt clears the value of the "success_at" field.
-func (m *PersonMutation) ClearSuccessAt() {
-	m.success_at = nil
-	m.clearedFields[person.FieldSuccessAt] = struct{}{}
+// ClearResultAt clears the value of the "result_at" field.
+func (m *PersonMutation) ClearResultAt() {
+	m.result_at = nil
+	m.clearedFields[person.FieldResultAt] = struct{}{}
 }
 
-// SuccessAtCleared returns if the "success_at" field was cleared in this mutation.
-func (m *PersonMutation) SuccessAtCleared() bool {
-	_, ok := m.clearedFields[person.FieldSuccessAt]
+// ResultAtCleared returns if the "result_at" field was cleared in this mutation.
+func (m *PersonMutation) ResultAtCleared() bool {
+	_, ok := m.clearedFields[person.FieldResultAt]
 	return ok
 }
 
-// ResetSuccessAt resets all changes to the "success_at" field.
-func (m *PersonMutation) ResetSuccessAt() {
-	m.success_at = nil
-	delete(m.clearedFields, person.FieldSuccessAt)
+// ResetResultAt resets all changes to the "result_at" field.
+func (m *PersonMutation) ResetResultAt() {
+	m.result_at = nil
+	delete(m.clearedFields, person.FieldResultAt)
 }
 
 // AddRiderIDs adds the "rider" edge to the Rider entity by ids.
@@ -903,8 +903,8 @@ func (m *PersonMutation) Fields() []string {
 	if m.face_verify_result != nil {
 		fields = append(fields, person.FieldFaceVerifyResult)
 	}
-	if m.success_at != nil {
-		fields = append(fields, person.FieldSuccessAt)
+	if m.result_at != nil {
+		fields = append(fields, person.FieldResultAt)
 	}
 	return fields
 }
@@ -942,8 +942,8 @@ func (m *PersonMutation) Field(name string) (ent.Value, bool) {
 		return m.FaceImg()
 	case person.FieldFaceVerifyResult:
 		return m.FaceVerifyResult()
-	case person.FieldSuccessAt:
-		return m.SuccessAt()
+	case person.FieldResultAt:
+		return m.ResultAt()
 	}
 	return nil, false
 }
@@ -981,8 +981,8 @@ func (m *PersonMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldFaceImg(ctx)
 	case person.FieldFaceVerifyResult:
 		return m.OldFaceVerifyResult(ctx)
-	case person.FieldSuccessAt:
-		return m.OldSuccessAt(ctx)
+	case person.FieldResultAt:
+		return m.OldResultAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Person field %s", name)
 }
@@ -1090,12 +1090,12 @@ func (m *PersonMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetFaceVerifyResult(v)
 		return nil
-	case person.FieldSuccessAt:
+	case person.FieldResultAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetSuccessAt(v)
+		m.SetResultAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Person field %s", name)
@@ -1166,8 +1166,8 @@ func (m *PersonMutation) ClearedFields() []string {
 	if m.FieldCleared(person.FieldFaceVerifyResult) {
 		fields = append(fields, person.FieldFaceVerifyResult)
 	}
-	if m.FieldCleared(person.FieldSuccessAt) {
-		fields = append(fields, person.FieldSuccessAt)
+	if m.FieldCleared(person.FieldResultAt) {
+		fields = append(fields, person.FieldResultAt)
 	}
 	return fields
 }
@@ -1195,8 +1195,8 @@ func (m *PersonMutation) ClearField(name string) error {
 	case person.FieldFaceVerifyResult:
 		m.ClearFaceVerifyResult()
 		return nil
-	case person.FieldSuccessAt:
-		m.ClearSuccessAt()
+	case person.FieldResultAt:
+		m.ClearResultAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Person nullable field %s", name)
@@ -1248,8 +1248,8 @@ func (m *PersonMutation) ResetField(name string) error {
 	case person.FieldFaceVerifyResult:
 		m.ResetFaceVerifyResult()
 		return nil
-	case person.FieldSuccessAt:
-		m.ResetSuccessAt()
+	case person.FieldResultAt:
+		m.ResetResultAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Person field %s", name)

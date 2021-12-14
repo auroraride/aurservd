@@ -172,16 +172,16 @@ func (pc *PersonCreate) SetFaceVerifyResult(mvr *model.FaceVerifyResult) *Person
 	return pc
 }
 
-// SetSuccessAt sets the "success_at" field.
-func (pc *PersonCreate) SetSuccessAt(t time.Time) *PersonCreate {
-	pc.mutation.SetSuccessAt(t)
+// SetResultAt sets the "result_at" field.
+func (pc *PersonCreate) SetResultAt(t time.Time) *PersonCreate {
+	pc.mutation.SetResultAt(t)
 	return pc
 }
 
-// SetNillableSuccessAt sets the "success_at" field if the given value is not nil.
-func (pc *PersonCreate) SetNillableSuccessAt(t *time.Time) *PersonCreate {
+// SetNillableResultAt sets the "result_at" field if the given value is not nil.
+func (pc *PersonCreate) SetNillableResultAt(t *time.Time) *PersonCreate {
 	if t != nil {
-		pc.SetSuccessAt(*t)
+		pc.SetResultAt(*t)
 	}
 	return pc
 }
@@ -476,13 +476,13 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 		})
 		_node.FaceVerifyResult = value
 	}
-	if value, ok := pc.mutation.SuccessAt(); ok {
+	if value, ok := pc.mutation.ResultAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: person.FieldSuccessAt,
+			Column: person.FieldResultAt,
 		})
-		_node.SuccessAt = &value
+		_node.ResultAt = &value
 	}
 	if nodes := pc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -749,21 +749,21 @@ func (u *PersonUpsert) ClearFaceVerifyResult() *PersonUpsert {
 	return u
 }
 
-// SetSuccessAt sets the "success_at" field.
-func (u *PersonUpsert) SetSuccessAt(v time.Time) *PersonUpsert {
-	u.Set(person.FieldSuccessAt, v)
+// SetResultAt sets the "result_at" field.
+func (u *PersonUpsert) SetResultAt(v time.Time) *PersonUpsert {
+	u.Set(person.FieldResultAt, v)
 	return u
 }
 
-// UpdateSuccessAt sets the "success_at" field to the value that was provided on create.
-func (u *PersonUpsert) UpdateSuccessAt() *PersonUpsert {
-	u.SetExcluded(person.FieldSuccessAt)
+// UpdateResultAt sets the "result_at" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateResultAt() *PersonUpsert {
+	u.SetExcluded(person.FieldResultAt)
 	return u
 }
 
-// ClearSuccessAt clears the value of the "success_at" field.
-func (u *PersonUpsert) ClearSuccessAt() *PersonUpsert {
-	u.SetNull(person.FieldSuccessAt)
+// ClearResultAt clears the value of the "result_at" field.
+func (u *PersonUpsert) ClearResultAt() *PersonUpsert {
+	u.SetNull(person.FieldResultAt)
 	return u
 }
 
@@ -1033,24 +1033,24 @@ func (u *PersonUpsertOne) ClearFaceVerifyResult() *PersonUpsertOne {
 	})
 }
 
-// SetSuccessAt sets the "success_at" field.
-func (u *PersonUpsertOne) SetSuccessAt(v time.Time) *PersonUpsertOne {
+// SetResultAt sets the "result_at" field.
+func (u *PersonUpsertOne) SetResultAt(v time.Time) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetSuccessAt(v)
+		s.SetResultAt(v)
 	})
 }
 
-// UpdateSuccessAt sets the "success_at" field to the value that was provided on create.
-func (u *PersonUpsertOne) UpdateSuccessAt() *PersonUpsertOne {
+// UpdateResultAt sets the "result_at" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateResultAt() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateSuccessAt()
+		s.UpdateResultAt()
 	})
 }
 
-// ClearSuccessAt clears the value of the "success_at" field.
-func (u *PersonUpsertOne) ClearSuccessAt() *PersonUpsertOne {
+// ClearResultAt clears the value of the "result_at" field.
+func (u *PersonUpsertOne) ClearResultAt() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.ClearSuccessAt()
+		s.ClearResultAt()
 	})
 }
 
@@ -1482,24 +1482,24 @@ func (u *PersonUpsertBulk) ClearFaceVerifyResult() *PersonUpsertBulk {
 	})
 }
 
-// SetSuccessAt sets the "success_at" field.
-func (u *PersonUpsertBulk) SetSuccessAt(v time.Time) *PersonUpsertBulk {
+// SetResultAt sets the "result_at" field.
+func (u *PersonUpsertBulk) SetResultAt(v time.Time) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetSuccessAt(v)
+		s.SetResultAt(v)
 	})
 }
 
-// UpdateSuccessAt sets the "success_at" field to the value that was provided on create.
-func (u *PersonUpsertBulk) UpdateSuccessAt() *PersonUpsertBulk {
+// UpdateResultAt sets the "result_at" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateResultAt() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateSuccessAt()
+		s.UpdateResultAt()
 	})
 }
 
-// ClearSuccessAt clears the value of the "success_at" field.
-func (u *PersonUpsertBulk) ClearSuccessAt() *PersonUpsertBulk {
+// ClearResultAt clears the value of the "result_at" field.
+func (u *PersonUpsertBulk) ClearResultAt() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.ClearSuccessAt()
+		s.ClearResultAt()
 	})
 }
 

@@ -184,10 +184,10 @@ func FaceImg(v string) predicate.Person {
 	})
 }
 
-// SuccessAt applies equality check predicate on the "success_at" field. It's identical to SuccessAtEQ.
-func SuccessAt(v time.Time) predicate.Person {
+// ResultAt applies equality check predicate on the "result_at" field. It's identical to ResultAtEQ.
+func ResultAt(v time.Time) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSuccessAt), v))
+		s.Where(sql.EQ(s.C(FieldResultAt), v))
 	})
 }
 
@@ -1383,22 +1383,22 @@ func FaceVerifyResultNotNil() predicate.Person {
 	})
 }
 
-// SuccessAtEQ applies the EQ predicate on the "success_at" field.
-func SuccessAtEQ(v time.Time) predicate.Person {
+// ResultAtEQ applies the EQ predicate on the "result_at" field.
+func ResultAtEQ(v time.Time) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSuccessAt), v))
+		s.Where(sql.EQ(s.C(FieldResultAt), v))
 	})
 }
 
-// SuccessAtNEQ applies the NEQ predicate on the "success_at" field.
-func SuccessAtNEQ(v time.Time) predicate.Person {
+// ResultAtNEQ applies the NEQ predicate on the "result_at" field.
+func ResultAtNEQ(v time.Time) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSuccessAt), v))
+		s.Where(sql.NEQ(s.C(FieldResultAt), v))
 	})
 }
 
-// SuccessAtIn applies the In predicate on the "success_at" field.
-func SuccessAtIn(vs ...time.Time) predicate.Person {
+// ResultAtIn applies the In predicate on the "result_at" field.
+func ResultAtIn(vs ...time.Time) predicate.Person {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1410,12 +1410,12 @@ func SuccessAtIn(vs ...time.Time) predicate.Person {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldSuccessAt), v...))
+		s.Where(sql.In(s.C(FieldResultAt), v...))
 	})
 }
 
-// SuccessAtNotIn applies the NotIn predicate on the "success_at" field.
-func SuccessAtNotIn(vs ...time.Time) predicate.Person {
+// ResultAtNotIn applies the NotIn predicate on the "result_at" field.
+func ResultAtNotIn(vs ...time.Time) predicate.Person {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1427,49 +1427,49 @@ func SuccessAtNotIn(vs ...time.Time) predicate.Person {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldSuccessAt), v...))
+		s.Where(sql.NotIn(s.C(FieldResultAt), v...))
 	})
 }
 
-// SuccessAtGT applies the GT predicate on the "success_at" field.
-func SuccessAtGT(v time.Time) predicate.Person {
+// ResultAtGT applies the GT predicate on the "result_at" field.
+func ResultAtGT(v time.Time) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldSuccessAt), v))
+		s.Where(sql.GT(s.C(FieldResultAt), v))
 	})
 }
 
-// SuccessAtGTE applies the GTE predicate on the "success_at" field.
-func SuccessAtGTE(v time.Time) predicate.Person {
+// ResultAtGTE applies the GTE predicate on the "result_at" field.
+func ResultAtGTE(v time.Time) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldSuccessAt), v))
+		s.Where(sql.GTE(s.C(FieldResultAt), v))
 	})
 }
 
-// SuccessAtLT applies the LT predicate on the "success_at" field.
-func SuccessAtLT(v time.Time) predicate.Person {
+// ResultAtLT applies the LT predicate on the "result_at" field.
+func ResultAtLT(v time.Time) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldSuccessAt), v))
+		s.Where(sql.LT(s.C(FieldResultAt), v))
 	})
 }
 
-// SuccessAtLTE applies the LTE predicate on the "success_at" field.
-func SuccessAtLTE(v time.Time) predicate.Person {
+// ResultAtLTE applies the LTE predicate on the "result_at" field.
+func ResultAtLTE(v time.Time) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldSuccessAt), v))
+		s.Where(sql.LTE(s.C(FieldResultAt), v))
 	})
 }
 
-// SuccessAtIsNil applies the IsNil predicate on the "success_at" field.
-func SuccessAtIsNil() predicate.Person {
+// ResultAtIsNil applies the IsNil predicate on the "result_at" field.
+func ResultAtIsNil() predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldSuccessAt)))
+		s.Where(sql.IsNull(s.C(FieldResultAt)))
 	})
 }
 
-// SuccessAtNotNil applies the NotNil predicate on the "success_at" field.
-func SuccessAtNotNil() predicate.Person {
+// ResultAtNotNil applies the NotNil predicate on the "result_at" field.
+func ResultAtNotNil() predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldSuccessAt)))
+		s.Where(sql.NotNull(s.C(FieldResultAt)))
 	})
 }
 

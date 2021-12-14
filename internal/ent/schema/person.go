@@ -35,7 +35,7 @@ func (Person) Fields() []ent.Field {
         field.String("ic_national").Comment("证件国徽面"),
         field.String("face_img").Comment("人脸照片"),
         field.JSON("face_verify_result", &model.FaceVerifyResult{}).Optional().Comment("人脸识别验证结果详情"),
-        field.Time("success_at").Nillable().Optional().Comment("认证通过时间"),
+        field.Time("result_at").Nillable().Optional().Comment("结果获取时间"),
     }
 }
 

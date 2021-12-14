@@ -26,7 +26,7 @@ var (
 		{Name: "ic_national", Type: field.TypeString},
 		{Name: "face_img", Type: field.TypeString},
 		{Name: "face_verify_result", Type: field.TypeJSON, Nullable: true},
-		{Name: "success_at", Type: field.TypeTime, Nullable: true},
+		{Name: "result_at", Type: field.TypeTime, Nullable: true},
 	}
 	// PersonTable holds the schema information for the "person" table.
 	PersonTable = &schema.Table{
