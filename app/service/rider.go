@@ -56,7 +56,6 @@ func (r *riderService) IsNewDevice(u *ent.Rider, device *app.Device) bool {
 }
 
 // Signin 骑手登录
-// 当返回字段 isNewDevice 时候需要跳转人脸识别界面
 func (r *riderService) Signin(phone string, device *app.Device) (res *model.RiderSigninRes, err error) {
     ctx := context.Background()
     orm := ar.Ent.Rider
@@ -126,8 +125,28 @@ func (r *riderService) SetDevice(u *ent.Rider, device *app.Device) error {
     return err
 }
 
+// GetFaceAuthUrl 获取人脸实名验证URL
+func (r *riderService) GetFaceAuthUrl(c *app.RiderContext) string {
+    uri, token := baidu.New().GetAuthenticatorUrl()
+    ar.Cache.Set(context.Background(), token, r.GeneratePrivacy(c), 30*time.Minute)
+    return uri
+}
+
+// GetFaceUrl 获取人脸校验URL
+func (r *riderService) GetFaceUrl(c *app.RiderContext) string {
+    p := c.Rider.Edges.Person
+    uri, token := baidu.New().GetFaceUrl(p.Name, p.IcNumber)
+    ar.Cache.Set(context.Background(), token, r.GeneratePrivacy(c), 30*time.Minute)
+    return uri
+}
+
 // FaceAuthResult 获取并更新人脸实名验证结果
-func (r *riderService) FaceAuthResult(u *ent.Rider, token string) (success bool, err error) {
+func (r *riderService) FaceAuthResult(c *app.RiderContext) (success bool, err error) {
+    if !r.ComparePrivacy(c) {
+        return false, errors.New("验证失败")
+    }
+    token := c.Param("token")
+    u := c.Rider
     data, err := baidu.New().AuthenticatorResult(token)
     if err != nil {
         return
@@ -190,7 +209,13 @@ func (r *riderService) FaceAuthResult(u *ent.Rider, token string) (success bool,
 }
 
 // FaceResult 获取人脸比对结果
-func (r *riderService) FaceResult(u *ent.Rider, token, sn string) (success bool, err error) {
+func (r *riderService) FaceResult(c *app.RiderContext) (success bool, err error) {
+    if !r.ComparePrivacy(c) {
+        return false, errors.New("验证失败")
+    }
+    token := c.Param("token")
+    u := c.Rider
+    sn := c.Device.Serial
     res, resErr := baidu.New().FaceResult(token)
     err = resErr
     if err != nil {
@@ -224,4 +249,14 @@ func (r *riderService) UpdateContact(u *ent.Rider, contact *model.RiderContact) 
     if err != nil {
         panic(response.NewError(err))
     }
+}
+
+// GeneratePrivacy 获取实名认证或人脸识别限制条件
+func (r *riderService) GeneratePrivacy(c *app.RiderContext) string {
+    return fmt.Sprintf("%s-%d", c.Device.Serial, c.Rider.ID)
+}
+
+// ComparePrivacy 比对实名认证或人脸识别限制条件是否满足
+func (r *riderService) ComparePrivacy(c *app.RiderContext) bool {
+    return ar.Cache.Get(context.Background(), c.Param("token")).Val() == r.GeneratePrivacy(c)
 }

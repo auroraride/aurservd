@@ -13,7 +13,6 @@ import (
     "github.com/auroraride/aurservd/app/response"
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
-    "github.com/auroraride/aurservd/internal/baidu"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/labstack/echo/v4"
 )
@@ -50,15 +49,10 @@ func RiderMiddleware() echo.MiddlewareFunc {
             }
 
             // 重载context
-            ctx := &app.RiderContext{
+            return next(&app.RiderContext{
                 GlobalContext: c.(*app.GlobalContext),
                 Rider:         u,
-            }
-
-            // TODO 判定骑手是否新设备
-
-            // TODO 判断是否需要认证和补充联系人
-            return next(ctx)
+            })
         }
     }
 }
@@ -88,11 +82,11 @@ func RiderFaceMiddleware() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
             ctx := c.(*app.RiderContext)
-            r := ctx.Rider
-            p := r.Edges.Person
-            if ctx.Device.Serial != r.LastDevice {
+            u := ctx.Rider
+            s := service.NewRider()
+            if s.IsNewDevice(u, ctx.Device) {
                 ctx.Set("errCode", response.StatusLocked)
-                ctx.Set("errData", ar.Map{"url": baidu.New().GetFaceUrl(p.Name, p.IcNumber)})
+                ctx.Set("errData", ar.Map{"url": s.GetFaceUrl(ctx)})
                 return errors.New("需要人脸验证")
             }
             return next(ctx)

@@ -97,7 +97,6 @@ type faceprintSubmitResp struct {
 }
 
 // getFaceprintUrl 获取人脸核验URL
-// TODO 验证页面随便跳转到那个页面, flutter前端进行webview路由拦截获取token请求验证结果, 成功或失败进行弹窗提示
 func (b *baiduClient) getFaceprintUrl(typ string) (url string, token string) {
     var err error
     var planId string
@@ -133,9 +132,8 @@ func (b *baiduClient) getFaceprintUrl(typ string) (url string, token string) {
 }
 
 // GetFaceUrl 获取人脸校验URL
-// TODO 缓存token和用户对应关系, token只能请求一次
-func (b *baiduClient) GetFaceUrl(name, icNum string) string {
-    uri, token := b.getFaceprintUrl(TypeFace)
+func (b *baiduClient) GetFaceUrl(name, icNum string) (uri string, token string) {
+    uri, token = b.getFaceprintUrl(TypeFace)
     res := new(faceprintSubmitResp)
     _, err := resty.New().R().
         SetResult(res).
@@ -149,14 +147,12 @@ func (b *baiduClient) GetFaceUrl(name, icNum string) string {
     if err != nil {
         panic(response.NewError(err))
     }
-    return uri
+    return
 }
 
 // GetAuthenticatorUrl 实名认证
-// TODO 缓存token和用户对应关系, token只能请求一次
-func (b *baiduClient) GetAuthenticatorUrl() string {
-    uri, _ := b.getFaceprintUrl(TypeAuth)
-    return uri
+func (b *baiduClient) GetAuthenticatorUrl() (string, string) {
+    return b.getFaceprintUrl(TypeAuth)
 }
 
 // FaceResult 获取人脸照片

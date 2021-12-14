@@ -11,7 +11,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/response"
     "github.com/auroraride/aurservd/app/service"
-    "github.com/auroraride/aurservd/internal/baidu"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/labstack/echo/v4"
 )
 
@@ -63,31 +63,28 @@ func (*rider) Authenticator(c echo.Context) error {
     ctx := c.(*app.RiderContext)
     contact := new(model.RiderContact)
     ctx.BindValidate(contact)
+    r := service.NewRider()
     // 更新紧急联系人
-    service.NewRider().UpdateContact(ctx.Rider, contact)
+    r.UpdateContact(ctx.Rider, contact)
     // 获取人脸识别URL
-    return response.New(c).Success().SetData(map[string]string{"url": baidu.New().GetAuthenticatorUrl()}).Send()
+    return response.New(c).Success().SetData(ar.Map{"url": r.GetFaceAuthUrl(ctx)}).Send()
 }
 
 // AuthResult 实名认证结果
 // TODO 测试认证失败逻辑
 func (r *rider) AuthResult(c echo.Context) error {
-    u := c.(*app.RiderContext).Rider
-    token := c.Param("token")
-    success, err := service.NewRider().FaceAuthResult(u, token)
+    success, err := service.NewRider().FaceAuthResult(c.(*app.RiderContext))
     if err != nil {
         return err
     }
-    return response.New(c).Success().SetData(map[string]bool{"status": success}).Send()
+    return response.New(c).Success().SetData(ar.Map{"status": success}).Send()
 }
 
 // FaceResult 获取人脸验证结果
 func (r *rider) FaceResult(c echo.Context) error {
-    token := c.Param("token")
-    ctx := c.(*app.RiderContext)
-    success, err := service.NewRider().FaceResult(ctx.Rider, token, ctx.Device.Serial)
+    success, err := service.NewRider().FaceResult(c.(*app.RiderContext))
     if err != nil {
         return err
     }
-    return response.New(c).Success().SetData(map[string]bool{"status": success}).Send()
+    return response.New(c).Success().SetData(ar.Map{"status": success}).Send()
 }
