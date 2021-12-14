@@ -172,6 +172,20 @@ func (pc *PersonCreate) SetFaceVerifyResult(mvr *model.FaceVerifyResult) *Person
 	return pc
 }
 
+// SetSuccessAt sets the "success_at" field.
+func (pc *PersonCreate) SetSuccessAt(t time.Time) *PersonCreate {
+	pc.mutation.SetSuccessAt(t)
+	return pc
+}
+
+// SetNillableSuccessAt sets the "success_at" field if the given value is not nil.
+func (pc *PersonCreate) SetNillableSuccessAt(t *time.Time) *PersonCreate {
+	if t != nil {
+		pc.SetSuccessAt(*t)
+	}
+	return pc
+}
+
 // AddRiderIDs adds the "rider" edge to the Rider entity by IDs.
 func (pc *PersonCreate) AddRiderIDs(ids ...uint64) *PersonCreate {
 	pc.mutation.AddRiderIDs(ids...)
@@ -462,6 +476,14 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 		})
 		_node.FaceVerifyResult = value
 	}
+	if value, ok := pc.mutation.SuccessAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: person.FieldSuccessAt,
+		})
+		_node.SuccessAt = &value
+	}
 	if nodes := pc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -724,6 +746,24 @@ func (u *PersonUpsert) UpdateFaceVerifyResult() *PersonUpsert {
 // ClearFaceVerifyResult clears the value of the "face_verify_result" field.
 func (u *PersonUpsert) ClearFaceVerifyResult() *PersonUpsert {
 	u.SetNull(person.FieldFaceVerifyResult)
+	return u
+}
+
+// SetSuccessAt sets the "success_at" field.
+func (u *PersonUpsert) SetSuccessAt(v time.Time) *PersonUpsert {
+	u.Set(person.FieldSuccessAt, v)
+	return u
+}
+
+// UpdateSuccessAt sets the "success_at" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateSuccessAt() *PersonUpsert {
+	u.SetExcluded(person.FieldSuccessAt)
+	return u
+}
+
+// ClearSuccessAt clears the value of the "success_at" field.
+func (u *PersonUpsert) ClearSuccessAt() *PersonUpsert {
+	u.SetNull(person.FieldSuccessAt)
 	return u
 }
 
@@ -990,6 +1030,27 @@ func (u *PersonUpsertOne) UpdateFaceVerifyResult() *PersonUpsertOne {
 func (u *PersonUpsertOne) ClearFaceVerifyResult() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
 		s.ClearFaceVerifyResult()
+	})
+}
+
+// SetSuccessAt sets the "success_at" field.
+func (u *PersonUpsertOne) SetSuccessAt(v time.Time) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetSuccessAt(v)
+	})
+}
+
+// UpdateSuccessAt sets the "success_at" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateSuccessAt() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateSuccessAt()
+	})
+}
+
+// ClearSuccessAt clears the value of the "success_at" field.
+func (u *PersonUpsertOne) ClearSuccessAt() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearSuccessAt()
 	})
 }
 
@@ -1418,6 +1479,27 @@ func (u *PersonUpsertBulk) UpdateFaceVerifyResult() *PersonUpsertBulk {
 func (u *PersonUpsertBulk) ClearFaceVerifyResult() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
 		s.ClearFaceVerifyResult()
+	})
+}
+
+// SetSuccessAt sets the "success_at" field.
+func (u *PersonUpsertBulk) SetSuccessAt(v time.Time) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetSuccessAt(v)
+	})
+}
+
+// UpdateSuccessAt sets the "success_at" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateSuccessAt() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateSuccessAt()
+	})
+}
+
+// ClearSuccessAt clears the value of the "success_at" field.
+func (u *PersonUpsertBulk) ClearSuccessAt() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearSuccessAt()
 	})
 }
 

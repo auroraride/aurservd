@@ -27,26 +27,29 @@ func RiderMiddleware() echo.MiddlewareFunc {
             }
 
             // 获取骑手, 判定是否需要登录
-            signinMessage := "需要登录"
             token := c.Request().Header.Get(app.HeaderRiderToken)
             id, err := ar.Cache.Get(context.Background(), token).Uint64()
             if err != nil {
                 c.Set("errCode", response.StatusUnauthorized)
-                return errors.New(signinMessage)
+                return errors.New(ar.RiderRequireSignin)
             }
             s := service.NewRider()
             var u *ent.Rider
             u, err = s.GetRiderById(id)
             if err != nil || u == nil {
                 c.Set("errCode", response.StatusUnauthorized)
-                return errors.New(signinMessage)
+                return errors.New(ar.RiderRequireSignin)
             }
 
+            // 用户被封禁
             if s.IsBlocked(u) {
                 c.Set("errCode", response.StatusForbidden)
                 s.Signout(u)
-                return errors.New("你已被封禁")
+                return errors.New(ar.RiderBlockedMessage)
             }
+
+            // 延长token有效期
+            s.ExtendTokenTime(u.ID, token)
 
             // 重载context
             return next(&app.RiderContext{
@@ -66,11 +69,11 @@ func RiderRequireAuthAndContact() echo.MiddlewareFunc {
             p := ctx.Rider.Edges.Person
             if ctx.Rider.Contact == nil && uri != "/rider/contact" {
                 ctx.Set("errCode", response.StatusRequireContact)
-                return errors.New("需要补充紧急联系人")
+                return errors.New(ar.RiderRequireContact)
             }
             if p == nil || model.PersonAuthStatus(p.Status).RequireAuth() {
                 ctx.Set("errCode", response.StatusRequireAuth)
-                return errors.New("需要实名验证")
+                return errors.New(ar.RiderRequireAuth)
             }
             return next(ctx)
         }
@@ -87,7 +90,7 @@ func RiderFaceMiddleware() echo.MiddlewareFunc {
             if s.IsNewDevice(u, ctx.Device) {
                 ctx.Set("errCode", response.StatusLocked)
                 ctx.Set("errData", ar.Map{"url": s.GetFaceUrl(ctx)})
-                return errors.New("需要人脸验证")
+                return errors.New(ar.RiderRequireFace)
             }
             return next(ctx)
         }

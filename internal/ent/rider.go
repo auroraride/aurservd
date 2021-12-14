@@ -52,6 +52,9 @@ type Rider struct {
 	// PushID holds the value of the "push_id" field.
 	// 推送ID
 	PushID *string `json:"push_id,omitempty"`
+	// LastSigninAt holds the value of the "last_signin_at" field.
+	// 最后登录时间
+	LastSigninAt *time.Time `json:"last_signin_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RiderQuery when eager-loading is set.
 	Edges RiderEdges `json:"edges"`
@@ -91,7 +94,7 @@ func (*Rider) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case rider.FieldRemark, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID:
 			values[i] = new(sql.NullString)
-		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastModify:
+		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastModify, rider.FieldLastSigninAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Rider", columns[i])
@@ -194,6 +197,13 @@ func (r *Rider) assignValues(columns []string, values []interface{}) error {
 				r.PushID = new(string)
 				*r.PushID = value.String
 			}
+		case rider.FieldLastSigninAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field last_signin_at", values[i])
+			} else if value.Valid {
+				r.LastSigninAt = new(time.Time)
+				*r.LastSigninAt = value.Time
+			}
 		}
 	}
 	return nil
@@ -262,6 +272,10 @@ func (r *Rider) String() string {
 	if v := r.PushID; v != nil {
 		builder.WriteString(", push_id=")
 		builder.WriteString(*v)
+	}
+	if v := r.LastSigninAt; v != nil {
+		builder.WriteString(", last_signin_at=")
+		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteByte(')')
 	return builder.String()

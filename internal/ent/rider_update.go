@@ -192,6 +192,26 @@ func (ru *RiderUpdate) ClearPushID() *RiderUpdate {
 	return ru
 }
 
+// SetLastSigninAt sets the "last_signin_at" field.
+func (ru *RiderUpdate) SetLastSigninAt(t time.Time) *RiderUpdate {
+	ru.mutation.SetLastSigninAt(t)
+	return ru
+}
+
+// SetNillableLastSigninAt sets the "last_signin_at" field if the given value is not nil.
+func (ru *RiderUpdate) SetNillableLastSigninAt(t *time.Time) *RiderUpdate {
+	if t != nil {
+		ru.SetLastSigninAt(*t)
+	}
+	return ru
+}
+
+// ClearLastSigninAt clears the value of the "last_signin_at" field.
+func (ru *RiderUpdate) ClearLastSigninAt() *RiderUpdate {
+	ru.mutation.ClearLastSigninAt()
+	return ru
+}
+
 // SetPerson sets the "person" edge to the Person entity.
 func (ru *RiderUpdate) SetPerson(p *Person) *RiderUpdate {
 	return ru.SetPersonID(p.ID)
@@ -428,6 +448,19 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: rider.FieldPushID,
 		})
 	}
+	if value, ok := ru.mutation.LastSigninAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: rider.FieldLastSigninAt,
+		})
+	}
+	if ru.mutation.LastSigninAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: rider.FieldLastSigninAt,
+		})
+	}
 	if ru.mutation.PersonCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -642,6 +675,26 @@ func (ruo *RiderUpdateOne) SetNillablePushID(s *string) *RiderUpdateOne {
 // ClearPushID clears the value of the "push_id" field.
 func (ruo *RiderUpdateOne) ClearPushID() *RiderUpdateOne {
 	ruo.mutation.ClearPushID()
+	return ruo
+}
+
+// SetLastSigninAt sets the "last_signin_at" field.
+func (ruo *RiderUpdateOne) SetLastSigninAt(t time.Time) *RiderUpdateOne {
+	ruo.mutation.SetLastSigninAt(t)
+	return ruo
+}
+
+// SetNillableLastSigninAt sets the "last_signin_at" field if the given value is not nil.
+func (ruo *RiderUpdateOne) SetNillableLastSigninAt(t *time.Time) *RiderUpdateOne {
+	if t != nil {
+		ruo.SetLastSigninAt(*t)
+	}
+	return ruo
+}
+
+// ClearLastSigninAt clears the value of the "last_signin_at" field.
+func (ruo *RiderUpdateOne) ClearLastSigninAt() *RiderUpdateOne {
+	ruo.mutation.ClearLastSigninAt()
 	return ruo
 }
 
@@ -903,6 +956,19 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: rider.FieldPushID,
+		})
+	}
+	if value, ok := ruo.mutation.LastSigninAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: rider.FieldLastSigninAt,
+		})
+	}
+	if ruo.mutation.LastSigninAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: rider.FieldLastSigninAt,
 		})
 	}
 	if ruo.mutation.PersonCleared() {

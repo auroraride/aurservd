@@ -75,7 +75,7 @@ func (r *riderService) Signin(phone string, device *app.Device) (res *model.Ride
 
     // 判定用户是否被封禁
     if r.IsBlocked(u) {
-        err = errors.New("你已被封禁")
+        err = errors.New(ar.RiderBlockedMessage)
         return
     }
 
@@ -96,7 +96,7 @@ func (r *riderService) Signin(phone string, device *app.Device) (res *model.Ride
         IsContactFilled: u.Contact != nil,
         IsAuthed:        r.IsAuthed(u),
         Contact:         u.Contact,
-        Qrcode: fmt.Sprintf("https://rider.auroraride.com/%d", u.ID),
+        Qrcode:          fmt.Sprintf("https://rider.auroraride.com/%d", u.ID),
     }
 
     // 设置登录token
@@ -156,11 +156,8 @@ func (r *riderService) FaceAuthResult(c *app.RiderContext) (success bool, err er
     if !success {
         return
     }
-    // 判断用户是否被 Block
 
     res := data.Result
-    oss := ali.NewOss()
-    prefix := fmt.Sprintf("%s-%s/", res.IdcardOcrResult.Name, res.IdcardOcrResult.IdCardNumber)
     detail := res.IdcardOcrResult
     vr := &model.FaceVerifyResult{
         Birthday:       detail.Birthday,
@@ -176,14 +173,22 @@ func (r *riderService) FaceAuthResult(c *app.RiderContext) (success bool, err er
         LivenessScore:  res.VerifyResult.LivenessScore,
         Spoofing:       res.VerifyResult.Spoofing,
     }
+    // 判断用户是否被封禁
+    blocked, _ := ar.Ent.Person.Query().Where(person.IcNumber(detail.IdCardNumber), person.Block(true)).Exist(context.Background())
+    if blocked {
+        panic(errors.New(""))
+    }
 
     // 上传图片到七牛云
+    oss := ali.NewOss()
+    prefix := fmt.Sprintf("%s-%s/", res.IdcardOcrResult.Name, res.IdcardOcrResult.IdCardNumber)
     fm := oss.UploadUrlFile(prefix+"face.jpg", res.FaceImg)
     pm := oss.UploadBase64ImageJpeg(prefix+"portrait.jpg", res.IdcardImages.FrontBase64)
     nm := oss.UploadBase64ImageJpeg(prefix+"national.jpg", res.IdcardImages.BackBase64)
 
     icNum := vr.IdCardNumber
-    id, err := ar.Ent.Person.Create().
+    id, err := ar.Ent.Person.
+        Create().
         SetStatus(model.PersonAuthSuccess.Raw()).
         SetIcNumber(icNum).
         SetName(vr.Name).
@@ -191,6 +196,7 @@ func (r *riderService) FaceAuthResult(c *app.RiderContext) (success bool, err er
         SetIcNational(nm).
         SetIcPortrait(pm).
         SetFaceVerifyResult(vr).
+        SetLastModify(time.Now()).
         OnConflictColumns(person.FieldIcNumber).
         UpdateNewValues().
         ID(context.Background())
@@ -260,4 +266,17 @@ func (r *riderService) GeneratePrivacy(c *app.RiderContext) string {
 // ComparePrivacy 比对实名认证或人脸识别限制条件是否满足
 func (r *riderService) ComparePrivacy(c *app.RiderContext) bool {
     return ar.Cache.Get(context.Background(), c.Param("token")).Val() == r.GeneratePrivacy(c)
+}
+
+// ExtendTokenTime 延长骑手登录有效期
+func (r *riderService) ExtendTokenTime(id uint64, token string) {
+    key := fmt.Sprintf("RIDER_%d", id)
+    cache := ar.Cache
+    ctx := context.Background()
+    cache.Set(ctx, key, token, 7*24*time.Hour)
+    cache.Set(ctx, token, id, 7*24*time.Hour)
+    _ = ar.Ent.Rider.
+        UpdateOneID(id).
+        SetLastSigninAt(time.Now()).
+        Exec(context.Background())
 }

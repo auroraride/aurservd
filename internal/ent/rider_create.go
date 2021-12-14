@@ -160,6 +160,20 @@ func (rc *RiderCreate) SetNillablePushID(s *string) *RiderCreate {
 	return rc
 }
 
+// SetLastSigninAt sets the "last_signin_at" field.
+func (rc *RiderCreate) SetLastSigninAt(t time.Time) *RiderCreate {
+	rc.mutation.SetLastSigninAt(t)
+	return rc
+}
+
+// SetNillableLastSigninAt sets the "last_signin_at" field if the given value is not nil.
+func (rc *RiderCreate) SetNillableLastSigninAt(t *time.Time) *RiderCreate {
+	if t != nil {
+		rc.SetLastSigninAt(*t)
+	}
+	return rc
+}
+
 // SetPerson sets the "person" edge to the Person entity.
 func (rc *RiderCreate) SetPerson(p *Person) *RiderCreate {
 	return rc.SetPersonID(p.ID)
@@ -393,6 +407,14 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			Column: rider.FieldPushID,
 		})
 		_node.PushID = &value
+	}
+	if value, ok := rc.mutation.LastSigninAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: rider.FieldLastSigninAt,
+		})
+		_node.LastSigninAt = &value
 	}
 	if nodes := rc.mutation.PersonIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -654,6 +676,24 @@ func (u *RiderUpsert) ClearPushID() *RiderUpsert {
 	return u
 }
 
+// SetLastSigninAt sets the "last_signin_at" field.
+func (u *RiderUpsert) SetLastSigninAt(v time.Time) *RiderUpsert {
+	u.Set(rider.FieldLastSigninAt, v)
+	return u
+}
+
+// UpdateLastSigninAt sets the "last_signin_at" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateLastSigninAt() *RiderUpsert {
+	u.SetExcluded(rider.FieldLastSigninAt)
+	return u
+}
+
+// ClearLastSigninAt clears the value of the "last_signin_at" field.
+func (u *RiderUpsert) ClearLastSigninAt() *RiderUpsert {
+	u.SetNull(rider.FieldLastSigninAt)
+	return u
+}
+
 // UpdateNewValues updates the fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -910,6 +950,27 @@ func (u *RiderUpsertOne) UpdatePushID() *RiderUpsertOne {
 func (u *RiderUpsertOne) ClearPushID() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearPushID()
+	})
+}
+
+// SetLastSigninAt sets the "last_signin_at" field.
+func (u *RiderUpsertOne) SetLastSigninAt(v time.Time) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetLastSigninAt(v)
+	})
+}
+
+// UpdateLastSigninAt sets the "last_signin_at" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateLastSigninAt() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateLastSigninAt()
+	})
+}
+
+// ClearLastSigninAt clears the value of the "last_signin_at" field.
+func (u *RiderUpsertOne) ClearLastSigninAt() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearLastSigninAt()
 	})
 }
 
@@ -1331,6 +1392,27 @@ func (u *RiderUpsertBulk) UpdatePushID() *RiderUpsertBulk {
 func (u *RiderUpsertBulk) ClearPushID() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearPushID()
+	})
+}
+
+// SetLastSigninAt sets the "last_signin_at" field.
+func (u *RiderUpsertBulk) SetLastSigninAt(v time.Time) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetLastSigninAt(v)
+	})
+}
+
+// UpdateLastSigninAt sets the "last_signin_at" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateLastSigninAt() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateLastSigninAt()
+	})
+}
+
+// ClearLastSigninAt clears the value of the "last_signin_at" field.
+func (u *RiderUpsertBulk) ClearLastSigninAt() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearLastSigninAt()
 	})
 }
 

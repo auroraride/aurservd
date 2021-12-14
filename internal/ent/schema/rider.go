@@ -33,6 +33,7 @@ func (Rider) Fields() []ent.Field {
         field.String("last_device").MaxLen(60).Unique().Comment("上次登录设备ID"),
         field.String("last_face").Optional().Nillable().Comment("上次登录人脸"),
         field.String("push_id").MaxLen(60).Unique().Optional().Nillable().Comment("推送ID"),
+        field.Time("last_signin_at").Nillable().Optional().Comment("最后登录时间"),
     }
 }
 

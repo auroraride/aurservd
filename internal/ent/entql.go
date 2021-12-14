@@ -42,6 +42,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			person.FieldIcNational:       {Type: field.TypeString, Column: person.FieldIcNational},
 			person.FieldFaceImg:          {Type: field.TypeString, Column: person.FieldFaceImg},
 			person.FieldFaceVerifyResult: {Type: field.TypeJSON, Column: person.FieldFaceVerifyResult},
+			person.FieldSuccessAt:        {Type: field.TypeTime, Column: person.FieldSuccessAt},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -55,18 +56,19 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Rider",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			rider.FieldCreatedAt:  {Type: field.TypeTime, Column: rider.FieldCreatedAt},
-			rider.FieldUpdatedAt:  {Type: field.TypeTime, Column: rider.FieldUpdatedAt},
-			rider.FieldDeletedAt:  {Type: field.TypeTime, Column: rider.FieldDeletedAt},
-			rider.FieldLastModify: {Type: field.TypeTime, Column: rider.FieldLastModify},
-			rider.FieldRemark:     {Type: field.TypeString, Column: rider.FieldRemark},
-			rider.FieldPersonID:   {Type: field.TypeUint64, Column: rider.FieldPersonID},
-			rider.FieldPhone:      {Type: field.TypeString, Column: rider.FieldPhone},
-			rider.FieldContact:    {Type: field.TypeJSON, Column: rider.FieldContact},
-			rider.FieldDeviceType: {Type: field.TypeUint8, Column: rider.FieldDeviceType},
-			rider.FieldLastDevice: {Type: field.TypeString, Column: rider.FieldLastDevice},
-			rider.FieldLastFace:   {Type: field.TypeString, Column: rider.FieldLastFace},
-			rider.FieldPushID:     {Type: field.TypeString, Column: rider.FieldPushID},
+			rider.FieldCreatedAt:    {Type: field.TypeTime, Column: rider.FieldCreatedAt},
+			rider.FieldUpdatedAt:    {Type: field.TypeTime, Column: rider.FieldUpdatedAt},
+			rider.FieldDeletedAt:    {Type: field.TypeTime, Column: rider.FieldDeletedAt},
+			rider.FieldLastModify:   {Type: field.TypeTime, Column: rider.FieldLastModify},
+			rider.FieldRemark:       {Type: field.TypeString, Column: rider.FieldRemark},
+			rider.FieldPersonID:     {Type: field.TypeUint64, Column: rider.FieldPersonID},
+			rider.FieldPhone:        {Type: field.TypeString, Column: rider.FieldPhone},
+			rider.FieldContact:      {Type: field.TypeJSON, Column: rider.FieldContact},
+			rider.FieldDeviceType:   {Type: field.TypeUint8, Column: rider.FieldDeviceType},
+			rider.FieldLastDevice:   {Type: field.TypeString, Column: rider.FieldLastDevice},
+			rider.FieldLastFace:     {Type: field.TypeString, Column: rider.FieldLastFace},
+			rider.FieldPushID:       {Type: field.TypeString, Column: rider.FieldPushID},
+			rider.FieldLastSigninAt: {Type: field.TypeTime, Column: rider.FieldLastSigninAt},
 		},
 	}
 	graph.Nodes[2] = &sqlgraph.Node{
@@ -228,6 +230,11 @@ func (f *PersonFilter) WhereFaceVerifyResult(p entql.BytesP) {
 	f.Where(p.Field(person.FieldFaceVerifyResult))
 }
 
+// WhereSuccessAt applies the entql time.Time predicate on the success_at field.
+func (f *PersonFilter) WhereSuccessAt(p entql.TimeP) {
+	f.Where(p.Field(person.FieldSuccessAt))
+}
+
 // WhereHasRider applies a predicate to check if query has an edge rider.
 func (f *PersonFilter) WhereHasRider() {
 	f.Where(entql.HasEdge("rider"))
@@ -339,6 +346,11 @@ func (f *RiderFilter) WhereLastFace(p entql.StringP) {
 // WherePushID applies the entql string predicate on the push_id field.
 func (f *RiderFilter) WherePushID(p entql.StringP) {
 	f.Where(p.Field(rider.FieldPushID))
+}
+
+// WhereLastSigninAt applies the entql time.Time predicate on the last_signin_at field.
+func (f *RiderFilter) WhereLastSigninAt(p entql.TimeP) {
+	f.Where(p.Field(rider.FieldLastSigninAt))
 }
 
 // WhereHasPerson applies a predicate to check if query has an edge person.
