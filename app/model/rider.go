@@ -29,6 +29,7 @@ type RiderSigninRes struct {
     IsAuthed        bool          `json:"isAuthed"`        // 是否已认证
     IsContactFilled bool          `json:"isContactFilled"` // 联系人是否添加
     Contact         *RiderContact `json:"contact,omitempty"`
+    Qrcode          string        `json:"qrcode"`
 }
 
 // RiderContact 紧急联系人

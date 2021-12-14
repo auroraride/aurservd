@@ -94,8 +94,9 @@ func (r *riderService) Signin(phone string, device *app.Device) (res *model.Ride
         Token:           token,
         IsNewDevice:     r.IsNewDevice(u, device),
         IsContactFilled: u.Contact != nil,
-        Contact:         u.Contact,
         IsAuthed:        r.IsAuthed(u),
+        Contact:         u.Contact,
+        Qrcode: fmt.Sprintf("https://rider.auroraride.com/%d", u.ID),
     }
 
     // 设置登录token
