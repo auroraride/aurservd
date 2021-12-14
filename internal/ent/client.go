@@ -11,6 +11,7 @@ import (
 
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/setting"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -26,6 +27,8 @@ type Client struct {
 	Person *PersonClient
 	// Rider is the client for interacting with the Rider builders.
 	Rider *RiderClient
+	// Setting is the client for interacting with the Setting builders.
+	Setting *SettingClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -41,6 +44,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Person = NewPersonClient(c.config)
 	c.Rider = NewRiderClient(c.config)
+	c.Setting = NewSettingClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -72,10 +76,11 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		Person: NewPersonClient(cfg),
-		Rider:  NewRiderClient(cfg),
+		ctx:     ctx,
+		config:  cfg,
+		Person:  NewPersonClient(cfg),
+		Rider:   NewRiderClient(cfg),
+		Setting: NewSettingClient(cfg),
 	}, nil
 }
 
@@ -93,9 +98,10 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config: cfg,
-		Person: NewPersonClient(cfg),
-		Rider:  NewRiderClient(cfg),
+		config:  cfg,
+		Person:  NewPersonClient(cfg),
+		Rider:   NewRiderClient(cfg),
+		Setting: NewSettingClient(cfg),
 	}, nil
 }
 
@@ -127,6 +133,7 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.Person.Use(hooks...)
 	c.Rider.Use(hooks...)
+	c.Setting.Use(hooks...)
 }
 
 // PersonClient is a client for the Person schema.
@@ -339,4 +346,94 @@ func (c *RiderClient) QueryPerson(r *Rider) *PersonQuery {
 // Hooks returns the client hooks.
 func (c *RiderClient) Hooks() []Hook {
 	return c.hooks.Rider
+}
+
+// SettingClient is a client for the Setting schema.
+type SettingClient struct {
+	config
+}
+
+// NewSettingClient returns a client for the Setting from the given config.
+func NewSettingClient(c config) *SettingClient {
+	return &SettingClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `setting.Hooks(f(g(h())))`.
+func (c *SettingClient) Use(hooks ...Hook) {
+	c.hooks.Setting = append(c.hooks.Setting, hooks...)
+}
+
+// Create returns a create builder for Setting.
+func (c *SettingClient) Create() *SettingCreate {
+	mutation := newSettingMutation(c.config, OpCreate)
+	return &SettingCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Setting entities.
+func (c *SettingClient) CreateBulk(builders ...*SettingCreate) *SettingCreateBulk {
+	return &SettingCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Setting.
+func (c *SettingClient) Update() *SettingUpdate {
+	mutation := newSettingMutation(c.config, OpUpdate)
+	return &SettingUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SettingClient) UpdateOne(s *Setting) *SettingUpdateOne {
+	mutation := newSettingMutation(c.config, OpUpdateOne, withSetting(s))
+	return &SettingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SettingClient) UpdateOneID(id uint64) *SettingUpdateOne {
+	mutation := newSettingMutation(c.config, OpUpdateOne, withSettingID(id))
+	return &SettingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Setting.
+func (c *SettingClient) Delete() *SettingDelete {
+	mutation := newSettingMutation(c.config, OpDelete)
+	return &SettingDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *SettingClient) DeleteOne(s *Setting) *SettingDeleteOne {
+	return c.DeleteOneID(s.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *SettingClient) DeleteOneID(id uint64) *SettingDeleteOne {
+	builder := c.Delete().Where(setting.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SettingDeleteOne{builder}
+}
+
+// Query returns a query builder for Setting.
+func (c *SettingClient) Query() *SettingQuery {
+	return &SettingQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Setting entity by its id.
+func (c *SettingClient) Get(ctx context.Context, id uint64) (*Setting, error) {
+	return c.Query().Where(setting.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SettingClient) GetX(ctx context.Context, id uint64) *Setting {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SettingClient) Hooks() []Hook {
+	return c.hooks.Setting
 }

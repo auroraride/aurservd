@@ -43,6 +43,12 @@ func RiderMiddleware() echo.MiddlewareFunc {
                 return errors.New(signinMessage)
             }
 
+            if s.IsBlocked(u) {
+                c.Set("errCode", response.StatusForbidden)
+                s.Signout(u)
+                return errors.New("你已被封禁")
+            }
+
             // 重载context
             ctx := &app.RiderContext{
                 GlobalContext: c.(*app.GlobalContext),

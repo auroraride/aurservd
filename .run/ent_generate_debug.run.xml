@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ent_generate_debug" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="aurservd" />
+    <working_directory value="$PROJECT_DIR$" />
+    <parameters value="generate" />
+    <kind value="PACKAGE" />
+    <package value="github.com/auroraride/aurservd/cmd/ent" />
+    <directory value="$PROJECT_DIR$/cmd/aurservd" />
+    <filePath value="$PROJECT_DIR$" />
+    <output_directory value="$PROJECT_DIR$/build/debug" />
+    <method v="2" />
+  </configuration>
+</component>

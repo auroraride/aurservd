@@ -79,6 +79,7 @@ func GenerateCmd(postRun ...func(*gen.Config)) *cobra.Command {
                     entc.Storage(storage),
                     entc.FeatureNames(features...),
                 }
+                templates = append(templates, "./cmd/ent/template/softdelete.tmpl")
                 for _, tmpl := range templates {
                     typ := "dir"
                     if parts := strings.SplitN(tmpl, "=", 2); len(parts) > 1 {

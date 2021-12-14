@@ -1,0 +1,73 @@
+{{/*
+Copyright (C) liasica. 2021-present.
+
+Created at 2021-12-14
+Based on aurservd by liasica, magicrolan@qq.com.
+*/}}
+
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "soft_delete" }}
+
+{{ $pkg := base $.Config.Package }}
+{{ template "header" $ }}
+
+import (
+    "time"
+
+	{{ range $n := $.Nodes }}
+		"{{ $n.Config.Package }}/{{ $n.Package }}"
+	{{- end }}
+)
+
+{{ range $n := $.Nodes }}
+{{ $client := print $n.Name "Client" }}
+
+{{ $rec := $n.Receiver }}{{ if eq $rec "c" }}{{ $rec = printf "%.2s" $n.Name | lower }}{{ end }}
+
+{{- range $f := $n.Fields }}
+{{- if eq $f.StructField "DeletedAt"}}
+// SoftDelete returns an soft delete builder for {{ $n.Name }}.
+func (c *{{ $client }}) SoftDelete() *{{ $n.UpdateName }} {
+	mutation := new{{ $n.MutationName }}(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &{{ $n.UpdateName }}{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *{{ $client }}) SoftDeleteOne({{ $rec }} *{{ $n.Name }}) *{{ $n.UpdateOneName }} {
+	mutation := new{{ $n.MutationName }}(c.config, OpUpdateOne, {{ print "with" $n.Name }}({{ $rec }}))
+	mutation.SetDeletedAt(time.Now())
+	return &{{ $n.UpdateOneName }}{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *{{ $client }}) SoftDeleteOneID(id {{ $n.ID.Type }}) *{{ $n.UpdateOneName }} {
+	mutation := new{{ $n.MutationName }}(c.config, OpUpdateOne, {{ print "with" $n.Name "ID" }}(id))
+	mutation.SetDeletedAt(time.Now())
+	return &{{ $n.UpdateOneName }}{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for {{ $n.Name }}.
+func (c *{{ $client }}) QueryNotDeleted() *{{ $n.QueryName }} {
+	return c.Query().Where({{ $n.Package }}.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a {{ $n.Name }} not deleted entity by its id.
+func (c *{{ $client }}) GetNotDeleted(ctx context.Context, id {{ $n.ID.Type }}) (*{{ $n.Name }}, error) {
+	return c.Query().Where({{ $n.Package }}.ID(id), {{ $n.Package }}.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *{{ $client }}) GetNotDeletedX(ctx context.Context, id {{ $n.ID.Type }}) *{{ $n.Name }} {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+{{- end }}
+{{- end }}
+
+{{ end }}
+{{ end }}

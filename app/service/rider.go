@@ -7,6 +7,7 @@ package service
 
 import (
     "context"
+    "errors"
     "fmt"
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/model"
@@ -29,7 +30,33 @@ func NewRider() *riderService {
     return &riderService{}
 }
 
+// GetRiderById 根据ID获取骑手及其实名状态
+func (r *riderService) GetRiderById(id uint64) (u *ent.Rider, err error) {
+    return ar.Ent.Rider.
+        QueryNotDeleted().
+        WithPerson().
+        Where(rider.ID(id)).
+        Only(context.Background())
+}
+
+// IsAuthed 是否已认证
+func (r *riderService) IsAuthed(u *ent.Rider) bool {
+    return u.Edges.Person != nil && model.PersonAuthStatus(u.Edges.Person.Status).RequireAuth()
+}
+
+// IsBlocked 骑手是否被封锁
+func (r *riderService) IsBlocked(u *ent.Rider) bool {
+    p := u.Edges.Person
+    return p != nil && p.Block
+}
+
+// IsNewDevice 检查是否是新设备
+func (r *riderService) IsNewDevice(u *ent.Rider, device *app.Device) bool {
+    return u.LastDevice != device.Serial
+}
+
 // Signin 骑手登录
+// 当返回字段 isNewDevice 时候需要跳转人脸识别界面
 func (r *riderService) Signin(phone string, device *app.Device) (res *model.RiderSigninRes, err error) {
     ctx := context.Background()
     orm := ar.Ent.Rider
@@ -47,10 +74,13 @@ func (r *riderService) Signin(phone string, device *app.Device) (res *model.Ride
         }
     }
 
-    // 判定是否更换了设备
-    var token string
+    // 判定用户是否被封禁
+    if r.IsBlocked(u) {
+        err = errors.New("你已被封禁")
+        return
+    }
 
-    token = xid.New().String() + utils.RandTokenString()
+    token := xid.New().String() + utils.RandTokenString()
     cache := ar.Cache
     key := fmt.Sprintf("RIDER_%d", u.ID)
 
@@ -66,7 +96,7 @@ func (r *riderService) Signin(phone string, device *app.Device) (res *model.Ride
         IsNewDevice:     r.IsNewDevice(u, device),
         IsContactFilled: u.Contact != nil,
         Contact:         u.Contact,
-        IsAuthed:        u.Edges.Person != nil && model.PersonAuthStatus(u.Edges.Person.Status).RequireAuth(),
+        IsAuthed:        r.IsAuthed(u),
     }
 
     // 设置登录token
@@ -76,27 +106,24 @@ func (r *riderService) Signin(phone string, device *app.Device) (res *model.Ride
     return
 }
 
-// GetRiderById 根据ID获取骑手及其实名状态
-func (r *riderService) GetRiderById(id uint64) (u *ent.Rider, err error) {
-    return ar.Ent.Rider.Query().
-        WithPerson().
-        Where(rider.ID(id)).
-        Only(context.Background())
+// Signout 强制登出
+func (r *riderService) Signout(u *ent.Rider) {
+    cache := ar.Cache
+    ctx := context.Background()
+    key := fmt.Sprintf("RIDER_%d", u.ID)
+    token := cache.Get(ctx, key).Val()
+    cache.Del(ctx, key)
+    cache.Del(ctx, token)
 }
 
 // SetDevice 更新用户设备
 func (r *riderService) SetDevice(u *ent.Rider, device *app.Device) error {
-    orm := ar.Ent.Rider
-    _, err := orm.UpdateOneID(u.ID).
+    _, err := ar.Ent.Rider.
+        UpdateOneID(u.ID).
         SetLastDevice(device.Serial).
         SetDeviceType(device.Type.Raw()).
         Save(context.Background())
     return err
-}
-
-// IsNewDevice 检查是否是新设备
-func (r *riderService) IsNewDevice(u *ent.Rider, device *app.Device) bool {
-    return u.LastDevice != device.Serial
 }
 
 // FaceAuthResult 获取并更新人脸实名验证结果
@@ -109,6 +136,8 @@ func (r *riderService) FaceAuthResult(u *ent.Rider, token string) (success bool,
     if !success {
         return
     }
+    // 判断用户是否被 Block
+
     res := data.Result
     oss := ali.NewOss()
     prefix := fmt.Sprintf("%s-%s/", res.IdcardOcrResult.Name, res.IdcardOcrResult.IdCardNumber)

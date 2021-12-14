@@ -8,6 +8,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/schema"
+	"github.com/auroraride/aurservd/internal/ent/setting"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -76,4 +77,23 @@ func init() {
 	riderDescPushID := riderFields[6].Descriptor()
 	// rider.PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
 	rider.PushIDValidator = riderDescPushID.Validators[0].(func(string) error)
+	settingMixin := schema.Setting{}.Mixin()
+	settingMixinFields0 := settingMixin[0].Fields()
+	_ = settingMixinFields0
+	settingFields := schema.Setting{}.Fields()
+	_ = settingFields
+	// settingDescCreatedAt is the schema descriptor for created_at field.
+	settingDescCreatedAt := settingMixinFields0[0].Descriptor()
+	// setting.DefaultCreatedAt holds the default value on creation for the created_at field.
+	setting.DefaultCreatedAt = settingDescCreatedAt.Default.(func() time.Time)
+	// settingDescUpdatedAt is the schema descriptor for updated_at field.
+	settingDescUpdatedAt := settingMixinFields0[1].Descriptor()
+	// setting.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	setting.DefaultUpdatedAt = settingDescUpdatedAt.Default.(func() time.Time)
+	// setting.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	setting.UpdateDefaultUpdatedAt = settingDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// settingDescKey is the schema descriptor for key field.
+	settingDescKey := settingFields[0].Descriptor()
+	// setting.KeyValidator is a validator for the "key" field. It is called by the builders before save.
+	setting.KeyValidator = settingDescKey.Validators[0].(func(string) error)
 }

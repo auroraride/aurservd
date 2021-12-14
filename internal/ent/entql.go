@@ -6,6 +6,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/setting"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -15,7 +16,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 2)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 3)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   person.Table,
@@ -66,6 +67,23 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldLastDevice: {Type: field.TypeString, Column: rider.FieldLastDevice},
 			rider.FieldLastFace:   {Type: field.TypeString, Column: rider.FieldLastFace},
 			rider.FieldPushID:     {Type: field.TypeString, Column: rider.FieldPushID},
+		},
+	}
+	graph.Nodes[2] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   setting.Table,
+			Columns: setting.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: setting.FieldID,
+			},
+		},
+		Type: "Setting",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			setting.FieldCreatedAt: {Type: field.TypeTime, Column: setting.FieldCreatedAt},
+			setting.FieldUpdatedAt: {Type: field.TypeTime, Column: setting.FieldUpdatedAt},
+			setting.FieldKey:       {Type: field.TypeString, Column: setting.FieldKey},
+			setting.FieldVal:       {Type: field.TypeJSON, Column: setting.FieldVal},
 		},
 	}
 	graph.MustAddE(
@@ -335,4 +353,63 @@ func (f *RiderFilter) WhereHasPersonWith(preds ...predicate.Person) {
 			p(s)
 		}
 	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (sq *SettingQuery) addPredicate(pred func(s *sql.Selector)) {
+	sq.predicates = append(sq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the SettingQuery builder.
+func (sq *SettingQuery) Filter() *SettingFilter {
+	return &SettingFilter{sq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *SettingMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the SettingMutation builder.
+func (m *SettingMutation) Filter() *SettingFilter {
+	return &SettingFilter{m}
+}
+
+// SettingFilter provides a generic filtering capability at runtime for SettingQuery.
+type SettingFilter struct {
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *SettingFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *SettingFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(setting.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *SettingFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(setting.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *SettingFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(setting.FieldUpdatedAt))
+}
+
+// WhereKey applies the entql string predicate on the key field.
+func (f *SettingFilter) WhereKey(p entql.StringP) {
+	f.Where(p.Field(setting.FieldKey))
+}
+
+// WhereVal applies the entql json.RawMessage predicate on the val field.
+func (f *SettingFilter) WhereVal(p entql.BytesP) {
+	f.Where(p.Field(setting.FieldVal))
 }

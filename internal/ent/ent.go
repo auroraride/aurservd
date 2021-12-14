@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/setting"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -30,8 +31,9 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		person.Table: person.ValidColumn,
-		rider.Table:  rider.ValidColumn,
+		person.Table:  person.ValidColumn,
+		rider.Table:   rider.ValidColumn,
+		setting.Table: setting.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

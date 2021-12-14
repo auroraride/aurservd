@@ -11,3 +11,6 @@ type Person func(*sql.Selector)
 
 // Rider is the predicate function for rider builders.
 type Rider func(*sql.Selector)
+
+// Setting is the predicate function for setting builders.
+type Setting func(*sql.Selector)

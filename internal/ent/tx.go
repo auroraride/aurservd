@@ -16,6 +16,8 @@ type Tx struct {
 	Person *PersonClient
 	// Rider is the client for interacting with the Rider builders.
 	Rider *RiderClient
+	// Setting is the client for interacting with the Setting builders.
+	Setting *SettingClient
 
 	// lazily loaded.
 	client     *Client
@@ -153,6 +155,7 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.Person = NewPersonClient(tx.config)
 	tx.Rider = NewRiderClient(tx.config)
+	tx.Setting = NewSettingClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

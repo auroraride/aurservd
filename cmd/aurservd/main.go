@@ -9,9 +9,11 @@ import (
     _ "github.com/auroraride/aurservd/internal/boot"
 
     "github.com/auroraride/aurservd/app/router"
+    "github.com/auroraride/aurservd/cmd/aurservd/internal"
 )
 
 func main() {
+    go internal.Demo()
     // 启动服务器
     router.Run()
 }

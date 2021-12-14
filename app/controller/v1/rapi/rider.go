@@ -85,6 +85,9 @@ func (r *rider) AuthResult(c echo.Context) error {
 func (r *rider) FaceResult(c echo.Context) error {
     token := c.Param("token")
     ctx := c.(*app.RiderContext)
-    service.NewRider().FaceResult(ctx.Rider, token, ctx.Device.Serial)
-    return nil
+    success, err := service.NewRider().FaceResult(ctx.Rider, token, ctx.Device.Serial)
+    if err != nil {
+        return err
+    }
+    return response.New(c).Success().SetData(map[string]bool{"status": success}).Send()
 }

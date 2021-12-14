@@ -82,10 +82,25 @@ var (
 			},
 		},
 	}
+	// SettingColumns holds the columns for the "setting" table.
+	SettingColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "key", Type: field.TypeString, Unique: true, Size: 40},
+		{Name: "val", Type: field.TypeJSON},
+	}
+	// SettingTable holds the schema information for the "setting" table.
+	SettingTable = &schema.Table{
+		Name:       "setting",
+		Columns:    SettingColumns,
+		PrimaryKey: []*schema.Column{SettingColumns[0]},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		PersonTable,
 		RiderTable,
+		SettingTable,
 	}
 )
 
@@ -96,5 +111,8 @@ func init() {
 	RiderTable.ForeignKeys[0].RefTable = PersonTable
 	RiderTable.Annotation = &entsql.Annotation{
 		Table: "rider",
+	}
+	SettingTable.Annotation = &entsql.Annotation{
+		Table: "setting",
 	}
 }
