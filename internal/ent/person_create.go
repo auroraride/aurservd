@@ -128,60 +128,60 @@ func (pc *PersonCreate) SetName(s string) *PersonCreate {
 	return pc
 }
 
-// SetIcNumber sets the "ic_number" field.
-func (pc *PersonCreate) SetIcNumber(s string) *PersonCreate {
-	pc.mutation.SetIcNumber(s)
+// SetIDCardNumber sets the "id_card_number" field.
+func (pc *PersonCreate) SetIDCardNumber(s string) *PersonCreate {
+	pc.mutation.SetIDCardNumber(s)
 	return pc
 }
 
-// SetIcType sets the "ic_type" field.
-func (pc *PersonCreate) SetIcType(u uint8) *PersonCreate {
-	pc.mutation.SetIcType(u)
+// SetIDCardType sets the "id_card_type" field.
+func (pc *PersonCreate) SetIDCardType(u uint8) *PersonCreate {
+	pc.mutation.SetIDCardType(u)
 	return pc
 }
 
-// SetNillableIcType sets the "ic_type" field if the given value is not nil.
-func (pc *PersonCreate) SetNillableIcType(u *uint8) *PersonCreate {
+// SetNillableIDCardType sets the "id_card_type" field if the given value is not nil.
+func (pc *PersonCreate) SetNillableIDCardType(u *uint8) *PersonCreate {
 	if u != nil {
-		pc.SetIcType(*u)
+		pc.SetIDCardType(*u)
 	}
 	return pc
 }
 
-// SetIcPortrait sets the "ic_portrait" field.
-func (pc *PersonCreate) SetIcPortrait(s string) *PersonCreate {
-	pc.mutation.SetIcPortrait(s)
+// SetIDCardPortrait sets the "id_card_portrait" field.
+func (pc *PersonCreate) SetIDCardPortrait(s string) *PersonCreate {
+	pc.mutation.SetIDCardPortrait(s)
 	return pc
 }
 
-// SetIcNational sets the "ic_national" field.
-func (pc *PersonCreate) SetIcNational(s string) *PersonCreate {
-	pc.mutation.SetIcNational(s)
+// SetIDCardNational sets the "id_card_national" field.
+func (pc *PersonCreate) SetIDCardNational(s string) *PersonCreate {
+	pc.mutation.SetIDCardNational(s)
 	return pc
 }
 
-// SetFaceImg sets the "face_img" field.
-func (pc *PersonCreate) SetFaceImg(s string) *PersonCreate {
-	pc.mutation.SetFaceImg(s)
+// SetAuthFace sets the "auth_face" field.
+func (pc *PersonCreate) SetAuthFace(s string) *PersonCreate {
+	pc.mutation.SetAuthFace(s)
 	return pc
 }
 
-// SetFaceVerifyResult sets the "face_verify_result" field.
-func (pc *PersonCreate) SetFaceVerifyResult(mvr *model.FaceVerifyResult) *PersonCreate {
-	pc.mutation.SetFaceVerifyResult(mvr)
+// SetAuthResult sets the "auth_result" field.
+func (pc *PersonCreate) SetAuthResult(mvr *model.FaceVerifyResult) *PersonCreate {
+	pc.mutation.SetAuthResult(mvr)
 	return pc
 }
 
-// SetResultAt sets the "result_at" field.
-func (pc *PersonCreate) SetResultAt(t time.Time) *PersonCreate {
-	pc.mutation.SetResultAt(t)
+// SetAuthAt sets the "auth_at" field.
+func (pc *PersonCreate) SetAuthAt(t time.Time) *PersonCreate {
+	pc.mutation.SetAuthAt(t)
 	return pc
 }
 
-// SetNillableResultAt sets the "result_at" field if the given value is not nil.
-func (pc *PersonCreate) SetNillableResultAt(t *time.Time) *PersonCreate {
+// SetNillableAuthAt sets the "auth_at" field if the given value is not nil.
+func (pc *PersonCreate) SetNillableAuthAt(t *time.Time) *PersonCreate {
 	if t != nil {
-		pc.SetResultAt(*t)
+		pc.SetAuthAt(*t)
 	}
 	return pc
 }
@@ -302,9 +302,9 @@ func (pc *PersonCreate) defaults() {
 		v := person.DefaultBlock
 		pc.mutation.SetBlock(v)
 	}
-	if _, ok := pc.mutation.IcType(); !ok {
-		v := person.DefaultIcType
-		pc.mutation.SetIcType(v)
+	if _, ok := pc.mutation.IDCardType(); !ok {
+		v := person.DefaultIDCardType
+		pc.mutation.SetIDCardType(v)
 	}
 }
 
@@ -330,25 +330,25 @@ func (pc *PersonCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "name": %w`, err)}
 		}
 	}
-	if _, ok := pc.mutation.IcNumber(); !ok {
-		return &ValidationError{Name: "ic_number", err: errors.New(`ent: missing required field "ic_number"`)}
+	if _, ok := pc.mutation.IDCardNumber(); !ok {
+		return &ValidationError{Name: "id_card_number", err: errors.New(`ent: missing required field "id_card_number"`)}
 	}
-	if v, ok := pc.mutation.IcNumber(); ok {
-		if err := person.IcNumberValidator(v); err != nil {
-			return &ValidationError{Name: "ic_number", err: fmt.Errorf(`ent: validator failed for field "ic_number": %w`, err)}
+	if v, ok := pc.mutation.IDCardNumber(); ok {
+		if err := person.IDCardNumberValidator(v); err != nil {
+			return &ValidationError{Name: "id_card_number", err: fmt.Errorf(`ent: validator failed for field "id_card_number": %w`, err)}
 		}
 	}
-	if _, ok := pc.mutation.IcType(); !ok {
-		return &ValidationError{Name: "ic_type", err: errors.New(`ent: missing required field "ic_type"`)}
+	if _, ok := pc.mutation.IDCardType(); !ok {
+		return &ValidationError{Name: "id_card_type", err: errors.New(`ent: missing required field "id_card_type"`)}
 	}
-	if _, ok := pc.mutation.IcPortrait(); !ok {
-		return &ValidationError{Name: "ic_portrait", err: errors.New(`ent: missing required field "ic_portrait"`)}
+	if _, ok := pc.mutation.IDCardPortrait(); !ok {
+		return &ValidationError{Name: "id_card_portrait", err: errors.New(`ent: missing required field "id_card_portrait"`)}
 	}
-	if _, ok := pc.mutation.IcNational(); !ok {
-		return &ValidationError{Name: "ic_national", err: errors.New(`ent: missing required field "ic_national"`)}
+	if _, ok := pc.mutation.IDCardNational(); !ok {
+		return &ValidationError{Name: "id_card_national", err: errors.New(`ent: missing required field "id_card_national"`)}
 	}
-	if _, ok := pc.mutation.FaceImg(); !ok {
-		return &ValidationError{Name: "face_img", err: errors.New(`ent: missing required field "face_img"`)}
+	if _, ok := pc.mutation.AuthFace(); !ok {
+		return &ValidationError{Name: "auth_face", err: errors.New(`ent: missing required field "auth_face"`)}
 	}
 	return nil
 }
@@ -442,61 +442,61 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 		})
 		_node.Name = value
 	}
-	if value, ok := pc.mutation.IcNumber(); ok {
+	if value, ok := pc.mutation.IDCardNumber(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: person.FieldIcNumber,
+			Column: person.FieldIDCardNumber,
 		})
-		_node.IcNumber = value
+		_node.IDCardNumber = value
 	}
-	if value, ok := pc.mutation.IcType(); ok {
+	if value, ok := pc.mutation.IDCardType(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeUint8,
 			Value:  value,
-			Column: person.FieldIcType,
+			Column: person.FieldIDCardType,
 		})
-		_node.IcType = value
+		_node.IDCardType = value
 	}
-	if value, ok := pc.mutation.IcPortrait(); ok {
+	if value, ok := pc.mutation.IDCardPortrait(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: person.FieldIcPortrait,
+			Column: person.FieldIDCardPortrait,
 		})
-		_node.IcPortrait = value
+		_node.IDCardPortrait = value
 	}
-	if value, ok := pc.mutation.IcNational(); ok {
+	if value, ok := pc.mutation.IDCardNational(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: person.FieldIcNational,
+			Column: person.FieldIDCardNational,
 		})
-		_node.IcNational = value
+		_node.IDCardNational = value
 	}
-	if value, ok := pc.mutation.FaceImg(); ok {
+	if value, ok := pc.mutation.AuthFace(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: person.FieldFaceImg,
+			Column: person.FieldAuthFace,
 		})
-		_node.FaceImg = value
+		_node.AuthFace = value
 	}
-	if value, ok := pc.mutation.FaceVerifyResult(); ok {
+	if value, ok := pc.mutation.AuthResult(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: person.FieldFaceVerifyResult,
+			Column: person.FieldAuthResult,
 		})
-		_node.FaceVerifyResult = value
+		_node.AuthResult = value
 	}
-	if value, ok := pc.mutation.ResultAt(); ok {
+	if value, ok := pc.mutation.AuthAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: person.FieldResultAt,
+			Column: person.FieldAuthAt,
 		})
-		_node.ResultAt = &value
+		_node.AuthAt = &value
 	}
 	if value, ok := pc.mutation.EsignAccountID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -504,7 +504,7 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: person.FieldEsignAccountID,
 		})
-		_node.EsignAccountID = value
+		_node.EsignAccountID = &value
 	}
 	if nodes := pc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -693,99 +693,99 @@ func (u *PersonUpsert) UpdateName() *PersonUpsert {
 	return u
 }
 
-// SetIcNumber sets the "ic_number" field.
-func (u *PersonUpsert) SetIcNumber(v string) *PersonUpsert {
-	u.Set(person.FieldIcNumber, v)
+// SetIDCardNumber sets the "id_card_number" field.
+func (u *PersonUpsert) SetIDCardNumber(v string) *PersonUpsert {
+	u.Set(person.FieldIDCardNumber, v)
 	return u
 }
 
-// UpdateIcNumber sets the "ic_number" field to the value that was provided on create.
-func (u *PersonUpsert) UpdateIcNumber() *PersonUpsert {
-	u.SetExcluded(person.FieldIcNumber)
+// UpdateIDCardNumber sets the "id_card_number" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateIDCardNumber() *PersonUpsert {
+	u.SetExcluded(person.FieldIDCardNumber)
 	return u
 }
 
-// SetIcType sets the "ic_type" field.
-func (u *PersonUpsert) SetIcType(v uint8) *PersonUpsert {
-	u.Set(person.FieldIcType, v)
+// SetIDCardType sets the "id_card_type" field.
+func (u *PersonUpsert) SetIDCardType(v uint8) *PersonUpsert {
+	u.Set(person.FieldIDCardType, v)
 	return u
 }
 
-// UpdateIcType sets the "ic_type" field to the value that was provided on create.
-func (u *PersonUpsert) UpdateIcType() *PersonUpsert {
-	u.SetExcluded(person.FieldIcType)
+// UpdateIDCardType sets the "id_card_type" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateIDCardType() *PersonUpsert {
+	u.SetExcluded(person.FieldIDCardType)
 	return u
 }
 
-// SetIcPortrait sets the "ic_portrait" field.
-func (u *PersonUpsert) SetIcPortrait(v string) *PersonUpsert {
-	u.Set(person.FieldIcPortrait, v)
+// SetIDCardPortrait sets the "id_card_portrait" field.
+func (u *PersonUpsert) SetIDCardPortrait(v string) *PersonUpsert {
+	u.Set(person.FieldIDCardPortrait, v)
 	return u
 }
 
-// UpdateIcPortrait sets the "ic_portrait" field to the value that was provided on create.
-func (u *PersonUpsert) UpdateIcPortrait() *PersonUpsert {
-	u.SetExcluded(person.FieldIcPortrait)
+// UpdateIDCardPortrait sets the "id_card_portrait" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateIDCardPortrait() *PersonUpsert {
+	u.SetExcluded(person.FieldIDCardPortrait)
 	return u
 }
 
-// SetIcNational sets the "ic_national" field.
-func (u *PersonUpsert) SetIcNational(v string) *PersonUpsert {
-	u.Set(person.FieldIcNational, v)
+// SetIDCardNational sets the "id_card_national" field.
+func (u *PersonUpsert) SetIDCardNational(v string) *PersonUpsert {
+	u.Set(person.FieldIDCardNational, v)
 	return u
 }
 
-// UpdateIcNational sets the "ic_national" field to the value that was provided on create.
-func (u *PersonUpsert) UpdateIcNational() *PersonUpsert {
-	u.SetExcluded(person.FieldIcNational)
+// UpdateIDCardNational sets the "id_card_national" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateIDCardNational() *PersonUpsert {
+	u.SetExcluded(person.FieldIDCardNational)
 	return u
 }
 
-// SetFaceImg sets the "face_img" field.
-func (u *PersonUpsert) SetFaceImg(v string) *PersonUpsert {
-	u.Set(person.FieldFaceImg, v)
+// SetAuthFace sets the "auth_face" field.
+func (u *PersonUpsert) SetAuthFace(v string) *PersonUpsert {
+	u.Set(person.FieldAuthFace, v)
 	return u
 }
 
-// UpdateFaceImg sets the "face_img" field to the value that was provided on create.
-func (u *PersonUpsert) UpdateFaceImg() *PersonUpsert {
-	u.SetExcluded(person.FieldFaceImg)
+// UpdateAuthFace sets the "auth_face" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateAuthFace() *PersonUpsert {
+	u.SetExcluded(person.FieldAuthFace)
 	return u
 }
 
-// SetFaceVerifyResult sets the "face_verify_result" field.
-func (u *PersonUpsert) SetFaceVerifyResult(v *model.FaceVerifyResult) *PersonUpsert {
-	u.Set(person.FieldFaceVerifyResult, v)
+// SetAuthResult sets the "auth_result" field.
+func (u *PersonUpsert) SetAuthResult(v *model.FaceVerifyResult) *PersonUpsert {
+	u.Set(person.FieldAuthResult, v)
 	return u
 }
 
-// UpdateFaceVerifyResult sets the "face_verify_result" field to the value that was provided on create.
-func (u *PersonUpsert) UpdateFaceVerifyResult() *PersonUpsert {
-	u.SetExcluded(person.FieldFaceVerifyResult)
+// UpdateAuthResult sets the "auth_result" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateAuthResult() *PersonUpsert {
+	u.SetExcluded(person.FieldAuthResult)
 	return u
 }
 
-// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
-func (u *PersonUpsert) ClearFaceVerifyResult() *PersonUpsert {
-	u.SetNull(person.FieldFaceVerifyResult)
+// ClearAuthResult clears the value of the "auth_result" field.
+func (u *PersonUpsert) ClearAuthResult() *PersonUpsert {
+	u.SetNull(person.FieldAuthResult)
 	return u
 }
 
-// SetResultAt sets the "result_at" field.
-func (u *PersonUpsert) SetResultAt(v time.Time) *PersonUpsert {
-	u.Set(person.FieldResultAt, v)
+// SetAuthAt sets the "auth_at" field.
+func (u *PersonUpsert) SetAuthAt(v time.Time) *PersonUpsert {
+	u.Set(person.FieldAuthAt, v)
 	return u
 }
 
-// UpdateResultAt sets the "result_at" field to the value that was provided on create.
-func (u *PersonUpsert) UpdateResultAt() *PersonUpsert {
-	u.SetExcluded(person.FieldResultAt)
+// UpdateAuthAt sets the "auth_at" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateAuthAt() *PersonUpsert {
+	u.SetExcluded(person.FieldAuthAt)
 	return u
 }
 
-// ClearResultAt clears the value of the "result_at" field.
-func (u *PersonUpsert) ClearResultAt() *PersonUpsert {
-	u.SetNull(person.FieldResultAt)
+// ClearAuthAt clears the value of the "auth_at" field.
+func (u *PersonUpsert) ClearAuthAt() *PersonUpsert {
+	u.SetNull(person.FieldAuthAt)
 	return u
 }
 
@@ -982,115 +982,115 @@ func (u *PersonUpsertOne) UpdateName() *PersonUpsertOne {
 	})
 }
 
-// SetIcNumber sets the "ic_number" field.
-func (u *PersonUpsertOne) SetIcNumber(v string) *PersonUpsertOne {
+// SetIDCardNumber sets the "id_card_number" field.
+func (u *PersonUpsertOne) SetIDCardNumber(v string) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetIcNumber(v)
+		s.SetIDCardNumber(v)
 	})
 }
 
-// UpdateIcNumber sets the "ic_number" field to the value that was provided on create.
-func (u *PersonUpsertOne) UpdateIcNumber() *PersonUpsertOne {
+// UpdateIDCardNumber sets the "id_card_number" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateIDCardNumber() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateIcNumber()
+		s.UpdateIDCardNumber()
 	})
 }
 
-// SetIcType sets the "ic_type" field.
-func (u *PersonUpsertOne) SetIcType(v uint8) *PersonUpsertOne {
+// SetIDCardType sets the "id_card_type" field.
+func (u *PersonUpsertOne) SetIDCardType(v uint8) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetIcType(v)
+		s.SetIDCardType(v)
 	})
 }
 
-// UpdateIcType sets the "ic_type" field to the value that was provided on create.
-func (u *PersonUpsertOne) UpdateIcType() *PersonUpsertOne {
+// UpdateIDCardType sets the "id_card_type" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateIDCardType() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateIcType()
+		s.UpdateIDCardType()
 	})
 }
 
-// SetIcPortrait sets the "ic_portrait" field.
-func (u *PersonUpsertOne) SetIcPortrait(v string) *PersonUpsertOne {
+// SetIDCardPortrait sets the "id_card_portrait" field.
+func (u *PersonUpsertOne) SetIDCardPortrait(v string) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetIcPortrait(v)
+		s.SetIDCardPortrait(v)
 	})
 }
 
-// UpdateIcPortrait sets the "ic_portrait" field to the value that was provided on create.
-func (u *PersonUpsertOne) UpdateIcPortrait() *PersonUpsertOne {
+// UpdateIDCardPortrait sets the "id_card_portrait" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateIDCardPortrait() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateIcPortrait()
+		s.UpdateIDCardPortrait()
 	})
 }
 
-// SetIcNational sets the "ic_national" field.
-func (u *PersonUpsertOne) SetIcNational(v string) *PersonUpsertOne {
+// SetIDCardNational sets the "id_card_national" field.
+func (u *PersonUpsertOne) SetIDCardNational(v string) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetIcNational(v)
+		s.SetIDCardNational(v)
 	})
 }
 
-// UpdateIcNational sets the "ic_national" field to the value that was provided on create.
-func (u *PersonUpsertOne) UpdateIcNational() *PersonUpsertOne {
+// UpdateIDCardNational sets the "id_card_national" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateIDCardNational() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateIcNational()
+		s.UpdateIDCardNational()
 	})
 }
 
-// SetFaceImg sets the "face_img" field.
-func (u *PersonUpsertOne) SetFaceImg(v string) *PersonUpsertOne {
+// SetAuthFace sets the "auth_face" field.
+func (u *PersonUpsertOne) SetAuthFace(v string) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetFaceImg(v)
+		s.SetAuthFace(v)
 	})
 }
 
-// UpdateFaceImg sets the "face_img" field to the value that was provided on create.
-func (u *PersonUpsertOne) UpdateFaceImg() *PersonUpsertOne {
+// UpdateAuthFace sets the "auth_face" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateAuthFace() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateFaceImg()
+		s.UpdateAuthFace()
 	})
 }
 
-// SetFaceVerifyResult sets the "face_verify_result" field.
-func (u *PersonUpsertOne) SetFaceVerifyResult(v *model.FaceVerifyResult) *PersonUpsertOne {
+// SetAuthResult sets the "auth_result" field.
+func (u *PersonUpsertOne) SetAuthResult(v *model.FaceVerifyResult) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetFaceVerifyResult(v)
+		s.SetAuthResult(v)
 	})
 }
 
-// UpdateFaceVerifyResult sets the "face_verify_result" field to the value that was provided on create.
-func (u *PersonUpsertOne) UpdateFaceVerifyResult() *PersonUpsertOne {
+// UpdateAuthResult sets the "auth_result" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateAuthResult() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateFaceVerifyResult()
+		s.UpdateAuthResult()
 	})
 }
 
-// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
-func (u *PersonUpsertOne) ClearFaceVerifyResult() *PersonUpsertOne {
+// ClearAuthResult clears the value of the "auth_result" field.
+func (u *PersonUpsertOne) ClearAuthResult() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.ClearFaceVerifyResult()
+		s.ClearAuthResult()
 	})
 }
 
-// SetResultAt sets the "result_at" field.
-func (u *PersonUpsertOne) SetResultAt(v time.Time) *PersonUpsertOne {
+// SetAuthAt sets the "auth_at" field.
+func (u *PersonUpsertOne) SetAuthAt(v time.Time) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetResultAt(v)
+		s.SetAuthAt(v)
 	})
 }
 
-// UpdateResultAt sets the "result_at" field to the value that was provided on create.
-func (u *PersonUpsertOne) UpdateResultAt() *PersonUpsertOne {
+// UpdateAuthAt sets the "auth_at" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateAuthAt() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateResultAt()
+		s.UpdateAuthAt()
 	})
 }
 
-// ClearResultAt clears the value of the "result_at" field.
-func (u *PersonUpsertOne) ClearResultAt() *PersonUpsertOne {
+// ClearAuthAt clears the value of the "auth_at" field.
+func (u *PersonUpsertOne) ClearAuthAt() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.ClearResultAt()
+		s.ClearAuthAt()
 	})
 }
 
@@ -1452,115 +1452,115 @@ func (u *PersonUpsertBulk) UpdateName() *PersonUpsertBulk {
 	})
 }
 
-// SetIcNumber sets the "ic_number" field.
-func (u *PersonUpsertBulk) SetIcNumber(v string) *PersonUpsertBulk {
+// SetIDCardNumber sets the "id_card_number" field.
+func (u *PersonUpsertBulk) SetIDCardNumber(v string) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetIcNumber(v)
+		s.SetIDCardNumber(v)
 	})
 }
 
-// UpdateIcNumber sets the "ic_number" field to the value that was provided on create.
-func (u *PersonUpsertBulk) UpdateIcNumber() *PersonUpsertBulk {
+// UpdateIDCardNumber sets the "id_card_number" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateIDCardNumber() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateIcNumber()
+		s.UpdateIDCardNumber()
 	})
 }
 
-// SetIcType sets the "ic_type" field.
-func (u *PersonUpsertBulk) SetIcType(v uint8) *PersonUpsertBulk {
+// SetIDCardType sets the "id_card_type" field.
+func (u *PersonUpsertBulk) SetIDCardType(v uint8) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetIcType(v)
+		s.SetIDCardType(v)
 	})
 }
 
-// UpdateIcType sets the "ic_type" field to the value that was provided on create.
-func (u *PersonUpsertBulk) UpdateIcType() *PersonUpsertBulk {
+// UpdateIDCardType sets the "id_card_type" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateIDCardType() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateIcType()
+		s.UpdateIDCardType()
 	})
 }
 
-// SetIcPortrait sets the "ic_portrait" field.
-func (u *PersonUpsertBulk) SetIcPortrait(v string) *PersonUpsertBulk {
+// SetIDCardPortrait sets the "id_card_portrait" field.
+func (u *PersonUpsertBulk) SetIDCardPortrait(v string) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetIcPortrait(v)
+		s.SetIDCardPortrait(v)
 	})
 }
 
-// UpdateIcPortrait sets the "ic_portrait" field to the value that was provided on create.
-func (u *PersonUpsertBulk) UpdateIcPortrait() *PersonUpsertBulk {
+// UpdateIDCardPortrait sets the "id_card_portrait" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateIDCardPortrait() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateIcPortrait()
+		s.UpdateIDCardPortrait()
 	})
 }
 
-// SetIcNational sets the "ic_national" field.
-func (u *PersonUpsertBulk) SetIcNational(v string) *PersonUpsertBulk {
+// SetIDCardNational sets the "id_card_national" field.
+func (u *PersonUpsertBulk) SetIDCardNational(v string) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetIcNational(v)
+		s.SetIDCardNational(v)
 	})
 }
 
-// UpdateIcNational sets the "ic_national" field to the value that was provided on create.
-func (u *PersonUpsertBulk) UpdateIcNational() *PersonUpsertBulk {
+// UpdateIDCardNational sets the "id_card_national" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateIDCardNational() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateIcNational()
+		s.UpdateIDCardNational()
 	})
 }
 
-// SetFaceImg sets the "face_img" field.
-func (u *PersonUpsertBulk) SetFaceImg(v string) *PersonUpsertBulk {
+// SetAuthFace sets the "auth_face" field.
+func (u *PersonUpsertBulk) SetAuthFace(v string) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetFaceImg(v)
+		s.SetAuthFace(v)
 	})
 }
 
-// UpdateFaceImg sets the "face_img" field to the value that was provided on create.
-func (u *PersonUpsertBulk) UpdateFaceImg() *PersonUpsertBulk {
+// UpdateAuthFace sets the "auth_face" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateAuthFace() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateFaceImg()
+		s.UpdateAuthFace()
 	})
 }
 
-// SetFaceVerifyResult sets the "face_verify_result" field.
-func (u *PersonUpsertBulk) SetFaceVerifyResult(v *model.FaceVerifyResult) *PersonUpsertBulk {
+// SetAuthResult sets the "auth_result" field.
+func (u *PersonUpsertBulk) SetAuthResult(v *model.FaceVerifyResult) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetFaceVerifyResult(v)
+		s.SetAuthResult(v)
 	})
 }
 
-// UpdateFaceVerifyResult sets the "face_verify_result" field to the value that was provided on create.
-func (u *PersonUpsertBulk) UpdateFaceVerifyResult() *PersonUpsertBulk {
+// UpdateAuthResult sets the "auth_result" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateAuthResult() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateFaceVerifyResult()
+		s.UpdateAuthResult()
 	})
 }
 
-// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
-func (u *PersonUpsertBulk) ClearFaceVerifyResult() *PersonUpsertBulk {
+// ClearAuthResult clears the value of the "auth_result" field.
+func (u *PersonUpsertBulk) ClearAuthResult() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.ClearFaceVerifyResult()
+		s.ClearAuthResult()
 	})
 }
 
-// SetResultAt sets the "result_at" field.
-func (u *PersonUpsertBulk) SetResultAt(v time.Time) *PersonUpsertBulk {
+// SetAuthAt sets the "auth_at" field.
+func (u *PersonUpsertBulk) SetAuthAt(v time.Time) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetResultAt(v)
+		s.SetAuthAt(v)
 	})
 }
 
-// UpdateResultAt sets the "result_at" field to the value that was provided on create.
-func (u *PersonUpsertBulk) UpdateResultAt() *PersonUpsertBulk {
+// UpdateAuthAt sets the "auth_at" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateAuthAt() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateResultAt()
+		s.UpdateAuthAt()
 	})
 }
 
-// ClearResultAt clears the value of the "result_at" field.
-func (u *PersonUpsertBulk) ClearResultAt() *PersonUpsertBulk {
+// ClearAuthAt clears the value of the "auth_at" field.
+func (u *PersonUpsertBulk) ClearAuthAt() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.ClearResultAt()
+		s.ClearAuthAt()
 	})
 }
 

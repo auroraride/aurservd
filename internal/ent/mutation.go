@@ -34,34 +34,34 @@ const (
 // PersonMutation represents an operation that mutates the Person nodes in the graph.
 type PersonMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *uint64
-	created_at         *time.Time
-	updated_at         *time.Time
-	deleted_at         *time.Time
-	last_modify        *time.Time
-	remark             *string
-	status             *uint8
-	addstatus          *uint8
-	block              *bool
-	name               *string
-	ic_number          *string
-	ic_type            *uint8
-	addic_type         *uint8
-	ic_portrait        *string
-	ic_national        *string
-	face_img           *string
-	face_verify_result **model.FaceVerifyResult
-	result_at          *time.Time
-	esign_account_id   *string
-	clearedFields      map[string]struct{}
-	rider              map[uint64]struct{}
-	removedrider       map[uint64]struct{}
-	clearedrider       bool
-	done               bool
-	oldValue           func(context.Context) (*Person, error)
-	predicates         []predicate.Person
+	op               Op
+	typ              string
+	id               *uint64
+	created_at       *time.Time
+	updated_at       *time.Time
+	deleted_at       *time.Time
+	last_modify      *time.Time
+	remark           *string
+	status           *uint8
+	addstatus        *uint8
+	block            *bool
+	name             *string
+	id_card_number   *string
+	id_card_type     *uint8
+	addid_card_type  *uint8
+	id_card_portrait *string
+	id_card_national *string
+	auth_face        *string
+	auth_result      **model.FaceVerifyResult
+	auth_at          *time.Time
+	esign_account_id *string
+	clearedFields    map[string]struct{}
+	rider            map[uint64]struct{}
+	removedrider     map[uint64]struct{}
+	clearedrider     bool
+	done             bool
+	oldValue         func(context.Context) (*Person, error)
+	predicates       []predicate.Person
 }
 
 var _ ent.Mutation = (*PersonMutation)(nil)
@@ -490,302 +490,302 @@ func (m *PersonMutation) ResetName() {
 	m.name = nil
 }
 
-// SetIcNumber sets the "ic_number" field.
-func (m *PersonMutation) SetIcNumber(s string) {
-	m.ic_number = &s
+// SetIDCardNumber sets the "id_card_number" field.
+func (m *PersonMutation) SetIDCardNumber(s string) {
+	m.id_card_number = &s
 }
 
-// IcNumber returns the value of the "ic_number" field in the mutation.
-func (m *PersonMutation) IcNumber() (r string, exists bool) {
-	v := m.ic_number
+// IDCardNumber returns the value of the "id_card_number" field in the mutation.
+func (m *PersonMutation) IDCardNumber() (r string, exists bool) {
+	v := m.id_card_number
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldIcNumber returns the old "ic_number" field's value of the Person entity.
+// OldIDCardNumber returns the old "id_card_number" field's value of the Person entity.
 // If the Person object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldIcNumber(ctx context.Context) (v string, err error) {
+func (m *PersonMutation) OldIDCardNumber(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldIcNumber is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldIDCardNumber is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldIcNumber requires an ID field in the mutation")
+		return v, fmt.Errorf("OldIDCardNumber requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIcNumber: %w", err)
+		return v, fmt.Errorf("querying old value for OldIDCardNumber: %w", err)
 	}
-	return oldValue.IcNumber, nil
+	return oldValue.IDCardNumber, nil
 }
 
-// ResetIcNumber resets all changes to the "ic_number" field.
-func (m *PersonMutation) ResetIcNumber() {
-	m.ic_number = nil
+// ResetIDCardNumber resets all changes to the "id_card_number" field.
+func (m *PersonMutation) ResetIDCardNumber() {
+	m.id_card_number = nil
 }
 
-// SetIcType sets the "ic_type" field.
-func (m *PersonMutation) SetIcType(u uint8) {
-	m.ic_type = &u
-	m.addic_type = nil
+// SetIDCardType sets the "id_card_type" field.
+func (m *PersonMutation) SetIDCardType(u uint8) {
+	m.id_card_type = &u
+	m.addid_card_type = nil
 }
 
-// IcType returns the value of the "ic_type" field in the mutation.
-func (m *PersonMutation) IcType() (r uint8, exists bool) {
-	v := m.ic_type
+// IDCardType returns the value of the "id_card_type" field in the mutation.
+func (m *PersonMutation) IDCardType() (r uint8, exists bool) {
+	v := m.id_card_type
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldIcType returns the old "ic_type" field's value of the Person entity.
+// OldIDCardType returns the old "id_card_type" field's value of the Person entity.
 // If the Person object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldIcType(ctx context.Context) (v uint8, err error) {
+func (m *PersonMutation) OldIDCardType(ctx context.Context) (v uint8, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldIcType is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldIDCardType is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldIcType requires an ID field in the mutation")
+		return v, fmt.Errorf("OldIDCardType requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIcType: %w", err)
+		return v, fmt.Errorf("querying old value for OldIDCardType: %w", err)
 	}
-	return oldValue.IcType, nil
+	return oldValue.IDCardType, nil
 }
 
-// AddIcType adds u to the "ic_type" field.
-func (m *PersonMutation) AddIcType(u uint8) {
-	if m.addic_type != nil {
-		*m.addic_type += u
+// AddIDCardType adds u to the "id_card_type" field.
+func (m *PersonMutation) AddIDCardType(u uint8) {
+	if m.addid_card_type != nil {
+		*m.addid_card_type += u
 	} else {
-		m.addic_type = &u
+		m.addid_card_type = &u
 	}
 }
 
-// AddedIcType returns the value that was added to the "ic_type" field in this mutation.
-func (m *PersonMutation) AddedIcType() (r uint8, exists bool) {
-	v := m.addic_type
+// AddedIDCardType returns the value that was added to the "id_card_type" field in this mutation.
+func (m *PersonMutation) AddedIDCardType() (r uint8, exists bool) {
+	v := m.addid_card_type
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetIcType resets all changes to the "ic_type" field.
-func (m *PersonMutation) ResetIcType() {
-	m.ic_type = nil
-	m.addic_type = nil
+// ResetIDCardType resets all changes to the "id_card_type" field.
+func (m *PersonMutation) ResetIDCardType() {
+	m.id_card_type = nil
+	m.addid_card_type = nil
 }
 
-// SetIcPortrait sets the "ic_portrait" field.
-func (m *PersonMutation) SetIcPortrait(s string) {
-	m.ic_portrait = &s
+// SetIDCardPortrait sets the "id_card_portrait" field.
+func (m *PersonMutation) SetIDCardPortrait(s string) {
+	m.id_card_portrait = &s
 }
 
-// IcPortrait returns the value of the "ic_portrait" field in the mutation.
-func (m *PersonMutation) IcPortrait() (r string, exists bool) {
-	v := m.ic_portrait
+// IDCardPortrait returns the value of the "id_card_portrait" field in the mutation.
+func (m *PersonMutation) IDCardPortrait() (r string, exists bool) {
+	v := m.id_card_portrait
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldIcPortrait returns the old "ic_portrait" field's value of the Person entity.
+// OldIDCardPortrait returns the old "id_card_portrait" field's value of the Person entity.
 // If the Person object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldIcPortrait(ctx context.Context) (v string, err error) {
+func (m *PersonMutation) OldIDCardPortrait(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldIcPortrait is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldIDCardPortrait is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldIcPortrait requires an ID field in the mutation")
+		return v, fmt.Errorf("OldIDCardPortrait requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIcPortrait: %w", err)
+		return v, fmt.Errorf("querying old value for OldIDCardPortrait: %w", err)
 	}
-	return oldValue.IcPortrait, nil
+	return oldValue.IDCardPortrait, nil
 }
 
-// ResetIcPortrait resets all changes to the "ic_portrait" field.
-func (m *PersonMutation) ResetIcPortrait() {
-	m.ic_portrait = nil
+// ResetIDCardPortrait resets all changes to the "id_card_portrait" field.
+func (m *PersonMutation) ResetIDCardPortrait() {
+	m.id_card_portrait = nil
 }
 
-// SetIcNational sets the "ic_national" field.
-func (m *PersonMutation) SetIcNational(s string) {
-	m.ic_national = &s
+// SetIDCardNational sets the "id_card_national" field.
+func (m *PersonMutation) SetIDCardNational(s string) {
+	m.id_card_national = &s
 }
 
-// IcNational returns the value of the "ic_national" field in the mutation.
-func (m *PersonMutation) IcNational() (r string, exists bool) {
-	v := m.ic_national
+// IDCardNational returns the value of the "id_card_national" field in the mutation.
+func (m *PersonMutation) IDCardNational() (r string, exists bool) {
+	v := m.id_card_national
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldIcNational returns the old "ic_national" field's value of the Person entity.
+// OldIDCardNational returns the old "id_card_national" field's value of the Person entity.
 // If the Person object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldIcNational(ctx context.Context) (v string, err error) {
+func (m *PersonMutation) OldIDCardNational(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldIcNational is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldIDCardNational is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldIcNational requires an ID field in the mutation")
+		return v, fmt.Errorf("OldIDCardNational requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIcNational: %w", err)
+		return v, fmt.Errorf("querying old value for OldIDCardNational: %w", err)
 	}
-	return oldValue.IcNational, nil
+	return oldValue.IDCardNational, nil
 }
 
-// ResetIcNational resets all changes to the "ic_national" field.
-func (m *PersonMutation) ResetIcNational() {
-	m.ic_national = nil
+// ResetIDCardNational resets all changes to the "id_card_national" field.
+func (m *PersonMutation) ResetIDCardNational() {
+	m.id_card_national = nil
 }
 
-// SetFaceImg sets the "face_img" field.
-func (m *PersonMutation) SetFaceImg(s string) {
-	m.face_img = &s
+// SetAuthFace sets the "auth_face" field.
+func (m *PersonMutation) SetAuthFace(s string) {
+	m.auth_face = &s
 }
 
-// FaceImg returns the value of the "face_img" field in the mutation.
-func (m *PersonMutation) FaceImg() (r string, exists bool) {
-	v := m.face_img
+// AuthFace returns the value of the "auth_face" field in the mutation.
+func (m *PersonMutation) AuthFace() (r string, exists bool) {
+	v := m.auth_face
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldFaceImg returns the old "face_img" field's value of the Person entity.
+// OldAuthFace returns the old "auth_face" field's value of the Person entity.
 // If the Person object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldFaceImg(ctx context.Context) (v string, err error) {
+func (m *PersonMutation) OldAuthFace(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldFaceImg is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldAuthFace is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldFaceImg requires an ID field in the mutation")
+		return v, fmt.Errorf("OldAuthFace requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldFaceImg: %w", err)
+		return v, fmt.Errorf("querying old value for OldAuthFace: %w", err)
 	}
-	return oldValue.FaceImg, nil
+	return oldValue.AuthFace, nil
 }
 
-// ResetFaceImg resets all changes to the "face_img" field.
-func (m *PersonMutation) ResetFaceImg() {
-	m.face_img = nil
+// ResetAuthFace resets all changes to the "auth_face" field.
+func (m *PersonMutation) ResetAuthFace() {
+	m.auth_face = nil
 }
 
-// SetFaceVerifyResult sets the "face_verify_result" field.
-func (m *PersonMutation) SetFaceVerifyResult(mvr *model.FaceVerifyResult) {
-	m.face_verify_result = &mvr
+// SetAuthResult sets the "auth_result" field.
+func (m *PersonMutation) SetAuthResult(mvr *model.FaceVerifyResult) {
+	m.auth_result = &mvr
 }
 
-// FaceVerifyResult returns the value of the "face_verify_result" field in the mutation.
-func (m *PersonMutation) FaceVerifyResult() (r *model.FaceVerifyResult, exists bool) {
-	v := m.face_verify_result
+// AuthResult returns the value of the "auth_result" field in the mutation.
+func (m *PersonMutation) AuthResult() (r *model.FaceVerifyResult, exists bool) {
+	v := m.auth_result
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldFaceVerifyResult returns the old "face_verify_result" field's value of the Person entity.
+// OldAuthResult returns the old "auth_result" field's value of the Person entity.
 // If the Person object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldFaceVerifyResult(ctx context.Context) (v *model.FaceVerifyResult, err error) {
+func (m *PersonMutation) OldAuthResult(ctx context.Context) (v *model.FaceVerifyResult, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldFaceVerifyResult is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldAuthResult is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldFaceVerifyResult requires an ID field in the mutation")
+		return v, fmt.Errorf("OldAuthResult requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldFaceVerifyResult: %w", err)
+		return v, fmt.Errorf("querying old value for OldAuthResult: %w", err)
 	}
-	return oldValue.FaceVerifyResult, nil
+	return oldValue.AuthResult, nil
 }
 
-// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
-func (m *PersonMutation) ClearFaceVerifyResult() {
-	m.face_verify_result = nil
-	m.clearedFields[person.FieldFaceVerifyResult] = struct{}{}
+// ClearAuthResult clears the value of the "auth_result" field.
+func (m *PersonMutation) ClearAuthResult() {
+	m.auth_result = nil
+	m.clearedFields[person.FieldAuthResult] = struct{}{}
 }
 
-// FaceVerifyResultCleared returns if the "face_verify_result" field was cleared in this mutation.
-func (m *PersonMutation) FaceVerifyResultCleared() bool {
-	_, ok := m.clearedFields[person.FieldFaceVerifyResult]
+// AuthResultCleared returns if the "auth_result" field was cleared in this mutation.
+func (m *PersonMutation) AuthResultCleared() bool {
+	_, ok := m.clearedFields[person.FieldAuthResult]
 	return ok
 }
 
-// ResetFaceVerifyResult resets all changes to the "face_verify_result" field.
-func (m *PersonMutation) ResetFaceVerifyResult() {
-	m.face_verify_result = nil
-	delete(m.clearedFields, person.FieldFaceVerifyResult)
+// ResetAuthResult resets all changes to the "auth_result" field.
+func (m *PersonMutation) ResetAuthResult() {
+	m.auth_result = nil
+	delete(m.clearedFields, person.FieldAuthResult)
 }
 
-// SetResultAt sets the "result_at" field.
-func (m *PersonMutation) SetResultAt(t time.Time) {
-	m.result_at = &t
+// SetAuthAt sets the "auth_at" field.
+func (m *PersonMutation) SetAuthAt(t time.Time) {
+	m.auth_at = &t
 }
 
-// ResultAt returns the value of the "result_at" field in the mutation.
-func (m *PersonMutation) ResultAt() (r time.Time, exists bool) {
-	v := m.result_at
+// AuthAt returns the value of the "auth_at" field in the mutation.
+func (m *PersonMutation) AuthAt() (r time.Time, exists bool) {
+	v := m.auth_at
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldResultAt returns the old "result_at" field's value of the Person entity.
+// OldAuthAt returns the old "auth_at" field's value of the Person entity.
 // If the Person object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldResultAt(ctx context.Context) (v *time.Time, err error) {
+func (m *PersonMutation) OldAuthAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldResultAt is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldAuthAt is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldResultAt requires an ID field in the mutation")
+		return v, fmt.Errorf("OldAuthAt requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldResultAt: %w", err)
+		return v, fmt.Errorf("querying old value for OldAuthAt: %w", err)
 	}
-	return oldValue.ResultAt, nil
+	return oldValue.AuthAt, nil
 }
 
-// ClearResultAt clears the value of the "result_at" field.
-func (m *PersonMutation) ClearResultAt() {
-	m.result_at = nil
-	m.clearedFields[person.FieldResultAt] = struct{}{}
+// ClearAuthAt clears the value of the "auth_at" field.
+func (m *PersonMutation) ClearAuthAt() {
+	m.auth_at = nil
+	m.clearedFields[person.FieldAuthAt] = struct{}{}
 }
 
-// ResultAtCleared returns if the "result_at" field was cleared in this mutation.
-func (m *PersonMutation) ResultAtCleared() bool {
-	_, ok := m.clearedFields[person.FieldResultAt]
+// AuthAtCleared returns if the "auth_at" field was cleared in this mutation.
+func (m *PersonMutation) AuthAtCleared() bool {
+	_, ok := m.clearedFields[person.FieldAuthAt]
 	return ok
 }
 
-// ResetResultAt resets all changes to the "result_at" field.
-func (m *PersonMutation) ResetResultAt() {
-	m.result_at = nil
-	delete(m.clearedFields, person.FieldResultAt)
+// ResetAuthAt resets all changes to the "auth_at" field.
+func (m *PersonMutation) ResetAuthAt() {
+	m.auth_at = nil
+	delete(m.clearedFields, person.FieldAuthAt)
 }
 
 // SetEsignAccountID sets the "esign_account_id" field.
@@ -805,7 +805,7 @@ func (m *PersonMutation) EsignAccountID() (r string, exists bool) {
 // OldEsignAccountID returns the old "esign_account_id" field's value of the Person entity.
 // If the Person object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldEsignAccountID(ctx context.Context) (v string, err error) {
+func (m *PersonMutation) OldEsignAccountID(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldEsignAccountID is only allowed on UpdateOne operations")
 	}
@@ -935,26 +935,26 @@ func (m *PersonMutation) Fields() []string {
 	if m.name != nil {
 		fields = append(fields, person.FieldName)
 	}
-	if m.ic_number != nil {
-		fields = append(fields, person.FieldIcNumber)
+	if m.id_card_number != nil {
+		fields = append(fields, person.FieldIDCardNumber)
 	}
-	if m.ic_type != nil {
-		fields = append(fields, person.FieldIcType)
+	if m.id_card_type != nil {
+		fields = append(fields, person.FieldIDCardType)
 	}
-	if m.ic_portrait != nil {
-		fields = append(fields, person.FieldIcPortrait)
+	if m.id_card_portrait != nil {
+		fields = append(fields, person.FieldIDCardPortrait)
 	}
-	if m.ic_national != nil {
-		fields = append(fields, person.FieldIcNational)
+	if m.id_card_national != nil {
+		fields = append(fields, person.FieldIDCardNational)
 	}
-	if m.face_img != nil {
-		fields = append(fields, person.FieldFaceImg)
+	if m.auth_face != nil {
+		fields = append(fields, person.FieldAuthFace)
 	}
-	if m.face_verify_result != nil {
-		fields = append(fields, person.FieldFaceVerifyResult)
+	if m.auth_result != nil {
+		fields = append(fields, person.FieldAuthResult)
 	}
-	if m.result_at != nil {
-		fields = append(fields, person.FieldResultAt)
+	if m.auth_at != nil {
+		fields = append(fields, person.FieldAuthAt)
 	}
 	if m.esign_account_id != nil {
 		fields = append(fields, person.FieldEsignAccountID)
@@ -983,20 +983,20 @@ func (m *PersonMutation) Field(name string) (ent.Value, bool) {
 		return m.Block()
 	case person.FieldName:
 		return m.Name()
-	case person.FieldIcNumber:
-		return m.IcNumber()
-	case person.FieldIcType:
-		return m.IcType()
-	case person.FieldIcPortrait:
-		return m.IcPortrait()
-	case person.FieldIcNational:
-		return m.IcNational()
-	case person.FieldFaceImg:
-		return m.FaceImg()
-	case person.FieldFaceVerifyResult:
-		return m.FaceVerifyResult()
-	case person.FieldResultAt:
-		return m.ResultAt()
+	case person.FieldIDCardNumber:
+		return m.IDCardNumber()
+	case person.FieldIDCardType:
+		return m.IDCardType()
+	case person.FieldIDCardPortrait:
+		return m.IDCardPortrait()
+	case person.FieldIDCardNational:
+		return m.IDCardNational()
+	case person.FieldAuthFace:
+		return m.AuthFace()
+	case person.FieldAuthResult:
+		return m.AuthResult()
+	case person.FieldAuthAt:
+		return m.AuthAt()
 	case person.FieldEsignAccountID:
 		return m.EsignAccountID()
 	}
@@ -1024,20 +1024,20 @@ func (m *PersonMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldBlock(ctx)
 	case person.FieldName:
 		return m.OldName(ctx)
-	case person.FieldIcNumber:
-		return m.OldIcNumber(ctx)
-	case person.FieldIcType:
-		return m.OldIcType(ctx)
-	case person.FieldIcPortrait:
-		return m.OldIcPortrait(ctx)
-	case person.FieldIcNational:
-		return m.OldIcNational(ctx)
-	case person.FieldFaceImg:
-		return m.OldFaceImg(ctx)
-	case person.FieldFaceVerifyResult:
-		return m.OldFaceVerifyResult(ctx)
-	case person.FieldResultAt:
-		return m.OldResultAt(ctx)
+	case person.FieldIDCardNumber:
+		return m.OldIDCardNumber(ctx)
+	case person.FieldIDCardType:
+		return m.OldIDCardType(ctx)
+	case person.FieldIDCardPortrait:
+		return m.OldIDCardPortrait(ctx)
+	case person.FieldIDCardNational:
+		return m.OldIDCardNational(ctx)
+	case person.FieldAuthFace:
+		return m.OldAuthFace(ctx)
+	case person.FieldAuthResult:
+		return m.OldAuthResult(ctx)
+	case person.FieldAuthAt:
+		return m.OldAuthAt(ctx)
 	case person.FieldEsignAccountID:
 		return m.OldEsignAccountID(ctx)
 	}
@@ -1105,54 +1105,54 @@ func (m *PersonMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetName(v)
 		return nil
-	case person.FieldIcNumber:
+	case person.FieldIDCardNumber:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetIcNumber(v)
+		m.SetIDCardNumber(v)
 		return nil
-	case person.FieldIcType:
+	case person.FieldIDCardType:
 		v, ok := value.(uint8)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetIcType(v)
+		m.SetIDCardType(v)
 		return nil
-	case person.FieldIcPortrait:
+	case person.FieldIDCardPortrait:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetIcPortrait(v)
+		m.SetIDCardPortrait(v)
 		return nil
-	case person.FieldIcNational:
+	case person.FieldIDCardNational:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetIcNational(v)
+		m.SetIDCardNational(v)
 		return nil
-	case person.FieldFaceImg:
+	case person.FieldAuthFace:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetFaceImg(v)
+		m.SetAuthFace(v)
 		return nil
-	case person.FieldFaceVerifyResult:
+	case person.FieldAuthResult:
 		v, ok := value.(*model.FaceVerifyResult)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetFaceVerifyResult(v)
+		m.SetAuthResult(v)
 		return nil
-	case person.FieldResultAt:
+	case person.FieldAuthAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetResultAt(v)
+		m.SetAuthAt(v)
 		return nil
 	case person.FieldEsignAccountID:
 		v, ok := value.(string)
@@ -1172,8 +1172,8 @@ func (m *PersonMutation) AddedFields() []string {
 	if m.addstatus != nil {
 		fields = append(fields, person.FieldStatus)
 	}
-	if m.addic_type != nil {
-		fields = append(fields, person.FieldIcType)
+	if m.addid_card_type != nil {
+		fields = append(fields, person.FieldIDCardType)
 	}
 	return fields
 }
@@ -1185,8 +1185,8 @@ func (m *PersonMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case person.FieldStatus:
 		return m.AddedStatus()
-	case person.FieldIcType:
-		return m.AddedIcType()
+	case person.FieldIDCardType:
+		return m.AddedIDCardType()
 	}
 	return nil, false
 }
@@ -1203,12 +1203,12 @@ func (m *PersonMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddStatus(v)
 		return nil
-	case person.FieldIcType:
+	case person.FieldIDCardType:
 		v, ok := value.(uint8)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddIcType(v)
+		m.AddIDCardType(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Person numeric field %s", name)
@@ -1227,11 +1227,11 @@ func (m *PersonMutation) ClearedFields() []string {
 	if m.FieldCleared(person.FieldRemark) {
 		fields = append(fields, person.FieldRemark)
 	}
-	if m.FieldCleared(person.FieldFaceVerifyResult) {
-		fields = append(fields, person.FieldFaceVerifyResult)
+	if m.FieldCleared(person.FieldAuthResult) {
+		fields = append(fields, person.FieldAuthResult)
 	}
-	if m.FieldCleared(person.FieldResultAt) {
-		fields = append(fields, person.FieldResultAt)
+	if m.FieldCleared(person.FieldAuthAt) {
+		fields = append(fields, person.FieldAuthAt)
 	}
 	if m.FieldCleared(person.FieldEsignAccountID) {
 		fields = append(fields, person.FieldEsignAccountID)
@@ -1259,11 +1259,11 @@ func (m *PersonMutation) ClearField(name string) error {
 	case person.FieldRemark:
 		m.ClearRemark()
 		return nil
-	case person.FieldFaceVerifyResult:
-		m.ClearFaceVerifyResult()
+	case person.FieldAuthResult:
+		m.ClearAuthResult()
 		return nil
-	case person.FieldResultAt:
-		m.ClearResultAt()
+	case person.FieldAuthAt:
+		m.ClearAuthAt()
 		return nil
 	case person.FieldEsignAccountID:
 		m.ClearEsignAccountID()
@@ -1300,26 +1300,26 @@ func (m *PersonMutation) ResetField(name string) error {
 	case person.FieldName:
 		m.ResetName()
 		return nil
-	case person.FieldIcNumber:
-		m.ResetIcNumber()
+	case person.FieldIDCardNumber:
+		m.ResetIDCardNumber()
 		return nil
-	case person.FieldIcType:
-		m.ResetIcType()
+	case person.FieldIDCardType:
+		m.ResetIDCardType()
 		return nil
-	case person.FieldIcPortrait:
-		m.ResetIcPortrait()
+	case person.FieldIDCardPortrait:
+		m.ResetIDCardPortrait()
 		return nil
-	case person.FieldIcNational:
-		m.ResetIcNational()
+	case person.FieldIDCardNational:
+		m.ResetIDCardNational()
 		return nil
-	case person.FieldFaceImg:
-		m.ResetFaceImg()
+	case person.FieldAuthFace:
+		m.ResetAuthFace()
 		return nil
-	case person.FieldFaceVerifyResult:
-		m.ResetFaceVerifyResult()
+	case person.FieldAuthResult:
+		m.ResetAuthResult()
 		return nil
-	case person.FieldResultAt:
-		m.ResetResultAt()
+	case person.FieldAuthAt:
+		m.ResetAuthAt()
 		return nil
 	case person.FieldEsignAccountID:
 		m.ResetEsignAccountID()
@@ -1423,6 +1423,8 @@ type RiderMutation struct {
 	deleted_at     *time.Time
 	last_modify    *time.Time
 	remark         *string
+	group_id       *uint64
+	addgroup_id    *uint64
 	phone          *string
 	contact        **model.RiderContact
 	device_type    *uint8
@@ -1784,6 +1786,76 @@ func (m *RiderMutation) PersonIDCleared() bool {
 func (m *RiderMutation) ResetPersonID() {
 	m.person = nil
 	delete(m.clearedFields, rider.FieldPersonID)
+}
+
+// SetGroupID sets the "group_id" field.
+func (m *RiderMutation) SetGroupID(u uint64) {
+	m.group_id = &u
+	m.addgroup_id = nil
+}
+
+// GroupID returns the value of the "group_id" field in the mutation.
+func (m *RiderMutation) GroupID() (r uint64, exists bool) {
+	v := m.group_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGroupID returns the old "group_id" field's value of the Rider entity.
+// If the Rider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderMutation) OldGroupID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldGroupID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldGroupID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGroupID: %w", err)
+	}
+	return oldValue.GroupID, nil
+}
+
+// AddGroupID adds u to the "group_id" field.
+func (m *RiderMutation) AddGroupID(u uint64) {
+	if m.addgroup_id != nil {
+		*m.addgroup_id += u
+	} else {
+		m.addgroup_id = &u
+	}
+}
+
+// AddedGroupID returns the value that was added to the "group_id" field in this mutation.
+func (m *RiderMutation) AddedGroupID() (r uint64, exists bool) {
+	v := m.addgroup_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (m *RiderMutation) ClearGroupID() {
+	m.group_id = nil
+	m.addgroup_id = nil
+	m.clearedFields[rider.FieldGroupID] = struct{}{}
+}
+
+// GroupIDCleared returns if the "group_id" field was cleared in this mutation.
+func (m *RiderMutation) GroupIDCleared() bool {
+	_, ok := m.clearedFields[rider.FieldGroupID]
+	return ok
+}
+
+// ResetGroupID resets all changes to the "group_id" field.
+func (m *RiderMutation) ResetGroupID() {
+	m.group_id = nil
+	m.addgroup_id = nil
+	delete(m.clearedFields, rider.FieldGroupID)
 }
 
 // SetPhone sets the "phone" field.
@@ -2155,7 +2227,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -2173,6 +2245,9 @@ func (m *RiderMutation) Fields() []string {
 	}
 	if m.person != nil {
 		fields = append(fields, rider.FieldPersonID)
+	}
+	if m.group_id != nil {
+		fields = append(fields, rider.FieldGroupID)
 	}
 	if m.phone != nil {
 		fields = append(fields, rider.FieldPhone)
@@ -2215,6 +2290,8 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case rider.FieldPersonID:
 		return m.PersonID()
+	case rider.FieldGroupID:
+		return m.GroupID()
 	case rider.FieldPhone:
 		return m.Phone()
 	case rider.FieldContact:
@@ -2250,6 +2327,8 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldRemark(ctx)
 	case rider.FieldPersonID:
 		return m.OldPersonID(ctx)
+	case rider.FieldGroupID:
+		return m.OldGroupID(ctx)
 	case rider.FieldPhone:
 		return m.OldPhone(ctx)
 	case rider.FieldContact:
@@ -2315,6 +2394,13 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPersonID(v)
 		return nil
+	case rider.FieldGroupID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGroupID(v)
+		return nil
 	case rider.FieldPhone:
 		v, ok := value.(string)
 		if !ok {
@@ -2372,6 +2458,9 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *RiderMutation) AddedFields() []string {
 	var fields []string
+	if m.addgroup_id != nil {
+		fields = append(fields, rider.FieldGroupID)
+	}
 	if m.adddevice_type != nil {
 		fields = append(fields, rider.FieldDeviceType)
 	}
@@ -2383,6 +2472,8 @@ func (m *RiderMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *RiderMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case rider.FieldGroupID:
+		return m.AddedGroupID()
 	case rider.FieldDeviceType:
 		return m.AddedDeviceType()
 	}
@@ -2394,6 +2485,13 @@ func (m *RiderMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *RiderMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case rider.FieldGroupID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddGroupID(v)
+		return nil
 	case rider.FieldDeviceType:
 		v, ok := value.(uint8)
 		if !ok {
@@ -2420,6 +2518,9 @@ func (m *RiderMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(rider.FieldPersonID) {
 		fields = append(fields, rider.FieldPersonID)
+	}
+	if m.FieldCleared(rider.FieldGroupID) {
+		fields = append(fields, rider.FieldGroupID)
 	}
 	if m.FieldCleared(rider.FieldContact) {
 		fields = append(fields, rider.FieldContact)
@@ -2459,6 +2560,9 @@ func (m *RiderMutation) ClearField(name string) error {
 	case rider.FieldPersonID:
 		m.ClearPersonID()
 		return nil
+	case rider.FieldGroupID:
+		m.ClearGroupID()
+		return nil
 	case rider.FieldContact:
 		m.ClearContact()
 		return nil
@@ -2496,6 +2600,9 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldPersonID:
 		m.ResetPersonID()
+		return nil
+	case rider.FieldGroupID:
+		m.ResetGroupID()
 		return nil
 	case rider.FieldPhone:
 		m.ResetPhone()

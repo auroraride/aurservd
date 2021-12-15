@@ -9,7 +9,7 @@ import (
     "bytes"
     "encoding/base64"
     "github.com/aliyun/aliyun-oss-go-sdk/oss"
-    "github.com/auroraride/aurservd/app/response"
+    "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/go-resty/resty/v2"
     "strings"
@@ -26,12 +26,12 @@ func NewOss() *ossClient {
     cfg := ar.Config.Aliyun.Oss
     client, err := oss.New(cfg.Endpoint, cfg.AccessKeyId, cfg.AccessKeySecret)
     if err != nil {
-        panic(response.NewError(err))
+        panic(app.NewError(err))
     }
     var bucket *oss.Bucket
     bucket, err = client.Bucket(cfg.Bucket)
     if err != nil {
-        panic(response.NewError(err))
+        panic(app.NewError(err))
     }
     return &ossClient{
         Client: client,
@@ -44,7 +44,7 @@ func NewOss() *ossClient {
 func (c *ossClient) UploadUrlFile(name string, url string) string {
     r, err := resty.New().R().Get(url)
     if err != nil {
-        panic(response.NewError(err))
+        panic(app.NewError(err))
     }
     return c.UploadBytes(name, r.Body())
 }
@@ -53,7 +53,7 @@ func (c *ossClient) UploadUrlFile(name string, url string) string {
 func (c *ossClient) UploadBase64ImageJpeg(name string, b64 string) string {
     b, err := base64.StdEncoding.DecodeString(b64)
     if err != nil {
-        panic(response.NewError(err))
+        panic(app.NewError(err))
     }
     return c.UploadBytes(name, b)
 }
@@ -62,7 +62,7 @@ func (c *ossClient) UploadBase64ImageJpeg(name string, b64 string) string {
 func (c *ossClient) UploadBytes(name string, b []byte) string {
     err := c.Bucket.PutObject(name, bytes.NewReader(b))
     if err != nil {
-        panic(response.NewError(err))
+        panic(app.NewError(err))
     }
     url := c.url
     if !strings.HasSuffix(url, "/") {

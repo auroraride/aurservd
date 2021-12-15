@@ -108,6 +108,20 @@ func (rc *RiderCreate) SetNillablePersonID(u *uint64) *RiderCreate {
 	return rc
 }
 
+// SetGroupID sets the "group_id" field.
+func (rc *RiderCreate) SetGroupID(u uint64) *RiderCreate {
+	rc.mutation.SetGroupID(u)
+	return rc
+}
+
+// SetNillableGroupID sets the "group_id" field if the given value is not nil.
+func (rc *RiderCreate) SetNillableGroupID(u *uint64) *RiderCreate {
+	if u != nil {
+		rc.SetGroupID(*u)
+	}
+	return rc
+}
+
 // SetPhone sets the "phone" field.
 func (rc *RiderCreate) SetPhone(s string) *RiderCreate {
 	rc.mutation.SetPhone(s)
@@ -360,6 +374,14 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 		})
 		_node.Remark = &value
 	}
+	if value, ok := rc.mutation.GroupID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Value:  value,
+			Column: rider.FieldGroupID,
+		})
+		_node.GroupID = &value
+	}
 	if value, ok := rc.mutation.Phone(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -583,6 +605,24 @@ func (u *RiderUpsert) UpdatePersonID() *RiderUpsert {
 // ClearPersonID clears the value of the "person_id" field.
 func (u *RiderUpsert) ClearPersonID() *RiderUpsert {
 	u.SetNull(rider.FieldPersonID)
+	return u
+}
+
+// SetGroupID sets the "group_id" field.
+func (u *RiderUpsert) SetGroupID(v uint64) *RiderUpsert {
+	u.Set(rider.FieldGroupID, v)
+	return u
+}
+
+// UpdateGroupID sets the "group_id" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateGroupID() *RiderUpsert {
+	u.SetExcluded(rider.FieldGroupID)
+	return u
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (u *RiderUpsert) ClearGroupID() *RiderUpsert {
+	u.SetNull(rider.FieldGroupID)
 	return u
 }
 
@@ -845,6 +885,27 @@ func (u *RiderUpsertOne) UpdatePersonID() *RiderUpsertOne {
 func (u *RiderUpsertOne) ClearPersonID() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearPersonID()
+	})
+}
+
+// SetGroupID sets the "group_id" field.
+func (u *RiderUpsertOne) SetGroupID(v uint64) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetGroupID(v)
+	})
+}
+
+// UpdateGroupID sets the "group_id" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateGroupID() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateGroupID()
+	})
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (u *RiderUpsertOne) ClearGroupID() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearGroupID()
 	})
 }
 
@@ -1287,6 +1348,27 @@ func (u *RiderUpsertBulk) UpdatePersonID() *RiderUpsertBulk {
 func (u *RiderUpsertBulk) ClearPersonID() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearPersonID()
+	})
+}
+
+// SetGroupID sets the "group_id" field.
+func (u *RiderUpsertBulk) SetGroupID(v uint64) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetGroupID(v)
+	})
+}
+
+// UpdateGroupID sets the "group_id" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateGroupID() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateGroupID()
+	})
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (u *RiderUpsertBulk) ClearGroupID() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearGroupID()
 	})
 }
 

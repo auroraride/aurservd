@@ -53,8 +53,8 @@ func RiderMiddleware() echo.MiddlewareFunc {
 
             // 重载context
             return next(&app.RiderContext{
-                GlobalContext: c.(*app.GlobalContext),
-                Rider:         u,
+                Context: c.(*app.Context),
+                Rider:   u,
             })
         }
     }

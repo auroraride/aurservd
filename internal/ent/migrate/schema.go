@@ -20,13 +20,13 @@ var (
 		{Name: "status", Type: field.TypeUint8, Default: 0},
 		{Name: "block", Type: field.TypeBool, Default: false},
 		{Name: "name", Type: field.TypeString, Size: 40},
-		{Name: "ic_number", Type: field.TypeString, Unique: true, Size: 40},
-		{Name: "ic_type", Type: field.TypeUint8, Default: 1},
-		{Name: "ic_portrait", Type: field.TypeString},
-		{Name: "ic_national", Type: field.TypeString},
-		{Name: "face_img", Type: field.TypeString},
-		{Name: "face_verify_result", Type: field.TypeJSON, Nullable: true},
-		{Name: "result_at", Type: field.TypeTime, Nullable: true},
+		{Name: "id_card_number", Type: field.TypeString, Unique: true, Size: 40},
+		{Name: "id_card_type", Type: field.TypeUint8, Default: 1},
+		{Name: "id_card_portrait", Type: field.TypeString},
+		{Name: "id_card_national", Type: field.TypeString},
+		{Name: "auth_face", Type: field.TypeString},
+		{Name: "auth_result", Type: field.TypeJSON, Nullable: true},
+		{Name: "auth_at", Type: field.TypeTime, Nullable: true},
 		{Name: "esign_account_id", Type: field.TypeString, Nullable: true},
 	}
 	// PersonTable holds the schema information for the "person" table.
@@ -55,6 +55,7 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "last_modify", Type: field.TypeTime, Nullable: true},
 		{Name: "remark", Type: field.TypeString, Nullable: true},
+		{Name: "group_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "phone", Type: field.TypeString, Unique: true, Size: 11},
 		{Name: "contact", Type: field.TypeJSON, Nullable: true},
 		{Name: "device_type", Type: field.TypeUint8},
@@ -72,7 +73,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "rider_person_rider",
-				Columns:    []*schema.Column{RiderColumns[13]},
+				Columns:    []*schema.Column{RiderColumns[14]},
 				RefColumns: []*schema.Column{PersonColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

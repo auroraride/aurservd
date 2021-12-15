@@ -135,6 +135,13 @@ func PersonID(v uint64) predicate.Rider {
 	})
 }
 
+// GroupID applies equality check predicate on the "group_id" field. It's identical to GroupIDEQ.
+func GroupID(v uint64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldGroupID), v))
+	})
+}
+
 // Phone applies equality check predicate on the "phone" field. It's identical to PhoneEQ.
 func Phone(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
@@ -693,6 +700,96 @@ func PersonIDIsNil() predicate.Rider {
 func PersonIDNotNil() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldPersonID)))
+	})
+}
+
+// GroupIDEQ applies the EQ predicate on the "group_id" field.
+func GroupIDEQ(v uint64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldGroupID), v))
+	})
+}
+
+// GroupIDNEQ applies the NEQ predicate on the "group_id" field.
+func GroupIDNEQ(v uint64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldGroupID), v))
+	})
+}
+
+// GroupIDIn applies the In predicate on the "group_id" field.
+func GroupIDIn(vs ...uint64) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldGroupID), v...))
+	})
+}
+
+// GroupIDNotIn applies the NotIn predicate on the "group_id" field.
+func GroupIDNotIn(vs ...uint64) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldGroupID), v...))
+	})
+}
+
+// GroupIDGT applies the GT predicate on the "group_id" field.
+func GroupIDGT(v uint64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldGroupID), v))
+	})
+}
+
+// GroupIDGTE applies the GTE predicate on the "group_id" field.
+func GroupIDGTE(v uint64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldGroupID), v))
+	})
+}
+
+// GroupIDLT applies the LT predicate on the "group_id" field.
+func GroupIDLT(v uint64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldGroupID), v))
+	})
+}
+
+// GroupIDLTE applies the LTE predicate on the "group_id" field.
+func GroupIDLTE(v uint64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldGroupID), v))
+	})
+}
+
+// GroupIDIsNil applies the IsNil predicate on the "group_id" field.
+func GroupIDIsNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldGroupID)))
+	})
+}
+
+// GroupIDNotNil applies the NotNil predicate on the "group_id" field.
+func GroupIDNotNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldGroupID)))
 	})
 }
 

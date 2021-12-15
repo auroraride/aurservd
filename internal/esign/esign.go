@@ -7,7 +7,7 @@ package esign
 
 import (
     "bytes"
-    "github.com/auroraride/aurservd/app/response"
+    "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
@@ -49,7 +49,7 @@ const (
     createFlowOneStepUrl = `/api/v2/signflows/createFlowOneStep`
 )
 
-type esign struct {
+type Esign struct {
     config        ar.EsignConfig
     headers       map[string]string
     client        *resty.Request
@@ -62,7 +62,7 @@ type commonRes struct {
     Data    interface{} `json:"data"`
 }
 
-func New() *esign {
+func New() *Esign {
     var config ar.EsignConfig
     cfg := ar.Config.Esign
     switch cfg.Target {
@@ -71,9 +71,9 @@ func New() *esign {
     case EnvOnline:
         config = cfg.Online
     default:
-        panic(response.NewError("环境设置失败"))
+        panic(app.NewError("环境设置失败"))
     }
-    return &esign{
+    return &Esign{
         serialization: jsoniter.Config{SortMapKeys: true},
         config:        config,
         headers: map[string]string{
@@ -87,7 +87,7 @@ func New() *esign {
 }
 
 // getSign 获取签名
-func (e *esign) getSign(api, method, md5 string) (string, string) {
+func (e *Esign) getSign(api, method, md5 string) (string, string) {
     var buffer bytes.Buffer
     buffer.WriteString(method)
     buffer.WriteString("\n")
@@ -116,7 +116,7 @@ type reqLog struct {
 }
 
 // request 请求
-func (e *esign) request(api, method string, body interface{}, data interface{}) interface{} {
+func (e *Esign) request(api, method string, body interface{}, data interface{}) interface{} {
     var md5 string
     res := new(commonRes)
     res.Data = data
@@ -138,7 +138,7 @@ func (e *esign) request(api, method string, body interface{}, data interface{}) 
         _, err = req.Get(e.config.BaseUrl + api)
     }
     if err != nil {
-        panic(response.NewError(err))
+        panic(app.NewError(err))
     }
     // 记录请求日志
     if e.config.Log {
@@ -160,10 +160,10 @@ func (e *esign) request(api, method string, body interface{}, data interface{}) 
 }
 
 // isResSuccess 返回是否成功
-func (e *esign) isResSuccess(res *commonRes) {
+func (e *Esign) isResSuccess(res *commonRes) {
     switch res.Code {
     case resSuccess, resExists:
         return
     }
-    panic(response.NewError(res.Message))
+    panic(app.NewError(res.Message))
 }

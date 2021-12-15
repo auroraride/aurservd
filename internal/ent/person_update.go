@@ -136,80 +136,80 @@ func (pu *PersonUpdate) SetName(s string) *PersonUpdate {
 	return pu
 }
 
-// SetIcNumber sets the "ic_number" field.
-func (pu *PersonUpdate) SetIcNumber(s string) *PersonUpdate {
-	pu.mutation.SetIcNumber(s)
+// SetIDCardNumber sets the "id_card_number" field.
+func (pu *PersonUpdate) SetIDCardNumber(s string) *PersonUpdate {
+	pu.mutation.SetIDCardNumber(s)
 	return pu
 }
 
-// SetIcType sets the "ic_type" field.
-func (pu *PersonUpdate) SetIcType(u uint8) *PersonUpdate {
-	pu.mutation.ResetIcType()
-	pu.mutation.SetIcType(u)
+// SetIDCardType sets the "id_card_type" field.
+func (pu *PersonUpdate) SetIDCardType(u uint8) *PersonUpdate {
+	pu.mutation.ResetIDCardType()
+	pu.mutation.SetIDCardType(u)
 	return pu
 }
 
-// SetNillableIcType sets the "ic_type" field if the given value is not nil.
-func (pu *PersonUpdate) SetNillableIcType(u *uint8) *PersonUpdate {
+// SetNillableIDCardType sets the "id_card_type" field if the given value is not nil.
+func (pu *PersonUpdate) SetNillableIDCardType(u *uint8) *PersonUpdate {
 	if u != nil {
-		pu.SetIcType(*u)
+		pu.SetIDCardType(*u)
 	}
 	return pu
 }
 
-// AddIcType adds u to the "ic_type" field.
-func (pu *PersonUpdate) AddIcType(u uint8) *PersonUpdate {
-	pu.mutation.AddIcType(u)
+// AddIDCardType adds u to the "id_card_type" field.
+func (pu *PersonUpdate) AddIDCardType(u uint8) *PersonUpdate {
+	pu.mutation.AddIDCardType(u)
 	return pu
 }
 
-// SetIcPortrait sets the "ic_portrait" field.
-func (pu *PersonUpdate) SetIcPortrait(s string) *PersonUpdate {
-	pu.mutation.SetIcPortrait(s)
+// SetIDCardPortrait sets the "id_card_portrait" field.
+func (pu *PersonUpdate) SetIDCardPortrait(s string) *PersonUpdate {
+	pu.mutation.SetIDCardPortrait(s)
 	return pu
 }
 
-// SetIcNational sets the "ic_national" field.
-func (pu *PersonUpdate) SetIcNational(s string) *PersonUpdate {
-	pu.mutation.SetIcNational(s)
+// SetIDCardNational sets the "id_card_national" field.
+func (pu *PersonUpdate) SetIDCardNational(s string) *PersonUpdate {
+	pu.mutation.SetIDCardNational(s)
 	return pu
 }
 
-// SetFaceImg sets the "face_img" field.
-func (pu *PersonUpdate) SetFaceImg(s string) *PersonUpdate {
-	pu.mutation.SetFaceImg(s)
+// SetAuthFace sets the "auth_face" field.
+func (pu *PersonUpdate) SetAuthFace(s string) *PersonUpdate {
+	pu.mutation.SetAuthFace(s)
 	return pu
 }
 
-// SetFaceVerifyResult sets the "face_verify_result" field.
-func (pu *PersonUpdate) SetFaceVerifyResult(mvr *model.FaceVerifyResult) *PersonUpdate {
-	pu.mutation.SetFaceVerifyResult(mvr)
+// SetAuthResult sets the "auth_result" field.
+func (pu *PersonUpdate) SetAuthResult(mvr *model.FaceVerifyResult) *PersonUpdate {
+	pu.mutation.SetAuthResult(mvr)
 	return pu
 }
 
-// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
-func (pu *PersonUpdate) ClearFaceVerifyResult() *PersonUpdate {
-	pu.mutation.ClearFaceVerifyResult()
+// ClearAuthResult clears the value of the "auth_result" field.
+func (pu *PersonUpdate) ClearAuthResult() *PersonUpdate {
+	pu.mutation.ClearAuthResult()
 	return pu
 }
 
-// SetResultAt sets the "result_at" field.
-func (pu *PersonUpdate) SetResultAt(t time.Time) *PersonUpdate {
-	pu.mutation.SetResultAt(t)
+// SetAuthAt sets the "auth_at" field.
+func (pu *PersonUpdate) SetAuthAt(t time.Time) *PersonUpdate {
+	pu.mutation.SetAuthAt(t)
 	return pu
 }
 
-// SetNillableResultAt sets the "result_at" field if the given value is not nil.
-func (pu *PersonUpdate) SetNillableResultAt(t *time.Time) *PersonUpdate {
+// SetNillableAuthAt sets the "auth_at" field if the given value is not nil.
+func (pu *PersonUpdate) SetNillableAuthAt(t *time.Time) *PersonUpdate {
 	if t != nil {
-		pu.SetResultAt(*t)
+		pu.SetAuthAt(*t)
 	}
 	return pu
 }
 
-// ClearResultAt clears the value of the "result_at" field.
-func (pu *PersonUpdate) ClearResultAt() *PersonUpdate {
-	pu.mutation.ClearResultAt()
+// ClearAuthAt clears the value of the "auth_at" field.
+func (pu *PersonUpdate) ClearAuthAt() *PersonUpdate {
+	pu.mutation.ClearAuthAt()
 	return pu
 }
 
@@ -350,9 +350,9 @@ func (pu *PersonUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
 		}
 	}
-	if v, ok := pu.mutation.IcNumber(); ok {
-		if err := person.IcNumberValidator(v); err != nil {
-			return &ValidationError{Name: "ic_number", err: fmt.Errorf("ent: validator failed for field \"ic_number\": %w", err)}
+	if v, ok := pu.mutation.IDCardNumber(); ok {
+		if err := person.IDCardNumberValidator(v); err != nil {
+			return &ValidationError{Name: "id_card_number", err: fmt.Errorf("ent: validator failed for field \"id_card_number\": %w", err)}
 		}
 	}
 	return nil
@@ -450,72 +450,72 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: person.FieldName,
 		})
 	}
-	if value, ok := pu.mutation.IcNumber(); ok {
+	if value, ok := pu.mutation.IDCardNumber(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: person.FieldIcNumber,
+			Column: person.FieldIDCardNumber,
 		})
 	}
-	if value, ok := pu.mutation.IcType(); ok {
+	if value, ok := pu.mutation.IDCardType(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeUint8,
 			Value:  value,
-			Column: person.FieldIcType,
+			Column: person.FieldIDCardType,
 		})
 	}
-	if value, ok := pu.mutation.AddedIcType(); ok {
+	if value, ok := pu.mutation.AddedIDCardType(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeUint8,
 			Value:  value,
-			Column: person.FieldIcType,
+			Column: person.FieldIDCardType,
 		})
 	}
-	if value, ok := pu.mutation.IcPortrait(); ok {
+	if value, ok := pu.mutation.IDCardPortrait(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: person.FieldIcPortrait,
+			Column: person.FieldIDCardPortrait,
 		})
 	}
-	if value, ok := pu.mutation.IcNational(); ok {
+	if value, ok := pu.mutation.IDCardNational(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: person.FieldIcNational,
+			Column: person.FieldIDCardNational,
 		})
 	}
-	if value, ok := pu.mutation.FaceImg(); ok {
+	if value, ok := pu.mutation.AuthFace(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: person.FieldFaceImg,
+			Column: person.FieldAuthFace,
 		})
 	}
-	if value, ok := pu.mutation.FaceVerifyResult(); ok {
+	if value, ok := pu.mutation.AuthResult(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: person.FieldFaceVerifyResult,
+			Column: person.FieldAuthResult,
 		})
 	}
-	if pu.mutation.FaceVerifyResultCleared() {
+	if pu.mutation.AuthResultCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: person.FieldFaceVerifyResult,
+			Column: person.FieldAuthResult,
 		})
 	}
-	if value, ok := pu.mutation.ResultAt(); ok {
+	if value, ok := pu.mutation.AuthAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: person.FieldResultAt,
+			Column: person.FieldAuthAt,
 		})
 	}
-	if pu.mutation.ResultAtCleared() {
+	if pu.mutation.AuthAtCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
-			Column: person.FieldResultAt,
+			Column: person.FieldAuthAt,
 		})
 	}
 	if value, ok := pu.mutation.EsignAccountID(); ok {
@@ -711,80 +711,80 @@ func (puo *PersonUpdateOne) SetName(s string) *PersonUpdateOne {
 	return puo
 }
 
-// SetIcNumber sets the "ic_number" field.
-func (puo *PersonUpdateOne) SetIcNumber(s string) *PersonUpdateOne {
-	puo.mutation.SetIcNumber(s)
+// SetIDCardNumber sets the "id_card_number" field.
+func (puo *PersonUpdateOne) SetIDCardNumber(s string) *PersonUpdateOne {
+	puo.mutation.SetIDCardNumber(s)
 	return puo
 }
 
-// SetIcType sets the "ic_type" field.
-func (puo *PersonUpdateOne) SetIcType(u uint8) *PersonUpdateOne {
-	puo.mutation.ResetIcType()
-	puo.mutation.SetIcType(u)
+// SetIDCardType sets the "id_card_type" field.
+func (puo *PersonUpdateOne) SetIDCardType(u uint8) *PersonUpdateOne {
+	puo.mutation.ResetIDCardType()
+	puo.mutation.SetIDCardType(u)
 	return puo
 }
 
-// SetNillableIcType sets the "ic_type" field if the given value is not nil.
-func (puo *PersonUpdateOne) SetNillableIcType(u *uint8) *PersonUpdateOne {
+// SetNillableIDCardType sets the "id_card_type" field if the given value is not nil.
+func (puo *PersonUpdateOne) SetNillableIDCardType(u *uint8) *PersonUpdateOne {
 	if u != nil {
-		puo.SetIcType(*u)
+		puo.SetIDCardType(*u)
 	}
 	return puo
 }
 
-// AddIcType adds u to the "ic_type" field.
-func (puo *PersonUpdateOne) AddIcType(u uint8) *PersonUpdateOne {
-	puo.mutation.AddIcType(u)
+// AddIDCardType adds u to the "id_card_type" field.
+func (puo *PersonUpdateOne) AddIDCardType(u uint8) *PersonUpdateOne {
+	puo.mutation.AddIDCardType(u)
 	return puo
 }
 
-// SetIcPortrait sets the "ic_portrait" field.
-func (puo *PersonUpdateOne) SetIcPortrait(s string) *PersonUpdateOne {
-	puo.mutation.SetIcPortrait(s)
+// SetIDCardPortrait sets the "id_card_portrait" field.
+func (puo *PersonUpdateOne) SetIDCardPortrait(s string) *PersonUpdateOne {
+	puo.mutation.SetIDCardPortrait(s)
 	return puo
 }
 
-// SetIcNational sets the "ic_national" field.
-func (puo *PersonUpdateOne) SetIcNational(s string) *PersonUpdateOne {
-	puo.mutation.SetIcNational(s)
+// SetIDCardNational sets the "id_card_national" field.
+func (puo *PersonUpdateOne) SetIDCardNational(s string) *PersonUpdateOne {
+	puo.mutation.SetIDCardNational(s)
 	return puo
 }
 
-// SetFaceImg sets the "face_img" field.
-func (puo *PersonUpdateOne) SetFaceImg(s string) *PersonUpdateOne {
-	puo.mutation.SetFaceImg(s)
+// SetAuthFace sets the "auth_face" field.
+func (puo *PersonUpdateOne) SetAuthFace(s string) *PersonUpdateOne {
+	puo.mutation.SetAuthFace(s)
 	return puo
 }
 
-// SetFaceVerifyResult sets the "face_verify_result" field.
-func (puo *PersonUpdateOne) SetFaceVerifyResult(mvr *model.FaceVerifyResult) *PersonUpdateOne {
-	puo.mutation.SetFaceVerifyResult(mvr)
+// SetAuthResult sets the "auth_result" field.
+func (puo *PersonUpdateOne) SetAuthResult(mvr *model.FaceVerifyResult) *PersonUpdateOne {
+	puo.mutation.SetAuthResult(mvr)
 	return puo
 }
 
-// ClearFaceVerifyResult clears the value of the "face_verify_result" field.
-func (puo *PersonUpdateOne) ClearFaceVerifyResult() *PersonUpdateOne {
-	puo.mutation.ClearFaceVerifyResult()
+// ClearAuthResult clears the value of the "auth_result" field.
+func (puo *PersonUpdateOne) ClearAuthResult() *PersonUpdateOne {
+	puo.mutation.ClearAuthResult()
 	return puo
 }
 
-// SetResultAt sets the "result_at" field.
-func (puo *PersonUpdateOne) SetResultAt(t time.Time) *PersonUpdateOne {
-	puo.mutation.SetResultAt(t)
+// SetAuthAt sets the "auth_at" field.
+func (puo *PersonUpdateOne) SetAuthAt(t time.Time) *PersonUpdateOne {
+	puo.mutation.SetAuthAt(t)
 	return puo
 }
 
-// SetNillableResultAt sets the "result_at" field if the given value is not nil.
-func (puo *PersonUpdateOne) SetNillableResultAt(t *time.Time) *PersonUpdateOne {
+// SetNillableAuthAt sets the "auth_at" field if the given value is not nil.
+func (puo *PersonUpdateOne) SetNillableAuthAt(t *time.Time) *PersonUpdateOne {
 	if t != nil {
-		puo.SetResultAt(*t)
+		puo.SetAuthAt(*t)
 	}
 	return puo
 }
 
-// ClearResultAt clears the value of the "result_at" field.
-func (puo *PersonUpdateOne) ClearResultAt() *PersonUpdateOne {
-	puo.mutation.ClearResultAt()
+// ClearAuthAt clears the value of the "auth_at" field.
+func (puo *PersonUpdateOne) ClearAuthAt() *PersonUpdateOne {
+	puo.mutation.ClearAuthAt()
 	return puo
 }
 
@@ -932,9 +932,9 @@ func (puo *PersonUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
 		}
 	}
-	if v, ok := puo.mutation.IcNumber(); ok {
-		if err := person.IcNumberValidator(v); err != nil {
-			return &ValidationError{Name: "ic_number", err: fmt.Errorf("ent: validator failed for field \"ic_number\": %w", err)}
+	if v, ok := puo.mutation.IDCardNumber(); ok {
+		if err := person.IDCardNumberValidator(v); err != nil {
+			return &ValidationError{Name: "id_card_number", err: fmt.Errorf("ent: validator failed for field \"id_card_number\": %w", err)}
 		}
 	}
 	return nil
@@ -1049,72 +1049,72 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 			Column: person.FieldName,
 		})
 	}
-	if value, ok := puo.mutation.IcNumber(); ok {
+	if value, ok := puo.mutation.IDCardNumber(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: person.FieldIcNumber,
+			Column: person.FieldIDCardNumber,
 		})
 	}
-	if value, ok := puo.mutation.IcType(); ok {
+	if value, ok := puo.mutation.IDCardType(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeUint8,
 			Value:  value,
-			Column: person.FieldIcType,
+			Column: person.FieldIDCardType,
 		})
 	}
-	if value, ok := puo.mutation.AddedIcType(); ok {
+	if value, ok := puo.mutation.AddedIDCardType(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeUint8,
 			Value:  value,
-			Column: person.FieldIcType,
+			Column: person.FieldIDCardType,
 		})
 	}
-	if value, ok := puo.mutation.IcPortrait(); ok {
+	if value, ok := puo.mutation.IDCardPortrait(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: person.FieldIcPortrait,
+			Column: person.FieldIDCardPortrait,
 		})
 	}
-	if value, ok := puo.mutation.IcNational(); ok {
+	if value, ok := puo.mutation.IDCardNational(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: person.FieldIcNational,
+			Column: person.FieldIDCardNational,
 		})
 	}
-	if value, ok := puo.mutation.FaceImg(); ok {
+	if value, ok := puo.mutation.AuthFace(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: person.FieldFaceImg,
+			Column: person.FieldAuthFace,
 		})
 	}
-	if value, ok := puo.mutation.FaceVerifyResult(); ok {
+	if value, ok := puo.mutation.AuthResult(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: person.FieldFaceVerifyResult,
+			Column: person.FieldAuthResult,
 		})
 	}
-	if puo.mutation.FaceVerifyResultCleared() {
+	if puo.mutation.AuthResultCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: person.FieldFaceVerifyResult,
+			Column: person.FieldAuthResult,
 		})
 	}
-	if value, ok := puo.mutation.ResultAt(); ok {
+	if value, ok := puo.mutation.AuthAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: person.FieldResultAt,
+			Column: person.FieldAuthAt,
 		})
 	}
-	if puo.mutation.ResultAtCleared() {
+	if puo.mutation.AuthAtCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
-			Column: person.FieldResultAt,
+			Column: person.FieldAuthAt,
 		})
 	}
 	if value, ok := puo.mutation.EsignAccountID(); ok {

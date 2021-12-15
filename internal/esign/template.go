@@ -56,14 +56,14 @@ type CreateByTemplateRes struct {
 }
 
 // DocTemplate 查询模板文件详情
-func (e *esign) DocTemplate() *DocTemplateRes {
+func (e *Esign) DocTemplate(templateId string) *DocTemplateRes {
     res := new(DocTemplateRes)
-    e.request(fmt.Sprintf(docTemplateUrl, e.config.TemplateId), methodGet, nil, res)
+    e.request(fmt.Sprintf(docTemplateUrl, templateId), methodGet, nil, res)
     return res
 }
 
 // CreateByTemplate 填充内容生成PDF
-func (e *esign) CreateByTemplate(req CreateByTemplateReq) *CreateByTemplateRes {
+func (e *Esign) CreateByTemplate(req CreateByTemplateReq) *CreateByTemplateRes {
     res := new(CreateByTemplateRes)
     e.request(createByTemplateUrl, methodPost, req, res)
     return res

@@ -7,7 +7,7 @@ package baidu
 
 import (
     "fmt"
-    "github.com/auroraride/aurservd/app/response"
+    "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
@@ -115,10 +115,10 @@ func (b *baiduClient) getFaceprintUrl(typ string) (url string, token string) {
         SetBody(map[string]string{"plan_id": planId}).
         Post(fmt.Sprintf(faceprintTokenUrl, b.accessToken))
     if err != nil {
-        panic(response.NewError(err))
+        panic(app.NewError(err))
     }
     if !res.Success {
-        panic(response.NewError("实名认证请求失败"))
+        panic(app.NewError("实名认证请求失败"))
     }
     token = res.Result.VerifyToken
     str := fmt.Sprintf("%s?type=%s&token=%s&state=", cfg.Callback, typ, token)
@@ -145,7 +145,7 @@ func (b *baiduClient) GetFaceUrl(name, icNum string) (uri string, token string) 
         }).
         Post(fmt.Sprintf(faceprintSubmitUrl, b.accessToken))
     if err != nil {
-        panic(response.NewError(err))
+        panic(app.NewError(err))
     }
     return
 }

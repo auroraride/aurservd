@@ -6,7 +6,6 @@
 package app
 
 import (
-    "github.com/auroraride/aurservd/app/response"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/labstack/echo/v4"
 )
@@ -23,26 +22,26 @@ const (
     HeaderRiderToken = "X-Rider-Token"
 )
 
-type GlobalContext struct {
+type Context struct {
     echo.Context
 
     Device *Device
 }
 
 type RiderContext struct {
-    *GlobalContext
+    *Context
 
     Rider *ent.Rider
 }
 
 // BindValidate 绑定并校验数据
-func (c *GlobalContext) BindValidate(ptr interface{}) {
+func (c *Context) BindValidate(ptr interface{}) {
     err := c.Bind(ptr)
     if err != nil {
-        panic(response.NewError(err))
+        panic(NewError(err))
     }
     err = c.Validate(ptr)
     if err != nil {
-        panic(response.NewError(err))
+        panic(NewError(err))
     }
 }

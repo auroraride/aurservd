@@ -26,6 +26,7 @@ func (Rider) Annotations() []schema.Annotation {
 func (Rider) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("person_id").Optional().Nillable().Comment("实人"),
+        field.Uint64("group_id").Optional().Nillable().Comment("团队"),
         // field.Uint8("status").Default(0).Comment("业务状态"),
         field.String("phone").MaxLen(11).Unique().Comment("手机号"),
         field.JSON("contact", &model.RiderContact{}).Optional().Comment("紧急联系人"),

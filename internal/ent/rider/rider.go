@@ -23,6 +23,8 @@ const (
 	FieldRemark = "remark"
 	// FieldPersonID holds the string denoting the person_id field in the database.
 	FieldPersonID = "person_id"
+	// FieldGroupID holds the string denoting the group_id field in the database.
+	FieldGroupID = "group_id"
 	// FieldPhone holds the string denoting the phone field in the database.
 	FieldPhone = "phone"
 	// FieldContact holds the string denoting the contact field in the database.
@@ -59,6 +61,7 @@ var Columns = []string{
 	FieldLastModify,
 	FieldRemark,
 	FieldPersonID,
+	FieldGroupID,
 	FieldPhone,
 	FieldContact,
 	FieldDeviceType,

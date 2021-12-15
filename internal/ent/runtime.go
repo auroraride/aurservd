@@ -42,14 +42,14 @@ func init() {
 	personDescName := personFields[2].Descriptor()
 	// person.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	person.NameValidator = personDescName.Validators[0].(func(string) error)
-	// personDescIcNumber is the schema descriptor for ic_number field.
-	personDescIcNumber := personFields[3].Descriptor()
-	// person.IcNumberValidator is a validator for the "ic_number" field. It is called by the builders before save.
-	person.IcNumberValidator = personDescIcNumber.Validators[0].(func(string) error)
-	// personDescIcType is the schema descriptor for ic_type field.
-	personDescIcType := personFields[4].Descriptor()
-	// person.DefaultIcType holds the default value on creation for the ic_type field.
-	person.DefaultIcType = personDescIcType.Default.(uint8)
+	// personDescIDCardNumber is the schema descriptor for id_card_number field.
+	personDescIDCardNumber := personFields[3].Descriptor()
+	// person.IDCardNumberValidator is a validator for the "id_card_number" field. It is called by the builders before save.
+	person.IDCardNumberValidator = personDescIDCardNumber.Validators[0].(func(string) error)
+	// personDescIDCardType is the schema descriptor for id_card_type field.
+	personDescIDCardType := personFields[4].Descriptor()
+	// person.DefaultIDCardType holds the default value on creation for the id_card_type field.
+	person.DefaultIDCardType = personDescIDCardType.Default.(uint8)
 	riderMixin := schema.Rider{}.Mixin()
 	riderMixinFields0 := riderMixin[0].Fields()
 	_ = riderMixinFields0
@@ -66,15 +66,15 @@ func init() {
 	// rider.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	rider.UpdateDefaultUpdatedAt = riderDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// riderDescPhone is the schema descriptor for phone field.
-	riderDescPhone := riderFields[1].Descriptor()
+	riderDescPhone := riderFields[2].Descriptor()
 	// rider.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
 	rider.PhoneValidator = riderDescPhone.Validators[0].(func(string) error)
 	// riderDescLastDevice is the schema descriptor for last_device field.
-	riderDescLastDevice := riderFields[4].Descriptor()
+	riderDescLastDevice := riderFields[5].Descriptor()
 	// rider.LastDeviceValidator is a validator for the "last_device" field. It is called by the builders before save.
 	rider.LastDeviceValidator = riderDescLastDevice.Validators[0].(func(string) error)
 	// riderDescPushID is the schema descriptor for push_id field.
-	riderDescPushID := riderFields[6].Descriptor()
+	riderDescPushID := riderFields[7].Descriptor()
 	// rider.PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
 	rider.PushIDValidator = riderDescPushID.Validators[0].(func(string) error)
 	settingMixin := schema.Setting{}.Mixin()

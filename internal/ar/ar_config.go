@@ -25,15 +25,21 @@ var Config *config
 var defaultConfigStr string
 
 type EsignConfig struct {
-    Appid      string
-    BaseUrl    string
-    Secret     string
-    RSA        string `mapstructure:"rsa"`
-    FlowId     string
-    TemplateId string
-    Log        bool
-    Callback   string
-    Redirect   string
+    Appid    string
+    BaseUrl  string
+    Secret   string
+    RSA      string `mapstructure:"rsa"`
+    Log      bool
+    Callback string
+    Redirect string
+    Group    struct {
+        FlowId     string
+        TemplateId string
+    }
+    Person struct {
+        FlowId     string
+        TemplateId string
+    }
 }
 
 type config struct {

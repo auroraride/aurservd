@@ -31,7 +31,7 @@ type rider struct {
 // Signin 骑手登录
 func (*rider) Signin(c echo.Context) (err error) {
     req := new(model.RiderSignupReq)
-    ctx := c.(*app.GlobalContext)
+    ctx := c.(*app.Context)
     ctx.BindValidate(req)
 
     // 校验短信

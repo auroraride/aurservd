@@ -25,7 +25,6 @@ type FaceVerifyResult struct {
     Score          float64 `json:"score"`
     LivenessScore  float64 `json:"livenessScore"`
     Spoofing       float64 `json:"spoofing"`
-
 }
 
 type PersonAuthStatus uint8

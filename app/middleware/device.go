@@ -14,7 +14,7 @@ import (
 func DeviceMiddleware() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(ctx echo.Context) error {
-            c := ctx.(*app.GlobalContext)
+            c := ctx.(*app.Context)
             sn := c.Request().Header.Get(app.HeaderDeviceSerial)
             dt := c.Request().Header.Get(app.HeaderDeviceType)
             if sn == "" || dt == "" {

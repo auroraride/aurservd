@@ -39,30 +39,30 @@ type Person struct {
 	// Name holds the value of the "name" field.
 	// 真实姓名
 	Name string `json:"name,omitempty"`
-	// IcNumber holds the value of the "ic_number" field.
+	// IDCardNumber holds the value of the "id_card_number" field.
 	// 证件号码
-	IcNumber string `json:"ic_number,omitempty"`
-	// IcType holds the value of the "ic_type" field.
+	IDCardNumber string `json:"id_card_number,omitempty"`
+	// IDCardType holds the value of the "id_card_type" field.
 	// 证件类别
-	IcType uint8 `json:"ic_type,omitempty"`
-	// IcPortrait holds the value of the "ic_portrait" field.
+	IDCardType uint8 `json:"id_card_type,omitempty"`
+	// IDCardPortrait holds the value of the "id_card_portrait" field.
 	// 证件人像面
-	IcPortrait string `json:"ic_portrait,omitempty"`
-	// IcNational holds the value of the "ic_national" field.
+	IDCardPortrait string `json:"id_card_portrait,omitempty"`
+	// IDCardNational holds the value of the "id_card_national" field.
 	// 证件国徽面
-	IcNational string `json:"ic_national,omitempty"`
-	// FaceImg holds the value of the "face_img" field.
-	// 人脸照片
-	FaceImg string `json:"face_img,omitempty"`
-	// FaceVerifyResult holds the value of the "face_verify_result" field.
-	// 人脸识别验证结果详情
-	FaceVerifyResult *model.FaceVerifyResult `json:"face_verify_result,omitempty"`
-	// ResultAt holds the value of the "result_at" field.
-	// 认证结果获取时间
-	ResultAt *time.Time `json:"result_at,omitempty"`
+	IDCardNational string `json:"id_card_national,omitempty"`
+	// AuthFace holds the value of the "auth_face" field.
+	// 实名认证人脸照片
+	AuthFace string `json:"auth_face,omitempty"`
+	// AuthResult holds the value of the "auth_result" field.
+	// 实名认证结果详情
+	AuthResult *model.FaceVerifyResult `json:"auth_result,omitempty"`
+	// AuthAt holds the value of the "auth_at" field.
+	// 实名认证结果获取时间
+	AuthAt *time.Time `json:"auth_at,omitempty"`
 	// EsignAccountID holds the value of the "esign_account_id" field.
 	// E签宝账户ID
-	EsignAccountID string `json:"esign_account_id,omitempty"`
+	EsignAccountID *string `json:"esign_account_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PersonQuery when eager-loading is set.
 	Edges PersonEdges `json:"edges"`
@@ -91,15 +91,15 @@ func (*Person) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case person.FieldFaceVerifyResult:
+		case person.FieldAuthResult:
 			values[i] = new([]byte)
 		case person.FieldBlock:
 			values[i] = new(sql.NullBool)
-		case person.FieldID, person.FieldStatus, person.FieldIcType:
+		case person.FieldID, person.FieldStatus, person.FieldIDCardType:
 			values[i] = new(sql.NullInt64)
-		case person.FieldRemark, person.FieldName, person.FieldIcNumber, person.FieldIcPortrait, person.FieldIcNational, person.FieldFaceImg, person.FieldEsignAccountID:
+		case person.FieldRemark, person.FieldName, person.FieldIDCardNumber, person.FieldIDCardPortrait, person.FieldIDCardNational, person.FieldAuthFace, person.FieldEsignAccountID:
 			values[i] = new(sql.NullString)
-		case person.FieldCreatedAt, person.FieldUpdatedAt, person.FieldDeletedAt, person.FieldLastModify, person.FieldResultAt:
+		case person.FieldCreatedAt, person.FieldUpdatedAt, person.FieldDeletedAt, person.FieldLastModify, person.FieldAuthAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Person", columns[i])
@@ -173,56 +173,57 @@ func (pe *Person) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				pe.Name = value.String
 			}
-		case person.FieldIcNumber:
+		case person.FieldIDCardNumber:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field ic_number", values[i])
+				return fmt.Errorf("unexpected type %T for field id_card_number", values[i])
 			} else if value.Valid {
-				pe.IcNumber = value.String
+				pe.IDCardNumber = value.String
 			}
-		case person.FieldIcType:
+		case person.FieldIDCardType:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field ic_type", values[i])
+				return fmt.Errorf("unexpected type %T for field id_card_type", values[i])
 			} else if value.Valid {
-				pe.IcType = uint8(value.Int64)
+				pe.IDCardType = uint8(value.Int64)
 			}
-		case person.FieldIcPortrait:
+		case person.FieldIDCardPortrait:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field ic_portrait", values[i])
+				return fmt.Errorf("unexpected type %T for field id_card_portrait", values[i])
 			} else if value.Valid {
-				pe.IcPortrait = value.String
+				pe.IDCardPortrait = value.String
 			}
-		case person.FieldIcNational:
+		case person.FieldIDCardNational:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field ic_national", values[i])
+				return fmt.Errorf("unexpected type %T for field id_card_national", values[i])
 			} else if value.Valid {
-				pe.IcNational = value.String
+				pe.IDCardNational = value.String
 			}
-		case person.FieldFaceImg:
+		case person.FieldAuthFace:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field face_img", values[i])
+				return fmt.Errorf("unexpected type %T for field auth_face", values[i])
 			} else if value.Valid {
-				pe.FaceImg = value.String
+				pe.AuthFace = value.String
 			}
-		case person.FieldFaceVerifyResult:
+		case person.FieldAuthResult:
 			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field face_verify_result", values[i])
+				return fmt.Errorf("unexpected type %T for field auth_result", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &pe.FaceVerifyResult); err != nil {
-					return fmt.Errorf("unmarshal field face_verify_result: %w", err)
+				if err := json.Unmarshal(*value, &pe.AuthResult); err != nil {
+					return fmt.Errorf("unmarshal field auth_result: %w", err)
 				}
 			}
-		case person.FieldResultAt:
+		case person.FieldAuthAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field result_at", values[i])
+				return fmt.Errorf("unexpected type %T for field auth_at", values[i])
 			} else if value.Valid {
-				pe.ResultAt = new(time.Time)
-				*pe.ResultAt = value.Time
+				pe.AuthAt = new(time.Time)
+				*pe.AuthAt = value.Time
 			}
 		case person.FieldEsignAccountID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field esign_account_id", values[i])
 			} else if value.Valid {
-				pe.EsignAccountID = value.String
+				pe.EsignAccountID = new(string)
+				*pe.EsignAccountID = value.String
 			}
 		}
 	}
@@ -279,24 +280,26 @@ func (pe *Person) String() string {
 	builder.WriteString(fmt.Sprintf("%v", pe.Block))
 	builder.WriteString(", name=")
 	builder.WriteString(pe.Name)
-	builder.WriteString(", ic_number=")
-	builder.WriteString(pe.IcNumber)
-	builder.WriteString(", ic_type=")
-	builder.WriteString(fmt.Sprintf("%v", pe.IcType))
-	builder.WriteString(", ic_portrait=")
-	builder.WriteString(pe.IcPortrait)
-	builder.WriteString(", ic_national=")
-	builder.WriteString(pe.IcNational)
-	builder.WriteString(", face_img=")
-	builder.WriteString(pe.FaceImg)
-	builder.WriteString(", face_verify_result=")
-	builder.WriteString(fmt.Sprintf("%v", pe.FaceVerifyResult))
-	if v := pe.ResultAt; v != nil {
-		builder.WriteString(", result_at=")
+	builder.WriteString(", id_card_number=")
+	builder.WriteString(pe.IDCardNumber)
+	builder.WriteString(", id_card_type=")
+	builder.WriteString(fmt.Sprintf("%v", pe.IDCardType))
+	builder.WriteString(", id_card_portrait=")
+	builder.WriteString(pe.IDCardPortrait)
+	builder.WriteString(", id_card_national=")
+	builder.WriteString(pe.IDCardNational)
+	builder.WriteString(", auth_face=")
+	builder.WriteString(pe.AuthFace)
+	builder.WriteString(", auth_result=")
+	builder.WriteString(fmt.Sprintf("%v", pe.AuthResult))
+	if v := pe.AuthAt; v != nil {
+		builder.WriteString(", auth_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	builder.WriteString(", esign_account_id=")
-	builder.WriteString(pe.EsignAccountID)
+	if v := pe.EsignAccountID; v != nil {
+		builder.WriteString(", esign_account_id=")
+		builder.WriteString(*v)
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

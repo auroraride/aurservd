@@ -115,6 +115,33 @@ func (ru *RiderUpdate) ClearPersonID() *RiderUpdate {
 	return ru
 }
 
+// SetGroupID sets the "group_id" field.
+func (ru *RiderUpdate) SetGroupID(u uint64) *RiderUpdate {
+	ru.mutation.ResetGroupID()
+	ru.mutation.SetGroupID(u)
+	return ru
+}
+
+// SetNillableGroupID sets the "group_id" field if the given value is not nil.
+func (ru *RiderUpdate) SetNillableGroupID(u *uint64) *RiderUpdate {
+	if u != nil {
+		ru.SetGroupID(*u)
+	}
+	return ru
+}
+
+// AddGroupID adds u to the "group_id" field.
+func (ru *RiderUpdate) AddGroupID(u uint64) *RiderUpdate {
+	ru.mutation.AddGroupID(u)
+	return ru
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (ru *RiderUpdate) ClearGroupID() *RiderUpdate {
+	ru.mutation.ClearGroupID()
+	return ru
+}
+
 // SetPhone sets the "phone" field.
 func (ru *RiderUpdate) SetPhone(s string) *RiderUpdate {
 	ru.mutation.SetPhone(s)
@@ -381,6 +408,26 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: rider.FieldRemark,
 		})
 	}
+	if value, ok := ru.mutation.GroupID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Value:  value,
+			Column: rider.FieldGroupID,
+		})
+	}
+	if value, ok := ru.mutation.AddedGroupID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Value:  value,
+			Column: rider.FieldGroupID,
+		})
+	}
+	if ru.mutation.GroupIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Column: rider.FieldGroupID,
+		})
+	}
 	if value, ok := ru.mutation.Phone(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -598,6 +645,33 @@ func (ruo *RiderUpdateOne) SetNillablePersonID(u *uint64) *RiderUpdateOne {
 // ClearPersonID clears the value of the "person_id" field.
 func (ruo *RiderUpdateOne) ClearPersonID() *RiderUpdateOne {
 	ruo.mutation.ClearPersonID()
+	return ruo
+}
+
+// SetGroupID sets the "group_id" field.
+func (ruo *RiderUpdateOne) SetGroupID(u uint64) *RiderUpdateOne {
+	ruo.mutation.ResetGroupID()
+	ruo.mutation.SetGroupID(u)
+	return ruo
+}
+
+// SetNillableGroupID sets the "group_id" field if the given value is not nil.
+func (ruo *RiderUpdateOne) SetNillableGroupID(u *uint64) *RiderUpdateOne {
+	if u != nil {
+		ruo.SetGroupID(*u)
+	}
+	return ruo
+}
+
+// AddGroupID adds u to the "group_id" field.
+func (ruo *RiderUpdateOne) AddGroupID(u uint64) *RiderUpdateOne {
+	ruo.mutation.AddGroupID(u)
+	return ruo
+}
+
+// ClearGroupID clears the value of the "group_id" field.
+func (ruo *RiderUpdateOne) ClearGroupID() *RiderUpdateOne {
+	ruo.mutation.ClearGroupID()
 	return ruo
 }
 
@@ -889,6 +963,26 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: rider.FieldRemark,
+		})
+	}
+	if value, ok := ruo.mutation.GroupID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Value:  value,
+			Column: rider.FieldGroupID,
+		})
+	}
+	if value, ok := ruo.mutation.AddedGroupID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Value:  value,
+			Column: rider.FieldGroupID,
+		})
+	}
+	if ruo.mutation.GroupIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Column: rider.FieldGroupID,
 		})
 	}
 	if value, ok := ruo.mutation.Phone(); ok {

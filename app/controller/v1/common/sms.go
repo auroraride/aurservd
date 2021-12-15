@@ -20,7 +20,7 @@ type smsReq struct {
 
 // SendSmsCode 发送短信验证码
 func SendSmsCode(ctx echo.Context) error {
-    c := ctx.(*app.GlobalContext)
+    c := ctx.(*app.Context)
     r := new(smsReq)
     c.BindValidate(r)
     id := c.Request().Header.Get(app.HeaderCaptchaID)

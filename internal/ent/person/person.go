@@ -27,20 +27,20 @@ const (
 	FieldBlock = "block"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldIcNumber holds the string denoting the ic_number field in the database.
-	FieldIcNumber = "ic_number"
-	// FieldIcType holds the string denoting the ic_type field in the database.
-	FieldIcType = "ic_type"
-	// FieldIcPortrait holds the string denoting the ic_portrait field in the database.
-	FieldIcPortrait = "ic_portrait"
-	// FieldIcNational holds the string denoting the ic_national field in the database.
-	FieldIcNational = "ic_national"
-	// FieldFaceImg holds the string denoting the face_img field in the database.
-	FieldFaceImg = "face_img"
-	// FieldFaceVerifyResult holds the string denoting the face_verify_result field in the database.
-	FieldFaceVerifyResult = "face_verify_result"
-	// FieldResultAt holds the string denoting the result_at field in the database.
-	FieldResultAt = "result_at"
+	// FieldIDCardNumber holds the string denoting the id_card_number field in the database.
+	FieldIDCardNumber = "id_card_number"
+	// FieldIDCardType holds the string denoting the id_card_type field in the database.
+	FieldIDCardType = "id_card_type"
+	// FieldIDCardPortrait holds the string denoting the id_card_portrait field in the database.
+	FieldIDCardPortrait = "id_card_portrait"
+	// FieldIDCardNational holds the string denoting the id_card_national field in the database.
+	FieldIDCardNational = "id_card_national"
+	// FieldAuthFace holds the string denoting the auth_face field in the database.
+	FieldAuthFace = "auth_face"
+	// FieldAuthResult holds the string denoting the auth_result field in the database.
+	FieldAuthResult = "auth_result"
+	// FieldAuthAt holds the string denoting the auth_at field in the database.
+	FieldAuthAt = "auth_at"
 	// FieldEsignAccountID holds the string denoting the esign_account_id field in the database.
 	FieldEsignAccountID = "esign_account_id"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
@@ -67,13 +67,13 @@ var Columns = []string{
 	FieldStatus,
 	FieldBlock,
 	FieldName,
-	FieldIcNumber,
-	FieldIcType,
-	FieldIcPortrait,
-	FieldIcNational,
-	FieldFaceImg,
-	FieldFaceVerifyResult,
-	FieldResultAt,
+	FieldIDCardNumber,
+	FieldIDCardType,
+	FieldIDCardPortrait,
+	FieldIDCardNational,
+	FieldAuthFace,
+	FieldAuthResult,
+	FieldAuthAt,
 	FieldEsignAccountID,
 }
 
@@ -100,8 +100,8 @@ var (
 	DefaultBlock bool
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
-	// IcNumberValidator is a validator for the "ic_number" field. It is called by the builders before save.
-	IcNumberValidator func(string) error
-	// DefaultIcType holds the default value on creation for the "ic_type" field.
-	DefaultIcType uint8
+	// IDCardNumberValidator is a validator for the "id_card_number" field. It is called by the builders before save.
+	IDCardNumberValidator func(string) error
+	// DefaultIDCardType holds the default value on creation for the "id_card_type" field.
+	DefaultIDCardType uint8
 )

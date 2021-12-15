@@ -34,6 +34,9 @@ type Rider struct {
 	// PersonID holds the value of the "person_id" field.
 	// 实人
 	PersonID *uint64 `json:"person_id,omitempty"`
+	// GroupID holds the value of the "group_id" field.
+	// 团队
+	GroupID *uint64 `json:"group_id,omitempty"`
 	// Phone holds the value of the "phone" field.
 	// 手机号
 	Phone string `json:"phone,omitempty"`
@@ -90,7 +93,7 @@ func (*Rider) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case rider.FieldContact:
 			values[i] = new([]byte)
-		case rider.FieldID, rider.FieldPersonID, rider.FieldDeviceType:
+		case rider.FieldID, rider.FieldPersonID, rider.FieldGroupID, rider.FieldDeviceType:
 			values[i] = new(sql.NullInt64)
 		case rider.FieldRemark, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID:
 			values[i] = new(sql.NullString)
@@ -156,6 +159,13 @@ func (r *Rider) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				r.PersonID = new(uint64)
 				*r.PersonID = uint64(value.Int64)
+			}
+		case rider.FieldGroupID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field group_id", values[i])
+			} else if value.Valid {
+				r.GroupID = new(uint64)
+				*r.GroupID = uint64(value.Int64)
 			}
 		case rider.FieldPhone:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -255,6 +265,10 @@ func (r *Rider) String() string {
 	}
 	if v := r.PersonID; v != nil {
 		builder.WriteString(", person_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := r.GroupID; v != nil {
+		builder.WriteString(", group_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", phone=")

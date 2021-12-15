@@ -28,22 +28,22 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Person",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			person.FieldCreatedAt:        {Type: field.TypeTime, Column: person.FieldCreatedAt},
-			person.FieldUpdatedAt:        {Type: field.TypeTime, Column: person.FieldUpdatedAt},
-			person.FieldDeletedAt:        {Type: field.TypeTime, Column: person.FieldDeletedAt},
-			person.FieldLastModify:       {Type: field.TypeTime, Column: person.FieldLastModify},
-			person.FieldRemark:           {Type: field.TypeString, Column: person.FieldRemark},
-			person.FieldStatus:           {Type: field.TypeUint8, Column: person.FieldStatus},
-			person.FieldBlock:            {Type: field.TypeBool, Column: person.FieldBlock},
-			person.FieldName:             {Type: field.TypeString, Column: person.FieldName},
-			person.FieldIcNumber:         {Type: field.TypeString, Column: person.FieldIcNumber},
-			person.FieldIcType:           {Type: field.TypeUint8, Column: person.FieldIcType},
-			person.FieldIcPortrait:       {Type: field.TypeString, Column: person.FieldIcPortrait},
-			person.FieldIcNational:       {Type: field.TypeString, Column: person.FieldIcNational},
-			person.FieldFaceImg:          {Type: field.TypeString, Column: person.FieldFaceImg},
-			person.FieldFaceVerifyResult: {Type: field.TypeJSON, Column: person.FieldFaceVerifyResult},
-			person.FieldResultAt:         {Type: field.TypeTime, Column: person.FieldResultAt},
-			person.FieldEsignAccountID:   {Type: field.TypeString, Column: person.FieldEsignAccountID},
+			person.FieldCreatedAt:      {Type: field.TypeTime, Column: person.FieldCreatedAt},
+			person.FieldUpdatedAt:      {Type: field.TypeTime, Column: person.FieldUpdatedAt},
+			person.FieldDeletedAt:      {Type: field.TypeTime, Column: person.FieldDeletedAt},
+			person.FieldLastModify:     {Type: field.TypeTime, Column: person.FieldLastModify},
+			person.FieldRemark:         {Type: field.TypeString, Column: person.FieldRemark},
+			person.FieldStatus:         {Type: field.TypeUint8, Column: person.FieldStatus},
+			person.FieldBlock:          {Type: field.TypeBool, Column: person.FieldBlock},
+			person.FieldName:           {Type: field.TypeString, Column: person.FieldName},
+			person.FieldIDCardNumber:   {Type: field.TypeString, Column: person.FieldIDCardNumber},
+			person.FieldIDCardType:     {Type: field.TypeUint8, Column: person.FieldIDCardType},
+			person.FieldIDCardPortrait: {Type: field.TypeString, Column: person.FieldIDCardPortrait},
+			person.FieldIDCardNational: {Type: field.TypeString, Column: person.FieldIDCardNational},
+			person.FieldAuthFace:       {Type: field.TypeString, Column: person.FieldAuthFace},
+			person.FieldAuthResult:     {Type: field.TypeJSON, Column: person.FieldAuthResult},
+			person.FieldAuthAt:         {Type: field.TypeTime, Column: person.FieldAuthAt},
+			person.FieldEsignAccountID: {Type: field.TypeString, Column: person.FieldEsignAccountID},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -63,6 +63,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldLastModify:   {Type: field.TypeTime, Column: rider.FieldLastModify},
 			rider.FieldRemark:       {Type: field.TypeString, Column: rider.FieldRemark},
 			rider.FieldPersonID:     {Type: field.TypeUint64, Column: rider.FieldPersonID},
+			rider.FieldGroupID:      {Type: field.TypeUint64, Column: rider.FieldGroupID},
 			rider.FieldPhone:        {Type: field.TypeString, Column: rider.FieldPhone},
 			rider.FieldContact:      {Type: field.TypeJSON, Column: rider.FieldContact},
 			rider.FieldDeviceType:   {Type: field.TypeUint8, Column: rider.FieldDeviceType},
@@ -201,39 +202,39 @@ func (f *PersonFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(person.FieldName))
 }
 
-// WhereIcNumber applies the entql string predicate on the ic_number field.
-func (f *PersonFilter) WhereIcNumber(p entql.StringP) {
-	f.Where(p.Field(person.FieldIcNumber))
+// WhereIDCardNumber applies the entql string predicate on the id_card_number field.
+func (f *PersonFilter) WhereIDCardNumber(p entql.StringP) {
+	f.Where(p.Field(person.FieldIDCardNumber))
 }
 
-// WhereIcType applies the entql uint8 predicate on the ic_type field.
-func (f *PersonFilter) WhereIcType(p entql.Uint8P) {
-	f.Where(p.Field(person.FieldIcType))
+// WhereIDCardType applies the entql uint8 predicate on the id_card_type field.
+func (f *PersonFilter) WhereIDCardType(p entql.Uint8P) {
+	f.Where(p.Field(person.FieldIDCardType))
 }
 
-// WhereIcPortrait applies the entql string predicate on the ic_portrait field.
-func (f *PersonFilter) WhereIcPortrait(p entql.StringP) {
-	f.Where(p.Field(person.FieldIcPortrait))
+// WhereIDCardPortrait applies the entql string predicate on the id_card_portrait field.
+func (f *PersonFilter) WhereIDCardPortrait(p entql.StringP) {
+	f.Where(p.Field(person.FieldIDCardPortrait))
 }
 
-// WhereIcNational applies the entql string predicate on the ic_national field.
-func (f *PersonFilter) WhereIcNational(p entql.StringP) {
-	f.Where(p.Field(person.FieldIcNational))
+// WhereIDCardNational applies the entql string predicate on the id_card_national field.
+func (f *PersonFilter) WhereIDCardNational(p entql.StringP) {
+	f.Where(p.Field(person.FieldIDCardNational))
 }
 
-// WhereFaceImg applies the entql string predicate on the face_img field.
-func (f *PersonFilter) WhereFaceImg(p entql.StringP) {
-	f.Where(p.Field(person.FieldFaceImg))
+// WhereAuthFace applies the entql string predicate on the auth_face field.
+func (f *PersonFilter) WhereAuthFace(p entql.StringP) {
+	f.Where(p.Field(person.FieldAuthFace))
 }
 
-// WhereFaceVerifyResult applies the entql json.RawMessage predicate on the face_verify_result field.
-func (f *PersonFilter) WhereFaceVerifyResult(p entql.BytesP) {
-	f.Where(p.Field(person.FieldFaceVerifyResult))
+// WhereAuthResult applies the entql json.RawMessage predicate on the auth_result field.
+func (f *PersonFilter) WhereAuthResult(p entql.BytesP) {
+	f.Where(p.Field(person.FieldAuthResult))
 }
 
-// WhereResultAt applies the entql time.Time predicate on the result_at field.
-func (f *PersonFilter) WhereResultAt(p entql.TimeP) {
-	f.Where(p.Field(person.FieldResultAt))
+// WhereAuthAt applies the entql time.Time predicate on the auth_at field.
+func (f *PersonFilter) WhereAuthAt(p entql.TimeP) {
+	f.Where(p.Field(person.FieldAuthAt))
 }
 
 // WhereEsignAccountID applies the entql string predicate on the esign_account_id field.
@@ -322,6 +323,11 @@ func (f *RiderFilter) WhereRemark(p entql.StringP) {
 // WherePersonID applies the entql uint64 predicate on the person_id field.
 func (f *RiderFilter) WherePersonID(p entql.Uint64P) {
 	f.Where(p.Field(rider.FieldPersonID))
+}
+
+// WhereGroupID applies the entql uint64 predicate on the group_id field.
+func (f *RiderFilter) WhereGroupID(p entql.Uint64P) {
+	f.Where(p.Field(rider.FieldGroupID))
 }
 
 // WherePhone applies the entql string predicate on the phone field.

@@ -39,7 +39,7 @@ func Run() {
     r.Use(
         func(next echo.HandlerFunc) echo.HandlerFunc {
             return func(ctx echo.Context) error {
-                c := &app.GlobalContext{Context: ctx}
+                c := &app.Context{Context: ctx}
                 return next(c)
             }
         },

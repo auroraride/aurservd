@@ -12,7 +12,7 @@ type CreateFlowOneStepRes struct {
 }
 
 // CreateFlowOneStep 一步发起签署
-func (e *esign) CreateFlowOneStep() string {
+func (e *Esign) CreateFlowOneStep() string {
     var (
         scene           = "签署测试"
         fileId          = "3f8a6de98af44f20b836985e81ce942c"

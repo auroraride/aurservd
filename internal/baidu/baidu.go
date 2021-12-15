@@ -8,7 +8,7 @@ package baidu
 import (
     "context"
     "fmt"
-    "github.com/auroraride/aurservd/app/response"
+    "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/go-resty/resty/v2"
     "time"
@@ -60,10 +60,10 @@ func (b *baiduClient) requestAccessToken() string {
         SetResult(res).
         Post(url)
     if err != nil {
-        panic(response.NewError(err))
+        panic(app.NewError(err))
     }
     if res.Error != "" {
-        panic(response.NewError(res.ErrorDescription))
+        panic(app.NewError(res.ErrorDescription))
     }
     ar.Cache.Set(context.Background(), accessTokenKey, res.AccessToken, time.Second*time.Duration(res.ExpiresIn-120))
     return res.AccessToken

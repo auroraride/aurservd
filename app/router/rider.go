@@ -30,5 +30,10 @@ func (r *router) rideRoute() {
 
     // 检测是否需要人脸识别
     g.Use(middleware.RiderFaceMiddleware())
+
     g.POST("/contact", rapi.Rider.Contact) // 编辑紧急联系人
+
+    // 合同
+    contract := g.Group("/contract")
+    contract.POST("/", rapi.Contract.Sign)
 }

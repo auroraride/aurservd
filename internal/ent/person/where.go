@@ -149,45 +149,45 @@ func Name(v string) predicate.Person {
 	})
 }
 
-// IcNumber applies equality check predicate on the "ic_number" field. It's identical to IcNumberEQ.
-func IcNumber(v string) predicate.Person {
+// IDCardNumber applies equality check predicate on the "id_card_number" field. It's identical to IDCardNumberEQ.
+func IDCardNumber(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIcNumber), v))
+		s.Where(sql.EQ(s.C(FieldIDCardNumber), v))
 	})
 }
 
-// IcType applies equality check predicate on the "ic_type" field. It's identical to IcTypeEQ.
-func IcType(v uint8) predicate.Person {
+// IDCardType applies equality check predicate on the "id_card_type" field. It's identical to IDCardTypeEQ.
+func IDCardType(v uint8) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIcType), v))
+		s.Where(sql.EQ(s.C(FieldIDCardType), v))
 	})
 }
 
-// IcPortrait applies equality check predicate on the "ic_portrait" field. It's identical to IcPortraitEQ.
-func IcPortrait(v string) predicate.Person {
+// IDCardPortrait applies equality check predicate on the "id_card_portrait" field. It's identical to IDCardPortraitEQ.
+func IDCardPortrait(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIcPortrait), v))
+		s.Where(sql.EQ(s.C(FieldIDCardPortrait), v))
 	})
 }
 
-// IcNational applies equality check predicate on the "ic_national" field. It's identical to IcNationalEQ.
-func IcNational(v string) predicate.Person {
+// IDCardNational applies equality check predicate on the "id_card_national" field. It's identical to IDCardNationalEQ.
+func IDCardNational(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIcNational), v))
+		s.Where(sql.EQ(s.C(FieldIDCardNational), v))
 	})
 }
 
-// FaceImg applies equality check predicate on the "face_img" field. It's identical to FaceImgEQ.
-func FaceImg(v string) predicate.Person {
+// AuthFace applies equality check predicate on the "auth_face" field. It's identical to AuthFaceEQ.
+func AuthFace(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldFaceImg), v))
+		s.Where(sql.EQ(s.C(FieldAuthFace), v))
 	})
 }
 
-// ResultAt applies equality check predicate on the "result_at" field. It's identical to ResultAtEQ.
-func ResultAt(v time.Time) predicate.Person {
+// AuthAt applies equality check predicate on the "auth_at" field. It's identical to AuthAtEQ.
+func AuthAt(v time.Time) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldResultAt), v))
+		s.Where(sql.EQ(s.C(FieldAuthAt), v))
 	})
 }
 
@@ -856,22 +856,22 @@ func NameContainsFold(v string) predicate.Person {
 	})
 }
 
-// IcNumberEQ applies the EQ predicate on the "ic_number" field.
-func IcNumberEQ(v string) predicate.Person {
+// IDCardNumberEQ applies the EQ predicate on the "id_card_number" field.
+func IDCardNumberEQ(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIcNumber), v))
+		s.Where(sql.EQ(s.C(FieldIDCardNumber), v))
 	})
 }
 
-// IcNumberNEQ applies the NEQ predicate on the "ic_number" field.
-func IcNumberNEQ(v string) predicate.Person {
+// IDCardNumberNEQ applies the NEQ predicate on the "id_card_number" field.
+func IDCardNumberNEQ(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldIcNumber), v))
+		s.Where(sql.NEQ(s.C(FieldIDCardNumber), v))
 	})
 }
 
-// IcNumberIn applies the In predicate on the "ic_number" field.
-func IcNumberIn(vs ...string) predicate.Person {
+// IDCardNumberIn applies the In predicate on the "id_card_number" field.
+func IDCardNumberIn(vs ...string) predicate.Person {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -883,12 +883,12 @@ func IcNumberIn(vs ...string) predicate.Person {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldIcNumber), v...))
+		s.Where(sql.In(s.C(FieldIDCardNumber), v...))
 	})
 }
 
-// IcNumberNotIn applies the NotIn predicate on the "ic_number" field.
-func IcNumberNotIn(vs ...string) predicate.Person {
+// IDCardNumberNotIn applies the NotIn predicate on the "id_card_number" field.
+func IDCardNumberNotIn(vs ...string) predicate.Person {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -900,89 +900,89 @@ func IcNumberNotIn(vs ...string) predicate.Person {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldIcNumber), v...))
+		s.Where(sql.NotIn(s.C(FieldIDCardNumber), v...))
 	})
 }
 
-// IcNumberGT applies the GT predicate on the "ic_number" field.
-func IcNumberGT(v string) predicate.Person {
+// IDCardNumberGT applies the GT predicate on the "id_card_number" field.
+func IDCardNumberGT(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldIcNumber), v))
+		s.Where(sql.GT(s.C(FieldIDCardNumber), v))
 	})
 }
 
-// IcNumberGTE applies the GTE predicate on the "ic_number" field.
-func IcNumberGTE(v string) predicate.Person {
+// IDCardNumberGTE applies the GTE predicate on the "id_card_number" field.
+func IDCardNumberGTE(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldIcNumber), v))
+		s.Where(sql.GTE(s.C(FieldIDCardNumber), v))
 	})
 }
 
-// IcNumberLT applies the LT predicate on the "ic_number" field.
-func IcNumberLT(v string) predicate.Person {
+// IDCardNumberLT applies the LT predicate on the "id_card_number" field.
+func IDCardNumberLT(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldIcNumber), v))
+		s.Where(sql.LT(s.C(FieldIDCardNumber), v))
 	})
 }
 
-// IcNumberLTE applies the LTE predicate on the "ic_number" field.
-func IcNumberLTE(v string) predicate.Person {
+// IDCardNumberLTE applies the LTE predicate on the "id_card_number" field.
+func IDCardNumberLTE(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldIcNumber), v))
+		s.Where(sql.LTE(s.C(FieldIDCardNumber), v))
 	})
 }
 
-// IcNumberContains applies the Contains predicate on the "ic_number" field.
-func IcNumberContains(v string) predicate.Person {
+// IDCardNumberContains applies the Contains predicate on the "id_card_number" field.
+func IDCardNumberContains(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldIcNumber), v))
+		s.Where(sql.Contains(s.C(FieldIDCardNumber), v))
 	})
 }
 
-// IcNumberHasPrefix applies the HasPrefix predicate on the "ic_number" field.
-func IcNumberHasPrefix(v string) predicate.Person {
+// IDCardNumberHasPrefix applies the HasPrefix predicate on the "id_card_number" field.
+func IDCardNumberHasPrefix(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldIcNumber), v))
+		s.Where(sql.HasPrefix(s.C(FieldIDCardNumber), v))
 	})
 }
 
-// IcNumberHasSuffix applies the HasSuffix predicate on the "ic_number" field.
-func IcNumberHasSuffix(v string) predicate.Person {
+// IDCardNumberHasSuffix applies the HasSuffix predicate on the "id_card_number" field.
+func IDCardNumberHasSuffix(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldIcNumber), v))
+		s.Where(sql.HasSuffix(s.C(FieldIDCardNumber), v))
 	})
 }
 
-// IcNumberEqualFold applies the EqualFold predicate on the "ic_number" field.
-func IcNumberEqualFold(v string) predicate.Person {
+// IDCardNumberEqualFold applies the EqualFold predicate on the "id_card_number" field.
+func IDCardNumberEqualFold(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldIcNumber), v))
+		s.Where(sql.EqualFold(s.C(FieldIDCardNumber), v))
 	})
 }
 
-// IcNumberContainsFold applies the ContainsFold predicate on the "ic_number" field.
-func IcNumberContainsFold(v string) predicate.Person {
+// IDCardNumberContainsFold applies the ContainsFold predicate on the "id_card_number" field.
+func IDCardNumberContainsFold(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldIcNumber), v))
+		s.Where(sql.ContainsFold(s.C(FieldIDCardNumber), v))
 	})
 }
 
-// IcTypeEQ applies the EQ predicate on the "ic_type" field.
-func IcTypeEQ(v uint8) predicate.Person {
+// IDCardTypeEQ applies the EQ predicate on the "id_card_type" field.
+func IDCardTypeEQ(v uint8) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIcType), v))
+		s.Where(sql.EQ(s.C(FieldIDCardType), v))
 	})
 }
 
-// IcTypeNEQ applies the NEQ predicate on the "ic_type" field.
-func IcTypeNEQ(v uint8) predicate.Person {
+// IDCardTypeNEQ applies the NEQ predicate on the "id_card_type" field.
+func IDCardTypeNEQ(v uint8) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldIcType), v))
+		s.Where(sql.NEQ(s.C(FieldIDCardType), v))
 	})
 }
 
-// IcTypeIn applies the In predicate on the "ic_type" field.
-func IcTypeIn(vs ...uint8) predicate.Person {
+// IDCardTypeIn applies the In predicate on the "id_card_type" field.
+func IDCardTypeIn(vs ...uint8) predicate.Person {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -994,12 +994,12 @@ func IcTypeIn(vs ...uint8) predicate.Person {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldIcType), v...))
+		s.Where(sql.In(s.C(FieldIDCardType), v...))
 	})
 }
 
-// IcTypeNotIn applies the NotIn predicate on the "ic_type" field.
-func IcTypeNotIn(vs ...uint8) predicate.Person {
+// IDCardTypeNotIn applies the NotIn predicate on the "id_card_type" field.
+func IDCardTypeNotIn(vs ...uint8) predicate.Person {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1011,54 +1011,54 @@ func IcTypeNotIn(vs ...uint8) predicate.Person {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldIcType), v...))
+		s.Where(sql.NotIn(s.C(FieldIDCardType), v...))
 	})
 }
 
-// IcTypeGT applies the GT predicate on the "ic_type" field.
-func IcTypeGT(v uint8) predicate.Person {
+// IDCardTypeGT applies the GT predicate on the "id_card_type" field.
+func IDCardTypeGT(v uint8) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldIcType), v))
+		s.Where(sql.GT(s.C(FieldIDCardType), v))
 	})
 }
 
-// IcTypeGTE applies the GTE predicate on the "ic_type" field.
-func IcTypeGTE(v uint8) predicate.Person {
+// IDCardTypeGTE applies the GTE predicate on the "id_card_type" field.
+func IDCardTypeGTE(v uint8) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldIcType), v))
+		s.Where(sql.GTE(s.C(FieldIDCardType), v))
 	})
 }
 
-// IcTypeLT applies the LT predicate on the "ic_type" field.
-func IcTypeLT(v uint8) predicate.Person {
+// IDCardTypeLT applies the LT predicate on the "id_card_type" field.
+func IDCardTypeLT(v uint8) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldIcType), v))
+		s.Where(sql.LT(s.C(FieldIDCardType), v))
 	})
 }
 
-// IcTypeLTE applies the LTE predicate on the "ic_type" field.
-func IcTypeLTE(v uint8) predicate.Person {
+// IDCardTypeLTE applies the LTE predicate on the "id_card_type" field.
+func IDCardTypeLTE(v uint8) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldIcType), v))
+		s.Where(sql.LTE(s.C(FieldIDCardType), v))
 	})
 }
 
-// IcPortraitEQ applies the EQ predicate on the "ic_portrait" field.
-func IcPortraitEQ(v string) predicate.Person {
+// IDCardPortraitEQ applies the EQ predicate on the "id_card_portrait" field.
+func IDCardPortraitEQ(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIcPortrait), v))
+		s.Where(sql.EQ(s.C(FieldIDCardPortrait), v))
 	})
 }
 
-// IcPortraitNEQ applies the NEQ predicate on the "ic_portrait" field.
-func IcPortraitNEQ(v string) predicate.Person {
+// IDCardPortraitNEQ applies the NEQ predicate on the "id_card_portrait" field.
+func IDCardPortraitNEQ(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldIcPortrait), v))
+		s.Where(sql.NEQ(s.C(FieldIDCardPortrait), v))
 	})
 }
 
-// IcPortraitIn applies the In predicate on the "ic_portrait" field.
-func IcPortraitIn(vs ...string) predicate.Person {
+// IDCardPortraitIn applies the In predicate on the "id_card_portrait" field.
+func IDCardPortraitIn(vs ...string) predicate.Person {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1070,12 +1070,12 @@ func IcPortraitIn(vs ...string) predicate.Person {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldIcPortrait), v...))
+		s.Where(sql.In(s.C(FieldIDCardPortrait), v...))
 	})
 }
 
-// IcPortraitNotIn applies the NotIn predicate on the "ic_portrait" field.
-func IcPortraitNotIn(vs ...string) predicate.Person {
+// IDCardPortraitNotIn applies the NotIn predicate on the "id_card_portrait" field.
+func IDCardPortraitNotIn(vs ...string) predicate.Person {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1087,89 +1087,89 @@ func IcPortraitNotIn(vs ...string) predicate.Person {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldIcPortrait), v...))
+		s.Where(sql.NotIn(s.C(FieldIDCardPortrait), v...))
 	})
 }
 
-// IcPortraitGT applies the GT predicate on the "ic_portrait" field.
-func IcPortraitGT(v string) predicate.Person {
+// IDCardPortraitGT applies the GT predicate on the "id_card_portrait" field.
+func IDCardPortraitGT(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldIcPortrait), v))
+		s.Where(sql.GT(s.C(FieldIDCardPortrait), v))
 	})
 }
 
-// IcPortraitGTE applies the GTE predicate on the "ic_portrait" field.
-func IcPortraitGTE(v string) predicate.Person {
+// IDCardPortraitGTE applies the GTE predicate on the "id_card_portrait" field.
+func IDCardPortraitGTE(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldIcPortrait), v))
+		s.Where(sql.GTE(s.C(FieldIDCardPortrait), v))
 	})
 }
 
-// IcPortraitLT applies the LT predicate on the "ic_portrait" field.
-func IcPortraitLT(v string) predicate.Person {
+// IDCardPortraitLT applies the LT predicate on the "id_card_portrait" field.
+func IDCardPortraitLT(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldIcPortrait), v))
+		s.Where(sql.LT(s.C(FieldIDCardPortrait), v))
 	})
 }
 
-// IcPortraitLTE applies the LTE predicate on the "ic_portrait" field.
-func IcPortraitLTE(v string) predicate.Person {
+// IDCardPortraitLTE applies the LTE predicate on the "id_card_portrait" field.
+func IDCardPortraitLTE(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldIcPortrait), v))
+		s.Where(sql.LTE(s.C(FieldIDCardPortrait), v))
 	})
 }
 
-// IcPortraitContains applies the Contains predicate on the "ic_portrait" field.
-func IcPortraitContains(v string) predicate.Person {
+// IDCardPortraitContains applies the Contains predicate on the "id_card_portrait" field.
+func IDCardPortraitContains(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldIcPortrait), v))
+		s.Where(sql.Contains(s.C(FieldIDCardPortrait), v))
 	})
 }
 
-// IcPortraitHasPrefix applies the HasPrefix predicate on the "ic_portrait" field.
-func IcPortraitHasPrefix(v string) predicate.Person {
+// IDCardPortraitHasPrefix applies the HasPrefix predicate on the "id_card_portrait" field.
+func IDCardPortraitHasPrefix(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldIcPortrait), v))
+		s.Where(sql.HasPrefix(s.C(FieldIDCardPortrait), v))
 	})
 }
 
-// IcPortraitHasSuffix applies the HasSuffix predicate on the "ic_portrait" field.
-func IcPortraitHasSuffix(v string) predicate.Person {
+// IDCardPortraitHasSuffix applies the HasSuffix predicate on the "id_card_portrait" field.
+func IDCardPortraitHasSuffix(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldIcPortrait), v))
+		s.Where(sql.HasSuffix(s.C(FieldIDCardPortrait), v))
 	})
 }
 
-// IcPortraitEqualFold applies the EqualFold predicate on the "ic_portrait" field.
-func IcPortraitEqualFold(v string) predicate.Person {
+// IDCardPortraitEqualFold applies the EqualFold predicate on the "id_card_portrait" field.
+func IDCardPortraitEqualFold(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldIcPortrait), v))
+		s.Where(sql.EqualFold(s.C(FieldIDCardPortrait), v))
 	})
 }
 
-// IcPortraitContainsFold applies the ContainsFold predicate on the "ic_portrait" field.
-func IcPortraitContainsFold(v string) predicate.Person {
+// IDCardPortraitContainsFold applies the ContainsFold predicate on the "id_card_portrait" field.
+func IDCardPortraitContainsFold(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldIcPortrait), v))
+		s.Where(sql.ContainsFold(s.C(FieldIDCardPortrait), v))
 	})
 }
 
-// IcNationalEQ applies the EQ predicate on the "ic_national" field.
-func IcNationalEQ(v string) predicate.Person {
+// IDCardNationalEQ applies the EQ predicate on the "id_card_national" field.
+func IDCardNationalEQ(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIcNational), v))
+		s.Where(sql.EQ(s.C(FieldIDCardNational), v))
 	})
 }
 
-// IcNationalNEQ applies the NEQ predicate on the "ic_national" field.
-func IcNationalNEQ(v string) predicate.Person {
+// IDCardNationalNEQ applies the NEQ predicate on the "id_card_national" field.
+func IDCardNationalNEQ(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldIcNational), v))
+		s.Where(sql.NEQ(s.C(FieldIDCardNational), v))
 	})
 }
 
-// IcNationalIn applies the In predicate on the "ic_national" field.
-func IcNationalIn(vs ...string) predicate.Person {
+// IDCardNationalIn applies the In predicate on the "id_card_national" field.
+func IDCardNationalIn(vs ...string) predicate.Person {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1181,12 +1181,12 @@ func IcNationalIn(vs ...string) predicate.Person {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldIcNational), v...))
+		s.Where(sql.In(s.C(FieldIDCardNational), v...))
 	})
 }
 
-// IcNationalNotIn applies the NotIn predicate on the "ic_national" field.
-func IcNationalNotIn(vs ...string) predicate.Person {
+// IDCardNationalNotIn applies the NotIn predicate on the "id_card_national" field.
+func IDCardNationalNotIn(vs ...string) predicate.Person {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1198,89 +1198,89 @@ func IcNationalNotIn(vs ...string) predicate.Person {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldIcNational), v...))
+		s.Where(sql.NotIn(s.C(FieldIDCardNational), v...))
 	})
 }
 
-// IcNationalGT applies the GT predicate on the "ic_national" field.
-func IcNationalGT(v string) predicate.Person {
+// IDCardNationalGT applies the GT predicate on the "id_card_national" field.
+func IDCardNationalGT(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldIcNational), v))
+		s.Where(sql.GT(s.C(FieldIDCardNational), v))
 	})
 }
 
-// IcNationalGTE applies the GTE predicate on the "ic_national" field.
-func IcNationalGTE(v string) predicate.Person {
+// IDCardNationalGTE applies the GTE predicate on the "id_card_national" field.
+func IDCardNationalGTE(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldIcNational), v))
+		s.Where(sql.GTE(s.C(FieldIDCardNational), v))
 	})
 }
 
-// IcNationalLT applies the LT predicate on the "ic_national" field.
-func IcNationalLT(v string) predicate.Person {
+// IDCardNationalLT applies the LT predicate on the "id_card_national" field.
+func IDCardNationalLT(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldIcNational), v))
+		s.Where(sql.LT(s.C(FieldIDCardNational), v))
 	})
 }
 
-// IcNationalLTE applies the LTE predicate on the "ic_national" field.
-func IcNationalLTE(v string) predicate.Person {
+// IDCardNationalLTE applies the LTE predicate on the "id_card_national" field.
+func IDCardNationalLTE(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldIcNational), v))
+		s.Where(sql.LTE(s.C(FieldIDCardNational), v))
 	})
 }
 
-// IcNationalContains applies the Contains predicate on the "ic_national" field.
-func IcNationalContains(v string) predicate.Person {
+// IDCardNationalContains applies the Contains predicate on the "id_card_national" field.
+func IDCardNationalContains(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldIcNational), v))
+		s.Where(sql.Contains(s.C(FieldIDCardNational), v))
 	})
 }
 
-// IcNationalHasPrefix applies the HasPrefix predicate on the "ic_national" field.
-func IcNationalHasPrefix(v string) predicate.Person {
+// IDCardNationalHasPrefix applies the HasPrefix predicate on the "id_card_national" field.
+func IDCardNationalHasPrefix(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldIcNational), v))
+		s.Where(sql.HasPrefix(s.C(FieldIDCardNational), v))
 	})
 }
 
-// IcNationalHasSuffix applies the HasSuffix predicate on the "ic_national" field.
-func IcNationalHasSuffix(v string) predicate.Person {
+// IDCardNationalHasSuffix applies the HasSuffix predicate on the "id_card_national" field.
+func IDCardNationalHasSuffix(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldIcNational), v))
+		s.Where(sql.HasSuffix(s.C(FieldIDCardNational), v))
 	})
 }
 
-// IcNationalEqualFold applies the EqualFold predicate on the "ic_national" field.
-func IcNationalEqualFold(v string) predicate.Person {
+// IDCardNationalEqualFold applies the EqualFold predicate on the "id_card_national" field.
+func IDCardNationalEqualFold(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldIcNational), v))
+		s.Where(sql.EqualFold(s.C(FieldIDCardNational), v))
 	})
 }
 
-// IcNationalContainsFold applies the ContainsFold predicate on the "ic_national" field.
-func IcNationalContainsFold(v string) predicate.Person {
+// IDCardNationalContainsFold applies the ContainsFold predicate on the "id_card_national" field.
+func IDCardNationalContainsFold(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldIcNational), v))
+		s.Where(sql.ContainsFold(s.C(FieldIDCardNational), v))
 	})
 }
 
-// FaceImgEQ applies the EQ predicate on the "face_img" field.
-func FaceImgEQ(v string) predicate.Person {
+// AuthFaceEQ applies the EQ predicate on the "auth_face" field.
+func AuthFaceEQ(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldFaceImg), v))
+		s.Where(sql.EQ(s.C(FieldAuthFace), v))
 	})
 }
 
-// FaceImgNEQ applies the NEQ predicate on the "face_img" field.
-func FaceImgNEQ(v string) predicate.Person {
+// AuthFaceNEQ applies the NEQ predicate on the "auth_face" field.
+func AuthFaceNEQ(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldFaceImg), v))
+		s.Where(sql.NEQ(s.C(FieldAuthFace), v))
 	})
 }
 
-// FaceImgIn applies the In predicate on the "face_img" field.
-func FaceImgIn(vs ...string) predicate.Person {
+// AuthFaceIn applies the In predicate on the "auth_face" field.
+func AuthFaceIn(vs ...string) predicate.Person {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1292,12 +1292,12 @@ func FaceImgIn(vs ...string) predicate.Person {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldFaceImg), v...))
+		s.Where(sql.In(s.C(FieldAuthFace), v...))
 	})
 }
 
-// FaceImgNotIn applies the NotIn predicate on the "face_img" field.
-func FaceImgNotIn(vs ...string) predicate.Person {
+// AuthFaceNotIn applies the NotIn predicate on the "auth_face" field.
+func AuthFaceNotIn(vs ...string) predicate.Person {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1309,103 +1309,103 @@ func FaceImgNotIn(vs ...string) predicate.Person {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldFaceImg), v...))
+		s.Where(sql.NotIn(s.C(FieldAuthFace), v...))
 	})
 }
 
-// FaceImgGT applies the GT predicate on the "face_img" field.
-func FaceImgGT(v string) predicate.Person {
+// AuthFaceGT applies the GT predicate on the "auth_face" field.
+func AuthFaceGT(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldFaceImg), v))
+		s.Where(sql.GT(s.C(FieldAuthFace), v))
 	})
 }
 
-// FaceImgGTE applies the GTE predicate on the "face_img" field.
-func FaceImgGTE(v string) predicate.Person {
+// AuthFaceGTE applies the GTE predicate on the "auth_face" field.
+func AuthFaceGTE(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldFaceImg), v))
+		s.Where(sql.GTE(s.C(FieldAuthFace), v))
 	})
 }
 
-// FaceImgLT applies the LT predicate on the "face_img" field.
-func FaceImgLT(v string) predicate.Person {
+// AuthFaceLT applies the LT predicate on the "auth_face" field.
+func AuthFaceLT(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldFaceImg), v))
+		s.Where(sql.LT(s.C(FieldAuthFace), v))
 	})
 }
 
-// FaceImgLTE applies the LTE predicate on the "face_img" field.
-func FaceImgLTE(v string) predicate.Person {
+// AuthFaceLTE applies the LTE predicate on the "auth_face" field.
+func AuthFaceLTE(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldFaceImg), v))
+		s.Where(sql.LTE(s.C(FieldAuthFace), v))
 	})
 }
 
-// FaceImgContains applies the Contains predicate on the "face_img" field.
-func FaceImgContains(v string) predicate.Person {
+// AuthFaceContains applies the Contains predicate on the "auth_face" field.
+func AuthFaceContains(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldFaceImg), v))
+		s.Where(sql.Contains(s.C(FieldAuthFace), v))
 	})
 }
 
-// FaceImgHasPrefix applies the HasPrefix predicate on the "face_img" field.
-func FaceImgHasPrefix(v string) predicate.Person {
+// AuthFaceHasPrefix applies the HasPrefix predicate on the "auth_face" field.
+func AuthFaceHasPrefix(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldFaceImg), v))
+		s.Where(sql.HasPrefix(s.C(FieldAuthFace), v))
 	})
 }
 
-// FaceImgHasSuffix applies the HasSuffix predicate on the "face_img" field.
-func FaceImgHasSuffix(v string) predicate.Person {
+// AuthFaceHasSuffix applies the HasSuffix predicate on the "auth_face" field.
+func AuthFaceHasSuffix(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldFaceImg), v))
+		s.Where(sql.HasSuffix(s.C(FieldAuthFace), v))
 	})
 }
 
-// FaceImgEqualFold applies the EqualFold predicate on the "face_img" field.
-func FaceImgEqualFold(v string) predicate.Person {
+// AuthFaceEqualFold applies the EqualFold predicate on the "auth_face" field.
+func AuthFaceEqualFold(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldFaceImg), v))
+		s.Where(sql.EqualFold(s.C(FieldAuthFace), v))
 	})
 }
 
-// FaceImgContainsFold applies the ContainsFold predicate on the "face_img" field.
-func FaceImgContainsFold(v string) predicate.Person {
+// AuthFaceContainsFold applies the ContainsFold predicate on the "auth_face" field.
+func AuthFaceContainsFold(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldFaceImg), v))
+		s.Where(sql.ContainsFold(s.C(FieldAuthFace), v))
 	})
 }
 
-// FaceVerifyResultIsNil applies the IsNil predicate on the "face_verify_result" field.
-func FaceVerifyResultIsNil() predicate.Person {
+// AuthResultIsNil applies the IsNil predicate on the "auth_result" field.
+func AuthResultIsNil() predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldFaceVerifyResult)))
+		s.Where(sql.IsNull(s.C(FieldAuthResult)))
 	})
 }
 
-// FaceVerifyResultNotNil applies the NotNil predicate on the "face_verify_result" field.
-func FaceVerifyResultNotNil() predicate.Person {
+// AuthResultNotNil applies the NotNil predicate on the "auth_result" field.
+func AuthResultNotNil() predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldFaceVerifyResult)))
+		s.Where(sql.NotNull(s.C(FieldAuthResult)))
 	})
 }
 
-// ResultAtEQ applies the EQ predicate on the "result_at" field.
-func ResultAtEQ(v time.Time) predicate.Person {
+// AuthAtEQ applies the EQ predicate on the "auth_at" field.
+func AuthAtEQ(v time.Time) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldResultAt), v))
+		s.Where(sql.EQ(s.C(FieldAuthAt), v))
 	})
 }
 
-// ResultAtNEQ applies the NEQ predicate on the "result_at" field.
-func ResultAtNEQ(v time.Time) predicate.Person {
+// AuthAtNEQ applies the NEQ predicate on the "auth_at" field.
+func AuthAtNEQ(v time.Time) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldResultAt), v))
+		s.Where(sql.NEQ(s.C(FieldAuthAt), v))
 	})
 }
 
-// ResultAtIn applies the In predicate on the "result_at" field.
-func ResultAtIn(vs ...time.Time) predicate.Person {
+// AuthAtIn applies the In predicate on the "auth_at" field.
+func AuthAtIn(vs ...time.Time) predicate.Person {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1417,12 +1417,12 @@ func ResultAtIn(vs ...time.Time) predicate.Person {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldResultAt), v...))
+		s.Where(sql.In(s.C(FieldAuthAt), v...))
 	})
 }
 
-// ResultAtNotIn applies the NotIn predicate on the "result_at" field.
-func ResultAtNotIn(vs ...time.Time) predicate.Person {
+// AuthAtNotIn applies the NotIn predicate on the "auth_at" field.
+func AuthAtNotIn(vs ...time.Time) predicate.Person {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1434,49 +1434,49 @@ func ResultAtNotIn(vs ...time.Time) predicate.Person {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldResultAt), v...))
+		s.Where(sql.NotIn(s.C(FieldAuthAt), v...))
 	})
 }
 
-// ResultAtGT applies the GT predicate on the "result_at" field.
-func ResultAtGT(v time.Time) predicate.Person {
+// AuthAtGT applies the GT predicate on the "auth_at" field.
+func AuthAtGT(v time.Time) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldResultAt), v))
+		s.Where(sql.GT(s.C(FieldAuthAt), v))
 	})
 }
 
-// ResultAtGTE applies the GTE predicate on the "result_at" field.
-func ResultAtGTE(v time.Time) predicate.Person {
+// AuthAtGTE applies the GTE predicate on the "auth_at" field.
+func AuthAtGTE(v time.Time) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldResultAt), v))
+		s.Where(sql.GTE(s.C(FieldAuthAt), v))
 	})
 }
 
-// ResultAtLT applies the LT predicate on the "result_at" field.
-func ResultAtLT(v time.Time) predicate.Person {
+// AuthAtLT applies the LT predicate on the "auth_at" field.
+func AuthAtLT(v time.Time) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldResultAt), v))
+		s.Where(sql.LT(s.C(FieldAuthAt), v))
 	})
 }
 
-// ResultAtLTE applies the LTE predicate on the "result_at" field.
-func ResultAtLTE(v time.Time) predicate.Person {
+// AuthAtLTE applies the LTE predicate on the "auth_at" field.
+func AuthAtLTE(v time.Time) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldResultAt), v))
+		s.Where(sql.LTE(s.C(FieldAuthAt), v))
 	})
 }
 
-// ResultAtIsNil applies the IsNil predicate on the "result_at" field.
-func ResultAtIsNil() predicate.Person {
+// AuthAtIsNil applies the IsNil predicate on the "auth_at" field.
+func AuthAtIsNil() predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldResultAt)))
+		s.Where(sql.IsNull(s.C(FieldAuthAt)))
 	})
 }
 
-// ResultAtNotNil applies the NotNil predicate on the "result_at" field.
-func ResultAtNotNil() predicate.Person {
+// AuthAtNotNil applies the NotNil predicate on the "auth_at" field.
+func AuthAtNotNil() predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldResultAt)))
+		s.Where(sql.NotNull(s.C(FieldAuthAt)))
 	})
 }
 

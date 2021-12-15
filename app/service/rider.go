@@ -11,7 +11,6 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/response"
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/baidu"
@@ -136,7 +135,7 @@ func (r *riderService) GetFaceAuthUrl(c *app.RiderContext) string {
 // GetFaceUrl 获取人脸校验URL
 func (r *riderService) GetFaceUrl(c *app.RiderContext) string {
     p := c.Rider.Edges.Person
-    uri, token := baidu.New().GetFaceUrl(p.Name, p.IcNumber)
+    uri, token := baidu.New().GetFaceUrl(p.Name, p.IDCardNumber)
     ar.Cache.Set(context.Background(), token, r.GeneratePrivacy(c), 30*time.Minute)
     return uri
 }
@@ -174,7 +173,7 @@ func (r *riderService) FaceAuthResult(c *app.RiderContext) (success bool, err er
         Spoofing:       res.VerifyResult.Spoofing,
     }
     // 判断用户是否被封禁
-    blocked, _ := ar.Ent.Person.Query().Where(person.IcNumber(detail.IdCardNumber), person.Block(true)).Exist(context.Background())
+    blocked, _ := ar.Ent.Person.Query().Where(person.IDCardNumber(detail.IdCardNumber), person.Block(true)).Exist(context.Background())
     if blocked {
         panic(errors.New(""))
     }
@@ -190,18 +189,18 @@ func (r *riderService) FaceAuthResult(c *app.RiderContext) (success bool, err er
     id, err := ar.Ent.Person.
         Create().
         SetStatus(model.PersonAuthSuccess.Raw()).
-        SetIcNumber(icNum).
+        SetIDCardNumber(icNum).
         SetName(vr.Name).
-        SetFaceImg(fm).
-        SetIcNational(nm).
-        SetIcPortrait(pm).
-        SetFaceVerifyResult(vr).
-        SetResultAt(time.Now()).
-        OnConflictColumns(person.FieldIcNumber).
+        SetAuthFace(fm).
+        SetIDCardNational(nm).
+        SetIDCardPortrait(pm).
+        SetAuthResult(vr).
+        SetAuthAt(time.Now()).
+        OnConflictColumns(person.FieldIDCardNumber).
         UpdateNewValues().
         ID(context.Background())
     if err != nil {
-        panic(response.NewError(err))
+        panic(app.NewError(err))
     }
 
     err = ar.Ent.Rider.
@@ -210,7 +209,7 @@ func (r *riderService) FaceAuthResult(c *app.RiderContext) (success bool, err er
         SetLastFace(fm).
         Exec(context.Background())
     if err != nil {
-        panic(response.NewError(err))
+        panic(app.NewError(err))
     }
     return
 }
@@ -234,14 +233,14 @@ func (r *riderService) FaceResult(c *app.RiderContext) (success bool, err error)
     }
     // 上传人脸图
     p := u.Edges.Person
-    fm := ali.NewOss().UploadUrlFile(fmt.Sprintf("%s-%s/face-%s.jpg", p.Name, p.IcNumber, sn), res.Result.Image)
+    fm := ali.NewOss().UploadUrlFile(fmt.Sprintf("%s-%s/face-%s.jpg", p.Name, p.IDCardNumber, sn), res.Result.Image)
     err = ar.Ent.Rider.
         UpdateOneID(u.ID).
         SetLastFace(fm).
         SetLastDevice(sn).
         Exec(context.Background())
     if err != nil {
-        panic(response.NewError(err))
+        panic(app.NewError(err))
     }
     return
 }
@@ -250,11 +249,11 @@ func (r *riderService) FaceResult(c *app.RiderContext) (success bool, err error)
 func (r *riderService) UpdateContact(u *ent.Rider, contact *model.RiderContact) {
     // 判断紧急联系人手机号是否和当前骑手手机号一样
     if u.Phone == contact.Phone {
-        panic(response.NewError("紧急联系人手机号不能是当前手机号"))
+        panic(app.NewError("紧急联系人手机号不能是当前手机号"))
     }
     err := ar.Ent.Rider.UpdateOneID(u.ID).SetContact(contact).Exec(context.Background())
     if err != nil {
-        panic(response.NewError(err))
+        panic(app.NewError(err))
     }
 }
 
