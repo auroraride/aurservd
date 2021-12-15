@@ -54,6 +54,7 @@ type PersonMutation struct {
 	face_img           *string
 	face_verify_result **model.FaceVerifyResult
 	result_at          *time.Time
+	esign_account_id   *string
 	clearedFields      map[string]struct{}
 	rider              map[uint64]struct{}
 	removedrider       map[uint64]struct{}
@@ -787,6 +788,55 @@ func (m *PersonMutation) ResetResultAt() {
 	delete(m.clearedFields, person.FieldResultAt)
 }
 
+// SetEsignAccountID sets the "esign_account_id" field.
+func (m *PersonMutation) SetEsignAccountID(s string) {
+	m.esign_account_id = &s
+}
+
+// EsignAccountID returns the value of the "esign_account_id" field in the mutation.
+func (m *PersonMutation) EsignAccountID() (r string, exists bool) {
+	v := m.esign_account_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEsignAccountID returns the old "esign_account_id" field's value of the Person entity.
+// If the Person object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PersonMutation) OldEsignAccountID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldEsignAccountID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldEsignAccountID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEsignAccountID: %w", err)
+	}
+	return oldValue.EsignAccountID, nil
+}
+
+// ClearEsignAccountID clears the value of the "esign_account_id" field.
+func (m *PersonMutation) ClearEsignAccountID() {
+	m.esign_account_id = nil
+	m.clearedFields[person.FieldEsignAccountID] = struct{}{}
+}
+
+// EsignAccountIDCleared returns if the "esign_account_id" field was cleared in this mutation.
+func (m *PersonMutation) EsignAccountIDCleared() bool {
+	_, ok := m.clearedFields[person.FieldEsignAccountID]
+	return ok
+}
+
+// ResetEsignAccountID resets all changes to the "esign_account_id" field.
+func (m *PersonMutation) ResetEsignAccountID() {
+	m.esign_account_id = nil
+	delete(m.clearedFields, person.FieldEsignAccountID)
+}
+
 // AddRiderIDs adds the "rider" edge to the Rider entity by ids.
 func (m *PersonMutation) AddRiderIDs(ids ...uint64) {
 	if m.rider == nil {
@@ -860,7 +910,7 @@ func (m *PersonMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PersonMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 16)
 	if m.created_at != nil {
 		fields = append(fields, person.FieldCreatedAt)
 	}
@@ -906,6 +956,9 @@ func (m *PersonMutation) Fields() []string {
 	if m.result_at != nil {
 		fields = append(fields, person.FieldResultAt)
 	}
+	if m.esign_account_id != nil {
+		fields = append(fields, person.FieldEsignAccountID)
+	}
 	return fields
 }
 
@@ -944,6 +997,8 @@ func (m *PersonMutation) Field(name string) (ent.Value, bool) {
 		return m.FaceVerifyResult()
 	case person.FieldResultAt:
 		return m.ResultAt()
+	case person.FieldEsignAccountID:
+		return m.EsignAccountID()
 	}
 	return nil, false
 }
@@ -983,6 +1038,8 @@ func (m *PersonMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldFaceVerifyResult(ctx)
 	case person.FieldResultAt:
 		return m.OldResultAt(ctx)
+	case person.FieldEsignAccountID:
+		return m.OldEsignAccountID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Person field %s", name)
 }
@@ -1097,6 +1154,13 @@ func (m *PersonMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetResultAt(v)
 		return nil
+	case person.FieldEsignAccountID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEsignAccountID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Person field %s", name)
 }
@@ -1169,6 +1233,9 @@ func (m *PersonMutation) ClearedFields() []string {
 	if m.FieldCleared(person.FieldResultAt) {
 		fields = append(fields, person.FieldResultAt)
 	}
+	if m.FieldCleared(person.FieldEsignAccountID) {
+		fields = append(fields, person.FieldEsignAccountID)
+	}
 	return fields
 }
 
@@ -1197,6 +1264,9 @@ func (m *PersonMutation) ClearField(name string) error {
 		return nil
 	case person.FieldResultAt:
 		m.ClearResultAt()
+		return nil
+	case person.FieldEsignAccountID:
+		m.ClearEsignAccountID()
 		return nil
 	}
 	return fmt.Errorf("unknown Person nullable field %s", name)
@@ -1250,6 +1320,9 @@ func (m *PersonMutation) ResetField(name string) error {
 		return nil
 	case person.FieldResultAt:
 		m.ResetResultAt()
+		return nil
+	case person.FieldEsignAccountID:
+		m.ResetEsignAccountID()
 		return nil
 	}
 	return fmt.Errorf("unknown Person field %s", name)

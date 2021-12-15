@@ -41,6 +41,8 @@ const (
 	FieldFaceVerifyResult = "face_verify_result"
 	// FieldResultAt holds the string denoting the result_at field in the database.
 	FieldResultAt = "result_at"
+	// FieldEsignAccountID holds the string denoting the esign_account_id field in the database.
+	FieldEsignAccountID = "esign_account_id"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// Table holds the table name of the person in the database.
@@ -72,6 +74,7 @@ var Columns = []string{
 	FieldFaceImg,
 	FieldFaceVerifyResult,
 	FieldResultAt,
+	FieldEsignAccountID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

@@ -27,6 +27,7 @@ var (
 		{Name: "face_img", Type: field.TypeString},
 		{Name: "face_verify_result", Type: field.TypeJSON, Nullable: true},
 		{Name: "result_at", Type: field.TypeTime, Nullable: true},
+		{Name: "esign_account_id", Type: field.TypeString, Nullable: true},
 	}
 	// PersonTable holds the schema information for the "person" table.
 	PersonTable = &schema.Table{

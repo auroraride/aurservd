@@ -7,6 +7,7 @@ package router
 
 import (
     "github.com/auroraride/aurservd/app"
+    "github.com/auroraride/aurservd/app/controller/v1/demo"
     "github.com/auroraride/aurservd/app/middleware"
     "github.com/auroraride/aurservd/app/request"
     "github.com/auroraride/aurservd/app/response"
@@ -74,7 +75,8 @@ func Run() {
     // 载入路由
     {
         // demo
-        // dg := r.Group("/demo")
+        dg := r.Group("/demo")
+        dg.POST("/esign", demo.Esign)
     }
     r.commonRoute() // 公共API
     r.rideRoute()   // 骑手路由

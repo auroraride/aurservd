@@ -43,6 +43,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			person.FieldFaceImg:          {Type: field.TypeString, Column: person.FieldFaceImg},
 			person.FieldFaceVerifyResult: {Type: field.TypeJSON, Column: person.FieldFaceVerifyResult},
 			person.FieldResultAt:         {Type: field.TypeTime, Column: person.FieldResultAt},
+			person.FieldEsignAccountID:   {Type: field.TypeString, Column: person.FieldEsignAccountID},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -233,6 +234,11 @@ func (f *PersonFilter) WhereFaceVerifyResult(p entql.BytesP) {
 // WhereResultAt applies the entql time.Time predicate on the result_at field.
 func (f *PersonFilter) WhereResultAt(p entql.TimeP) {
 	f.Where(p.Field(person.FieldResultAt))
+}
+
+// WhereEsignAccountID applies the entql string predicate on the esign_account_id field.
+func (f *PersonFilter) WhereEsignAccountID(p entql.StringP) {
+	f.Where(p.Field(person.FieldEsignAccountID))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.

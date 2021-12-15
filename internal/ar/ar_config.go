@@ -24,6 +24,14 @@ var Config *config
 //go:embed default_config.yml
 var defaultConfigStr string
 
+type EsignConfig struct {
+    Appid      string
+    BaseUrl    string
+    Secret     string
+    RSA        string `mapstructure:"rsa"`
+    TemplateId string
+}
+
 type config struct {
     App struct {
         Address   string
@@ -85,6 +93,11 @@ type config struct {
             AuthPlanId string
             FacePlanId string
         }
+    }
+    Esign struct {
+        Target  string
+        Sandbox EsignConfig
+        Online  EsignConfig
     }
     Trans map[string]string
 }
