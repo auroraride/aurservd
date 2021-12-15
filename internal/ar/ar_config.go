@@ -29,6 +29,7 @@ type EsignConfig struct {
     BaseUrl    string
     Secret     string
     RSA        string `mapstructure:"rsa"`
+    FlowId     string
     TemplateId string
 }
 
