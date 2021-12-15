@@ -12,6 +12,14 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/esign"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/utils"
+    "github.com/golang-module/carbon/v2"
+)
+
+const (
+    snKey      = "sn"      // 合同编号
+    entSignKey = "entSign" // 企业签章控件名称
+    psnSignKey = "psnSign" // 个人签章控件名称
 )
 
 type contractService struct {
@@ -24,10 +32,15 @@ func NewContract() *contractService {
     }
 }
 
+func (s *contractService) generateSn() string {
+    return fmt.Sprintf("%s%06d", carbon.Now().ToShortDateTimeString(), utils.RandomIntMaxMin(1000, 999999))
+}
+
 // Sign 签署合同
 // TODO 保存合同
 func (s *contractService) Sign(u *ent.Rider) string {
     var (
+        sn         = s.generateSn()
         cfg        = s.esign.Config
         orm        = ar.Ent
         person     = u.Edges.Person
@@ -70,13 +83,15 @@ func (s *contractService) Sign(u *ent.Rider) string {
     m := make(ar.Map)
     for _, com := range tmpl.StructComponents {
         switch com.Key {
-        case cfg.EntSignKey:
+        case snKey:
+            m[snKey] = sn
+        case entSignKey:
             req.EntSignBean = esign.PosBean{
                 PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
                 PosX:    com.Context.Pos.X,
                 PosY:    com.Context.Pos.Y,
             }
-        case cfg.PsnSignKey:
+        case psnSignKey:
             req.PsnSignBean = esign.PosBean{
                 PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
                 PosX:    com.Context.Pos.X,
@@ -89,7 +104,7 @@ func (s *contractService) Sign(u *ent.Rider) string {
     }
     // 填充内容生成PDF
     pdf := s.esign.CreateByTemplate(esign.CreateByTemplateReq{
-        Name:             req.Scene + ".pdf", // todo 文件名
+        Name:             fmt.Sprintf("%s-%s.pdf", req.Scene, sn), // todo 文件名
         SimpleFormFields: m,
         TemplateId:       templateId,
     })

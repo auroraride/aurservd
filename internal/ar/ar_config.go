@@ -32,8 +32,6 @@ type EsignConfig struct {
     Log        bool
     Callback   string
     Redirect   string
-    EntSignKey string // 企业签章控件名称
-    PsnSignKey string // 个人签章控件名称
     Group      struct {
         Scene      string
         FlowId     string

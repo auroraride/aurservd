@@ -8,9 +8,17 @@ package boot
 import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/logger"
+    "os"
+    "time"
 )
 
 func init() {
+    // 设置全局时区
+    tz := "Asia/Shanghai"
+    _ = os.Setenv("TZ", tz)
+    loc, _ := time.LoadLocation(tz)
+    time.Local = loc
+
     // 载入配置
     ar.LoadConfig()
 
