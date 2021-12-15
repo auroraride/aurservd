@@ -10,7 +10,7 @@ import (
     "github.com/auroraride/aurservd/app/response"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/esign"
-    "github.com/auroraride/aurservd/pkg/rorre"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
     log "github.com/sirupsen/logrus"
 )
@@ -37,7 +37,7 @@ func Esign(c echo.Context) error {
 }
 
 func EsignDo(c echo.Context) error {
-    rorre.Panic("test")
+    snag.Panic("test")
     log.Info(esign.New().CreateFlowOneStep())
     return nil
 }

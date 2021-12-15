@@ -7,11 +7,10 @@ package service
 
 import (
     "context"
-    "errors"
-    "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/esign"
+    "github.com/auroraride/aurservd/pkg/snag"
 )
 
 type contractService struct {
@@ -41,13 +40,12 @@ func (s *contractService) Sign(u *ent.Rider) {
             Mobile:           u.Phone,
         })
         if accountId == nil {
-            panic(app.NewError(errors.New("签署账号生成失败")))
+            snag.Panic("签署账号生成失败")
         }
         // 保存个人账号
         err := orm.Person.UpdateOneID(person.ID).SetNillableEsignAccountID(accountId).Exec(context.Background())
         if err != nil {
-            panic(app.NewError(err))
-            return
+            snag.Panic(err)
         }
     }
 }

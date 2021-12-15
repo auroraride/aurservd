@@ -7,8 +7,8 @@ package esign
 
 import (
     "bytes"
-    "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
     jsoniter "github.com/json-iterator/go"
@@ -71,7 +71,7 @@ func New() *Esign {
     case EnvOnline:
         config = cfg.Online
     default:
-        panic(app.NewError("环境设置失败"))
+        snag.Panic("环境设置失败")
     }
     return &Esign{
         serialization: jsoniter.Config{SortMapKeys: true},
@@ -138,7 +138,7 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
         _, err = req.Get(e.config.BaseUrl + api)
     }
     if err != nil {
-        panic(app.NewError(err))
+        snag.Panic(err)
     }
     // 记录请求日志
     if e.config.Log {
@@ -165,5 +165,5 @@ func (e *Esign) isResSuccess(res *commonRes) {
     case resSuccess, resExists:
         return
     }
-    panic(app.NewError(res.Message))
+    snag.Panic(res.Message)
 }

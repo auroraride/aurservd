@@ -17,6 +17,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/rs/xid"
     "time"
@@ -200,7 +201,7 @@ func (r *riderService) FaceAuthResult(c *app.RiderContext) (success bool, err er
         UpdateNewValues().
         ID(context.Background())
     if err != nil {
-        panic(app.NewError(err))
+        snag.Panic(err)
     }
 
     err = ar.Ent.Rider.
@@ -209,7 +210,7 @@ func (r *riderService) FaceAuthResult(c *app.RiderContext) (success bool, err er
         SetLastFace(fm).
         Exec(context.Background())
     if err != nil {
-        panic(app.NewError(err))
+        snag.Panic(err)
     }
     return
 }
@@ -240,7 +241,7 @@ func (r *riderService) FaceResult(c *app.RiderContext) (success bool, err error)
         SetLastDevice(sn).
         Exec(context.Background())
     if err != nil {
-        panic(app.NewError(err))
+        snag.Panic(err)
     }
     return
 }
@@ -249,11 +250,11 @@ func (r *riderService) FaceResult(c *app.RiderContext) (success bool, err error)
 func (r *riderService) UpdateContact(u *ent.Rider, contact *model.RiderContact) {
     // 判断紧急联系人手机号是否和当前骑手手机号一样
     if u.Phone == contact.Phone {
-        panic(app.NewError("紧急联系人手机号不能是当前手机号"))
+        snag.Panic("紧急联系人手机号不能是当前手机号")
     }
     err := ar.Ent.Rider.UpdateOneID(u.ID).SetContact(contact).Exec(context.Background())
     if err != nil {
-        panic(app.NewError(err))
+        snag.Panic(err)
     }
 }
 

@@ -7,6 +7,7 @@ package app
 
 import (
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
 )
 
@@ -38,10 +39,10 @@ type RiderContext struct {
 func (c *Context) BindValidate(ptr interface{}) {
     err := c.Bind(ptr)
     if err != nil {
-        panic(NewError(err))
+        snag.Panic(err)
     }
     err = c.Validate(ptr)
     if err != nil {
-        panic(NewError(err))
+        snag.Panic(err)
     }
 }

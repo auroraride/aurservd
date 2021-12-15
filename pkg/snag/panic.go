@@ -3,7 +3,7 @@
 // Created at 2021-12-15
 // Based on aurservd by liasica, magicrolan@qq.com.
 
-package rorre
+package snag
 
 func Panic(e interface{}) {
     panic(NewError(e))
