@@ -47,10 +47,13 @@ const (
 
     // createFlowOneStepUrl 一步发起签署
     createFlowOneStepUrl = `/api/v2/signflows/createFlowOneStep`
+
+    // executeUrl 获取签署链接
+    executeUrl = `/v1/signflows/%s/executeUrl?accountId=%s` // todo appScheme
 )
 
 type Esign struct {
-    config        ar.EsignConfig
+    Config        ar.EsignConfig
     headers       map[string]string
     client        *resty.Request
     serialization jsoniter.Config
@@ -75,7 +78,7 @@ func New() *Esign {
     }
     return &Esign{
         serialization: jsoniter.Config{SortMapKeys: true},
-        config:        config,
+        Config:        config,
         headers: map[string]string{
             "X-Tsign-Open-App-Id":       config.Appid,
             "Content-Type":              headerContentType,
@@ -101,18 +104,18 @@ func (e *Esign) getSign(api, method, md5 string) (string, string) {
     buffer.WriteString("\n")
     buffer.WriteString(api)
     str := buffer.String()
-    return utils.Sha256Base64String(str, e.config.Secret), str
+    return utils.Sha256Base64String(str, e.Config.Secret), str
 }
 
 type reqLog struct {
-    Api    string
-    Method string
-    Body   interface{}
-    Res    interface{}
-    MD5    string
-    Secret string
-    Sign   string
-    Raw    string
+    Api    string      `json:"api,omitempty"`
+    Method string      `json:"method,omitempty"`
+    Body   interface{} `json:"body,omitempty"`
+    Res    interface{} `json:"res,omitempty"`
+    MD5    string      `json:"MD5,omitempty"`
+    Secret string      `json:"secret,omitempty"`
+    Sign   string      `json:"sign,omitempty"`
+    Raw    string      `json:"raw,omitempty"`
 }
 
 // request 请求
@@ -133,22 +136,22 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
     var err error
     switch method {
     case methodPost:
-        _, err = req.SetBody(body).Post(e.config.BaseUrl + api)
+        _, err = req.SetBody(body).Post(e.Config.BaseUrl + api)
     case methodGet:
-        _, err = req.Get(e.config.BaseUrl + api)
+        _, err = req.Get(e.Config.BaseUrl + api)
     }
     if err != nil {
         snag.Panic(err)
     }
     // 记录请求日志
-    if e.config.Log {
+    if e.Config.Log {
         logdata := reqLog{
             Api:    api,
             Method: method,
             Body:   bodyString,
             Res:    res,
             MD5:    md5,
-            Secret: e.config.Secret,
+            Secret: e.Config.Secret,
             Sign:   singnature,
             Raw:    raw,
         }

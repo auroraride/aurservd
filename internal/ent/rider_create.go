@@ -188,6 +188,20 @@ func (rc *RiderCreate) SetNillableLastSigninAt(t *time.Time) *RiderCreate {
 	return rc
 }
 
+// SetEsignAccountID sets the "esign_account_id" field.
+func (rc *RiderCreate) SetEsignAccountID(s string) *RiderCreate {
+	rc.mutation.SetEsignAccountID(s)
+	return rc
+}
+
+// SetNillableEsignAccountID sets the "esign_account_id" field if the given value is not nil.
+func (rc *RiderCreate) SetNillableEsignAccountID(s *string) *RiderCreate {
+	if s != nil {
+		rc.SetEsignAccountID(*s)
+	}
+	return rc
+}
+
 // SetPerson sets the "person" edge to the Person entity.
 func (rc *RiderCreate) SetPerson(p *Person) *RiderCreate {
 	return rc.SetPersonID(p.ID)
@@ -437,6 +451,14 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			Column: rider.FieldLastSigninAt,
 		})
 		_node.LastSigninAt = &value
+	}
+	if value, ok := rc.mutation.EsignAccountID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: rider.FieldEsignAccountID,
+		})
+		_node.EsignAccountID = value
 	}
 	if nodes := rc.mutation.PersonIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -731,6 +753,24 @@ func (u *RiderUpsert) UpdateLastSigninAt() *RiderUpsert {
 // ClearLastSigninAt clears the value of the "last_signin_at" field.
 func (u *RiderUpsert) ClearLastSigninAt() *RiderUpsert {
 	u.SetNull(rider.FieldLastSigninAt)
+	return u
+}
+
+// SetEsignAccountID sets the "esign_account_id" field.
+func (u *RiderUpsert) SetEsignAccountID(v string) *RiderUpsert {
+	u.Set(rider.FieldEsignAccountID, v)
+	return u
+}
+
+// UpdateEsignAccountID sets the "esign_account_id" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateEsignAccountID() *RiderUpsert {
+	u.SetExcluded(rider.FieldEsignAccountID)
+	return u
+}
+
+// ClearEsignAccountID clears the value of the "esign_account_id" field.
+func (u *RiderUpsert) ClearEsignAccountID() *RiderUpsert {
+	u.SetNull(rider.FieldEsignAccountID)
 	return u
 }
 
@@ -1032,6 +1072,27 @@ func (u *RiderUpsertOne) UpdateLastSigninAt() *RiderUpsertOne {
 func (u *RiderUpsertOne) ClearLastSigninAt() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearLastSigninAt()
+	})
+}
+
+// SetEsignAccountID sets the "esign_account_id" field.
+func (u *RiderUpsertOne) SetEsignAccountID(v string) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetEsignAccountID(v)
+	})
+}
+
+// UpdateEsignAccountID sets the "esign_account_id" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateEsignAccountID() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateEsignAccountID()
+	})
+}
+
+// ClearEsignAccountID clears the value of the "esign_account_id" field.
+func (u *RiderUpsertOne) ClearEsignAccountID() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearEsignAccountID()
 	})
 }
 
@@ -1495,6 +1556,27 @@ func (u *RiderUpsertBulk) UpdateLastSigninAt() *RiderUpsertBulk {
 func (u *RiderUpsertBulk) ClearLastSigninAt() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearLastSigninAt()
+	})
+}
+
+// SetEsignAccountID sets the "esign_account_id" field.
+func (u *RiderUpsertBulk) SetEsignAccountID(v string) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetEsignAccountID(v)
+	})
+}
+
+// UpdateEsignAccountID sets the "esign_account_id" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateEsignAccountID() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateEsignAccountID()
+	})
+}
+
+// ClearEsignAccountID clears the value of the "esign_account_id" field.
+func (u *RiderUpsertBulk) ClearEsignAccountID() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearEsignAccountID()
 	})
 }
 

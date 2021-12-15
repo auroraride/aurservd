@@ -5,13 +5,21 @@
 
 package rapi
 
-import "github.com/labstack/echo/v4"
+import (
+    "github.com/auroraride/aurservd/app"
+    "github.com/auroraride/aurservd/app/service"
+    "github.com/labstack/echo/v4"
+)
 
 type contract struct {
 }
 
 var Contract = new(contract)
 
+// Sign 签署合同
 func (*contract) Sign(c echo.Context) error {
-    return nil
+    return app.NewResponse(c).
+        Success().
+        SetData(service.NewContract().Sign(c.(*app.RiderContext).Rider)).
+        Send()
 }

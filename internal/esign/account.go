@@ -17,11 +17,11 @@ type CreatePersonAccountReq struct {
 
 // CreatePersonAccountRes 创建个人账号返回体
 type CreatePersonAccountRes struct {
-    AccountId *string `json:"accountId"`
+    AccountId string `json:"accountId"`
 }
 
 // CreatePersonAccount 创建个人签署账号
-func (e *Esign) CreatePersonAccount(req CreatePersonAccountReq) *string {
+func (e *Esign) CreatePersonAccount(req CreatePersonAccountReq) string {
     res := new(CreatePersonAccountRes)
     e.request(createPersonAccountUrl, "POST", req, res)
     return res.AccountId

@@ -43,7 +43,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			person.FieldAuthFace:       {Type: field.TypeString, Column: person.FieldAuthFace},
 			person.FieldAuthResult:     {Type: field.TypeJSON, Column: person.FieldAuthResult},
 			person.FieldAuthAt:         {Type: field.TypeTime, Column: person.FieldAuthAt},
-			person.FieldEsignAccountID: {Type: field.TypeString, Column: person.FieldEsignAccountID},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -57,20 +56,21 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Rider",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			rider.FieldCreatedAt:    {Type: field.TypeTime, Column: rider.FieldCreatedAt},
-			rider.FieldUpdatedAt:    {Type: field.TypeTime, Column: rider.FieldUpdatedAt},
-			rider.FieldDeletedAt:    {Type: field.TypeTime, Column: rider.FieldDeletedAt},
-			rider.FieldLastModify:   {Type: field.TypeTime, Column: rider.FieldLastModify},
-			rider.FieldRemark:       {Type: field.TypeString, Column: rider.FieldRemark},
-			rider.FieldPersonID:     {Type: field.TypeUint64, Column: rider.FieldPersonID},
-			rider.FieldGroupID:      {Type: field.TypeUint64, Column: rider.FieldGroupID},
-			rider.FieldPhone:        {Type: field.TypeString, Column: rider.FieldPhone},
-			rider.FieldContact:      {Type: field.TypeJSON, Column: rider.FieldContact},
-			rider.FieldDeviceType:   {Type: field.TypeUint8, Column: rider.FieldDeviceType},
-			rider.FieldLastDevice:   {Type: field.TypeString, Column: rider.FieldLastDevice},
-			rider.FieldLastFace:     {Type: field.TypeString, Column: rider.FieldLastFace},
-			rider.FieldPushID:       {Type: field.TypeString, Column: rider.FieldPushID},
-			rider.FieldLastSigninAt: {Type: field.TypeTime, Column: rider.FieldLastSigninAt},
+			rider.FieldCreatedAt:      {Type: field.TypeTime, Column: rider.FieldCreatedAt},
+			rider.FieldUpdatedAt:      {Type: field.TypeTime, Column: rider.FieldUpdatedAt},
+			rider.FieldDeletedAt:      {Type: field.TypeTime, Column: rider.FieldDeletedAt},
+			rider.FieldLastModify:     {Type: field.TypeTime, Column: rider.FieldLastModify},
+			rider.FieldRemark:         {Type: field.TypeString, Column: rider.FieldRemark},
+			rider.FieldPersonID:       {Type: field.TypeUint64, Column: rider.FieldPersonID},
+			rider.FieldGroupID:        {Type: field.TypeUint64, Column: rider.FieldGroupID},
+			rider.FieldPhone:          {Type: field.TypeString, Column: rider.FieldPhone},
+			rider.FieldContact:        {Type: field.TypeJSON, Column: rider.FieldContact},
+			rider.FieldDeviceType:     {Type: field.TypeUint8, Column: rider.FieldDeviceType},
+			rider.FieldLastDevice:     {Type: field.TypeString, Column: rider.FieldLastDevice},
+			rider.FieldLastFace:       {Type: field.TypeString, Column: rider.FieldLastFace},
+			rider.FieldPushID:         {Type: field.TypeString, Column: rider.FieldPushID},
+			rider.FieldLastSigninAt:   {Type: field.TypeTime, Column: rider.FieldLastSigninAt},
+			rider.FieldEsignAccountID: {Type: field.TypeString, Column: rider.FieldEsignAccountID},
 		},
 	}
 	graph.Nodes[2] = &sqlgraph.Node{
@@ -237,11 +237,6 @@ func (f *PersonFilter) WhereAuthAt(p entql.TimeP) {
 	f.Where(p.Field(person.FieldAuthAt))
 }
 
-// WhereEsignAccountID applies the entql string predicate on the esign_account_id field.
-func (f *PersonFilter) WhereEsignAccountID(p entql.StringP) {
-	f.Where(p.Field(person.FieldEsignAccountID))
-}
-
 // WhereHasRider applies a predicate to check if query has an edge rider.
 func (f *PersonFilter) WhereHasRider() {
 	f.Where(entql.HasEdge("rider"))
@@ -363,6 +358,11 @@ func (f *RiderFilter) WherePushID(p entql.StringP) {
 // WhereLastSigninAt applies the entql time.Time predicate on the last_signin_at field.
 func (f *RiderFilter) WhereLastSigninAt(p entql.TimeP) {
 	f.Where(p.Field(rider.FieldLastSigninAt))
+}
+
+// WhereEsignAccountID applies the entql string predicate on the esign_account_id field.
+func (f *RiderFilter) WhereEsignAccountID(p entql.StringP) {
+	f.Where(p.Field(rider.FieldEsignAccountID))
 }
 
 // WhereHasPerson applies a predicate to check if query has an edge person.

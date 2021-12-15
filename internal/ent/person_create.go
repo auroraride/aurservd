@@ -186,20 +186,6 @@ func (pc *PersonCreate) SetNillableAuthAt(t *time.Time) *PersonCreate {
 	return pc
 }
 
-// SetEsignAccountID sets the "esign_account_id" field.
-func (pc *PersonCreate) SetEsignAccountID(s string) *PersonCreate {
-	pc.mutation.SetEsignAccountID(s)
-	return pc
-}
-
-// SetNillableEsignAccountID sets the "esign_account_id" field if the given value is not nil.
-func (pc *PersonCreate) SetNillableEsignAccountID(s *string) *PersonCreate {
-	if s != nil {
-		pc.SetEsignAccountID(*s)
-	}
-	return pc
-}
-
 // AddRiderIDs adds the "rider" edge to the Rider entity by IDs.
 func (pc *PersonCreate) AddRiderIDs(ids ...uint64) *PersonCreate {
 	pc.mutation.AddRiderIDs(ids...)
@@ -498,14 +484,6 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 		})
 		_node.AuthAt = &value
 	}
-	if value, ok := pc.mutation.EsignAccountID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: person.FieldEsignAccountID,
-		})
-		_node.EsignAccountID = &value
-	}
 	if nodes := pc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -786,24 +764,6 @@ func (u *PersonUpsert) UpdateAuthAt() *PersonUpsert {
 // ClearAuthAt clears the value of the "auth_at" field.
 func (u *PersonUpsert) ClearAuthAt() *PersonUpsert {
 	u.SetNull(person.FieldAuthAt)
-	return u
-}
-
-// SetEsignAccountID sets the "esign_account_id" field.
-func (u *PersonUpsert) SetEsignAccountID(v string) *PersonUpsert {
-	u.Set(person.FieldEsignAccountID, v)
-	return u
-}
-
-// UpdateEsignAccountID sets the "esign_account_id" field to the value that was provided on create.
-func (u *PersonUpsert) UpdateEsignAccountID() *PersonUpsert {
-	u.SetExcluded(person.FieldEsignAccountID)
-	return u
-}
-
-// ClearEsignAccountID clears the value of the "esign_account_id" field.
-func (u *PersonUpsert) ClearEsignAccountID() *PersonUpsert {
-	u.SetNull(person.FieldEsignAccountID)
 	return u
 }
 
@@ -1091,27 +1051,6 @@ func (u *PersonUpsertOne) UpdateAuthAt() *PersonUpsertOne {
 func (u *PersonUpsertOne) ClearAuthAt() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
 		s.ClearAuthAt()
-	})
-}
-
-// SetEsignAccountID sets the "esign_account_id" field.
-func (u *PersonUpsertOne) SetEsignAccountID(v string) *PersonUpsertOne {
-	return u.Update(func(s *PersonUpsert) {
-		s.SetEsignAccountID(v)
-	})
-}
-
-// UpdateEsignAccountID sets the "esign_account_id" field to the value that was provided on create.
-func (u *PersonUpsertOne) UpdateEsignAccountID() *PersonUpsertOne {
-	return u.Update(func(s *PersonUpsert) {
-		s.UpdateEsignAccountID()
-	})
-}
-
-// ClearEsignAccountID clears the value of the "esign_account_id" field.
-func (u *PersonUpsertOne) ClearEsignAccountID() *PersonUpsertOne {
-	return u.Update(func(s *PersonUpsert) {
-		s.ClearEsignAccountID()
 	})
 }
 
@@ -1561,27 +1500,6 @@ func (u *PersonUpsertBulk) UpdateAuthAt() *PersonUpsertBulk {
 func (u *PersonUpsertBulk) ClearAuthAt() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
 		s.ClearAuthAt()
-	})
-}
-
-// SetEsignAccountID sets the "esign_account_id" field.
-func (u *PersonUpsertBulk) SetEsignAccountID(v string) *PersonUpsertBulk {
-	return u.Update(func(s *PersonUpsert) {
-		s.SetEsignAccountID(v)
-	})
-}
-
-// UpdateEsignAccountID sets the "esign_account_id" field to the value that was provided on create.
-func (u *PersonUpsertBulk) UpdateEsignAccountID() *PersonUpsertBulk {
-	return u.Update(func(s *PersonUpsert) {
-		s.UpdateEsignAccountID()
-	})
-}
-
-// ClearEsignAccountID clears the value of the "esign_account_id" field.
-func (u *PersonUpsertBulk) ClearEsignAccountID() *PersonUpsertBulk {
-	return u.Update(func(s *PersonUpsert) {
-		s.ClearEsignAccountID()
 	})
 }
 

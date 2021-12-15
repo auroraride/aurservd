@@ -52,7 +52,7 @@ Temporary Items
 .apdisk
 
 # Directories for project
-/config
+/Config
 /runtime
 /build
 /debug

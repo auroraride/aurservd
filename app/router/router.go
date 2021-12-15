@@ -7,7 +7,6 @@ package router
 
 import (
     "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/controller/v1/demo"
     "github.com/auroraride/aurservd/app/middleware"
     "github.com/auroraride/aurservd/app/request"
     "github.com/auroraride/aurservd/internal/ar"
@@ -64,21 +63,19 @@ func Run() {
     r.Validator = request.NewGlobalValidator()
 
     r.HTTPErrorHandler = func(err error, c echo.Context) {
+        res := app.NewResponse(c).Error(app.StatusError).SetMessage(err.Error())
         if e, ok := err.(*snag.Error); ok {
-            res := app.NewResponse(c).Error(app.StatusError).SetMessage(err.Error())
             if data, ok := e.Data.(app.Response); ok {
                 res.Error(data.Code).SetMessage(data.Message).SetData(data.Data)
             }
-            _ = res.Send()
         }
+        _ = res.Send()
     }
 
     // 载入路由
     {
         // demo
-        dg := r.Group("/demo")
-        dg.POST("/esign", demo.Esign)
-        dg.POST("/esign/sign", demo.EsignDo)
+        // dg := r.Group("/demo")
     }
     r.commonRoute() // 公共API
     r.rideRoute()   // 骑手路由

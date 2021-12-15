@@ -27,7 +27,6 @@ var (
 		{Name: "auth_face", Type: field.TypeString},
 		{Name: "auth_result", Type: field.TypeJSON, Nullable: true},
 		{Name: "auth_at", Type: field.TypeTime, Nullable: true},
-		{Name: "esign_account_id", Type: field.TypeString, Nullable: true},
 	}
 	// PersonTable holds the schema information for the "person" table.
 	PersonTable = &schema.Table{
@@ -63,6 +62,7 @@ var (
 		{Name: "last_face", Type: field.TypeString, Nullable: true},
 		{Name: "push_id", Type: field.TypeString, Unique: true, Nullable: true, Size: 60},
 		{Name: "last_signin_at", Type: field.TypeTime, Nullable: true},
+		{Name: "esign_account_id", Type: field.TypeString, Nullable: true},
 		{Name: "person_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// RiderTable holds the schema information for the "rider" table.
@@ -73,7 +73,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "rider_person_rider",
-				Columns:    []*schema.Column{RiderColumns[14]},
+				Columns:    []*schema.Column{RiderColumns[15]},
 				RefColumns: []*schema.Column{PersonColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

@@ -184,6 +184,13 @@ func LastSigninAt(v time.Time) predicate.Rider {
 	})
 }
 
+// EsignAccountID applies equality check predicate on the "esign_account_id" field. It's identical to EsignAccountIDEQ.
+func EsignAccountID(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEsignAccountID), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
@@ -1442,6 +1449,131 @@ func LastSigninAtIsNil() predicate.Rider {
 func LastSigninAtNotNil() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldLastSigninAt)))
+	})
+}
+
+// EsignAccountIDEQ applies the EQ predicate on the "esign_account_id" field.
+func EsignAccountIDEQ(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEsignAccountID), v))
+	})
+}
+
+// EsignAccountIDNEQ applies the NEQ predicate on the "esign_account_id" field.
+func EsignAccountIDNEQ(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEsignAccountID), v))
+	})
+}
+
+// EsignAccountIDIn applies the In predicate on the "esign_account_id" field.
+func EsignAccountIDIn(vs ...string) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldEsignAccountID), v...))
+	})
+}
+
+// EsignAccountIDNotIn applies the NotIn predicate on the "esign_account_id" field.
+func EsignAccountIDNotIn(vs ...string) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldEsignAccountID), v...))
+	})
+}
+
+// EsignAccountIDGT applies the GT predicate on the "esign_account_id" field.
+func EsignAccountIDGT(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldEsignAccountID), v))
+	})
+}
+
+// EsignAccountIDGTE applies the GTE predicate on the "esign_account_id" field.
+func EsignAccountIDGTE(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldEsignAccountID), v))
+	})
+}
+
+// EsignAccountIDLT applies the LT predicate on the "esign_account_id" field.
+func EsignAccountIDLT(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldEsignAccountID), v))
+	})
+}
+
+// EsignAccountIDLTE applies the LTE predicate on the "esign_account_id" field.
+func EsignAccountIDLTE(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldEsignAccountID), v))
+	})
+}
+
+// EsignAccountIDContains applies the Contains predicate on the "esign_account_id" field.
+func EsignAccountIDContains(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldEsignAccountID), v))
+	})
+}
+
+// EsignAccountIDHasPrefix applies the HasPrefix predicate on the "esign_account_id" field.
+func EsignAccountIDHasPrefix(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldEsignAccountID), v))
+	})
+}
+
+// EsignAccountIDHasSuffix applies the HasSuffix predicate on the "esign_account_id" field.
+func EsignAccountIDHasSuffix(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldEsignAccountID), v))
+	})
+}
+
+// EsignAccountIDIsNil applies the IsNil predicate on the "esign_account_id" field.
+func EsignAccountIDIsNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEsignAccountID)))
+	})
+}
+
+// EsignAccountIDNotNil applies the NotNil predicate on the "esign_account_id" field.
+func EsignAccountIDNotNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEsignAccountID)))
+	})
+}
+
+// EsignAccountIDEqualFold applies the EqualFold predicate on the "esign_account_id" field.
+func EsignAccountIDEqualFold(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldEsignAccountID), v))
+	})
+}
+
+// EsignAccountIDContainsFold applies the ContainsFold predicate on the "esign_account_id" field.
+func EsignAccountIDContainsFold(v string) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldEsignAccountID), v))
 	})
 }
 

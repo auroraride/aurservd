@@ -126,7 +126,7 @@ func (r *riderService) SetDevice(u *ent.Rider, device *app.Device) error {
     return err
 }
 
-// GetFaceAuthUrl 获取人脸实名验证URL
+// GetFaceAuthUrl 获取实名验证URL
 func (r *riderService) GetFaceAuthUrl(c *app.RiderContext) string {
     uri, token := baidu.New().GetAuthenticatorUrl()
     ar.Cache.Set(context.Background(), token, r.GeneratePrivacy(c), 30*time.Minute)

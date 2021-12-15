@@ -11,22 +11,22 @@ type CreateFlowOneStepRes struct {
     FlowId string `json:"flowId"`
 }
 
+type CreateFlowReq struct {
+    Scene           string
+    FileId          string
+    PersonAccountId string
+    PsnSignBean     PosBean
+    EntSignBean     PosBean
+}
+
 // CreateFlowOneStep 一步发起签署
-func (e *Esign) CreateFlowOneStep() string {
+func (e *Esign) CreateFlowOneStep(data CreateFlowReq) string {
     var (
-        scene           = "签署测试"
-        fileId          = "3f8a6de98af44f20b836985e81ce942c"
-        personAccountId = "f8c1df05edb047f4869a4d24749d76df"
-        psnSignBean     = PosBean{
-            PosPage: "2",
-            PosX:    376.15,
-            PosY:    441.3,
-        }
-        entSignBean = PosBean{
-            PosPage: "2",
-            PosX:    155.65,
-            PosY:    436.8,
-        }
+        scene           = data.Scene
+        fileId          = data.FileId
+        personAccountId = data.PersonAccountId
+        psnSignBean     = data.PsnSignBean
+        entSignBean     = data.EntSignBean
     )
 
     req := CreateFlowOneStepReq{
@@ -36,15 +36,18 @@ func (e *Esign) CreateFlowOneStep() string {
             BusinessScene: scene,
             // ContractValidity: time.Now().Add(30*time.Minute).UnixNano() / 1e6, // 半小时有效期
             FlowConfigInfo: FlowConfigInfo{
-                NoticeDeveloperUrl: e.config.Callback,
-                RedirectUrl:        fmt.Sprintf("%s?path=%s", e.config.Redirect, "test"),
+                NoticeDeveloperUrl: e.Config.Callback,
+                RedirectUrl:        fmt.Sprintf("%s?path=%s", e.Config.Redirect, "test"),
                 // RedirectDelayTime: 0,
             },
         },
         Signers: []Signer{
             {
-                SignOrder:     2,
-                SignerAccount: SignerAccount{SignerAccountId: personAccountId},
+                SignOrder: 2,
+                SignerAccount: SignerAccount{
+                    SignerAccountId: personAccountId,
+                    NoticeType:      "1",
+                },
                 Signfields: []Signfield{
                     {
                         FileId:  fileId,
@@ -75,4 +78,17 @@ func (e *Esign) CreateFlowOneStep() string {
     res := new(CreateFlowOneStepRes)
     e.request(createFlowOneStepUrl, methodPost, req, res)
     return res.FlowId
+}
+
+type executeUrlRes struct {
+    Url      string `json:"url"`
+    ShortUrl string `json:"shortUrl"`
+}
+
+// ExecuteUrl 获取签署地址
+// @doc https://open.esign.cn/doc/detail?id=opendoc%2Fsaas_api%2Ffdtfqf&namespace=opendoc%2Fsaas_api
+func (e *Esign) ExecuteUrl(flowId, accountId string) string {
+    res := new(executeUrlRes)
+    e.request(fmt.Sprintf(executeUrl, flowId, accountId), methodGet, nil, res)
+    return res.Url
 }

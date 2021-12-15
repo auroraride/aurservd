@@ -35,7 +35,7 @@ type DocTemplateRes struct {
             Pos struct {
                 X    float64 `json:"x"`
                 Y    float64 `json:"y"`
-                Page float64 `json:"page"`
+                Page int `json:"page"`
             } `json:"pos"`
         } `json:"context"`
     } `json:"structComponents"`

@@ -58,6 +58,9 @@ type Rider struct {
 	// LastSigninAt holds the value of the "last_signin_at" field.
 	// 最后登录时间
 	LastSigninAt *time.Time `json:"last_signin_at,omitempty"`
+	// EsignAccountID holds the value of the "esign_account_id" field.
+	// E签宝账户ID
+	EsignAccountID string `json:"esign_account_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RiderQuery when eager-loading is set.
 	Edges RiderEdges `json:"edges"`
@@ -95,7 +98,7 @@ func (*Rider) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case rider.FieldID, rider.FieldPersonID, rider.FieldGroupID, rider.FieldDeviceType:
 			values[i] = new(sql.NullInt64)
-		case rider.FieldRemark, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID:
+		case rider.FieldRemark, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID, rider.FieldEsignAccountID:
 			values[i] = new(sql.NullString)
 		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastModify, rider.FieldLastSigninAt:
 			values[i] = new(sql.NullTime)
@@ -214,6 +217,12 @@ func (r *Rider) assignValues(columns []string, values []interface{}) error {
 				r.LastSigninAt = new(time.Time)
 				*r.LastSigninAt = value.Time
 			}
+		case rider.FieldEsignAccountID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field esign_account_id", values[i])
+			} else if value.Valid {
+				r.EsignAccountID = value.String
+			}
 		}
 	}
 	return nil
@@ -291,6 +300,8 @@ func (r *Rider) String() string {
 		builder.WriteString(", last_signin_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", esign_account_id=")
+	builder.WriteString(r.EsignAccountID)
 	builder.WriteByte(')')
 	return builder.String()
 }

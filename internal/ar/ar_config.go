@@ -25,18 +25,22 @@ var Config *config
 var defaultConfigStr string
 
 type EsignConfig struct {
-    Appid    string
-    BaseUrl  string
-    Secret   string
-    RSA      string `mapstructure:"rsa"`
-    Log      bool
-    Callback string
-    Redirect string
-    Group    struct {
+    Appid      string
+    BaseUrl    string
+    Secret     string
+    RSA        string `mapstructure:"rsa"`
+    Log        bool
+    Callback   string
+    Redirect   string
+    EntSignKey string // 企业签章控件名称
+    PsnSignKey string // 个人签章控件名称
+    Group      struct {
+        Scene      string
         FlowId     string
         TemplateId string
     }
     Person struct {
+        Scene      string
         FlowId     string
         TemplateId string
     }

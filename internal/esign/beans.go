@@ -45,8 +45,10 @@ type Signer struct {
 }
 
 type SignerAccount struct {
-    SignerAccountId     string `json:"signerAccountId,omitempty"`
-    AuthorizedAccountId string `json:"authorizedAccountId,omitempty"`
+    SignerAccountId     string   `json:"signerAccountId,omitempty"`
+    AuthorizedAccountId string   `json:"authorizedAccountId,omitempty"`
+    NoticeType          string   `json:"noticeType,omitempty"`
+    WillTypes           []string `json:"willTypes,omitempty"`
 }
 
 type Signfield struct {
@@ -75,8 +77,8 @@ type SignDateBean struct {
 
 type PosBean struct {
     PosPage        string  `json:"posPage,omitempty"`
-    PosX           float32 `json:"posX,omitempty"`
-    PosY           float32 `json:"posY,omitempty"`
+    PosX           float64 `json:"posX,omitempty"`
+    PosY           float64 `json:"posY,omitempty"`
     AddSignTime    bool    `json:"addSignTime,omitempty"`
     SignTimeFormat string  `json:"signTimeFormat,omitempty"`
 }

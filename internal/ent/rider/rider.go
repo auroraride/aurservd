@@ -39,6 +39,8 @@ const (
 	FieldPushID = "push_id"
 	// FieldLastSigninAt holds the string denoting the last_signin_at field in the database.
 	FieldLastSigninAt = "last_signin_at"
+	// FieldEsignAccountID holds the string denoting the esign_account_id field in the database.
+	FieldEsignAccountID = "esign_account_id"
 	// EdgePerson holds the string denoting the person edge name in mutations.
 	EdgePerson = "person"
 	// Table holds the table name of the rider in the database.
@@ -69,6 +71,7 @@ var Columns = []string{
 	FieldLastFace,
 	FieldPushID,
 	FieldLastSigninAt,
+	FieldEsignAccountID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
