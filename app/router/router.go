@@ -10,8 +10,8 @@ import (
     "github.com/auroraride/aurservd/app/controller/v1/demo"
     "github.com/auroraride/aurservd/app/middleware"
     "github.com/auroraride/aurservd/app/request"
-    "github.com/auroraride/aurservd/app/response"
     "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
     mw "github.com/labstack/echo/v4/middleware"
     log "github.com/sirupsen/logrus"
@@ -64,12 +64,13 @@ func Run() {
     r.Validator = request.NewGlobalValidator()
 
     r.HTTPErrorHandler = func(err error, c echo.Context) {
-        code := response.StatusError
-        errCode, ok := c.Get("errCode").(int)
-        if ok {
-            code = errCode
+        if e, ok := err.(*snag.Error); ok {
+            res := app.NewResponse(c).Error(app.StatusError).SetMessage(err.Error())
+            if data, ok := e.Data.(app.Response); ok {
+                res.Error(data.Code).SetMessage(data.Message).SetData(data.Data)
+            }
+            _ = res.Send()
         }
-        _ = response.New(c).Error(code).SetMessage(err.Error()).SetData(c.Get("errData")).Send()
     }
 
     // 载入路由

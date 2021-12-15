@@ -9,7 +9,6 @@ import (
     "bytes"
     "errors"
     "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/response"
     "github.com/auroraride/aurservd/app/service"
     "github.com/labstack/echo/v4"
     "net/http"
@@ -48,5 +47,5 @@ func CaptchaVerify(c echo.Context) error {
     if !service.NewCaptcha().Verify(id, r.Code, false) {
         return errors.New("验证码校验失败")
     }
-    return response.New(c).Success().Send()
+    return app.NewResponse(c).Success().Send()
 }

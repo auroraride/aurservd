@@ -7,13 +7,12 @@ package middleware
 
 import (
     "context"
-    "errors"
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/response"
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
 )
 
@@ -30,22 +29,19 @@ func RiderMiddleware() echo.MiddlewareFunc {
             token := c.Request().Header.Get(app.HeaderRiderToken)
             id, err := ar.Cache.Get(context.Background(), token).Uint64()
             if err != nil {
-                c.Set("errCode", response.StatusUnauthorized)
-                return errors.New(ar.RiderRequireSignin)
+                snag.Panic(app.Response{Code: app.StatusUnauthorized, Message: ar.RiderRequireSignin})
             }
             s := service.NewRider()
             var u *ent.Rider
             u, err = s.GetRiderById(id)
             if err != nil || u == nil {
-                c.Set("errCode", response.StatusUnauthorized)
-                return errors.New(ar.RiderRequireSignin)
+                snag.Panic(app.Response{Code: app.StatusUnauthorized, Message: ar.RiderRequireSignin})
             }
 
             // 用户被封禁
             if s.IsBlocked(u) {
-                c.Set("errCode", response.StatusForbidden)
                 s.Signout(u)
-                return errors.New(ar.RiderBlockedMessage)
+                snag.Panic(app.Response{Code: app.StatusForbidden, Message: ar.RiderBlockedMessage})
             }
 
             // 延长token有效期
@@ -68,12 +64,10 @@ func RiderRequireAuthAndContact() echo.MiddlewareFunc {
             uri := c.Request().RequestURI
             p := ctx.Rider.Edges.Person
             if ctx.Rider.Contact == nil && uri != "/rider/contact" {
-                ctx.Set("errCode", response.StatusRequireContact)
-                return errors.New(ar.RiderRequireContact)
+                snag.Panic(app.Response{Code: app.StatusRequireContact, Message: ar.RiderRequireContact})
             }
             if p == nil || model.PersonAuthStatus(p.Status).RequireAuth() {
-                ctx.Set("errCode", response.StatusRequireAuth)
-                return errors.New(ar.RiderRequireAuth)
+                snag.Panic(app.Response{Code: app.StatusRequireAuth, Message: ar.RiderRequireAuth})
             }
             return next(ctx)
         }
@@ -88,9 +82,7 @@ func RiderFaceMiddleware() echo.MiddlewareFunc {
             u := ctx.Rider
             s := service.NewRider()
             if s.IsNewDevice(u, ctx.Device) {
-                ctx.Set("errCode", response.StatusLocked)
-                ctx.Set("errData", ar.Map{"url": s.GetFaceUrl(ctx)})
-                return errors.New(ar.RiderRequireFace)
+                snag.Panic(app.Response{Code: app.StatusLocked, Message: ar.RiderRequireFace, Data: ar.Map{"url": s.GetFaceUrl(ctx)}})
             }
             return next(ctx)
         }

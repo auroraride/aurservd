@@ -8,7 +8,6 @@ package common
 import (
     "errors"
     "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/response"
     "github.com/auroraride/aurservd/app/service"
     "github.com/labstack/echo/v4"
 )
@@ -32,5 +31,5 @@ func SendSmsCode(ctx echo.Context) error {
     if err != nil {
         return err
     }
-    return response.New(c).SetData(map[string]string{"id": smsId}).Success().Send()
+    return app.NewResponse(c).SetData(map[string]string{"id": smsId}).Success().Send()
 }

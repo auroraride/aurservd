@@ -3,7 +3,7 @@
 // Created at 2021/12/11
 // Based on aurservd by liasica, magicrolan@qq.com.
 
-package response
+package app
 
 import (
     "bytes"
@@ -25,7 +25,7 @@ const (
     StatusRequestTimeout                  //  0x900 请求过期
 )
 
-type response struct {
+type Response struct {
     echo.Context `json:"-"`
 
     Code    int         `json:"code"`
@@ -33,32 +33,32 @@ type response struct {
     Data    interface{} `json:"data,omitempty"`
 }
 
-func New(c echo.Context) *response {
-    return &response{
+func NewResponse(c echo.Context) *Response {
+    return &Response{
         Context: c,
     }
 }
 
 // SetData 设置数据
-func (r *response) SetData(data interface{}) *response {
+func (r *Response) SetData(data interface{}) *Response {
     r.Data = data
     return r
 }
 
 // SetMessage 设置消息
-func (r *response) SetMessage(message string) *response {
+func (r *Response) SetMessage(message string) *Response {
     r.Message = message
     return r
 }
 
 // SetHeader 设置header
-func (r *response) SetHeader(key, val string) *response {
+func (r *Response) SetHeader(key, val string) *Response {
     r.Response().Header().Set(key, val)
     return r
 }
 
 // SetHeaders 批量设置header
-func (r *response) SetHeaders(m map[string]string) *response {
+func (r *Response) SetHeaders(m map[string]string) *Response {
     for key, val := range m {
         r.Response().Header().Set(key, val)
     }
@@ -66,18 +66,18 @@ func (r *response) SetHeaders(m map[string]string) *response {
 }
 
 // NewError 错误
-func (r *response) Error(code int) *response {
+func (r *Response) Error(code int) *Response {
     r.Code = code
     return r
 }
 
 // Success 成功
-func (r *response) Success() *response {
+func (r *Response) Success() *Response {
     r.Code = StatusOK
     return r
 }
 
-func (r *response) Send() error {
+func (r *Response) Send() error {
     if r.Code == StatusOK && r.Message == "" {
         r.Message = "OK"
     }

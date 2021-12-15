@@ -7,7 +7,6 @@ package demo
 
 import (
     "github.com/auroraride/aurservd/app"
-    "github.com/auroraride/aurservd/app/response"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/esign"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -33,7 +32,7 @@ func Esign(c echo.Context) error {
         SimpleFormFields: m,
         TemplateId:       tmpl.TemplateId,
     })
-    return response.New(c).Success().SetData(pdf).Send()
+    return app.NewResponse(c).Success().SetData(pdf).Send()
 }
 
 func EsignDo(c echo.Context) error {

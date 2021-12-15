@@ -9,7 +9,6 @@ import (
     "errors"
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/response"
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/labstack/echo/v4"
@@ -46,7 +45,7 @@ func (*rider) Signin(c echo.Context) (err error) {
     if err != nil {
         return
     }
-    return response.New(c).SetData(data).Send()
+    return app.NewResponse(c).SetData(data).Send()
 }
 
 // Contact 添加紧急联系人
@@ -55,7 +54,7 @@ func (r *rider) Contact(c echo.Context) error {
     contact := new(model.RiderContact)
     ctx.BindValidate(contact)
     service.NewRider().UpdateContact(ctx.Rider, contact)
-    return response.New(c).Success().Send()
+    return app.NewResponse(c).Success().Send()
 }
 
 // Authenticator 实名认证
@@ -67,7 +66,7 @@ func (*rider) Authenticator(c echo.Context) error {
     // 更新紧急联系人
     r.UpdateContact(ctx.Rider, contact)
     // 获取人脸识别URL
-    return response.New(c).Success().SetData(ar.Map{"url": r.GetFaceAuthUrl(ctx)}).Send()
+    return app.NewResponse(c).Success().SetData(ar.Map{"url": r.GetFaceAuthUrl(ctx)}).Send()
 }
 
 // AuthResult 实名认证结果
@@ -77,7 +76,7 @@ func (r *rider) AuthResult(c echo.Context) error {
     if err != nil {
         return err
     }
-    return response.New(c).Success().SetData(ar.Map{"status": success}).Send()
+    return app.NewResponse(c).Success().SetData(ar.Map{"status": success}).Send()
 }
 
 // FaceResult 获取人脸验证结果
@@ -86,5 +85,5 @@ func (r *rider) FaceResult(c echo.Context) error {
     if err != nil {
         return err
     }
-    return response.New(c).Success().SetData(ar.Map{"status": success}).Send()
+    return app.NewResponse(c).Success().SetData(ar.Map{"status": success}).Send()
 }

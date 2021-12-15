@@ -12,21 +12,17 @@ type Error struct {
     Data interface{}
 }
 
-func NewError(params ...interface{}) *Error {
-    out := &Error {
+func NewError(param interface{}) *Error {
+    out := &Error{
         error: errors.New("请求失败"),
     }
-    if len(params) > 0 {
-        e := params[0]
-        switch e.(type) {
-        case error:
-            out.error = e.(error)
-        case string:
-            out.error = errors.New(e.(string))
-        }
-    }
-    if len(params) > 1 {
-        out.Data = params[1]
+    switch param.(type) {
+    case string:
+        out.error = errors.New(param.(string))
+    case error:
+        out.error = param.(error)
+    default:
+        out.Data = param
     }
     return out
 }
