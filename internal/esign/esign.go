@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
     jsoniter "github.com/json-iterator/go"
+    log "github.com/sirupsen/logrus"
     "strconv"
     "time"
 )
@@ -19,6 +20,8 @@ import (
 const (
     resSuccess = 0
     resExists  = 53000000
+    methodPost = "POST"
+    methodGet  = "GET"
 )
 
 const (
@@ -27,7 +30,7 @@ const (
 )
 
 const (
-    headerContentType = "application/json;charset=UTF-8"
+    headerContentType = "application/json; charset=UTF-8"
     headerAccept      = "*/*"
     headerAuthMode    = "Signature"
 )
@@ -38,12 +41,16 @@ const (
 
     // docTemplateUrl 查询模板文件详情
     docTemplateUrl = `/v1/docTemplates/%s`
+
+    // createByTemplateUrl 填充内容生成PDF
+    createByTemplateUrl = `/v1/files/createByTemplate`
 )
 
 type esign struct {
-    config  ar.EsignConfig
-    headers map[string]string
-    client  *resty.Request
+    config        ar.EsignConfig
+    headers       map[string]string
+    client        *resty.Request
+    serialization jsoniter.Config
 }
 
 type commonRes struct {
@@ -64,7 +71,8 @@ func New() *esign {
         panic(response.NewError("环境设置失败"))
     }
     return &esign{
-        config: config,
+        serialization: jsoniter.Config{SortMapKeys: true},
+        config:        config,
         headers: map[string]string{
             "X-Tsign-Open-App-Id":       config.Appid,
             "Content-Type":              headerContentType,
@@ -76,7 +84,7 @@ func New() *esign {
 }
 
 // getSign 获取签名
-func (e *esign) getSign(api, method, md5 string) string {
+func (e *esign) getSign(api, method, md5 string) (string, string) {
     var buffer bytes.Buffer
     buffer.WriteString(method)
     buffer.WriteString("\n")
@@ -90,31 +98,59 @@ func (e *esign) getSign(api, method, md5 string) string {
     buffer.WriteString("\n")
     buffer.WriteString(api)
     str := buffer.String()
-    return utils.Sha256Base64String(str, e.config.Secret)
+    return utils.Sha256Base64String(str, e.config.Secret), str
+}
+
+type reqLog struct {
+    Api    string
+    Method string
+    Body   interface{}
+    Res    interface{}
+    MD5    string
+    Secret string
+    Sign   string
+    Raw    string
 }
 
 // request 请求
 func (e *esign) request(api, method string, body interface{}, data interface{}) interface{} {
+    var md5 string
     res := new(commonRes)
     res.Data = data
-    s, _ := jsoniter.MarshalToString(body)
-    md5 := utils.Md5String(s)
+    bodyString, _ := e.serialization.Froze().MarshalToString(body)
+    md5 = utils.Md5String(bodyString)
+    singnature, raw := e.getSign(api, method, md5)
     req := resty.New().
         R().
         SetResult(res).
-        SetBody(body).
+        SetBody(bodyString).
         SetHeaders(e.headers).
         SetHeader("Content-MD5", md5).
-        SetHeader("X-Tsign-Open-Ca-Signature", e.getSign(api, method, md5))
+        SetHeader("X-Tsign-Open-Ca-Signature", singnature)
     var err error
     switch method {
-    case "POST":
+    case methodPost:
         _, err = req.SetBody(body).Post(e.config.BaseUrl + api)
-    case "GET":
+    case methodGet:
         _, err = req.Get(e.config.BaseUrl + api)
     }
     if err != nil {
         panic(response.NewError(err))
+    }
+    // 记录请求日志
+    if e.config.Log {
+        logdata := reqLog{
+            Api:    api,
+            Method: method,
+            Body:   bodyString,
+            Res:    res,
+            MD5:    md5,
+            Secret: e.config.Secret,
+            Sign:   singnature,
+            Raw:    raw,
+        }
+        logstr, _ := e.serialization.Froze().MarshalToString(logdata)
+        log.Info(logstr)
     }
     e.isResSuccess(res)
     return res.Data

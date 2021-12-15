@@ -7,6 +7,8 @@ package demo
 
 import (
     "github.com/auroraride/aurservd/app"
+    "github.com/auroraride/aurservd/app/response"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/esign"
     "github.com/labstack/echo/v4"
     log "github.com/sirupsen/logrus"
@@ -17,8 +19,22 @@ func Esign(c echo.Context) error {
     var req esign.CreatePersonAccountReq
     c.(*app.GlobalContext).BindValidate(&req)
     ai := e.CreatePersonAccount(req)
-    log.Info(ai)
-    doc := e.DocTemplate()
-    log.Println(doc)
+    log.Info(ai) // f8c1df05edb047f4869a4d24749d76df
+    tmpl := e.DocTemplate()
+    m := make(ar.Map)
+    for _, com := range tmpl.StructComponents {
+        if com.Key != "entSign" && com.Key != "riderSign" {
+            m[com.Key] = com.Key
+        }
+    }
+    pdf := e.CreateByTemplate(esign.CreateByTemplateReq{
+        Name:             "签署测试.pdf",
+        SimpleFormFields: m,
+        TemplateId:       tmpl.TemplateId,
+    })
+    return response.New(c).Success().SetData(pdf).Send()
+}
+
+func EsignDo(c echo.Context) error {
     return nil
 }

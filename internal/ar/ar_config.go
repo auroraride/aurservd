@@ -31,6 +31,7 @@ type EsignConfig struct {
     RSA        string `mapstructure:"rsa"`
     FlowId     string
     TemplateId string
+    Log        bool
 }
 
 type config struct {

@@ -77,6 +77,7 @@ func Run() {
         // demo
         dg := r.Group("/demo")
         dg.POST("/esign", demo.Esign)
+        dg.POST("/esign/sign", demo.EsignDo)
     }
     r.commonRoute() // 公共API
     r.rideRoute()   // 骑手路由
