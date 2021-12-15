@@ -32,6 +32,8 @@ type EsignConfig struct {
     FlowId     string
     TemplateId string
     Log        bool
+    Callback   string
+    Redirect   string
 }
 
 type config struct {

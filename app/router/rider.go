@@ -14,7 +14,8 @@ import (
 func (r *router) rideRoute() {
     g := r.Group("/rider")
 
-    g.GET("/callback", rapi.Callback.RiderCallback) // 骑手api回调中心
+    g.Any("/callback", rapi.Callback.RiderCallback, middleware.BodyDump())          // 骑手api回调中心
+    g.Any("/callback/esign", rapi.Callback.ESignCallback, middleware.BodyDumpRaw()) // esign回调中心
 
     // 引入骑手api需要的中间件
     g.Use(middleware.DeviceMiddleware(), middleware.RiderMiddleware())

@@ -36,5 +36,6 @@ func Esign(c echo.Context) error {
 }
 
 func EsignDo(c echo.Context) error {
+    log.Info(esign.New().CreateFlowOneStep())
     return nil
 }

@@ -7,6 +7,7 @@ package rapi
 
 import (
     "github.com/labstack/echo/v4"
+    "net/http"
 )
 
 type callback struct{}
@@ -23,4 +24,9 @@ func (*callback) RiderCallback(c echo.Context) error {
     req := new(callbackReq)
     _ = c.Bind(req)
     return nil
+}
+
+// ESignCallback E签宝回调
+func (*callback) ESignCallback(c echo.Context) error {
+    return c.JSON(http.StatusOK, map[string]int{"code": 200})
 }

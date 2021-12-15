@@ -44,6 +44,9 @@ const (
 
     // createByTemplateUrl 填充内容生成PDF
     createByTemplateUrl = `/v1/files/createByTemplate`
+
+    // createFlowOneStepUrl 一步发起签署
+    createFlowOneStepUrl = `/api/v2/signflows/createFlowOneStep`
 )
 
 type esign struct {
