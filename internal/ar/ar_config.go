@@ -25,14 +25,14 @@ var Config *config
 var defaultConfigStr string
 
 type EsignConfig struct {
-    Appid      string
-    BaseUrl    string
-    Secret     string
-    RSA        string `mapstructure:"rsa"`
-    Log        bool
-    Callback   string
-    Redirect   string
-    Group      struct {
+    Appid    string
+    BaseUrl  string
+    Secret   string
+    RSA      string `mapstructure:"rsa"`
+    Log      bool
+    Callback string
+    Redirect string
+    Group    struct {
         Scene      string
         FlowId     string
         TemplateId string
@@ -85,12 +85,22 @@ type config struct {
             Endpoint        string
             Url             string
         }
+        // 语音通知
+        Vms struct {
+            AccessKeyId     string
+            AccessKeySecret string
+            Endpoint        string
+            Overdue         struct {
+                Template *string // tts 模板ID
+                Tel      *string // 独立号码为空的时候使用公共号码进行发送
+            }
+        }
         Sms struct {
-            AccessId     string
-            AccessSecret string
-            Endpoint     string
-            Sign         string
-            Template     struct {
+            AccessKeyId     string
+            AccessKeySecret string
+            Endpoint        string
+            Sign            string
+            Template        struct {
                 General struct {
                     Code string
                 }

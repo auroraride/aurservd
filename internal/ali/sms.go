@@ -25,8 +25,8 @@ type smsClient struct {
 func NewSmsClient() (c *smsClient, err error) {
     cfg := ar.Config.Aliyun.Sms
     config := &openapi.Config{
-        AccessKeyId:     &cfg.AccessId,
-        AccessKeySecret: &cfg.AccessSecret,
+        AccessKeyId:     &cfg.AccessKeyId,
+        AccessKeySecret: &cfg.AccessKeySecret,
         Endpoint:        &cfg.Endpoint,
     }
     var client *dysmsapi.Client
