@@ -21,6 +21,8 @@ type CreateFlowReq struct {
 
 // CreateFlowOneStep 一步发起签署
 func (e *Esign) CreateFlowOneStep(data CreateFlowReq) string {
+    // 定义跳转url/app
+    e.redirect = e.Config.Redirect
     var (
         scene           = data.Scene
         fileId          = data.FileId
@@ -36,9 +38,13 @@ func (e *Esign) CreateFlowOneStep(data CreateFlowReq) string {
             BusinessScene: scene,
             // ContractValidity: time.Now().Add(30*time.Minute).UnixNano() / 1e6, // 半小时有效期
             FlowConfigInfo: FlowConfigInfo{
+                RedirectDelayTime:  0,
                 NoticeDeveloperUrl: e.Config.Callback,
-                RedirectUrl:        fmt.Sprintf("%s?path=%s", e.Config.Redirect, "test"),
-                // RedirectDelayTime: 0,
+                RedirectUrl:        e.redirect,
+                SignPlatform:       "1",
+                NoticeType:         "",
+                PersonAvailableAuthTypes: []string{"PSN_FACEAUTH_BYURL"},
+                WillTypes:       []string{"FACE_ZHIMA_XY"},
             },
         },
         Signers: []Signer{
@@ -46,7 +52,7 @@ func (e *Esign) CreateFlowOneStep(data CreateFlowReq) string {
                 SignOrder: 2,
                 SignerAccount: SignerAccount{
                     SignerAccountId: personAccountId,
-                    NoticeType:      "1",
+                    NoticeType:      "",
                 },
                 Signfields: []Signfield{
                     {
@@ -80,6 +86,7 @@ func (e *Esign) CreateFlowOneStep(data CreateFlowReq) string {
     return res.FlowId
 }
 
+// executeUrlRes 获取签署地址返回
 type executeUrlRes struct {
     Url      string `json:"url"`
     ShortUrl string `json:"shortUrl"`
@@ -87,8 +94,47 @@ type executeUrlRes struct {
 
 // ExecuteUrl 获取签署地址
 // @doc https://open.esign.cn/doc/detail?id=opendoc%2Fsaas_api%2Ffdtfqf&namespace=opendoc%2Fsaas_api
+// @doc https://open.esign.cn/doc/detail?id=opendoc%2Fpaas_api%2Fevvsef&namespace=opendoc%2Fpaas_api
 func (e *Esign) ExecuteUrl(flowId, accountId string) string {
     res := new(executeUrlRes)
-    e.request(fmt.Sprintf(executeUrl, flowId, accountId), methodGet, nil, res)
-    return res.Url
+    url := fmt.Sprintf(executeUrl, flowId, accountId, e.redirect+"/"+flowId)
+    e.request(url, methodGet, nil, res)
+    return res.ShortUrl
+}
+
+type signResult struct {
+    ProcessId                    string      `json:"processId,omitempty"`
+    ContractNo                   interface{} `json:"contractNo,omitempty"`
+    FlowId                       string      `json:"flowId,omitempty"`
+    AppId                        string      `json:"appId,omitempty"`
+    AppName                      interface{} `json:"appName,omitempty"`
+    AutoArchive                  bool        `json:"autoArchive,omitempty"`
+    FlowStatus                   int         `json:"flowStatus,omitempty"`
+    FlowDesc                     string      `json:"flowDesc,omitempty"`
+    FlowStartTime                int64       `json:"flowStartTime,omitempty"`
+    FlowEndTime                  int64       `json:"flowEndTime,omitempty"`
+    BusinessScene                string      `json:"businessScene,omitempty"`
+    InitiatorClient              string      `json:"initiatorClient,omitempty"`
+    InitiatorAccountId           string      `json:"initiatorAccountId,omitempty"`
+    InitiatorAuthorizedAccountId string      `json:"initiatorAuthorizedAccountId,omitempty"`
+    PayerAccountId               string      `json:"payerAccountId,omitempty"`
+    SignValidity                 interface{} `json:"signValidity,omitempty"`
+    ContractValidity             interface{} `json:"contractValidity,omitempty"`
+    ContractEffective            interface{} `json:"contractEffective,omitempty"`
+    ContractRemind               interface{} `json:"contractRemind,omitempty"`
+    ConfigInfo                   struct {
+        SignPlatform       string      `json:"signPlatform,omitempty"`
+        NoticeType         string      `json:"noticeType,omitempty"`
+        NoticeDeveloperUrl interface{} `json:"noticeDeveloperUrl,omitempty"`
+        RedirectUrl        string      `json:"redirectUrl,omitempty"`
+        ArchiveLock        bool        `json:"archiveLock,omitempty"`
+    } `json:"configInfo,omitempty"`
+}
+
+// Result 签署结果查询
+// @doc https://open.esign.cn/doc/detail?id=opendoc%2Fpaas_api%2Fghywlg&namespace=opendoc%2Fpaas_api
+func (e *Esign) Result(flowId string) bool {
+    var res = new(signResult)
+    e.request(fmt.Sprintf(signResultUrl, flowId), methodGet, nil, res)
+    return res.FlowStatus == 2
 }

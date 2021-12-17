@@ -8,8 +8,10 @@ package service
 import (
     "context"
     "fmt"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/contract"
     "github.com/auroraride/aurservd/internal/esign"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
@@ -32,12 +34,12 @@ func NewContract() *contractService {
     }
 }
 
+// generateSn 生成合同编号
 func (s *contractService) generateSn() string {
     return fmt.Sprintf("%s%06d", carbon.Now().ToShortDateTimeString(), utils.RandomIntMaxMin(1000, 999999))
 }
 
 // Sign 签署合同
-// TODO 保存合同
 func (s *contractService) Sign(u *ent.Rider) string {
     var (
         sn         = s.generateSn()
@@ -114,5 +116,42 @@ func (s *contractService) Sign(u *ent.Rider) string {
     flowId := s.esign.CreateFlowOneStep(req)
 
     // 获取签署链接
-    return s.esign.ExecuteUrl(flowId, accountId)
+    link := s.esign.ExecuteUrl(flowId, accountId)
+
+    // 存储合同信息
+    err := ar.Ent.Contract.Create().
+        SetFlowID(flowId).
+        SetRiderID(u.ID).
+        SetStatus(model.ContractStatusPending.Raw()).
+        SetSn(sn).
+        Exec(context.Background())
+    if err != nil {
+        snag.Panic(err)
+    }
+    return link
+}
+
+// Result 合同签署结果
+func (s *contractService) Result(u *ent.Rider, flowId string) bool {
+    orm := ar.Ent.Contract
+    success := s.esign.Result(flowId)
+    // 判定合同是否属于本人
+    c, err := orm.Query().
+        Where(contract.FlowID(flowId), contract.RiderID(u.ID)).
+        Only(context.Background())
+    if err != nil || c == nil{
+        snag.Panic("合同查询失败")
+    }
+    update := orm.UpdateOneID(c.ID)
+    if success {
+        // 获取合同并上传到阿里云
+        p := u.Edges.Person
+        update.SetStatus(model.ContractStatusSuccess.Raw()).
+            SetFiles(s.esign.DownloadDocument(fmt.Sprintf("%s-%s/contracts/", p.Name, p.IDCardNumber), flowId))
+    }
+    err = update.Exec(context.Background())
+    if err != nil {
+        snag.Panic(err)
+    }
+    return success
 }

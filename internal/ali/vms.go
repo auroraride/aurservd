@@ -39,7 +39,7 @@ func (v *vms) SendVoiceMessageByTts(phone, param string, tel, tmplate *string) {
         TtsCode:          tmplate,
         CalledNumber:     &phone,
         TtsParam:         &param,
-        Speed:            tea.Int32(-5),
+        Speed:            tea.Int32(-200),
     }
     res, err := v.client.SingleCallByTts(req)
     if err != nil {

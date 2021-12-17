@@ -70,9 +70,11 @@ type Rider struct {
 type RiderEdges struct {
 	// Person holds the value of the person edge.
 	Person *Person `json:"person,omitempty"`
+	// Contract holds the value of the contract edge.
+	Contract []*Contract `json:"contract,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // PersonOrErr returns the Person value or an error if the edge
@@ -87,6 +89,15 @@ func (e RiderEdges) PersonOrErr() (*Person, error) {
 		return e.Person, nil
 	}
 	return nil, &NotLoadedError{edge: "person"}
+}
+
+// ContractOrErr returns the Contract value or an error if the edge
+// was not loaded in eager-loading.
+func (e RiderEdges) ContractOrErr() ([]*Contract, error) {
+	if e.loadedTypes[1] {
+		return e.Contract, nil
+	}
+	return nil, &NotLoadedError{edge: "contract"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -231,6 +242,11 @@ func (r *Rider) assignValues(columns []string, values []interface{}) error {
 // QueryPerson queries the "person" edge of the Rider entity.
 func (r *Rider) QueryPerson() *PersonQuery {
 	return (&RiderClient{config: r.config}).QueryPerson(r)
+}
+
+// QueryContract queries the "contract" edge of the Rider entity.
+func (r *Rider) QueryContract() *ContractQuery {
+	return (&RiderClient{config: r.config}).QueryContract(r)
 }
 
 // Update returns a builder for updating this Rider.

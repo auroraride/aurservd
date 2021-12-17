@@ -49,7 +49,13 @@ const (
     createFlowOneStepUrl = `/api/v2/signflows/createFlowOneStep`
 
     // executeUrl 获取签署链接
-    executeUrl = `/v1/signflows/%s/executeUrl?accountId=%s` // todo appScheme
+    executeUrl = `/v1/signflows/%s/executeUrl?urlType=0&accountId=%s&appScheme=%s`
+
+    // signResultUrl 签署结果查询
+    signResultUrl = `/v1/signflows/%s`
+
+    // documentUrl 流程文档下载
+    documentUrl = `/v1/signflows/%s/documents`
 )
 
 type Esign struct {
@@ -57,6 +63,7 @@ type Esign struct {
     headers       map[string]string
     client        *resty.Request
     serialization jsoniter.Config
+    redirect      string
 }
 
 type commonRes struct {

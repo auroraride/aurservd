@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/schema"
@@ -15,6 +16,61 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	contractMixin := schema.Contract{}.Mixin()
+	contractMixinFields0 := contractMixin[0].Fields()
+	_ = contractMixinFields0
+	contractFields := schema.Contract{}.Fields()
+	_ = contractFields
+	// contractDescCreatedAt is the schema descriptor for created_at field.
+	contractDescCreatedAt := contractMixinFields0[0].Descriptor()
+	// contract.DefaultCreatedAt holds the default value on creation for the created_at field.
+	contract.DefaultCreatedAt = contractDescCreatedAt.Default.(func() time.Time)
+	// contractDescUpdatedAt is the schema descriptor for updated_at field.
+	contractDescUpdatedAt := contractMixinFields0[1].Descriptor()
+	// contract.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	contract.DefaultUpdatedAt = contractDescUpdatedAt.Default.(func() time.Time)
+	// contract.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	contract.UpdateDefaultUpdatedAt = contractDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// contractDescStatus is the schema descriptor for status field.
+	contractDescStatus := contractFields[0].Descriptor()
+	// contract.DefaultStatus holds the default value on creation for the status field.
+	contract.DefaultStatus = contractDescStatus.Default.(uint8)
+	// contractDescFlowID is the schema descriptor for flow_id field.
+	contractDescFlowID := contractFields[2].Descriptor()
+	// contract.FlowIDValidator is a validator for the "flow_id" field. It is called by the builders before save.
+	contract.FlowIDValidator = func() func(string) error {
+		validators := contractDescFlowID.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(flow_id string) error {
+			for _, fn := range fns {
+				if err := fn(flow_id); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// contractDescSn is the schema descriptor for sn field.
+	contractDescSn := contractFields[3].Descriptor()
+	// contract.SnValidator is a validator for the "sn" field. It is called by the builders before save.
+	contract.SnValidator = func() func(string) error {
+		validators := contractDescSn.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(sn string) error {
+			for _, fn := range fns {
+				if err := fn(sn); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	personMixin := schema.Person{}.Mixin()
 	personMixinFields0 := personMixin[0].Fields()
 	_ = personMixinFields0

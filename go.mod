@@ -6,6 +6,8 @@ require (
 	entgo.io/ent v0.9.1
 	github.com/alibabacloud-go/darabonba-openapi v0.1.12
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.8
+	github.com/alibabacloud-go/dyvmsapi-20170525/v2 v2.1.1
+	github.com/alibabacloud-go/tea v1.1.17
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.0+incompatible
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/go-playground/locales v0.14.0
@@ -13,6 +15,7 @@ require (
 	github.com/go-playground/validator/v10 v10.9.0
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-resty/resty/v2 v2.7.0
+	github.com/golang-module/carbon/v2 v2.0.1
 	github.com/iancoleman/strcase v0.2.0
 	github.com/jackc/pgx/v4 v4.14.1
 	github.com/json-iterator/go v1.1.12
@@ -31,10 +34,8 @@ require (
 require (
 	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.2 // indirect
 	github.com/alibabacloud-go/debug v0.0.0-20190504072949-9472017b5c68 // indirect
-	github.com/alibabacloud-go/dyvmsapi-20170525/v2 v2.1.1 // indirect
 	github.com/alibabacloud-go/endpoint-util v1.1.0 // indirect
 	github.com/alibabacloud-go/openapi-util v0.0.9 // indirect
-	github.com/alibabacloud-go/tea v1.1.17 // indirect
 	github.com/alibabacloud-go/tea-utils v1.4.1 // indirect
 	github.com/aliyun/credentials-go v1.1.3 // indirect
 	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
@@ -43,7 +44,6 @@ require (
 	github.com/go-bindata/go-bindata v1.0.1-0.20190711162640-ee3c2418e368 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
-	github.com/golang-module/carbon/v2 v2.0.1 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect

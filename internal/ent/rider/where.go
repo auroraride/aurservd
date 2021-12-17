@@ -1605,6 +1605,34 @@ func HasPersonWith(preds ...predicate.Person) predicate.Rider {
 	})
 }
 
+// HasContract applies the HasEdge predicate on the "contract" edge.
+func HasContract() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ContractTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ContractTable, ContractColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasContractWith applies the HasEdge predicate on the "contract" edge with a given conditions (other predicates).
+func HasContractWith(preds ...predicate.Contract) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ContractInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ContractTable, ContractColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Rider) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {

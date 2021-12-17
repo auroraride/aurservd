@@ -7,6 +7,7 @@ package esign
 
 import (
     "fmt"
+    "github.com/auroraride/aurservd/internal/ali"
 )
 
 // DocTemplateRes 模板文件返回结构体
@@ -35,7 +36,7 @@ type DocTemplateRes struct {
             Pos struct {
                 X    float64 `json:"x"`
                 Y    float64 `json:"y"`
-                Page int `json:"page"`
+                Page int     `json:"page"`
             } `json:"pos"`
         } `json:"context"`
     } `json:"structComponents"`
@@ -67,4 +68,27 @@ func (e *Esign) CreateByTemplate(req CreateByTemplateReq) *CreateByTemplateRes {
     res := new(CreateByTemplateRes)
     e.request(createByTemplateUrl, methodPost, req, res)
     return res
+}
+
+// documentRes 获取文档返回
+type documentRes struct {
+    Docs []struct {
+        FileId   string `json:"fileId"`
+        FileName string `json:"fileName"`
+        FileUrl  string `json:"fileUrl"`
+    } `json:"docs"`
+}
+
+// DownloadDocument 下载文档
+// @doc https://open.esign.cn/doc/detail?id=opendoc%2Fpaas_api%2Fnep9zz&namespace=opendoc%2Fpaas_api
+func (e *Esign) DownloadDocument(prefix, flowId string) (files []string) {
+    res := new(documentRes)
+    e.request(fmt.Sprintf(documentUrl, flowId), methodGet, nil, res)
+    docs := res.Docs
+    // 下载并保存到阿里云
+    oss := ali.NewOss()
+    for _, doc := range docs {
+        files = append(files, oss.UploadUrlFile(prefix+doc.FileName, doc.FileUrl))
+    }
+    return
 }

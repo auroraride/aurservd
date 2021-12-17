@@ -36,4 +36,5 @@ func (r *router) rideRoute() {
     // 合同
     contract := g.Group("/contract")
     contract.POST("/sign", rapi.Contract.Sign)
+    contract.GET("/:flowId", rapi.Contract.SignResult)
 }

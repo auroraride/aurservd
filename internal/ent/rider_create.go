@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
@@ -205,6 +206,21 @@ func (rc *RiderCreate) SetNillableEsignAccountID(s *string) *RiderCreate {
 // SetPerson sets the "person" edge to the Person entity.
 func (rc *RiderCreate) SetPerson(p *Person) *RiderCreate {
 	return rc.SetPersonID(p.ID)
+}
+
+// AddContractIDs adds the "contract" edge to the Contract entity by IDs.
+func (rc *RiderCreate) AddContractIDs(ids ...uint64) *RiderCreate {
+	rc.mutation.AddContractIDs(ids...)
+	return rc
+}
+
+// AddContract adds the "contract" edges to the Contract entity.
+func (rc *RiderCreate) AddContract(c ...*Contract) *RiderCreate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return rc.AddContractIDs(ids...)
 }
 
 // Mutation returns the RiderMutation object of the builder.
@@ -478,6 +494,25 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.PersonID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.ContractIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.ContractTable,
+			Columns: []string{rider.ContractColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: contract.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

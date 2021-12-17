@@ -23,3 +23,11 @@ func (*contract) Sign(c echo.Context) error {
         SetData(service.NewContract().Sign(c.(*app.RiderContext).Rider)).
         Send()
 }
+
+// SignResult 获取合同签署结果
+func (*contract) SignResult(c echo.Context) error {
+    return app.NewResponse(c).
+        Success().
+        SetData(service.NewContract().Result(c.(*app.RiderContext).Rider, c.Param("flowId"))).
+        Send()
+}

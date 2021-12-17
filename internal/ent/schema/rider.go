@@ -42,6 +42,7 @@ func (Rider) Fields() []ent.Field {
 func (Rider) Edges() []ent.Edge {
     return []ent.Edge{
         edge.From("person", Person.Type).Ref("rider").Unique().Field("person_id"),
+        edge.To("contract", Contract.Type),
     }
 }
 

@@ -9,6 +9,41 @@ import (
 )
 
 var (
+	// ContractColumns holds the columns for the "contract" table.
+	ContractColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "last_modify", Type: field.TypeTime, Nullable: true},
+		{Name: "remark", Type: field.TypeString, Nullable: true},
+		{Name: "status", Type: field.TypeUint8, Default: 0},
+		{Name: "flow_id", Type: field.TypeString, Unique: true, Size: 40},
+		{Name: "sn", Type: field.TypeString, Unique: true, Size: 20},
+		{Name: "files", Type: field.TypeJSON, Nullable: true},
+		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
+	}
+	// ContractTable holds the schema information for the "contract" table.
+	ContractTable = &schema.Table{
+		Name:       "contract",
+		Columns:    ContractColumns,
+		PrimaryKey: []*schema.Column{ContractColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "contract_rider_contract",
+				Columns:    []*schema.Column{ContractColumns[10]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "contract_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{ContractColumns[3]},
+			},
+		},
+	}
 	// PersonColumns holds the columns for the "person" table.
 	PersonColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -102,6 +137,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		ContractTable,
 		PersonTable,
 		RiderTable,
 		SettingTable,
@@ -109,6 +145,10 @@ var (
 )
 
 func init() {
+	ContractTable.ForeignKeys[0].RefTable = RiderTable
+	ContractTable.Annotation = &entsql.Annotation{
+		Table: "contract",
+	}
 	PersonTable.Annotation = &entsql.Annotation{
 		Table: "person",
 	}

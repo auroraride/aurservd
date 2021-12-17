@@ -6,9 +6,50 @@ import (
 	"context"
 	"time"
 
+	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
+
+// SoftDelete returns an soft delete builder for Contract.
+func (c *ContractClient) SoftDelete() *ContractUpdate {
+	mutation := newContractMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &ContractUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *ContractClient) SoftDeleteOne(co *Contract) *ContractUpdateOne {
+	mutation := newContractMutation(c.config, OpUpdateOne, withContract(co))
+	mutation.SetDeletedAt(time.Now())
+	return &ContractUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *ContractClient) SoftDeleteOneID(id uint64) *ContractUpdateOne {
+	mutation := newContractMutation(c.config, OpUpdateOne, withContractID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &ContractUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Contract.
+func (c *ContractClient) QueryNotDeleted() *ContractQuery {
+	return c.Query().Where(contract.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Contract not deleted entity by its id.
+func (c *ContractClient) GetNotDeleted(ctx context.Context, id uint64) (*Contract, error) {
+	return c.Query().Where(contract.ID(id), contract.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *ContractClient) GetNotDeletedX(ctx context.Context, id uint64) *Contract {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
 
 // SoftDelete returns an soft delete builder for Person.
 func (c *PersonClient) SoftDelete() *PersonUpdate {

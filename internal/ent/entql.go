@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -16,8 +17,31 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 3)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 4)}
 	graph.Nodes[0] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   contract.Table,
+			Columns: contract.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: contract.FieldID,
+			},
+		},
+		Type: "Contract",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			contract.FieldCreatedAt:  {Type: field.TypeTime, Column: contract.FieldCreatedAt},
+			contract.FieldUpdatedAt:  {Type: field.TypeTime, Column: contract.FieldUpdatedAt},
+			contract.FieldDeletedAt:  {Type: field.TypeTime, Column: contract.FieldDeletedAt},
+			contract.FieldLastModify: {Type: field.TypeTime, Column: contract.FieldLastModify},
+			contract.FieldRemark:     {Type: field.TypeString, Column: contract.FieldRemark},
+			contract.FieldStatus:     {Type: field.TypeUint8, Column: contract.FieldStatus},
+			contract.FieldRiderID:    {Type: field.TypeUint64, Column: contract.FieldRiderID},
+			contract.FieldFlowID:     {Type: field.TypeString, Column: contract.FieldFlowID},
+			contract.FieldSn:         {Type: field.TypeString, Column: contract.FieldSn},
+			contract.FieldFiles:      {Type: field.TypeJSON, Column: contract.FieldFiles},
+		},
+	}
+	graph.Nodes[1] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   person.Table,
 			Columns: person.Columns,
@@ -45,7 +69,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			person.FieldAuthAt:         {Type: field.TypeTime, Column: person.FieldAuthAt},
 		},
 	}
-	graph.Nodes[1] = &sqlgraph.Node{
+	graph.Nodes[2] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   rider.Table,
 			Columns: rider.Columns,
@@ -73,7 +97,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldEsignAccountID: {Type: field.TypeString, Column: rider.FieldEsignAccountID},
 		},
 	}
-	graph.Nodes[2] = &sqlgraph.Node{
+	graph.Nodes[3] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   setting.Table,
 			Columns: setting.Columns,
@@ -90,6 +114,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 			setting.FieldVal:       {Type: field.TypeJSON, Column: setting.FieldVal},
 		},
 	}
+	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   contract.RiderTable,
+			Columns: []string{contract.RiderColumn},
+			Bidi:    false,
+		},
+		"Contract",
+		"Rider",
+	)
 	graph.MustAddE(
 		"rider",
 		&sqlgraph.EdgeSpec{
@@ -114,6 +150,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Rider",
 		"Person",
 	)
+	graph.MustAddE(
+		"contract",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.ContractTable,
+			Columns: []string{rider.ContractColumn},
+			Bidi:    false,
+		},
+		"Rider",
+		"Contract",
+	)
 	return graph
 }()
 
@@ -121,6 +169,109 @@ var schemaGraph = func() *sqlgraph.Schema {
 // All update, update-one and query builders implement this interface.
 type predicateAdder interface {
 	addPredicate(func(s *sql.Selector))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (cq *ContractQuery) addPredicate(pred func(s *sql.Selector)) {
+	cq.predicates = append(cq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the ContractQuery builder.
+func (cq *ContractQuery) Filter() *ContractFilter {
+	return &ContractFilter{cq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *ContractMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the ContractMutation builder.
+func (m *ContractMutation) Filter() *ContractFilter {
+	return &ContractFilter{m}
+}
+
+// ContractFilter provides a generic filtering capability at runtime for ContractQuery.
+type ContractFilter struct {
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *ContractFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[0].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *ContractFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(contract.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *ContractFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(contract.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *ContractFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(contract.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *ContractFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(contract.FieldDeletedAt))
+}
+
+// WhereLastModify applies the entql time.Time predicate on the last_modify field.
+func (f *ContractFilter) WhereLastModify(p entql.TimeP) {
+	f.Where(p.Field(contract.FieldLastModify))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *ContractFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(contract.FieldRemark))
+}
+
+// WhereStatus applies the entql uint8 predicate on the status field.
+func (f *ContractFilter) WhereStatus(p entql.Uint8P) {
+	f.Where(p.Field(contract.FieldStatus))
+}
+
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *ContractFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(contract.FieldRiderID))
+}
+
+// WhereFlowID applies the entql string predicate on the flow_id field.
+func (f *ContractFilter) WhereFlowID(p entql.StringP) {
+	f.Where(p.Field(contract.FieldFlowID))
+}
+
+// WhereSn applies the entql string predicate on the sn field.
+func (f *ContractFilter) WhereSn(p entql.StringP) {
+	f.Where(p.Field(contract.FieldSn))
+}
+
+// WhereFiles applies the entql json.RawMessage predicate on the files field.
+func (f *ContractFilter) WhereFiles(p entql.BytesP) {
+	f.Where(p.Field(contract.FieldFiles))
+}
+
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *ContractFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *ContractFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // addPredicate implements the predicateAdder interface.
@@ -151,7 +302,7 @@ type PersonFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PersonFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[0].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -279,7 +430,7 @@ type RiderFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RiderFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -379,6 +530,20 @@ func (f *RiderFilter) WhereHasPersonWith(preds ...predicate.Person) {
 	})))
 }
 
+// WhereHasContract applies a predicate to check if query has an edge contract.
+func (f *RiderFilter) WhereHasContract() {
+	f.Where(entql.HasEdge("contract"))
+}
+
+// WhereHasContractWith applies a predicate to check if query has an edge contract with a given conditions (other predicates).
+func (f *RiderFilter) WhereHasContractWith(preds ...predicate.Contract) {
+	f.Where(entql.HasEdgeWith("contract", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (sq *SettingQuery) addPredicate(pred func(s *sql.Selector)) {
 	sq.predicates = append(sq.predicates, pred)
@@ -407,7 +572,7 @@ type SettingFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SettingFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

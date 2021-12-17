@@ -29,11 +29,13 @@ type FlowInfo struct {
 }
 
 type FlowConfigInfo struct {
-    NoticeDeveloperUrl string `json:"noticeDeveloperUrl,omitempty"`
-    NoticeType         string `json:"noticeType,omitempty"`
-    RedirectUrl        string `json:"redirectUrl,omitempty"`
-    SignPlatform       string `json:"signPlatform,omitempty"`
-    RedirectDelayTime  int64  `json:"redirectDelayTime,omitempty"`
+    NoticeDeveloperUrl       string   `json:"noticeDeveloperUrl,omitempty"`
+    NoticeType               string   `json:"noticeType,omitempty"`
+    RedirectUrl              string   `json:"redirectUrl,omitempty"`
+    SignPlatform             string   `json:"signPlatform,omitempty"`
+    RedirectDelayTime        int64    `json:"redirectDelayTime,omitempty"`
+    PersonAvailableAuthTypes []string `json:"personAvailableAuthTypes,omitempty"`
+    WillTypes                []string `json:"willTypes,omitempty"`
 }
 
 type Signer struct {

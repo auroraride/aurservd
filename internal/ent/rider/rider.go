@@ -43,6 +43,8 @@ const (
 	FieldEsignAccountID = "esign_account_id"
 	// EdgePerson holds the string denoting the person edge name in mutations.
 	EdgePerson = "person"
+	// EdgeContract holds the string denoting the contract edge name in mutations.
+	EdgeContract = "contract"
 	// Table holds the table name of the rider in the database.
 	Table = "rider"
 	// PersonTable is the table that holds the person relation/edge.
@@ -52,6 +54,13 @@ const (
 	PersonInverseTable = "person"
 	// PersonColumn is the table column denoting the person relation/edge.
 	PersonColumn = "person_id"
+	// ContractTable is the table that holds the contract relation/edge.
+	ContractTable = "contract"
+	// ContractInverseTable is the table name for the Contract entity.
+	// It exists in this package in order to avoid circular dependency with the "contract" package.
+	ContractInverseTable = "contract"
+	// ContractColumn is the table column denoting the contract relation/edge.
+	ContractColumn = "rider_id"
 )
 
 // Columns holds all SQL columns for rider fields.
