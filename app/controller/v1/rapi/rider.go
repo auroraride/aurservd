@@ -84,3 +84,7 @@ func (r *rider) FaceResult(c echo.Context) error {
     }
     return app.NewResponse(c).Success().SetData(ar.Map{"status": success}).Send()
 }
+
+func (r *rider) Demo(c echo.Context) error {
+    return app.NewResponse(c).Success().SetData(ar.Map{"status": true}).Send()
+}

@@ -31,10 +31,11 @@ func (r *router) rideRoute() {
     // 检测是否需要人脸识别
     g.Use(middleware.RiderFaceMiddleware())
 
+    g.GET("/demo", rapi.Rider.Demo) // 测试空白页面
     g.POST("/contact", rapi.Rider.Contact) // 编辑紧急联系人
 
     // 合同
     contract := g.Group("/contract")
     contract.POST("/sign", rapi.Contract.Sign)
-    contract.GET("/:flowId", rapi.Contract.SignResult)
+    contract.GET("/:sn", rapi.Contract.SignResult)
 }

@@ -77,6 +77,9 @@ func (s *contractService) Sign(u *ent.Rider) string {
         }
     }
 
+    // 设置合同编号
+    s.esign.SetSn(sn)
+
     // 设置个人账户ID
     req.PersonAccountId = accountId
 
@@ -132,22 +135,22 @@ func (s *contractService) Sign(u *ent.Rider) string {
 }
 
 // Result 合同签署结果
-func (s *contractService) Result(u *ent.Rider, flowId string) bool {
+func (s *contractService) Result(u *ent.Rider, sn string) bool {
     orm := ar.Ent.Contract
-    success := s.esign.Result(flowId)
-    // 判定合同是否属于本人
+    // 查询合同是否存在
     c, err := orm.Query().
-        Where(contract.FlowID(flowId), contract.RiderID(u.ID)).
+        Where(contract.Sn(sn), contract.RiderID(u.ID)).
         Only(context.Background())
-    if err != nil || c == nil{
+    if err != nil || c == nil {
         snag.Panic("合同查询失败")
     }
+    success := s.esign.Result(c.FlowID)
     update := orm.UpdateOneID(c.ID)
     if success {
         // 获取合同并上传到阿里云
         p := u.Edges.Person
         update.SetStatus(model.ContractStatusSuccess.Raw()).
-            SetFiles(s.esign.DownloadDocument(fmt.Sprintf("%s-%s/contracts/", p.Name, p.IDCardNumber), flowId))
+            SetFiles(s.esign.DownloadDocument(fmt.Sprintf("%s-%s/contracts/", p.Name, p.IDCardNumber), c.FlowID))
     }
     err = update.Exec(context.Background())
     if err != nil {

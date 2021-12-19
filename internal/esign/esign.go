@@ -64,6 +64,7 @@ type Esign struct {
     client        *resty.Request
     serialization jsoniter.Config
     redirect      string
+    sn            string
 }
 
 type commonRes struct {
@@ -94,6 +95,10 @@ func New() *Esign {
             "X-Tsign-Open-Ca-Timestamp": strconv.FormatInt(time.Now().UnixNano()/1e6, 10),
         },
     }
+}
+
+func (e *Esign) SetSn(sn string) {
+    e.sn = sn
 }
 
 // getSign 获取签名

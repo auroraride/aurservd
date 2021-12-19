@@ -121,7 +121,7 @@ func (b *baiduClient) getFaceprintUrl(typ string) (url string, token string) {
         snag.Panic("实名认证请求失败")
     }
     token = res.Result.VerifyToken
-    str := fmt.Sprintf("%s?type=%s&token=%s&state=", cfg.Callback, typ, token)
+    str := fmt.Sprintf("%s?type=%s&token=%s&state=", cfg.Redirect, typ, token)
     url = fmt.Sprintf(
         faceprintAuthUrl,
         token,

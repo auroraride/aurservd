@@ -8,6 +8,7 @@ package rapi
 import (
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/service"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/labstack/echo/v4"
 )
 
@@ -20,7 +21,7 @@ var Contract = new(contract)
 func (*contract) Sign(c echo.Context) error {
     return app.NewResponse(c).
         Success().
-        SetData(service.NewContract().Sign(c.(*app.RiderContext).Rider)).
+        SetData(ar.Map{"url": service.NewContract().Sign(c.(*app.RiderContext).Rider)}).
         Send()
 }
 
@@ -28,6 +29,8 @@ func (*contract) Sign(c echo.Context) error {
 func (*contract) SignResult(c echo.Context) error {
     return app.NewResponse(c).
         Success().
-        SetData(service.NewContract().Result(c.(*app.RiderContext).Rider, c.Param("flowId"))).
+        SetData(ar.Map{
+            "status": service.NewContract().Result(c.(*app.RiderContext).Rider, c.Param("sn")),
+        }).
         Send()
 }

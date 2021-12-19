@@ -5,7 +5,11 @@
 
 package esign
 
-import "fmt"
+import (
+    "fmt"
+    "github.com/auroraride/aurservd/pkg/snag"
+    "time"
+)
 
 type CreateFlowOneStepRes struct {
     FlowId string `json:"flowId"`
@@ -21,8 +25,11 @@ type CreateFlowReq struct {
 
 // CreateFlowOneStep 一步发起签署
 func (e *Esign) CreateFlowOneStep(data CreateFlowReq) string {
+    if e.sn == "" {
+        snag.Panic("合同编号为空")
+    }
     // 定义跳转url/app
-    e.redirect = e.Config.Redirect
+    e.redirect = e.Config.Redirect + "/" + e.sn
     var (
         scene           = data.Scene
         fileId          = data.FileId
@@ -33,18 +40,18 @@ func (e *Esign) CreateFlowOneStep(data CreateFlowReq) string {
 
     req := CreateFlowOneStepReq{
         FlowInfo: FlowInfo{
-            AutoArchive:   true,
-            AutoInitiate:  true,
-            BusinessScene: scene,
-            // ContractValidity: time.Now().Add(30*time.Minute).UnixNano() / 1e6, // 半小时有效期
+            AutoArchive:      true,
+            AutoInitiate:     true,
+            BusinessScene:    scene,
+            ContractValidity: time.Now().Add(30*time.Minute).UnixNano() / 1e6, // 半小时有效期
             FlowConfigInfo: FlowConfigInfo{
-                RedirectDelayTime:  0,
-                NoticeDeveloperUrl: e.Config.Callback,
-                RedirectUrl:        e.redirect,
-                SignPlatform:       "1",
-                NoticeType:         "",
+                RedirectDelayTime:        0,
+                NoticeDeveloperUrl:       e.Config.Callback,
+                RedirectUrl:              e.redirect,
+                SignPlatform:             "1",
+                NoticeType:               "",
                 PersonAvailableAuthTypes: []string{"PSN_FACEAUTH_BYURL"},
-                WillTypes:       []string{"FACE_ZHIMA_XY"},
+                WillTypes:                []string{"FACE_ZHIMA_XY"},
             },
         },
         Signers: []Signer{
@@ -97,7 +104,7 @@ type executeUrlRes struct {
 // @doc https://open.esign.cn/doc/detail?id=opendoc%2Fpaas_api%2Fevvsef&namespace=opendoc%2Fpaas_api
 func (e *Esign) ExecuteUrl(flowId, accountId string) string {
     res := new(executeUrlRes)
-    url := fmt.Sprintf(executeUrl, flowId, accountId, e.redirect+"/"+flowId)
+    url := fmt.Sprintf(executeUrl, flowId, accountId, e.redirect)
     e.request(url, methodGet, nil, res)
     return res.ShortUrl
 }

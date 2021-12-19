@@ -114,7 +114,7 @@ type config struct {
         Face struct {
             ApiKey     string
             SecretKey  string
-            Callback   string
+            Redirect   string
             AuthPlanId string
             FacePlanId string
         }
