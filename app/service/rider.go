@@ -217,6 +217,7 @@ func (r *riderService) FaceAuthResult(c *app.RiderContext) (success bool, err er
         UpdateOneID(u.ID).
         SetPersonID(id).
         SetLastFace(fm).
+        SetIsNewDevice(false).
         Exec(context.Background())
     if err != nil {
         snag.Panic(err)
@@ -231,7 +232,6 @@ func (r *riderService) FaceResult(c *app.RiderContext) (success bool, err error)
     }
     token := c.Param("token")
     u := c.Rider
-    sn := c.Device.Serial
     res, resErr := baidu.New().FaceResult(token)
     err = resErr
     if err != nil {
@@ -243,11 +243,11 @@ func (r *riderService) FaceResult(c *app.RiderContext) (success bool, err error)
     }
     // 上传人脸图
     p := u.Edges.Person
-    fm := ali.NewOss().UploadUrlFile(fmt.Sprintf("%s-%s/face-%s.jpg", p.Name, p.IDCardNumber, sn), res.Result.Image)
+    fm := ali.NewOss().UploadUrlFile(fmt.Sprintf("%s-%s/face-%s.jpg", p.Name, p.IDCardNumber, u.LastDevice), res.Result.Image)
     err = ar.Ent.Rider.
         UpdateOneID(u.ID).
         SetLastFace(fm).
-        SetLastDevice(sn).
+        SetIsNewDevice(false).
         Exec(context.Background())
     if err != nil {
         snag.Panic(err)
