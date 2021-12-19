@@ -18,10 +18,7 @@ var (
     Rider = new(rider)
 
     // 登录debug
-    debugPhones = map[string]bool{
-        "18501358308": true,
-        "19381630638": true,
-    }
+    debugPhones = ar.Config.App.Debug.Phone
 )
 
 type rider struct {

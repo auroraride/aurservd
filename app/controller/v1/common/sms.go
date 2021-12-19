@@ -9,15 +9,13 @@ import (
     "errors"
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/service"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/labstack/echo/v4"
 )
 
 var (
     // debug
-    debugPhones = map[string]bool{
-        "18501358308": true,
-        "19381630638": true,
-    }
+    debugPhones = ar.Config.App.Debug.Phone
 )
 
 type smsReq struct {
@@ -31,13 +29,19 @@ func SendSmsCode(c echo.Context) error {
     req := new(smsReq)
     ctx.BindValidate(req)
     id := ctx.Request().Header.Get(app.HeaderCaptchaID)
-    if !debugPhones[req.Phone] && !service.NewCaptcha().Verify(id, req.CaptchaCode, false) {
-        return errors.New("图形验证码校验失败")
-    }
-    // 发送短信
-    smsId, err := service.NewSms().SendCode(req.Phone)
-    if err != nil {
-        return err
+    var smsId string
+    var err error
+    if debugPhones[req.Phone] {
+        if !debugPhones[req.Phone] && !service.NewCaptcha().Verify(id, req.CaptchaCode, false) {
+            return errors.New("图形验证码校验失败")
+        }
+        // 发送短信
+        smsId, err = service.NewSms().SendCode(req.Phone)
+        if err != nil {
+            return err
+        }
+    } else {
+        smsId = req.Phone
     }
     return app.NewResponse(c).SetData(map[string]string{"id": smsId}).Success().Send()
 }

@@ -49,6 +49,9 @@ type config struct {
         Address   string
         BodyLimit string
         RateLimit float64
+        Debug struct{
+            Phone map[string]bool
+        }
         Captcha   struct {
             Names map[string]string
         }
