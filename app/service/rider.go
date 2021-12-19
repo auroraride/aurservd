@@ -41,7 +41,7 @@ func (r *riderService) GetRiderById(id uint64) (u *ent.Rider, err error) {
 
 // IsAuthed 是否已认证
 func (r *riderService) IsAuthed(u *ent.Rider) bool {
-    return u.Edges.Person != nil && model.PersonAuthStatus(u.Edges.Person.Status).RequireAuth()
+    return u.Edges.Person != nil && !model.PersonAuthStatus(u.Edges.Person.Status).RequireAuth()
 }
 
 // IsBlocked 骑手是否被封锁
