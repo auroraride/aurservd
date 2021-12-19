@@ -163,6 +163,13 @@ func LastDevice(v string) predicate.Rider {
 	})
 }
 
+// IsNewDevice applies equality check predicate on the "is_new_device" field. It's identical to IsNewDeviceEQ.
+func IsNewDevice(v bool) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIsNewDevice), v))
+	})
+}
+
 // LastFace applies equality check predicate on the "last_face" field. It's identical to LastFaceEQ.
 func LastFace(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
@@ -1109,6 +1116,20 @@ func LastDeviceEqualFold(v string) predicate.Rider {
 func LastDeviceContainsFold(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldLastDevice), v))
+	})
+}
+
+// IsNewDeviceEQ applies the EQ predicate on the "is_new_device" field.
+func IsNewDeviceEQ(v bool) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldIsNewDevice), v))
+	})
+}
+
+// IsNewDeviceNEQ applies the NEQ predicate on the "is_new_device" field.
+func IsNewDeviceNEQ(v bool) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldIsNewDevice), v))
 	})
 }
 

@@ -33,6 +33,8 @@ const (
 	FieldDeviceType = "device_type"
 	// FieldLastDevice holds the string denoting the last_device field in the database.
 	FieldLastDevice = "last_device"
+	// FieldIsNewDevice holds the string denoting the is_new_device field in the database.
+	FieldIsNewDevice = "is_new_device"
 	// FieldLastFace holds the string denoting the last_face field in the database.
 	FieldLastFace = "last_face"
 	// FieldPushID holds the string denoting the push_id field in the database.
@@ -77,6 +79,7 @@ var Columns = []string{
 	FieldContact,
 	FieldDeviceType,
 	FieldLastDevice,
+	FieldIsNewDevice,
 	FieldLastFace,
 	FieldPushID,
 	FieldLastSigninAt,
@@ -104,6 +107,8 @@ var (
 	PhoneValidator func(string) error
 	// LastDeviceValidator is a validator for the "last_device" field. It is called by the builders before save.
 	LastDeviceValidator func(string) error
+	// DefaultIsNewDevice holds the default value on creation for the "is_new_device" field.
+	DefaultIsNewDevice bool
 	// PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
 	PushIDValidator func(string) error
 )

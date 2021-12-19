@@ -52,7 +52,7 @@ func (r *riderService) IsBlocked(u *ent.Rider) bool {
 
 // IsNewDevice 检查是否是新设备
 func (r *riderService) IsNewDevice(u *ent.Rider, device *app.Device) bool {
-    return u.LastDevice != device.Serial
+    return u.LastDevice != device.Serial || u.IsNewDevice
 }
 
 // Signin 骑手登录
@@ -89,6 +89,11 @@ func (r *riderService) Signin(phone string, device *app.Device) (res *model.Ride
         cache.Del(ctx, old)
     }
 
+    // 更新设备
+    if u.LastDevice != device.Serial {
+        r.SetNewDevice(u, device)
+    }
+
     res = &model.RiderSigninRes{
         Id:              u.ID,
         Token:           token,
@@ -116,14 +121,18 @@ func (r *riderService) Signout(u *ent.Rider) {
     cache.Del(ctx, token)
 }
 
-// SetDevice 更新用户设备
-func (r *riderService) SetDevice(u *ent.Rider, device *app.Device) error {
+// SetNewDevice 更新用户设备
+func (r *riderService) SetNewDevice(u *ent.Rider, device *app.Device) {
     _, err := ar.Ent.Rider.
         UpdateOneID(u.ID).
         SetLastDevice(device.Serial).
         SetDeviceType(device.Type.Raw()).
+        SetIsNewDevice(true).
         Save(context.Background())
-    return err
+    if err != nil {
+        snag.Panic(err)
+    }
+    u.IsNewDevice = true
 }
 
 // GetFaceAuthUrl 获取实名验证URL

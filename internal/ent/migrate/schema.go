@@ -94,6 +94,7 @@ var (
 		{Name: "contact", Type: field.TypeJSON, Nullable: true},
 		{Name: "device_type", Type: field.TypeUint8},
 		{Name: "last_device", Type: field.TypeString, Unique: true, Size: 60},
+		{Name: "is_new_device", Type: field.TypeBool, Default: false},
 		{Name: "last_face", Type: field.TypeString, Nullable: true},
 		{Name: "push_id", Type: field.TypeString, Unique: true, Nullable: true, Size: 60},
 		{Name: "last_signin_at", Type: field.TypeTime, Nullable: true},
@@ -108,7 +109,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "rider_person_rider",
-				Columns:    []*schema.Column{RiderColumns[15]},
+				Columns:    []*schema.Column{RiderColumns[16]},
 				RefColumns: []*schema.Column{PersonColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

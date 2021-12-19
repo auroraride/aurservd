@@ -44,7 +44,7 @@ func CaptchaVerify(c echo.Context) error {
         return err
     }
     id := c.Request().Header.Get(app.HeaderCaptchaID)
-    if !service.NewCaptcha().Verify(id, r.Code, false) {
+    if !service.NewCaptcha().Verify(id, r.Code, true) {
         return errors.New("验证码校验失败")
     }
     return app.NewResponse(c).Success().Send()

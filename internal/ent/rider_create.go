@@ -147,6 +147,20 @@ func (rc *RiderCreate) SetLastDevice(s string) *RiderCreate {
 	return rc
 }
 
+// SetIsNewDevice sets the "is_new_device" field.
+func (rc *RiderCreate) SetIsNewDevice(b bool) *RiderCreate {
+	rc.mutation.SetIsNewDevice(b)
+	return rc
+}
+
+// SetNillableIsNewDevice sets the "is_new_device" field if the given value is not nil.
+func (rc *RiderCreate) SetNillableIsNewDevice(b *bool) *RiderCreate {
+	if b != nil {
+		rc.SetIsNewDevice(*b)
+	}
+	return rc
+}
+
 // SetLastFace sets the "last_face" field.
 func (rc *RiderCreate) SetLastFace(s string) *RiderCreate {
 	rc.mutation.SetLastFace(s)
@@ -302,6 +316,10 @@ func (rc *RiderCreate) defaults() {
 		v := rider.DefaultUpdatedAt()
 		rc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := rc.mutation.IsNewDevice(); !ok {
+		v := rider.DefaultIsNewDevice
+		rc.mutation.SetIsNewDevice(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -330,6 +348,9 @@ func (rc *RiderCreate) check() error {
 		if err := rider.LastDeviceValidator(v); err != nil {
 			return &ValidationError{Name: "last_device", err: fmt.Errorf(`ent: validator failed for field "last_device": %w`, err)}
 		}
+	}
+	if _, ok := rc.mutation.IsNewDevice(); !ok {
+		return &ValidationError{Name: "is_new_device", err: errors.New(`ent: missing required field "is_new_device"`)}
 	}
 	if v, ok := rc.mutation.PushID(); ok {
 		if err := rider.PushIDValidator(v); err != nil {
@@ -443,6 +464,14 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			Column: rider.FieldLastDevice,
 		})
 		_node.LastDevice = value
+	}
+	if value, ok := rc.mutation.IsNewDevice(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: rider.FieldIsNewDevice,
+		})
+		_node.IsNewDevice = value
 	}
 	if value, ok := rc.mutation.LastFace(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -734,6 +763,18 @@ func (u *RiderUpsert) SetLastDevice(v string) *RiderUpsert {
 // UpdateLastDevice sets the "last_device" field to the value that was provided on create.
 func (u *RiderUpsert) UpdateLastDevice() *RiderUpsert {
 	u.SetExcluded(rider.FieldLastDevice)
+	return u
+}
+
+// SetIsNewDevice sets the "is_new_device" field.
+func (u *RiderUpsert) SetIsNewDevice(v bool) *RiderUpsert {
+	u.Set(rider.FieldIsNewDevice, v)
+	return u
+}
+
+// UpdateIsNewDevice sets the "is_new_device" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateIsNewDevice() *RiderUpsert {
+	u.SetExcluded(rider.FieldIsNewDevice)
 	return u
 }
 
@@ -1044,6 +1085,20 @@ func (u *RiderUpsertOne) SetLastDevice(v string) *RiderUpsertOne {
 func (u *RiderUpsertOne) UpdateLastDevice() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.UpdateLastDevice()
+	})
+}
+
+// SetIsNewDevice sets the "is_new_device" field.
+func (u *RiderUpsertOne) SetIsNewDevice(v bool) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetIsNewDevice(v)
+	})
+}
+
+// UpdateIsNewDevice sets the "is_new_device" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateIsNewDevice() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateIsNewDevice()
 	})
 }
 
@@ -1528,6 +1583,20 @@ func (u *RiderUpsertBulk) SetLastDevice(v string) *RiderUpsertBulk {
 func (u *RiderUpsertBulk) UpdateLastDevice() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.UpdateLastDevice()
+	})
+}
+
+// SetIsNewDevice sets the "is_new_device" field.
+func (u *RiderUpsertBulk) SetIsNewDevice(v bool) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetIsNewDevice(v)
+	})
+}
+
+// UpdateIsNewDevice sets the "is_new_device" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateIsNewDevice() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateIsNewDevice()
 	})
 }
 

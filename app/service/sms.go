@@ -7,6 +7,7 @@ package service
 
 import (
     "context"
+    "errors"
     "fmt"
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
@@ -28,18 +29,27 @@ func NewSms() *sms {
 
 // SendCode 发送验证码
 func (s *sms) SendCode(phone string) (string, error) {
+    cache := ar.Cache
+    t, _ := cache.Get(context.Background(), phone).Int64()
+    if t-time.Now().Unix() > 0 {
+        return "", errors.New("请勿频繁请求")
+    }
     c, err := ali.NewSmsClient()
     if err != nil {
         return "", err
     }
-    cfg := ar.Config.Aliyun.Sms
     code := fmt.Sprintf("%06d", utils.RandomIntMaxMin(1000, 999999))
     var id string
+    // log.Info(*c.Endpoint)
+    // id = "test"
+    cfg := ar.Config.Aliyun.Sms
     id, err = c.SetTmplate(cfg.Template.General.Code).SetParam(map[string]string{"code": code}).SendCode(phone)
     if err != nil {
         return "", err
     }
-    ar.Cache.Set(context.Background(), id, code, 5*time.Minute)
+    // 保存下次请求有效期
+    cache.Set(context.Background(), phone, time.Now().Unix()+59, 1*time.Minute)
+    cache.Set(context.Background(), id, code, 5*time.Minute)
     return id, nil
 }
 

@@ -180,6 +180,20 @@ func (ru *RiderUpdate) SetLastDevice(s string) *RiderUpdate {
 	return ru
 }
 
+// SetIsNewDevice sets the "is_new_device" field.
+func (ru *RiderUpdate) SetIsNewDevice(b bool) *RiderUpdate {
+	ru.mutation.SetIsNewDevice(b)
+	return ru
+}
+
+// SetNillableIsNewDevice sets the "is_new_device" field if the given value is not nil.
+func (ru *RiderUpdate) SetNillableIsNewDevice(b *bool) *RiderUpdate {
+	if b != nil {
+		ru.SetIsNewDevice(*b)
+	}
+	return ru
+}
+
 // SetLastFace sets the "last_face" field.
 func (ru *RiderUpdate) SetLastFace(s string) *RiderUpdate {
 	ru.mutation.SetLastFace(s)
@@ -526,6 +540,13 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: rider.FieldLastDevice,
 		})
 	}
+	if value, ok := ru.mutation.IsNewDevice(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: rider.FieldIsNewDevice,
+		})
+	}
 	if value, ok := ru.mutation.LastFace(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -833,6 +854,20 @@ func (ruo *RiderUpdateOne) AddDeviceType(u uint8) *RiderUpdateOne {
 // SetLastDevice sets the "last_device" field.
 func (ruo *RiderUpdateOne) SetLastDevice(s string) *RiderUpdateOne {
 	ruo.mutation.SetLastDevice(s)
+	return ruo
+}
+
+// SetIsNewDevice sets the "is_new_device" field.
+func (ruo *RiderUpdateOne) SetIsNewDevice(b bool) *RiderUpdateOne {
+	ruo.mutation.SetIsNewDevice(b)
+	return ruo
+}
+
+// SetNillableIsNewDevice sets the "is_new_device" field if the given value is not nil.
+func (ruo *RiderUpdateOne) SetNillableIsNewDevice(b *bool) *RiderUpdateOne {
+	if b != nil {
+		ruo.SetIsNewDevice(*b)
+	}
 	return ruo
 }
 
@@ -1204,6 +1239,13 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 			Type:   field.TypeString,
 			Value:  value,
 			Column: rider.FieldLastDevice,
+		})
+	}
+	if value, ok := ruo.mutation.IsNewDevice(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: rider.FieldIsNewDevice,
 		})
 	}
 	if value, ok := ruo.mutation.LastFace(); ok {

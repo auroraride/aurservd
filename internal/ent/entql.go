@@ -91,6 +91,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldContact:        {Type: field.TypeJSON, Column: rider.FieldContact},
 			rider.FieldDeviceType:     {Type: field.TypeUint8, Column: rider.FieldDeviceType},
 			rider.FieldLastDevice:     {Type: field.TypeString, Column: rider.FieldLastDevice},
+			rider.FieldIsNewDevice:    {Type: field.TypeBool, Column: rider.FieldIsNewDevice},
 			rider.FieldLastFace:       {Type: field.TypeString, Column: rider.FieldLastFace},
 			rider.FieldPushID:         {Type: field.TypeString, Column: rider.FieldPushID},
 			rider.FieldLastSigninAt:   {Type: field.TypeTime, Column: rider.FieldLastSigninAt},
@@ -494,6 +495,11 @@ func (f *RiderFilter) WhereDeviceType(p entql.Uint8P) {
 // WhereLastDevice applies the entql string predicate on the last_device field.
 func (f *RiderFilter) WhereLastDevice(p entql.StringP) {
 	f.Where(p.Field(rider.FieldLastDevice))
+}
+
+// WhereIsNewDevice applies the entql bool predicate on the is_new_device field.
+func (f *RiderFilter) WhereIsNewDevice(p entql.BoolP) {
+	f.Where(p.Field(rider.FieldIsNewDevice))
 }
 
 // WhereLastFace applies the entql string predicate on the last_face field.

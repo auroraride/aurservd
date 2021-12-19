@@ -129,8 +129,12 @@ func init() {
 	riderDescLastDevice := riderFields[5].Descriptor()
 	// rider.LastDeviceValidator is a validator for the "last_device" field. It is called by the builders before save.
 	rider.LastDeviceValidator = riderDescLastDevice.Validators[0].(func(string) error)
+	// riderDescIsNewDevice is the schema descriptor for is_new_device field.
+	riderDescIsNewDevice := riderFields[6].Descriptor()
+	// rider.DefaultIsNewDevice holds the default value on creation for the is_new_device field.
+	rider.DefaultIsNewDevice = riderDescIsNewDevice.Default.(bool)
 	// riderDescPushID is the schema descriptor for push_id field.
-	riderDescPushID := riderFields[7].Descriptor()
+	riderDescPushID := riderFields[8].Descriptor()
 	// rider.PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
 	rider.PushIDValidator = riderDescPushID.Validators[0].(func(string) error)
 	settingMixin := schema.Setting{}.Mixin()

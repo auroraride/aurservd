@@ -23,7 +23,7 @@ func init() {
 }
 
 func NewCaptcha() *captcha {
-    d := bc.NewDriverDigit(80, 240, 6, 0.85, 120)
+    d := bc.NewDriverDigit(92, 240, 6, 0.85, 120)
     return &captcha{driver: d, ctx: context.Background()}
 }
 
@@ -33,18 +33,16 @@ func (c *captcha) Set(id string, value string) error {
 }
 
 // Get 从Redis中获取验证码
-func (c *captcha) Get(id string, clear bool) (code string) {
+func (c *captcha) Get(id string) (code string) {
     code = ar.Cache.Get(c.ctx, id).Val()
-    if clear && code != "" {
-        ar.Cache.Del(c.ctx, id)
-    }
     return
 }
 
 // Verify 校验Captcha
+// clear 验证成功后是否删除缓存
 func (c *captcha) Verify(id, answer string, clear bool) (ok bool) {
-    ok = c.Get(id, clear) == answer
-    if ok {
+    ok = c.Get(id) == answer
+    if ok && clear {
         ar.Cache.Del(c.ctx, id)
     }
     return

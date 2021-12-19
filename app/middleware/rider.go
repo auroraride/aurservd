@@ -67,7 +67,11 @@ func RiderRequireAuthAndContact() echo.MiddlewareFunc {
                 snag.Panic(app.Response{Code: app.StatusRequireContact, Message: ar.RiderRequireContact})
             }
             if p == nil || model.PersonAuthStatus(p.Status).RequireAuth() {
-                snag.Panic(app.Response{Code: app.StatusRequireAuth, Message: ar.RiderRequireAuth, Data: service.NewRider().GetFaceAuthUrl(ctx)})
+                snag.Panic(app.Response{
+                    Code:    app.StatusRequireAuth,
+                    Message: ar.RiderRequireAuth,
+                    Data:    ar.Map{"url": service.NewRider().GetFaceAuthUrl(ctx)},
+                })
             }
             return next(ctx)
         }
@@ -82,7 +86,11 @@ func RiderFaceMiddleware() echo.MiddlewareFunc {
             u := ctx.Rider
             s := service.NewRider()
             if s.IsNewDevice(u, ctx.Device) {
-                snag.Panic(app.Response{Code: app.StatusLocked, Message: ar.RiderRequireFace, Data: s.GetFaceUrl(ctx)})
+                snag.Panic(app.Response{
+                    Code:    app.StatusLocked,
+                    Message: ar.RiderRequireFace,
+                    Data:    ar.Map{"url": s.GetFaceUrl(ctx)},
+                })
             }
             return next(ctx)
         }

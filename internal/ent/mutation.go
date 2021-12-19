@@ -2307,6 +2307,7 @@ type RiderMutation struct {
 	device_type      *uint8
 	adddevice_type   *uint8
 	last_device      *string
+	is_new_device    *bool
 	last_face        *string
 	push_id          *string
 	last_signin_at   *time.Time
@@ -2916,6 +2917,42 @@ func (m *RiderMutation) ResetLastDevice() {
 	m.last_device = nil
 }
 
+// SetIsNewDevice sets the "is_new_device" field.
+func (m *RiderMutation) SetIsNewDevice(b bool) {
+	m.is_new_device = &b
+}
+
+// IsNewDevice returns the value of the "is_new_device" field in the mutation.
+func (m *RiderMutation) IsNewDevice() (r bool, exists bool) {
+	v := m.is_new_device
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsNewDevice returns the old "is_new_device" field's value of the Rider entity.
+// If the Rider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderMutation) OldIsNewDevice(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldIsNewDevice is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldIsNewDevice requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsNewDevice: %w", err)
+	}
+	return oldValue.IsNewDevice, nil
+}
+
+// ResetIsNewDevice resets all changes to the "is_new_device" field.
+func (m *RiderMutation) ResetIsNewDevice() {
+	m.is_new_device = nil
+}
+
 // SetLastFace sets the "last_face" field.
 func (m *RiderMutation) SetLastFace(s string) {
 	m.last_face = &s
@@ -3211,7 +3248,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 16)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -3244,6 +3281,9 @@ func (m *RiderMutation) Fields() []string {
 	}
 	if m.last_device != nil {
 		fields = append(fields, rider.FieldLastDevice)
+	}
+	if m.is_new_device != nil {
+		fields = append(fields, rider.FieldIsNewDevice)
 	}
 	if m.last_face != nil {
 		fields = append(fields, rider.FieldLastFace)
@@ -3287,6 +3327,8 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.DeviceType()
 	case rider.FieldLastDevice:
 		return m.LastDevice()
+	case rider.FieldIsNewDevice:
+		return m.IsNewDevice()
 	case rider.FieldLastFace:
 		return m.LastFace()
 	case rider.FieldPushID:
@@ -3326,6 +3368,8 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldDeviceType(ctx)
 	case rider.FieldLastDevice:
 		return m.OldLastDevice(ctx)
+	case rider.FieldIsNewDevice:
+		return m.OldIsNewDevice(ctx)
 	case rider.FieldLastFace:
 		return m.OldLastFace(ctx)
 	case rider.FieldPushID:
@@ -3419,6 +3463,13 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLastDevice(v)
+		return nil
+	case rider.FieldIsNewDevice:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsNewDevice(v)
 		return nil
 	case rider.FieldLastFace:
 		v, ok := value.(string)
@@ -3619,6 +3670,9 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldLastDevice:
 		m.ResetLastDevice()
+		return nil
+	case rider.FieldIsNewDevice:
+		m.ResetIsNewDevice()
 		return nil
 	case rider.FieldLastFace:
 		m.ResetLastFace()
