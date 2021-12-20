@@ -7,6 +7,7 @@ package app
 
 import (
     "bytes"
+    "github.com/auroraride/aurservd/internal/ar"
     jsoniter "github.com/json-iterator/go"
     "github.com/labstack/echo/v4"
     "net/http"
@@ -80,6 +81,9 @@ func (r *Response) Success() *Response {
 func (r *Response) Send() error {
     if r.Code == StatusOK && r.Message == "" {
         r.Message = "OK"
+    }
+    if r.Code == StatusOK && r.Data == nil {
+        r.Data = ar.Map{"status": true}
     }
     buffer := &bytes.Buffer{}
     encoder := jsoniter.NewEncoder(buffer)
