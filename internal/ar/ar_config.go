@@ -126,6 +126,7 @@ type config struct {
     }
     Mob struct {
         Push struct {
+            Env       string
             AppKey    string
             AppSecret string
         }

@@ -10,10 +10,18 @@ import (
     "crypto/md5"
     "crypto/sha256"
     "encoding/base64"
+    "encoding/hex"
 )
 
-// Md5String 字符串加密为md5
-func Md5String(s string) string {
+// Md5String hashes using md5 algorithm
+func Md5String(text string) string {
+    algorithm := md5.New()
+    algorithm.Write([]byte(text))
+    return hex.EncodeToString(algorithm.Sum(nil))
+}
+
+// Md5Base64String 字符串加密为md5(base64)
+func Md5Base64String(s string) string {
     hash := md5.New()
     hash.Write([]byte(s))
     md5Data := hash.Sum(nil)

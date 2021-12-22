@@ -5,89 +5,149 @@
 
 package mob
 
-import "github.com/auroraride/aurservd/internal/ar"
+import (
+    "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/utils"
+    "github.com/go-resty/resty/v2"
+    jsoniter "github.com/json-iterator/go"
+    log "github.com/sirupsen/logrus"
+)
+
+const (
+    // pushUrl 推送请求URL
+    pushUrl = `http://api.push.mob.com/v3/push/createPush`
+
+    source = "webapi"
+)
+
+const (
+    broadcast  = iota + 1 // 广播
+    alias                 // 别名
+    tag                   // 标签
+    regid                 // 设备
+    geo                   // 地理位置
+    group                 // 用户分组
+    complexGeo            // 复杂地理
+)
+
+const (
+    envProduction  = "production"
+    envDevelopment = "development"
+)
+
+const (
+    PlatformAndroid = iota + 1
+    PlatformiOS
+)
+
+const (
+    typeNotify = iota + 1
+    typeCustom
+)
+
+const (
+    iosDevelopment = iota // iOS测试环境
+    iosProduction         // iOS生产环境
+)
+
+const (
+    ChannelSystem  = "system"  // 系统通知
+    ChannelOverdue = "overdue" // 逾期通知
+)
 
 type mobPush struct {
-    AppKey    string
-    AppSecret string
-}
-
-// Message 推送消息结构体
-// @doc https://mob.com/wiki/detailed?wiki=234&id=136
-type Message struct {
-    Workno     string `json:"workno,omitempty"`
-    Source     string `json:"source,omitempty"`
-    Appkey     string `json:"appkey,omitempty"`
-    PushTarget struct {
-        Target int      `json:"target,omitempty"`
-        Rids   []string `json:"rids,omitempty"`
-    } `json:"pushTarget"`
-    PushNotify struct {
-        Plats          []int  `json:"plats,omitempty"`
-        IosProduction  int    `json:"iosProduction,omitempty"`
-        OfflineSeconds int    `json:"offlineSeconds,omitempty"`
-        Content        string `json:"content,omitempty"`
-        Title          string `json:"title,omitempty"`
-        Type           int    `json:"type,omitempty"`
-        AndroidNotify  struct {
-            Warn              string `json:"warn,omitempty"`
-            Sound             string `json:"sound,omitempty"`
-            AndroidChannelId  string `json:"androidChannelId,omitempty"`
-            AandroidBadgeType int    `json:"aandroidBadgeType,omitempty"`
-            AndroidBadge      int    `json:"androidBadge,omitempty"`
-        } `json:"androidNotify"`
-        IosNotify struct {
-            Badge            int    `json:"badge,omitempty"`
-            BadgeType        int    `json:"badgeType,omitempty"`
-            Category         string `json:"category,omitempty"`
-            Sound            string `json:"sound,omitempty"`
-            Subtitle         string `json:"subtitle,omitempty"`
-            SlientPush       int    `json:"slientPush,omitempty"`
-            ContentAvailable int    `json:"contentAvailable,omitempty"`
-            MutableContent   int    `json:"mutableContent,omitempty"`
-            AttachmentType   int    `json:"attachmentType,omitempty"`
-            Attachment       string `json:"attachment,omitempty"`
-        } `json:"iosNotify"`
-        TaskCron      int               `json:"taskCron,omitempty"`
-        TaskTime      uint64            `json:"taskTime,omitempty"`
-        Policy        int               `json:"policy,omitempty"` // 推送策略： * 1:先走tcp，再走厂商 * 2:先走厂商，再走tcp * 3:只走厂商 * 4:只走tcp (厂商透传policy只支持策略3或4)
-        ExtrasMapList []MessageKeyValue `json:"extrasMapList,omitempty"`
-    } `json:"pushNotify"`
-    PushCallback struct {
-        Url    string            `json:"url,omitempty"`
-        Params map[string]string `json:"params,omitempty"`
-    } `json:"pushCallback"`
-    PushForward struct {
-        Url            string            `json:"url,omitempty"`
-        Scheme         string            `json:"scheme,omitempty"`
-        NextType       int               `json:"nextType,omitempty"`
-        SchemeDataList []MessageKeyValue `json:"schemeDataList,omitempty"`
-    } `json:"pushForward"`
-    PushFactoryExtra struct {
-        XiaomiExtra struct {
-            ChannelId string `json:"channelId,omitempty"`
-        } `json:"xiaomiExtra"`
-        OppoExtra struct {
-            ChannelId string `json:"channelId,omitempty"`
-        } `json:"oppoExtra"`
-        VivoExtra struct {
-            Classification string `json:"classification,omitempty"`
-        } `json:"vivoExtra"`
-    } `json:"pushFactoryExtra"`
-}
-
-type MessageKeyValue struct {
-    Key   string
-    Value string
+    appKey        string
+    appSecret     string
+    iosProduction int
 }
 
 func NewPush() *mobPush {
     cfg := ar.Config.Mob.Push
-    return &mobPush{
-        AppKey:    cfg.AppKey,
-        AppSecret: cfg.AppSecret,
+    m := &mobPush{
+        appKey:    cfg.AppKey,
+        appSecret: cfg.AppSecret,
     }
+    if cfg.Env == envProduction {
+        m.iosProduction = 1
+    }
+    return m
 }
 
-func (m *mobPush) SendMessage() {
+type Req struct {
+    RegId       string
+    Platform    int
+    Content     string
+    Title       string
+    MessageData []MessageData
+    Channel     string
+}
+
+func (m *mobPush) SendMessage(req Req) {
+    data := &Message{
+        Source: source,
+        Appkey: m.appKey,
+        PushTarget: PushTarget{
+            Target: regid,
+            Rids: []string{
+                req.RegId,
+            },
+        },
+        PushNotify: PushNotify{
+            Plats:          []int{req.Platform},
+            OfflineSeconds: 7 * 86400,
+            Content:        req.Content,
+            Title:          req.Title,
+            Type:           typeNotify,
+            Policy:         1,
+            IOSProduction:  m.iosProduction,
+        },
+        // TODO 可配置
+        PushFactoryExtra: PushFactoryExtra{
+            XiaomiExtra: XiaomiExtra{ChannelId: "high_system"},
+            OppoExtra:   OppoExtra{ChannelId: "system"},
+            VivoExtra:   VivoExtra{Classification: "1"},
+        },
+    }
+    switch req.Platform {
+    case PlatformiOS:
+        // TODO ios消息结构
+        data.PushNotify.IOSNotify = IOSNotify{
+            Badge:     1,
+            BadgeType: 2,
+        }
+    case PlatformAndroid:
+        data.PushNotify.AndroidNotify = AndroidNotify{
+            Warn:             "123",
+            // AndroidChannelId: req.Channel,
+            AndroidBadgeType: 2,
+            AndroidBadge:     1,
+        }
+    }
+    for _, d := range req.MessageData {
+        data.PushNotify.ExtrasMapList = append(data.PushNotify.ExtrasMapList, d)
+    }
+    // 排序并转换json字符串
+    jc := jsoniter.Config{SortMapKeys: true}
+    s, err := jc.Froze().MarshalToString(data)
+    if err != nil {
+        snag.Panic(err)
+    }
+    // client.SetHeaders()
+    // 生成sign
+    sign := utils.Md5String(s + m.appSecret)
+
+    res, err := resty.New().R().
+        SetHeaders(map[string]string{
+            "Content-Type": "application/json",
+            "key":          m.appKey,
+            "sign":         sign,
+        }).
+        SetBody(s).
+        Post(pushUrl)
+    if err != nil {
+        log.Errorf("推送消息失败: %v, sign: %s, %s", err, sign, s)
+        return
+    }
+    log.Println(string(res.Body()))
 }

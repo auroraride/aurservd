@@ -136,7 +136,7 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
     res := new(commonRes)
     res.Data = data
     bodyString, _ := e.serialization.Froze().MarshalToString(body)
-    md5 = utils.Md5String(bodyString)
+    md5 = utils.Md5Base64String(bodyString)
     singnature, raw := e.getSign(api, method, md5)
     req := resty.New().
         R().

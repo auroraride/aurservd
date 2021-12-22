@@ -7,7 +7,6 @@ go run ./cmd/ent init TABLE
 go run ./cmd/ent generate
 ```
 
-
 ## 第三方服务列表
 - 阿里云
   - SLS: 存储日志
@@ -17,3 +16,20 @@ go run ./cmd/ent generate
 - 百度人脸
   - 实名认证
   - 人脸比对
+
+## 测试
+
+### 推送
+
+```go
+mob.NewPush().SendMessage(mob.Req{
+    RegId:    "65kzlib1miggt8g",
+    Platform: mob.PlatformAndroid,
+    Content:  "测试推送内容",
+    Title:    "测试推送",
+    MessageData: []mob.MessageData{
+        {Key: "key", Value: "val"},
+    },
+    Channel: mob.ChannelSystem,
+})
+```
