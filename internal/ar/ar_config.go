@@ -49,10 +49,10 @@ type config struct {
         Address   string
         BodyLimit string
         RateLimit float64
-        Debug struct{
+        Debug     struct {
             Phone map[string]bool
         }
-        Captcha   struct {
+        Captcha struct {
             Names map[string]string
         }
     }
@@ -123,6 +123,12 @@ type config struct {
         Target  string
         Sandbox EsignConfig
         Online  EsignConfig
+    }
+    Mob struct {
+        Push struct {
+            AppKey    string
+            AppSecret string
+        }
     }
     Trans map[string]string
 }
