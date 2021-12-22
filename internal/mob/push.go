@@ -69,7 +69,7 @@ func NewPush() *mobPush {
         appSecret: cfg.AppSecret,
     }
     if cfg.Env == envProduction {
-        m.iosProduction = 1
+        m.iosProduction = iosProduction
     }
     return m
 }
@@ -87,13 +87,13 @@ func (m *mobPush) SendMessage(req Req) {
     data := &Message{
         Source: source,
         Appkey: m.appKey,
-        PushTarget: PushTarget{
+        PushTarget: &PushTarget{
             Target: regid,
             Rids: []string{
                 req.RegId,
             },
         },
-        PushNotify: PushNotify{
+        PushNotify: &PushNotify{
             Plats:          []int{req.Platform},
             OfflineSeconds: 7 * 86400,
             Content:        req.Content,
@@ -102,26 +102,25 @@ func (m *mobPush) SendMessage(req Req) {
             Policy:         1,
             IOSProduction:  m.iosProduction,
         },
-        // TODO 可配置
-        PushFactoryExtra: PushFactoryExtra{
-            XiaomiExtra: XiaomiExtra{ChannelId: "high_system"},
-            OppoExtra:   OppoExtra{ChannelId: "system"},
-            VivoExtra:   VivoExtra{Classification: "1"},
-        },
     }
     switch req.Platform {
     case PlatformiOS:
         // TODO ios消息结构
-        data.PushNotify.IOSNotify = IOSNotify{
+        data.PushNotify.IOSNotify = &IOSNotify{
             Badge:     1,
             BadgeType: 2,
         }
     case PlatformAndroid:
-        data.PushNotify.AndroidNotify = AndroidNotify{
-            Warn:             "123",
+        data.PushNotify.AndroidNotify = &AndroidNotify{
             // AndroidChannelId: req.Channel,
+            Warn:             "123",
             AndroidBadgeType: 2,
             AndroidBadge:     1,
+        }
+        data.PushFactoryExtra = &PushFactoryExtra{
+            XiaomiExtra: XiaomiExtra{ChannelId: "high_system"},
+            OppoExtra:   OppoExtra{ChannelId: "system"},
+            VivoExtra:   VivoExtra{Classification: "1"},
         }
     }
     for _, d := range req.MessageData {

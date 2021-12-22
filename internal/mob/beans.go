@@ -11,8 +11,8 @@ type PushTarget struct {
 }
 
 type MessageData struct {
-    Key   string
-    Value string
+    Key   string `json:"key,omitempty"`
+    Value string `json:"value,omitempty"`
 }
 
 type AndroidNotify struct {
@@ -37,17 +37,17 @@ type IOSNotify struct {
 }
 
 type PushNotify struct {
-    Plats          []int         `json:"plats,omitempty"`
-    IOSProduction  int           `json:"iosProduction,omitempty"`
-    OfflineSeconds int           `json:"offlineSeconds,omitempty"`
-    Content        string        `json:"content,omitempty"`
-    Title          string        `json:"title,omitempty"`
-    Type           int           `json:"type,omitempty"`
-    AndroidNotify  AndroidNotify `json:"androidNotify"`
-    IOSNotify      IOSNotify     `json:"iosNotify"`
-    TaskCron       int           `json:"taskCron,omitempty"`
-    TaskTime       uint64        `json:"taskTime,omitempty"`
-    Policy         int           `json:"policy,omitempty"` // 推送策略： * 1:先走tcp，再走厂商 * 2:先走厂商，再走tcp * 3:只走厂商 * 4:只走tcp (厂商透传policy只支持策略3或4)
+    Plats          []int          `json:"plats,omitempty"`
+    IOSProduction  int            `json:"iosProduction"`
+    OfflineSeconds int            `json:"offlineSeconds,omitempty"`
+    Content        string         `json:"content,omitempty"`
+    Title          string         `json:"title,omitempty"`
+    Type           int            `json:"type,omitempty"`
+    AndroidNotify  *AndroidNotify `json:"androidNotify,omitempty"`
+    IOSNotify      *IOSNotify     `json:"iosNotify,omitempty"`
+    TaskCron       int            `json:"taskCron,omitempty"`
+    TaskTime       uint64         `json:"taskTime,omitempty"`
+    Policy         int            `json:"policy,omitempty"` // 推送策略： * 1:先走tcp，再走厂商 * 2:先走厂商，再走tcp * 3:只走厂商 * 4:只走tcp (厂商透传policy只支持策略3或4)
     ExtrasMapList  []MessageData `json:"extrasMapList,omitempty"`
 }
 
@@ -76,20 +76,20 @@ type VivoExtra struct {
 }
 
 type PushFactoryExtra struct {
-    XiaomiExtra XiaomiExtra `json:"xiaomiExtra"`
-    OppoExtra   OppoExtra   `json:"oppoExtra"`
-    VivoExtra   VivoExtra   `json:"vivoExtra"`
+    XiaomiExtra XiaomiExtra `json:"xiaomiExtra,omitempty"`
+    OppoExtra   OppoExtra   `json:"oppoExtra,omitempty"`
+    VivoExtra   VivoExtra   `json:"vivoExtra,omitempty"`
 }
 
 // Message 推送消息结构体
 // @doc https://mob.com/wiki/detailed?wiki=234&id=136
 type Message struct {
-    Workno           string           `json:"workno,omitempty"`
-    Source           string           `json:"source,omitempty"`
-    Appkey           string           `json:"appkey,omitempty"`
-    PushTarget       PushTarget       `json:"pushTarget"`
-    PushNotify       PushNotify       `json:"pushNotify"`
-    PushCallback     PushCallback     `json:"pushCallback"`
-    PushForward      PushForward      `json:"pushForward"`
-    PushFactoryExtra PushFactoryExtra `json:"pushFactoryExtra"`
+    Workno           string            `json:"workno,omitempty"`
+    Source           string            `json:"source,omitempty"`
+    Appkey           string            `json:"appkey,omitempty"`
+    PushTarget       *PushTarget       `json:"pushTarget,omitempty"`
+    PushNotify       *PushNotify       `json:"pushNotify,omitempty"`
+    PushCallback     *PushCallback     `json:"pushCallback,omitempty"`
+    PushForward      *PushForward      `json:"pushForward,omitempty"`
+    PushFactoryExtra *PushFactoryExtra `json:"pushFactoryExtra,omitempty"`
 }
