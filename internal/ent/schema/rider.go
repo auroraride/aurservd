@@ -33,7 +33,7 @@ func (Rider) Fields() []ent.Field {
         field.String("last_device").MaxLen(60).Unique().Comment("上次登录设备ID"),
         field.Bool("is_new_device").Default(false).Comment("是否新设备"),
         field.String("last_face").Optional().Nillable().Comment("上次登录人脸"),
-        field.String("push_id").MaxLen(60).Unique().Optional().Nillable().Comment("推送ID"),
+        field.String("push_id").MaxLen(60).Unique().Optional().Comment("推送ID"),
         field.Time("last_signin_at").Nillable().Optional().Comment("最后登录时间"),
         field.String("esign_account_id").Optional().Comment("E签宝账户ID"),
     }

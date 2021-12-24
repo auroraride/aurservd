@@ -57,7 +57,7 @@ type Rider struct {
 	LastFace *string `json:"last_face,omitempty"`
 	// PushID holds the value of the "push_id" field.
 	// 推送ID
-	PushID *string `json:"push_id,omitempty"`
+	PushID string `json:"push_id,omitempty"`
 	// LastSigninAt holds the value of the "last_signin_at" field.
 	// 最后登录时间
 	LastSigninAt *time.Time `json:"last_signin_at,omitempty"`
@@ -229,8 +229,7 @@ func (r *Rider) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field push_id", values[i])
 			} else if value.Valid {
-				r.PushID = new(string)
-				*r.PushID = value.String
+				r.PushID = value.String
 			}
 		case rider.FieldLastSigninAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -321,10 +320,8 @@ func (r *Rider) String() string {
 		builder.WriteString(", last_face=")
 		builder.WriteString(*v)
 	}
-	if v := r.PushID; v != nil {
-		builder.WriteString(", push_id=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString(", push_id=")
+	builder.WriteString(r.PushID)
 	if v := r.LastSigninAt; v != nil {
 		builder.WriteString(", last_signin_at=")
 		builder.WriteString(v.Format(time.ANSIC))

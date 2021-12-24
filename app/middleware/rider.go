@@ -47,6 +47,12 @@ func RiderMiddleware() echo.MiddlewareFunc {
             // 延长token有效期
             s.ExtendTokenTime(u.ID, token)
 
+            // 获取与判定是否需要更新骑手推送ID
+            pushId := c.Request().Header.Get(app.HeaderPushId)
+            if u.PushID != pushId {
+                _ = ar.Ent.Rider.UpdateOneID(u.ID).SetPushID(pushId).Exec(context.Background())
+            }
+
             // 重载context
             return next(&app.RiderContext{
                 Context: c.(*app.Context),

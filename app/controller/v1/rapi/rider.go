@@ -88,3 +88,8 @@ func (r *rider) FaceResult(c echo.Context) error {
 func (r *rider) Demo(c echo.Context) error {
     return app.NewResponse(c).Success().SetData(ar.Map{"status": true}).Send()
 }
+
+// Profile 用户信息
+func (r *rider) Profile(c echo.Context) error {
+    return app.NewResponse(c).Success().SetData(ar.Map{"status": true}).Send()
+}

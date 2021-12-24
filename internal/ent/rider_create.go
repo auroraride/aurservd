@@ -487,7 +487,7 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: rider.FieldPushID,
 		})
-		_node.PushID = &value
+		_node.PushID = value
 	}
 	if value, ok := rc.mutation.LastSigninAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

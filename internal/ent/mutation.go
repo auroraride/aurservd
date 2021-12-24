@@ -3019,7 +3019,7 @@ func (m *RiderMutation) PushID() (r string, exists bool) {
 // OldPushID returns the old "push_id" field's value of the Rider entity.
 // If the Rider object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RiderMutation) OldPushID(ctx context.Context) (v *string, err error) {
+func (m *RiderMutation) OldPushID(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldPushID is only allowed on UpdateOne operations")
 	}

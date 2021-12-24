@@ -19,6 +19,8 @@ const (
     HeaderDeviceSerial = "X-Device-Serial"
     // HeaderDeviceType 骑手设备类型
     HeaderDeviceType = "X-Device-Type"
+    // HeaderPushId 骑手设备推送ID
+    HeaderPushId = "X-Push-Id"
     // HeaderRiderToken 骑手token
     HeaderRiderToken = "X-Rider-Token"
 )

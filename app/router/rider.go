@@ -33,6 +33,7 @@ func (r *router) rideRoute() {
     g.Use(middleware.RiderFaceMiddleware())
 
     g.GET("/demo", rapi.Rider.Demo) // 测试空白页面
+    g.GET("/", rapi.Rider.Profile)  // 获取用户信息
 
     // 合同
     contract := g.Group("/contract")
