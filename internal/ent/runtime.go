@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/schema"
@@ -71,6 +72,21 @@ func init() {
 			return nil
 		}
 	}()
+	managerMixin := schema.Manager{}.Mixin()
+	managerMixinFields0 := managerMixin[0].Fields()
+	_ = managerMixinFields0
+	managerFields := schema.Manager{}.Fields()
+	_ = managerFields
+	// managerDescCreatedAt is the schema descriptor for created_at field.
+	managerDescCreatedAt := managerMixinFields0[0].Descriptor()
+	// manager.DefaultCreatedAt holds the default value on creation for the created_at field.
+	manager.DefaultCreatedAt = managerDescCreatedAt.Default.(func() time.Time)
+	// managerDescUpdatedAt is the schema descriptor for updated_at field.
+	managerDescUpdatedAt := managerMixinFields0[1].Descriptor()
+	// manager.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	manager.DefaultUpdatedAt = managerDescUpdatedAt.Default.(func() time.Time)
+	// manager.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	manager.UpdateDefaultUpdatedAt = managerDescUpdatedAt.UpdateDefault.(func() time.Time)
 	personMixin := schema.Person{}.Mixin()
 	personMixinFields0 := personMixin[0].Fields()
 	_ = personMixinFields0

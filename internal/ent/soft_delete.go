@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
@@ -44,6 +45,46 @@ func (c *ContractClient) GetNotDeleted(ctx context.Context, id uint64) (*Contrac
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *ContractClient) GetNotDeletedX(ctx context.Context, id uint64) *Contract {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for Manager.
+func (c *ManagerClient) SoftDelete() *ManagerUpdate {
+	mutation := newManagerMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &ManagerUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *ManagerClient) SoftDeleteOne(m *Manager) *ManagerUpdateOne {
+	mutation := newManagerMutation(c.config, OpUpdateOne, withManager(m))
+	mutation.SetDeletedAt(time.Now())
+	return &ManagerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *ManagerClient) SoftDeleteOneID(id uint64) *ManagerUpdateOne {
+	mutation := newManagerMutation(c.config, OpUpdateOne, withManagerID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &ManagerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Manager.
+func (c *ManagerClient) QueryNotDeleted() *ManagerQuery {
+	return c.Query().Where(manager.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Manager not deleted entity by its id.
+func (c *ManagerClient) GetNotDeleted(ctx context.Context, id uint64) (*Manager, error) {
+	return c.Query().Where(manager.ID(id), manager.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *ManagerClient) GetNotDeletedX(ctx context.Context, id uint64) *Manager {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

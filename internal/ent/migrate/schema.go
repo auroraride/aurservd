@@ -44,6 +44,28 @@ var (
 			},
 		},
 	}
+	// ManagerColumns holds the columns for the "manager" table.
+	ManagerColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "last_modify", Type: field.TypeTime, Nullable: true},
+		{Name: "remark", Type: field.TypeString, Nullable: true},
+	}
+	// ManagerTable holds the schema information for the "manager" table.
+	ManagerTable = &schema.Table{
+		Name:       "manager",
+		Columns:    ManagerColumns,
+		PrimaryKey: []*schema.Column{ManagerColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "manager_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{ManagerColumns[3]},
+			},
+		},
+	}
 	// PersonColumns holds the columns for the "person" table.
 	PersonColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -139,6 +161,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		ContractTable,
+		ManagerTable,
 		PersonTable,
 		RiderTable,
 		SettingTable,
@@ -149,6 +172,9 @@ func init() {
 	ContractTable.ForeignKeys[0].RefTable = RiderTable
 	ContractTable.Annotation = &entsql.Annotation{
 		Table: "contract",
+	}
+	ManagerTable.Annotation = &entsql.Annotation{
+		Table: "manager",
 	}
 	PersonTable.Annotation = &entsql.Annotation{
 		Table: "person",

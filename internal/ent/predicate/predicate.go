@@ -9,6 +9,9 @@ import (
 // Contract is the predicate function for contract builders.
 type Contract func(*sql.Selector)
 
+// Manager is the predicate function for manager builders.
+type Manager func(*sql.Selector)
+
 // Person is the predicate function for person builders.
 type Person func(*sql.Selector)
 

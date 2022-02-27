@@ -10,6 +10,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/migrate"
 
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/setting"
@@ -26,6 +27,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Contract is the client for interacting with the Contract builders.
 	Contract *ContractClient
+	// Manager is the client for interacting with the Manager builders.
+	Manager *ManagerClient
 	// Person is the client for interacting with the Person builders.
 	Person *PersonClient
 	// Rider is the client for interacting with the Rider builders.
@@ -46,6 +49,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Contract = NewContractClient(c.config)
+	c.Manager = NewManagerClient(c.config)
 	c.Person = NewPersonClient(c.config)
 	c.Rider = NewRiderClient(c.config)
 	c.Setting = NewSettingClient(c.config)
@@ -83,6 +87,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:      ctx,
 		config:   cfg,
 		Contract: NewContractClient(cfg),
+		Manager:  NewManagerClient(cfg),
 		Person:   NewPersonClient(cfg),
 		Rider:    NewRiderClient(cfg),
 		Setting:  NewSettingClient(cfg),
@@ -105,6 +110,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		config:   cfg,
 		Contract: NewContractClient(cfg),
+		Manager:  NewManagerClient(cfg),
 		Person:   NewPersonClient(cfg),
 		Rider:    NewRiderClient(cfg),
 		Setting:  NewSettingClient(cfg),
@@ -138,6 +144,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Contract.Use(hooks...)
+	c.Manager.Use(hooks...)
 	c.Person.Use(hooks...)
 	c.Rider.Use(hooks...)
 	c.Setting.Use(hooks...)
@@ -247,6 +254,96 @@ func (c *ContractClient) QueryRider(co *Contract) *RiderQuery {
 // Hooks returns the client hooks.
 func (c *ContractClient) Hooks() []Hook {
 	return c.hooks.Contract
+}
+
+// ManagerClient is a client for the Manager schema.
+type ManagerClient struct {
+	config
+}
+
+// NewManagerClient returns a client for the Manager from the given config.
+func NewManagerClient(c config) *ManagerClient {
+	return &ManagerClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `manager.Hooks(f(g(h())))`.
+func (c *ManagerClient) Use(hooks ...Hook) {
+	c.hooks.Manager = append(c.hooks.Manager, hooks...)
+}
+
+// Create returns a create builder for Manager.
+func (c *ManagerClient) Create() *ManagerCreate {
+	mutation := newManagerMutation(c.config, OpCreate)
+	return &ManagerCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Manager entities.
+func (c *ManagerClient) CreateBulk(builders ...*ManagerCreate) *ManagerCreateBulk {
+	return &ManagerCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Manager.
+func (c *ManagerClient) Update() *ManagerUpdate {
+	mutation := newManagerMutation(c.config, OpUpdate)
+	return &ManagerUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ManagerClient) UpdateOne(m *Manager) *ManagerUpdateOne {
+	mutation := newManagerMutation(c.config, OpUpdateOne, withManager(m))
+	return &ManagerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ManagerClient) UpdateOneID(id uint64) *ManagerUpdateOne {
+	mutation := newManagerMutation(c.config, OpUpdateOne, withManagerID(id))
+	return &ManagerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Manager.
+func (c *ManagerClient) Delete() *ManagerDelete {
+	mutation := newManagerMutation(c.config, OpDelete)
+	return &ManagerDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ManagerClient) DeleteOne(m *Manager) *ManagerDeleteOne {
+	return c.DeleteOneID(m.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ManagerClient) DeleteOneID(id uint64) *ManagerDeleteOne {
+	builder := c.Delete().Where(manager.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ManagerDeleteOne{builder}
+}
+
+// Query returns a query builder for Manager.
+func (c *ManagerClient) Query() *ManagerQuery {
+	return &ManagerQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Manager entity by its id.
+func (c *ManagerClient) Get(ctx context.Context, id uint64) (*Manager, error) {
+	return c.Query().Where(manager.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ManagerClient) GetX(ctx context.Context, id uint64) *Manager {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ManagerClient) Hooks() []Hook {
+	return c.hooks.Manager
 }
 
 // PersonClient is a client for the Person schema.

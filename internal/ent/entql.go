@@ -4,6 +4,7 @@ package ent
 
 import (
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -17,7 +18,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 4)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 5)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   contract.Table,
@@ -42,6 +43,24 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   manager.Table,
+			Columns: manager.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: manager.FieldID,
+			},
+		},
+		Type: "Manager",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			manager.FieldCreatedAt:  {Type: field.TypeTime, Column: manager.FieldCreatedAt},
+			manager.FieldUpdatedAt:  {Type: field.TypeTime, Column: manager.FieldUpdatedAt},
+			manager.FieldDeletedAt:  {Type: field.TypeTime, Column: manager.FieldDeletedAt},
+			manager.FieldLastModify: {Type: field.TypeTime, Column: manager.FieldLastModify},
+			manager.FieldRemark:     {Type: field.TypeString, Column: manager.FieldRemark},
+		},
+	}
+	graph.Nodes[2] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   person.Table,
 			Columns: person.Columns,
@@ -69,7 +88,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			person.FieldAuthAt:         {Type: field.TypeTime, Column: person.FieldAuthAt},
 		},
 	}
-	graph.Nodes[2] = &sqlgraph.Node{
+	graph.Nodes[3] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   rider.Table,
 			Columns: rider.Columns,
@@ -98,7 +117,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldEsignAccountID: {Type: field.TypeString, Column: rider.FieldEsignAccountID},
 		},
 	}
-	graph.Nodes[3] = &sqlgraph.Node{
+	graph.Nodes[4] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   setting.Table,
 			Columns: setting.Columns,
@@ -276,6 +295,70 @@ func (f *ContractFilter) WhereHasRiderWith(preds ...predicate.Rider) {
 }
 
 // addPredicate implements the predicateAdder interface.
+func (mq *ManagerQuery) addPredicate(pred func(s *sql.Selector)) {
+	mq.predicates = append(mq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the ManagerQuery builder.
+func (mq *ManagerQuery) Filter() *ManagerFilter {
+	return &ManagerFilter{mq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *ManagerMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the ManagerMutation builder.
+func (m *ManagerMutation) Filter() *ManagerFilter {
+	return &ManagerFilter{m}
+}
+
+// ManagerFilter provides a generic filtering capability at runtime for ManagerQuery.
+type ManagerFilter struct {
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *ManagerFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *ManagerFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(manager.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *ManagerFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(manager.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *ManagerFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(manager.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *ManagerFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(manager.FieldDeletedAt))
+}
+
+// WhereLastModify applies the entql time.Time predicate on the last_modify field.
+func (f *ManagerFilter) WhereLastModify(p entql.TimeP) {
+	f.Where(p.Field(manager.FieldLastModify))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *ManagerFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(manager.FieldRemark))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (pq *PersonQuery) addPredicate(pred func(s *sql.Selector)) {
 	pq.predicates = append(pq.predicates, pred)
 }
@@ -303,7 +386,7 @@ type PersonFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PersonFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -431,7 +514,7 @@ type RiderFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RiderFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -578,7 +661,7 @@ type SettingFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SettingFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

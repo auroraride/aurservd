@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// Contract is the client for interacting with the Contract builders.
 	Contract *ContractClient
+	// Manager is the client for interacting with the Manager builders.
+	Manager *ManagerClient
 	// Person is the client for interacting with the Person builders.
 	Person *PersonClient
 	// Rider is the client for interacting with the Rider builders.
@@ -156,6 +158,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Contract = NewContractClient(tx.config)
+	tx.Manager = NewManagerClient(tx.config)
 	tx.Person = NewPersonClient(tx.config)
 	tx.Rider = NewRiderClient(tx.config)
 	tx.Setting = NewSettingClient(tx.config)
