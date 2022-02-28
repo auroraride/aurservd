@@ -10,8 +10,8 @@ import (
     "github.com/auroraride/aurservd/app/middleware"
 )
 
-// rideRoute 骑手路由
-func (r *router) rideRoute() {
+// rideRoutes 骑手路由
+func (r *router) rideRoutes() {
     g := r.Group("/rider")
 
     g.Any("/callback", rapi.Callback.RiderCallback, middleware.BodyDump())          // 骑手api回调中心

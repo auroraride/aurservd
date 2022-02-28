@@ -77,8 +77,9 @@ func Run() {
         // demo
         // dg := r.Group("/demo")
     }
-    r.commonRoute() // 公共API
-    r.rideRoute()   // 骑手路由
+    r.commonRoutes()  // 公共API
+    r.rideRoutes()    // 骑手路由
+    r.managerRoutes() // 管理员路由
 
     log.Fatal(r.Start(cfg.Address))
 }

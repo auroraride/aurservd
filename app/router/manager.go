@@ -4,3 +4,7 @@
 // Based on aurservd by liasica, magicrolan@qq.com.
 
 package router
+
+func (r *router) managerRoutes() {
+
+}
