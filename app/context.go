@@ -23,6 +23,8 @@ const (
     HeaderPushId = "X-Push-Id"
     // HeaderRiderToken 骑手token
     HeaderRiderToken = "X-Rider-Token"
+    // HeaderManagerToken 后台token
+    HeaderManagerToken = "X-Manager-Token"
 )
 
 type Context struct {
@@ -35,6 +37,12 @@ type RiderContext struct {
     *Context
 
     Rider *ent.Rider
+}
+
+type ManagerContext struct {
+    *Context
+
+    Manager *ent.Manager
 }
 
 // BindValidate 绑定并校验数据

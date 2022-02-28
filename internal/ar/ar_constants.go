@@ -6,9 +6,10 @@
 package ar
 
 const (
-    RiderRequireSignin  = "需要登录"
-    RiderRequireContact = "需要补充紧急联系人"
-    RiderRequireAuth    = "需要实名验证"
-    RiderRequireFace    = "需要人脸验证"
-    RiderBlockedMessage = "你已被封禁"
+    RequireSignin       = "需要登录"
+    RequireContact      = "需要补充紧急联系人"
+    RequireVerification = "需要实名验证"
+    RequireFace         = "需要人脸验证"
+
+    BlockedMessage = "你已被封禁"
 )

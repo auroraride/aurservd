@@ -24,10 +24,13 @@ import (
 )
 
 type riderService struct {
+    cacheKeyPrefix string
 }
 
 func NewRider() *riderService {
-    return &riderService{}
+    return &riderService{
+        cacheKeyPrefix: "RIDER_",
+    }
 }
 
 // GetRiderById 根据ID获取骑手及其实名状态
@@ -75,13 +78,13 @@ func (r *riderService) Signin(phone string, device *app.Device) (res *model.Ride
 
     // 判定用户是否被封禁
     if r.IsBlocked(u) {
-        err = errors.New(ar.RiderBlockedMessage)
+        err = errors.New(ar.BlockedMessage)
         return
     }
 
     token := xid.New().String() + utils.RandTokenString()
     cache := ar.Cache
-    key := fmt.Sprintf("RIDER_%d", u.ID)
+    key := fmt.Sprintf("%s%d", r.cacheKeyPrefix, u.ID)
 
     // 删除旧的token
     if old := cache.Get(ctx, key).Val(); old != "" {
@@ -115,7 +118,7 @@ func (r *riderService) Signin(phone string, device *app.Device) (res *model.Ride
 func (r *riderService) Signout(u *ent.Rider) {
     cache := ar.Cache
     ctx := context.Background()
-    key := fmt.Sprintf("RIDER_%d", u.ID)
+    key := fmt.Sprintf("%s%d", r.cacheKeyPrefix, u.ID)
     token := cache.Get(ctx, key).Val()
     cache.Del(ctx, key)
     cache.Del(ctx, token)
@@ -279,7 +282,7 @@ func (r *riderService) ComparePrivacy(c *app.RiderContext) bool {
 
 // ExtendTokenTime 延长骑手登录有效期
 func (r *riderService) ExtendTokenTime(id uint64, token string) {
-    key := fmt.Sprintf("RIDER_%d", id)
+    key := fmt.Sprintf("%s%d", r.cacheKeyPrefix, id)
     cache := ar.Cache
     ctx := context.Background()
     cache.Set(ctx, key, token, 7*24*time.Hour)
