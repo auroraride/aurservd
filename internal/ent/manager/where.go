@@ -127,6 +127,34 @@ func Remark(v string) predicate.Manager {
 	})
 }
 
+// Phone applies equality check predicate on the "phone" field. It's identical to PhoneEQ.
+func Phone(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPhone), v))
+	})
+}
+
+// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
+func Name(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldName), v))
+	})
+}
+
+// Password applies equality check predicate on the "password" field. It's identical to PasswordEQ.
+func Password(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPassword), v))
+	})
+}
+
+// LastSigninAt applies equality check predicate on the "last_signin_at" field. It's identical to LastSigninAtEQ.
+func LastSigninAt(v time.Time) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLastSigninAt), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Manager {
 	return predicate.Manager(func(s *sql.Selector) {
@@ -581,6 +609,429 @@ func RemarkEqualFold(v string) predicate.Manager {
 func RemarkContainsFold(v string) predicate.Manager {
 	return predicate.Manager(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
+	})
+}
+
+// PhoneEQ applies the EQ predicate on the "phone" field.
+func PhoneEQ(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneNEQ applies the NEQ predicate on the "phone" field.
+func PhoneNEQ(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneIn applies the In predicate on the "phone" field.
+func PhoneIn(vs ...string) predicate.Manager {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Manager(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldPhone), v...))
+	})
+}
+
+// PhoneNotIn applies the NotIn predicate on the "phone" field.
+func PhoneNotIn(vs ...string) predicate.Manager {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Manager(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldPhone), v...))
+	})
+}
+
+// PhoneGT applies the GT predicate on the "phone" field.
+func PhoneGT(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneGTE applies the GTE predicate on the "phone" field.
+func PhoneGTE(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneLT applies the LT predicate on the "phone" field.
+func PhoneLT(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneLTE applies the LTE predicate on the "phone" field.
+func PhoneLTE(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneContains applies the Contains predicate on the "phone" field.
+func PhoneContains(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneHasPrefix applies the HasPrefix predicate on the "phone" field.
+func PhoneHasPrefix(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneHasSuffix applies the HasSuffix predicate on the "phone" field.
+func PhoneHasSuffix(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneEqualFold applies the EqualFold predicate on the "phone" field.
+func PhoneEqualFold(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldPhone), v))
+	})
+}
+
+// PhoneContainsFold applies the ContainsFold predicate on the "phone" field.
+func PhoneContainsFold(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldPhone), v))
+	})
+}
+
+// NameEQ applies the EQ predicate on the "name" field.
+func NameEQ(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldName), v))
+	})
+}
+
+// NameNEQ applies the NEQ predicate on the "name" field.
+func NameNEQ(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldName), v))
+	})
+}
+
+// NameIn applies the In predicate on the "name" field.
+func NameIn(vs ...string) predicate.Manager {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Manager(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldName), v...))
+	})
+}
+
+// NameNotIn applies the NotIn predicate on the "name" field.
+func NameNotIn(vs ...string) predicate.Manager {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Manager(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldName), v...))
+	})
+}
+
+// NameGT applies the GT predicate on the "name" field.
+func NameGT(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldName), v))
+	})
+}
+
+// NameGTE applies the GTE predicate on the "name" field.
+func NameGTE(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldName), v))
+	})
+}
+
+// NameLT applies the LT predicate on the "name" field.
+func NameLT(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldName), v))
+	})
+}
+
+// NameLTE applies the LTE predicate on the "name" field.
+func NameLTE(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldName), v))
+	})
+}
+
+// NameContains applies the Contains predicate on the "name" field.
+func NameContains(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldName), v))
+	})
+}
+
+// NameHasPrefix applies the HasPrefix predicate on the "name" field.
+func NameHasPrefix(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldName), v))
+	})
+}
+
+// NameHasSuffix applies the HasSuffix predicate on the "name" field.
+func NameHasSuffix(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldName), v))
+	})
+}
+
+// NameEqualFold applies the EqualFold predicate on the "name" field.
+func NameEqualFold(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldName), v))
+	})
+}
+
+// NameContainsFold applies the ContainsFold predicate on the "name" field.
+func NameContainsFold(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldName), v))
+	})
+}
+
+// PasswordEQ applies the EQ predicate on the "password" field.
+func PasswordEQ(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPassword), v))
+	})
+}
+
+// PasswordNEQ applies the NEQ predicate on the "password" field.
+func PasswordNEQ(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPassword), v))
+	})
+}
+
+// PasswordIn applies the In predicate on the "password" field.
+func PasswordIn(vs ...string) predicate.Manager {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Manager(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldPassword), v...))
+	})
+}
+
+// PasswordNotIn applies the NotIn predicate on the "password" field.
+func PasswordNotIn(vs ...string) predicate.Manager {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Manager(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldPassword), v...))
+	})
+}
+
+// PasswordGT applies the GT predicate on the "password" field.
+func PasswordGT(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPassword), v))
+	})
+}
+
+// PasswordGTE applies the GTE predicate on the "password" field.
+func PasswordGTE(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPassword), v))
+	})
+}
+
+// PasswordLT applies the LT predicate on the "password" field.
+func PasswordLT(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPassword), v))
+	})
+}
+
+// PasswordLTE applies the LTE predicate on the "password" field.
+func PasswordLTE(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPassword), v))
+	})
+}
+
+// PasswordContains applies the Contains predicate on the "password" field.
+func PasswordContains(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldPassword), v))
+	})
+}
+
+// PasswordHasPrefix applies the HasPrefix predicate on the "password" field.
+func PasswordHasPrefix(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldPassword), v))
+	})
+}
+
+// PasswordHasSuffix applies the HasSuffix predicate on the "password" field.
+func PasswordHasSuffix(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldPassword), v))
+	})
+}
+
+// PasswordEqualFold applies the EqualFold predicate on the "password" field.
+func PasswordEqualFold(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldPassword), v))
+	})
+}
+
+// PasswordContainsFold applies the ContainsFold predicate on the "password" field.
+func PasswordContainsFold(v string) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldPassword), v))
+	})
+}
+
+// LastSigninAtEQ applies the EQ predicate on the "last_signin_at" field.
+func LastSigninAtEQ(v time.Time) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLastSigninAt), v))
+	})
+}
+
+// LastSigninAtNEQ applies the NEQ predicate on the "last_signin_at" field.
+func LastSigninAtNEQ(v time.Time) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLastSigninAt), v))
+	})
+}
+
+// LastSigninAtIn applies the In predicate on the "last_signin_at" field.
+func LastSigninAtIn(vs ...time.Time) predicate.Manager {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Manager(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldLastSigninAt), v...))
+	})
+}
+
+// LastSigninAtNotIn applies the NotIn predicate on the "last_signin_at" field.
+func LastSigninAtNotIn(vs ...time.Time) predicate.Manager {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Manager(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldLastSigninAt), v...))
+	})
+}
+
+// LastSigninAtGT applies the GT predicate on the "last_signin_at" field.
+func LastSigninAtGT(v time.Time) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldLastSigninAt), v))
+	})
+}
+
+// LastSigninAtGTE applies the GTE predicate on the "last_signin_at" field.
+func LastSigninAtGTE(v time.Time) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldLastSigninAt), v))
+	})
+}
+
+// LastSigninAtLT applies the LT predicate on the "last_signin_at" field.
+func LastSigninAtLT(v time.Time) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldLastSigninAt), v))
+	})
+}
+
+// LastSigninAtLTE applies the LTE predicate on the "last_signin_at" field.
+func LastSigninAtLTE(v time.Time) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldLastSigninAt), v))
+	})
+}
+
+// LastSigninAtIsNil applies the IsNil predicate on the "last_signin_at" field.
+func LastSigninAtIsNil() predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldLastSigninAt)))
+	})
+}
+
+// LastSigninAtNotNil applies the NotNil predicate on the "last_signin_at" field.
+func LastSigninAtNotNil() predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldLastSigninAt)))
 	})
 }
 

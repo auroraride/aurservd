@@ -92,6 +92,38 @@ func (mc *ManagerCreate) SetNillableRemark(s *string) *ManagerCreate {
 	return mc
 }
 
+// SetPhone sets the "phone" field.
+func (mc *ManagerCreate) SetPhone(s string) *ManagerCreate {
+	mc.mutation.SetPhone(s)
+	return mc
+}
+
+// SetName sets the "name" field.
+func (mc *ManagerCreate) SetName(s string) *ManagerCreate {
+	mc.mutation.SetName(s)
+	return mc
+}
+
+// SetPassword sets the "password" field.
+func (mc *ManagerCreate) SetPassword(s string) *ManagerCreate {
+	mc.mutation.SetPassword(s)
+	return mc
+}
+
+// SetLastSigninAt sets the "last_signin_at" field.
+func (mc *ManagerCreate) SetLastSigninAt(t time.Time) *ManagerCreate {
+	mc.mutation.SetLastSigninAt(t)
+	return mc
+}
+
+// SetNillableLastSigninAt sets the "last_signin_at" field if the given value is not nil.
+func (mc *ManagerCreate) SetNillableLastSigninAt(t *time.Time) *ManagerCreate {
+	if t != nil {
+		mc.SetLastSigninAt(*t)
+	}
+	return mc
+}
+
 // Mutation returns the ManagerMutation object of the builder.
 func (mc *ManagerCreate) Mutation() *ManagerMutation {
 	return mc.mutation
@@ -176,10 +208,29 @@ func (mc *ManagerCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (mc *ManagerCreate) check() error {
 	if _, ok := mc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Manager.created_at"`)}
 	}
 	if _, ok := mc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Manager.updated_at"`)}
+	}
+	if _, ok := mc.mutation.Phone(); !ok {
+		return &ValidationError{Name: "phone", err: errors.New(`ent: missing required field "Manager.phone"`)}
+	}
+	if v, ok := mc.mutation.Phone(); ok {
+		if err := manager.PhoneValidator(v); err != nil {
+			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "Manager.phone": %w`, err)}
+		}
+	}
+	if _, ok := mc.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Manager.name"`)}
+	}
+	if v, ok := mc.mutation.Name(); ok {
+		if err := manager.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Manager.name": %w`, err)}
+		}
+	}
+	if _, ok := mc.mutation.Password(); !ok {
+		return &ValidationError{Name: "password", err: errors.New(`ent: missing required field "Manager.password"`)}
 	}
 	return nil
 }
@@ -248,6 +299,38 @@ func (mc *ManagerCreate) createSpec() (*Manager, *sqlgraph.CreateSpec) {
 			Column: manager.FieldRemark,
 		})
 		_node.Remark = &value
+	}
+	if value, ok := mc.mutation.Phone(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: manager.FieldPhone,
+		})
+		_node.Phone = value
+	}
+	if value, ok := mc.mutation.Name(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: manager.FieldName,
+		})
+		_node.Name = value
+	}
+	if value, ok := mc.mutation.Password(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: manager.FieldPassword,
+		})
+		_node.Password = value
+	}
+	if value, ok := mc.mutation.LastSigninAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: manager.FieldLastSigninAt,
+		})
+		_node.LastSigninAt = &value
 	}
 	return _node, _spec
 }
@@ -381,7 +464,61 @@ func (u *ManagerUpsert) ClearRemark() *ManagerUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create.
+// SetPhone sets the "phone" field.
+func (u *ManagerUpsert) SetPhone(v string) *ManagerUpsert {
+	u.Set(manager.FieldPhone, v)
+	return u
+}
+
+// UpdatePhone sets the "phone" field to the value that was provided on create.
+func (u *ManagerUpsert) UpdatePhone() *ManagerUpsert {
+	u.SetExcluded(manager.FieldPhone)
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *ManagerUpsert) SetName(v string) *ManagerUpsert {
+	u.Set(manager.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *ManagerUpsert) UpdateName() *ManagerUpsert {
+	u.SetExcluded(manager.FieldName)
+	return u
+}
+
+// SetPassword sets the "password" field.
+func (u *ManagerUpsert) SetPassword(v string) *ManagerUpsert {
+	u.Set(manager.FieldPassword, v)
+	return u
+}
+
+// UpdatePassword sets the "password" field to the value that was provided on create.
+func (u *ManagerUpsert) UpdatePassword() *ManagerUpsert {
+	u.SetExcluded(manager.FieldPassword)
+	return u
+}
+
+// SetLastSigninAt sets the "last_signin_at" field.
+func (u *ManagerUpsert) SetLastSigninAt(v time.Time) *ManagerUpsert {
+	u.Set(manager.FieldLastSigninAt, v)
+	return u
+}
+
+// UpdateLastSigninAt sets the "last_signin_at" field to the value that was provided on create.
+func (u *ManagerUpsert) UpdateLastSigninAt() *ManagerUpsert {
+	u.SetExcluded(manager.FieldLastSigninAt)
+	return u
+}
+
+// ClearLastSigninAt clears the value of the "last_signin_at" field.
+func (u *ManagerUpsert) ClearLastSigninAt() *ManagerUpsert {
+	u.SetNull(manager.FieldLastSigninAt)
+	return u
+}
+
+// UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
 //	client.Manager.Create().
@@ -392,6 +529,11 @@ func (u *ManagerUpsert) ClearRemark() *ManagerUpsert {
 //
 func (u *ManagerUpsertOne) UpdateNewValues() *ManagerUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(manager.FieldCreatedAt)
+		}
+	}))
 	return u
 }
 
@@ -511,6 +653,69 @@ func (u *ManagerUpsertOne) UpdateRemark() *ManagerUpsertOne {
 func (u *ManagerUpsertOne) ClearRemark() *ManagerUpsertOne {
 	return u.Update(func(s *ManagerUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetPhone sets the "phone" field.
+func (u *ManagerUpsertOne) SetPhone(v string) *ManagerUpsertOne {
+	return u.Update(func(s *ManagerUpsert) {
+		s.SetPhone(v)
+	})
+}
+
+// UpdatePhone sets the "phone" field to the value that was provided on create.
+func (u *ManagerUpsertOne) UpdatePhone() *ManagerUpsertOne {
+	return u.Update(func(s *ManagerUpsert) {
+		s.UpdatePhone()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *ManagerUpsertOne) SetName(v string) *ManagerUpsertOne {
+	return u.Update(func(s *ManagerUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *ManagerUpsertOne) UpdateName() *ManagerUpsertOne {
+	return u.Update(func(s *ManagerUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetPassword sets the "password" field.
+func (u *ManagerUpsertOne) SetPassword(v string) *ManagerUpsertOne {
+	return u.Update(func(s *ManagerUpsert) {
+		s.SetPassword(v)
+	})
+}
+
+// UpdatePassword sets the "password" field to the value that was provided on create.
+func (u *ManagerUpsertOne) UpdatePassword() *ManagerUpsertOne {
+	return u.Update(func(s *ManagerUpsert) {
+		s.UpdatePassword()
+	})
+}
+
+// SetLastSigninAt sets the "last_signin_at" field.
+func (u *ManagerUpsertOne) SetLastSigninAt(v time.Time) *ManagerUpsertOne {
+	return u.Update(func(s *ManagerUpsert) {
+		s.SetLastSigninAt(v)
+	})
+}
+
+// UpdateLastSigninAt sets the "last_signin_at" field to the value that was provided on create.
+func (u *ManagerUpsertOne) UpdateLastSigninAt() *ManagerUpsertOne {
+	return u.Update(func(s *ManagerUpsert) {
+		s.UpdateLastSigninAt()
+	})
+}
+
+// ClearLastSigninAt clears the value of the "last_signin_at" field.
+func (u *ManagerUpsertOne) ClearLastSigninAt() *ManagerUpsertOne {
+	return u.Update(func(s *ManagerUpsert) {
+		s.ClearLastSigninAt()
 	})
 }
 
@@ -676,7 +881,7 @@ type ManagerUpsertBulk struct {
 	create *ManagerCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.Manager.Create().
@@ -687,6 +892,13 @@ type ManagerUpsertBulk struct {
 //
 func (u *ManagerUpsertBulk) UpdateNewValues() *ManagerUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(manager.FieldCreatedAt)
+			}
+		}
+	}))
 	return u
 }
 
@@ -806,6 +1018,69 @@ func (u *ManagerUpsertBulk) UpdateRemark() *ManagerUpsertBulk {
 func (u *ManagerUpsertBulk) ClearRemark() *ManagerUpsertBulk {
 	return u.Update(func(s *ManagerUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetPhone sets the "phone" field.
+func (u *ManagerUpsertBulk) SetPhone(v string) *ManagerUpsertBulk {
+	return u.Update(func(s *ManagerUpsert) {
+		s.SetPhone(v)
+	})
+}
+
+// UpdatePhone sets the "phone" field to the value that was provided on create.
+func (u *ManagerUpsertBulk) UpdatePhone() *ManagerUpsertBulk {
+	return u.Update(func(s *ManagerUpsert) {
+		s.UpdatePhone()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *ManagerUpsertBulk) SetName(v string) *ManagerUpsertBulk {
+	return u.Update(func(s *ManagerUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *ManagerUpsertBulk) UpdateName() *ManagerUpsertBulk {
+	return u.Update(func(s *ManagerUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetPassword sets the "password" field.
+func (u *ManagerUpsertBulk) SetPassword(v string) *ManagerUpsertBulk {
+	return u.Update(func(s *ManagerUpsert) {
+		s.SetPassword(v)
+	})
+}
+
+// UpdatePassword sets the "password" field to the value that was provided on create.
+func (u *ManagerUpsertBulk) UpdatePassword() *ManagerUpsertBulk {
+	return u.Update(func(s *ManagerUpsert) {
+		s.UpdatePassword()
+	})
+}
+
+// SetLastSigninAt sets the "last_signin_at" field.
+func (u *ManagerUpsertBulk) SetLastSigninAt(v time.Time) *ManagerUpsertBulk {
+	return u.Update(func(s *ManagerUpsert) {
+		s.SetLastSigninAt(v)
+	})
+}
+
+// UpdateLastSigninAt sets the "last_signin_at" field to the value that was provided on create.
+func (u *ManagerUpsertBulk) UpdateLastSigninAt() *ManagerUpsertBulk {
+	return u.Update(func(s *ManagerUpsert) {
+		s.UpdateLastSigninAt()
+	})
+}
+
+// ClearLastSigninAt clears the value of the "last_signin_at" field.
+func (u *ManagerUpsertBulk) ClearLastSigninAt() *ManagerUpsertBulk {
+	return u.Update(func(s *ManagerUpsert) {
+		s.ClearLastSigninAt()
 	})
 }
 

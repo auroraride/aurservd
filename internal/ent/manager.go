@@ -28,6 +28,18 @@ type Manager struct {
 	// Remark holds the value of the "remark" field.
 	// 备注
 	Remark *string `json:"remark,omitempty"`
+	// Phone holds the value of the "phone" field.
+	// 账户/手机号
+	Phone string `json:"phone,omitempty"`
+	// Name holds the value of the "name" field.
+	// 姓名
+	Name string `json:"name,omitempty"`
+	// Password holds the value of the "password" field.
+	// 密码
+	Password string `json:"password,omitempty"`
+	// LastSigninAt holds the value of the "last_signin_at" field.
+	// 最后登录时间
+	LastSigninAt *time.Time `json:"last_signin_at,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -37,9 +49,9 @@ func (*Manager) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case manager.FieldID:
 			values[i] = new(sql.NullInt64)
-		case manager.FieldRemark:
+		case manager.FieldRemark, manager.FieldPhone, manager.FieldName, manager.FieldPassword:
 			values[i] = new(sql.NullString)
-		case manager.FieldCreatedAt, manager.FieldUpdatedAt, manager.FieldDeletedAt, manager.FieldLastModify:
+		case manager.FieldCreatedAt, manager.FieldUpdatedAt, manager.FieldDeletedAt, manager.FieldLastModify, manager.FieldLastSigninAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Manager", columns[i])
@@ -95,6 +107,31 @@ func (m *Manager) assignValues(columns []string, values []interface{}) error {
 				m.Remark = new(string)
 				*m.Remark = value.String
 			}
+		case manager.FieldPhone:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field phone", values[i])
+			} else if value.Valid {
+				m.Phone = value.String
+			}
+		case manager.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				m.Name = value.String
+			}
+		case manager.FieldPassword:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field password", values[i])
+			} else if value.Valid {
+				m.Password = value.String
+			}
+		case manager.FieldLastSigninAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field last_signin_at", values[i])
+			} else if value.Valid {
+				m.LastSigninAt = new(time.Time)
+				*m.LastSigninAt = value.Time
+			}
 		}
 	}
 	return nil
@@ -138,6 +175,16 @@ func (m *Manager) String() string {
 	if v := m.Remark; v != nil {
 		builder.WriteString(", remark=")
 		builder.WriteString(*v)
+	}
+	builder.WriteString(", phone=")
+	builder.WriteString(m.Phone)
+	builder.WriteString(", name=")
+	builder.WriteString(m.Name)
+	builder.WriteString(", password=")
+	builder.WriteString(m.Password)
+	if v := m.LastSigninAt; v != nil {
+		builder.WriteString(", last_signin_at=")
+		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteByte(')')
 	return builder.String()

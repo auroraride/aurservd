@@ -224,35 +224,35 @@ func (cc *ContractCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (cc *ContractCreate) check() error {
 	if _, ok := cc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Contract.created_at"`)}
 	}
 	if _, ok := cc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Contract.updated_at"`)}
 	}
 	if _, ok := cc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "status"`)}
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Contract.status"`)}
 	}
 	if _, ok := cc.mutation.RiderID(); !ok {
-		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "rider_id"`)}
+		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "Contract.rider_id"`)}
 	}
 	if _, ok := cc.mutation.FlowID(); !ok {
-		return &ValidationError{Name: "flow_id", err: errors.New(`ent: missing required field "flow_id"`)}
+		return &ValidationError{Name: "flow_id", err: errors.New(`ent: missing required field "Contract.flow_id"`)}
 	}
 	if v, ok := cc.mutation.FlowID(); ok {
 		if err := contract.FlowIDValidator(v); err != nil {
-			return &ValidationError{Name: "flow_id", err: fmt.Errorf(`ent: validator failed for field "flow_id": %w`, err)}
+			return &ValidationError{Name: "flow_id", err: fmt.Errorf(`ent: validator failed for field "Contract.flow_id": %w`, err)}
 		}
 	}
 	if _, ok := cc.mutation.Sn(); !ok {
-		return &ValidationError{Name: "sn", err: errors.New(`ent: missing required field "sn"`)}
+		return &ValidationError{Name: "sn", err: errors.New(`ent: missing required field "Contract.sn"`)}
 	}
 	if v, ok := cc.mutation.Sn(); ok {
 		if err := contract.SnValidator(v); err != nil {
-			return &ValidationError{Name: "sn", err: fmt.Errorf(`ent: validator failed for field "sn": %w`, err)}
+			return &ValidationError{Name: "sn", err: fmt.Errorf(`ent: validator failed for field "Contract.sn": %w`, err)}
 		}
 	}
 	if _, ok := cc.mutation.RiderID(); !ok {
-		return &ValidationError{Name: "rider", err: errors.New("ent: missing required edge \"rider\"")}
+		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Contract.rider"`)}
 	}
 	return nil
 }
@@ -518,6 +518,12 @@ func (u *ContractUpsert) UpdateStatus() *ContractUpsert {
 	return u
 }
 
+// AddStatus adds v to the "status" field.
+func (u *ContractUpsert) AddStatus(v uint8) *ContractUpsert {
+	u.Add(contract.FieldStatus, v)
+	return u
+}
+
 // SetRiderID sets the "rider_id" field.
 func (u *ContractUpsert) SetRiderID(v uint64) *ContractUpsert {
 	u.Set(contract.FieldRiderID, v)
@@ -572,7 +578,7 @@ func (u *ContractUpsert) ClearFiles() *ContractUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create.
+// UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
 //	client.Contract.Create().
@@ -583,6 +589,11 @@ func (u *ContractUpsert) ClearFiles() *ContractUpsert {
 //
 func (u *ContractUpsertOne) UpdateNewValues() *ContractUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(contract.FieldCreatedAt)
+		}
+	}))
 	return u
 }
 
@@ -709,6 +720,13 @@ func (u *ContractUpsertOne) ClearRemark() *ContractUpsertOne {
 func (u *ContractUpsertOne) SetStatus(v uint8) *ContractUpsertOne {
 	return u.Update(func(s *ContractUpsert) {
 		s.SetStatus(v)
+	})
+}
+
+// AddStatus adds v to the "status" field.
+func (u *ContractUpsertOne) AddStatus(v uint8) *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.AddStatus(v)
 	})
 }
 
@@ -944,7 +962,7 @@ type ContractUpsertBulk struct {
 	create *ContractCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.Contract.Create().
@@ -955,6 +973,13 @@ type ContractUpsertBulk struct {
 //
 func (u *ContractUpsertBulk) UpdateNewValues() *ContractUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(contract.FieldCreatedAt)
+			}
+		}
+	}))
 	return u
 }
 
@@ -1081,6 +1106,13 @@ func (u *ContractUpsertBulk) ClearRemark() *ContractUpsertBulk {
 func (u *ContractUpsertBulk) SetStatus(v uint8) *ContractUpsertBulk {
 	return u.Update(func(s *ContractUpsert) {
 		s.SetStatus(v)
+	})
+}
+
+// AddStatus adds v to the "status" field.
+func (u *ContractUpsertBulk) AddStatus(v uint8) *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.AddStatus(v)
 	})
 }
 

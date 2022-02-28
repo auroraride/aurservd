@@ -111,7 +111,7 @@ func (cu *ContractUpdate) SetNillableStatus(u *uint8) *ContractUpdate {
 }
 
 // AddStatus adds u to the "status" field.
-func (cu *ContractUpdate) AddStatus(u uint8) *ContractUpdate {
+func (cu *ContractUpdate) AddStatus(u int8) *ContractUpdate {
 	cu.mutation.AddStatus(u)
 	return cu
 }
@@ -235,16 +235,16 @@ func (cu *ContractUpdate) defaults() {
 func (cu *ContractUpdate) check() error {
 	if v, ok := cu.mutation.FlowID(); ok {
 		if err := contract.FlowIDValidator(v); err != nil {
-			return &ValidationError{Name: "flow_id", err: fmt.Errorf("ent: validator failed for field \"flow_id\": %w", err)}
+			return &ValidationError{Name: "flow_id", err: fmt.Errorf(`ent: validator failed for field "Contract.flow_id": %w`, err)}
 		}
 	}
 	if v, ok := cu.mutation.Sn(); ok {
 		if err := contract.SnValidator(v); err != nil {
-			return &ValidationError{Name: "sn", err: fmt.Errorf("ent: validator failed for field \"sn\": %w", err)}
+			return &ValidationError{Name: "sn", err: fmt.Errorf(`ent: validator failed for field "Contract.sn": %w`, err)}
 		}
 	}
 	if _, ok := cu.mutation.RiderID(); cu.mutation.RiderCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"rider\"")
+		return errors.New(`ent: clearing a required unique edge "Contract.rider"`)
 	}
 	return nil
 }
@@ -490,7 +490,7 @@ func (cuo *ContractUpdateOne) SetNillableStatus(u *uint8) *ContractUpdateOne {
 }
 
 // AddStatus adds u to the "status" field.
-func (cuo *ContractUpdateOne) AddStatus(u uint8) *ContractUpdateOne {
+func (cuo *ContractUpdateOne) AddStatus(u int8) *ContractUpdateOne {
 	cuo.mutation.AddStatus(u)
 	return cuo
 }
@@ -621,16 +621,16 @@ func (cuo *ContractUpdateOne) defaults() {
 func (cuo *ContractUpdateOne) check() error {
 	if v, ok := cuo.mutation.FlowID(); ok {
 		if err := contract.FlowIDValidator(v); err != nil {
-			return &ValidationError{Name: "flow_id", err: fmt.Errorf("ent: validator failed for field \"flow_id\": %w", err)}
+			return &ValidationError{Name: "flow_id", err: fmt.Errorf(`ent: validator failed for field "Contract.flow_id": %w`, err)}
 		}
 	}
 	if v, ok := cuo.mutation.Sn(); ok {
 		if err := contract.SnValidator(v); err != nil {
-			return &ValidationError{Name: "sn", err: fmt.Errorf("ent: validator failed for field \"sn\": %w", err)}
+			return &ValidationError{Name: "sn", err: fmt.Errorf(`ent: validator failed for field "Contract.sn": %w`, err)}
 		}
 	}
 	if _, ok := cuo.mutation.RiderID(); cuo.mutation.RiderCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"rider\"")
+		return errors.New(`ent: clearing a required unique edge "Contract.rider"`)
 	}
 	return nil
 }
@@ -648,7 +648,7 @@ func (cuo *ContractUpdateOne) sqlSave(ctx context.Context) (_node *Contract, err
 	}
 	id, ok := cuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Contract.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Contract.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := cuo.fields; len(fields) > 0 {

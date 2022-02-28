@@ -414,6 +414,10 @@ func (pq *PersonQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(pq.modifiers) > 0 {
 		_spec.Modifiers = pq.modifiers
 	}
+	_spec.Node.Columns = pq.fields
+	if len(pq.fields) > 0 {
+		_spec.Unique = pq.unique != nil && *pq.unique
+	}
 	return sqlgraph.CountNodes(ctx, pq.driver, _spec)
 }
 
@@ -484,6 +488,9 @@ func (pq *PersonQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if pq.sql != nil {
 		selector = pq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if pq.unique != nil && *pq.unique {
+		selector.Distinct()
 	}
 	for _, m := range pq.modifiers {
 		m(selector)
@@ -772,9 +779,7 @@ func (pgb *PersonGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range pgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(pgb.fields...)...)

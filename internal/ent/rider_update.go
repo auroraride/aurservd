@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -132,7 +133,7 @@ func (ru *RiderUpdate) SetNillableGroupID(u *uint64) *RiderUpdate {
 }
 
 // AddGroupID adds u to the "group_id" field.
-func (ru *RiderUpdate) AddGroupID(u uint64) *RiderUpdate {
+func (ru *RiderUpdate) AddGroupID(u int64) *RiderUpdate {
 	ru.mutation.AddGroupID(u)
 	return ru
 }
@@ -169,7 +170,7 @@ func (ru *RiderUpdate) SetDeviceType(u uint8) *RiderUpdate {
 }
 
 // AddDeviceType adds u to the "device_type" field.
-func (ru *RiderUpdate) AddDeviceType(u uint8) *RiderUpdate {
+func (ru *RiderUpdate) AddDeviceType(u int8) *RiderUpdate {
 	ru.mutation.AddDeviceType(u)
 	return ru
 }
@@ -399,17 +400,17 @@ func (ru *RiderUpdate) defaults() {
 func (ru *RiderUpdate) check() error {
 	if v, ok := ru.mutation.Phone(); ok {
 		if err := rider.PhoneValidator(v); err != nil {
-			return &ValidationError{Name: "phone", err: fmt.Errorf("ent: validator failed for field \"phone\": %w", err)}
+			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "Rider.phone": %w`, err)}
 		}
 	}
 	if v, ok := ru.mutation.LastDevice(); ok {
 		if err := rider.LastDeviceValidator(v); err != nil {
-			return &ValidationError{Name: "last_device", err: fmt.Errorf("ent: validator failed for field \"last_device\": %w", err)}
+			return &ValidationError{Name: "last_device", err: fmt.Errorf(`ent: validator failed for field "Rider.last_device": %w`, err)}
 		}
 	}
 	if v, ok := ru.mutation.PushID(); ok {
 		if err := rider.PushIDValidator(v); err != nil {
-			return &ValidationError{Name: "push_id", err: fmt.Errorf("ent: validator failed for field \"push_id\": %w", err)}
+			return &ValidationError{Name: "push_id", err: fmt.Errorf(`ent: validator failed for field "Rider.push_id": %w`, err)}
 		}
 	}
 	return nil
@@ -809,7 +810,7 @@ func (ruo *RiderUpdateOne) SetNillableGroupID(u *uint64) *RiderUpdateOne {
 }
 
 // AddGroupID adds u to the "group_id" field.
-func (ruo *RiderUpdateOne) AddGroupID(u uint64) *RiderUpdateOne {
+func (ruo *RiderUpdateOne) AddGroupID(u int64) *RiderUpdateOne {
 	ruo.mutation.AddGroupID(u)
 	return ruo
 }
@@ -846,7 +847,7 @@ func (ruo *RiderUpdateOne) SetDeviceType(u uint8) *RiderUpdateOne {
 }
 
 // AddDeviceType adds u to the "device_type" field.
-func (ruo *RiderUpdateOne) AddDeviceType(u uint8) *RiderUpdateOne {
+func (ruo *RiderUpdateOne) AddDeviceType(u int8) *RiderUpdateOne {
 	ruo.mutation.AddDeviceType(u)
 	return ruo
 }
@@ -1083,17 +1084,17 @@ func (ruo *RiderUpdateOne) defaults() {
 func (ruo *RiderUpdateOne) check() error {
 	if v, ok := ruo.mutation.Phone(); ok {
 		if err := rider.PhoneValidator(v); err != nil {
-			return &ValidationError{Name: "phone", err: fmt.Errorf("ent: validator failed for field \"phone\": %w", err)}
+			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "Rider.phone": %w`, err)}
 		}
 	}
 	if v, ok := ruo.mutation.LastDevice(); ok {
 		if err := rider.LastDeviceValidator(v); err != nil {
-			return &ValidationError{Name: "last_device", err: fmt.Errorf("ent: validator failed for field \"last_device\": %w", err)}
+			return &ValidationError{Name: "last_device", err: fmt.Errorf(`ent: validator failed for field "Rider.last_device": %w`, err)}
 		}
 	}
 	if v, ok := ruo.mutation.PushID(); ok {
 		if err := rider.PushIDValidator(v); err != nil {
-			return &ValidationError{Name: "push_id", err: fmt.Errorf("ent: validator failed for field \"push_id\": %w", err)}
+			return &ValidationError{Name: "push_id", err: fmt.Errorf(`ent: validator failed for field "Rider.push_id": %w`, err)}
 		}
 	}
 	return nil
@@ -1112,7 +1113,7 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 	}
 	id, ok := ruo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Rider.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Rider.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ruo.fields; len(fields) > 0 {

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -93,6 +94,44 @@ func (mu *ManagerUpdate) ClearRemark() *ManagerUpdate {
 	return mu
 }
 
+// SetPhone sets the "phone" field.
+func (mu *ManagerUpdate) SetPhone(s string) *ManagerUpdate {
+	mu.mutation.SetPhone(s)
+	return mu
+}
+
+// SetName sets the "name" field.
+func (mu *ManagerUpdate) SetName(s string) *ManagerUpdate {
+	mu.mutation.SetName(s)
+	return mu
+}
+
+// SetPassword sets the "password" field.
+func (mu *ManagerUpdate) SetPassword(s string) *ManagerUpdate {
+	mu.mutation.SetPassword(s)
+	return mu
+}
+
+// SetLastSigninAt sets the "last_signin_at" field.
+func (mu *ManagerUpdate) SetLastSigninAt(t time.Time) *ManagerUpdate {
+	mu.mutation.SetLastSigninAt(t)
+	return mu
+}
+
+// SetNillableLastSigninAt sets the "last_signin_at" field if the given value is not nil.
+func (mu *ManagerUpdate) SetNillableLastSigninAt(t *time.Time) *ManagerUpdate {
+	if t != nil {
+		mu.SetLastSigninAt(*t)
+	}
+	return mu
+}
+
+// ClearLastSigninAt clears the value of the "last_signin_at" field.
+func (mu *ManagerUpdate) ClearLastSigninAt() *ManagerUpdate {
+	mu.mutation.ClearLastSigninAt()
+	return mu
+}
+
 // Mutation returns the ManagerMutation object of the builder.
 func (mu *ManagerUpdate) Mutation() *ManagerMutation {
 	return mu.mutation
@@ -106,12 +145,18 @@ func (mu *ManagerUpdate) Save(ctx context.Context) (int, error) {
 	)
 	mu.defaults()
 	if len(mu.hooks) == 0 {
+		if err = mu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = mu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*ManagerMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = mu.check(); err != nil {
+				return 0, err
 			}
 			mu.mutation = mutation
 			affected, err = mu.sqlSave(ctx)
@@ -159,6 +204,21 @@ func (mu *ManagerUpdate) defaults() {
 		v := manager.UpdateDefaultUpdatedAt()
 		mu.mutation.SetUpdatedAt(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (mu *ManagerUpdate) check() error {
+	if v, ok := mu.mutation.Phone(); ok {
+		if err := manager.PhoneValidator(v); err != nil {
+			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "Manager.phone": %w`, err)}
+		}
+	}
+	if v, ok := mu.mutation.Name(); ok {
+		if err := manager.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Manager.name": %w`, err)}
+		}
+	}
+	return nil
 }
 
 func (mu *ManagerUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -223,6 +283,40 @@ func (mu *ManagerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: manager.FieldRemark,
+		})
+	}
+	if value, ok := mu.mutation.Phone(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: manager.FieldPhone,
+		})
+	}
+	if value, ok := mu.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: manager.FieldName,
+		})
+	}
+	if value, ok := mu.mutation.Password(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: manager.FieldPassword,
+		})
+	}
+	if value, ok := mu.mutation.LastSigninAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: manager.FieldLastSigninAt,
+		})
+	}
+	if mu.mutation.LastSigninAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: manager.FieldLastSigninAt,
 		})
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, mu.driver, _spec); err != nil {
@@ -310,6 +404,44 @@ func (muo *ManagerUpdateOne) ClearRemark() *ManagerUpdateOne {
 	return muo
 }
 
+// SetPhone sets the "phone" field.
+func (muo *ManagerUpdateOne) SetPhone(s string) *ManagerUpdateOne {
+	muo.mutation.SetPhone(s)
+	return muo
+}
+
+// SetName sets the "name" field.
+func (muo *ManagerUpdateOne) SetName(s string) *ManagerUpdateOne {
+	muo.mutation.SetName(s)
+	return muo
+}
+
+// SetPassword sets the "password" field.
+func (muo *ManagerUpdateOne) SetPassword(s string) *ManagerUpdateOne {
+	muo.mutation.SetPassword(s)
+	return muo
+}
+
+// SetLastSigninAt sets the "last_signin_at" field.
+func (muo *ManagerUpdateOne) SetLastSigninAt(t time.Time) *ManagerUpdateOne {
+	muo.mutation.SetLastSigninAt(t)
+	return muo
+}
+
+// SetNillableLastSigninAt sets the "last_signin_at" field if the given value is not nil.
+func (muo *ManagerUpdateOne) SetNillableLastSigninAt(t *time.Time) *ManagerUpdateOne {
+	if t != nil {
+		muo.SetLastSigninAt(*t)
+	}
+	return muo
+}
+
+// ClearLastSigninAt clears the value of the "last_signin_at" field.
+func (muo *ManagerUpdateOne) ClearLastSigninAt() *ManagerUpdateOne {
+	muo.mutation.ClearLastSigninAt()
+	return muo
+}
+
 // Mutation returns the ManagerMutation object of the builder.
 func (muo *ManagerUpdateOne) Mutation() *ManagerMutation {
 	return muo.mutation
@@ -330,12 +462,18 @@ func (muo *ManagerUpdateOne) Save(ctx context.Context) (*Manager, error) {
 	)
 	muo.defaults()
 	if len(muo.hooks) == 0 {
+		if err = muo.check(); err != nil {
+			return nil, err
+		}
 		node, err = muo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*ManagerMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = muo.check(); err != nil {
+				return nil, err
 			}
 			muo.mutation = mutation
 			node, err = muo.sqlSave(ctx)
@@ -385,6 +523,21 @@ func (muo *ManagerUpdateOne) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (muo *ManagerUpdateOne) check() error {
+	if v, ok := muo.mutation.Phone(); ok {
+		if err := manager.PhoneValidator(v); err != nil {
+			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "Manager.phone": %w`, err)}
+		}
+	}
+	if v, ok := muo.mutation.Name(); ok {
+		if err := manager.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Manager.name": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (muo *ManagerUpdateOne) sqlSave(ctx context.Context) (_node *Manager, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -398,7 +551,7 @@ func (muo *ManagerUpdateOne) sqlSave(ctx context.Context) (_node *Manager, err e
 	}
 	id, ok := muo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Manager.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Manager.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := muo.fields; len(fields) > 0 {
@@ -464,6 +617,40 @@ func (muo *ManagerUpdateOne) sqlSave(ctx context.Context) (_node *Manager, err e
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: manager.FieldRemark,
+		})
+	}
+	if value, ok := muo.mutation.Phone(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: manager.FieldPhone,
+		})
+	}
+	if value, ok := muo.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: manager.FieldName,
+		})
+	}
+	if value, ok := muo.mutation.Password(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: manager.FieldPassword,
+		})
+	}
+	if value, ok := muo.mutation.LastSigninAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: manager.FieldLastSigninAt,
+		})
+	}
+	if muo.mutation.LastSigninAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: manager.FieldLastSigninAt,
 		})
 	}
 	_node = &Manager{config: muo.config}

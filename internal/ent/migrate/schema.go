@@ -9,6 +9,61 @@ import (
 )
 
 var (
+	// CityColumns holds the columns for the "city" table.
+	CityColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "last_modify", Type: field.TypeTime, Nullable: true},
+		{Name: "remark", Type: field.TypeString, Nullable: true},
+		{Name: "open", Type: field.TypeBool, Nullable: true},
+		{Name: "name", Type: field.TypeString, Size: 100},
+		{Name: "adcode", Type: field.TypeString, Unique: true, Size: 10},
+		{Name: "code", Type: field.TypeString, Size: 10},
+		{Name: "parent_id", Type: field.TypeUint64, Nullable: true},
+	}
+	// CityTable holds the schema information for the "city" table.
+	CityTable = &schema.Table{
+		Name:       "city",
+		Columns:    CityColumns,
+		PrimaryKey: []*schema.Column{CityColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "city_city_children",
+				Columns:    []*schema.Column{CityColumns[10]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "city_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{CityColumns[3]},
+			},
+			{
+				Name:    "city_open",
+				Unique:  false,
+				Columns: []*schema.Column{CityColumns[6]},
+			},
+			{
+				Name:    "city_code",
+				Unique:  false,
+				Columns: []*schema.Column{CityColumns[9]},
+			},
+			{
+				Name:    "city_adcode",
+				Unique:  false,
+				Columns: []*schema.Column{CityColumns[8]},
+			},
+			{
+				Name:    "city_parent_id",
+				Unique:  false,
+				Columns: []*schema.Column{CityColumns[10]},
+			},
+		},
+	}
 	// ContractColumns holds the columns for the "contract" table.
 	ContractColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -52,6 +107,10 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "last_modify", Type: field.TypeTime, Nullable: true},
 		{Name: "remark", Type: field.TypeString, Nullable: true},
+		{Name: "phone", Type: field.TypeString, Unique: true, Size: 30},
+		{Name: "name", Type: field.TypeString, Size: 30},
+		{Name: "password", Type: field.TypeString},
+		{Name: "last_signin_at", Type: field.TypeTime, Nullable: true},
 	}
 	// ManagerTable holds the schema information for the "manager" table.
 	ManagerTable = &schema.Table{
@@ -63,6 +122,11 @@ var (
 				Name:    "manager_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{ManagerColumns[3]},
+			},
+			{
+				Name:    "manager_phone",
+				Unique:  false,
+				Columns: []*schema.Column{ManagerColumns[6]},
 			},
 		},
 	}
@@ -142,6 +206,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{RiderColumns[3]},
 			},
+			{
+				Name:    "rider_phone",
+				Unique:  false,
+				Columns: []*schema.Column{RiderColumns[7]},
+			},
 		},
 	}
 	// SettingColumns holds the columns for the "setting" table.
@@ -160,6 +229,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		CityTable,
 		ContractTable,
 		ManagerTable,
 		PersonTable,
@@ -169,6 +239,10 @@ var (
 )
 
 func init() {
+	CityTable.ForeignKeys[0].RefTable = CityTable
+	CityTable.Annotation = &entsql.Annotation{
+		Table: "city",
+	}
 	ContractTable.ForeignKeys[0].RefTable = RiderTable
 	ContractTable.Annotation = &entsql.Annotation{
 		Table: "contract",

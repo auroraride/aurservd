@@ -1,0 +1,2606 @@
+[
+  {
+    "id": 0,
+    "adcode": "110000",
+    "name": "北京市",
+    "code": "010",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "110100",
+        "name": "北京市",
+        "code": "010",
+        "parent_id": 1
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "120000",
+    "name": "天津市",
+    "code": "022",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "120100",
+        "name": "天津市",
+        "code": "022",
+        "parent_id": 2
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "130000",
+    "name": "河北省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "130100",
+        "name": "石家庄市",
+        "code": "0311",
+        "parent_id": 3
+      },
+      {
+        "id": 0,
+        "adcode": "130200",
+        "name": "唐山市",
+        "code": "0315",
+        "parent_id": 3
+      },
+      {
+        "id": 0,
+        "adcode": "130300",
+        "name": "秦皇岛市",
+        "code": "0335",
+        "parent_id": 3
+      },
+      {
+        "id": 0,
+        "adcode": "130400",
+        "name": "邯郸市",
+        "code": "0310",
+        "parent_id": 3
+      },
+      {
+        "id": 0,
+        "adcode": "130500",
+        "name": "邢台市",
+        "code": "0319",
+        "parent_id": 3
+      },
+      {
+        "id": 0,
+        "adcode": "130600",
+        "name": "保定市",
+        "code": "0312",
+        "parent_id": 3
+      },
+      {
+        "id": 0,
+        "adcode": "130700",
+        "name": "张家口市",
+        "code": "0313",
+        "parent_id": 3
+      },
+      {
+        "id": 0,
+        "adcode": "130800",
+        "name": "承德市",
+        "code": "0314",
+        "parent_id": 3
+      },
+      {
+        "id": 0,
+        "adcode": "130900",
+        "name": "沧州市",
+        "code": "0317",
+        "parent_id": 3
+      },
+      {
+        "id": 0,
+        "adcode": "131000",
+        "name": "廊坊市",
+        "code": "0316",
+        "parent_id": 3
+      },
+      {
+        "id": 0,
+        "adcode": "131100",
+        "name": "衡水市",
+        "code": "0318",
+        "parent_id": 3
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "140000",
+    "name": "山西省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "140100",
+        "name": "太原市",
+        "code": "0351",
+        "parent_id": 4
+      },
+      {
+        "id": 0,
+        "adcode": "140200",
+        "name": "大同市",
+        "code": "0352",
+        "parent_id": 4
+      },
+      {
+        "id": 0,
+        "adcode": "140300",
+        "name": "阳泉市",
+        "code": "0353",
+        "parent_id": 4
+      },
+      {
+        "id": 0,
+        "adcode": "140400",
+        "name": "长治市",
+        "code": "0355",
+        "parent_id": 4
+      },
+      {
+        "id": 0,
+        "adcode": "140500",
+        "name": "晋城市",
+        "code": "0356",
+        "parent_id": 4
+      },
+      {
+        "id": 0,
+        "adcode": "140600",
+        "name": "朔州市",
+        "code": "0349",
+        "parent_id": 4
+      },
+      {
+        "id": 0,
+        "adcode": "140700",
+        "name": "晋中市",
+        "code": "0354",
+        "parent_id": 4
+      },
+      {
+        "id": 0,
+        "adcode": "140800",
+        "name": "运城市",
+        "code": "0359",
+        "parent_id": 4
+      },
+      {
+        "id": 0,
+        "adcode": "140900",
+        "name": "忻州市",
+        "code": "0350",
+        "parent_id": 4
+      },
+      {
+        "id": 0,
+        "adcode": "141000",
+        "name": "临汾市",
+        "code": "0357",
+        "parent_id": 4
+      },
+      {
+        "id": 0,
+        "adcode": "141100",
+        "name": "吕梁市",
+        "code": "0358",
+        "parent_id": 4
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "150000",
+    "name": "内蒙古自治区",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "150100",
+        "name": "呼和浩特市",
+        "code": "0471",
+        "parent_id": 5
+      },
+      {
+        "id": 0,
+        "adcode": "150200",
+        "name": "包头市",
+        "code": "0472",
+        "parent_id": 5
+      },
+      {
+        "id": 0,
+        "adcode": "150300",
+        "name": "乌海市",
+        "code": "0473",
+        "parent_id": 5
+      },
+      {
+        "id": 0,
+        "adcode": "150400",
+        "name": "赤峰市",
+        "code": "0476",
+        "parent_id": 5
+      },
+      {
+        "id": 0,
+        "adcode": "150500",
+        "name": "通辽市",
+        "code": "0475",
+        "parent_id": 5
+      },
+      {
+        "id": 0,
+        "adcode": "150600",
+        "name": "鄂尔多斯市",
+        "code": "0477",
+        "parent_id": 5
+      },
+      {
+        "id": 0,
+        "adcode": "150700",
+        "name": "呼伦贝尔市",
+        "code": "0470",
+        "parent_id": 5
+      },
+      {
+        "id": 0,
+        "adcode": "150800",
+        "name": "巴彦淖尔市",
+        "code": "0478",
+        "parent_id": 5
+      },
+      {
+        "id": 0,
+        "adcode": "150900",
+        "name": "乌兰察布市",
+        "code": "0474",
+        "parent_id": 5
+      },
+      {
+        "id": 0,
+        "adcode": "152200",
+        "name": "兴安盟",
+        "code": "0482",
+        "parent_id": 5
+      },
+      {
+        "id": 0,
+        "adcode": "152500",
+        "name": "锡林郭勒盟",
+        "code": "0479",
+        "parent_id": 5
+      },
+      {
+        "id": 0,
+        "adcode": "152900",
+        "name": "阿拉善盟",
+        "code": "0483",
+        "parent_id": 5
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "210000",
+    "name": "辽宁省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "210100",
+        "name": "沈阳市",
+        "code": "024",
+        "parent_id": 6
+      },
+      {
+        "id": 0,
+        "adcode": "210200",
+        "name": "大连市",
+        "code": "0411",
+        "parent_id": 6
+      },
+      {
+        "id": 0,
+        "adcode": "210300",
+        "name": "鞍山市",
+        "code": "0412",
+        "parent_id": 6
+      },
+      {
+        "id": 0,
+        "adcode": "210400",
+        "name": "抚顺市",
+        "code": "0413",
+        "parent_id": 6
+      },
+      {
+        "id": 0,
+        "adcode": "210500",
+        "name": "本溪市",
+        "code": "0414",
+        "parent_id": 6
+      },
+      {
+        "id": 0,
+        "adcode": "210600",
+        "name": "丹东市",
+        "code": "0415",
+        "parent_id": 6
+      },
+      {
+        "id": 0,
+        "adcode": "210700",
+        "name": "锦州市",
+        "code": "0416",
+        "parent_id": 6
+      },
+      {
+        "id": 0,
+        "adcode": "210800",
+        "name": "营口市",
+        "code": "0417",
+        "parent_id": 6
+      },
+      {
+        "id": 0,
+        "adcode": "210900",
+        "name": "阜新市",
+        "code": "0418",
+        "parent_id": 6
+      },
+      {
+        "id": 0,
+        "adcode": "211000",
+        "name": "辽阳市",
+        "code": "0419",
+        "parent_id": 6
+      },
+      {
+        "id": 0,
+        "adcode": "211100",
+        "name": "盘锦市",
+        "code": "0427",
+        "parent_id": 6
+      },
+      {
+        "id": 0,
+        "adcode": "211200",
+        "name": "铁岭市",
+        "code": "0410",
+        "parent_id": 6
+      },
+      {
+        "id": 0,
+        "adcode": "211300",
+        "name": "朝阳市",
+        "code": "0421",
+        "parent_id": 6
+      },
+      {
+        "id": 0,
+        "adcode": "211400",
+        "name": "葫芦岛市",
+        "code": "0429",
+        "parent_id": 6
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "220000",
+    "name": "吉林省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "220100",
+        "name": "长春市",
+        "code": "0431",
+        "parent_id": 7
+      },
+      {
+        "id": 0,
+        "adcode": "220200",
+        "name": "吉林市",
+        "code": "0432",
+        "parent_id": 7
+      },
+      {
+        "id": 0,
+        "adcode": "220300",
+        "name": "四平市",
+        "code": "0434",
+        "parent_id": 7
+      },
+      {
+        "id": 0,
+        "adcode": "220400",
+        "name": "辽源市",
+        "code": "0437",
+        "parent_id": 7
+      },
+      {
+        "id": 0,
+        "adcode": "220500",
+        "name": "通化市",
+        "code": "0435",
+        "parent_id": 7
+      },
+      {
+        "id": 0,
+        "adcode": "220600",
+        "name": "白山市",
+        "code": "0439",
+        "parent_id": 7
+      },
+      {
+        "id": 0,
+        "adcode": "220700",
+        "name": "松原市",
+        "code": "0438",
+        "parent_id": 7
+      },
+      {
+        "id": 0,
+        "adcode": "220800",
+        "name": "白城市",
+        "code": "0436",
+        "parent_id": 7
+      },
+      {
+        "id": 0,
+        "adcode": "222400",
+        "name": "延边朝鲜族自治州",
+        "code": "1433",
+        "parent_id": 7
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "230000",
+    "name": "黑龙江省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "230100",
+        "name": "哈尔滨市",
+        "code": "0451",
+        "parent_id": 8
+      },
+      {
+        "id": 0,
+        "adcode": "230200",
+        "name": "齐齐哈尔市",
+        "code": "0452",
+        "parent_id": 8
+      },
+      {
+        "id": 0,
+        "adcode": "230300",
+        "name": "鸡西市",
+        "code": "0467",
+        "parent_id": 8
+      },
+      {
+        "id": 0,
+        "adcode": "230400",
+        "name": "鹤岗市",
+        "code": "0468",
+        "parent_id": 8
+      },
+      {
+        "id": 0,
+        "adcode": "230500",
+        "name": "双鸭山市",
+        "code": "0469",
+        "parent_id": 8
+      },
+      {
+        "id": 0,
+        "adcode": "230600",
+        "name": "大庆市",
+        "code": "0459",
+        "parent_id": 8
+      },
+      {
+        "id": 0,
+        "adcode": "230700",
+        "name": "伊春市",
+        "code": "0458",
+        "parent_id": 8
+      },
+      {
+        "id": 0,
+        "adcode": "230800",
+        "name": "佳木斯市",
+        "code": "0454",
+        "parent_id": 8
+      },
+      {
+        "id": 0,
+        "adcode": "230900",
+        "name": "七台河市",
+        "code": "0464",
+        "parent_id": 8
+      },
+      {
+        "id": 0,
+        "adcode": "231000",
+        "name": "牡丹江市",
+        "code": "0453",
+        "parent_id": 8
+      },
+      {
+        "id": 0,
+        "adcode": "231100",
+        "name": "黑河市",
+        "code": "0456",
+        "parent_id": 8
+      },
+      {
+        "id": 0,
+        "adcode": "231200",
+        "name": "绥化市",
+        "code": "0455",
+        "parent_id": 8
+      },
+      {
+        "id": 0,
+        "adcode": "232700",
+        "name": "大兴安岭地区",
+        "code": "0457",
+        "parent_id": 8
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "310000",
+    "name": "上海市",
+    "code": "021",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "310100",
+        "name": "上海市",
+        "code": "021",
+        "parent_id": 9
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "320000",
+    "name": "江苏省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "320100",
+        "name": "南京市",
+        "code": "025",
+        "parent_id": 10
+      },
+      {
+        "id": 0,
+        "adcode": "320200",
+        "name": "无锡市",
+        "code": "0510",
+        "parent_id": 10
+      },
+      {
+        "id": 0,
+        "adcode": "320300",
+        "name": "徐州市",
+        "code": "0516",
+        "parent_id": 10
+      },
+      {
+        "id": 0,
+        "adcode": "320400",
+        "name": "常州市",
+        "code": "0519",
+        "parent_id": 10
+      },
+      {
+        "id": 0,
+        "adcode": "320500",
+        "name": "苏州市",
+        "code": "0512",
+        "parent_id": 10
+      },
+      {
+        "id": 0,
+        "adcode": "320600",
+        "name": "南通市",
+        "code": "0513",
+        "parent_id": 10
+      },
+      {
+        "id": 0,
+        "adcode": "320700",
+        "name": "连云港市",
+        "code": "0518",
+        "parent_id": 10
+      },
+      {
+        "id": 0,
+        "adcode": "320800",
+        "name": "淮安市",
+        "code": "0517",
+        "parent_id": 10
+      },
+      {
+        "id": 0,
+        "adcode": "320900",
+        "name": "盐城市",
+        "code": "0515",
+        "parent_id": 10
+      },
+      {
+        "id": 0,
+        "adcode": "321000",
+        "name": "扬州市",
+        "code": "0514",
+        "parent_id": 10
+      },
+      {
+        "id": 0,
+        "adcode": "321100",
+        "name": "镇江市",
+        "code": "0511",
+        "parent_id": 10
+      },
+      {
+        "id": 0,
+        "adcode": "321200",
+        "name": "泰州市",
+        "code": "0523",
+        "parent_id": 10
+      },
+      {
+        "id": 0,
+        "adcode": "321300",
+        "name": "宿迁市",
+        "code": "0527",
+        "parent_id": 10
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "330000",
+    "name": "浙江省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "330100",
+        "name": "杭州市",
+        "code": "0571",
+        "parent_id": 11
+      },
+      {
+        "id": 0,
+        "adcode": "330200",
+        "name": "宁波市",
+        "code": "0574",
+        "parent_id": 11
+      },
+      {
+        "id": 0,
+        "adcode": "330300",
+        "name": "温州市",
+        "code": "0577",
+        "parent_id": 11
+      },
+      {
+        "id": 0,
+        "adcode": "330400",
+        "name": "嘉兴市",
+        "code": "0573",
+        "parent_id": 11
+      },
+      {
+        "id": 0,
+        "adcode": "330500",
+        "name": "湖州市",
+        "code": "0572",
+        "parent_id": 11
+      },
+      {
+        "id": 0,
+        "adcode": "330600",
+        "name": "绍兴市",
+        "code": "0575",
+        "parent_id": 11
+      },
+      {
+        "id": 0,
+        "adcode": "330700",
+        "name": "金华市",
+        "code": "0579",
+        "parent_id": 11
+      },
+      {
+        "id": 0,
+        "adcode": "330800",
+        "name": "衢州市",
+        "code": "0570",
+        "parent_id": 11
+      },
+      {
+        "id": 0,
+        "adcode": "330900",
+        "name": "舟山市",
+        "code": "0580",
+        "parent_id": 11
+      },
+      {
+        "id": 0,
+        "adcode": "331000",
+        "name": "台州市",
+        "code": "0576",
+        "parent_id": 11
+      },
+      {
+        "id": 0,
+        "adcode": "331100",
+        "name": "丽水市",
+        "code": "0578",
+        "parent_id": 11
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "340000",
+    "name": "安徽省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "340100",
+        "name": "合肥市",
+        "code": "0551",
+        "parent_id": 12
+      },
+      {
+        "id": 0,
+        "adcode": "340200",
+        "name": "芜湖市",
+        "code": "0553",
+        "parent_id": 12
+      },
+      {
+        "id": 0,
+        "adcode": "340300",
+        "name": "蚌埠市",
+        "code": "0552",
+        "parent_id": 12
+      },
+      {
+        "id": 0,
+        "adcode": "340400",
+        "name": "淮南市",
+        "code": "0554",
+        "parent_id": 12
+      },
+      {
+        "id": 0,
+        "adcode": "340500",
+        "name": "马鞍山市",
+        "code": "0555",
+        "parent_id": 12
+      },
+      {
+        "id": 0,
+        "adcode": "340600",
+        "name": "淮北市",
+        "code": "0561",
+        "parent_id": 12
+      },
+      {
+        "id": 0,
+        "adcode": "340700",
+        "name": "铜陵市",
+        "code": "0562",
+        "parent_id": 12
+      },
+      {
+        "id": 0,
+        "adcode": "340800",
+        "name": "安庆市",
+        "code": "0556",
+        "parent_id": 12
+      },
+      {
+        "id": 0,
+        "adcode": "341000",
+        "name": "黄山市",
+        "code": "0559",
+        "parent_id": 12
+      },
+      {
+        "id": 0,
+        "adcode": "341100",
+        "name": "滁州市",
+        "code": "0550",
+        "parent_id": 12
+      },
+      {
+        "id": 0,
+        "adcode": "341200",
+        "name": "阜阳市",
+        "code": "1558",
+        "parent_id": 12
+      },
+      {
+        "id": 0,
+        "adcode": "341300",
+        "name": "宿州市",
+        "code": "0557",
+        "parent_id": 12
+      },
+      {
+        "id": 0,
+        "adcode": "341500",
+        "name": "六安市",
+        "code": "0564",
+        "parent_id": 12
+      },
+      {
+        "id": 0,
+        "adcode": "341600",
+        "name": "亳州市",
+        "code": "0558",
+        "parent_id": 12
+      },
+      {
+        "id": 0,
+        "adcode": "341700",
+        "name": "池州市",
+        "code": "0566",
+        "parent_id": 12
+      },
+      {
+        "id": 0,
+        "adcode": "341800",
+        "name": "宣城市",
+        "code": "0563",
+        "parent_id": 12
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "350000",
+    "name": "福建省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "350100",
+        "name": "福州市",
+        "code": "0591",
+        "parent_id": 13
+      },
+      {
+        "id": 0,
+        "adcode": "350200",
+        "name": "厦门市",
+        "code": "0592",
+        "parent_id": 13
+      },
+      {
+        "id": 0,
+        "adcode": "350300",
+        "name": "莆田市",
+        "code": "0594",
+        "parent_id": 13
+      },
+      {
+        "id": 0,
+        "adcode": "350400",
+        "name": "三明市",
+        "code": "0598",
+        "parent_id": 13
+      },
+      {
+        "id": 0,
+        "adcode": "350500",
+        "name": "泉州市",
+        "code": "0595",
+        "parent_id": 13
+      },
+      {
+        "id": 0,
+        "adcode": "350600",
+        "name": "漳州市",
+        "code": "0596",
+        "parent_id": 13
+      },
+      {
+        "id": 0,
+        "adcode": "350700",
+        "name": "南平市",
+        "code": "0599",
+        "parent_id": 13
+      },
+      {
+        "id": 0,
+        "adcode": "350800",
+        "name": "龙岩市",
+        "code": "0597",
+        "parent_id": 13
+      },
+      {
+        "id": 0,
+        "adcode": "350900",
+        "name": "宁德市",
+        "code": "0593",
+        "parent_id": 13
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "360000",
+    "name": "江西省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "360100",
+        "name": "南昌市",
+        "code": "0791",
+        "parent_id": 14
+      },
+      {
+        "id": 0,
+        "adcode": "360200",
+        "name": "景德镇市",
+        "code": "0798",
+        "parent_id": 14
+      },
+      {
+        "id": 0,
+        "adcode": "360300",
+        "name": "萍乡市",
+        "code": "0799",
+        "parent_id": 14
+      },
+      {
+        "id": 0,
+        "adcode": "360400",
+        "name": "九江市",
+        "code": "0792",
+        "parent_id": 14
+      },
+      {
+        "id": 0,
+        "adcode": "360500",
+        "name": "新余市",
+        "code": "0790",
+        "parent_id": 14
+      },
+      {
+        "id": 0,
+        "adcode": "360600",
+        "name": "鹰潭市",
+        "code": "0701",
+        "parent_id": 14
+      },
+      {
+        "id": 0,
+        "adcode": "360700",
+        "name": "赣州市",
+        "code": "0797",
+        "parent_id": 14
+      },
+      {
+        "id": 0,
+        "adcode": "360800",
+        "name": "吉安市",
+        "code": "0796",
+        "parent_id": 14
+      },
+      {
+        "id": 0,
+        "adcode": "360900",
+        "name": "宜春市",
+        "code": "0795",
+        "parent_id": 14
+      },
+      {
+        "id": 0,
+        "adcode": "361000",
+        "name": "抚州市",
+        "code": "0794",
+        "parent_id": 14
+      },
+      {
+        "id": 0,
+        "adcode": "361100",
+        "name": "上饶市",
+        "code": "0793",
+        "parent_id": 14
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "370000",
+    "name": "山东省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "370100",
+        "name": "济南市",
+        "code": "0531",
+        "parent_id": 15
+      },
+      {
+        "id": 0,
+        "adcode": "370200",
+        "name": "青岛市",
+        "code": "0532",
+        "parent_id": 15
+      },
+      {
+        "id": 0,
+        "adcode": "370300",
+        "name": "淄博市",
+        "code": "0533",
+        "parent_id": 15
+      },
+      {
+        "id": 0,
+        "adcode": "370400",
+        "name": "枣庄市",
+        "code": "0632",
+        "parent_id": 15
+      },
+      {
+        "id": 0,
+        "adcode": "370500",
+        "name": "东营市",
+        "code": "0546",
+        "parent_id": 15
+      },
+      {
+        "id": 0,
+        "adcode": "370600",
+        "name": "烟台市",
+        "code": "0535",
+        "parent_id": 15
+      },
+      {
+        "id": 0,
+        "adcode": "370700",
+        "name": "潍坊市",
+        "code": "0536",
+        "parent_id": 15
+      },
+      {
+        "id": 0,
+        "adcode": "370800",
+        "name": "济宁市",
+        "code": "0537",
+        "parent_id": 15
+      },
+      {
+        "id": 0,
+        "adcode": "370900",
+        "name": "泰安市",
+        "code": "0538",
+        "parent_id": 15
+      },
+      {
+        "id": 0,
+        "adcode": "371000",
+        "name": "威海市",
+        "code": "0631",
+        "parent_id": 15
+      },
+      {
+        "id": 0,
+        "adcode": "371100",
+        "name": "日照市",
+        "code": "0633",
+        "parent_id": 15
+      },
+      {
+        "id": 0,
+        "adcode": "371300",
+        "name": "临沂市",
+        "code": "0539",
+        "parent_id": 15
+      },
+      {
+        "id": 0,
+        "adcode": "371400",
+        "name": "德州市",
+        "code": "0534",
+        "parent_id": 15
+      },
+      {
+        "id": 0,
+        "adcode": "371500",
+        "name": "聊城市",
+        "code": "0635",
+        "parent_id": 15
+      },
+      {
+        "id": 0,
+        "adcode": "371600",
+        "name": "滨州市",
+        "code": "0543",
+        "parent_id": 15
+      },
+      {
+        "id": 0,
+        "adcode": "371700",
+        "name": "菏泽市",
+        "code": "0530",
+        "parent_id": 15
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "410000",
+    "name": "河南省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "410100",
+        "name": "郑州市",
+        "code": "0371",
+        "parent_id": 16
+      },
+      {
+        "id": 0,
+        "adcode": "410200",
+        "name": "开封市",
+        "code": "0378",
+        "parent_id": 16
+      },
+      {
+        "id": 0,
+        "adcode": "410300",
+        "name": "洛阳市",
+        "code": "0379",
+        "parent_id": 16
+      },
+      {
+        "id": 0,
+        "adcode": "410400",
+        "name": "平顶山市",
+        "code": "0375",
+        "parent_id": 16
+      },
+      {
+        "id": 0,
+        "adcode": "410500",
+        "name": "安阳市",
+        "code": "0372",
+        "parent_id": 16
+      },
+      {
+        "id": 0,
+        "adcode": "410600",
+        "name": "鹤壁市",
+        "code": "0392",
+        "parent_id": 16
+      },
+      {
+        "id": 0,
+        "adcode": "410700",
+        "name": "新乡市",
+        "code": "0373",
+        "parent_id": 16
+      },
+      {
+        "id": 0,
+        "adcode": "410800",
+        "name": "焦作市",
+        "code": "0391",
+        "parent_id": 16
+      },
+      {
+        "id": 0,
+        "adcode": "410900",
+        "name": "濮阳市",
+        "code": "0393",
+        "parent_id": 16
+      },
+      {
+        "id": 0,
+        "adcode": "411000",
+        "name": "许昌市",
+        "code": "0374",
+        "parent_id": 16
+      },
+      {
+        "id": 0,
+        "adcode": "411100",
+        "name": "漯河市",
+        "code": "0395",
+        "parent_id": 16
+      },
+      {
+        "id": 0,
+        "adcode": "411200",
+        "name": "三门峡市",
+        "code": "0398",
+        "parent_id": 16
+      },
+      {
+        "id": 0,
+        "adcode": "411300",
+        "name": "南阳市",
+        "code": "0377",
+        "parent_id": 16
+      },
+      {
+        "id": 0,
+        "adcode": "411400",
+        "name": "商丘市",
+        "code": "0370",
+        "parent_id": 16
+      },
+      {
+        "id": 0,
+        "adcode": "411500",
+        "name": "信阳市",
+        "code": "0376",
+        "parent_id": 16
+      },
+      {
+        "id": 0,
+        "adcode": "411600",
+        "name": "周口市",
+        "code": "0394",
+        "parent_id": 16
+      },
+      {
+        "id": 0,
+        "adcode": "411700",
+        "name": "驻马店市",
+        "code": "0396",
+        "parent_id": 16
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "420000",
+    "name": "湖北省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "420100",
+        "name": "武汉市",
+        "code": "027",
+        "parent_id": 17
+      },
+      {
+        "id": 0,
+        "adcode": "420200",
+        "name": "黄石市",
+        "code": "0714",
+        "parent_id": 17
+      },
+      {
+        "id": 0,
+        "adcode": "420300",
+        "name": "十堰市",
+        "code": "0719",
+        "parent_id": 17
+      },
+      {
+        "id": 0,
+        "adcode": "420500",
+        "name": "宜昌市",
+        "code": "0717",
+        "parent_id": 17
+      },
+      {
+        "id": 0,
+        "adcode": "420600",
+        "name": "襄阳市",
+        "code": "0710",
+        "parent_id": 17
+      },
+      {
+        "id": 0,
+        "adcode": "420700",
+        "name": "鄂州市",
+        "code": "0711",
+        "parent_id": 17
+      },
+      {
+        "id": 0,
+        "adcode": "420800",
+        "name": "荆门市",
+        "code": "0724",
+        "parent_id": 17
+      },
+      {
+        "id": 0,
+        "adcode": "420900",
+        "name": "孝感市",
+        "code": "0712",
+        "parent_id": 17
+      },
+      {
+        "id": 0,
+        "adcode": "421000",
+        "name": "荆州市",
+        "code": "0716",
+        "parent_id": 17
+      },
+      {
+        "id": 0,
+        "adcode": "421100",
+        "name": "黄冈市",
+        "code": "0713",
+        "parent_id": 17
+      },
+      {
+        "id": 0,
+        "adcode": "421200",
+        "name": "咸宁市",
+        "code": "0715",
+        "parent_id": 17
+      },
+      {
+        "id": 0,
+        "adcode": "421300",
+        "name": "随州市",
+        "code": "0722",
+        "parent_id": 17
+      },
+      {
+        "id": 0,
+        "adcode": "422800",
+        "name": "恩施土家族苗族自治州",
+        "code": "0718",
+        "parent_id": 17
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "430000",
+    "name": "湖南省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "430100",
+        "name": "长沙市",
+        "code": "0731",
+        "parent_id": 18
+      },
+      {
+        "id": 0,
+        "adcode": "430200",
+        "name": "株洲市",
+        "code": "0733",
+        "parent_id": 18
+      },
+      {
+        "id": 0,
+        "adcode": "430300",
+        "name": "湘潭市",
+        "code": "0732",
+        "parent_id": 18
+      },
+      {
+        "id": 0,
+        "adcode": "430400",
+        "name": "衡阳市",
+        "code": "0734",
+        "parent_id": 18
+      },
+      {
+        "id": 0,
+        "adcode": "430500",
+        "name": "邵阳市",
+        "code": "0739",
+        "parent_id": 18
+      },
+      {
+        "id": 0,
+        "adcode": "430600",
+        "name": "岳阳市",
+        "code": "0730",
+        "parent_id": 18
+      },
+      {
+        "id": 0,
+        "adcode": "430700",
+        "name": "常德市",
+        "code": "0736",
+        "parent_id": 18
+      },
+      {
+        "id": 0,
+        "adcode": "430800",
+        "name": "张家界市",
+        "code": "0744",
+        "parent_id": 18
+      },
+      {
+        "id": 0,
+        "adcode": "430900",
+        "name": "益阳市",
+        "code": "0737",
+        "parent_id": 18
+      },
+      {
+        "id": 0,
+        "adcode": "431000",
+        "name": "郴州市",
+        "code": "0735",
+        "parent_id": 18
+      },
+      {
+        "id": 0,
+        "adcode": "431100",
+        "name": "永州市",
+        "code": "0746",
+        "parent_id": 18
+      },
+      {
+        "id": 0,
+        "adcode": "431200",
+        "name": "怀化市",
+        "code": "0745",
+        "parent_id": 18
+      },
+      {
+        "id": 0,
+        "adcode": "431300",
+        "name": "娄底市",
+        "code": "0738",
+        "parent_id": 18
+      },
+      {
+        "id": 0,
+        "adcode": "433100",
+        "name": "湘西土家族苗族自治州",
+        "code": "0743",
+        "parent_id": 18
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "440000",
+    "name": "广东省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "440100",
+        "name": "广州市",
+        "code": "020",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "440200",
+        "name": "韶关市",
+        "code": "0751",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "440300",
+        "name": "深圳市",
+        "code": "0755",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "440400",
+        "name": "珠海市",
+        "code": "0756",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "440500",
+        "name": "汕头市",
+        "code": "0754",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "440600",
+        "name": "佛山市",
+        "code": "0757",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "440700",
+        "name": "江门市",
+        "code": "0750",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "440800",
+        "name": "湛江市",
+        "code": "0759",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "440900",
+        "name": "茂名市",
+        "code": "0668",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "441200",
+        "name": "肇庆市",
+        "code": "0758",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "441300",
+        "name": "惠州市",
+        "code": "0752",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "441400",
+        "name": "梅州市",
+        "code": "0753",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "441500",
+        "name": "汕尾市",
+        "code": "0660",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "441600",
+        "name": "河源市",
+        "code": "0762",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "441700",
+        "name": "阳江市",
+        "code": "0662",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "441800",
+        "name": "清远市",
+        "code": "0763",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "441900",
+        "name": "东莞市",
+        "code": "0769",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "442000",
+        "name": "中山市",
+        "code": "0760",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "445100",
+        "name": "潮州市",
+        "code": "0768",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "445200",
+        "name": "揭阳市",
+        "code": "0663",
+        "parent_id": 19
+      },
+      {
+        "id": 0,
+        "adcode": "445300",
+        "name": "云浮市",
+        "code": "0766",
+        "parent_id": 19
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "450000",
+    "name": "广西壮族自治区",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "450100",
+        "name": "南宁市",
+        "code": "0771",
+        "parent_id": 20
+      },
+      {
+        "id": 0,
+        "adcode": "450200",
+        "name": "柳州市",
+        "code": "0772",
+        "parent_id": 20
+      },
+      {
+        "id": 0,
+        "adcode": "450300",
+        "name": "桂林市",
+        "code": "0773",
+        "parent_id": 20
+      },
+      {
+        "id": 0,
+        "adcode": "450400",
+        "name": "梧州市",
+        "code": "0774",
+        "parent_id": 20
+      },
+      {
+        "id": 0,
+        "adcode": "450500",
+        "name": "北海市",
+        "code": "0779",
+        "parent_id": 20
+      },
+      {
+        "id": 0,
+        "adcode": "450600",
+        "name": "防城港市",
+        "code": "0770",
+        "parent_id": 20
+      },
+      {
+        "id": 0,
+        "adcode": "450700",
+        "name": "钦州市",
+        "code": "0777",
+        "parent_id": 20
+      },
+      {
+        "id": 0,
+        "adcode": "450800",
+        "name": "贵港市",
+        "code": "1755",
+        "parent_id": 20
+      },
+      {
+        "id": 0,
+        "adcode": "450900",
+        "name": "玉林市",
+        "code": "0775",
+        "parent_id": 20
+      },
+      {
+        "id": 0,
+        "adcode": "451000",
+        "name": "百色市",
+        "code": "0776",
+        "parent_id": 20
+      },
+      {
+        "id": 0,
+        "adcode": "451100",
+        "name": "贺州市",
+        "code": "1774",
+        "parent_id": 20
+      },
+      {
+        "id": 0,
+        "adcode": "451200",
+        "name": "河池市",
+        "code": "0778",
+        "parent_id": 20
+      },
+      {
+        "id": 0,
+        "adcode": "451300",
+        "name": "来宾市",
+        "code": "1772",
+        "parent_id": 20
+      },
+      {
+        "id": 0,
+        "adcode": "451400",
+        "name": "崇左市",
+        "code": "1771",
+        "parent_id": 20
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "460000",
+    "name": "海南省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "460100",
+        "name": "海口市",
+        "code": "0898",
+        "parent_id": 21
+      },
+      {
+        "id": 0,
+        "adcode": "460200",
+        "name": "三亚市",
+        "code": "0899",
+        "parent_id": 21
+      },
+      {
+        "id": 0,
+        "adcode": "460300",
+        "name": "三沙市",
+        "code": "2898",
+        "parent_id": 21
+      },
+      {
+        "id": 0,
+        "adcode": "460400",
+        "name": "儋州市",
+        "code": "0805",
+        "parent_id": 21
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "500000",
+    "name": "重庆市",
+    "code": "023",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "500100",
+        "name": "重庆市",
+        "code": "023",
+        "parent_id": 22
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "510000",
+    "name": "四川省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "510100",
+        "name": "成都市",
+        "code": "028",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "510300",
+        "name": "自贡市",
+        "code": "0813",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "510400",
+        "name": "攀枝花市",
+        "code": "0812",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "510500",
+        "name": "泸州市",
+        "code": "0830",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "510600",
+        "name": "德阳市",
+        "code": "0838",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "510700",
+        "name": "绵阳市",
+        "code": "0816",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "510800",
+        "name": "广元市",
+        "code": "0839",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "510900",
+        "name": "遂宁市",
+        "code": "0825",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "511000",
+        "name": "内江市",
+        "code": "1832",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "511100",
+        "name": "乐山市",
+        "code": "0833",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "511300",
+        "name": "南充市",
+        "code": "0817",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "511400",
+        "name": "眉山市",
+        "code": "1833",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "511500",
+        "name": "宜宾市",
+        "code": "0831",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "511600",
+        "name": "广安市",
+        "code": "0826",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "511700",
+        "name": "达州市",
+        "code": "0818",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "511800",
+        "name": "雅安市",
+        "code": "0835",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "511900",
+        "name": "巴中市",
+        "code": "0827",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "512000",
+        "name": "资阳市",
+        "code": "0832",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "513200",
+        "name": "阿坝藏族羌族自治州",
+        "code": "0837",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "513300",
+        "name": "甘孜藏族自治州",
+        "code": "0836",
+        "parent_id": 23
+      },
+      {
+        "id": 0,
+        "adcode": "513400",
+        "name": "凉山彝族自治州",
+        "code": "0834",
+        "parent_id": 23
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "520000",
+    "name": "贵州省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "520100",
+        "name": "贵阳市",
+        "code": "0851",
+        "parent_id": 24
+      },
+      {
+        "id": 0,
+        "adcode": "520200",
+        "name": "六盘水市",
+        "code": "0858",
+        "parent_id": 24
+      },
+      {
+        "id": 0,
+        "adcode": "520300",
+        "name": "遵义市",
+        "code": "0852",
+        "parent_id": 24
+      },
+      {
+        "id": 0,
+        "adcode": "520400",
+        "name": "安顺市",
+        "code": "0853",
+        "parent_id": 24
+      },
+      {
+        "id": 0,
+        "adcode": "520500",
+        "name": "毕节市",
+        "code": "0857",
+        "parent_id": 24
+      },
+      {
+        "id": 0,
+        "adcode": "520600",
+        "name": "铜仁市",
+        "code": "0856",
+        "parent_id": 24
+      },
+      {
+        "id": 0,
+        "adcode": "522300",
+        "name": "黔西南布依族苗族自治州",
+        "code": "0859",
+        "parent_id": 24
+      },
+      {
+        "id": 0,
+        "adcode": "522600",
+        "name": "黔东南苗族侗族自治州",
+        "code": "0855",
+        "parent_id": 24
+      },
+      {
+        "id": 0,
+        "adcode": "522700",
+        "name": "黔南布依族苗族自治州",
+        "code": "0854",
+        "parent_id": 24
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "530000",
+    "name": "云南省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "530100",
+        "name": "昆明市",
+        "code": "0871",
+        "parent_id": 25
+      },
+      {
+        "id": 0,
+        "adcode": "530300",
+        "name": "曲靖市",
+        "code": "0874",
+        "parent_id": 25
+      },
+      {
+        "id": 0,
+        "adcode": "530400",
+        "name": "玉溪市",
+        "code": "0877",
+        "parent_id": 25
+      },
+      {
+        "id": 0,
+        "adcode": "530500",
+        "name": "保山市",
+        "code": "0875",
+        "parent_id": 25
+      },
+      {
+        "id": 0,
+        "adcode": "530600",
+        "name": "昭通市",
+        "code": "0870",
+        "parent_id": 25
+      },
+      {
+        "id": 0,
+        "adcode": "530700",
+        "name": "丽江市",
+        "code": "0888",
+        "parent_id": 25
+      },
+      {
+        "id": 0,
+        "adcode": "530800",
+        "name": "普洱市",
+        "code": "0879",
+        "parent_id": 25
+      },
+      {
+        "id": 0,
+        "adcode": "530900",
+        "name": "临沧市",
+        "code": "0883",
+        "parent_id": 25
+      },
+      {
+        "id": 0,
+        "adcode": "532300",
+        "name": "楚雄彝族自治州",
+        "code": "0878",
+        "parent_id": 25
+      },
+      {
+        "id": 0,
+        "adcode": "532500",
+        "name": "红河哈尼族彝族自治州",
+        "code": "0873",
+        "parent_id": 25
+      },
+      {
+        "id": 0,
+        "adcode": "532600",
+        "name": "文山壮族苗族自治州",
+        "code": "0876",
+        "parent_id": 25
+      },
+      {
+        "id": 0,
+        "adcode": "532800",
+        "name": "西双版纳傣族自治州",
+        "code": "0691",
+        "parent_id": 25
+      },
+      {
+        "id": 0,
+        "adcode": "532900",
+        "name": "大理白族自治州",
+        "code": "0872",
+        "parent_id": 25
+      },
+      {
+        "id": 0,
+        "adcode": "533100",
+        "name": "德宏傣族景颇族自治州",
+        "code": "0692",
+        "parent_id": 25
+      },
+      {
+        "id": 0,
+        "adcode": "533300",
+        "name": "怒江傈僳族自治州",
+        "code": "0886",
+        "parent_id": 25
+      },
+      {
+        "id": 0,
+        "adcode": "533400",
+        "name": "迪庆藏族自治州",
+        "code": "0887",
+        "parent_id": 25
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "540000",
+    "name": "西藏自治区",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "540100",
+        "name": "拉萨市",
+        "code": "0891",
+        "parent_id": 26
+      },
+      {
+        "id": 0,
+        "adcode": "540200",
+        "name": "日喀则市",
+        "code": "0892",
+        "parent_id": 26
+      },
+      {
+        "id": 0,
+        "adcode": "540300",
+        "name": "昌都市",
+        "code": "0895",
+        "parent_id": 26
+      },
+      {
+        "id": 0,
+        "adcode": "540400",
+        "name": "林芝市",
+        "code": "0894",
+        "parent_id": 26
+      },
+      {
+        "id": 0,
+        "adcode": "540500",
+        "name": "山南市",
+        "code": "0893",
+        "parent_id": 26
+      },
+      {
+        "id": 0,
+        "adcode": "540600",
+        "name": "那曲市",
+        "code": "0896",
+        "parent_id": 26
+      },
+      {
+        "id": 0,
+        "adcode": "542500",
+        "name": "阿里地区",
+        "code": "0897",
+        "parent_id": 26
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "610000",
+    "name": "陕西省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "610100",
+        "name": "西安市",
+        "code": "029",
+        "parent_id": 27
+      },
+      {
+        "id": 0,
+        "adcode": "610200",
+        "name": "铜川市",
+        "code": "0919",
+        "parent_id": 27
+      },
+      {
+        "id": 0,
+        "adcode": "610300",
+        "name": "宝鸡市",
+        "code": "0917",
+        "parent_id": 27
+      },
+      {
+        "id": 0,
+        "adcode": "610400",
+        "name": "咸阳市",
+        "code": "0910",
+        "parent_id": 27
+      },
+      {
+        "id": 0,
+        "adcode": "610500",
+        "name": "渭南市",
+        "code": "0913",
+        "parent_id": 27
+      },
+      {
+        "id": 0,
+        "adcode": "610600",
+        "name": "延安市",
+        "code": "0911",
+        "parent_id": 27
+      },
+      {
+        "id": 0,
+        "adcode": "610700",
+        "name": "汉中市",
+        "code": "0916",
+        "parent_id": 27
+      },
+      {
+        "id": 0,
+        "adcode": "610800",
+        "name": "榆林市",
+        "code": "0912",
+        "parent_id": 27
+      },
+      {
+        "id": 0,
+        "adcode": "610900",
+        "name": "安康市",
+        "code": "0915",
+        "parent_id": 27
+      },
+      {
+        "id": 0,
+        "adcode": "611000",
+        "name": "商洛市",
+        "code": "0914",
+        "parent_id": 27
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "620000",
+    "name": "甘肃省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "620100",
+        "name": "兰州市",
+        "code": "0931",
+        "parent_id": 28
+      },
+      {
+        "id": 0,
+        "adcode": "620200",
+        "name": "嘉峪关市",
+        "code": "1937",
+        "parent_id": 28
+      },
+      {
+        "id": 0,
+        "adcode": "620300",
+        "name": "金昌市",
+        "code": "0935",
+        "parent_id": 28
+      },
+      {
+        "id": 0,
+        "adcode": "620400",
+        "name": "白银市",
+        "code": "0943",
+        "parent_id": 28
+      },
+      {
+        "id": 0,
+        "adcode": "620500",
+        "name": "天水市",
+        "code": "0938",
+        "parent_id": 28
+      },
+      {
+        "id": 0,
+        "adcode": "620600",
+        "name": "武威市",
+        "code": "1935",
+        "parent_id": 28
+      },
+      {
+        "id": 0,
+        "adcode": "620700",
+        "name": "张掖市",
+        "code": "0936",
+        "parent_id": 28
+      },
+      {
+        "id": 0,
+        "adcode": "620800",
+        "name": "平凉市",
+        "code": "0933",
+        "parent_id": 28
+      },
+      {
+        "id": 0,
+        "adcode": "620900",
+        "name": "酒泉市",
+        "code": "0937",
+        "parent_id": 28
+      },
+      {
+        "id": 0,
+        "adcode": "621000",
+        "name": "庆阳市",
+        "code": "0934",
+        "parent_id": 28
+      },
+      {
+        "id": 0,
+        "adcode": "621100",
+        "name": "定西市",
+        "code": "0932",
+        "parent_id": 28
+      },
+      {
+        "id": 0,
+        "adcode": "621200",
+        "name": "陇南市",
+        "code": "2935",
+        "parent_id": 28
+      },
+      {
+        "id": 0,
+        "adcode": "622900",
+        "name": "临夏回族自治州",
+        "code": "0930",
+        "parent_id": 28
+      },
+      {
+        "id": 0,
+        "adcode": "623000",
+        "name": "甘南藏族自治州",
+        "code": "0941",
+        "parent_id": 28
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "630000",
+    "name": "青海省",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "630100",
+        "name": "西宁市",
+        "code": "0971",
+        "parent_id": 29
+      },
+      {
+        "id": 0,
+        "adcode": "630200",
+        "name": "海东市",
+        "code": "0972",
+        "parent_id": 29
+      },
+      {
+        "id": 0,
+        "adcode": "632200",
+        "name": "海北藏族自治州",
+        "code": "0970",
+        "parent_id": 29
+      },
+      {
+        "id": 0,
+        "adcode": "632300",
+        "name": "黄南藏族自治州",
+        "code": "0973",
+        "parent_id": 29
+      },
+      {
+        "id": 0,
+        "adcode": "632500",
+        "name": "海南藏族自治州",
+        "code": "0974",
+        "parent_id": 29
+      },
+      {
+        "id": 0,
+        "adcode": "632600",
+        "name": "果洛藏族自治州",
+        "code": "0975",
+        "parent_id": 29
+      },
+      {
+        "id": 0,
+        "adcode": "632700",
+        "name": "玉树藏族自治州",
+        "code": "0976",
+        "parent_id": 29
+      },
+      {
+        "id": 0,
+        "adcode": "632800",
+        "name": "海西蒙古族藏族自治州",
+        "code": "0977",
+        "parent_id": 29
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "640000",
+    "name": "宁夏回族自治区",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "640100",
+        "name": "银川市",
+        "code": "0951",
+        "parent_id": 30
+      },
+      {
+        "id": 0,
+        "adcode": "640200",
+        "name": "石嘴山市",
+        "code": "0952",
+        "parent_id": 30
+      },
+      {
+        "id": 0,
+        "adcode": "640300",
+        "name": "吴忠市",
+        "code": "0953",
+        "parent_id": 30
+      },
+      {
+        "id": 0,
+        "adcode": "640400",
+        "name": "固原市",
+        "code": "0954",
+        "parent_id": 30
+      },
+      {
+        "id": 0,
+        "adcode": "640500",
+        "name": "中卫市",
+        "code": "1953",
+        "parent_id": 30
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "650000",
+    "name": "新疆维吾尔自治区",
+    "children": [
+      {
+        "id": 0,
+        "adcode": "650100",
+        "name": "乌鲁木齐市",
+        "code": "0991",
+        "parent_id": 31
+      },
+      {
+        "id": 0,
+        "adcode": "650200",
+        "name": "克拉玛依市",
+        "code": "0990",
+        "parent_id": 31
+      },
+      {
+        "id": 0,
+        "adcode": "650400",
+        "name": "吐鲁番市",
+        "code": "0995",
+        "parent_id": 31
+      },
+      {
+        "id": 0,
+        "adcode": "650500",
+        "name": "哈密市",
+        "code": "0902",
+        "parent_id": 31
+      },
+      {
+        "id": 0,
+        "adcode": "652300",
+        "name": "昌吉回族自治州",
+        "code": "0994",
+        "parent_id": 31
+      },
+      {
+        "id": 0,
+        "adcode": "652700",
+        "name": "博尔塔拉蒙古自治州",
+        "code": "0909",
+        "parent_id": 31
+      },
+      {
+        "id": 0,
+        "adcode": "652800",
+        "name": "巴音郭楞蒙古自治州",
+        "code": "0996",
+        "parent_id": 31
+      },
+      {
+        "id": 0,
+        "adcode": "652900",
+        "name": "阿克苏地区",
+        "code": "0997",
+        "parent_id": 31
+      },
+      {
+        "id": 0,
+        "adcode": "653000",
+        "name": "克孜勒苏柯尔克孜自治州",
+        "code": "0908",
+        "parent_id": 31
+      },
+      {
+        "id": 0,
+        "adcode": "653100",
+        "name": "喀什地区",
+        "code": "0998",
+        "parent_id": 31
+      },
+      {
+        "id": 0,
+        "adcode": "653200",
+        "name": "和田地区",
+        "code": "0903",
+        "parent_id": 31
+      },
+      {
+        "id": 0,
+        "adcode": "654000",
+        "name": "伊犁哈萨克自治州",
+        "code": "0999",
+        "parent_id": 31
+      },
+      {
+        "id": 0,
+        "adcode": "654200",
+        "name": "塔城地区",
+        "code": "0901",
+        "parent_id": 31
+      },
+      {
+        "id": 0,
+        "adcode": "654300",
+        "name": "阿勒泰地区",
+        "code": "0906",
+        "parent_id": 31
+      }
+    ]
+  },
+  {
+    "id": 0,
+    "adcode": "710000",
+    "name": "台湾省",
+    "code": "1886"
+  },
+  {
+    "id": 0,
+    "adcode": "810000",
+    "name": "香港特别行政区",
+    "code": "1852"
+  },
+  {
+    "id": 0,
+    "adcode": "820000",
+    "name": "澳门特别行政区",
+    "code": "1853"
+  },
+  {
+    "id": 0,
+    "adcode": "900000",
+    "name": "外国",
+    "code": "1900"
+  }
+]

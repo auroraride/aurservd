@@ -6,11 +6,52 @@ import (
 	"context"
 	"time"
 
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
+
+// SoftDelete returns an soft delete builder for City.
+func (c *CityClient) SoftDelete() *CityUpdate {
+	mutation := newCityMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &CityUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *CityClient) SoftDeleteOne(ci *City) *CityUpdateOne {
+	mutation := newCityMutation(c.config, OpUpdateOne, withCity(ci))
+	mutation.SetDeletedAt(time.Now())
+	return &CityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *CityClient) SoftDeleteOneID(id uint64) *CityUpdateOne {
+	mutation := newCityMutation(c.config, OpUpdateOne, withCityID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &CityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for City.
+func (c *CityClient) QueryNotDeleted() *CityQuery {
+	return c.Query().Where(city.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a City not deleted entity by its id.
+func (c *CityClient) GetNotDeleted(ctx context.Context, id uint64) (*City, error) {
+	return c.Query().Where(city.ID(id), city.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *CityClient) GetNotDeletedX(ctx context.Context, id uint64) *City {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
 
 // SoftDelete returns an soft delete builder for Contract.
 func (c *ContractClient) SoftDelete() *ContractUpdate {

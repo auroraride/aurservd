@@ -9,6 +9,7 @@ import (
 
 	"github.com/auroraride/aurservd/internal/ent/migrate"
 
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/person"
@@ -25,6 +26,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// City is the client for interacting with the City builders.
+	City *CityClient
 	// Contract is the client for interacting with the Contract builders.
 	Contract *ContractClient
 	// Manager is the client for interacting with the Manager builders.
@@ -48,6 +51,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.City = NewCityClient(c.config)
 	c.Contract = NewContractClient(c.config)
 	c.Manager = NewManagerClient(c.config)
 	c.Person = NewPersonClient(c.config)
@@ -86,6 +90,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:      ctx,
 		config:   cfg,
+		City:     NewCityClient(cfg),
 		Contract: NewContractClient(cfg),
 		Manager:  NewManagerClient(cfg),
 		Person:   NewPersonClient(cfg),
@@ -108,7 +113,9 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
+		ctx:      ctx,
 		config:   cfg,
+		City:     NewCityClient(cfg),
 		Contract: NewContractClient(cfg),
 		Manager:  NewManagerClient(cfg),
 		Person:   NewPersonClient(cfg),
@@ -120,7 +127,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Contract.
+//		City.
 //		Query().
 //		Count(ctx)
 //
@@ -143,11 +150,134 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.City.Use(hooks...)
 	c.Contract.Use(hooks...)
 	c.Manager.Use(hooks...)
 	c.Person.Use(hooks...)
 	c.Rider.Use(hooks...)
 	c.Setting.Use(hooks...)
+}
+
+// CityClient is a client for the City schema.
+type CityClient struct {
+	config
+}
+
+// NewCityClient returns a client for the City from the given config.
+func NewCityClient(c config) *CityClient {
+	return &CityClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `city.Hooks(f(g(h())))`.
+func (c *CityClient) Use(hooks ...Hook) {
+	c.hooks.City = append(c.hooks.City, hooks...)
+}
+
+// Create returns a create builder for City.
+func (c *CityClient) Create() *CityCreate {
+	mutation := newCityMutation(c.config, OpCreate)
+	return &CityCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of City entities.
+func (c *CityClient) CreateBulk(builders ...*CityCreate) *CityCreateBulk {
+	return &CityCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for City.
+func (c *CityClient) Update() *CityUpdate {
+	mutation := newCityMutation(c.config, OpUpdate)
+	return &CityUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CityClient) UpdateOne(ci *City) *CityUpdateOne {
+	mutation := newCityMutation(c.config, OpUpdateOne, withCity(ci))
+	return &CityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CityClient) UpdateOneID(id uint64) *CityUpdateOne {
+	mutation := newCityMutation(c.config, OpUpdateOne, withCityID(id))
+	return &CityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for City.
+func (c *CityClient) Delete() *CityDelete {
+	mutation := newCityMutation(c.config, OpDelete)
+	return &CityDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *CityClient) DeleteOne(ci *City) *CityDeleteOne {
+	return c.DeleteOneID(ci.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *CityClient) DeleteOneID(id uint64) *CityDeleteOne {
+	builder := c.Delete().Where(city.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CityDeleteOne{builder}
+}
+
+// Query returns a query builder for City.
+func (c *CityClient) Query() *CityQuery {
+	return &CityQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a City entity by its id.
+func (c *CityClient) Get(ctx context.Context, id uint64) (*City, error) {
+	return c.Query().Where(city.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CityClient) GetX(ctx context.Context, id uint64) *City {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryParent queries the parent edge of a City.
+func (c *CityClient) QueryParent(ci *City) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ci.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(city.Table, city.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, city.ParentTable, city.ParentColumn),
+		)
+		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryChildren queries the children edge of a City.
+func (c *CityClient) QueryChildren(ci *City) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ci.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(city.Table, city.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, city.ChildrenTable, city.ChildrenColumn),
+		)
+		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CityClient) Hooks() []Hook {
+	return c.hooks.City
 }
 
 // ContractClient is a client for the Contract schema.

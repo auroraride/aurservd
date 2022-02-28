@@ -343,6 +343,10 @@ func (mq *ManagerQuery) sqlCount(ctx context.Context) (int, error) {
 	if len(mq.modifiers) > 0 {
 		_spec.Modifiers = mq.modifiers
 	}
+	_spec.Node.Columns = mq.fields
+	if len(mq.fields) > 0 {
+		_spec.Unique = mq.unique != nil && *mq.unique
+	}
 	return sqlgraph.CountNodes(ctx, mq.driver, _spec)
 }
 
@@ -413,6 +417,9 @@ func (mq *ManagerQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if mq.sql != nil {
 		selector = mq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if mq.unique != nil && *mq.unique {
+		selector.Distinct()
 	}
 	for _, m := range mq.modifiers {
 		m(selector)
@@ -701,9 +708,7 @@ func (mgb *ManagerGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range mgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(mgb.fields...)...)

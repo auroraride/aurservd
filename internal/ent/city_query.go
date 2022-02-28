@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -11,62 +12,62 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
-	"github.com/auroraride/aurservd/internal/ent/rider"
 )
 
-// ContractQuery is the builder for querying Contract entities.
-type ContractQuery struct {
+// CityQuery is the builder for querying City entities.
+type CityQuery struct {
 	config
 	limit      *int
 	offset     *int
 	unique     *bool
 	order      []OrderFunc
 	fields     []string
-	predicates []predicate.Contract
+	predicates []predicate.City
 	// eager-loading edges.
-	withRider *RiderQuery
-	modifiers []func(s *sql.Selector)
+	withParent   *CityQuery
+	withChildren *CityQuery
+	modifiers    []func(s *sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the ContractQuery builder.
-func (cq *ContractQuery) Where(ps ...predicate.Contract) *ContractQuery {
+// Where adds a new predicate for the CityQuery builder.
+func (cq *CityQuery) Where(ps ...predicate.City) *CityQuery {
 	cq.predicates = append(cq.predicates, ps...)
 	return cq
 }
 
 // Limit adds a limit step to the query.
-func (cq *ContractQuery) Limit(limit int) *ContractQuery {
+func (cq *CityQuery) Limit(limit int) *CityQuery {
 	cq.limit = &limit
 	return cq
 }
 
 // Offset adds an offset step to the query.
-func (cq *ContractQuery) Offset(offset int) *ContractQuery {
+func (cq *CityQuery) Offset(offset int) *CityQuery {
 	cq.offset = &offset
 	return cq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (cq *ContractQuery) Unique(unique bool) *ContractQuery {
+func (cq *CityQuery) Unique(unique bool) *CityQuery {
 	cq.unique = &unique
 	return cq
 }
 
 // Order adds an order step to the query.
-func (cq *ContractQuery) Order(o ...OrderFunc) *ContractQuery {
+func (cq *CityQuery) Order(o ...OrderFunc) *CityQuery {
 	cq.order = append(cq.order, o...)
 	return cq
 }
 
-// QueryRider chains the current query on the "rider" edge.
-func (cq *ContractQuery) QueryRider() *RiderQuery {
-	query := &RiderQuery{config: cq.config}
+// QueryParent chains the current query on the "parent" edge.
+func (cq *CityQuery) QueryParent() *CityQuery {
+	query := &CityQuery{config: cq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -76,9 +77,9 @@ func (cq *ContractQuery) QueryRider() *RiderQuery {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(contract.Table, contract.FieldID, selector),
-			sqlgraph.To(rider.Table, rider.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, contract.RiderTable, contract.RiderColumn),
+			sqlgraph.From(city.Table, city.FieldID, selector),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, city.ParentTable, city.ParentColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -86,21 +87,43 @@ func (cq *ContractQuery) QueryRider() *RiderQuery {
 	return query
 }
 
-// First returns the first Contract entity from the query.
-// Returns a *NotFoundError when no Contract was found.
-func (cq *ContractQuery) First(ctx context.Context) (*Contract, error) {
+// QueryChildren chains the current query on the "children" edge.
+func (cq *CityQuery) QueryChildren() *CityQuery {
+	query := &CityQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(city.Table, city.FieldID, selector),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, city.ChildrenTable, city.ChildrenColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// First returns the first City entity from the query.
+// Returns a *NotFoundError when no City was found.
+func (cq *CityQuery) First(ctx context.Context) (*City, error) {
 	nodes, err := cq.Limit(1).All(ctx)
 	if err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
-		return nil, &NotFoundError{contract.Label}
+		return nil, &NotFoundError{city.Label}
 	}
 	return nodes[0], nil
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (cq *ContractQuery) FirstX(ctx context.Context) *Contract {
+func (cq *CityQuery) FirstX(ctx context.Context) *City {
 	node, err := cq.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -108,22 +131,22 @@ func (cq *ContractQuery) FirstX(ctx context.Context) *Contract {
 	return node
 }
 
-// FirstID returns the first Contract ID from the query.
-// Returns a *NotFoundError when no Contract ID was found.
-func (cq *ContractQuery) FirstID(ctx context.Context) (id uint64, err error) {
+// FirstID returns the first City ID from the query.
+// Returns a *NotFoundError when no City ID was found.
+func (cq *CityQuery) FirstID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
 	if ids, err = cq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
 	if len(ids) == 0 {
-		err = &NotFoundError{contract.Label}
+		err = &NotFoundError{city.Label}
 		return
 	}
 	return ids[0], nil
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (cq *ContractQuery) FirstIDX(ctx context.Context) uint64 {
+func (cq *CityQuery) FirstIDX(ctx context.Context) uint64 {
 	id, err := cq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -131,10 +154,10 @@ func (cq *ContractQuery) FirstIDX(ctx context.Context) uint64 {
 	return id
 }
 
-// Only returns a single Contract entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one Contract entity is not found.
-// Returns a *NotFoundError when no Contract entities are found.
-func (cq *ContractQuery) Only(ctx context.Context) (*Contract, error) {
+// Only returns a single City entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when exactly one City entity is not found.
+// Returns a *NotFoundError when no City entities are found.
+func (cq *CityQuery) Only(ctx context.Context) (*City, error) {
 	nodes, err := cq.Limit(2).All(ctx)
 	if err != nil {
 		return nil, err
@@ -143,14 +166,14 @@ func (cq *ContractQuery) Only(ctx context.Context) (*Contract, error) {
 	case 1:
 		return nodes[0], nil
 	case 0:
-		return nil, &NotFoundError{contract.Label}
+		return nil, &NotFoundError{city.Label}
 	default:
-		return nil, &NotSingularError{contract.Label}
+		return nil, &NotSingularError{city.Label}
 	}
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (cq *ContractQuery) OnlyX(ctx context.Context) *Contract {
+func (cq *CityQuery) OnlyX(ctx context.Context) *City {
 	node, err := cq.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -158,10 +181,10 @@ func (cq *ContractQuery) OnlyX(ctx context.Context) *Contract {
 	return node
 }
 
-// OnlyID is like Only, but returns the only Contract ID in the query.
-// Returns a *NotSingularError when exactly one Contract ID is not found.
+// OnlyID is like Only, but returns the only City ID in the query.
+// Returns a *NotSingularError when exactly one City ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (cq *ContractQuery) OnlyID(ctx context.Context) (id uint64, err error) {
+func (cq *CityQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
 	if ids, err = cq.Limit(2).IDs(ctx); err != nil {
 		return
@@ -170,15 +193,15 @@ func (cq *ContractQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	case 1:
 		id = ids[0]
 	case 0:
-		err = &NotFoundError{contract.Label}
+		err = &NotFoundError{city.Label}
 	default:
-		err = &NotSingularError{contract.Label}
+		err = &NotSingularError{city.Label}
 	}
 	return
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (cq *ContractQuery) OnlyIDX(ctx context.Context) uint64 {
+func (cq *CityQuery) OnlyIDX(ctx context.Context) uint64 {
 	id, err := cq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -186,8 +209,8 @@ func (cq *ContractQuery) OnlyIDX(ctx context.Context) uint64 {
 	return id
 }
 
-// All executes the query and returns a list of Contracts.
-func (cq *ContractQuery) All(ctx context.Context) ([]*Contract, error) {
+// All executes the query and returns a list of Cities.
+func (cq *CityQuery) All(ctx context.Context) ([]*City, error) {
 	if err := cq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -195,7 +218,7 @@ func (cq *ContractQuery) All(ctx context.Context) ([]*Contract, error) {
 }
 
 // AllX is like All, but panics if an error occurs.
-func (cq *ContractQuery) AllX(ctx context.Context) []*Contract {
+func (cq *CityQuery) AllX(ctx context.Context) []*City {
 	nodes, err := cq.All(ctx)
 	if err != nil {
 		panic(err)
@@ -203,17 +226,17 @@ func (cq *ContractQuery) AllX(ctx context.Context) []*Contract {
 	return nodes
 }
 
-// IDs executes the query and returns a list of Contract IDs.
-func (cq *ContractQuery) IDs(ctx context.Context) ([]uint64, error) {
+// IDs executes the query and returns a list of City IDs.
+func (cq *CityQuery) IDs(ctx context.Context) ([]uint64, error) {
 	var ids []uint64
-	if err := cq.Select(contract.FieldID).Scan(ctx, &ids); err != nil {
+	if err := cq.Select(city.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (cq *ContractQuery) IDsX(ctx context.Context) []uint64 {
+func (cq *CityQuery) IDsX(ctx context.Context) []uint64 {
 	ids, err := cq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -222,7 +245,7 @@ func (cq *ContractQuery) IDsX(ctx context.Context) []uint64 {
 }
 
 // Count returns the count of the given query.
-func (cq *ContractQuery) Count(ctx context.Context) (int, error) {
+func (cq *CityQuery) Count(ctx context.Context) (int, error) {
 	if err := cq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -230,7 +253,7 @@ func (cq *ContractQuery) Count(ctx context.Context) (int, error) {
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (cq *ContractQuery) CountX(ctx context.Context) int {
+func (cq *CityQuery) CountX(ctx context.Context) int {
 	count, err := cq.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -239,7 +262,7 @@ func (cq *ContractQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (cq *ContractQuery) Exist(ctx context.Context) (bool, error) {
+func (cq *CityQuery) Exist(ctx context.Context) (bool, error) {
 	if err := cq.prepareQuery(ctx); err != nil {
 		return false, err
 	}
@@ -247,7 +270,7 @@ func (cq *ContractQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (cq *ContractQuery) ExistX(ctx context.Context) bool {
+func (cq *CityQuery) ExistX(ctx context.Context) bool {
 	exist, err := cq.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -255,33 +278,45 @@ func (cq *ContractQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the ContractQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the CityQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (cq *ContractQuery) Clone() *ContractQuery {
+func (cq *CityQuery) Clone() *CityQuery {
 	if cq == nil {
 		return nil
 	}
-	return &ContractQuery{
-		config:     cq.config,
-		limit:      cq.limit,
-		offset:     cq.offset,
-		order:      append([]OrderFunc{}, cq.order...),
-		predicates: append([]predicate.Contract{}, cq.predicates...),
-		withRider:  cq.withRider.Clone(),
+	return &CityQuery{
+		config:       cq.config,
+		limit:        cq.limit,
+		offset:       cq.offset,
+		order:        append([]OrderFunc{}, cq.order...),
+		predicates:   append([]predicate.City{}, cq.predicates...),
+		withParent:   cq.withParent.Clone(),
+		withChildren: cq.withChildren.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
 	}
 }
 
-// WithRider tells the query-builder to eager-load the nodes that are connected to
-// the "rider" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *ContractQuery) WithRider(opts ...func(*RiderQuery)) *ContractQuery {
-	query := &RiderQuery{config: cq.config}
+// WithParent tells the query-builder to eager-load the nodes that are connected to
+// the "parent" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CityQuery) WithParent(opts ...func(*CityQuery)) *CityQuery {
+	query := &CityQuery{config: cq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	cq.withRider = query
+	cq.withParent = query
+	return cq
+}
+
+// WithChildren tells the query-builder to eager-load the nodes that are connected to
+// the "children" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CityQuery) WithChildren(opts ...func(*CityQuery)) *CityQuery {
+	query := &CityQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withChildren = query
 	return cq
 }
 
@@ -295,13 +330,13 @@ func (cq *ContractQuery) WithRider(opts ...func(*RiderQuery)) *ContractQuery {
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.Contract.Query().
-//		GroupBy(contract.FieldCreatedAt).
+//	client.City.Query().
+//		GroupBy(city.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
-func (cq *ContractQuery) GroupBy(field string, fields ...string) *ContractGroupBy {
-	group := &ContractGroupBy{config: cq.config}
+func (cq *CityQuery) GroupBy(field string, fields ...string) *CityGroupBy {
+	group := &CityGroupBy{config: cq.config}
 	group.fields = append([]string{field}, fields...)
 	group.path = func(ctx context.Context) (prev *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
@@ -321,18 +356,18 @@ func (cq *ContractQuery) GroupBy(field string, fields ...string) *ContractGroupB
 //		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
-//	client.Contract.Query().
-//		Select(contract.FieldCreatedAt).
+//	client.City.Query().
+//		Select(city.FieldCreatedAt).
 //		Scan(ctx, &v)
 //
-func (cq *ContractQuery) Select(fields ...string) *ContractSelect {
+func (cq *CityQuery) Select(fields ...string) *CitySelect {
 	cq.fields = append(cq.fields, fields...)
-	return &ContractSelect{ContractQuery: cq}
+	return &CitySelect{CityQuery: cq}
 }
 
-func (cq *ContractQuery) prepareQuery(ctx context.Context) error {
+func (cq *CityQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range cq.fields {
-		if !contract.ValidColumn(f) {
+		if !city.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
@@ -346,16 +381,17 @@ func (cq *ContractQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (cq *ContractQuery) sqlAll(ctx context.Context) ([]*Contract, error) {
+func (cq *CityQuery) sqlAll(ctx context.Context) ([]*City, error) {
 	var (
-		nodes       = []*Contract{}
+		nodes       = []*City{}
 		_spec       = cq.querySpec()
-		loadedTypes = [1]bool{
-			cq.withRider != nil,
+		loadedTypes = [2]bool{
+			cq.withParent != nil,
+			cq.withChildren != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
-		node := &Contract{config: cq.config}
+		node := &City{config: cq.config}
 		nodes = append(nodes, node)
 		return node.scanValues(columns)
 	}
@@ -377,17 +413,17 @@ func (cq *ContractQuery) sqlAll(ctx context.Context) ([]*Contract, error) {
 		return nodes, nil
 	}
 
-	if query := cq.withRider; query != nil {
+	if query := cq.withParent; query != nil {
 		ids := make([]uint64, 0, len(nodes))
-		nodeids := make(map[uint64][]*Contract)
+		nodeids := make(map[uint64][]*City)
 		for i := range nodes {
-			fk := nodes[i].RiderID
+			fk := nodes[i].ParentID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
 			nodeids[fk] = append(nodeids[fk], nodes[i])
 		}
-		query.Where(rider.IDIn(ids...))
+		query.Where(city.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
@@ -395,18 +431,43 @@ func (cq *ContractQuery) sqlAll(ctx context.Context) ([]*Contract, error) {
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "rider_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "parent_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.Rider = n
+				nodes[i].Edges.Parent = n
 			}
+		}
+	}
+
+	if query := cq.withChildren; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*City)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Children = []*City{}
+		}
+		query.Where(predicate.City(func(s *sql.Selector) {
+			s.Where(sql.InValues(city.ChildrenColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ParentID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "parent_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Children = append(node.Edges.Children, n)
 		}
 	}
 
 	return nodes, nil
 }
 
-func (cq *ContractQuery) sqlCount(ctx context.Context) (int, error) {
+func (cq *CityQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := cq.querySpec()
 	if len(cq.modifiers) > 0 {
 		_spec.Modifiers = cq.modifiers
@@ -418,7 +479,7 @@ func (cq *ContractQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, cq.driver, _spec)
 }
 
-func (cq *ContractQuery) sqlExist(ctx context.Context) (bool, error) {
+func (cq *CityQuery) sqlExist(ctx context.Context) (bool, error) {
 	n, err := cq.sqlCount(ctx)
 	if err != nil {
 		return false, fmt.Errorf("ent: check existence: %w", err)
@@ -426,14 +487,14 @@ func (cq *ContractQuery) sqlExist(ctx context.Context) (bool, error) {
 	return n > 0, nil
 }
 
-func (cq *ContractQuery) querySpec() *sqlgraph.QuerySpec {
+func (cq *CityQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
-			Table:   contract.Table,
-			Columns: contract.Columns,
+			Table:   city.Table,
+			Columns: city.Columns,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeUint64,
-				Column: contract.FieldID,
+				Column: city.FieldID,
 			},
 		},
 		From:   cq.sql,
@@ -444,9 +505,9 @@ func (cq *ContractQuery) querySpec() *sqlgraph.QuerySpec {
 	}
 	if fields := cq.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, contract.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, city.FieldID)
 		for i := range fields {
-			if fields[i] != contract.FieldID {
+			if fields[i] != city.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
@@ -474,12 +535,12 @@ func (cq *ContractQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (cq *ContractQuery) sqlQuery(ctx context.Context) *sql.Selector {
+func (cq *CityQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(cq.driver.Dialect())
-	t1 := builder.Table(contract.Table)
+	t1 := builder.Table(city.Table)
 	columns := cq.fields
 	if len(columns) == 0 {
-		columns = contract.Columns
+		columns = city.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if cq.sql != nil {
@@ -510,13 +571,13 @@ func (cq *ContractQuery) sqlQuery(ctx context.Context) *sql.Selector {
 }
 
 // Modify adds a query modifier for attaching custom logic to queries.
-func (cq *ContractQuery) Modify(modifiers ...func(s *sql.Selector)) *ContractSelect {
+func (cq *CityQuery) Modify(modifiers ...func(s *sql.Selector)) *CitySelect {
 	cq.modifiers = append(cq.modifiers, modifiers...)
 	return cq.Select()
 }
 
-// ContractGroupBy is the group-by builder for Contract entities.
-type ContractGroupBy struct {
+// CityGroupBy is the group-by builder for City entities.
+type CityGroupBy struct {
 	config
 	fields []string
 	fns    []AggregateFunc
@@ -526,13 +587,13 @@ type ContractGroupBy struct {
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (cgb *ContractGroupBy) Aggregate(fns ...AggregateFunc) *ContractGroupBy {
+func (cgb *CityGroupBy) Aggregate(fns ...AggregateFunc) *CityGroupBy {
 	cgb.fns = append(cgb.fns, fns...)
 	return cgb
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (cgb *ContractGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (cgb *CityGroupBy) Scan(ctx context.Context, v interface{}) error {
 	query, err := cgb.path(ctx)
 	if err != nil {
 		return err
@@ -542,7 +603,7 @@ func (cgb *ContractGroupBy) Scan(ctx context.Context, v interface{}) error {
 }
 
 // ScanX is like Scan, but panics if an error occurs.
-func (cgb *ContractGroupBy) ScanX(ctx context.Context, v interface{}) {
+func (cgb *CityGroupBy) ScanX(ctx context.Context, v interface{}) {
 	if err := cgb.Scan(ctx, v); err != nil {
 		panic(err)
 	}
@@ -550,9 +611,9 @@ func (cgb *ContractGroupBy) ScanX(ctx context.Context, v interface{}) {
 
 // Strings returns list of strings from group-by.
 // It is only allowed when executing a group-by query with one field.
-func (cgb *ContractGroupBy) Strings(ctx context.Context) ([]string, error) {
+func (cgb *CityGroupBy) Strings(ctx context.Context) ([]string, error) {
 	if len(cgb.fields) > 1 {
-		return nil, errors.New("ent: ContractGroupBy.Strings is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: CityGroupBy.Strings is not achievable when grouping more than 1 field")
 	}
 	var v []string
 	if err := cgb.Scan(ctx, &v); err != nil {
@@ -562,7 +623,7 @@ func (cgb *ContractGroupBy) Strings(ctx context.Context) ([]string, error) {
 }
 
 // StringsX is like Strings, but panics if an error occurs.
-func (cgb *ContractGroupBy) StringsX(ctx context.Context) []string {
+func (cgb *CityGroupBy) StringsX(ctx context.Context) []string {
 	v, err := cgb.Strings(ctx)
 	if err != nil {
 		panic(err)
@@ -572,7 +633,7 @@ func (cgb *ContractGroupBy) StringsX(ctx context.Context) []string {
 
 // String returns a single string from a group-by query.
 // It is only allowed when executing a group-by query with one field.
-func (cgb *ContractGroupBy) String(ctx context.Context) (_ string, err error) {
+func (cgb *CityGroupBy) String(ctx context.Context) (_ string, err error) {
 	var v []string
 	if v, err = cgb.Strings(ctx); err != nil {
 		return
@@ -581,15 +642,15 @@ func (cgb *ContractGroupBy) String(ctx context.Context) (_ string, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{contract.Label}
+		err = &NotFoundError{city.Label}
 	default:
-		err = fmt.Errorf("ent: ContractGroupBy.Strings returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: CityGroupBy.Strings returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // StringX is like String, but panics if an error occurs.
-func (cgb *ContractGroupBy) StringX(ctx context.Context) string {
+func (cgb *CityGroupBy) StringX(ctx context.Context) string {
 	v, err := cgb.String(ctx)
 	if err != nil {
 		panic(err)
@@ -599,9 +660,9 @@ func (cgb *ContractGroupBy) StringX(ctx context.Context) string {
 
 // Ints returns list of ints from group-by.
 // It is only allowed when executing a group-by query with one field.
-func (cgb *ContractGroupBy) Ints(ctx context.Context) ([]int, error) {
+func (cgb *CityGroupBy) Ints(ctx context.Context) ([]int, error) {
 	if len(cgb.fields) > 1 {
-		return nil, errors.New("ent: ContractGroupBy.Ints is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: CityGroupBy.Ints is not achievable when grouping more than 1 field")
 	}
 	var v []int
 	if err := cgb.Scan(ctx, &v); err != nil {
@@ -611,7 +672,7 @@ func (cgb *ContractGroupBy) Ints(ctx context.Context) ([]int, error) {
 }
 
 // IntsX is like Ints, but panics if an error occurs.
-func (cgb *ContractGroupBy) IntsX(ctx context.Context) []int {
+func (cgb *CityGroupBy) IntsX(ctx context.Context) []int {
 	v, err := cgb.Ints(ctx)
 	if err != nil {
 		panic(err)
@@ -621,7 +682,7 @@ func (cgb *ContractGroupBy) IntsX(ctx context.Context) []int {
 
 // Int returns a single int from a group-by query.
 // It is only allowed when executing a group-by query with one field.
-func (cgb *ContractGroupBy) Int(ctx context.Context) (_ int, err error) {
+func (cgb *CityGroupBy) Int(ctx context.Context) (_ int, err error) {
 	var v []int
 	if v, err = cgb.Ints(ctx); err != nil {
 		return
@@ -630,15 +691,15 @@ func (cgb *ContractGroupBy) Int(ctx context.Context) (_ int, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{contract.Label}
+		err = &NotFoundError{city.Label}
 	default:
-		err = fmt.Errorf("ent: ContractGroupBy.Ints returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: CityGroupBy.Ints returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // IntX is like Int, but panics if an error occurs.
-func (cgb *ContractGroupBy) IntX(ctx context.Context) int {
+func (cgb *CityGroupBy) IntX(ctx context.Context) int {
 	v, err := cgb.Int(ctx)
 	if err != nil {
 		panic(err)
@@ -648,9 +709,9 @@ func (cgb *ContractGroupBy) IntX(ctx context.Context) int {
 
 // Float64s returns list of float64s from group-by.
 // It is only allowed when executing a group-by query with one field.
-func (cgb *ContractGroupBy) Float64s(ctx context.Context) ([]float64, error) {
+func (cgb *CityGroupBy) Float64s(ctx context.Context) ([]float64, error) {
 	if len(cgb.fields) > 1 {
-		return nil, errors.New("ent: ContractGroupBy.Float64s is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: CityGroupBy.Float64s is not achievable when grouping more than 1 field")
 	}
 	var v []float64
 	if err := cgb.Scan(ctx, &v); err != nil {
@@ -660,7 +721,7 @@ func (cgb *ContractGroupBy) Float64s(ctx context.Context) ([]float64, error) {
 }
 
 // Float64sX is like Float64s, but panics if an error occurs.
-func (cgb *ContractGroupBy) Float64sX(ctx context.Context) []float64 {
+func (cgb *CityGroupBy) Float64sX(ctx context.Context) []float64 {
 	v, err := cgb.Float64s(ctx)
 	if err != nil {
 		panic(err)
@@ -670,7 +731,7 @@ func (cgb *ContractGroupBy) Float64sX(ctx context.Context) []float64 {
 
 // Float64 returns a single float64 from a group-by query.
 // It is only allowed when executing a group-by query with one field.
-func (cgb *ContractGroupBy) Float64(ctx context.Context) (_ float64, err error) {
+func (cgb *CityGroupBy) Float64(ctx context.Context) (_ float64, err error) {
 	var v []float64
 	if v, err = cgb.Float64s(ctx); err != nil {
 		return
@@ -679,15 +740,15 @@ func (cgb *ContractGroupBy) Float64(ctx context.Context) (_ float64, err error) 
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{contract.Label}
+		err = &NotFoundError{city.Label}
 	default:
-		err = fmt.Errorf("ent: ContractGroupBy.Float64s returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: CityGroupBy.Float64s returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // Float64X is like Float64, but panics if an error occurs.
-func (cgb *ContractGroupBy) Float64X(ctx context.Context) float64 {
+func (cgb *CityGroupBy) Float64X(ctx context.Context) float64 {
 	v, err := cgb.Float64(ctx)
 	if err != nil {
 		panic(err)
@@ -697,9 +758,9 @@ func (cgb *ContractGroupBy) Float64X(ctx context.Context) float64 {
 
 // Bools returns list of bools from group-by.
 // It is only allowed when executing a group-by query with one field.
-func (cgb *ContractGroupBy) Bools(ctx context.Context) ([]bool, error) {
+func (cgb *CityGroupBy) Bools(ctx context.Context) ([]bool, error) {
 	if len(cgb.fields) > 1 {
-		return nil, errors.New("ent: ContractGroupBy.Bools is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: CityGroupBy.Bools is not achievable when grouping more than 1 field")
 	}
 	var v []bool
 	if err := cgb.Scan(ctx, &v); err != nil {
@@ -709,7 +770,7 @@ func (cgb *ContractGroupBy) Bools(ctx context.Context) ([]bool, error) {
 }
 
 // BoolsX is like Bools, but panics if an error occurs.
-func (cgb *ContractGroupBy) BoolsX(ctx context.Context) []bool {
+func (cgb *CityGroupBy) BoolsX(ctx context.Context) []bool {
 	v, err := cgb.Bools(ctx)
 	if err != nil {
 		panic(err)
@@ -719,7 +780,7 @@ func (cgb *ContractGroupBy) BoolsX(ctx context.Context) []bool {
 
 // Bool returns a single bool from a group-by query.
 // It is only allowed when executing a group-by query with one field.
-func (cgb *ContractGroupBy) Bool(ctx context.Context) (_ bool, err error) {
+func (cgb *CityGroupBy) Bool(ctx context.Context) (_ bool, err error) {
 	var v []bool
 	if v, err = cgb.Bools(ctx); err != nil {
 		return
@@ -728,15 +789,15 @@ func (cgb *ContractGroupBy) Bool(ctx context.Context) (_ bool, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{contract.Label}
+		err = &NotFoundError{city.Label}
 	default:
-		err = fmt.Errorf("ent: ContractGroupBy.Bools returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: CityGroupBy.Bools returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // BoolX is like Bool, but panics if an error occurs.
-func (cgb *ContractGroupBy) BoolX(ctx context.Context) bool {
+func (cgb *CityGroupBy) BoolX(ctx context.Context) bool {
 	v, err := cgb.Bool(ctx)
 	if err != nil {
 		panic(err)
@@ -744,9 +805,9 @@ func (cgb *ContractGroupBy) BoolX(ctx context.Context) bool {
 	return v
 }
 
-func (cgb *ContractGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (cgb *CityGroupBy) sqlScan(ctx context.Context, v interface{}) error {
 	for _, f := range cgb.fields {
-		if !contract.ValidColumn(f) {
+		if !city.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
 		}
 	}
@@ -763,7 +824,7 @@ func (cgb *ContractGroupBy) sqlScan(ctx context.Context, v interface{}) error {
 	return sql.ScanSlice(rows, v)
 }
 
-func (cgb *ContractGroupBy) sqlQuery() *sql.Selector {
+func (cgb *CityGroupBy) sqlQuery() *sql.Selector {
 	selector := cgb.sql.Select()
 	aggregation := make([]string, 0, len(cgb.fns))
 	for _, fn := range cgb.fns {
@@ -782,33 +843,33 @@ func (cgb *ContractGroupBy) sqlQuery() *sql.Selector {
 	return selector.GroupBy(selector.Columns(cgb.fields...)...)
 }
 
-// ContractSelect is the builder for selecting fields of Contract entities.
-type ContractSelect struct {
-	*ContractQuery
+// CitySelect is the builder for selecting fields of City entities.
+type CitySelect struct {
+	*CityQuery
 	// intermediate query (i.e. traversal path).
 	sql *sql.Selector
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (cs *ContractSelect) Scan(ctx context.Context, v interface{}) error {
+func (cs *CitySelect) Scan(ctx context.Context, v interface{}) error {
 	if err := cs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	cs.sql = cs.ContractQuery.sqlQuery(ctx)
+	cs.sql = cs.CityQuery.sqlQuery(ctx)
 	return cs.sqlScan(ctx, v)
 }
 
 // ScanX is like Scan, but panics if an error occurs.
-func (cs *ContractSelect) ScanX(ctx context.Context, v interface{}) {
+func (cs *CitySelect) ScanX(ctx context.Context, v interface{}) {
 	if err := cs.Scan(ctx, v); err != nil {
 		panic(err)
 	}
 }
 
 // Strings returns list of strings from a selector. It is only allowed when selecting one field.
-func (cs *ContractSelect) Strings(ctx context.Context) ([]string, error) {
+func (cs *CitySelect) Strings(ctx context.Context) ([]string, error) {
 	if len(cs.fields) > 1 {
-		return nil, errors.New("ent: ContractSelect.Strings is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: CitySelect.Strings is not achievable when selecting more than 1 field")
 	}
 	var v []string
 	if err := cs.Scan(ctx, &v); err != nil {
@@ -818,7 +879,7 @@ func (cs *ContractSelect) Strings(ctx context.Context) ([]string, error) {
 }
 
 // StringsX is like Strings, but panics if an error occurs.
-func (cs *ContractSelect) StringsX(ctx context.Context) []string {
+func (cs *CitySelect) StringsX(ctx context.Context) []string {
 	v, err := cs.Strings(ctx)
 	if err != nil {
 		panic(err)
@@ -827,7 +888,7 @@ func (cs *ContractSelect) StringsX(ctx context.Context) []string {
 }
 
 // String returns a single string from a selector. It is only allowed when selecting one field.
-func (cs *ContractSelect) String(ctx context.Context) (_ string, err error) {
+func (cs *CitySelect) String(ctx context.Context) (_ string, err error) {
 	var v []string
 	if v, err = cs.Strings(ctx); err != nil {
 		return
@@ -836,15 +897,15 @@ func (cs *ContractSelect) String(ctx context.Context) (_ string, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{contract.Label}
+		err = &NotFoundError{city.Label}
 	default:
-		err = fmt.Errorf("ent: ContractSelect.Strings returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: CitySelect.Strings returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // StringX is like String, but panics if an error occurs.
-func (cs *ContractSelect) StringX(ctx context.Context) string {
+func (cs *CitySelect) StringX(ctx context.Context) string {
 	v, err := cs.String(ctx)
 	if err != nil {
 		panic(err)
@@ -853,9 +914,9 @@ func (cs *ContractSelect) StringX(ctx context.Context) string {
 }
 
 // Ints returns list of ints from a selector. It is only allowed when selecting one field.
-func (cs *ContractSelect) Ints(ctx context.Context) ([]int, error) {
+func (cs *CitySelect) Ints(ctx context.Context) ([]int, error) {
 	if len(cs.fields) > 1 {
-		return nil, errors.New("ent: ContractSelect.Ints is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: CitySelect.Ints is not achievable when selecting more than 1 field")
 	}
 	var v []int
 	if err := cs.Scan(ctx, &v); err != nil {
@@ -865,7 +926,7 @@ func (cs *ContractSelect) Ints(ctx context.Context) ([]int, error) {
 }
 
 // IntsX is like Ints, but panics if an error occurs.
-func (cs *ContractSelect) IntsX(ctx context.Context) []int {
+func (cs *CitySelect) IntsX(ctx context.Context) []int {
 	v, err := cs.Ints(ctx)
 	if err != nil {
 		panic(err)
@@ -874,7 +935,7 @@ func (cs *ContractSelect) IntsX(ctx context.Context) []int {
 }
 
 // Int returns a single int from a selector. It is only allowed when selecting one field.
-func (cs *ContractSelect) Int(ctx context.Context) (_ int, err error) {
+func (cs *CitySelect) Int(ctx context.Context) (_ int, err error) {
 	var v []int
 	if v, err = cs.Ints(ctx); err != nil {
 		return
@@ -883,15 +944,15 @@ func (cs *ContractSelect) Int(ctx context.Context) (_ int, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{contract.Label}
+		err = &NotFoundError{city.Label}
 	default:
-		err = fmt.Errorf("ent: ContractSelect.Ints returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: CitySelect.Ints returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // IntX is like Int, but panics if an error occurs.
-func (cs *ContractSelect) IntX(ctx context.Context) int {
+func (cs *CitySelect) IntX(ctx context.Context) int {
 	v, err := cs.Int(ctx)
 	if err != nil {
 		panic(err)
@@ -900,9 +961,9 @@ func (cs *ContractSelect) IntX(ctx context.Context) int {
 }
 
 // Float64s returns list of float64s from a selector. It is only allowed when selecting one field.
-func (cs *ContractSelect) Float64s(ctx context.Context) ([]float64, error) {
+func (cs *CitySelect) Float64s(ctx context.Context) ([]float64, error) {
 	if len(cs.fields) > 1 {
-		return nil, errors.New("ent: ContractSelect.Float64s is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: CitySelect.Float64s is not achievable when selecting more than 1 field")
 	}
 	var v []float64
 	if err := cs.Scan(ctx, &v); err != nil {
@@ -912,7 +973,7 @@ func (cs *ContractSelect) Float64s(ctx context.Context) ([]float64, error) {
 }
 
 // Float64sX is like Float64s, but panics if an error occurs.
-func (cs *ContractSelect) Float64sX(ctx context.Context) []float64 {
+func (cs *CitySelect) Float64sX(ctx context.Context) []float64 {
 	v, err := cs.Float64s(ctx)
 	if err != nil {
 		panic(err)
@@ -921,7 +982,7 @@ func (cs *ContractSelect) Float64sX(ctx context.Context) []float64 {
 }
 
 // Float64 returns a single float64 from a selector. It is only allowed when selecting one field.
-func (cs *ContractSelect) Float64(ctx context.Context) (_ float64, err error) {
+func (cs *CitySelect) Float64(ctx context.Context) (_ float64, err error) {
 	var v []float64
 	if v, err = cs.Float64s(ctx); err != nil {
 		return
@@ -930,15 +991,15 @@ func (cs *ContractSelect) Float64(ctx context.Context) (_ float64, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{contract.Label}
+		err = &NotFoundError{city.Label}
 	default:
-		err = fmt.Errorf("ent: ContractSelect.Float64s returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: CitySelect.Float64s returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // Float64X is like Float64, but panics if an error occurs.
-func (cs *ContractSelect) Float64X(ctx context.Context) float64 {
+func (cs *CitySelect) Float64X(ctx context.Context) float64 {
 	v, err := cs.Float64(ctx)
 	if err != nil {
 		panic(err)
@@ -947,9 +1008,9 @@ func (cs *ContractSelect) Float64X(ctx context.Context) float64 {
 }
 
 // Bools returns list of bools from a selector. It is only allowed when selecting one field.
-func (cs *ContractSelect) Bools(ctx context.Context) ([]bool, error) {
+func (cs *CitySelect) Bools(ctx context.Context) ([]bool, error) {
 	if len(cs.fields) > 1 {
-		return nil, errors.New("ent: ContractSelect.Bools is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: CitySelect.Bools is not achievable when selecting more than 1 field")
 	}
 	var v []bool
 	if err := cs.Scan(ctx, &v); err != nil {
@@ -959,7 +1020,7 @@ func (cs *ContractSelect) Bools(ctx context.Context) ([]bool, error) {
 }
 
 // BoolsX is like Bools, but panics if an error occurs.
-func (cs *ContractSelect) BoolsX(ctx context.Context) []bool {
+func (cs *CitySelect) BoolsX(ctx context.Context) []bool {
 	v, err := cs.Bools(ctx)
 	if err != nil {
 		panic(err)
@@ -968,7 +1029,7 @@ func (cs *ContractSelect) BoolsX(ctx context.Context) []bool {
 }
 
 // Bool returns a single bool from a selector. It is only allowed when selecting one field.
-func (cs *ContractSelect) Bool(ctx context.Context) (_ bool, err error) {
+func (cs *CitySelect) Bool(ctx context.Context) (_ bool, err error) {
 	var v []bool
 	if v, err = cs.Bools(ctx); err != nil {
 		return
@@ -977,15 +1038,15 @@ func (cs *ContractSelect) Bool(ctx context.Context) (_ bool, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{contract.Label}
+		err = &NotFoundError{city.Label}
 	default:
-		err = fmt.Errorf("ent: ContractSelect.Bools returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: CitySelect.Bools returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // BoolX is like Bool, but panics if an error occurs.
-func (cs *ContractSelect) BoolX(ctx context.Context) bool {
+func (cs *CitySelect) BoolX(ctx context.Context) bool {
 	v, err := cs.Bool(ctx)
 	if err != nil {
 		panic(err)
@@ -993,7 +1054,7 @@ func (cs *ContractSelect) BoolX(ctx context.Context) bool {
 	return v
 }
 
-func (cs *ContractSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (cs *CitySelect) sqlScan(ctx context.Context, v interface{}) error {
 	rows := &sql.Rows{}
 	query, args := cs.sql.Query()
 	if err := cs.driver.Query(ctx, query, args, rows); err != nil {
@@ -1004,7 +1065,7 @@ func (cs *ContractSelect) sqlScan(ctx context.Context, v interface{}) error {
 }
 
 // Modify adds a query modifier for attaching custom logic to queries.
-func (cs *ContractSelect) Modify(modifiers ...func(s *sql.Selector)) *ContractSelect {
+func (cs *CitySelect) Modify(modifiers ...func(s *sql.Selector)) *CitySelect {
 	cs.modifiers = append(cs.modifiers, modifiers...)
 	return cs
 }

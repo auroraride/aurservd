@@ -9,6 +9,19 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 )
 
+// The CityFunc type is an adapter to allow the use of ordinary
+// function as City mutator.
+type CityFunc func(context.Context, *ent.CityMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CityFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.CityMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CityMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The ContractFunc type is an adapter to allow the use of ordinary
 // function as Contract mutator.
 type ContractFunc func(context.Context, *ent.ContractMutation) (ent.Value, error)

@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// City is the predicate function for city builders.
+type City func(*sql.Selector)
+
 // Contract is the predicate function for contract builders.
 type Contract func(*sql.Selector)
 

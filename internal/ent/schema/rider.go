@@ -6,6 +6,7 @@ import (
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
+    "entgo.io/ent/schema/index"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
@@ -56,5 +57,7 @@ func (Rider) Mixin() []ent.Mixin {
 }
 
 func (Rider) Indexes() []ent.Index {
-    return nil
+    return []ent.Index{
+        index.Fields("phone"),
+    }
 }

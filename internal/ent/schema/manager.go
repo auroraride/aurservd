@@ -5,6 +5,7 @@ import (
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/field"
+    "entgo.io/ent/schema/index"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -26,6 +27,7 @@ func (Manager) Fields() []ent.Field {
         field.String("phone").MaxLen(30).Unique().Comment("账户/手机号"),
         field.String("name").MaxLen(30).Comment("姓名"),
         field.String("password").Comment("密码"),
+        field.Time("last_signin_at").Nillable().Optional().Comment("最后登录时间"),
     }
 }
 
@@ -43,5 +45,7 @@ func (Manager) Mixin() []ent.Mixin {
 }
 
 func (Manager) Indexes() []ent.Index {
-    return nil
+    return []ent.Index{
+        index.Fields("phone"),
+    }
 }

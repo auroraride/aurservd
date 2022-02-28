@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -124,7 +125,7 @@ func (su *SettingUpdate) defaults() {
 func (su *SettingUpdate) check() error {
 	if v, ok := su.mutation.Key(); ok {
 		if err := setting.KeyValidator(v); err != nil {
-			return &ValidationError{Name: "key", err: fmt.Errorf("ent: validator failed for field \"key\": %w", err)}
+			return &ValidationError{Name: "key", err: fmt.Errorf(`ent: validator failed for field "Setting.key": %w`, err)}
 		}
 	}
 	return nil
@@ -291,7 +292,7 @@ func (suo *SettingUpdateOne) defaults() {
 func (suo *SettingUpdateOne) check() error {
 	if v, ok := suo.mutation.Key(); ok {
 		if err := setting.KeyValidator(v); err != nil {
-			return &ValidationError{Name: "key", err: fmt.Errorf("ent: validator failed for field \"key\": %w", err)}
+			return &ValidationError{Name: "key", err: fmt.Errorf(`ent: validator failed for field "Setting.key": %w`, err)}
 		}
 	}
 	return nil
@@ -310,7 +311,7 @@ func (suo *SettingUpdateOne) sqlSave(ctx context.Context) (_node *Setting, err e
 	}
 	id, ok := suo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Setting.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Setting.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := suo.fields; len(fields) > 0 {

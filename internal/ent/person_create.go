@@ -297,44 +297,44 @@ func (pc *PersonCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (pc *PersonCreate) check() error {
 	if _, ok := pc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Person.created_at"`)}
 	}
 	if _, ok := pc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Person.updated_at"`)}
 	}
 	if _, ok := pc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "status"`)}
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Person.status"`)}
 	}
 	if _, ok := pc.mutation.Block(); !ok {
-		return &ValidationError{Name: "block", err: errors.New(`ent: missing required field "block"`)}
+		return &ValidationError{Name: "block", err: errors.New(`ent: missing required field "Person.block"`)}
 	}
 	if _, ok := pc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Person.name"`)}
 	}
 	if v, ok := pc.mutation.Name(); ok {
 		if err := person.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "name": %w`, err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Person.name": %w`, err)}
 		}
 	}
 	if _, ok := pc.mutation.IDCardNumber(); !ok {
-		return &ValidationError{Name: "id_card_number", err: errors.New(`ent: missing required field "id_card_number"`)}
+		return &ValidationError{Name: "id_card_number", err: errors.New(`ent: missing required field "Person.id_card_number"`)}
 	}
 	if v, ok := pc.mutation.IDCardNumber(); ok {
 		if err := person.IDCardNumberValidator(v); err != nil {
-			return &ValidationError{Name: "id_card_number", err: fmt.Errorf(`ent: validator failed for field "id_card_number": %w`, err)}
+			return &ValidationError{Name: "id_card_number", err: fmt.Errorf(`ent: validator failed for field "Person.id_card_number": %w`, err)}
 		}
 	}
 	if _, ok := pc.mutation.IDCardType(); !ok {
-		return &ValidationError{Name: "id_card_type", err: errors.New(`ent: missing required field "id_card_type"`)}
+		return &ValidationError{Name: "id_card_type", err: errors.New(`ent: missing required field "Person.id_card_type"`)}
 	}
 	if _, ok := pc.mutation.IDCardPortrait(); !ok {
-		return &ValidationError{Name: "id_card_portrait", err: errors.New(`ent: missing required field "id_card_portrait"`)}
+		return &ValidationError{Name: "id_card_portrait", err: errors.New(`ent: missing required field "Person.id_card_portrait"`)}
 	}
 	if _, ok := pc.mutation.IDCardNational(); !ok {
-		return &ValidationError{Name: "id_card_national", err: errors.New(`ent: missing required field "id_card_national"`)}
+		return &ValidationError{Name: "id_card_national", err: errors.New(`ent: missing required field "Person.id_card_national"`)}
 	}
 	if _, ok := pc.mutation.AuthFace(); !ok {
-		return &ValidationError{Name: "auth_face", err: errors.New(`ent: missing required field "auth_face"`)}
+		return &ValidationError{Name: "auth_face", err: errors.New(`ent: missing required field "Person.auth_face"`)}
 	}
 	return nil
 }
@@ -647,6 +647,12 @@ func (u *PersonUpsert) UpdateStatus() *PersonUpsert {
 	return u
 }
 
+// AddStatus adds v to the "status" field.
+func (u *PersonUpsert) AddStatus(v uint8) *PersonUpsert {
+	u.Add(person.FieldStatus, v)
+	return u
+}
+
 // SetBlock sets the "block" field.
 func (u *PersonUpsert) SetBlock(v bool) *PersonUpsert {
 	u.Set(person.FieldBlock, v)
@@ -692,6 +698,12 @@ func (u *PersonUpsert) SetIDCardType(v uint8) *PersonUpsert {
 // UpdateIDCardType sets the "id_card_type" field to the value that was provided on create.
 func (u *PersonUpsert) UpdateIDCardType() *PersonUpsert {
 	u.SetExcluded(person.FieldIDCardType)
+	return u
+}
+
+// AddIDCardType adds v to the "id_card_type" field.
+func (u *PersonUpsert) AddIDCardType(v uint8) *PersonUpsert {
+	u.Add(person.FieldIDCardType, v)
 	return u
 }
 
@@ -767,7 +779,7 @@ func (u *PersonUpsert) ClearAuthAt() *PersonUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create.
+// UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
 //	client.Person.Create().
@@ -778,6 +790,11 @@ func (u *PersonUpsert) ClearAuthAt() *PersonUpsert {
 //
 func (u *PersonUpsertOne) UpdateNewValues() *PersonUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(person.FieldCreatedAt)
+		}
+	}))
 	return u
 }
 
@@ -907,6 +924,13 @@ func (u *PersonUpsertOne) SetStatus(v uint8) *PersonUpsertOne {
 	})
 }
 
+// AddStatus adds v to the "status" field.
+func (u *PersonUpsertOne) AddStatus(v uint8) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.AddStatus(v)
+	})
+}
+
 // UpdateStatus sets the "status" field to the value that was provided on create.
 func (u *PersonUpsertOne) UpdateStatus() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
@@ -960,6 +984,13 @@ func (u *PersonUpsertOne) UpdateIDCardNumber() *PersonUpsertOne {
 func (u *PersonUpsertOne) SetIDCardType(v uint8) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
 		s.SetIDCardType(v)
+	})
+}
+
+// AddIDCardType adds v to the "id_card_type" field.
+func (u *PersonUpsertOne) AddIDCardType(v uint8) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.AddIDCardType(v)
 	})
 }
 
@@ -1216,7 +1247,7 @@ type PersonUpsertBulk struct {
 	create *PersonCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.Person.Create().
@@ -1227,6 +1258,13 @@ type PersonUpsertBulk struct {
 //
 func (u *PersonUpsertBulk) UpdateNewValues() *PersonUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(person.FieldCreatedAt)
+			}
+		}
+	}))
 	return u
 }
 
@@ -1356,6 +1394,13 @@ func (u *PersonUpsertBulk) SetStatus(v uint8) *PersonUpsertBulk {
 	})
 }
 
+// AddStatus adds v to the "status" field.
+func (u *PersonUpsertBulk) AddStatus(v uint8) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.AddStatus(v)
+	})
+}
+
 // UpdateStatus sets the "status" field to the value that was provided on create.
 func (u *PersonUpsertBulk) UpdateStatus() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
@@ -1409,6 +1454,13 @@ func (u *PersonUpsertBulk) UpdateIDCardNumber() *PersonUpsertBulk {
 func (u *PersonUpsertBulk) SetIDCardType(v uint8) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
 		s.SetIDCardType(v)
+	})
+}
+
+// AddIDCardType adds v to the "id_card_type" field.
+func (u *PersonUpsertBulk) AddIDCardType(v uint8) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.AddIDCardType(v)
 	})
 }
 

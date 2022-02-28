@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/person"
@@ -18,8 +19,31 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 5)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 6)}
 	graph.Nodes[0] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   city.Table,
+			Columns: city.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: city.FieldID,
+			},
+		},
+		Type: "City",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			city.FieldCreatedAt:  {Type: field.TypeTime, Column: city.FieldCreatedAt},
+			city.FieldUpdatedAt:  {Type: field.TypeTime, Column: city.FieldUpdatedAt},
+			city.FieldDeletedAt:  {Type: field.TypeTime, Column: city.FieldDeletedAt},
+			city.FieldLastModify: {Type: field.TypeTime, Column: city.FieldLastModify},
+			city.FieldRemark:     {Type: field.TypeString, Column: city.FieldRemark},
+			city.FieldOpen:       {Type: field.TypeBool, Column: city.FieldOpen},
+			city.FieldName:       {Type: field.TypeString, Column: city.FieldName},
+			city.FieldAdcode:     {Type: field.TypeString, Column: city.FieldAdcode},
+			city.FieldCode:       {Type: field.TypeString, Column: city.FieldCode},
+			city.FieldParentID:   {Type: field.TypeUint64, Column: city.FieldParentID},
+		},
+	}
+	graph.Nodes[1] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   contract.Table,
 			Columns: contract.Columns,
@@ -42,7 +66,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			contract.FieldFiles:      {Type: field.TypeJSON, Column: contract.FieldFiles},
 		},
 	}
-	graph.Nodes[1] = &sqlgraph.Node{
+	graph.Nodes[2] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   manager.Table,
 			Columns: manager.Columns,
@@ -53,14 +77,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Manager",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			manager.FieldCreatedAt:  {Type: field.TypeTime, Column: manager.FieldCreatedAt},
-			manager.FieldUpdatedAt:  {Type: field.TypeTime, Column: manager.FieldUpdatedAt},
-			manager.FieldDeletedAt:  {Type: field.TypeTime, Column: manager.FieldDeletedAt},
-			manager.FieldLastModify: {Type: field.TypeTime, Column: manager.FieldLastModify},
-			manager.FieldRemark:     {Type: field.TypeString, Column: manager.FieldRemark},
+			manager.FieldCreatedAt:    {Type: field.TypeTime, Column: manager.FieldCreatedAt},
+			manager.FieldUpdatedAt:    {Type: field.TypeTime, Column: manager.FieldUpdatedAt},
+			manager.FieldDeletedAt:    {Type: field.TypeTime, Column: manager.FieldDeletedAt},
+			manager.FieldLastModify:   {Type: field.TypeTime, Column: manager.FieldLastModify},
+			manager.FieldRemark:       {Type: field.TypeString, Column: manager.FieldRemark},
+			manager.FieldPhone:        {Type: field.TypeString, Column: manager.FieldPhone},
+			manager.FieldName:         {Type: field.TypeString, Column: manager.FieldName},
+			manager.FieldPassword:     {Type: field.TypeString, Column: manager.FieldPassword},
+			manager.FieldLastSigninAt: {Type: field.TypeTime, Column: manager.FieldLastSigninAt},
 		},
 	}
-	graph.Nodes[2] = &sqlgraph.Node{
+	graph.Nodes[3] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   person.Table,
 			Columns: person.Columns,
@@ -88,7 +116,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			person.FieldAuthAt:         {Type: field.TypeTime, Column: person.FieldAuthAt},
 		},
 	}
-	graph.Nodes[3] = &sqlgraph.Node{
+	graph.Nodes[4] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   rider.Table,
 			Columns: rider.Columns,
@@ -117,7 +145,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldEsignAccountID: {Type: field.TypeString, Column: rider.FieldEsignAccountID},
 		},
 	}
-	graph.Nodes[4] = &sqlgraph.Node{
+	graph.Nodes[5] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   setting.Table,
 			Columns: setting.Columns,
@@ -134,6 +162,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 			setting.FieldVal:       {Type: field.TypeJSON, Column: setting.FieldVal},
 		},
 	}
+	graph.MustAddE(
+		"parent",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   city.ParentTable,
+			Columns: []string{city.ParentColumn},
+			Bidi:    false,
+		},
+		"City",
+		"City",
+	)
+	graph.MustAddE(
+		"children",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   city.ChildrenTable,
+			Columns: []string{city.ChildrenColumn},
+			Bidi:    false,
+		},
+		"City",
+		"City",
+	)
 	graph.MustAddE(
 		"rider",
 		&sqlgraph.EdgeSpec{
@@ -192,6 +244,123 @@ type predicateAdder interface {
 }
 
 // addPredicate implements the predicateAdder interface.
+func (cq *CityQuery) addPredicate(pred func(s *sql.Selector)) {
+	cq.predicates = append(cq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the CityQuery builder.
+func (cq *CityQuery) Filter() *CityFilter {
+	return &CityFilter{cq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *CityMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the CityMutation builder.
+func (m *CityMutation) Filter() *CityFilter {
+	return &CityFilter{m}
+}
+
+// CityFilter provides a generic filtering capability at runtime for CityQuery.
+type CityFilter struct {
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *CityFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[0].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *CityFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(city.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *CityFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(city.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *CityFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(city.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *CityFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(city.FieldDeletedAt))
+}
+
+// WhereLastModify applies the entql time.Time predicate on the last_modify field.
+func (f *CityFilter) WhereLastModify(p entql.TimeP) {
+	f.Where(p.Field(city.FieldLastModify))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *CityFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(city.FieldRemark))
+}
+
+// WhereOpen applies the entql bool predicate on the open field.
+func (f *CityFilter) WhereOpen(p entql.BoolP) {
+	f.Where(p.Field(city.FieldOpen))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *CityFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(city.FieldName))
+}
+
+// WhereAdcode applies the entql string predicate on the adcode field.
+func (f *CityFilter) WhereAdcode(p entql.StringP) {
+	f.Where(p.Field(city.FieldAdcode))
+}
+
+// WhereCode applies the entql string predicate on the code field.
+func (f *CityFilter) WhereCode(p entql.StringP) {
+	f.Where(p.Field(city.FieldCode))
+}
+
+// WhereParentID applies the entql uint64 predicate on the parent_id field.
+func (f *CityFilter) WhereParentID(p entql.Uint64P) {
+	f.Where(p.Field(city.FieldParentID))
+}
+
+// WhereHasParent applies a predicate to check if query has an edge parent.
+func (f *CityFilter) WhereHasParent() {
+	f.Where(entql.HasEdge("parent"))
+}
+
+// WhereHasParentWith applies a predicate to check if query has an edge parent with a given conditions (other predicates).
+func (f *CityFilter) WhereHasParentWith(preds ...predicate.City) {
+	f.Where(entql.HasEdgeWith("parent", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasChildren applies a predicate to check if query has an edge children.
+func (f *CityFilter) WhereHasChildren() {
+	f.Where(entql.HasEdge("children"))
+}
+
+// WhereHasChildrenWith applies a predicate to check if query has an edge children with a given conditions (other predicates).
+func (f *CityFilter) WhereHasChildrenWith(preds ...predicate.City) {
+	f.Where(entql.HasEdgeWith("children", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (cq *ContractQuery) addPredicate(pred func(s *sql.Selector)) {
 	cq.predicates = append(cq.predicates, pred)
 }
@@ -219,7 +388,7 @@ type ContractFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *ContractFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[0].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -322,7 +491,7 @@ type ManagerFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *ManagerFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -358,6 +527,26 @@ func (f *ManagerFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(manager.FieldRemark))
 }
 
+// WherePhone applies the entql string predicate on the phone field.
+func (f *ManagerFilter) WherePhone(p entql.StringP) {
+	f.Where(p.Field(manager.FieldPhone))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *ManagerFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(manager.FieldName))
+}
+
+// WherePassword applies the entql string predicate on the password field.
+func (f *ManagerFilter) WherePassword(p entql.StringP) {
+	f.Where(p.Field(manager.FieldPassword))
+}
+
+// WhereLastSigninAt applies the entql time.Time predicate on the last_signin_at field.
+func (f *ManagerFilter) WhereLastSigninAt(p entql.TimeP) {
+	f.Where(p.Field(manager.FieldLastSigninAt))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (pq *PersonQuery) addPredicate(pred func(s *sql.Selector)) {
 	pq.predicates = append(pq.predicates, pred)
@@ -386,7 +575,7 @@ type PersonFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PersonFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -514,7 +703,7 @@ type RiderFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RiderFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -661,7 +850,7 @@ type SettingFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SettingFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

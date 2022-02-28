@@ -325,36 +325,36 @@ func (rc *RiderCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (rc *RiderCreate) check() error {
 	if _, ok := rc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Rider.created_at"`)}
 	}
 	if _, ok := rc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Rider.updated_at"`)}
 	}
 	if _, ok := rc.mutation.Phone(); !ok {
-		return &ValidationError{Name: "phone", err: errors.New(`ent: missing required field "phone"`)}
+		return &ValidationError{Name: "phone", err: errors.New(`ent: missing required field "Rider.phone"`)}
 	}
 	if v, ok := rc.mutation.Phone(); ok {
 		if err := rider.PhoneValidator(v); err != nil {
-			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "phone": %w`, err)}
+			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "Rider.phone": %w`, err)}
 		}
 	}
 	if _, ok := rc.mutation.DeviceType(); !ok {
-		return &ValidationError{Name: "device_type", err: errors.New(`ent: missing required field "device_type"`)}
+		return &ValidationError{Name: "device_type", err: errors.New(`ent: missing required field "Rider.device_type"`)}
 	}
 	if _, ok := rc.mutation.LastDevice(); !ok {
-		return &ValidationError{Name: "last_device", err: errors.New(`ent: missing required field "last_device"`)}
+		return &ValidationError{Name: "last_device", err: errors.New(`ent: missing required field "Rider.last_device"`)}
 	}
 	if v, ok := rc.mutation.LastDevice(); ok {
 		if err := rider.LastDeviceValidator(v); err != nil {
-			return &ValidationError{Name: "last_device", err: fmt.Errorf(`ent: validator failed for field "last_device": %w`, err)}
+			return &ValidationError{Name: "last_device", err: fmt.Errorf(`ent: validator failed for field "Rider.last_device": %w`, err)}
 		}
 	}
 	if _, ok := rc.mutation.IsNewDevice(); !ok {
-		return &ValidationError{Name: "is_new_device", err: errors.New(`ent: missing required field "is_new_device"`)}
+		return &ValidationError{Name: "is_new_device", err: errors.New(`ent: missing required field "Rider.is_new_device"`)}
 	}
 	if v, ok := rc.mutation.PushID(); ok {
 		if err := rider.PushIDValidator(v); err != nil {
-			return &ValidationError{Name: "push_id", err: fmt.Errorf(`ent: validator failed for field "push_id": %w`, err)}
+			return &ValidationError{Name: "push_id", err: fmt.Errorf(`ent: validator failed for field "Rider.push_id": %w`, err)}
 		}
 	}
 	return nil
@@ -706,6 +706,12 @@ func (u *RiderUpsert) UpdateGroupID() *RiderUpsert {
 	return u
 }
 
+// AddGroupID adds v to the "group_id" field.
+func (u *RiderUpsert) AddGroupID(v uint64) *RiderUpsert {
+	u.Add(rider.FieldGroupID, v)
+	return u
+}
+
 // ClearGroupID clears the value of the "group_id" field.
 func (u *RiderUpsert) ClearGroupID() *RiderUpsert {
 	u.SetNull(rider.FieldGroupID)
@@ -751,6 +757,12 @@ func (u *RiderUpsert) SetDeviceType(v uint8) *RiderUpsert {
 // UpdateDeviceType sets the "device_type" field to the value that was provided on create.
 func (u *RiderUpsert) UpdateDeviceType() *RiderUpsert {
 	u.SetExcluded(rider.FieldDeviceType)
+	return u
+}
+
+// AddDeviceType adds v to the "device_type" field.
+func (u *RiderUpsert) AddDeviceType(v uint8) *RiderUpsert {
+	u.Add(rider.FieldDeviceType, v)
 	return u
 }
 
@@ -850,7 +862,7 @@ func (u *RiderUpsert) ClearEsignAccountID() *RiderUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create.
+// UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
 //	client.Rider.Create().
@@ -861,6 +873,11 @@ func (u *RiderUpsert) ClearEsignAccountID() *RiderUpsert {
 //
 func (u *RiderUpsertOne) UpdateNewValues() *RiderUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(rider.FieldCreatedAt)
+		}
+	}))
 	return u
 }
 
@@ -1011,6 +1028,13 @@ func (u *RiderUpsertOne) SetGroupID(v uint64) *RiderUpsertOne {
 	})
 }
 
+// AddGroupID adds v to the "group_id" field.
+func (u *RiderUpsertOne) AddGroupID(v uint64) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.AddGroupID(v)
+	})
+}
+
 // UpdateGroupID sets the "group_id" field to the value that was provided on create.
 func (u *RiderUpsertOne) UpdateGroupID() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
@@ -1064,6 +1088,13 @@ func (u *RiderUpsertOne) ClearContact() *RiderUpsertOne {
 func (u *RiderUpsertOne) SetDeviceType(v uint8) *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.SetDeviceType(v)
+	})
+}
+
+// AddDeviceType adds v to the "device_type" field.
+func (u *RiderUpsertOne) AddDeviceType(v uint8) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.AddDeviceType(v)
 	})
 }
 
@@ -1348,7 +1379,7 @@ type RiderUpsertBulk struct {
 	create *RiderCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.Rider.Create().
@@ -1359,6 +1390,13 @@ type RiderUpsertBulk struct {
 //
 func (u *RiderUpsertBulk) UpdateNewValues() *RiderUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(rider.FieldCreatedAt)
+			}
+		}
+	}))
 	return u
 }
 
@@ -1509,6 +1547,13 @@ func (u *RiderUpsertBulk) SetGroupID(v uint64) *RiderUpsertBulk {
 	})
 }
 
+// AddGroupID adds v to the "group_id" field.
+func (u *RiderUpsertBulk) AddGroupID(v uint64) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.AddGroupID(v)
+	})
+}
+
 // UpdateGroupID sets the "group_id" field to the value that was provided on create.
 func (u *RiderUpsertBulk) UpdateGroupID() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
@@ -1562,6 +1607,13 @@ func (u *RiderUpsertBulk) ClearContact() *RiderUpsertBulk {
 func (u *RiderUpsertBulk) SetDeviceType(v uint8) *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.SetDeviceType(v)
+	})
+}
+
+// AddDeviceType adds v to the "device_type" field.
+func (u *RiderUpsertBulk) AddDeviceType(v uint8) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.AddDeviceType(v)
 	})
 }
 

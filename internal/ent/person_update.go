@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -111,7 +112,7 @@ func (pu *PersonUpdate) SetNillableStatus(u *uint8) *PersonUpdate {
 }
 
 // AddStatus adds u to the "status" field.
-func (pu *PersonUpdate) AddStatus(u uint8) *PersonUpdate {
+func (pu *PersonUpdate) AddStatus(u int8) *PersonUpdate {
 	pu.mutation.AddStatus(u)
 	return pu
 }
@@ -158,7 +159,7 @@ func (pu *PersonUpdate) SetNillableIDCardType(u *uint8) *PersonUpdate {
 }
 
 // AddIDCardType adds u to the "id_card_type" field.
-func (pu *PersonUpdate) AddIDCardType(u uint8) *PersonUpdate {
+func (pu *PersonUpdate) AddIDCardType(u int8) *PersonUpdate {
 	pu.mutation.AddIDCardType(u)
 	return pu
 }
@@ -327,12 +328,12 @@ func (pu *PersonUpdate) defaults() {
 func (pu *PersonUpdate) check() error {
 	if v, ok := pu.mutation.Name(); ok {
 		if err := person.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Person.name": %w`, err)}
 		}
 	}
 	if v, ok := pu.mutation.IDCardNumber(); ok {
 		if err := person.IDCardNumberValidator(v); err != nil {
-			return &ValidationError{Name: "id_card_number", err: fmt.Errorf("ent: validator failed for field \"id_card_number\": %w", err)}
+			return &ValidationError{Name: "id_card_number", err: fmt.Errorf(`ent: validator failed for field "Person.id_card_number": %w`, err)}
 		}
 	}
 	return nil
@@ -653,7 +654,7 @@ func (puo *PersonUpdateOne) SetNillableStatus(u *uint8) *PersonUpdateOne {
 }
 
 // AddStatus adds u to the "status" field.
-func (puo *PersonUpdateOne) AddStatus(u uint8) *PersonUpdateOne {
+func (puo *PersonUpdateOne) AddStatus(u int8) *PersonUpdateOne {
 	puo.mutation.AddStatus(u)
 	return puo
 }
@@ -700,7 +701,7 @@ func (puo *PersonUpdateOne) SetNillableIDCardType(u *uint8) *PersonUpdateOne {
 }
 
 // AddIDCardType adds u to the "id_card_type" field.
-func (puo *PersonUpdateOne) AddIDCardType(u uint8) *PersonUpdateOne {
+func (puo *PersonUpdateOne) AddIDCardType(u int8) *PersonUpdateOne {
 	puo.mutation.AddIDCardType(u)
 	return puo
 }
@@ -876,12 +877,12 @@ func (puo *PersonUpdateOne) defaults() {
 func (puo *PersonUpdateOne) check() error {
 	if v, ok := puo.mutation.Name(); ok {
 		if err := person.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Person.name": %w`, err)}
 		}
 	}
 	if v, ok := puo.mutation.IDCardNumber(); ok {
 		if err := person.IDCardNumberValidator(v); err != nil {
-			return &ValidationError{Name: "id_card_number", err: fmt.Errorf("ent: validator failed for field \"id_card_number\": %w", err)}
+			return &ValidationError{Name: "id_card_number", err: fmt.Errorf(`ent: validator failed for field "Person.id_card_number": %w`, err)}
 		}
 	}
 	return nil
@@ -900,7 +901,7 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 	}
 	id, ok := puo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Person.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Person.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := puo.fields; len(fields) > 0 {

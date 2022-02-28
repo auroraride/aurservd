@@ -147,21 +147,21 @@ func (sc *SettingCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (sc *SettingCreate) check() error {
 	if _, ok := sc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Setting.created_at"`)}
 	}
 	if _, ok := sc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Setting.updated_at"`)}
 	}
 	if _, ok := sc.mutation.Key(); !ok {
-		return &ValidationError{Name: "key", err: errors.New(`ent: missing required field "key"`)}
+		return &ValidationError{Name: "key", err: errors.New(`ent: missing required field "Setting.key"`)}
 	}
 	if v, ok := sc.mutation.Key(); ok {
 		if err := setting.KeyValidator(v); err != nil {
-			return &ValidationError{Name: "key", err: fmt.Errorf(`ent: validator failed for field "key": %w`, err)}
+			return &ValidationError{Name: "key", err: fmt.Errorf(`ent: validator failed for field "Setting.key": %w`, err)}
 		}
 	}
 	if _, ok := sc.mutation.Val(); !ok {
-		return &ValidationError{Name: "val", err: errors.New(`ent: missing required field "val"`)}
+		return &ValidationError{Name: "val", err: errors.New(`ent: missing required field "Setting.val"`)}
 	}
 	return nil
 }
@@ -325,7 +325,7 @@ func (u *SettingUpsert) UpdateVal() *SettingUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create.
+// UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
 //	client.Setting.Create().
@@ -336,6 +336,11 @@ func (u *SettingUpsert) UpdateVal() *SettingUpsert {
 //
 func (u *SettingUpsertOne) UpdateNewValues() *SettingUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(setting.FieldCreatedAt)
+		}
+	}))
 	return u
 }
 
@@ -585,7 +590,7 @@ type SettingUpsertBulk struct {
 	create *SettingCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.Setting.Create().
@@ -596,6 +601,13 @@ type SettingUpsertBulk struct {
 //
 func (u *SettingUpsertBulk) UpdateNewValues() *SettingUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(setting.FieldCreatedAt)
+			}
+		}
+	}))
 	return u
 }
 

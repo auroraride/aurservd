@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/person"
@@ -17,6 +18,33 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	cityMixin := schema.City{}.Mixin()
+	cityMixinFields0 := cityMixin[0].Fields()
+	_ = cityMixinFields0
+	cityFields := schema.City{}.Fields()
+	_ = cityFields
+	// cityDescCreatedAt is the schema descriptor for created_at field.
+	cityDescCreatedAt := cityMixinFields0[0].Descriptor()
+	// city.DefaultCreatedAt holds the default value on creation for the created_at field.
+	city.DefaultCreatedAt = cityDescCreatedAt.Default.(func() time.Time)
+	// cityDescUpdatedAt is the schema descriptor for updated_at field.
+	cityDescUpdatedAt := cityMixinFields0[1].Descriptor()
+	// city.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	city.DefaultUpdatedAt = cityDescUpdatedAt.Default.(func() time.Time)
+	// city.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	city.UpdateDefaultUpdatedAt = cityDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// cityDescName is the schema descriptor for name field.
+	cityDescName := cityFields[1].Descriptor()
+	// city.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	city.NameValidator = cityDescName.Validators[0].(func(string) error)
+	// cityDescAdcode is the schema descriptor for adcode field.
+	cityDescAdcode := cityFields[2].Descriptor()
+	// city.AdcodeValidator is a validator for the "adcode" field. It is called by the builders before save.
+	city.AdcodeValidator = cityDescAdcode.Validators[0].(func(string) error)
+	// cityDescCode is the schema descriptor for code field.
+	cityDescCode := cityFields[3].Descriptor()
+	// city.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	city.CodeValidator = cityDescCode.Validators[0].(func(string) error)
 	contractMixin := schema.Contract{}.Mixin()
 	contractMixinFields0 := contractMixin[0].Fields()
 	_ = contractMixinFields0
@@ -87,6 +115,14 @@ func init() {
 	manager.DefaultUpdatedAt = managerDescUpdatedAt.Default.(func() time.Time)
 	// manager.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	manager.UpdateDefaultUpdatedAt = managerDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// managerDescPhone is the schema descriptor for phone field.
+	managerDescPhone := managerFields[0].Descriptor()
+	// manager.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
+	manager.PhoneValidator = managerDescPhone.Validators[0].(func(string) error)
+	// managerDescName is the schema descriptor for name field.
+	managerDescName := managerFields[1].Descriptor()
+	// manager.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	manager.NameValidator = managerDescName.Validators[0].(func(string) error)
 	personMixin := schema.Person{}.Mixin()
 	personMixinFields0 := personMixin[0].Fields()
 	_ = personMixinFields0
