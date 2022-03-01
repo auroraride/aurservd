@@ -19,6 +19,9 @@ func (r *router) managerRoutes() {
     g.POST("/user/add", mapi.Manager.Add) // 新增管理员
 
     // 城市
-    g.GET("/city", mapi.City.List) // 城市列表
+    g.GET("/city", mapi.City.List)   // 城市列表
     g.PUT("/city", mapi.City.Modify) // 启用或关闭城市
+
+    // 网点
+    g.POST("/branch", mapi.Branch.Add) // 新增网点
 }

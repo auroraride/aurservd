@@ -20,9 +20,10 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64},
 		{Name: "name", Type: field.TypeString},
-		{Name: "lng", Type: field.TypeUint64},
-		{Name: "lat", Type: field.TypeUint64},
+		{Name: "lng", Type: field.TypeFloat64},
+		{Name: "lat", Type: field.TypeFloat64},
 		{Name: "address", Type: field.TypeString},
+		{Name: "photos", Type: field.TypeJSON},
 	}
 	// BranchTable holds the schema information for the "branch" table.
 	BranchTable = &schema.Table{
@@ -34,6 +35,52 @@ var (
 				Name:    "branch_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{BranchColumns[3]},
+			},
+		},
+	}
+	// BranchContractColumns holds the columns for the "branch_contract" table.
+	BranchContractColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true},
+		{Name: "last_modify", Type: field.TypeJSON, Nullable: true},
+		{Name: "remark", Type: field.TypeString, Nullable: true},
+		{Name: "landlord_name", Type: field.TypeString},
+		{Name: "id_card_number", Type: field.TypeString},
+		{Name: "phone", Type: field.TypeString},
+		{Name: "bank_number", Type: field.TypeString},
+		{Name: "pledge", Type: field.TypeFloat64},
+		{Name: "rent", Type: field.TypeFloat64},
+		{Name: "lease", Type: field.TypeUint},
+		{Name: "electricity_pledge", Type: field.TypeFloat64},
+		{Name: "electricity", Type: field.TypeFloat64},
+		{Name: "area", Type: field.TypeFloat64},
+		{Name: "start_time", Type: field.TypeString},
+		{Name: "end_time", Type: field.TypeString},
+		{Name: "file", Type: field.TypeString},
+		{Name: "sheets", Type: field.TypeJSON},
+		{Name: "branch_id", Type: field.TypeUint64, Nullable: true},
+	}
+	// BranchContractTable holds the schema information for the "branch_contract" table.
+	BranchContractTable = &schema.Table{
+		Name:       "branch_contract",
+		Columns:    BranchContractColumns,
+		PrimaryKey: []*schema.Column{BranchContractColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "branch_contract_branch_contracts",
+				Columns:    []*schema.Column{BranchContractColumns[21]},
+				RefColumns: []*schema.Column{BranchColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "branchcontract_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{BranchContractColumns[3]},
 			},
 		},
 	}
@@ -247,6 +294,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		BranchTable,
+		BranchContractTable,
 		CityTable,
 		ContractTable,
 		ManagerTable,
@@ -259,6 +307,10 @@ var (
 func init() {
 	BranchTable.Annotation = &entsql.Annotation{
 		Table: "branch",
+	}
+	BranchContractTable.ForeignKeys[0].RefTable = BranchTable
+	BranchContractTable.Annotation = &entsql.Annotation{
+		Table: "branch_contract",
 	}
 	CityTable.ForeignKeys[0].RefTable = CityTable
 	CityTable.Annotation = &entsql.Annotation{

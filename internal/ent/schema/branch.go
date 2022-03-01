@@ -4,6 +4,7 @@ import (
     "entgo.io/ent"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
+    "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
@@ -25,15 +26,18 @@ func (Branch) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("city_id").Comment("城市ID"),
         field.String("name").Comment("网点名称"),
-        field.Uint64("lng").Comment("经度"),
-        field.Uint64("lat").Comment("纬度"),
+        field.Float("lng").Comment("经度"),
+        field.Float("lat").Comment("纬度"),
         field.String("address").Comment("详细地址"),
+        field.Strings("photos").Comment("网点照片"),
     }
 }
 
 // Edges of the Branch.
 func (Branch) Edges() []ent.Edge {
-    return nil
+    return []ent.Edge {
+        edge.To("contracts", BranchContract.Type),
+    }
 }
 
 func (Branch) Mixin() []ent.Mixin {

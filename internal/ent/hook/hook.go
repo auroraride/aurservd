@@ -22,6 +22,19 @@ func (f BranchFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, erro
 	return f(ctx, mv)
 }
 
+// The BranchContractFunc type is an adapter to allow the use of ordinary
+// function as BranchContract mutator.
+type BranchContractFunc func(context.Context, *ent.BranchContractMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f BranchContractFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.BranchContractMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BranchContractMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The CityFunc type is an adapter to allow the use of ordinary
 // function as City mutator.
 type CityFunc func(context.Context, *ent.CityMutation) (ent.Value, error)

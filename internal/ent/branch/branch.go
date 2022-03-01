@@ -33,8 +33,19 @@ const (
 	FieldLat = "lat"
 	// FieldAddress holds the string denoting the address field in the database.
 	FieldAddress = "address"
+	// FieldPhotos holds the string denoting the photos field in the database.
+	FieldPhotos = "photos"
+	// EdgeContracts holds the string denoting the contracts edge name in mutations.
+	EdgeContracts = "contracts"
 	// Table holds the table name of the branch in the database.
 	Table = "branch"
+	// ContractsTable is the table that holds the contracts relation/edge.
+	ContractsTable = "branch_contract"
+	// ContractsInverseTable is the table name for the BranchContract entity.
+	// It exists in this package in order to avoid circular dependency with the "branchcontract" package.
+	ContractsInverseTable = "branch_contract"
+	// ContractsColumn is the table column denoting the contracts relation/edge.
+	ContractsColumn = "branch_id"
 )
 
 // Columns holds all SQL columns for branch fields.
@@ -51,6 +62,7 @@ var Columns = []string{
 	FieldLng,
 	FieldLat,
 	FieldAddress,
+	FieldPhotos,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

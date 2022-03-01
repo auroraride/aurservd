@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/branch"
+	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -119,28 +120,28 @@ func (bu *BranchUpdate) SetName(s string) *BranchUpdate {
 }
 
 // SetLng sets the "lng" field.
-func (bu *BranchUpdate) SetLng(u uint64) *BranchUpdate {
+func (bu *BranchUpdate) SetLng(f float64) *BranchUpdate {
 	bu.mutation.ResetLng()
-	bu.mutation.SetLng(u)
+	bu.mutation.SetLng(f)
 	return bu
 }
 
-// AddLng adds u to the "lng" field.
-func (bu *BranchUpdate) AddLng(u int64) *BranchUpdate {
-	bu.mutation.AddLng(u)
+// AddLng adds f to the "lng" field.
+func (bu *BranchUpdate) AddLng(f float64) *BranchUpdate {
+	bu.mutation.AddLng(f)
 	return bu
 }
 
 // SetLat sets the "lat" field.
-func (bu *BranchUpdate) SetLat(u uint64) *BranchUpdate {
+func (bu *BranchUpdate) SetLat(f float64) *BranchUpdate {
 	bu.mutation.ResetLat()
-	bu.mutation.SetLat(u)
+	bu.mutation.SetLat(f)
 	return bu
 }
 
-// AddLat adds u to the "lat" field.
-func (bu *BranchUpdate) AddLat(u int64) *BranchUpdate {
-	bu.mutation.AddLat(u)
+// AddLat adds f to the "lat" field.
+func (bu *BranchUpdate) AddLat(f float64) *BranchUpdate {
+	bu.mutation.AddLat(f)
 	return bu
 }
 
@@ -150,9 +151,51 @@ func (bu *BranchUpdate) SetAddress(s string) *BranchUpdate {
 	return bu
 }
 
+// SetPhotos sets the "photos" field.
+func (bu *BranchUpdate) SetPhotos(s []string) *BranchUpdate {
+	bu.mutation.SetPhotos(s)
+	return bu
+}
+
+// AddContractIDs adds the "contracts" edge to the BranchContract entity by IDs.
+func (bu *BranchUpdate) AddContractIDs(ids ...uint64) *BranchUpdate {
+	bu.mutation.AddContractIDs(ids...)
+	return bu
+}
+
+// AddContracts adds the "contracts" edges to the BranchContract entity.
+func (bu *BranchUpdate) AddContracts(b ...*BranchContract) *BranchUpdate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return bu.AddContractIDs(ids...)
+}
+
 // Mutation returns the BranchMutation object of the builder.
 func (bu *BranchUpdate) Mutation() *BranchMutation {
 	return bu.mutation
+}
+
+// ClearContracts clears all "contracts" edges to the BranchContract entity.
+func (bu *BranchUpdate) ClearContracts() *BranchUpdate {
+	bu.mutation.ClearContracts()
+	return bu
+}
+
+// RemoveContractIDs removes the "contracts" edge to BranchContract entities by IDs.
+func (bu *BranchUpdate) RemoveContractIDs(ids ...uint64) *BranchUpdate {
+	bu.mutation.RemoveContractIDs(ids...)
+	return bu
+}
+
+// RemoveContracts removes "contracts" edges to BranchContract entities.
+func (bu *BranchUpdate) RemoveContracts(b ...*BranchContract) *BranchUpdate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return bu.RemoveContractIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -318,28 +361,28 @@ func (bu *BranchUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := bu.mutation.Lng(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: branch.FieldLng,
 		})
 	}
 	if value, ok := bu.mutation.AddedLng(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: branch.FieldLng,
 		})
 	}
 	if value, ok := bu.mutation.Lat(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: branch.FieldLat,
 		})
 	}
 	if value, ok := bu.mutation.AddedLat(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: branch.FieldLat,
 		})
@@ -350,6 +393,67 @@ func (bu *BranchUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Value:  value,
 			Column: branch.FieldAddress,
 		})
+	}
+	if value, ok := bu.mutation.Photos(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: branch.FieldPhotos,
+		})
+	}
+	if bu.mutation.ContractsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   branch.ContractsTable,
+			Columns: []string{branch.ContractsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: branchcontract.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RemovedContractsIDs(); len(nodes) > 0 && !bu.mutation.ContractsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   branch.ContractsTable,
+			Columns: []string{branch.ContractsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: branchcontract.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.ContractsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   branch.ContractsTable,
+			Columns: []string{branch.ContractsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: branchcontract.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -460,28 +564,28 @@ func (buo *BranchUpdateOne) SetName(s string) *BranchUpdateOne {
 }
 
 // SetLng sets the "lng" field.
-func (buo *BranchUpdateOne) SetLng(u uint64) *BranchUpdateOne {
+func (buo *BranchUpdateOne) SetLng(f float64) *BranchUpdateOne {
 	buo.mutation.ResetLng()
-	buo.mutation.SetLng(u)
+	buo.mutation.SetLng(f)
 	return buo
 }
 
-// AddLng adds u to the "lng" field.
-func (buo *BranchUpdateOne) AddLng(u int64) *BranchUpdateOne {
-	buo.mutation.AddLng(u)
+// AddLng adds f to the "lng" field.
+func (buo *BranchUpdateOne) AddLng(f float64) *BranchUpdateOne {
+	buo.mutation.AddLng(f)
 	return buo
 }
 
 // SetLat sets the "lat" field.
-func (buo *BranchUpdateOne) SetLat(u uint64) *BranchUpdateOne {
+func (buo *BranchUpdateOne) SetLat(f float64) *BranchUpdateOne {
 	buo.mutation.ResetLat()
-	buo.mutation.SetLat(u)
+	buo.mutation.SetLat(f)
 	return buo
 }
 
-// AddLat adds u to the "lat" field.
-func (buo *BranchUpdateOne) AddLat(u int64) *BranchUpdateOne {
-	buo.mutation.AddLat(u)
+// AddLat adds f to the "lat" field.
+func (buo *BranchUpdateOne) AddLat(f float64) *BranchUpdateOne {
+	buo.mutation.AddLat(f)
 	return buo
 }
 
@@ -491,9 +595,51 @@ func (buo *BranchUpdateOne) SetAddress(s string) *BranchUpdateOne {
 	return buo
 }
 
+// SetPhotos sets the "photos" field.
+func (buo *BranchUpdateOne) SetPhotos(s []string) *BranchUpdateOne {
+	buo.mutation.SetPhotos(s)
+	return buo
+}
+
+// AddContractIDs adds the "contracts" edge to the BranchContract entity by IDs.
+func (buo *BranchUpdateOne) AddContractIDs(ids ...uint64) *BranchUpdateOne {
+	buo.mutation.AddContractIDs(ids...)
+	return buo
+}
+
+// AddContracts adds the "contracts" edges to the BranchContract entity.
+func (buo *BranchUpdateOne) AddContracts(b ...*BranchContract) *BranchUpdateOne {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return buo.AddContractIDs(ids...)
+}
+
 // Mutation returns the BranchMutation object of the builder.
 func (buo *BranchUpdateOne) Mutation() *BranchMutation {
 	return buo.mutation
+}
+
+// ClearContracts clears all "contracts" edges to the BranchContract entity.
+func (buo *BranchUpdateOne) ClearContracts() *BranchUpdateOne {
+	buo.mutation.ClearContracts()
+	return buo
+}
+
+// RemoveContractIDs removes the "contracts" edge to BranchContract entities by IDs.
+func (buo *BranchUpdateOne) RemoveContractIDs(ids ...uint64) *BranchUpdateOne {
+	buo.mutation.RemoveContractIDs(ids...)
+	return buo
+}
+
+// RemoveContracts removes "contracts" edges to BranchContract entities.
+func (buo *BranchUpdateOne) RemoveContracts(b ...*BranchContract) *BranchUpdateOne {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return buo.RemoveContractIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -683,28 +829,28 @@ func (buo *BranchUpdateOne) sqlSave(ctx context.Context) (_node *Branch, err err
 	}
 	if value, ok := buo.mutation.Lng(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: branch.FieldLng,
 		})
 	}
 	if value, ok := buo.mutation.AddedLng(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: branch.FieldLng,
 		})
 	}
 	if value, ok := buo.mutation.Lat(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: branch.FieldLat,
 		})
 	}
 	if value, ok := buo.mutation.AddedLat(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: branch.FieldLat,
 		})
@@ -715,6 +861,67 @@ func (buo *BranchUpdateOne) sqlSave(ctx context.Context) (_node *Branch, err err
 			Value:  value,
 			Column: branch.FieldAddress,
 		})
+	}
+	if value, ok := buo.mutation.Photos(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: branch.FieldPhotos,
+		})
+	}
+	if buo.mutation.ContractsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   branch.ContractsTable,
+			Columns: []string{branch.ContractsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: branchcontract.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RemovedContractsIDs(); len(nodes) > 0 && !buo.mutation.ContractsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   branch.ContractsTable,
+			Columns: []string{branch.ContractsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: branchcontract.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.ContractsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   branch.ContractsTable,
+			Columns: []string{branch.ContractsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: branchcontract.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Branch{config: buo.config}
 	_spec.Assign = _node.assignValues

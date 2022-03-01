@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/auroraride/aurservd/internal/ent/branch"
+	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -34,6 +35,21 @@ func init() {
 	branch.DefaultUpdatedAt = branchDescUpdatedAt.Default.(func() time.Time)
 	// branch.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	branch.UpdateDefaultUpdatedAt = branchDescUpdatedAt.UpdateDefault.(func() time.Time)
+	branchcontractMixin := schema.BranchContract{}.Mixin()
+	branchcontractMixinFields0 := branchcontractMixin[0].Fields()
+	_ = branchcontractMixinFields0
+	branchcontractFields := schema.BranchContract{}.Fields()
+	_ = branchcontractFields
+	// branchcontractDescCreatedAt is the schema descriptor for created_at field.
+	branchcontractDescCreatedAt := branchcontractMixinFields0[0].Descriptor()
+	// branchcontract.DefaultCreatedAt holds the default value on creation for the created_at field.
+	branchcontract.DefaultCreatedAt = branchcontractDescCreatedAt.Default.(func() time.Time)
+	// branchcontractDescUpdatedAt is the schema descriptor for updated_at field.
+	branchcontractDescUpdatedAt := branchcontractMixinFields0[1].Descriptor()
+	// branchcontract.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	branchcontract.DefaultUpdatedAt = branchcontractDescUpdatedAt.Default.(func() time.Time)
+	// branchcontract.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	branchcontract.UpdateDefaultUpdatedAt = branchcontractDescUpdatedAt.UpdateDefault.(func() time.Time)
 	cityMixin := schema.City{}.Mixin()
 	cityMixinFields0 := cityMixin[0].Fields()
 	_ = cityMixinFields0

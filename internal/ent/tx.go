@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// Branch is the client for interacting with the Branch builders.
 	Branch *BranchClient
+	// BranchContract is the client for interacting with the BranchContract builders.
+	BranchContract *BranchContractClient
 	// City is the client for interacting with the City builders.
 	City *CityClient
 	// Contract is the client for interacting with the Contract builders.
@@ -162,6 +164,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Branch = NewBranchClient(tx.config)
+	tx.BranchContract = NewBranchContractClient(tx.config)
 	tx.City = NewCityClient(tx.config)
 	tx.Contract = NewContractClient(tx.config)
 	tx.Manager = NewManagerClient(tx.config)

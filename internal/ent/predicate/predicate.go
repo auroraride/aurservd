@@ -9,6 +9,9 @@ import (
 // Branch is the predicate function for branch builders.
 type Branch func(*sql.Selector)
 
+// BranchContract is the predicate function for branchcontract builders.
+type BranchContract func(*sql.Selector)
+
 // City is the predicate function for city builders.
 type City func(*sql.Selector)
 

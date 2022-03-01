@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/auroraride/aurservd/internal/ent/branch"
+	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -47,6 +48,46 @@ func (c *BranchClient) GetNotDeleted(ctx context.Context, id uint64) (*Branch, e
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *BranchClient) GetNotDeletedX(ctx context.Context, id uint64) *Branch {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for BranchContract.
+func (c *BranchContractClient) SoftDelete() *BranchContractUpdate {
+	mutation := newBranchContractMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &BranchContractUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *BranchContractClient) SoftDeleteOne(bc *BranchContract) *BranchContractUpdateOne {
+	mutation := newBranchContractMutation(c.config, OpUpdateOne, withBranchContract(bc))
+	mutation.SetDeletedAt(time.Now())
+	return &BranchContractUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *BranchContractClient) SoftDeleteOneID(id uint64) *BranchContractUpdateOne {
+	mutation := newBranchContractMutation(c.config, OpUpdateOne, withBranchContractID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &BranchContractUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for BranchContract.
+func (c *BranchContractClient) QueryNotDeleted() *BranchContractQuery {
+	return c.Query().Where(branchcontract.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a BranchContract not deleted entity by its id.
+func (c *BranchContractClient) GetNotDeleted(ctx context.Context, id uint64) (*BranchContract, error) {
+	return c.Query().Where(branchcontract.ID(id), branchcontract.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *BranchContractClient) GetNotDeletedX(ctx context.Context, id uint64) *BranchContract {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

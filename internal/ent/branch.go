@@ -41,13 +41,37 @@ type Branch struct {
 	Name string `json:"name,omitempty"`
 	// Lng holds the value of the "lng" field.
 	// 经度
-	Lng uint64 `json:"lng,omitempty"`
+	Lng float64 `json:"lng,omitempty"`
 	// Lat holds the value of the "lat" field.
 	// 纬度
-	Lat uint64 `json:"lat,omitempty"`
+	Lat float64 `json:"lat,omitempty"`
 	// Address holds the value of the "address" field.
 	// 详细地址
 	Address string `json:"address,omitempty"`
+	// Photos holds the value of the "photos" field.
+	// 网点照片
+	Photos []string `json:"photos,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the BranchQuery when eager-loading is set.
+	Edges BranchEdges `json:"edges"`
+}
+
+// BranchEdges holds the relations/edges for other nodes in the graph.
+type BranchEdges struct {
+	// Contracts holds the value of the contracts edge.
+	Contracts []*BranchContract `json:"contracts,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// ContractsOrErr returns the Contracts value or an error if the edge
+// was not loaded in eager-loading.
+func (e BranchEdges) ContractsOrErr() ([]*BranchContract, error) {
+	if e.loadedTypes[0] {
+		return e.Contracts, nil
+	}
+	return nil, &NotLoadedError{edge: "contracts"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -55,9 +79,11 @@ func (*Branch) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case branch.FieldCreator, branch.FieldLastModify:
+		case branch.FieldCreator, branch.FieldLastModify, branch.FieldPhotos:
 			values[i] = new([]byte)
-		case branch.FieldID, branch.FieldCityID, branch.FieldLng, branch.FieldLat:
+		case branch.FieldLng, branch.FieldLat:
+			values[i] = new(sql.NullFloat64)
+		case branch.FieldID, branch.FieldCityID:
 			values[i] = new(sql.NullInt64)
 		case branch.FieldRemark, branch.FieldName, branch.FieldAddress:
 			values[i] = new(sql.NullString)
@@ -139,16 +165,16 @@ func (b *Branch) assignValues(columns []string, values []interface{}) error {
 				b.Name = value.String
 			}
 		case branch.FieldLng:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field lng", values[i])
 			} else if value.Valid {
-				b.Lng = uint64(value.Int64)
+				b.Lng = value.Float64
 			}
 		case branch.FieldLat:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field lat", values[i])
 			} else if value.Valid {
-				b.Lat = uint64(value.Int64)
+				b.Lat = value.Float64
 			}
 		case branch.FieldAddress:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -156,9 +182,22 @@ func (b *Branch) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				b.Address = value.String
 			}
+		case branch.FieldPhotos:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field photos", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &b.Photos); err != nil {
+					return fmt.Errorf("unmarshal field photos: %w", err)
+				}
+			}
 		}
 	}
 	return nil
+}
+
+// QueryContracts queries the "contracts" edge of the Branch entity.
+func (b *Branch) QueryContracts() *BranchContractQuery {
+	return (&BranchClient{config: b.config}).QueryContracts(b)
 }
 
 // Update returns a builder for updating this Branch.
@@ -210,6 +249,8 @@ func (b *Branch) String() string {
 	builder.WriteString(fmt.Sprintf("%v", b.Lat))
 	builder.WriteString(", address=")
 	builder.WriteString(b.Address)
+	builder.WriteString(", photos=")
+	builder.WriteString(fmt.Sprintf("%v", b.Photos))
 	builder.WriteByte(')')
 	return builder.String()
 }

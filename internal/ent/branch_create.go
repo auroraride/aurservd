@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/branch"
+	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 )
 
 // BranchCreate is the builder for creating a Branch entity.
@@ -104,14 +105,14 @@ func (bc *BranchCreate) SetName(s string) *BranchCreate {
 }
 
 // SetLng sets the "lng" field.
-func (bc *BranchCreate) SetLng(u uint64) *BranchCreate {
-	bc.mutation.SetLng(u)
+func (bc *BranchCreate) SetLng(f float64) *BranchCreate {
+	bc.mutation.SetLng(f)
 	return bc
 }
 
 // SetLat sets the "lat" field.
-func (bc *BranchCreate) SetLat(u uint64) *BranchCreate {
-	bc.mutation.SetLat(u)
+func (bc *BranchCreate) SetLat(f float64) *BranchCreate {
+	bc.mutation.SetLat(f)
 	return bc
 }
 
@@ -119,6 +120,27 @@ func (bc *BranchCreate) SetLat(u uint64) *BranchCreate {
 func (bc *BranchCreate) SetAddress(s string) *BranchCreate {
 	bc.mutation.SetAddress(s)
 	return bc
+}
+
+// SetPhotos sets the "photos" field.
+func (bc *BranchCreate) SetPhotos(s []string) *BranchCreate {
+	bc.mutation.SetPhotos(s)
+	return bc
+}
+
+// AddContractIDs adds the "contracts" edge to the BranchContract entity by IDs.
+func (bc *BranchCreate) AddContractIDs(ids ...uint64) *BranchCreate {
+	bc.mutation.AddContractIDs(ids...)
+	return bc
+}
+
+// AddContracts adds the "contracts" edges to the BranchContract entity.
+func (bc *BranchCreate) AddContracts(b ...*BranchContract) *BranchCreate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return bc.AddContractIDs(ids...)
 }
 
 // Mutation returns the BranchMutation object of the builder.
@@ -225,6 +247,9 @@ func (bc *BranchCreate) check() error {
 	if _, ok := bc.mutation.Address(); !ok {
 		return &ValidationError{Name: "address", err: errors.New(`ent: missing required field "Branch.address"`)}
 	}
+	if _, ok := bc.mutation.Photos(); !ok {
+		return &ValidationError{Name: "photos", err: errors.New(`ent: missing required field "Branch.photos"`)}
+	}
 	return nil
 }
 
@@ -319,7 +344,7 @@ func (bc *BranchCreate) createSpec() (*Branch, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := bc.mutation.Lng(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: branch.FieldLng,
 		})
@@ -327,7 +352,7 @@ func (bc *BranchCreate) createSpec() (*Branch, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := bc.mutation.Lat(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: branch.FieldLat,
 		})
@@ -340,6 +365,33 @@ func (bc *BranchCreate) createSpec() (*Branch, *sqlgraph.CreateSpec) {
 			Column: branch.FieldAddress,
 		})
 		_node.Address = value
+	}
+	if value, ok := bc.mutation.Photos(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: branch.FieldPhotos,
+		})
+		_node.Photos = value
+	}
+	if nodes := bc.mutation.ContractsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   branch.ContractsTable,
+			Columns: []string{branch.ContractsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: branchcontract.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -522,7 +574,7 @@ func (u *BranchUpsert) UpdateName() *BranchUpsert {
 }
 
 // SetLng sets the "lng" field.
-func (u *BranchUpsert) SetLng(v uint64) *BranchUpsert {
+func (u *BranchUpsert) SetLng(v float64) *BranchUpsert {
 	u.Set(branch.FieldLng, v)
 	return u
 }
@@ -534,13 +586,13 @@ func (u *BranchUpsert) UpdateLng() *BranchUpsert {
 }
 
 // AddLng adds v to the "lng" field.
-func (u *BranchUpsert) AddLng(v uint64) *BranchUpsert {
+func (u *BranchUpsert) AddLng(v float64) *BranchUpsert {
 	u.Add(branch.FieldLng, v)
 	return u
 }
 
 // SetLat sets the "lat" field.
-func (u *BranchUpsert) SetLat(v uint64) *BranchUpsert {
+func (u *BranchUpsert) SetLat(v float64) *BranchUpsert {
 	u.Set(branch.FieldLat, v)
 	return u
 }
@@ -552,7 +604,7 @@ func (u *BranchUpsert) UpdateLat() *BranchUpsert {
 }
 
 // AddLat adds v to the "lat" field.
-func (u *BranchUpsert) AddLat(v uint64) *BranchUpsert {
+func (u *BranchUpsert) AddLat(v float64) *BranchUpsert {
 	u.Add(branch.FieldLat, v)
 	return u
 }
@@ -566,6 +618,18 @@ func (u *BranchUpsert) SetAddress(v string) *BranchUpsert {
 // UpdateAddress sets the "address" field to the value that was provided on create.
 func (u *BranchUpsert) UpdateAddress() *BranchUpsert {
 	u.SetExcluded(branch.FieldAddress)
+	return u
+}
+
+// SetPhotos sets the "photos" field.
+func (u *BranchUpsert) SetPhotos(v []string) *BranchUpsert {
+	u.Set(branch.FieldPhotos, v)
+	return u
+}
+
+// UpdatePhotos sets the "photos" field to the value that was provided on create.
+func (u *BranchUpsert) UpdatePhotos() *BranchUpsert {
+	u.SetExcluded(branch.FieldPhotos)
 	return u
 }
 
@@ -764,14 +828,14 @@ func (u *BranchUpsertOne) UpdateName() *BranchUpsertOne {
 }
 
 // SetLng sets the "lng" field.
-func (u *BranchUpsertOne) SetLng(v uint64) *BranchUpsertOne {
+func (u *BranchUpsertOne) SetLng(v float64) *BranchUpsertOne {
 	return u.Update(func(s *BranchUpsert) {
 		s.SetLng(v)
 	})
 }
 
 // AddLng adds v to the "lng" field.
-func (u *BranchUpsertOne) AddLng(v uint64) *BranchUpsertOne {
+func (u *BranchUpsertOne) AddLng(v float64) *BranchUpsertOne {
 	return u.Update(func(s *BranchUpsert) {
 		s.AddLng(v)
 	})
@@ -785,14 +849,14 @@ func (u *BranchUpsertOne) UpdateLng() *BranchUpsertOne {
 }
 
 // SetLat sets the "lat" field.
-func (u *BranchUpsertOne) SetLat(v uint64) *BranchUpsertOne {
+func (u *BranchUpsertOne) SetLat(v float64) *BranchUpsertOne {
 	return u.Update(func(s *BranchUpsert) {
 		s.SetLat(v)
 	})
 }
 
 // AddLat adds v to the "lat" field.
-func (u *BranchUpsertOne) AddLat(v uint64) *BranchUpsertOne {
+func (u *BranchUpsertOne) AddLat(v float64) *BranchUpsertOne {
 	return u.Update(func(s *BranchUpsert) {
 		s.AddLat(v)
 	})
@@ -816,6 +880,20 @@ func (u *BranchUpsertOne) SetAddress(v string) *BranchUpsertOne {
 func (u *BranchUpsertOne) UpdateAddress() *BranchUpsertOne {
 	return u.Update(func(s *BranchUpsert) {
 		s.UpdateAddress()
+	})
+}
+
+// SetPhotos sets the "photos" field.
+func (u *BranchUpsertOne) SetPhotos(v []string) *BranchUpsertOne {
+	return u.Update(func(s *BranchUpsert) {
+		s.SetPhotos(v)
+	})
+}
+
+// UpdatePhotos sets the "photos" field to the value that was provided on create.
+func (u *BranchUpsertOne) UpdatePhotos() *BranchUpsertOne {
+	return u.Update(func(s *BranchUpsert) {
+		s.UpdatePhotos()
 	})
 }
 
@@ -1178,14 +1256,14 @@ func (u *BranchUpsertBulk) UpdateName() *BranchUpsertBulk {
 }
 
 // SetLng sets the "lng" field.
-func (u *BranchUpsertBulk) SetLng(v uint64) *BranchUpsertBulk {
+func (u *BranchUpsertBulk) SetLng(v float64) *BranchUpsertBulk {
 	return u.Update(func(s *BranchUpsert) {
 		s.SetLng(v)
 	})
 }
 
 // AddLng adds v to the "lng" field.
-func (u *BranchUpsertBulk) AddLng(v uint64) *BranchUpsertBulk {
+func (u *BranchUpsertBulk) AddLng(v float64) *BranchUpsertBulk {
 	return u.Update(func(s *BranchUpsert) {
 		s.AddLng(v)
 	})
@@ -1199,14 +1277,14 @@ func (u *BranchUpsertBulk) UpdateLng() *BranchUpsertBulk {
 }
 
 // SetLat sets the "lat" field.
-func (u *BranchUpsertBulk) SetLat(v uint64) *BranchUpsertBulk {
+func (u *BranchUpsertBulk) SetLat(v float64) *BranchUpsertBulk {
 	return u.Update(func(s *BranchUpsert) {
 		s.SetLat(v)
 	})
 }
 
 // AddLat adds v to the "lat" field.
-func (u *BranchUpsertBulk) AddLat(v uint64) *BranchUpsertBulk {
+func (u *BranchUpsertBulk) AddLat(v float64) *BranchUpsertBulk {
 	return u.Update(func(s *BranchUpsert) {
 		s.AddLat(v)
 	})
@@ -1230,6 +1308,20 @@ func (u *BranchUpsertBulk) SetAddress(v string) *BranchUpsertBulk {
 func (u *BranchUpsertBulk) UpdateAddress() *BranchUpsertBulk {
 	return u.Update(func(s *BranchUpsert) {
 		s.UpdateAddress()
+	})
+}
+
+// SetPhotos sets the "photos" field.
+func (u *BranchUpsertBulk) SetPhotos(v []string) *BranchUpsertBulk {
+	return u.Update(func(s *BranchUpsert) {
+		s.SetPhotos(v)
+	})
+}
+
+// UpdatePhotos sets the "photos" field to the value that was provided on create.
+func (u *BranchUpsertBulk) UpdatePhotos() *BranchUpsertBulk {
+	return u.Update(func(s *BranchUpsert) {
+		s.UpdatePhotos()
 	})
 }
 

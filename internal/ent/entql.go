@@ -4,6 +4,7 @@ package ent
 
 import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
+	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -20,7 +21,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 7)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 8)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   branch.Table,
@@ -40,12 +41,47 @@ var schemaGraph = func() *sqlgraph.Schema {
 			branch.FieldRemark:     {Type: field.TypeString, Column: branch.FieldRemark},
 			branch.FieldCityID:     {Type: field.TypeUint64, Column: branch.FieldCityID},
 			branch.FieldName:       {Type: field.TypeString, Column: branch.FieldName},
-			branch.FieldLng:        {Type: field.TypeUint64, Column: branch.FieldLng},
-			branch.FieldLat:        {Type: field.TypeUint64, Column: branch.FieldLat},
+			branch.FieldLng:        {Type: field.TypeFloat64, Column: branch.FieldLng},
+			branch.FieldLat:        {Type: field.TypeFloat64, Column: branch.FieldLat},
 			branch.FieldAddress:    {Type: field.TypeString, Column: branch.FieldAddress},
+			branch.FieldPhotos:     {Type: field.TypeJSON, Column: branch.FieldPhotos},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   branchcontract.Table,
+			Columns: branchcontract.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: branchcontract.FieldID,
+			},
+		},
+		Type: "BranchContract",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			branchcontract.FieldCreatedAt:         {Type: field.TypeTime, Column: branchcontract.FieldCreatedAt},
+			branchcontract.FieldUpdatedAt:         {Type: field.TypeTime, Column: branchcontract.FieldUpdatedAt},
+			branchcontract.FieldDeletedAt:         {Type: field.TypeTime, Column: branchcontract.FieldDeletedAt},
+			branchcontract.FieldCreator:           {Type: field.TypeJSON, Column: branchcontract.FieldCreator},
+			branchcontract.FieldLastModify:        {Type: field.TypeJSON, Column: branchcontract.FieldLastModify},
+			branchcontract.FieldRemark:            {Type: field.TypeString, Column: branchcontract.FieldRemark},
+			branchcontract.FieldBranchID:          {Type: field.TypeUint64, Column: branchcontract.FieldBranchID},
+			branchcontract.FieldLandlordName:      {Type: field.TypeString, Column: branchcontract.FieldLandlordName},
+			branchcontract.FieldIDCardNumber:      {Type: field.TypeString, Column: branchcontract.FieldIDCardNumber},
+			branchcontract.FieldPhone:             {Type: field.TypeString, Column: branchcontract.FieldPhone},
+			branchcontract.FieldBankNumber:        {Type: field.TypeString, Column: branchcontract.FieldBankNumber},
+			branchcontract.FieldPledge:            {Type: field.TypeFloat64, Column: branchcontract.FieldPledge},
+			branchcontract.FieldRent:              {Type: field.TypeFloat64, Column: branchcontract.FieldRent},
+			branchcontract.FieldLease:             {Type: field.TypeUint, Column: branchcontract.FieldLease},
+			branchcontract.FieldElectricityPledge: {Type: field.TypeFloat64, Column: branchcontract.FieldElectricityPledge},
+			branchcontract.FieldElectricity:       {Type: field.TypeFloat64, Column: branchcontract.FieldElectricity},
+			branchcontract.FieldArea:              {Type: field.TypeFloat64, Column: branchcontract.FieldArea},
+			branchcontract.FieldStartTime:         {Type: field.TypeString, Column: branchcontract.FieldStartTime},
+			branchcontract.FieldEndTime:           {Type: field.TypeString, Column: branchcontract.FieldEndTime},
+			branchcontract.FieldFile:              {Type: field.TypeString, Column: branchcontract.FieldFile},
+			branchcontract.FieldSheets:            {Type: field.TypeJSON, Column: branchcontract.FieldSheets},
+		},
+	}
+	graph.Nodes[2] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   city.Table,
 			Columns: city.Columns,
@@ -67,7 +103,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			city.FieldParentID:   {Type: field.TypeUint64, Column: city.FieldParentID},
 		},
 	}
-	graph.Nodes[2] = &sqlgraph.Node{
+	graph.Nodes[3] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   contract.Table,
 			Columns: contract.Columns,
@@ -90,7 +126,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			contract.FieldFiles:      {Type: field.TypeJSON, Column: contract.FieldFiles},
 		},
 	}
-	graph.Nodes[3] = &sqlgraph.Node{
+	graph.Nodes[4] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   manager.Table,
 			Columns: manager.Columns,
@@ -112,7 +148,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			manager.FieldLastSigninAt: {Type: field.TypeTime, Column: manager.FieldLastSigninAt},
 		},
 	}
-	graph.Nodes[4] = &sqlgraph.Node{
+	graph.Nodes[5] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   person.Table,
 			Columns: person.Columns,
@@ -140,7 +176,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			person.FieldAuthAt:         {Type: field.TypeTime, Column: person.FieldAuthAt},
 		},
 	}
-	graph.Nodes[5] = &sqlgraph.Node{
+	graph.Nodes[6] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   rider.Table,
 			Columns: rider.Columns,
@@ -169,7 +205,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldEsignAccountID: {Type: field.TypeString, Column: rider.FieldEsignAccountID},
 		},
 	}
-	graph.Nodes[6] = &sqlgraph.Node{
+	graph.Nodes[7] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   setting.Table,
 			Columns: setting.Columns,
@@ -186,6 +222,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 			setting.FieldVal:       {Type: field.TypeJSON, Column: setting.FieldVal},
 		},
 	}
+	graph.MustAddE(
+		"contracts",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   branch.ContractsTable,
+			Columns: []string{branch.ContractsColumn},
+			Bidi:    false,
+		},
+		"Branch",
+		"BranchContract",
+	)
+	graph.MustAddE(
+		"branch",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   branchcontract.BranchTable,
+			Columns: []string{branchcontract.BranchColumn},
+			Bidi:    false,
+		},
+		"BranchContract",
+		"Branch",
+	)
 	graph.MustAddE(
 		"parent",
 		&sqlgraph.EdgeSpec{
@@ -346,19 +406,196 @@ func (f *BranchFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(branch.FieldName))
 }
 
-// WhereLng applies the entql uint64 predicate on the lng field.
-func (f *BranchFilter) WhereLng(p entql.Uint64P) {
+// WhereLng applies the entql float64 predicate on the lng field.
+func (f *BranchFilter) WhereLng(p entql.Float64P) {
 	f.Where(p.Field(branch.FieldLng))
 }
 
-// WhereLat applies the entql uint64 predicate on the lat field.
-func (f *BranchFilter) WhereLat(p entql.Uint64P) {
+// WhereLat applies the entql float64 predicate on the lat field.
+func (f *BranchFilter) WhereLat(p entql.Float64P) {
 	f.Where(p.Field(branch.FieldLat))
 }
 
 // WhereAddress applies the entql string predicate on the address field.
 func (f *BranchFilter) WhereAddress(p entql.StringP) {
 	f.Where(p.Field(branch.FieldAddress))
+}
+
+// WherePhotos applies the entql json.RawMessage predicate on the photos field.
+func (f *BranchFilter) WherePhotos(p entql.BytesP) {
+	f.Where(p.Field(branch.FieldPhotos))
+}
+
+// WhereHasContracts applies a predicate to check if query has an edge contracts.
+func (f *BranchFilter) WhereHasContracts() {
+	f.Where(entql.HasEdge("contracts"))
+}
+
+// WhereHasContractsWith applies a predicate to check if query has an edge contracts with a given conditions (other predicates).
+func (f *BranchFilter) WhereHasContractsWith(preds ...predicate.BranchContract) {
+	f.Where(entql.HasEdgeWith("contracts", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (bcq *BranchContractQuery) addPredicate(pred func(s *sql.Selector)) {
+	bcq.predicates = append(bcq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the BranchContractQuery builder.
+func (bcq *BranchContractQuery) Filter() *BranchContractFilter {
+	return &BranchContractFilter{bcq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *BranchContractMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the BranchContractMutation builder.
+func (m *BranchContractMutation) Filter() *BranchContractFilter {
+	return &BranchContractFilter{m}
+}
+
+// BranchContractFilter provides a generic filtering capability at runtime for BranchContractQuery.
+type BranchContractFilter struct {
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *BranchContractFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *BranchContractFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(branchcontract.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *BranchContractFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(branchcontract.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *BranchContractFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(branchcontract.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *BranchContractFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(branchcontract.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *BranchContractFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(branchcontract.FieldCreator))
+}
+
+// WhereLastModify applies the entql json.RawMessage predicate on the last_modify field.
+func (f *BranchContractFilter) WhereLastModify(p entql.BytesP) {
+	f.Where(p.Field(branchcontract.FieldLastModify))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *BranchContractFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(branchcontract.FieldRemark))
+}
+
+// WhereBranchID applies the entql uint64 predicate on the branch_id field.
+func (f *BranchContractFilter) WhereBranchID(p entql.Uint64P) {
+	f.Where(p.Field(branchcontract.FieldBranchID))
+}
+
+// WhereLandlordName applies the entql string predicate on the landlord_name field.
+func (f *BranchContractFilter) WhereLandlordName(p entql.StringP) {
+	f.Where(p.Field(branchcontract.FieldLandlordName))
+}
+
+// WhereIDCardNumber applies the entql string predicate on the id_card_number field.
+func (f *BranchContractFilter) WhereIDCardNumber(p entql.StringP) {
+	f.Where(p.Field(branchcontract.FieldIDCardNumber))
+}
+
+// WherePhone applies the entql string predicate on the phone field.
+func (f *BranchContractFilter) WherePhone(p entql.StringP) {
+	f.Where(p.Field(branchcontract.FieldPhone))
+}
+
+// WhereBankNumber applies the entql string predicate on the bank_number field.
+func (f *BranchContractFilter) WhereBankNumber(p entql.StringP) {
+	f.Where(p.Field(branchcontract.FieldBankNumber))
+}
+
+// WherePledge applies the entql float64 predicate on the pledge field.
+func (f *BranchContractFilter) WherePledge(p entql.Float64P) {
+	f.Where(p.Field(branchcontract.FieldPledge))
+}
+
+// WhereRent applies the entql float64 predicate on the rent field.
+func (f *BranchContractFilter) WhereRent(p entql.Float64P) {
+	f.Where(p.Field(branchcontract.FieldRent))
+}
+
+// WhereLease applies the entql uint predicate on the lease field.
+func (f *BranchContractFilter) WhereLease(p entql.UintP) {
+	f.Where(p.Field(branchcontract.FieldLease))
+}
+
+// WhereElectricityPledge applies the entql float64 predicate on the electricity_pledge field.
+func (f *BranchContractFilter) WhereElectricityPledge(p entql.Float64P) {
+	f.Where(p.Field(branchcontract.FieldElectricityPledge))
+}
+
+// WhereElectricity applies the entql float64 predicate on the electricity field.
+func (f *BranchContractFilter) WhereElectricity(p entql.Float64P) {
+	f.Where(p.Field(branchcontract.FieldElectricity))
+}
+
+// WhereArea applies the entql float64 predicate on the area field.
+func (f *BranchContractFilter) WhereArea(p entql.Float64P) {
+	f.Where(p.Field(branchcontract.FieldArea))
+}
+
+// WhereStartTime applies the entql string predicate on the start_time field.
+func (f *BranchContractFilter) WhereStartTime(p entql.StringP) {
+	f.Where(p.Field(branchcontract.FieldStartTime))
+}
+
+// WhereEndTime applies the entql string predicate on the end_time field.
+func (f *BranchContractFilter) WhereEndTime(p entql.StringP) {
+	f.Where(p.Field(branchcontract.FieldEndTime))
+}
+
+// WhereFile applies the entql string predicate on the file field.
+func (f *BranchContractFilter) WhereFile(p entql.StringP) {
+	f.Where(p.Field(branchcontract.FieldFile))
+}
+
+// WhereSheets applies the entql json.RawMessage predicate on the sheets field.
+func (f *BranchContractFilter) WhereSheets(p entql.BytesP) {
+	f.Where(p.Field(branchcontract.FieldSheets))
+}
+
+// WhereHasBranch applies a predicate to check if query has an edge branch.
+func (f *BranchContractFilter) WhereHasBranch() {
+	f.Where(entql.HasEdge("branch"))
+}
+
+// WhereHasBranchWith applies a predicate to check if query has an edge branch with a given conditions (other predicates).
+func (f *BranchContractFilter) WhereHasBranchWith(preds ...predicate.Branch) {
+	f.Where(entql.HasEdgeWith("branch", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // addPredicate implements the predicateAdder interface.
@@ -389,7 +626,7 @@ type CityFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *CityFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -501,7 +738,7 @@ type ContractFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *ContractFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -604,7 +841,7 @@ type ManagerFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *ManagerFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -688,7 +925,7 @@ type PersonFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PersonFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -816,7 +1053,7 @@ type RiderFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RiderFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -963,7 +1200,7 @@ type SettingFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SettingFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

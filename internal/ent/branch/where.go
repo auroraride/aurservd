@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -135,14 +136,14 @@ func Name(v string) predicate.Branch {
 }
 
 // Lng applies equality check predicate on the "lng" field. It's identical to LngEQ.
-func Lng(v uint64) predicate.Branch {
+func Lng(v float64) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldLng), v))
 	})
 }
 
 // Lat applies equality check predicate on the "lat" field. It's identical to LatEQ.
-func Lat(v uint64) predicate.Branch {
+func Lat(v float64) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldLat), v))
 	})
@@ -738,21 +739,21 @@ func NameContainsFold(v string) predicate.Branch {
 }
 
 // LngEQ applies the EQ predicate on the "lng" field.
-func LngEQ(v uint64) predicate.Branch {
+func LngEQ(v float64) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldLng), v))
 	})
 }
 
 // LngNEQ applies the NEQ predicate on the "lng" field.
-func LngNEQ(v uint64) predicate.Branch {
+func LngNEQ(v float64) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldLng), v))
 	})
 }
 
 // LngIn applies the In predicate on the "lng" field.
-func LngIn(vs ...uint64) predicate.Branch {
+func LngIn(vs ...float64) predicate.Branch {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -769,7 +770,7 @@ func LngIn(vs ...uint64) predicate.Branch {
 }
 
 // LngNotIn applies the NotIn predicate on the "lng" field.
-func LngNotIn(vs ...uint64) predicate.Branch {
+func LngNotIn(vs ...float64) predicate.Branch {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -786,49 +787,49 @@ func LngNotIn(vs ...uint64) predicate.Branch {
 }
 
 // LngGT applies the GT predicate on the "lng" field.
-func LngGT(v uint64) predicate.Branch {
+func LngGT(v float64) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldLng), v))
 	})
 }
 
 // LngGTE applies the GTE predicate on the "lng" field.
-func LngGTE(v uint64) predicate.Branch {
+func LngGTE(v float64) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldLng), v))
 	})
 }
 
 // LngLT applies the LT predicate on the "lng" field.
-func LngLT(v uint64) predicate.Branch {
+func LngLT(v float64) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldLng), v))
 	})
 }
 
 // LngLTE applies the LTE predicate on the "lng" field.
-func LngLTE(v uint64) predicate.Branch {
+func LngLTE(v float64) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldLng), v))
 	})
 }
 
 // LatEQ applies the EQ predicate on the "lat" field.
-func LatEQ(v uint64) predicate.Branch {
+func LatEQ(v float64) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldLat), v))
 	})
 }
 
 // LatNEQ applies the NEQ predicate on the "lat" field.
-func LatNEQ(v uint64) predicate.Branch {
+func LatNEQ(v float64) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldLat), v))
 	})
 }
 
 // LatIn applies the In predicate on the "lat" field.
-func LatIn(vs ...uint64) predicate.Branch {
+func LatIn(vs ...float64) predicate.Branch {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -845,7 +846,7 @@ func LatIn(vs ...uint64) predicate.Branch {
 }
 
 // LatNotIn applies the NotIn predicate on the "lat" field.
-func LatNotIn(vs ...uint64) predicate.Branch {
+func LatNotIn(vs ...float64) predicate.Branch {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -862,28 +863,28 @@ func LatNotIn(vs ...uint64) predicate.Branch {
 }
 
 // LatGT applies the GT predicate on the "lat" field.
-func LatGT(v uint64) predicate.Branch {
+func LatGT(v float64) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldLat), v))
 	})
 }
 
 // LatGTE applies the GTE predicate on the "lat" field.
-func LatGTE(v uint64) predicate.Branch {
+func LatGTE(v float64) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldLat), v))
 	})
 }
 
 // LatLT applies the LT predicate on the "lat" field.
-func LatLT(v uint64) predicate.Branch {
+func LatLT(v float64) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldLat), v))
 	})
 }
 
 // LatLTE applies the LTE predicate on the "lat" field.
-func LatLTE(v uint64) predicate.Branch {
+func LatLTE(v float64) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldLat), v))
 	})
@@ -997,6 +998,34 @@ func AddressEqualFold(v string) predicate.Branch {
 func AddressContainsFold(v string) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldAddress), v))
+	})
+}
+
+// HasContracts applies the HasEdge predicate on the "contracts" edge.
+func HasContracts() predicate.Branch {
+	return predicate.Branch(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ContractsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ContractsTable, ContractsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasContractsWith applies the HasEdge predicate on the "contracts" edge with a given conditions (other predicates).
+func HasContractsWith(preds ...predicate.BranchContract) predicate.Branch {
+	return predicate.Branch(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ContractsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ContractsTable, ContractsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

@@ -60,6 +60,7 @@ func ({{ .name }}) Mixin() []ent.Mixin {
     return []ent.Mixin{
         internal.TimeMixin{},
         internal.DeleteMixin{},
+        internal.Creator{},
         internal.LastModify{},
     }
 }

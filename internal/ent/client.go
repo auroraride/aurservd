@@ -10,6 +10,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/migrate"
 
 	"github.com/auroraride/aurservd/internal/ent/branch"
+	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -29,6 +30,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Branch is the client for interacting with the Branch builders.
 	Branch *BranchClient
+	// BranchContract is the client for interacting with the BranchContract builders.
+	BranchContract *BranchContractClient
 	// City is the client for interacting with the City builders.
 	City *CityClient
 	// Contract is the client for interacting with the Contract builders.
@@ -55,6 +58,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Branch = NewBranchClient(c.config)
+	c.BranchContract = NewBranchContractClient(c.config)
 	c.City = NewCityClient(c.config)
 	c.Contract = NewContractClient(c.config)
 	c.Manager = NewManagerClient(c.config)
@@ -92,15 +96,16 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:      ctx,
-		config:   cfg,
-		Branch:   NewBranchClient(cfg),
-		City:     NewCityClient(cfg),
-		Contract: NewContractClient(cfg),
-		Manager:  NewManagerClient(cfg),
-		Person:   NewPersonClient(cfg),
-		Rider:    NewRiderClient(cfg),
-		Setting:  NewSettingClient(cfg),
+		ctx:            ctx,
+		config:         cfg,
+		Branch:         NewBranchClient(cfg),
+		BranchContract: NewBranchContractClient(cfg),
+		City:           NewCityClient(cfg),
+		Contract:       NewContractClient(cfg),
+		Manager:        NewManagerClient(cfg),
+		Person:         NewPersonClient(cfg),
+		Rider:          NewRiderClient(cfg),
+		Setting:        NewSettingClient(cfg),
 	}, nil
 }
 
@@ -118,15 +123,16 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:      ctx,
-		config:   cfg,
-		Branch:   NewBranchClient(cfg),
-		City:     NewCityClient(cfg),
-		Contract: NewContractClient(cfg),
-		Manager:  NewManagerClient(cfg),
-		Person:   NewPersonClient(cfg),
-		Rider:    NewRiderClient(cfg),
-		Setting:  NewSettingClient(cfg),
+		ctx:            ctx,
+		config:         cfg,
+		Branch:         NewBranchClient(cfg),
+		BranchContract: NewBranchContractClient(cfg),
+		City:           NewCityClient(cfg),
+		Contract:       NewContractClient(cfg),
+		Manager:        NewManagerClient(cfg),
+		Person:         NewPersonClient(cfg),
+		Rider:          NewRiderClient(cfg),
+		Setting:        NewSettingClient(cfg),
 	}, nil
 }
 
@@ -157,6 +163,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Branch.Use(hooks...)
+	c.BranchContract.Use(hooks...)
 	c.City.Use(hooks...)
 	c.Contract.Use(hooks...)
 	c.Manager.Use(hooks...)
@@ -250,9 +257,131 @@ func (c *BranchClient) GetX(ctx context.Context, id uint64) *Branch {
 	return obj
 }
 
+// QueryContracts queries the contracts edge of a Branch.
+func (c *BranchClient) QueryContracts(b *Branch) *BranchContractQuery {
+	query := &BranchContractQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(branch.Table, branch.FieldID, id),
+			sqlgraph.To(branchcontract.Table, branchcontract.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, branch.ContractsTable, branch.ContractsColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *BranchClient) Hooks() []Hook {
 	return c.hooks.Branch
+}
+
+// BranchContractClient is a client for the BranchContract schema.
+type BranchContractClient struct {
+	config
+}
+
+// NewBranchContractClient returns a client for the BranchContract from the given config.
+func NewBranchContractClient(c config) *BranchContractClient {
+	return &BranchContractClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `branchcontract.Hooks(f(g(h())))`.
+func (c *BranchContractClient) Use(hooks ...Hook) {
+	c.hooks.BranchContract = append(c.hooks.BranchContract, hooks...)
+}
+
+// Create returns a create builder for BranchContract.
+func (c *BranchContractClient) Create() *BranchContractCreate {
+	mutation := newBranchContractMutation(c.config, OpCreate)
+	return &BranchContractCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of BranchContract entities.
+func (c *BranchContractClient) CreateBulk(builders ...*BranchContractCreate) *BranchContractCreateBulk {
+	return &BranchContractCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for BranchContract.
+func (c *BranchContractClient) Update() *BranchContractUpdate {
+	mutation := newBranchContractMutation(c.config, OpUpdate)
+	return &BranchContractUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *BranchContractClient) UpdateOne(bc *BranchContract) *BranchContractUpdateOne {
+	mutation := newBranchContractMutation(c.config, OpUpdateOne, withBranchContract(bc))
+	return &BranchContractUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *BranchContractClient) UpdateOneID(id uint64) *BranchContractUpdateOne {
+	mutation := newBranchContractMutation(c.config, OpUpdateOne, withBranchContractID(id))
+	return &BranchContractUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for BranchContract.
+func (c *BranchContractClient) Delete() *BranchContractDelete {
+	mutation := newBranchContractMutation(c.config, OpDelete)
+	return &BranchContractDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *BranchContractClient) DeleteOne(bc *BranchContract) *BranchContractDeleteOne {
+	return c.DeleteOneID(bc.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *BranchContractClient) DeleteOneID(id uint64) *BranchContractDeleteOne {
+	builder := c.Delete().Where(branchcontract.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &BranchContractDeleteOne{builder}
+}
+
+// Query returns a query builder for BranchContract.
+func (c *BranchContractClient) Query() *BranchContractQuery {
+	return &BranchContractQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a BranchContract entity by its id.
+func (c *BranchContractClient) Get(ctx context.Context, id uint64) (*BranchContract, error) {
+	return c.Query().Where(branchcontract.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *BranchContractClient) GetX(ctx context.Context, id uint64) *BranchContract {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryBranch queries the branch edge of a BranchContract.
+func (c *BranchContractClient) QueryBranch(bc *BranchContract) *BranchQuery {
+	query := &BranchQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := bc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(branchcontract.Table, branchcontract.FieldID, id),
+			sqlgraph.To(branch.Table, branch.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, branchcontract.BranchTable, branchcontract.BranchColumn),
+		)
+		fromV = sqlgraph.Neighbors(bc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *BranchContractClient) Hooks() []Hook {
+	return c.hooks.BranchContract
 }
 
 // CityClient is a client for the City schema.

@@ -9,6 +9,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/internal/ent/branch"
+	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -35,13 +36,14 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		branch.Table:   branch.ValidColumn,
-		city.Table:     city.ValidColumn,
-		contract.Table: contract.ValidColumn,
-		manager.Table:  manager.ValidColumn,
-		person.Table:   person.ValidColumn,
-		rider.Table:    rider.ValidColumn,
-		setting.Table:  setting.ValidColumn,
+		branch.Table:         branch.ValidColumn,
+		branchcontract.Table: branchcontract.ValidColumn,
+		city.Table:           city.ValidColumn,
+		contract.Table:       contract.ValidColumn,
+		manager.Table:        manager.ValidColumn,
+		person.Table:         person.ValidColumn,
+		rider.Table:          rider.ValidColumn,
+		setting.Table:        setting.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {
