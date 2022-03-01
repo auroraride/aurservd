@@ -15,4 +15,6 @@ func (r *router) commonRoutes() {
     g.POST("/captcha", common.CaptchaVerify)
     g.POST("/sms", common.SendSmsCode)
     g.GET("/oss/token", common.Oss.Token)
+
+    g.Static("/demo", "public")
 }

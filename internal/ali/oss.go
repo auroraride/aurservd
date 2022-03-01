@@ -8,6 +8,7 @@ package ali
 import (
     "bytes"
     "encoding/base64"
+    "fmt"
     "github.com/aliyun/alibaba-cloud-sdk-go/services/sts"
     "github.com/aliyun/aliyun-oss-go-sdk/oss"
     "github.com/auroraride/aurservd/app/model"
@@ -75,6 +76,7 @@ func (c *ossClient) UploadBytes(name string, b []byte) string {
 
 // StsToken 获取临时访问token
 // @doc https://help.aliyun.com/document_detail/383950.html
+// @doc https://help.aliyun.com/document_detail/66934.html
 func (c *ossClient) StsToken() *model.AliyunOssStsRes {
     cfg := ar.Config.Aliyun.Oss
     client, err := sts.NewClientWithAccessKey(cfg.RegionId, cfg.AccessKeyId, cfg.AccessKeySecret)
@@ -102,5 +104,6 @@ func (c *ossClient) StsToken() *model.AliyunOssStsRes {
         AccessKeyId:     res.AccessKeyId,
         StsToken:        res.SecurityToken,
         Bucket:          cfg.Bucket,
+        Region:          fmt.Sprintf("oss-%s", cfg.RegionId),
     }
 }

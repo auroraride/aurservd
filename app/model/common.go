@@ -18,4 +18,5 @@ type AliyunOssStsRes struct {
     AccessKeyId     string `json:"accessKeyId,omitempty"`
     StsToken        string `json:"stsToken,omitempty"`
     Bucket          string `json:"bucket,omitempty"`
+    Region          string `json:"region,omitempty"`
 }
