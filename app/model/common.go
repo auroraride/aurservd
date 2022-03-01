@@ -12,6 +12,7 @@ type Modifier struct {
     Phone string `json:"phone,omitempty"`
 }
 
+// AliyunOssStsRes 阿里云oss临时凭证
 type AliyunOssStsRes struct {
     AccessKeySecret string `json:"accessKeySecret,omitempty"`
     Expiration      string `json:"expiration,omitempty"`

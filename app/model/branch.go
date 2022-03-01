@@ -5,19 +5,30 @@
 
 package model
 
+// BranchListReq 后台网点列表请求
+type BranchListReq struct {
+    PaginationReq
+
+    CityID *uint64 `json:"cityId" query:"cityId" trans:"城市"`
+}
+
 // Branch 网点请求体
 type Branch struct {
-    CityID   uint64          `json:"cityId" validate:"required" trans:"城市"`
-    Name     string          `json:"name" validate:"required" trans:"网点名称"`
-    Lng      float64         `json:"lng" validate:"required" trans:"经度"`
-    Lat      float64         `json:"lat" validate:"required" trans:"纬度"`
-    Address  string          `json:"address" validate:"required" trans:"详细地址"`
-    Photos   []string        `json:"photos" validate:"required" trans:"网点照片"`
-    Contract *BranchContract `json:"contract,omitempty"`
+    ID uint64 `json:"id,omitempty"`
+
+    CityID    uint64            `json:"cityId" validate:"required" trans:"城市"`
+    Name      string            `json:"name" validate:"required" trans:"网点名称"`
+    Lng       float64           `json:"lng" validate:"required" trans:"经度"`
+    Lat       float64           `json:"lat" validate:"required" trans:"纬度"`
+    Address   string            `json:"address" validate:"required" trans:"详细地址"`
+    Photos    []string          `json:"photos" validate:"required" trans:"网点照片"`
+    Contracts []*BranchContract `json:"contracts,omitempty"`
 }
 
 // BranchContract 网点合同请求体
 type BranchContract struct {
+    ID uint64 `json:"id,omitempty"`
+
     LandlordName      string   `json:"landlordName" validate:"required"`
     IDCardNumber      string   `json:"idCardNumber" validate:"required" trans:"房东身份证"`
     Phone             string   `json:"phone" validate:"required,phone" trans:"房东手机号"`

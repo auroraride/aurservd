@@ -10,7 +10,10 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/branch"
+    "github.com/auroraride/aurservd/internal/ent/branchcontract"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/jinzhu/copier"
 )
 
 type branchService struct {
@@ -43,8 +46,10 @@ func (s *branchService) Add(req *model.Branch) {
         snag.Panic(err)
     }
 
-    if req.Contract != nil {
-        s.AddContract(b.ID, req.Contract)
+    if len(req.Contracts) > 0 {
+        for _, contract := range req.Contracts {
+            s.AddContract(b.ID, contract)
+        }
     }
 
     _ = tx.Commit()
@@ -69,4 +74,54 @@ func (s *branchService) AddContract(id uint64, req *model.BranchContract) *ent.B
         SetFile(req.File).
         SetSheets(req.Sheets).
         SaveX(s.ctx)
+}
+
+// List 网点列表
+func (s *branchService) List(req *model.BranchListReq) (res model.PaginationRes) {
+    q := s.orm.Query().
+        Order(ent.Desc(branch.FieldID))
+
+    if req.CityID != nil {
+        q.Where(branch.CityID(*req.CityID))
+    }
+
+    total := s.orm.Query().CountX(s.ctx)
+    res.Pagination = model.Pagination{
+        Current: req.GetCurrent(),
+        Pages:   req.GetPages(total),
+        Total:   total,
+    }
+
+    items := q.
+        WithContracts(func(query *ent.BranchContractQuery) {
+            query.Order(ent.Desc(branchcontract.FieldID))
+        }).
+        Offset(req.GetOffset()).
+        Limit(req.GetLimit()).
+        AllX(s.ctx)
+
+    rs := make([]*model.Branch, len(items))
+
+    for m, item := range items {
+        r := new(model.Branch)
+        if err := copier.Copy(r, item); err != nil {
+            snag.Panic(err)
+        }
+
+        cs := make([]*model.BranchContract, len(item.Edges.Contracts))
+        for n, contract := range item.Edges.Contracts {
+            c := new(model.BranchContract)
+            if err := copier.Copy(c, contract); err != nil {
+                snag.Panic(err)
+            }
+            cs[n] = c
+        }
+
+        r.Contracts = cs
+
+        rs[m] = r
+    }
+
+    res.Items = rs
+    return
 }

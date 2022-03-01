@@ -6,6 +6,7 @@ import (
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
+    "entgo.io/ent/schema/index"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -35,7 +36,7 @@ func (Branch) Fields() []ent.Field {
 
 // Edges of the Branch.
 func (Branch) Edges() []ent.Edge {
-    return []ent.Edge {
+    return []ent.Edge{
         edge.To("contracts", BranchContract.Type),
     }
 }
@@ -50,5 +51,8 @@ func (Branch) Mixin() []ent.Mixin {
 }
 
 func (Branch) Indexes() []ent.Index {
-    return nil
+    return []ent.Index{
+        index.Fields("city_id"),
+        index.Fields("lng", "lat"),
+    }
 }

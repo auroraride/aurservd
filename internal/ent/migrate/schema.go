@@ -36,6 +36,16 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{BranchColumns[3]},
 			},
+			{
+				Name:    "branch_city_id",
+				Unique:  false,
+				Columns: []*schema.Column{BranchColumns[7]},
+			},
+			{
+				Name:    "branch_lng_lat",
+				Unique:  false,
+				Columns: []*schema.Column{BranchColumns[9], BranchColumns[10]},
+			},
 		},
 	}
 	// BranchContractColumns holds the columns for the "branch_contract" table.

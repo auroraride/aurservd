@@ -23,5 +23,6 @@ func (r *router) managerRoutes() {
     g.PUT("/city", mapi.City.Modify) // 启用或关闭城市
 
     // 网点
+    g.GET("/branch", mapi.Branch.List) // 新增网点
     g.POST("/branch", mapi.Branch.Add) // 新增网点
 }

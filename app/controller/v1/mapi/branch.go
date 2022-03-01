@@ -17,6 +17,14 @@ type branch struct {
 
 var Branch = new(branch)
 
+// List 网点列表
+func (*branch) List(c echo.Context) (err error) {
+    req := new(model.BranchListReq)
+    app.GetManagerContext(c).BindValidate(req)
+
+    return app.NewResponse(c).SetData(service.NewBranch().List(req)).Send()
+}
+
 // Add 新增网点
 func (*branch) Add(c echo.Context) (err error) {
     req := new(model.Branch)
