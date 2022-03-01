@@ -9,10 +9,14 @@ import "github.com/auroraride/aurservd/internal/ent"
 
 type Options struct {
     City bool
+    Manager bool
 }
 
 func Database(client *ent.Client, o *Options) {
     if o.City {
-        insertCities(client)
+        insertCity(client)
+    }
+    if o.Manager {
+        insertManager(client)
     }
 }

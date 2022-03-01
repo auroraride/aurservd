@@ -13,7 +13,7 @@ import (
     "io/ioutil"
 )
 
-func insertCities(client *ent.Client) {
+func insertCity(client *ent.Client) {
     type R struct {
         ID       uint64 `json:"id"`
         Adcode   string `json:"adcode,omitempty"`

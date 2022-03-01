@@ -61,6 +61,9 @@ func (c *orm) autoMigrate() {
                     if change.Comment == `create "city" table` {
                         o.City = true
                     }
+                    if change.Comment == `create "manager" table` {
+                        o.Manager = true
+                    }
                 }
                 return next.Apply(ctx, conn, plan)
             })
