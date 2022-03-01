@@ -11,11 +11,11 @@ import (
     jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "io/ioutil"
+    "strconv"
 )
 
 func insertCity(client *ent.Client) {
     type R struct {
-        ID       uint64 `json:"id"`
         Adcode   string `json:"adcode,omitempty"`
         Name     string `json:"name,omitempty"`
         Code     string `json:"code,omitempty"`
@@ -34,15 +34,17 @@ func insertCity(client *ent.Client) {
         err = jsoniter.Unmarshal(b, &items)
         if err == nil {
             for _, item := range items {
+                id, _ := strconv.Atoi(item.Adcode)
                 parent := client.City.Create().
+                    SetID(uint64(id)).
                     SetName(item.Name).
-                    SetAdcode(item.Adcode).
                     SetCode(item.Code).
                     SaveX(ctx)
                 for _, child := range item.Children {
+                    cid, _ := strconv.Atoi(child.Adcode)
                     client.City.Create().
+                        SetID(uint64(cid)).
                         SetName(child.Name).
-                        SetAdcode(child.Adcode).
                         SetCode(child.Code).
                         SetOpen(false).
                         SetParent(parent).

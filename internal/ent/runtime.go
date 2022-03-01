@@ -50,13 +50,9 @@ func init() {
 	// city.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	city.UpdateDefaultUpdatedAt = cityDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// cityDescName is the schema descriptor for name field.
-	cityDescName := cityFields[1].Descriptor()
+	cityDescName := cityFields[2].Descriptor()
 	// city.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	city.NameValidator = cityDescName.Validators[0].(func(string) error)
-	// cityDescAdcode is the schema descriptor for adcode field.
-	cityDescAdcode := cityFields[2].Descriptor()
-	// city.AdcodeValidator is a validator for the "adcode" field. It is called by the builders before save.
-	city.AdcodeValidator = cityDescAdcode.Validators[0].(func(string) error)
 	// cityDescCode is the schema descriptor for code field.
 	cityDescCode := cityFields[3].Descriptor()
 	// city.CodeValidator is a validator for the "code" field. It is called by the builders before save.

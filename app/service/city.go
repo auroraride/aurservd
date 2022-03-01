@@ -29,14 +29,14 @@ func NewCity() *cityService {
 // List 获取城市列表
 func (s *cityService) List(req *model.CityListReq) (items []*model.CityItem) {
     fields := []string{
-        city.FieldID, city.FieldName, city.FieldAdcode, city.FieldParentID, city.FieldOpen,
+        city.FieldID, city.FieldName, city.FieldParentID, city.FieldOpen,
     }
     q := s.orm.Query().
         Where(city.ParentIDIsNil()).
         WithChildren(func(query *ent.CityQuery) {
-            query.Select(fields...).Order(ent.Asc(city.FieldAdcode))
+            query.Select(fields...).Order(ent.Asc(city.FieldID))
         }).
-        Order(ent.Asc(city.FieldAdcode))
+        Order(ent.Asc(city.FieldID))
     if req.Status > 0 {
         q.Where(city.HasChildrenWith(city.Open(req.Status == model.CityStatusOpen)))
     }

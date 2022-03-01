@@ -113,12 +113,6 @@ func (cu *CityUpdate) SetName(s string) *CityUpdate {
 	return cu
 }
 
-// SetAdcode sets the "adcode" field.
-func (cu *CityUpdate) SetAdcode(s string) *CityUpdate {
-	cu.mutation.SetAdcode(s)
-	return cu
-}
-
 // SetCode sets the "code" field.
 func (cu *CityUpdate) SetCode(s string) *CityUpdate {
 	cu.mutation.SetCode(s)
@@ -273,11 +267,6 @@ func (cu *CityUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "City.name": %w`, err)}
 		}
 	}
-	if v, ok := cu.mutation.Adcode(); ok {
-		if err := city.AdcodeValidator(v); err != nil {
-			return &ValidationError{Name: "adcode", err: fmt.Errorf(`ent: validator failed for field "City.adcode": %w`, err)}
-		}
-	}
 	if v, ok := cu.mutation.Code(); ok {
 		if err := city.CodeValidator(v); err != nil {
 			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "City.code": %w`, err)}
@@ -368,13 +357,6 @@ func (cu *CityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: city.FieldName,
-		})
-	}
-	if value, ok := cu.mutation.Adcode(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: city.FieldAdcode,
 		})
 	}
 	if value, ok := cu.mutation.Code(); ok {
@@ -576,12 +558,6 @@ func (cuo *CityUpdateOne) SetName(s string) *CityUpdateOne {
 	return cuo
 }
 
-// SetAdcode sets the "adcode" field.
-func (cuo *CityUpdateOne) SetAdcode(s string) *CityUpdateOne {
-	cuo.mutation.SetAdcode(s)
-	return cuo
-}
-
 // SetCode sets the "code" field.
 func (cuo *CityUpdateOne) SetCode(s string) *CityUpdateOne {
 	cuo.mutation.SetCode(s)
@@ -743,11 +719,6 @@ func (cuo *CityUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "City.name": %w`, err)}
 		}
 	}
-	if v, ok := cuo.mutation.Adcode(); ok {
-		if err := city.AdcodeValidator(v); err != nil {
-			return &ValidationError{Name: "adcode", err: fmt.Errorf(`ent: validator failed for field "City.adcode": %w`, err)}
-		}
-	}
 	if v, ok := cuo.mutation.Code(); ok {
 		if err := city.CodeValidator(v); err != nil {
 			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "City.code": %w`, err)}
@@ -855,13 +826,6 @@ func (cuo *CityUpdateOne) sqlSave(ctx context.Context) (_node *City, err error) 
 			Type:   field.TypeString,
 			Value:  value,
 			Column: city.FieldName,
-		})
-	}
-	if value, ok := cuo.mutation.Adcode(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: city.FieldAdcode,
 		})
 	}
 	if value, ok := cuo.mutation.Code(); ok {

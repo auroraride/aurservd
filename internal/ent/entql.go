@@ -63,7 +63,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			city.FieldRemark:     {Type: field.TypeString, Column: city.FieldRemark},
 			city.FieldOpen:       {Type: field.TypeBool, Column: city.FieldOpen},
 			city.FieldName:       {Type: field.TypeString, Column: city.FieldName},
-			city.FieldAdcode:     {Type: field.TypeString, Column: city.FieldAdcode},
 			city.FieldCode:       {Type: field.TypeString, Column: city.FieldCode},
 			city.FieldParentID:   {Type: field.TypeUint64, Column: city.FieldParentID},
 		},
@@ -434,11 +433,6 @@ func (f *CityFilter) WhereOpen(p entql.BoolP) {
 // WhereName applies the entql string predicate on the name field.
 func (f *CityFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(city.FieldName))
-}
-
-// WhereAdcode applies the entql string predicate on the adcode field.
-func (f *CityFilter) WhereAdcode(p entql.StringP) {
-	f.Where(p.Field(city.FieldAdcode))
 }
 
 // WhereCode applies the entql string predicate on the code field.

@@ -47,7 +47,6 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true},
 		{Name: "open", Type: field.TypeBool, Nullable: true},
 		{Name: "name", Type: field.TypeString, Size: 100},
-		{Name: "adcode", Type: field.TypeString, Unique: true, Size: 10},
 		{Name: "code", Type: field.TypeString, Size: 10},
 		{Name: "parent_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -59,7 +58,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "city_city_children",
-				Columns:    []*schema.Column{CityColumns[10]},
+				Columns:    []*schema.Column{CityColumns[9]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -76,19 +75,9 @@ var (
 				Columns: []*schema.Column{CityColumns[6]},
 			},
 			{
-				Name:    "city_code",
-				Unique:  false,
-				Columns: []*schema.Column{CityColumns[9]},
-			},
-			{
-				Name:    "city_adcode",
-				Unique:  false,
-				Columns: []*schema.Column{CityColumns[8]},
-			},
-			{
 				Name:    "city_parent_id",
 				Unique:  false,
-				Columns: []*schema.Column{CityColumns[10]},
+				Columns: []*schema.Column{CityColumns[9]},
 			},
 		},
 	}

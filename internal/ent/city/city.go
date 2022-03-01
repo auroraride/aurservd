@@ -25,8 +25,6 @@ const (
 	FieldOpen = "open"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldAdcode holds the string denoting the adcode field in the database.
-	FieldAdcode = "adcode"
 	// FieldCode holds the string denoting the code field in the database.
 	FieldCode = "code"
 	// FieldParentID holds the string denoting the parent_id field in the database.
@@ -57,7 +55,6 @@ var Columns = []string{
 	FieldRemark,
 	FieldOpen,
 	FieldName,
-	FieldAdcode,
 	FieldCode,
 	FieldParentID,
 }
@@ -81,8 +78,6 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
-	// AdcodeValidator is a validator for the "adcode" field. It is called by the builders before save.
-	AdcodeValidator func(string) error
 	// CodeValidator is a validator for the "code" field. It is called by the builders before save.
 	CodeValidator func(string) error
 )

@@ -105,12 +105,6 @@ func (cc *CityCreate) SetName(s string) *CityCreate {
 	return cc
 }
 
-// SetAdcode sets the "adcode" field.
-func (cc *CityCreate) SetAdcode(s string) *CityCreate {
-	cc.mutation.SetAdcode(s)
-	return cc
-}
-
 // SetCode sets the "code" field.
 func (cc *CityCreate) SetCode(s string) *CityCreate {
 	cc.mutation.SetCode(s)
@@ -128,6 +122,12 @@ func (cc *CityCreate) SetNillableParentID(u *uint64) *CityCreate {
 	if u != nil {
 		cc.SetParentID(*u)
 	}
+	return cc
+}
+
+// SetID sets the "id" field.
+func (cc *CityCreate) SetID(u uint64) *CityCreate {
+	cc.mutation.SetID(u)
 	return cc
 }
 
@@ -248,14 +248,6 @@ func (cc *CityCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "City.name": %w`, err)}
 		}
 	}
-	if _, ok := cc.mutation.Adcode(); !ok {
-		return &ValidationError{Name: "adcode", err: errors.New(`ent: missing required field "City.adcode"`)}
-	}
-	if v, ok := cc.mutation.Adcode(); ok {
-		if err := city.AdcodeValidator(v); err != nil {
-			return &ValidationError{Name: "adcode", err: fmt.Errorf(`ent: validator failed for field "City.adcode": %w`, err)}
-		}
-	}
 	if _, ok := cc.mutation.Code(); !ok {
 		return &ValidationError{Name: "code", err: errors.New(`ent: missing required field "City.code"`)}
 	}
@@ -275,8 +267,10 @@ func (cc *CityCreate) sqlSave(ctx context.Context) (*City, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = uint64(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = uint64(id)
+	}
 	return _node, nil
 }
 
@@ -292,6 +286,10 @@ func (cc *CityCreate) createSpec() (*City, *sqlgraph.CreateSpec) {
 		}
 	)
 	_spec.OnConflict = cc.conflict
+	if id, ok := cc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := cc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -347,14 +345,6 @@ func (cc *CityCreate) createSpec() (*City, *sqlgraph.CreateSpec) {
 			Column: city.FieldName,
 		})
 		_node.Name = value
-	}
-	if value, ok := cc.mutation.Adcode(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: city.FieldAdcode,
-		})
-		_node.Adcode = value
 	}
 	if value, ok := cc.mutation.Code(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -565,18 +555,6 @@ func (u *CityUpsert) UpdateName() *CityUpsert {
 	return u
 }
 
-// SetAdcode sets the "adcode" field.
-func (u *CityUpsert) SetAdcode(v string) *CityUpsert {
-	u.Set(city.FieldAdcode, v)
-	return u
-}
-
-// UpdateAdcode sets the "adcode" field to the value that was provided on create.
-func (u *CityUpsert) UpdateAdcode() *CityUpsert {
-	u.SetExcluded(city.FieldAdcode)
-	return u
-}
-
 // SetCode sets the "code" field.
 func (u *CityUpsert) SetCode(v string) *CityUpsert {
 	u.Set(city.FieldCode, v)
@@ -607,18 +585,24 @@ func (u *CityUpsert) ClearParentID() *CityUpsert {
 	return u
 }
 
-// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.City.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(city.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 //
 func (u *CityUpsertOne) UpdateNewValues() *CityUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(city.FieldID)
+		}
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(city.FieldCreatedAt)
 		}
@@ -780,20 +764,6 @@ func (u *CityUpsertOne) UpdateName() *CityUpsertOne {
 	})
 }
 
-// SetAdcode sets the "adcode" field.
-func (u *CityUpsertOne) SetAdcode(v string) *CityUpsertOne {
-	return u.Update(func(s *CityUpsert) {
-		s.SetAdcode(v)
-	})
-}
-
-// UpdateAdcode sets the "adcode" field to the value that was provided on create.
-func (u *CityUpsertOne) UpdateAdcode() *CityUpsertOne {
-	return u.Update(func(s *CityUpsert) {
-		s.UpdateAdcode()
-	})
-}
-
 // SetCode sets the "code" field.
 func (u *CityUpsertOne) SetCode(v string) *CityUpsertOne {
 	return u.Update(func(s *CityUpsert) {
@@ -906,7 +876,7 @@ func (ccb *CityCreateBulk) Save(ctx context.Context) ([]*City, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = uint64(id)
 				}
@@ -997,6 +967,9 @@ type CityUpsertBulk struct {
 //	client.City.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(city.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 //
@@ -1004,6 +977,10 @@ func (u *CityUpsertBulk) UpdateNewValues() *CityUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(city.FieldID)
+				return
+			}
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(city.FieldCreatedAt)
 			}
@@ -1163,20 +1140,6 @@ func (u *CityUpsertBulk) SetName(v string) *CityUpsertBulk {
 func (u *CityUpsertBulk) UpdateName() *CityUpsertBulk {
 	return u.Update(func(s *CityUpsert) {
 		s.UpdateName()
-	})
-}
-
-// SetAdcode sets the "adcode" field.
-func (u *CityUpsertBulk) SetAdcode(v string) *CityUpsertBulk {
-	return u.Update(func(s *CityUpsert) {
-		s.SetAdcode(v)
-	})
-}
-
-// UpdateAdcode sets the "adcode" field to the value that was provided on create.
-func (u *CityUpsertBulk) UpdateAdcode() *CityUpsertBulk {
-	return u.Update(func(s *CityUpsert) {
-		s.UpdateAdcode()
 	})
 }
 

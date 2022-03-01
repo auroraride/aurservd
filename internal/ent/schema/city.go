@@ -25,10 +25,10 @@ func (City) Annotations() []schema.Annotation {
 // Fields of the City.
 func (City) Fields() []ent.Field {
     return []ent.Field{
+        field.Uint64("id"),
         field.Bool("open").Optional().Comment("启用"),
         field.String("name").MaxLen(100).Comment("城市"),
-        field.String("adcode").MaxLen(10).Unique().Comment("地区编号"),
-        field.String("code").MaxLen(10).Comment("编号"),
+        field.String("code").MaxLen(10).Comment("城市编号"),
         field.Uint64("parent_id").Optional().Nillable().Comment("父级"),
     }
 }
@@ -54,8 +54,6 @@ func (City) Mixin() []ent.Mixin {
 func (City) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("open"),
-        index.Fields("code"),
-        index.Fields("adcode"),
         index.Fields("parent_id"),
     }
 }

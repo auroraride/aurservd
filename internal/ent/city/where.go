@@ -135,13 +135,6 @@ func Name(v string) predicate.City {
 	})
 }
 
-// Adcode applies equality check predicate on the "adcode" field. It's identical to AdcodeEQ.
-func Adcode(v string) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAdcode), v))
-	})
-}
-
 // Code applies equality check predicate on the "code" field. It's identical to CodeEQ.
 func Code(v string) predicate.City {
 	return predicate.City(func(s *sql.Selector) {
@@ -673,117 +666,6 @@ func NameEqualFold(v string) predicate.City {
 func NameContainsFold(v string) predicate.City {
 	return predicate.City(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldName), v))
-	})
-}
-
-// AdcodeEQ applies the EQ predicate on the "adcode" field.
-func AdcodeEQ(v string) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAdcode), v))
-	})
-}
-
-// AdcodeNEQ applies the NEQ predicate on the "adcode" field.
-func AdcodeNEQ(v string) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAdcode), v))
-	})
-}
-
-// AdcodeIn applies the In predicate on the "adcode" field.
-func AdcodeIn(vs ...string) predicate.City {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.City(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldAdcode), v...))
-	})
-}
-
-// AdcodeNotIn applies the NotIn predicate on the "adcode" field.
-func AdcodeNotIn(vs ...string) predicate.City {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.City(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldAdcode), v...))
-	})
-}
-
-// AdcodeGT applies the GT predicate on the "adcode" field.
-func AdcodeGT(v string) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAdcode), v))
-	})
-}
-
-// AdcodeGTE applies the GTE predicate on the "adcode" field.
-func AdcodeGTE(v string) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAdcode), v))
-	})
-}
-
-// AdcodeLT applies the LT predicate on the "adcode" field.
-func AdcodeLT(v string) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAdcode), v))
-	})
-}
-
-// AdcodeLTE applies the LTE predicate on the "adcode" field.
-func AdcodeLTE(v string) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAdcode), v))
-	})
-}
-
-// AdcodeContains applies the Contains predicate on the "adcode" field.
-func AdcodeContains(v string) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldAdcode), v))
-	})
-}
-
-// AdcodeHasPrefix applies the HasPrefix predicate on the "adcode" field.
-func AdcodeHasPrefix(v string) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldAdcode), v))
-	})
-}
-
-// AdcodeHasSuffix applies the HasSuffix predicate on the "adcode" field.
-func AdcodeHasSuffix(v string) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldAdcode), v))
-	})
-}
-
-// AdcodeEqualFold applies the EqualFold predicate on the "adcode" field.
-func AdcodeEqualFold(v string) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldAdcode), v))
-	})
-}
-
-// AdcodeContainsFold applies the ContainsFold predicate on the "adcode" field.
-func AdcodeContainsFold(v string) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldAdcode), v))
 	})
 }
 

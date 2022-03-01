@@ -36,11 +36,8 @@ type City struct {
 	// Name holds the value of the "name" field.
 	// 城市
 	Name string `json:"name,omitempty"`
-	// Adcode holds the value of the "adcode" field.
-	// 地区编号
-	Adcode string `json:"adcode,omitempty"`
 	// Code holds the value of the "code" field.
-	// 编号
+	// 城市编号
 	Code string `json:"code,omitempty"`
 	// ParentID holds the value of the "parent_id" field.
 	// 父级
@@ -95,7 +92,7 @@ func (*City) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case city.FieldID, city.FieldParentID:
 			values[i] = new(sql.NullInt64)
-		case city.FieldRemark, city.FieldName, city.FieldAdcode, city.FieldCode:
+		case city.FieldRemark, city.FieldName, city.FieldCode:
 			values[i] = new(sql.NullString)
 		case city.FieldCreatedAt, city.FieldUpdatedAt, city.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -166,12 +163,6 @@ func (c *City) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				c.Name = value.String
 			}
-		case city.FieldAdcode:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field adcode", values[i])
-			} else if value.Valid {
-				c.Adcode = value.String
-			}
 		case city.FieldCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field code", values[i])
@@ -241,8 +232,6 @@ func (c *City) String() string {
 	builder.WriteString(fmt.Sprintf("%v", c.Open))
 	builder.WriteString(", name=")
 	builder.WriteString(c.Name)
-	builder.WriteString(", adcode=")
-	builder.WriteString(c.Adcode)
 	builder.WriteString(", code=")
 	builder.WriteString(c.Code)
 	if v := c.ParentID; v != nil {

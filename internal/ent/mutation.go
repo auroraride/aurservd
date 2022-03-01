@@ -1085,7 +1085,6 @@ type CityMutation struct {
 	remark          *string
 	open            *bool
 	name            *string
-	adcode          *string
 	code            *string
 	clearedFields   map[string]struct{}
 	parent          *uint64
@@ -1166,6 +1165,12 @@ func (m CityMutation) Tx() (*Tx, error) {
 	tx := &Tx{config: m.config}
 	tx.init()
 	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of City entities.
+func (m *CityMutation) SetID(id uint64) {
+	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
@@ -1500,42 +1505,6 @@ func (m *CityMutation) ResetName() {
 	m.name = nil
 }
 
-// SetAdcode sets the "adcode" field.
-func (m *CityMutation) SetAdcode(s string) {
-	m.adcode = &s
-}
-
-// Adcode returns the value of the "adcode" field in the mutation.
-func (m *CityMutation) Adcode() (r string, exists bool) {
-	v := m.adcode
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldAdcode returns the old "adcode" field's value of the City entity.
-// If the City object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CityMutation) OldAdcode(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAdcode is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAdcode requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAdcode: %w", err)
-	}
-	return oldValue.Adcode, nil
-}
-
-// ResetAdcode resets all changes to the "adcode" field.
-func (m *CityMutation) ResetAdcode() {
-	m.adcode = nil
-}
-
 // SetCode sets the "code" field.
 func (m *CityMutation) SetCode(s string) {
 	m.code = &s
@@ -1720,7 +1689,7 @@ func (m *CityMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CityMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, city.FieldCreatedAt)
 	}
@@ -1741,9 +1710,6 @@ func (m *CityMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, city.FieldName)
-	}
-	if m.adcode != nil {
-		fields = append(fields, city.FieldAdcode)
 	}
 	if m.code != nil {
 		fields = append(fields, city.FieldCode)
@@ -1773,8 +1739,6 @@ func (m *CityMutation) Field(name string) (ent.Value, bool) {
 		return m.Open()
 	case city.FieldName:
 		return m.Name()
-	case city.FieldAdcode:
-		return m.Adcode()
 	case city.FieldCode:
 		return m.Code()
 	case city.FieldParentID:
@@ -1802,8 +1766,6 @@ func (m *CityMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldOpen(ctx)
 	case city.FieldName:
 		return m.OldName(ctx)
-	case city.FieldAdcode:
-		return m.OldAdcode(ctx)
 	case city.FieldCode:
 		return m.OldCode(ctx)
 	case city.FieldParentID:
@@ -1865,13 +1827,6 @@ func (m *CityMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
-		return nil
-	case city.FieldAdcode:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetAdcode(v)
 		return nil
 	case city.FieldCode:
 		v, ok := value.(string)
@@ -1992,9 +1947,6 @@ func (m *CityMutation) ResetField(name string) error {
 		return nil
 	case city.FieldName:
 		m.ResetName()
-		return nil
-	case city.FieldAdcode:
-		m.ResetAdcode()
 		return nil
 	case city.FieldCode:
 		m.ResetCode()
