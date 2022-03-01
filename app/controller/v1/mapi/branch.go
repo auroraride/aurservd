@@ -28,7 +28,17 @@ func (*branch) List(c echo.Context) (err error) {
 // Add 新增网点
 func (*branch) Add(c echo.Context) (err error) {
     req := new(model.Branch)
-    app.GetManagerContext(c).BindValidate(req)
-    service.NewBranch().Add(req)
+    ctx := app.GetManagerContext(c)
+    ctx.BindValidate(req)
+    service.NewBranch().Add(req, ctx.Modifier)
+    return app.NewResponse(c).Send()
+}
+
+// Modify 编辑网点
+func (*branch) Modify(c echo.Context) (err error) {
+    req := new(model.Branch)
+    ctx := app.GetManagerContext(c)
+    ctx.BindValidate(req)
+    service.NewBranch().Modify(req, ctx.Modifier)
     return app.NewResponse(c).Send()
 }

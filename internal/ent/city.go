@@ -24,9 +24,9 @@ type City struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// LastModify holds the value of the "last_modify" field.
+	// LastModifier holds the value of the "last_modifier" field.
 	// 最后修改人
-	LastModify *model.Modifier `json:"last_modify,omitempty"`
+	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// Remark holds the value of the "remark" field.
 	// 备注
 	Remark *string `json:"remark,omitempty"`
@@ -86,7 +86,7 @@ func (*City) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case city.FieldLastModify:
+		case city.FieldLastModifier:
 			values[i] = new([]byte)
 		case city.FieldOpen:
 			values[i] = new(sql.NullBool)
@@ -136,12 +136,12 @@ func (c *City) assignValues(columns []string, values []interface{}) error {
 				c.DeletedAt = new(time.Time)
 				*c.DeletedAt = value.Time
 			}
-		case city.FieldLastModify:
+		case city.FieldLastModifier:
 			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field last_modify", values[i])
+				return fmt.Errorf("unexpected type %T for field last_modifier", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &c.LastModify); err != nil {
-					return fmt.Errorf("unmarshal field last_modify: %w", err)
+				if err := json.Unmarshal(*value, &c.LastModifier); err != nil {
+					return fmt.Errorf("unmarshal field last_modifier: %w", err)
 				}
 			}
 		case city.FieldRemark:
@@ -222,8 +222,8 @@ func (c *City) String() string {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	builder.WriteString(", last_modify=")
-	builder.WriteString(fmt.Sprintf("%v", c.LastModify))
+	builder.WriteString(", last_modifier=")
+	builder.WriteString(fmt.Sprintf("%v", c.LastModifier))
 	if v := c.Remark; v != nil {
 		builder.WriteString(", remark=")
 		builder.WriteString(*v)

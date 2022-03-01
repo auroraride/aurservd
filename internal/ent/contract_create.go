@@ -66,9 +66,9 @@ func (cc *ContractCreate) SetNillableDeletedAt(t *time.Time) *ContractCreate {
 	return cc
 }
 
-// SetLastModify sets the "last_modify" field.
-func (cc *ContractCreate) SetLastModify(m *model.Modifier) *ContractCreate {
-	cc.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (cc *ContractCreate) SetLastModifier(m *model.Modifier) *ContractCreate {
+	cc.mutation.SetLastModifier(m)
 	return cc
 }
 
@@ -299,13 +299,13 @@ func (cc *ContractCreate) createSpec() (*Contract, *sqlgraph.CreateSpec) {
 		})
 		_node.DeletedAt = &value
 	}
-	if value, ok := cc.mutation.LastModify(); ok {
+	if value, ok := cc.mutation.LastModifier(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: contract.FieldLastModify,
+			Column: contract.FieldLastModifier,
 		})
-		_node.LastModify = value
+		_node.LastModifier = value
 	}
 	if value, ok := cc.mutation.Remark(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -463,21 +463,21 @@ func (u *ContractUpsert) ClearDeletedAt() *ContractUpsert {
 	return u
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *ContractUpsert) SetLastModify(v *model.Modifier) *ContractUpsert {
-	u.Set(contract.FieldLastModify, v)
+// SetLastModifier sets the "last_modifier" field.
+func (u *ContractUpsert) SetLastModifier(v *model.Modifier) *ContractUpsert {
+	u.Set(contract.FieldLastModifier, v)
 	return u
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *ContractUpsert) UpdateLastModify() *ContractUpsert {
-	u.SetExcluded(contract.FieldLastModify)
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *ContractUpsert) UpdateLastModifier() *ContractUpsert {
+	u.SetExcluded(contract.FieldLastModifier)
 	return u
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *ContractUpsert) ClearLastModify() *ContractUpsert {
-	u.SetNull(contract.FieldLastModify)
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *ContractUpsert) ClearLastModifier() *ContractUpsert {
+	u.SetNull(contract.FieldLastModifier)
 	return u
 }
 
@@ -667,24 +667,24 @@ func (u *ContractUpsertOne) ClearDeletedAt() *ContractUpsertOne {
 	})
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *ContractUpsertOne) SetLastModify(v *model.Modifier) *ContractUpsertOne {
+// SetLastModifier sets the "last_modifier" field.
+func (u *ContractUpsertOne) SetLastModifier(v *model.Modifier) *ContractUpsertOne {
 	return u.Update(func(s *ContractUpsert) {
-		s.SetLastModify(v)
+		s.SetLastModifier(v)
 	})
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *ContractUpsertOne) UpdateLastModify() *ContractUpsertOne {
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *ContractUpsertOne) UpdateLastModifier() *ContractUpsertOne {
 	return u.Update(func(s *ContractUpsert) {
-		s.UpdateLastModify()
+		s.UpdateLastModifier()
 	})
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *ContractUpsertOne) ClearLastModify() *ContractUpsertOne {
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *ContractUpsertOne) ClearLastModifier() *ContractUpsertOne {
 	return u.Update(func(s *ContractUpsert) {
-		s.ClearLastModify()
+		s.ClearLastModifier()
 	})
 }
 
@@ -1053,24 +1053,24 @@ func (u *ContractUpsertBulk) ClearDeletedAt() *ContractUpsertBulk {
 	})
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *ContractUpsertBulk) SetLastModify(v *model.Modifier) *ContractUpsertBulk {
+// SetLastModifier sets the "last_modifier" field.
+func (u *ContractUpsertBulk) SetLastModifier(v *model.Modifier) *ContractUpsertBulk {
 	return u.Update(func(s *ContractUpsert) {
-		s.SetLastModify(v)
+		s.SetLastModifier(v)
 	})
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *ContractUpsertBulk) UpdateLastModify() *ContractUpsertBulk {
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *ContractUpsertBulk) UpdateLastModifier() *ContractUpsertBulk {
 	return u.Update(func(s *ContractUpsert) {
-		s.UpdateLastModify()
+		s.UpdateLastModifier()
 	})
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *ContractUpsertBulk) ClearLastModify() *ContractUpsertBulk {
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *ContractUpsertBulk) ClearLastModifier() *ContractUpsertBulk {
 	return u.Update(func(s *ContractUpsert) {
-		s.ClearLastModify()
+		s.ClearLastModifier()
 	})
 }
 

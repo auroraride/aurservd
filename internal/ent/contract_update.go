@@ -56,15 +56,15 @@ func (cu *ContractUpdate) ClearDeletedAt() *ContractUpdate {
 	return cu
 }
 
-// SetLastModify sets the "last_modify" field.
-func (cu *ContractUpdate) SetLastModify(m *model.Modifier) *ContractUpdate {
-	cu.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (cu *ContractUpdate) SetLastModifier(m *model.Modifier) *ContractUpdate {
+	cu.mutation.SetLastModifier(m)
 	return cu
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (cu *ContractUpdate) ClearLastModify() *ContractUpdate {
-	cu.mutation.ClearLastModify()
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (cu *ContractUpdate) ClearLastModifier() *ContractUpdate {
+	cu.mutation.ClearLastModifier()
 	return cu
 }
 
@@ -280,17 +280,17 @@ func (cu *ContractUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: contract.FieldDeletedAt,
 		})
 	}
-	if value, ok := cu.mutation.LastModify(); ok {
+	if value, ok := cu.mutation.LastModifier(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: contract.FieldLastModify,
+			Column: contract.FieldLastModifier,
 		})
 	}
-	if cu.mutation.LastModifyCleared() {
+	if cu.mutation.LastModifierCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: contract.FieldLastModify,
+			Column: contract.FieldLastModifier,
 		})
 	}
 	if value, ok := cu.mutation.Remark(); ok {
@@ -427,15 +427,15 @@ func (cuo *ContractUpdateOne) ClearDeletedAt() *ContractUpdateOne {
 	return cuo
 }
 
-// SetLastModify sets the "last_modify" field.
-func (cuo *ContractUpdateOne) SetLastModify(m *model.Modifier) *ContractUpdateOne {
-	cuo.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (cuo *ContractUpdateOne) SetLastModifier(m *model.Modifier) *ContractUpdateOne {
+	cuo.mutation.SetLastModifier(m)
 	return cuo
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (cuo *ContractUpdateOne) ClearLastModify() *ContractUpdateOne {
-	cuo.mutation.ClearLastModify()
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (cuo *ContractUpdateOne) ClearLastModifier() *ContractUpdateOne {
+	cuo.mutation.ClearLastModifier()
 	return cuo
 }
 
@@ -675,17 +675,17 @@ func (cuo *ContractUpdateOne) sqlSave(ctx context.Context) (_node *Contract, err
 			Column: contract.FieldDeletedAt,
 		})
 	}
-	if value, ok := cuo.mutation.LastModify(); ok {
+	if value, ok := cuo.mutation.LastModifier(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: contract.FieldLastModify,
+			Column: contract.FieldLastModifier,
 		})
 	}
-	if cuo.mutation.LastModifyCleared() {
+	if cuo.mutation.LastModifierCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: contract.FieldLastModify,
+			Column: contract.FieldLastModifier,
 		})
 	}
 	if value, ok := cuo.mutation.Remark(); ok {

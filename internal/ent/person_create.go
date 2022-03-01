@@ -66,9 +66,9 @@ func (pc *PersonCreate) SetNillableDeletedAt(t *time.Time) *PersonCreate {
 	return pc
 }
 
-// SetLastModify sets the "last_modify" field.
-func (pc *PersonCreate) SetLastModify(m *model.Modifier) *PersonCreate {
-	pc.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (pc *PersonCreate) SetLastModifier(m *model.Modifier) *PersonCreate {
+	pc.mutation.SetLastModifier(m)
 	return pc
 }
 
@@ -380,13 +380,13 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 		})
 		_node.DeletedAt = &value
 	}
-	if value, ok := pc.mutation.LastModify(); ok {
+	if value, ok := pc.mutation.LastModifier(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: person.FieldLastModify,
+			Column: person.FieldLastModifier,
 		})
-		_node.LastModify = value
+		_node.LastModifier = value
 	}
 	if value, ok := pc.mutation.Remark(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -591,21 +591,21 @@ func (u *PersonUpsert) ClearDeletedAt() *PersonUpsert {
 	return u
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *PersonUpsert) SetLastModify(v *model.Modifier) *PersonUpsert {
-	u.Set(person.FieldLastModify, v)
+// SetLastModifier sets the "last_modifier" field.
+func (u *PersonUpsert) SetLastModifier(v *model.Modifier) *PersonUpsert {
+	u.Set(person.FieldLastModifier, v)
 	return u
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *PersonUpsert) UpdateLastModify() *PersonUpsert {
-	u.SetExcluded(person.FieldLastModify)
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateLastModifier() *PersonUpsert {
+	u.SetExcluded(person.FieldLastModifier)
 	return u
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *PersonUpsert) ClearLastModify() *PersonUpsert {
-	u.SetNull(person.FieldLastModify)
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *PersonUpsert) ClearLastModifier() *PersonUpsert {
+	u.SetNull(person.FieldLastModifier)
 	return u
 }
 
@@ -867,24 +867,24 @@ func (u *PersonUpsertOne) ClearDeletedAt() *PersonUpsertOne {
 	})
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *PersonUpsertOne) SetLastModify(v *model.Modifier) *PersonUpsertOne {
+// SetLastModifier sets the "last_modifier" field.
+func (u *PersonUpsertOne) SetLastModifier(v *model.Modifier) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetLastModify(v)
+		s.SetLastModifier(v)
 	})
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *PersonUpsertOne) UpdateLastModify() *PersonUpsertOne {
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateLastModifier() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateLastModify()
+		s.UpdateLastModifier()
 	})
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *PersonUpsertOne) ClearLastModify() *PersonUpsertOne {
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *PersonUpsertOne) ClearLastModifier() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.ClearLastModify()
+		s.ClearLastModifier()
 	})
 }
 
@@ -1337,24 +1337,24 @@ func (u *PersonUpsertBulk) ClearDeletedAt() *PersonUpsertBulk {
 	})
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *PersonUpsertBulk) SetLastModify(v *model.Modifier) *PersonUpsertBulk {
+// SetLastModifier sets the "last_modifier" field.
+func (u *PersonUpsertBulk) SetLastModifier(v *model.Modifier) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetLastModify(v)
+		s.SetLastModifier(v)
 	})
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *PersonUpsertBulk) UpdateLastModify() *PersonUpsertBulk {
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateLastModifier() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateLastModify()
+		s.UpdateLastModifier()
 	})
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *PersonUpsertBulk) ClearLastModify() *PersonUpsertBulk {
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *PersonUpsertBulk) ClearLastModifier() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.ClearLastModify()
+		s.ClearLastModifier()
 	})
 }
 

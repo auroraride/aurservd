@@ -56,15 +56,15 @@ func (pu *PersonUpdate) ClearDeletedAt() *PersonUpdate {
 	return pu
 }
 
-// SetLastModify sets the "last_modify" field.
-func (pu *PersonUpdate) SetLastModify(m *model.Modifier) *PersonUpdate {
-	pu.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (pu *PersonUpdate) SetLastModifier(m *model.Modifier) *PersonUpdate {
+	pu.mutation.SetLastModifier(m)
 	return pu
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (pu *PersonUpdate) ClearLastModify() *PersonUpdate {
-	pu.mutation.ClearLastModify()
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (pu *PersonUpdate) ClearLastModifier() *PersonUpdate {
+	pu.mutation.ClearLastModifier()
 	return pu
 }
 
@@ -369,17 +369,17 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: person.FieldDeletedAt,
 		})
 	}
-	if value, ok := pu.mutation.LastModify(); ok {
+	if value, ok := pu.mutation.LastModifier(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: person.FieldLastModify,
+			Column: person.FieldLastModifier,
 		})
 	}
-	if pu.mutation.LastModifyCleared() {
+	if pu.mutation.LastModifierCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: person.FieldLastModify,
+			Column: person.FieldLastModifier,
 		})
 	}
 	if value, ok := pu.mutation.Remark(); ok {
@@ -590,15 +590,15 @@ func (puo *PersonUpdateOne) ClearDeletedAt() *PersonUpdateOne {
 	return puo
 }
 
-// SetLastModify sets the "last_modify" field.
-func (puo *PersonUpdateOne) SetLastModify(m *model.Modifier) *PersonUpdateOne {
-	puo.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (puo *PersonUpdateOne) SetLastModifier(m *model.Modifier) *PersonUpdateOne {
+	puo.mutation.SetLastModifier(m)
 	return puo
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (puo *PersonUpdateOne) ClearLastModify() *PersonUpdateOne {
-	puo.mutation.ClearLastModify()
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (puo *PersonUpdateOne) ClearLastModifier() *PersonUpdateOne {
+	puo.mutation.ClearLastModifier()
 	return puo
 }
 
@@ -927,17 +927,17 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 			Column: person.FieldDeletedAt,
 		})
 	}
-	if value, ok := puo.mutation.LastModify(); ok {
+	if value, ok := puo.mutation.LastModifier(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: person.FieldLastModify,
+			Column: person.FieldLastModifier,
 		})
 	}
-	if puo.mutation.LastModifyCleared() {
+	if puo.mutation.LastModifierCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: person.FieldLastModify,
+			Column: person.FieldLastModifier,
 		})
 	}
 	if value, ok := puo.mutation.Remark(); ok {

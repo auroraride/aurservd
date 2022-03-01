@@ -1,5 +1,10 @@
 # 极光出行
 
+## 待办
+- 从`struct`创建或更新
+  - https://github.com/ent/ent/issues/761
+  - https://entgo.io/docs/templates/#examples
+
 ## 常用命令
 
 ```bash

@@ -68,15 +68,15 @@ func (bu *BranchUpdate) ClearCreator() *BranchUpdate {
 	return bu
 }
 
-// SetLastModify sets the "last_modify" field.
-func (bu *BranchUpdate) SetLastModify(m *model.Modifier) *BranchUpdate {
-	bu.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (bu *BranchUpdate) SetLastModifier(m *model.Modifier) *BranchUpdate {
+	bu.mutation.SetLastModifier(m)
 	return bu
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (bu *BranchUpdate) ClearLastModify() *BranchUpdate {
-	bu.mutation.ClearLastModify()
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (bu *BranchUpdate) ClearLastModifier() *BranchUpdate {
+	bu.mutation.ClearLastModifier()
 	return bu
 }
 
@@ -312,17 +312,17 @@ func (bu *BranchUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: branch.FieldCreator,
 		})
 	}
-	if value, ok := bu.mutation.LastModify(); ok {
+	if value, ok := bu.mutation.LastModifier(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: branch.FieldLastModify,
+			Column: branch.FieldLastModifier,
 		})
 	}
-	if bu.mutation.LastModifyCleared() {
+	if bu.mutation.LastModifierCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: branch.FieldLastModify,
+			Column: branch.FieldLastModifier,
 		})
 	}
 	if value, ok := bu.mutation.Remark(); ok {
@@ -512,15 +512,15 @@ func (buo *BranchUpdateOne) ClearCreator() *BranchUpdateOne {
 	return buo
 }
 
-// SetLastModify sets the "last_modify" field.
-func (buo *BranchUpdateOne) SetLastModify(m *model.Modifier) *BranchUpdateOne {
-	buo.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (buo *BranchUpdateOne) SetLastModifier(m *model.Modifier) *BranchUpdateOne {
+	buo.mutation.SetLastModifier(m)
 	return buo
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (buo *BranchUpdateOne) ClearLastModify() *BranchUpdateOne {
-	buo.mutation.ClearLastModify()
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (buo *BranchUpdateOne) ClearLastModifier() *BranchUpdateOne {
+	buo.mutation.ClearLastModifier()
 	return buo
 }
 
@@ -780,17 +780,17 @@ func (buo *BranchUpdateOne) sqlSave(ctx context.Context) (_node *Branch, err err
 			Column: branch.FieldCreator,
 		})
 	}
-	if value, ok := buo.mutation.LastModify(); ok {
+	if value, ok := buo.mutation.LastModifier(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: branch.FieldLastModify,
+			Column: branch.FieldLastModifier,
 		})
 	}
-	if buo.mutation.LastModifyCleared() {
+	if buo.mutation.LastModifierCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: branch.FieldLastModify,
+			Column: branch.FieldLastModifier,
 		})
 	}
 	if value, ok := buo.mutation.Remark(); ok {

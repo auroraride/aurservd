@@ -29,17 +29,20 @@ func NewBranch() *branchService {
 }
 
 // Add 新增网点
-func (s *branchService) Add(req *model.Branch) {
+// TODO 从结构体新增
+func (s *branchService) Add(req *model.Branch, mod *model.Modifier) {
     tx, _ := ar.Ent.Tx(s.ctx)
 
     // TODO: 校验城市是否启用
     b, err := s.orm.Create().
-        SetName(req.Name).
-        SetAddress(req.Address).
-        SetCityID(req.CityID).
-        SetLng(req.Lng).
-        SetLat(req.Lat).
+        SetName(*req.Name).
+        SetAddress(*req.Address).
+        SetCityID(*req.CityID).
+        SetLng(*req.Lng).
+        SetLat(*req.Lat).
         SetPhotos(req.Photos).
+        SetLastModifier(mod).
+        SetCreator(mod).
         Save(s.ctx)
     if err != nil {
         _ = tx.Rollback()
@@ -48,7 +51,7 @@ func (s *branchService) Add(req *model.Branch) {
 
     if len(req.Contracts) > 0 {
         for _, contract := range req.Contracts {
-            s.AddContract(b.ID, contract)
+            s.AddContract(b.ID, contract, mod)
         }
     }
 
@@ -56,7 +59,8 @@ func (s *branchService) Add(req *model.Branch) {
 }
 
 // AddContract 新增合同
-func (s *branchService) AddContract(id uint64, req *model.BranchContract) *ent.BranchContract {
+// TODO 从结构体新增
+func (s *branchService) AddContract(id uint64, req *model.BranchContract, mod *model.Modifier) *ent.BranchContract {
     return ar.Ent.BranchContract.Create().
         SetBranchID(id).
         SetLandlordName(req.LandlordName).
@@ -73,6 +77,8 @@ func (s *branchService) AddContract(id uint64, req *model.BranchContract) *ent.B
         SetEndTime(req.EndTime).
         SetFile(req.File).
         SetSheets(req.Sheets).
+        SetLastModifier(mod).
+        SetCreator(mod).
         SaveX(s.ctx)
 }
 
@@ -124,4 +130,24 @@ func (s *branchService) List(req *model.BranchListReq) (res model.PaginationRes)
 
     res.Items = rs
     return
+}
+
+// Modify 修改网点
+// TODO 从结构体更新
+func (s *branchService) Modify(req *model.Branch, mod *model.Modifier) {
+    b := s.orm.Query().Where(branch.ID(req.ID)).OnlyX(s.ctx)
+    if b == nil {
+        snag.Panic("网点不存在")
+    }
+
+    s.orm.UpdateOne(b).
+        SetName(*req.Name).
+        SetAddress(*req.Address).
+        SetCityID(*req.CityID).
+        SetLng(*req.Lng).
+        SetLat(*req.Lat).
+        SetPhotos(req.Photos).
+        SetLastModifier(mod).
+        SetCreator(mod).
+        SaveX(s.ctx)
 }

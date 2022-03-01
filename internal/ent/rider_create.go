@@ -67,9 +67,9 @@ func (rc *RiderCreate) SetNillableDeletedAt(t *time.Time) *RiderCreate {
 	return rc
 }
 
-// SetLastModify sets the "last_modify" field.
-func (rc *RiderCreate) SetLastModify(m *model.Modifier) *RiderCreate {
-	rc.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (rc *RiderCreate) SetLastModifier(m *model.Modifier) *RiderCreate {
+	rc.mutation.SetLastModifier(m)
 	return rc
 }
 
@@ -401,13 +401,13 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 		})
 		_node.DeletedAt = &value
 	}
-	if value, ok := rc.mutation.LastModify(); ok {
+	if value, ok := rc.mutation.LastModifier(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: rider.FieldLastModify,
+			Column: rider.FieldLastModifier,
 		})
-		_node.LastModify = value
+		_node.LastModifier = value
 	}
 	if value, ok := rc.mutation.Remark(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -632,21 +632,21 @@ func (u *RiderUpsert) ClearDeletedAt() *RiderUpsert {
 	return u
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *RiderUpsert) SetLastModify(v *model.Modifier) *RiderUpsert {
-	u.Set(rider.FieldLastModify, v)
+// SetLastModifier sets the "last_modifier" field.
+func (u *RiderUpsert) SetLastModifier(v *model.Modifier) *RiderUpsert {
+	u.Set(rider.FieldLastModifier, v)
 	return u
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *RiderUpsert) UpdateLastModify() *RiderUpsert {
-	u.SetExcluded(rider.FieldLastModify)
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateLastModifier() *RiderUpsert {
+	u.SetExcluded(rider.FieldLastModifier)
 	return u
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *RiderUpsert) ClearLastModify() *RiderUpsert {
-	u.SetNull(rider.FieldLastModify)
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *RiderUpsert) ClearLastModifier() *RiderUpsert {
+	u.SetNull(rider.FieldLastModifier)
 	return u
 }
 
@@ -950,24 +950,24 @@ func (u *RiderUpsertOne) ClearDeletedAt() *RiderUpsertOne {
 	})
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *RiderUpsertOne) SetLastModify(v *model.Modifier) *RiderUpsertOne {
+// SetLastModifier sets the "last_modifier" field.
+func (u *RiderUpsertOne) SetLastModifier(v *model.Modifier) *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
-		s.SetLastModify(v)
+		s.SetLastModifier(v)
 	})
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *RiderUpsertOne) UpdateLastModify() *RiderUpsertOne {
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateLastModifier() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
-		s.UpdateLastModify()
+		s.UpdateLastModifier()
 	})
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *RiderUpsertOne) ClearLastModify() *RiderUpsertOne {
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *RiderUpsertOne) ClearLastModifier() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
-		s.ClearLastModify()
+		s.ClearLastModifier()
 	})
 }
 
@@ -1469,24 +1469,24 @@ func (u *RiderUpsertBulk) ClearDeletedAt() *RiderUpsertBulk {
 	})
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *RiderUpsertBulk) SetLastModify(v *model.Modifier) *RiderUpsertBulk {
+// SetLastModifier sets the "last_modifier" field.
+func (u *RiderUpsertBulk) SetLastModifier(v *model.Modifier) *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
-		s.SetLastModify(v)
+		s.SetLastModifier(v)
 	})
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *RiderUpsertBulk) UpdateLastModify() *RiderUpsertBulk {
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateLastModifier() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
-		s.UpdateLastModify()
+		s.UpdateLastModifier()
 	})
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *RiderUpsertBulk) ClearLastModify() *RiderUpsertBulk {
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *RiderUpsertBulk) ClearLastModifier() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
-		s.ClearLastModify()
+		s.ClearLastModifier()
 	})
 }
 

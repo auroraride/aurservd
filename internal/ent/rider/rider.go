@@ -17,8 +17,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldLastModify holds the string denoting the last_modify field in the database.
-	FieldLastModify = "last_modify"
+	// FieldLastModifier holds the string denoting the last_modifier field in the database.
+	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
 	// FieldPersonID holds the string denoting the person_id field in the database.
@@ -71,7 +71,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldLastModify,
+	FieldLastModifier,
 	FieldRemark,
 	FieldPersonID,
 	FieldGroupID,

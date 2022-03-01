@@ -72,9 +72,9 @@ func (bc *BranchCreate) SetCreator(m *model.Modifier) *BranchCreate {
 	return bc
 }
 
-// SetLastModify sets the "last_modify" field.
-func (bc *BranchCreate) SetLastModify(m *model.Modifier) *BranchCreate {
-	bc.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (bc *BranchCreate) SetLastModifier(m *model.Modifier) *BranchCreate {
+	bc.mutation.SetLastModifier(m)
 	return bc
 }
 
@@ -310,13 +310,13 @@ func (bc *BranchCreate) createSpec() (*Branch, *sqlgraph.CreateSpec) {
 		})
 		_node.Creator = value
 	}
-	if value, ok := bc.mutation.LastModify(); ok {
+	if value, ok := bc.mutation.LastModifier(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: branch.FieldLastModify,
+			Column: branch.FieldLastModifier,
 		})
-		_node.LastModify = value
+		_node.LastModifier = value
 	}
 	if value, ok := bc.mutation.Remark(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -507,21 +507,21 @@ func (u *BranchUpsert) ClearCreator() *BranchUpsert {
 	return u
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *BranchUpsert) SetLastModify(v *model.Modifier) *BranchUpsert {
-	u.Set(branch.FieldLastModify, v)
+// SetLastModifier sets the "last_modifier" field.
+func (u *BranchUpsert) SetLastModifier(v *model.Modifier) *BranchUpsert {
+	u.Set(branch.FieldLastModifier, v)
 	return u
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *BranchUpsert) UpdateLastModify() *BranchUpsert {
-	u.SetExcluded(branch.FieldLastModify)
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *BranchUpsert) UpdateLastModifier() *BranchUpsert {
+	u.SetExcluded(branch.FieldLastModifier)
 	return u
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *BranchUpsert) ClearLastModify() *BranchUpsert {
-	u.SetNull(branch.FieldLastModify)
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *BranchUpsert) ClearLastModifier() *BranchUpsert {
+	u.SetNull(branch.FieldLastModifier)
 	return u
 }
 
@@ -750,24 +750,24 @@ func (u *BranchUpsertOne) ClearCreator() *BranchUpsertOne {
 	})
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *BranchUpsertOne) SetLastModify(v *model.Modifier) *BranchUpsertOne {
+// SetLastModifier sets the "last_modifier" field.
+func (u *BranchUpsertOne) SetLastModifier(v *model.Modifier) *BranchUpsertOne {
 	return u.Update(func(s *BranchUpsert) {
-		s.SetLastModify(v)
+		s.SetLastModifier(v)
 	})
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *BranchUpsertOne) UpdateLastModify() *BranchUpsertOne {
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *BranchUpsertOne) UpdateLastModifier() *BranchUpsertOne {
 	return u.Update(func(s *BranchUpsert) {
-		s.UpdateLastModify()
+		s.UpdateLastModifier()
 	})
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *BranchUpsertOne) ClearLastModify() *BranchUpsertOne {
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *BranchUpsertOne) ClearLastModifier() *BranchUpsertOne {
 	return u.Update(func(s *BranchUpsert) {
-		s.ClearLastModify()
+		s.ClearLastModifier()
 	})
 }
 
@@ -1178,24 +1178,24 @@ func (u *BranchUpsertBulk) ClearCreator() *BranchUpsertBulk {
 	})
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *BranchUpsertBulk) SetLastModify(v *model.Modifier) *BranchUpsertBulk {
+// SetLastModifier sets the "last_modifier" field.
+func (u *BranchUpsertBulk) SetLastModifier(v *model.Modifier) *BranchUpsertBulk {
 	return u.Update(func(s *BranchUpsert) {
-		s.SetLastModify(v)
+		s.SetLastModifier(v)
 	})
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *BranchUpsertBulk) UpdateLastModify() *BranchUpsertBulk {
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *BranchUpsertBulk) UpdateLastModifier() *BranchUpsertBulk {
 	return u.Update(func(s *BranchUpsert) {
-		s.UpdateLastModify()
+		s.UpdateLastModifier()
 	})
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *BranchUpsertBulk) ClearLastModify() *BranchUpsertBulk {
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *BranchUpsertBulk) ClearLastModifier() *BranchUpsertBulk {
 	return u.Update(func(s *BranchUpsert) {
-		s.ClearLastModify()
+		s.ClearLastModifier()
 	})
 }
 

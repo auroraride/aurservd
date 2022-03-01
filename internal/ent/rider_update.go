@@ -57,15 +57,15 @@ func (ru *RiderUpdate) ClearDeletedAt() *RiderUpdate {
 	return ru
 }
 
-// SetLastModify sets the "last_modify" field.
-func (ru *RiderUpdate) SetLastModify(m *model.Modifier) *RiderUpdate {
-	ru.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (ru *RiderUpdate) SetLastModifier(m *model.Modifier) *RiderUpdate {
+	ru.mutation.SetLastModifier(m)
 	return ru
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (ru *RiderUpdate) ClearLastModify() *RiderUpdate {
-	ru.mutation.ClearLastModify()
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (ru *RiderUpdate) ClearLastModifier() *RiderUpdate {
+	ru.mutation.ClearLastModifier()
 	return ru
 }
 
@@ -446,17 +446,17 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: rider.FieldDeletedAt,
 		})
 	}
-	if value, ok := ru.mutation.LastModify(); ok {
+	if value, ok := ru.mutation.LastModifier(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: rider.FieldLastModify,
+			Column: rider.FieldLastModifier,
 		})
 	}
-	if ru.mutation.LastModifyCleared() {
+	if ru.mutation.LastModifierCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: rider.FieldLastModify,
+			Column: rider.FieldLastModifier,
 		})
 	}
 	if value, ok := ru.mutation.Remark(); ok {
@@ -726,15 +726,15 @@ func (ruo *RiderUpdateOne) ClearDeletedAt() *RiderUpdateOne {
 	return ruo
 }
 
-// SetLastModify sets the "last_modify" field.
-func (ruo *RiderUpdateOne) SetLastModify(m *model.Modifier) *RiderUpdateOne {
-	ruo.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (ruo *RiderUpdateOne) SetLastModifier(m *model.Modifier) *RiderUpdateOne {
+	ruo.mutation.SetLastModifier(m)
 	return ruo
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (ruo *RiderUpdateOne) ClearLastModify() *RiderUpdateOne {
-	ruo.mutation.ClearLastModify()
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (ruo *RiderUpdateOne) ClearLastModifier() *RiderUpdateOne {
+	ruo.mutation.ClearLastModifier()
 	return ruo
 }
 
@@ -1139,17 +1139,17 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 			Column: rider.FieldDeletedAt,
 		})
 	}
-	if value, ok := ruo.mutation.LastModify(); ok {
+	if value, ok := ruo.mutation.LastModifier(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: rider.FieldLastModify,
+			Column: rider.FieldLastModifier,
 		})
 	}
-	if ruo.mutation.LastModifyCleared() {
+	if ruo.mutation.LastModifierCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: rider.FieldLastModify,
+			Column: rider.FieldLastModifier,
 		})
 	}
 	if value, ok := ruo.mutation.Remark(); ok {

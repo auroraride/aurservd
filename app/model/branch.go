@@ -14,15 +14,18 @@ type BranchListReq struct {
 
 // Branch 网点请求体
 type Branch struct {
-    ID uint64 `json:"id,omitempty"`
+    ID uint64 `json:"id,omitempty" param:"id"`
 
-    CityID    uint64            `json:"cityId" validate:"required" trans:"城市"`
-    Name      string            `json:"name" validate:"required" trans:"网点名称"`
-    Lng       float64           `json:"lng" validate:"required" trans:"经度"`
-    Lat       float64           `json:"lat" validate:"required" trans:"纬度"`
-    Address   string            `json:"address" validate:"required" trans:"详细地址"`
+    CityID    *uint64           `json:"cityId" validate:"required" trans:"城市"`
+    Name      *string           `json:"name" validate:"required" trans:"网点名称"`
+    Lng       *float64          `json:"lng" validate:"required" trans:"经度"`
+    Lat       *float64          `json:"lat" validate:"required" trans:"纬度"`
+    Address   *string           `json:"address" validate:"required" trans:"详细地址"`
     Photos    []string          `json:"photos" validate:"required" trans:"网点照片"`
     Contracts []*BranchContract `json:"contracts,omitempty"`
+
+    Creator      *Modifier `json:"creator,omitempty"`
+    LastModifier *Modifier `json:"lastModifier,omitempty"`
 }
 
 // BranchContract 网点合同请求体

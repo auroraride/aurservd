@@ -72,9 +72,9 @@ func (bcc *BranchContractCreate) SetCreator(m *model.Modifier) *BranchContractCr
 	return bcc
 }
 
-// SetLastModify sets the "last_modify" field.
-func (bcc *BranchContractCreate) SetLastModify(m *model.Modifier) *BranchContractCreate {
-	bcc.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (bcc *BranchContractCreate) SetLastModifier(m *model.Modifier) *BranchContractCreate {
+	bcc.mutation.SetLastModifier(m)
 	return bcc
 }
 
@@ -384,13 +384,13 @@ func (bcc *BranchContractCreate) createSpec() (*BranchContract, *sqlgraph.Create
 		})
 		_node.Creator = value
 	}
-	if value, ok := bcc.mutation.LastModify(); ok {
+	if value, ok := bcc.mutation.LastModifier(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: branchcontract.FieldLastModify,
+			Column: branchcontract.FieldLastModifier,
 		})
-		_node.LastModify = value
+		_node.LastModifier = value
 	}
 	if value, ok := bcc.mutation.Remark(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -646,21 +646,21 @@ func (u *BranchContractUpsert) ClearCreator() *BranchContractUpsert {
 	return u
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *BranchContractUpsert) SetLastModify(v *model.Modifier) *BranchContractUpsert {
-	u.Set(branchcontract.FieldLastModify, v)
+// SetLastModifier sets the "last_modifier" field.
+func (u *BranchContractUpsert) SetLastModifier(v *model.Modifier) *BranchContractUpsert {
+	u.Set(branchcontract.FieldLastModifier, v)
 	return u
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *BranchContractUpsert) UpdateLastModify() *BranchContractUpsert {
-	u.SetExcluded(branchcontract.FieldLastModify)
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *BranchContractUpsert) UpdateLastModifier() *BranchContractUpsert {
+	u.SetExcluded(branchcontract.FieldLastModifier)
 	return u
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *BranchContractUpsert) ClearLastModify() *BranchContractUpsert {
-	u.SetNull(branchcontract.FieldLastModify)
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *BranchContractUpsert) ClearLastModifier() *BranchContractUpsert {
+	u.SetNull(branchcontract.FieldLastModifier)
 	return u
 }
 
@@ -1015,24 +1015,24 @@ func (u *BranchContractUpsertOne) ClearCreator() *BranchContractUpsertOne {
 	})
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *BranchContractUpsertOne) SetLastModify(v *model.Modifier) *BranchContractUpsertOne {
+// SetLastModifier sets the "last_modifier" field.
+func (u *BranchContractUpsertOne) SetLastModifier(v *model.Modifier) *BranchContractUpsertOne {
 	return u.Update(func(s *BranchContractUpsert) {
-		s.SetLastModify(v)
+		s.SetLastModifier(v)
 	})
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *BranchContractUpsertOne) UpdateLastModify() *BranchContractUpsertOne {
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *BranchContractUpsertOne) UpdateLastModifier() *BranchContractUpsertOne {
 	return u.Update(func(s *BranchContractUpsert) {
-		s.UpdateLastModify()
+		s.UpdateLastModifier()
 	})
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *BranchContractUpsertOne) ClearLastModify() *BranchContractUpsertOne {
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *BranchContractUpsertOne) ClearLastModifier() *BranchContractUpsertOne {
 	return u.Update(func(s *BranchContractUpsert) {
-		s.ClearLastModify()
+		s.ClearLastModifier()
 	})
 }
 
@@ -1590,24 +1590,24 @@ func (u *BranchContractUpsertBulk) ClearCreator() *BranchContractUpsertBulk {
 	})
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *BranchContractUpsertBulk) SetLastModify(v *model.Modifier) *BranchContractUpsertBulk {
+// SetLastModifier sets the "last_modifier" field.
+func (u *BranchContractUpsertBulk) SetLastModifier(v *model.Modifier) *BranchContractUpsertBulk {
 	return u.Update(func(s *BranchContractUpsert) {
-		s.SetLastModify(v)
+		s.SetLastModifier(v)
 	})
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *BranchContractUpsertBulk) UpdateLastModify() *BranchContractUpsertBulk {
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *BranchContractUpsertBulk) UpdateLastModifier() *BranchContractUpsertBulk {
 	return u.Update(func(s *BranchContractUpsert) {
-		s.UpdateLastModify()
+		s.UpdateLastModifier()
 	})
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *BranchContractUpsertBulk) ClearLastModify() *BranchContractUpsertBulk {
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *BranchContractUpsertBulk) ClearLastModifier() *BranchContractUpsertBulk {
 	return u.Update(func(s *BranchContractUpsert) {
-		s.ClearLastModify()
+		s.ClearLastModifier()
 	})
 }
 

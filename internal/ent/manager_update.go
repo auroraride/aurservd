@@ -55,15 +55,15 @@ func (mu *ManagerUpdate) ClearDeletedAt() *ManagerUpdate {
 	return mu
 }
 
-// SetLastModify sets the "last_modify" field.
-func (mu *ManagerUpdate) SetLastModify(m *model.Modifier) *ManagerUpdate {
-	mu.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (mu *ManagerUpdate) SetLastModifier(m *model.Modifier) *ManagerUpdate {
+	mu.mutation.SetLastModifier(m)
 	return mu
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (mu *ManagerUpdate) ClearLastModify() *ManagerUpdate {
-	mu.mutation.ClearLastModify()
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (mu *ManagerUpdate) ClearLastModifier() *ManagerUpdate {
+	mu.mutation.ClearLastModifier()
 	return mu
 }
 
@@ -252,17 +252,17 @@ func (mu *ManagerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: manager.FieldDeletedAt,
 		})
 	}
-	if value, ok := mu.mutation.LastModify(); ok {
+	if value, ok := mu.mutation.LastModifier(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: manager.FieldLastModify,
+			Column: manager.FieldLastModifier,
 		})
 	}
-	if mu.mutation.LastModifyCleared() {
+	if mu.mutation.LastModifierCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: manager.FieldLastModify,
+			Column: manager.FieldLastModifier,
 		})
 	}
 	if value, ok := mu.mutation.Remark(); ok {
@@ -357,15 +357,15 @@ func (muo *ManagerUpdateOne) ClearDeletedAt() *ManagerUpdateOne {
 	return muo
 }
 
-// SetLastModify sets the "last_modify" field.
-func (muo *ManagerUpdateOne) SetLastModify(m *model.Modifier) *ManagerUpdateOne {
-	muo.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (muo *ManagerUpdateOne) SetLastModifier(m *model.Modifier) *ManagerUpdateOne {
+	muo.mutation.SetLastModifier(m)
 	return muo
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (muo *ManagerUpdateOne) ClearLastModify() *ManagerUpdateOne {
-	muo.mutation.ClearLastModify()
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (muo *ManagerUpdateOne) ClearLastModifier() *ManagerUpdateOne {
+	muo.mutation.ClearLastModifier()
 	return muo
 }
 
@@ -578,17 +578,17 @@ func (muo *ManagerUpdateOne) sqlSave(ctx context.Context) (_node *Manager, err e
 			Column: manager.FieldDeletedAt,
 		})
 	}
-	if value, ok := muo.mutation.LastModify(); ok {
+	if value, ok := muo.mutation.LastModifier(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: manager.FieldLastModify,
+			Column: manager.FieldLastModifier,
 		})
 	}
-	if muo.mutation.LastModifyCleared() {
+	if muo.mutation.LastModifierCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: manager.FieldLastModify,
+			Column: manager.FieldLastModifier,
 		})
 	}
 	if value, ok := muo.mutation.Remark(); ok {

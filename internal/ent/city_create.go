@@ -65,9 +65,9 @@ func (cc *CityCreate) SetNillableDeletedAt(t *time.Time) *CityCreate {
 	return cc
 }
 
-// SetLastModify sets the "last_modify" field.
-func (cc *CityCreate) SetLastModify(m *model.Modifier) *CityCreate {
-	cc.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (cc *CityCreate) SetLastModifier(m *model.Modifier) *CityCreate {
+	cc.mutation.SetLastModifier(m)
 	return cc
 }
 
@@ -314,13 +314,13 @@ func (cc *CityCreate) createSpec() (*City, *sqlgraph.CreateSpec) {
 		})
 		_node.DeletedAt = &value
 	}
-	if value, ok := cc.mutation.LastModify(); ok {
+	if value, ok := cc.mutation.LastModifier(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: city.FieldLastModify,
+			Column: city.FieldLastModifier,
 		})
-		_node.LastModify = value
+		_node.LastModifier = value
 	}
 	if value, ok := cc.mutation.Remark(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -489,21 +489,21 @@ func (u *CityUpsert) ClearDeletedAt() *CityUpsert {
 	return u
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *CityUpsert) SetLastModify(v *model.Modifier) *CityUpsert {
-	u.Set(city.FieldLastModify, v)
+// SetLastModifier sets the "last_modifier" field.
+func (u *CityUpsert) SetLastModifier(v *model.Modifier) *CityUpsert {
+	u.Set(city.FieldLastModifier, v)
 	return u
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *CityUpsert) UpdateLastModify() *CityUpsert {
-	u.SetExcluded(city.FieldLastModify)
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *CityUpsert) UpdateLastModifier() *CityUpsert {
+	u.SetExcluded(city.FieldLastModifier)
 	return u
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *CityUpsert) ClearLastModify() *CityUpsert {
-	u.SetNull(city.FieldLastModify)
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *CityUpsert) ClearLastModifier() *CityUpsert {
+	u.SetNull(city.FieldLastModifier)
 	return u
 }
 
@@ -687,24 +687,24 @@ func (u *CityUpsertOne) ClearDeletedAt() *CityUpsertOne {
 	})
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *CityUpsertOne) SetLastModify(v *model.Modifier) *CityUpsertOne {
+// SetLastModifier sets the "last_modifier" field.
+func (u *CityUpsertOne) SetLastModifier(v *model.Modifier) *CityUpsertOne {
 	return u.Update(func(s *CityUpsert) {
-		s.SetLastModify(v)
+		s.SetLastModifier(v)
 	})
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *CityUpsertOne) UpdateLastModify() *CityUpsertOne {
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *CityUpsertOne) UpdateLastModifier() *CityUpsertOne {
 	return u.Update(func(s *CityUpsert) {
-		s.UpdateLastModify()
+		s.UpdateLastModifier()
 	})
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *CityUpsertOne) ClearLastModify() *CityUpsertOne {
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *CityUpsertOne) ClearLastModifier() *CityUpsertOne {
 	return u.Update(func(s *CityUpsert) {
-		s.ClearLastModify()
+		s.ClearLastModifier()
 	})
 }
 
@@ -1066,24 +1066,24 @@ func (u *CityUpsertBulk) ClearDeletedAt() *CityUpsertBulk {
 	})
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *CityUpsertBulk) SetLastModify(v *model.Modifier) *CityUpsertBulk {
+// SetLastModifier sets the "last_modifier" field.
+func (u *CityUpsertBulk) SetLastModifier(v *model.Modifier) *CityUpsertBulk {
 	return u.Update(func(s *CityUpsert) {
-		s.SetLastModify(v)
+		s.SetLastModifier(v)
 	})
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *CityUpsertBulk) UpdateLastModify() *CityUpsertBulk {
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *CityUpsertBulk) UpdateLastModifier() *CityUpsertBulk {
 	return u.Update(func(s *CityUpsert) {
-		s.UpdateLastModify()
+		s.UpdateLastModifier()
 	})
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *CityUpsertBulk) ClearLastModify() *CityUpsertBulk {
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *CityUpsertBulk) ClearLastModifier() *CityUpsertBulk {
 	return u.Update(func(s *CityUpsert) {
-		s.ClearLastModify()
+		s.ClearLastModifier()
 	})
 }
 

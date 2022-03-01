@@ -27,9 +27,9 @@ type Branch struct {
 	// Creator holds the value of the "creator" field.
 	// 创建人
 	Creator *model.Modifier `json:"creator,omitempty"`
-	// LastModify holds the value of the "last_modify" field.
+	// LastModifier holds the value of the "last_modifier" field.
 	// 最后修改人
-	LastModify *model.Modifier `json:"last_modify,omitempty"`
+	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// Remark holds the value of the "remark" field.
 	// 备注
 	Remark *string `json:"remark,omitempty"`
@@ -79,7 +79,7 @@ func (*Branch) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case branch.FieldCreator, branch.FieldLastModify, branch.FieldPhotos:
+		case branch.FieldCreator, branch.FieldLastModifier, branch.FieldPhotos:
 			values[i] = new([]byte)
 		case branch.FieldLng, branch.FieldLat:
 			values[i] = new(sql.NullFloat64)
@@ -137,12 +137,12 @@ func (b *Branch) assignValues(columns []string, values []interface{}) error {
 					return fmt.Errorf("unmarshal field creator: %w", err)
 				}
 			}
-		case branch.FieldLastModify:
+		case branch.FieldLastModifier:
 			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field last_modify", values[i])
+				return fmt.Errorf("unexpected type %T for field last_modifier", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &b.LastModify); err != nil {
-					return fmt.Errorf("unmarshal field last_modify: %w", err)
+				if err := json.Unmarshal(*value, &b.LastModifier); err != nil {
+					return fmt.Errorf("unmarshal field last_modifier: %w", err)
 				}
 			}
 		case branch.FieldRemark:
@@ -233,8 +233,8 @@ func (b *Branch) String() string {
 	}
 	builder.WriteString(", creator=")
 	builder.WriteString(fmt.Sprintf("%v", b.Creator))
-	builder.WriteString(", last_modify=")
-	builder.WriteString(fmt.Sprintf("%v", b.LastModify))
+	builder.WriteString(", last_modifier=")
+	builder.WriteString(fmt.Sprintf("%v", b.LastModifier))
 	if v := b.Remark; v != nil {
 		builder.WriteString(", remark=")
 		builder.WriteString(*v)

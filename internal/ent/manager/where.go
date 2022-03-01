@@ -390,17 +390,17 @@ func DeletedAtNotNil() predicate.Manager {
 	})
 }
 
-// LastModifyIsNil applies the IsNil predicate on the "last_modify" field.
-func LastModifyIsNil() predicate.Manager {
+// LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
+func LastModifierIsNil() predicate.Manager {
 	return predicate.Manager(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLastModify)))
+		s.Where(sql.IsNull(s.C(FieldLastModifier)))
 	})
 }
 
-// LastModifyNotNil applies the NotNil predicate on the "last_modify" field.
-func LastModifyNotNil() predicate.Manager {
+// LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
+func LastModifierNotNil() predicate.Manager {
 	return predicate.Manager(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLastModify)))
+		s.Where(sql.NotNull(s.C(FieldLastModifier)))
 	})
 }
 

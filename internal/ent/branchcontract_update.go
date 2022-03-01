@@ -68,15 +68,15 @@ func (bcu *BranchContractUpdate) ClearCreator() *BranchContractUpdate {
 	return bcu
 }
 
-// SetLastModify sets the "last_modify" field.
-func (bcu *BranchContractUpdate) SetLastModify(m *model.Modifier) *BranchContractUpdate {
-	bcu.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (bcu *BranchContractUpdate) SetLastModifier(m *model.Modifier) *BranchContractUpdate {
+	bcu.mutation.SetLastModifier(m)
 	return bcu
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (bcu *BranchContractUpdate) ClearLastModify() *BranchContractUpdate {
-	bcu.mutation.ClearLastModify()
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (bcu *BranchContractUpdate) ClearLastModifier() *BranchContractUpdate {
+	bcu.mutation.ClearLastModifier()
 	return bcu
 }
 
@@ -376,17 +376,17 @@ func (bcu *BranchContractUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: branchcontract.FieldCreator,
 		})
 	}
-	if value, ok := bcu.mutation.LastModify(); ok {
+	if value, ok := bcu.mutation.LastModifier(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: branchcontract.FieldLastModify,
+			Column: branchcontract.FieldLastModifier,
 		})
 	}
-	if bcu.mutation.LastModifyCleared() {
+	if bcu.mutation.LastModifierCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: branchcontract.FieldLastModify,
+			Column: branchcontract.FieldLastModifier,
 		})
 	}
 	if value, ok := bcu.mutation.Remark(); ok {
@@ -634,15 +634,15 @@ func (bcuo *BranchContractUpdateOne) ClearCreator() *BranchContractUpdateOne {
 	return bcuo
 }
 
-// SetLastModify sets the "last_modify" field.
-func (bcuo *BranchContractUpdateOne) SetLastModify(m *model.Modifier) *BranchContractUpdateOne {
-	bcuo.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (bcuo *BranchContractUpdateOne) SetLastModifier(m *model.Modifier) *BranchContractUpdateOne {
+	bcuo.mutation.SetLastModifier(m)
 	return bcuo
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (bcuo *BranchContractUpdateOne) ClearLastModify() *BranchContractUpdateOne {
-	bcuo.mutation.ClearLastModify()
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (bcuo *BranchContractUpdateOne) ClearLastModifier() *BranchContractUpdateOne {
+	bcuo.mutation.ClearLastModifier()
 	return bcuo
 }
 
@@ -966,17 +966,17 @@ func (bcuo *BranchContractUpdateOne) sqlSave(ctx context.Context) (_node *Branch
 			Column: branchcontract.FieldCreator,
 		})
 	}
-	if value, ok := bcuo.mutation.LastModify(); ok {
+	if value, ok := bcuo.mutation.LastModifier(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: branchcontract.FieldLastModify,
+			Column: branchcontract.FieldLastModifier,
 		})
 	}
-	if bcuo.mutation.LastModifyCleared() {
+	if bcuo.mutation.LastModifierCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: branchcontract.FieldLastModify,
+			Column: branchcontract.FieldLastModifier,
 		})
 	}
 	if value, ok := bcuo.mutation.Remark(); ok {

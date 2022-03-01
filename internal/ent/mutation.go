@@ -52,7 +52,7 @@ type BranchMutation struct {
 	updated_at       *time.Time
 	deleted_at       *time.Time
 	creator          **model.Modifier
-	last_modify      **model.Modifier
+	last_modifier    **model.Modifier
 	remark           *string
 	city_id          *uint64
 	addcity_id       *int64
@@ -340,53 +340,53 @@ func (m *BranchMutation) ResetCreator() {
 	delete(m.clearedFields, branch.FieldCreator)
 }
 
-// SetLastModify sets the "last_modify" field.
-func (m *BranchMutation) SetLastModify(value *model.Modifier) {
-	m.last_modify = &value
+// SetLastModifier sets the "last_modifier" field.
+func (m *BranchMutation) SetLastModifier(value *model.Modifier) {
+	m.last_modifier = &value
 }
 
-// LastModify returns the value of the "last_modify" field in the mutation.
-func (m *BranchMutation) LastModify() (r *model.Modifier, exists bool) {
-	v := m.last_modify
+// LastModifier returns the value of the "last_modifier" field in the mutation.
+func (m *BranchMutation) LastModifier() (r *model.Modifier, exists bool) {
+	v := m.last_modifier
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldLastModify returns the old "last_modify" field's value of the Branch entity.
+// OldLastModifier returns the old "last_modifier" field's value of the Branch entity.
 // If the Branch object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BranchMutation) OldLastModify(ctx context.Context) (v *model.Modifier, err error) {
+func (m *BranchMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastModify is only allowed on UpdateOne operations")
+		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastModify requires an ID field in the mutation")
+		return v, errors.New("OldLastModifier requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastModify: %w", err)
+		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
 	}
-	return oldValue.LastModify, nil
+	return oldValue.LastModifier, nil
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (m *BranchMutation) ClearLastModify() {
-	m.last_modify = nil
-	m.clearedFields[branch.FieldLastModify] = struct{}{}
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (m *BranchMutation) ClearLastModifier() {
+	m.last_modifier = nil
+	m.clearedFields[branch.FieldLastModifier] = struct{}{}
 }
 
-// LastModifyCleared returns if the "last_modify" field was cleared in this mutation.
-func (m *BranchMutation) LastModifyCleared() bool {
-	_, ok := m.clearedFields[branch.FieldLastModify]
+// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
+func (m *BranchMutation) LastModifierCleared() bool {
+	_, ok := m.clearedFields[branch.FieldLastModifier]
 	return ok
 }
 
-// ResetLastModify resets all changes to the "last_modify" field.
-func (m *BranchMutation) ResetLastModify() {
-	m.last_modify = nil
-	delete(m.clearedFields, branch.FieldLastModify)
+// ResetLastModifier resets all changes to the "last_modifier" field.
+func (m *BranchMutation) ResetLastModifier() {
+	m.last_modifier = nil
+	delete(m.clearedFields, branch.FieldLastModifier)
 }
 
 // SetRemark sets the "remark" field.
@@ -800,8 +800,8 @@ func (m *BranchMutation) Fields() []string {
 	if m.creator != nil {
 		fields = append(fields, branch.FieldCreator)
 	}
-	if m.last_modify != nil {
-		fields = append(fields, branch.FieldLastModify)
+	if m.last_modifier != nil {
+		fields = append(fields, branch.FieldLastModifier)
 	}
 	if m.remark != nil {
 		fields = append(fields, branch.FieldRemark)
@@ -840,8 +840,8 @@ func (m *BranchMutation) Field(name string) (ent.Value, bool) {
 		return m.DeletedAt()
 	case branch.FieldCreator:
 		return m.Creator()
-	case branch.FieldLastModify:
-		return m.LastModify()
+	case branch.FieldLastModifier:
+		return m.LastModifier()
 	case branch.FieldRemark:
 		return m.Remark()
 	case branch.FieldCityID:
@@ -873,8 +873,8 @@ func (m *BranchMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldDeletedAt(ctx)
 	case branch.FieldCreator:
 		return m.OldCreator(ctx)
-	case branch.FieldLastModify:
-		return m.OldLastModify(ctx)
+	case branch.FieldLastModifier:
+		return m.OldLastModifier(ctx)
 	case branch.FieldRemark:
 		return m.OldRemark(ctx)
 	case branch.FieldCityID:
@@ -926,12 +926,12 @@ func (m *BranchMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCreator(v)
 		return nil
-	case branch.FieldLastModify:
+	case branch.FieldLastModifier:
 		v, ok := value.(*model.Modifier)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetLastModify(v)
+		m.SetLastModifier(v)
 		return nil
 	case branch.FieldRemark:
 		v, ok := value.(string)
@@ -1057,8 +1057,8 @@ func (m *BranchMutation) ClearedFields() []string {
 	if m.FieldCleared(branch.FieldCreator) {
 		fields = append(fields, branch.FieldCreator)
 	}
-	if m.FieldCleared(branch.FieldLastModify) {
-		fields = append(fields, branch.FieldLastModify)
+	if m.FieldCleared(branch.FieldLastModifier) {
+		fields = append(fields, branch.FieldLastModifier)
 	}
 	if m.FieldCleared(branch.FieldRemark) {
 		fields = append(fields, branch.FieldRemark)
@@ -1083,8 +1083,8 @@ func (m *BranchMutation) ClearField(name string) error {
 	case branch.FieldCreator:
 		m.ClearCreator()
 		return nil
-	case branch.FieldLastModify:
-		m.ClearLastModify()
+	case branch.FieldLastModifier:
+		m.ClearLastModifier()
 		return nil
 	case branch.FieldRemark:
 		m.ClearRemark()
@@ -1109,8 +1109,8 @@ func (m *BranchMutation) ResetField(name string) error {
 	case branch.FieldCreator:
 		m.ResetCreator()
 		return nil
-	case branch.FieldLastModify:
-		m.ResetLastModify()
+	case branch.FieldLastModifier:
+		m.ResetLastModifier()
 		return nil
 	case branch.FieldRemark:
 		m.ResetRemark()
@@ -1231,7 +1231,7 @@ type BranchContractMutation struct {
 	updated_at            *time.Time
 	deleted_at            *time.Time
 	creator               **model.Modifier
-	last_modify           **model.Modifier
+	last_modifier         **model.Modifier
 	remark                *string
 	landlord_name         *string
 	id_card_number        *string
@@ -1529,53 +1529,53 @@ func (m *BranchContractMutation) ResetCreator() {
 	delete(m.clearedFields, branchcontract.FieldCreator)
 }
 
-// SetLastModify sets the "last_modify" field.
-func (m *BranchContractMutation) SetLastModify(value *model.Modifier) {
-	m.last_modify = &value
+// SetLastModifier sets the "last_modifier" field.
+func (m *BranchContractMutation) SetLastModifier(value *model.Modifier) {
+	m.last_modifier = &value
 }
 
-// LastModify returns the value of the "last_modify" field in the mutation.
-func (m *BranchContractMutation) LastModify() (r *model.Modifier, exists bool) {
-	v := m.last_modify
+// LastModifier returns the value of the "last_modifier" field in the mutation.
+func (m *BranchContractMutation) LastModifier() (r *model.Modifier, exists bool) {
+	v := m.last_modifier
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldLastModify returns the old "last_modify" field's value of the BranchContract entity.
+// OldLastModifier returns the old "last_modifier" field's value of the BranchContract entity.
 // If the BranchContract object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BranchContractMutation) OldLastModify(ctx context.Context) (v *model.Modifier, err error) {
+func (m *BranchContractMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastModify is only allowed on UpdateOne operations")
+		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastModify requires an ID field in the mutation")
+		return v, errors.New("OldLastModifier requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastModify: %w", err)
+		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
 	}
-	return oldValue.LastModify, nil
+	return oldValue.LastModifier, nil
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (m *BranchContractMutation) ClearLastModify() {
-	m.last_modify = nil
-	m.clearedFields[branchcontract.FieldLastModify] = struct{}{}
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (m *BranchContractMutation) ClearLastModifier() {
+	m.last_modifier = nil
+	m.clearedFields[branchcontract.FieldLastModifier] = struct{}{}
 }
 
-// LastModifyCleared returns if the "last_modify" field was cleared in this mutation.
-func (m *BranchContractMutation) LastModifyCleared() bool {
-	_, ok := m.clearedFields[branchcontract.FieldLastModify]
+// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
+func (m *BranchContractMutation) LastModifierCleared() bool {
+	_, ok := m.clearedFields[branchcontract.FieldLastModifier]
 	return ok
 }
 
-// ResetLastModify resets all changes to the "last_modify" field.
-func (m *BranchContractMutation) ResetLastModify() {
-	m.last_modify = nil
-	delete(m.clearedFields, branchcontract.FieldLastModify)
+// ResetLastModifier resets all changes to the "last_modifier" field.
+func (m *BranchContractMutation) ResetLastModifier() {
+	m.last_modifier = nil
+	delete(m.clearedFields, branchcontract.FieldLastModifier)
 }
 
 // SetRemark sets the "remark" field.
@@ -2345,8 +2345,8 @@ func (m *BranchContractMutation) Fields() []string {
 	if m.creator != nil {
 		fields = append(fields, branchcontract.FieldCreator)
 	}
-	if m.last_modify != nil {
-		fields = append(fields, branchcontract.FieldLastModify)
+	if m.last_modifier != nil {
+		fields = append(fields, branchcontract.FieldLastModifier)
 	}
 	if m.remark != nil {
 		fields = append(fields, branchcontract.FieldRemark)
@@ -2412,8 +2412,8 @@ func (m *BranchContractMutation) Field(name string) (ent.Value, bool) {
 		return m.DeletedAt()
 	case branchcontract.FieldCreator:
 		return m.Creator()
-	case branchcontract.FieldLastModify:
-		return m.LastModify()
+	case branchcontract.FieldLastModifier:
+		return m.LastModifier()
 	case branchcontract.FieldRemark:
 		return m.Remark()
 	case branchcontract.FieldBranchID:
@@ -2463,8 +2463,8 @@ func (m *BranchContractMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldDeletedAt(ctx)
 	case branchcontract.FieldCreator:
 		return m.OldCreator(ctx)
-	case branchcontract.FieldLastModify:
-		return m.OldLastModify(ctx)
+	case branchcontract.FieldLastModifier:
+		return m.OldLastModifier(ctx)
 	case branchcontract.FieldRemark:
 		return m.OldRemark(ctx)
 	case branchcontract.FieldBranchID:
@@ -2534,12 +2534,12 @@ func (m *BranchContractMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCreator(v)
 		return nil
-	case branchcontract.FieldLastModify:
+	case branchcontract.FieldLastModifier:
 		v, ok := value.(*model.Modifier)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetLastModify(v)
+		m.SetLastModifier(v)
 		return nil
 	case branchcontract.FieldRemark:
 		v, ok := value.(string)
@@ -2764,8 +2764,8 @@ func (m *BranchContractMutation) ClearedFields() []string {
 	if m.FieldCleared(branchcontract.FieldCreator) {
 		fields = append(fields, branchcontract.FieldCreator)
 	}
-	if m.FieldCleared(branchcontract.FieldLastModify) {
-		fields = append(fields, branchcontract.FieldLastModify)
+	if m.FieldCleared(branchcontract.FieldLastModifier) {
+		fields = append(fields, branchcontract.FieldLastModifier)
 	}
 	if m.FieldCleared(branchcontract.FieldRemark) {
 		fields = append(fields, branchcontract.FieldRemark)
@@ -2790,8 +2790,8 @@ func (m *BranchContractMutation) ClearField(name string) error {
 	case branchcontract.FieldCreator:
 		m.ClearCreator()
 		return nil
-	case branchcontract.FieldLastModify:
-		m.ClearLastModify()
+	case branchcontract.FieldLastModifier:
+		m.ClearLastModifier()
 		return nil
 	case branchcontract.FieldRemark:
 		m.ClearRemark()
@@ -2816,8 +2816,8 @@ func (m *BranchContractMutation) ResetField(name string) error {
 	case branchcontract.FieldCreator:
 		m.ResetCreator()
 		return nil
-	case branchcontract.FieldLastModify:
-		m.ResetLastModify()
+	case branchcontract.FieldLastModifier:
+		m.ResetLastModifier()
 		return nil
 	case branchcontract.FieldRemark:
 		m.ResetRemark()
@@ -2956,7 +2956,7 @@ type CityMutation struct {
 	created_at      *time.Time
 	updated_at      *time.Time
 	deleted_at      *time.Time
-	last_modify     **model.Modifier
+	last_modifier   **model.Modifier
 	remark          *string
 	open            *bool
 	name            *string
@@ -3197,53 +3197,53 @@ func (m *CityMutation) ResetDeletedAt() {
 	delete(m.clearedFields, city.FieldDeletedAt)
 }
 
-// SetLastModify sets the "last_modify" field.
-func (m *CityMutation) SetLastModify(value *model.Modifier) {
-	m.last_modify = &value
+// SetLastModifier sets the "last_modifier" field.
+func (m *CityMutation) SetLastModifier(value *model.Modifier) {
+	m.last_modifier = &value
 }
 
-// LastModify returns the value of the "last_modify" field in the mutation.
-func (m *CityMutation) LastModify() (r *model.Modifier, exists bool) {
-	v := m.last_modify
+// LastModifier returns the value of the "last_modifier" field in the mutation.
+func (m *CityMutation) LastModifier() (r *model.Modifier, exists bool) {
+	v := m.last_modifier
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldLastModify returns the old "last_modify" field's value of the City entity.
+// OldLastModifier returns the old "last_modifier" field's value of the City entity.
 // If the City object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CityMutation) OldLastModify(ctx context.Context) (v *model.Modifier, err error) {
+func (m *CityMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastModify is only allowed on UpdateOne operations")
+		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastModify requires an ID field in the mutation")
+		return v, errors.New("OldLastModifier requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastModify: %w", err)
+		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
 	}
-	return oldValue.LastModify, nil
+	return oldValue.LastModifier, nil
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (m *CityMutation) ClearLastModify() {
-	m.last_modify = nil
-	m.clearedFields[city.FieldLastModify] = struct{}{}
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (m *CityMutation) ClearLastModifier() {
+	m.last_modifier = nil
+	m.clearedFields[city.FieldLastModifier] = struct{}{}
 }
 
-// LastModifyCleared returns if the "last_modify" field was cleared in this mutation.
-func (m *CityMutation) LastModifyCleared() bool {
-	_, ok := m.clearedFields[city.FieldLastModify]
+// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
+func (m *CityMutation) LastModifierCleared() bool {
+	_, ok := m.clearedFields[city.FieldLastModifier]
 	return ok
 }
 
-// ResetLastModify resets all changes to the "last_modify" field.
-func (m *CityMutation) ResetLastModify() {
-	m.last_modify = nil
-	delete(m.clearedFields, city.FieldLastModify)
+// ResetLastModifier resets all changes to the "last_modifier" field.
+func (m *CityMutation) ResetLastModifier() {
+	m.last_modifier = nil
+	delete(m.clearedFields, city.FieldLastModifier)
 }
 
 // SetRemark sets the "remark" field.
@@ -3574,8 +3574,8 @@ func (m *CityMutation) Fields() []string {
 	if m.deleted_at != nil {
 		fields = append(fields, city.FieldDeletedAt)
 	}
-	if m.last_modify != nil {
-		fields = append(fields, city.FieldLastModify)
+	if m.last_modifier != nil {
+		fields = append(fields, city.FieldLastModifier)
 	}
 	if m.remark != nil {
 		fields = append(fields, city.FieldRemark)
@@ -3606,8 +3606,8 @@ func (m *CityMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case city.FieldDeletedAt:
 		return m.DeletedAt()
-	case city.FieldLastModify:
-		return m.LastModify()
+	case city.FieldLastModifier:
+		return m.LastModifier()
 	case city.FieldRemark:
 		return m.Remark()
 	case city.FieldOpen:
@@ -3633,8 +3633,8 @@ func (m *CityMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldUpdatedAt(ctx)
 	case city.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case city.FieldLastModify:
-		return m.OldLastModify(ctx)
+	case city.FieldLastModifier:
+		return m.OldLastModifier(ctx)
 	case city.FieldRemark:
 		return m.OldRemark(ctx)
 	case city.FieldOpen:
@@ -3675,12 +3675,12 @@ func (m *CityMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case city.FieldLastModify:
+	case city.FieldLastModifier:
 		v, ok := value.(*model.Modifier)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetLastModify(v)
+		m.SetLastModifier(v)
 		return nil
 	case city.FieldRemark:
 		v, ok := value.(string)
@@ -3753,8 +3753,8 @@ func (m *CityMutation) ClearedFields() []string {
 	if m.FieldCleared(city.FieldDeletedAt) {
 		fields = append(fields, city.FieldDeletedAt)
 	}
-	if m.FieldCleared(city.FieldLastModify) {
-		fields = append(fields, city.FieldLastModify)
+	if m.FieldCleared(city.FieldLastModifier) {
+		fields = append(fields, city.FieldLastModifier)
 	}
 	if m.FieldCleared(city.FieldRemark) {
 		fields = append(fields, city.FieldRemark)
@@ -3782,8 +3782,8 @@ func (m *CityMutation) ClearField(name string) error {
 	case city.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
-	case city.FieldLastModify:
-		m.ClearLastModify()
+	case city.FieldLastModifier:
+		m.ClearLastModifier()
 		return nil
 	case city.FieldRemark:
 		m.ClearRemark()
@@ -3811,8 +3811,8 @@ func (m *CityMutation) ResetField(name string) error {
 	case city.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case city.FieldLastModify:
-		m.ResetLastModify()
+	case city.FieldLastModifier:
+		m.ResetLastModifier()
 		return nil
 	case city.FieldRemark:
 		m.ResetRemark()
@@ -3944,7 +3944,7 @@ type ContractMutation struct {
 	created_at    *time.Time
 	updated_at    *time.Time
 	deleted_at    *time.Time
-	last_modify   **model.Modifier
+	last_modifier **model.Modifier
 	remark        *string
 	status        *uint8
 	addstatus     *int8
@@ -4178,53 +4178,53 @@ func (m *ContractMutation) ResetDeletedAt() {
 	delete(m.clearedFields, contract.FieldDeletedAt)
 }
 
-// SetLastModify sets the "last_modify" field.
-func (m *ContractMutation) SetLastModify(value *model.Modifier) {
-	m.last_modify = &value
+// SetLastModifier sets the "last_modifier" field.
+func (m *ContractMutation) SetLastModifier(value *model.Modifier) {
+	m.last_modifier = &value
 }
 
-// LastModify returns the value of the "last_modify" field in the mutation.
-func (m *ContractMutation) LastModify() (r *model.Modifier, exists bool) {
-	v := m.last_modify
+// LastModifier returns the value of the "last_modifier" field in the mutation.
+func (m *ContractMutation) LastModifier() (r *model.Modifier, exists bool) {
+	v := m.last_modifier
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldLastModify returns the old "last_modify" field's value of the Contract entity.
+// OldLastModifier returns the old "last_modifier" field's value of the Contract entity.
 // If the Contract object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ContractMutation) OldLastModify(ctx context.Context) (v *model.Modifier, err error) {
+func (m *ContractMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastModify is only allowed on UpdateOne operations")
+		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastModify requires an ID field in the mutation")
+		return v, errors.New("OldLastModifier requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastModify: %w", err)
+		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
 	}
-	return oldValue.LastModify, nil
+	return oldValue.LastModifier, nil
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (m *ContractMutation) ClearLastModify() {
-	m.last_modify = nil
-	m.clearedFields[contract.FieldLastModify] = struct{}{}
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (m *ContractMutation) ClearLastModifier() {
+	m.last_modifier = nil
+	m.clearedFields[contract.FieldLastModifier] = struct{}{}
 }
 
-// LastModifyCleared returns if the "last_modify" field was cleared in this mutation.
-func (m *ContractMutation) LastModifyCleared() bool {
-	_, ok := m.clearedFields[contract.FieldLastModify]
+// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
+func (m *ContractMutation) LastModifierCleared() bool {
+	_, ok := m.clearedFields[contract.FieldLastModifier]
 	return ok
 }
 
-// ResetLastModify resets all changes to the "last_modify" field.
-func (m *ContractMutation) ResetLastModify() {
-	m.last_modify = nil
-	delete(m.clearedFields, contract.FieldLastModify)
+// ResetLastModifier resets all changes to the "last_modifier" field.
+func (m *ContractMutation) ResetLastModifier() {
+	m.last_modifier = nil
+	delete(m.clearedFields, contract.FieldLastModifier)
 }
 
 // SetRemark sets the "remark" field.
@@ -4544,8 +4544,8 @@ func (m *ContractMutation) Fields() []string {
 	if m.deleted_at != nil {
 		fields = append(fields, contract.FieldDeletedAt)
 	}
-	if m.last_modify != nil {
-		fields = append(fields, contract.FieldLastModify)
+	if m.last_modifier != nil {
+		fields = append(fields, contract.FieldLastModifier)
 	}
 	if m.remark != nil {
 		fields = append(fields, contract.FieldRemark)
@@ -4579,8 +4579,8 @@ func (m *ContractMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case contract.FieldDeletedAt:
 		return m.DeletedAt()
-	case contract.FieldLastModify:
-		return m.LastModify()
+	case contract.FieldLastModifier:
+		return m.LastModifier()
 	case contract.FieldRemark:
 		return m.Remark()
 	case contract.FieldStatus:
@@ -4608,8 +4608,8 @@ func (m *ContractMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldUpdatedAt(ctx)
 	case contract.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case contract.FieldLastModify:
-		return m.OldLastModify(ctx)
+	case contract.FieldLastModifier:
+		return m.OldLastModifier(ctx)
 	case contract.FieldRemark:
 		return m.OldRemark(ctx)
 	case contract.FieldStatus:
@@ -4652,12 +4652,12 @@ func (m *ContractMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case contract.FieldLastModify:
+	case contract.FieldLastModifier:
 		v, ok := value.(*model.Modifier)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetLastModify(v)
+		m.SetLastModifier(v)
 		return nil
 	case contract.FieldRemark:
 		v, ok := value.(string)
@@ -4749,8 +4749,8 @@ func (m *ContractMutation) ClearedFields() []string {
 	if m.FieldCleared(contract.FieldDeletedAt) {
 		fields = append(fields, contract.FieldDeletedAt)
 	}
-	if m.FieldCleared(contract.FieldLastModify) {
-		fields = append(fields, contract.FieldLastModify)
+	if m.FieldCleared(contract.FieldLastModifier) {
+		fields = append(fields, contract.FieldLastModifier)
 	}
 	if m.FieldCleared(contract.FieldRemark) {
 		fields = append(fields, contract.FieldRemark)
@@ -4775,8 +4775,8 @@ func (m *ContractMutation) ClearField(name string) error {
 	case contract.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
-	case contract.FieldLastModify:
-		m.ClearLastModify()
+	case contract.FieldLastModifier:
+		m.ClearLastModifier()
 		return nil
 	case contract.FieldRemark:
 		m.ClearRemark()
@@ -4801,8 +4801,8 @@ func (m *ContractMutation) ResetField(name string) error {
 	case contract.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case contract.FieldLastModify:
-		m.ResetLastModify()
+	case contract.FieldLastModifier:
+		m.ResetLastModifier()
 		return nil
 	case contract.FieldRemark:
 		m.ResetRemark()
@@ -4911,7 +4911,7 @@ type ManagerMutation struct {
 	created_at     *time.Time
 	updated_at     *time.Time
 	deleted_at     *time.Time
-	last_modify    **model.Modifier
+	last_modifier  **model.Modifier
 	remark         *string
 	phone          *string
 	name           *string
@@ -5142,53 +5142,53 @@ func (m *ManagerMutation) ResetDeletedAt() {
 	delete(m.clearedFields, manager.FieldDeletedAt)
 }
 
-// SetLastModify sets the "last_modify" field.
-func (m *ManagerMutation) SetLastModify(value *model.Modifier) {
-	m.last_modify = &value
+// SetLastModifier sets the "last_modifier" field.
+func (m *ManagerMutation) SetLastModifier(value *model.Modifier) {
+	m.last_modifier = &value
 }
 
-// LastModify returns the value of the "last_modify" field in the mutation.
-func (m *ManagerMutation) LastModify() (r *model.Modifier, exists bool) {
-	v := m.last_modify
+// LastModifier returns the value of the "last_modifier" field in the mutation.
+func (m *ManagerMutation) LastModifier() (r *model.Modifier, exists bool) {
+	v := m.last_modifier
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldLastModify returns the old "last_modify" field's value of the Manager entity.
+// OldLastModifier returns the old "last_modifier" field's value of the Manager entity.
 // If the Manager object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ManagerMutation) OldLastModify(ctx context.Context) (v *model.Modifier, err error) {
+func (m *ManagerMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastModify is only allowed on UpdateOne operations")
+		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastModify requires an ID field in the mutation")
+		return v, errors.New("OldLastModifier requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastModify: %w", err)
+		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
 	}
-	return oldValue.LastModify, nil
+	return oldValue.LastModifier, nil
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (m *ManagerMutation) ClearLastModify() {
-	m.last_modify = nil
-	m.clearedFields[manager.FieldLastModify] = struct{}{}
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (m *ManagerMutation) ClearLastModifier() {
+	m.last_modifier = nil
+	m.clearedFields[manager.FieldLastModifier] = struct{}{}
 }
 
-// LastModifyCleared returns if the "last_modify" field was cleared in this mutation.
-func (m *ManagerMutation) LastModifyCleared() bool {
-	_, ok := m.clearedFields[manager.FieldLastModify]
+// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
+func (m *ManagerMutation) LastModifierCleared() bool {
+	_, ok := m.clearedFields[manager.FieldLastModifier]
 	return ok
 }
 
-// ResetLastModify resets all changes to the "last_modify" field.
-func (m *ManagerMutation) ResetLastModify() {
-	m.last_modify = nil
-	delete(m.clearedFields, manager.FieldLastModify)
+// ResetLastModifier resets all changes to the "last_modifier" field.
+func (m *ManagerMutation) ResetLastModifier() {
+	m.last_modifier = nil
+	delete(m.clearedFields, manager.FieldLastModifier)
 }
 
 // SetRemark sets the "remark" field.
@@ -5426,8 +5426,8 @@ func (m *ManagerMutation) Fields() []string {
 	if m.deleted_at != nil {
 		fields = append(fields, manager.FieldDeletedAt)
 	}
-	if m.last_modify != nil {
-		fields = append(fields, manager.FieldLastModify)
+	if m.last_modifier != nil {
+		fields = append(fields, manager.FieldLastModifier)
 	}
 	if m.remark != nil {
 		fields = append(fields, manager.FieldRemark)
@@ -5458,8 +5458,8 @@ func (m *ManagerMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case manager.FieldDeletedAt:
 		return m.DeletedAt()
-	case manager.FieldLastModify:
-		return m.LastModify()
+	case manager.FieldLastModifier:
+		return m.LastModifier()
 	case manager.FieldRemark:
 		return m.Remark()
 	case manager.FieldPhone:
@@ -5485,8 +5485,8 @@ func (m *ManagerMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldUpdatedAt(ctx)
 	case manager.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case manager.FieldLastModify:
-		return m.OldLastModify(ctx)
+	case manager.FieldLastModifier:
+		return m.OldLastModifier(ctx)
 	case manager.FieldRemark:
 		return m.OldRemark(ctx)
 	case manager.FieldPhone:
@@ -5527,12 +5527,12 @@ func (m *ManagerMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case manager.FieldLastModify:
+	case manager.FieldLastModifier:
 		v, ok := value.(*model.Modifier)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetLastModify(v)
+		m.SetLastModifier(v)
 		return nil
 	case manager.FieldRemark:
 		v, ok := value.(string)
@@ -5602,8 +5602,8 @@ func (m *ManagerMutation) ClearedFields() []string {
 	if m.FieldCleared(manager.FieldDeletedAt) {
 		fields = append(fields, manager.FieldDeletedAt)
 	}
-	if m.FieldCleared(manager.FieldLastModify) {
-		fields = append(fields, manager.FieldLastModify)
+	if m.FieldCleared(manager.FieldLastModifier) {
+		fields = append(fields, manager.FieldLastModifier)
 	}
 	if m.FieldCleared(manager.FieldRemark) {
 		fields = append(fields, manager.FieldRemark)
@@ -5628,8 +5628,8 @@ func (m *ManagerMutation) ClearField(name string) error {
 	case manager.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
-	case manager.FieldLastModify:
-		m.ClearLastModify()
+	case manager.FieldLastModifier:
+		m.ClearLastModifier()
 		return nil
 	case manager.FieldRemark:
 		m.ClearRemark()
@@ -5654,8 +5654,8 @@ func (m *ManagerMutation) ResetField(name string) error {
 	case manager.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case manager.FieldLastModify:
-		m.ResetLastModify()
+	case manager.FieldLastModifier:
+		m.ResetLastModifier()
 		return nil
 	case manager.FieldRemark:
 		m.ResetRemark()
@@ -5733,7 +5733,7 @@ type PersonMutation struct {
 	created_at       *time.Time
 	updated_at       *time.Time
 	deleted_at       *time.Time
-	last_modify      **model.Modifier
+	last_modifier    **model.Modifier
 	remark           *string
 	status           *uint8
 	addstatus        *int8
@@ -5975,53 +5975,53 @@ func (m *PersonMutation) ResetDeletedAt() {
 	delete(m.clearedFields, person.FieldDeletedAt)
 }
 
-// SetLastModify sets the "last_modify" field.
-func (m *PersonMutation) SetLastModify(value *model.Modifier) {
-	m.last_modify = &value
+// SetLastModifier sets the "last_modifier" field.
+func (m *PersonMutation) SetLastModifier(value *model.Modifier) {
+	m.last_modifier = &value
 }
 
-// LastModify returns the value of the "last_modify" field in the mutation.
-func (m *PersonMutation) LastModify() (r *model.Modifier, exists bool) {
-	v := m.last_modify
+// LastModifier returns the value of the "last_modifier" field in the mutation.
+func (m *PersonMutation) LastModifier() (r *model.Modifier, exists bool) {
+	v := m.last_modifier
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldLastModify returns the old "last_modify" field's value of the Person entity.
+// OldLastModifier returns the old "last_modifier" field's value of the Person entity.
 // If the Person object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldLastModify(ctx context.Context) (v *model.Modifier, err error) {
+func (m *PersonMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastModify is only allowed on UpdateOne operations")
+		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastModify requires an ID field in the mutation")
+		return v, errors.New("OldLastModifier requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastModify: %w", err)
+		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
 	}
-	return oldValue.LastModify, nil
+	return oldValue.LastModifier, nil
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (m *PersonMutation) ClearLastModify() {
-	m.last_modify = nil
-	m.clearedFields[person.FieldLastModify] = struct{}{}
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (m *PersonMutation) ClearLastModifier() {
+	m.last_modifier = nil
+	m.clearedFields[person.FieldLastModifier] = struct{}{}
 }
 
-// LastModifyCleared returns if the "last_modify" field was cleared in this mutation.
-func (m *PersonMutation) LastModifyCleared() bool {
-	_, ok := m.clearedFields[person.FieldLastModify]
+// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
+func (m *PersonMutation) LastModifierCleared() bool {
+	_, ok := m.clearedFields[person.FieldLastModifier]
 	return ok
 }
 
-// ResetLastModify resets all changes to the "last_modify" field.
-func (m *PersonMutation) ResetLastModify() {
-	m.last_modify = nil
-	delete(m.clearedFields, person.FieldLastModify)
+// ResetLastModifier resets all changes to the "last_modifier" field.
+func (m *PersonMutation) ResetLastModifier() {
+	m.last_modifier = nil
+	delete(m.clearedFields, person.FieldLastModifier)
 }
 
 // SetRemark sets the "remark" field.
@@ -6582,8 +6582,8 @@ func (m *PersonMutation) Fields() []string {
 	if m.deleted_at != nil {
 		fields = append(fields, person.FieldDeletedAt)
 	}
-	if m.last_modify != nil {
-		fields = append(fields, person.FieldLastModify)
+	if m.last_modifier != nil {
+		fields = append(fields, person.FieldLastModifier)
 	}
 	if m.remark != nil {
 		fields = append(fields, person.FieldRemark)
@@ -6632,8 +6632,8 @@ func (m *PersonMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case person.FieldDeletedAt:
 		return m.DeletedAt()
-	case person.FieldLastModify:
-		return m.LastModify()
+	case person.FieldLastModifier:
+		return m.LastModifier()
 	case person.FieldRemark:
 		return m.Remark()
 	case person.FieldStatus:
@@ -6671,8 +6671,8 @@ func (m *PersonMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldUpdatedAt(ctx)
 	case person.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case person.FieldLastModify:
-		return m.OldLastModify(ctx)
+	case person.FieldLastModifier:
+		return m.OldLastModifier(ctx)
 	case person.FieldRemark:
 		return m.OldRemark(ctx)
 	case person.FieldStatus:
@@ -6725,12 +6725,12 @@ func (m *PersonMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case person.FieldLastModify:
+	case person.FieldLastModifier:
 		v, ok := value.(*model.Modifier)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetLastModify(v)
+		m.SetLastModifier(v)
 		return nil
 	case person.FieldRemark:
 		v, ok := value.(string)
@@ -6869,8 +6869,8 @@ func (m *PersonMutation) ClearedFields() []string {
 	if m.FieldCleared(person.FieldDeletedAt) {
 		fields = append(fields, person.FieldDeletedAt)
 	}
-	if m.FieldCleared(person.FieldLastModify) {
-		fields = append(fields, person.FieldLastModify)
+	if m.FieldCleared(person.FieldLastModifier) {
+		fields = append(fields, person.FieldLastModifier)
 	}
 	if m.FieldCleared(person.FieldRemark) {
 		fields = append(fields, person.FieldRemark)
@@ -6898,8 +6898,8 @@ func (m *PersonMutation) ClearField(name string) error {
 	case person.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
-	case person.FieldLastModify:
-		m.ClearLastModify()
+	case person.FieldLastModifier:
+		m.ClearLastModifier()
 		return nil
 	case person.FieldRemark:
 		m.ClearRemark()
@@ -6927,8 +6927,8 @@ func (m *PersonMutation) ResetField(name string) error {
 	case person.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case person.FieldLastModify:
-		m.ResetLastModify()
+	case person.FieldLastModifier:
+		m.ResetLastModifier()
 		return nil
 	case person.FieldRemark:
 		m.ResetRemark()
@@ -7060,7 +7060,7 @@ type RiderMutation struct {
 	created_at       *time.Time
 	updated_at       *time.Time
 	deleted_at       *time.Time
-	last_modify      **model.Modifier
+	last_modifier    **model.Modifier
 	remark           *string
 	group_id         *uint64
 	addgroup_id      *int64
@@ -7304,53 +7304,53 @@ func (m *RiderMutation) ResetDeletedAt() {
 	delete(m.clearedFields, rider.FieldDeletedAt)
 }
 
-// SetLastModify sets the "last_modify" field.
-func (m *RiderMutation) SetLastModify(value *model.Modifier) {
-	m.last_modify = &value
+// SetLastModifier sets the "last_modifier" field.
+func (m *RiderMutation) SetLastModifier(value *model.Modifier) {
+	m.last_modifier = &value
 }
 
-// LastModify returns the value of the "last_modify" field in the mutation.
-func (m *RiderMutation) LastModify() (r *model.Modifier, exists bool) {
-	v := m.last_modify
+// LastModifier returns the value of the "last_modifier" field in the mutation.
+func (m *RiderMutation) LastModifier() (r *model.Modifier, exists bool) {
+	v := m.last_modifier
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldLastModify returns the old "last_modify" field's value of the Rider entity.
+// OldLastModifier returns the old "last_modifier" field's value of the Rider entity.
 // If the Rider object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RiderMutation) OldLastModify(ctx context.Context) (v *model.Modifier, err error) {
+func (m *RiderMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastModify is only allowed on UpdateOne operations")
+		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastModify requires an ID field in the mutation")
+		return v, errors.New("OldLastModifier requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastModify: %w", err)
+		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
 	}
-	return oldValue.LastModify, nil
+	return oldValue.LastModifier, nil
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (m *RiderMutation) ClearLastModify() {
-	m.last_modify = nil
-	m.clearedFields[rider.FieldLastModify] = struct{}{}
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (m *RiderMutation) ClearLastModifier() {
+	m.last_modifier = nil
+	m.clearedFields[rider.FieldLastModifier] = struct{}{}
 }
 
-// LastModifyCleared returns if the "last_modify" field was cleared in this mutation.
-func (m *RiderMutation) LastModifyCleared() bool {
-	_, ok := m.clearedFields[rider.FieldLastModify]
+// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
+func (m *RiderMutation) LastModifierCleared() bool {
+	_, ok := m.clearedFields[rider.FieldLastModifier]
 	return ok
 }
 
-// ResetLastModify resets all changes to the "last_modify" field.
-func (m *RiderMutation) ResetLastModify() {
-	m.last_modify = nil
-	delete(m.clearedFields, rider.FieldLastModify)
+// ResetLastModifier resets all changes to the "last_modifier" field.
+func (m *RiderMutation) ResetLastModifier() {
+	m.last_modifier = nil
+	delete(m.clearedFields, rider.FieldLastModifier)
 }
 
 // SetRemark sets the "remark" field.
@@ -8039,8 +8039,8 @@ func (m *RiderMutation) Fields() []string {
 	if m.deleted_at != nil {
 		fields = append(fields, rider.FieldDeletedAt)
 	}
-	if m.last_modify != nil {
-		fields = append(fields, rider.FieldLastModify)
+	if m.last_modifier != nil {
+		fields = append(fields, rider.FieldLastModifier)
 	}
 	if m.remark != nil {
 		fields = append(fields, rider.FieldRemark)
@@ -8092,8 +8092,8 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case rider.FieldDeletedAt:
 		return m.DeletedAt()
-	case rider.FieldLastModify:
-		return m.LastModify()
+	case rider.FieldLastModifier:
+		return m.LastModifier()
 	case rider.FieldRemark:
 		return m.Remark()
 	case rider.FieldPersonID:
@@ -8133,8 +8133,8 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldUpdatedAt(ctx)
 	case rider.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case rider.FieldLastModify:
-		return m.OldLastModify(ctx)
+	case rider.FieldLastModifier:
+		return m.OldLastModifier(ctx)
 	case rider.FieldRemark:
 		return m.OldRemark(ctx)
 	case rider.FieldPersonID:
@@ -8189,12 +8189,12 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case rider.FieldLastModify:
+	case rider.FieldLastModifier:
 		v, ok := value.(*model.Modifier)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetLastModify(v)
+		m.SetLastModifier(v)
 		return nil
 	case rider.FieldRemark:
 		v, ok := value.(string)
@@ -8340,8 +8340,8 @@ func (m *RiderMutation) ClearedFields() []string {
 	if m.FieldCleared(rider.FieldDeletedAt) {
 		fields = append(fields, rider.FieldDeletedAt)
 	}
-	if m.FieldCleared(rider.FieldLastModify) {
-		fields = append(fields, rider.FieldLastModify)
+	if m.FieldCleared(rider.FieldLastModifier) {
+		fields = append(fields, rider.FieldLastModifier)
 	}
 	if m.FieldCleared(rider.FieldRemark) {
 		fields = append(fields, rider.FieldRemark)
@@ -8384,8 +8384,8 @@ func (m *RiderMutation) ClearField(name string) error {
 	case rider.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
-	case rider.FieldLastModify:
-		m.ClearLastModify()
+	case rider.FieldLastModifier:
+		m.ClearLastModifier()
 		return nil
 	case rider.FieldRemark:
 		m.ClearRemark()
@@ -8428,8 +8428,8 @@ func (m *RiderMutation) ResetField(name string) error {
 	case rider.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case rider.FieldLastModify:
-		m.ResetLastModify()
+	case rider.FieldLastModifier:
+		m.ResetLastModifier()
 		return nil
 	case rider.FieldRemark:
 		m.ResetRemark()

@@ -55,15 +55,15 @@ func (cu *CityUpdate) ClearDeletedAt() *CityUpdate {
 	return cu
 }
 
-// SetLastModify sets the "last_modify" field.
-func (cu *CityUpdate) SetLastModify(m *model.Modifier) *CityUpdate {
-	cu.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (cu *CityUpdate) SetLastModifier(m *model.Modifier) *CityUpdate {
+	cu.mutation.SetLastModifier(m)
 	return cu
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (cu *CityUpdate) ClearLastModify() *CityUpdate {
-	cu.mutation.ClearLastModify()
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (cu *CityUpdate) ClearLastModifier() *CityUpdate {
+	cu.mutation.ClearLastModifier()
 	return cu
 }
 
@@ -313,17 +313,17 @@ func (cu *CityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: city.FieldDeletedAt,
 		})
 	}
-	if value, ok := cu.mutation.LastModify(); ok {
+	if value, ok := cu.mutation.LastModifier(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: city.FieldLastModify,
+			Column: city.FieldLastModifier,
 		})
 	}
-	if cu.mutation.LastModifyCleared() {
+	if cu.mutation.LastModifierCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: city.FieldLastModify,
+			Column: city.FieldLastModifier,
 		})
 	}
 	if value, ok := cu.mutation.Remark(); ok {
@@ -500,15 +500,15 @@ func (cuo *CityUpdateOne) ClearDeletedAt() *CityUpdateOne {
 	return cuo
 }
 
-// SetLastModify sets the "last_modify" field.
-func (cuo *CityUpdateOne) SetLastModify(m *model.Modifier) *CityUpdateOne {
-	cuo.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (cuo *CityUpdateOne) SetLastModifier(m *model.Modifier) *CityUpdateOne {
+	cuo.mutation.SetLastModifier(m)
 	return cuo
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (cuo *CityUpdateOne) ClearLastModify() *CityUpdateOne {
-	cuo.mutation.ClearLastModify()
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (cuo *CityUpdateOne) ClearLastModifier() *CityUpdateOne {
+	cuo.mutation.ClearLastModifier()
 	return cuo
 }
 
@@ -782,17 +782,17 @@ func (cuo *CityUpdateOne) sqlSave(ctx context.Context) (_node *City, err error) 
 			Column: city.FieldDeletedAt,
 		})
 	}
-	if value, ok := cuo.mutation.LastModify(); ok {
+	if value, ok := cuo.mutation.LastModifier(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: city.FieldLastModify,
+			Column: city.FieldLastModifier,
 		})
 	}
-	if cuo.mutation.LastModifyCleared() {
+	if cuo.mutation.LastModifierCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
-			Column: city.FieldLastModify,
+			Column: city.FieldLastModifier,
 		})
 	}
 	if value, ok := cuo.mutation.Remark(); ok {

@@ -65,6 +65,6 @@ func (s *cityService) Modify(req *model.CityModifyReq, mod *model.Modifier) bool
     if !s.orm.Query().Where(city.ID(req.ID), city.ParentIDNotNil()).ExistX(context.Background()) {
         snag.Panic("城市ID错误")
     }
-    c := s.orm.UpdateOneID(req.ID).SetOpen(req.Open).SetLastModify(mod).SaveX(s.ctx)
+    c := s.orm.UpdateOneID(req.ID).SetOpen(req.Open).SetLastModifier(mod).SaveX(s.ctx)
     return c.Open
 }

@@ -65,9 +65,9 @@ func (mc *ManagerCreate) SetNillableDeletedAt(t *time.Time) *ManagerCreate {
 	return mc
 }
 
-// SetLastModify sets the "last_modify" field.
-func (mc *ManagerCreate) SetLastModify(m *model.Modifier) *ManagerCreate {
-	mc.mutation.SetLastModify(m)
+// SetLastModifier sets the "last_modifier" field.
+func (mc *ManagerCreate) SetLastModifier(m *model.Modifier) *ManagerCreate {
+	mc.mutation.SetLastModifier(m)
 	return mc
 }
 
@@ -277,13 +277,13 @@ func (mc *ManagerCreate) createSpec() (*Manager, *sqlgraph.CreateSpec) {
 		})
 		_node.DeletedAt = &value
 	}
-	if value, ok := mc.mutation.LastModify(); ok {
+	if value, ok := mc.mutation.LastModifier(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Value:  value,
-			Column: manager.FieldLastModify,
+			Column: manager.FieldLastModifier,
 		})
-		_node.LastModify = value
+		_node.LastModifier = value
 	}
 	if value, ok := mc.mutation.Remark(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -421,21 +421,21 @@ func (u *ManagerUpsert) ClearDeletedAt() *ManagerUpsert {
 	return u
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *ManagerUpsert) SetLastModify(v *model.Modifier) *ManagerUpsert {
-	u.Set(manager.FieldLastModify, v)
+// SetLastModifier sets the "last_modifier" field.
+func (u *ManagerUpsert) SetLastModifier(v *model.Modifier) *ManagerUpsert {
+	u.Set(manager.FieldLastModifier, v)
 	return u
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *ManagerUpsert) UpdateLastModify() *ManagerUpsert {
-	u.SetExcluded(manager.FieldLastModify)
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *ManagerUpsert) UpdateLastModifier() *ManagerUpsert {
+	u.SetExcluded(manager.FieldLastModifier)
 	return u
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *ManagerUpsert) ClearLastModify() *ManagerUpsert {
-	u.SetNull(manager.FieldLastModify)
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *ManagerUpsert) ClearLastModifier() *ManagerUpsert {
+	u.SetNull(manager.FieldLastModifier)
 	return u
 }
 
@@ -607,24 +607,24 @@ func (u *ManagerUpsertOne) ClearDeletedAt() *ManagerUpsertOne {
 	})
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *ManagerUpsertOne) SetLastModify(v *model.Modifier) *ManagerUpsertOne {
+// SetLastModifier sets the "last_modifier" field.
+func (u *ManagerUpsertOne) SetLastModifier(v *model.Modifier) *ManagerUpsertOne {
 	return u.Update(func(s *ManagerUpsert) {
-		s.SetLastModify(v)
+		s.SetLastModifier(v)
 	})
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *ManagerUpsertOne) UpdateLastModify() *ManagerUpsertOne {
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *ManagerUpsertOne) UpdateLastModifier() *ManagerUpsertOne {
 	return u.Update(func(s *ManagerUpsert) {
-		s.UpdateLastModify()
+		s.UpdateLastModifier()
 	})
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *ManagerUpsertOne) ClearLastModify() *ManagerUpsertOne {
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *ManagerUpsertOne) ClearLastModifier() *ManagerUpsertOne {
 	return u.Update(func(s *ManagerUpsert) {
-		s.ClearLastModify()
+		s.ClearLastModifier()
 	})
 }
 
@@ -972,24 +972,24 @@ func (u *ManagerUpsertBulk) ClearDeletedAt() *ManagerUpsertBulk {
 	})
 }
 
-// SetLastModify sets the "last_modify" field.
-func (u *ManagerUpsertBulk) SetLastModify(v *model.Modifier) *ManagerUpsertBulk {
+// SetLastModifier sets the "last_modifier" field.
+func (u *ManagerUpsertBulk) SetLastModifier(v *model.Modifier) *ManagerUpsertBulk {
 	return u.Update(func(s *ManagerUpsert) {
-		s.SetLastModify(v)
+		s.SetLastModifier(v)
 	})
 }
 
-// UpdateLastModify sets the "last_modify" field to the value that was provided on create.
-func (u *ManagerUpsertBulk) UpdateLastModify() *ManagerUpsertBulk {
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *ManagerUpsertBulk) UpdateLastModifier() *ManagerUpsertBulk {
 	return u.Update(func(s *ManagerUpsert) {
-		s.UpdateLastModify()
+		s.UpdateLastModifier()
 	})
 }
 
-// ClearLastModify clears the value of the "last_modify" field.
-func (u *ManagerUpsertBulk) ClearLastModify() *ManagerUpsertBulk {
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *ManagerUpsertBulk) ClearLastModifier() *ManagerUpsertBulk {
 	return u.Update(func(s *ManagerUpsert) {
-		s.ClearLastModify()
+		s.ClearLastModifier()
 	})
 }
 

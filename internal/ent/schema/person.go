@@ -50,7 +50,7 @@ func (Person) Mixin() []ent.Mixin {
     return []ent.Mixin{
         internal.TimeMixin{},
         internal.DeleteMixin{},
-        internal.LastModify{},
+        internal.LastModifier{},
     }
 }
 

@@ -58,7 +58,7 @@ func (BranchContract) Mixin() []ent.Mixin {
         internal.TimeMixin{},
         internal.DeleteMixin{},
         internal.Creator{},
-        internal.LastModify{},
+        internal.LastModifier{},
     }
 }
 
