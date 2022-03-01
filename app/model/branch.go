@@ -30,7 +30,8 @@ type Branch struct {
 
 // BranchContract 网点合同请求体
 type BranchContract struct {
-    ID uint64 `json:"id,omitempty"`
+    ID       uint64 `json:"id,omitempty"`
+    BranchID uint64 `json:"branchId,omitempty" param:"id"`
 
     LandlordName      string   `json:"landlordName" validate:"required"`
     IDCardNumber      string   `json:"idCardNumber" validate:"required" trans:"房东身份证"`

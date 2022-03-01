@@ -42,3 +42,11 @@ func (*branch) Modify(c echo.Context) (err error) {
     service.NewBranch().Modify(req, ctx.Modifier)
     return app.NewResponse(c).Send()
 }
+
+func (*branch) AddContract(c echo.Context) (err error) {
+    req := new(model.BranchContract)
+    ctx := app.GetManagerContext(c)
+    ctx.BindValidate(req)
+    service.NewBranch().AddContract(req.BranchID, req, ctx.Modifier)
+    return app.NewResponse(c).Send()
+}
