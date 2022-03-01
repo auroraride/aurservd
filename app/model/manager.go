@@ -13,8 +13,10 @@ type ManagerSigninReq struct {
 
 // ManagerSigninRes 管理员登录返回
 type ManagerSigninRes struct {
-    Id    uint64 `json:"id"`
-    Token string `json:"token"`
+    ID    uint64 `json:"id,omitempty"`
+    Name  string `json:"name,omitempty"`
+    Token string `json:"token,omitempty"`
+    Phone string `json:"phone,omitempty"`
 }
 
 // ManagerAddReq 管理员新增

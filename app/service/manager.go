@@ -71,8 +71,10 @@ func (s *managerService) Signin(req *model.ManagerSigninReq) (res *model.Manager
     s.ExtendTokenTime(u.ID, token)
 
     return &model.ManagerSigninRes{
-        Id:    u.ID,
+        ID:    u.ID,
         Token: token,
+        Name:  u.Name,
+        Phone: u.Phone,
     }, err
 }
 
