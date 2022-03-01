@@ -5,6 +5,16 @@
 
 package router
 
-func (r *router) managerRoutes() {
+import (
+    "github.com/auroraride/aurservd/app/controller/v1/mapi"
+    "github.com/auroraride/aurservd/app/middleware"
+)
 
+func (r *router) managerRoutes() {
+    g := r.Group("/manager/v1")
+
+    g.POST("/user/signin", mapi.Manager.Signin) // 登录
+
+    g.Use(middleware.ManagerMiddleware())
+    g.POST("/user/add", mapi.Manager.Add) // 新增管理员
 }

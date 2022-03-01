@@ -12,4 +12,7 @@ const (
     RequireFace         = "需要人脸验证"
 
     BlockedMessage = "你已被封禁"
+
+    UserNotFound             = "用户未找到"
+    UserAuthenticationFailed = "用户认证失败"
 )

@@ -108,8 +108,7 @@ func (r *riderService) Signin(phone string, device *app.Device) (res *model.Ride
     }
 
     // 设置登录token
-    cache.Set(ctx, key, token, 7*24*time.Hour)
-    cache.Set(ctx, token, u.ID, 7*24*time.Hour)
+    r.ExtendTokenTime(u.ID, token)
 
     return
 }
