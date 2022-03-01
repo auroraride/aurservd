@@ -8,7 +8,9 @@ package ali
 import (
     "bytes"
     "encoding/base64"
+    "github.com/aliyun/alibaba-cloud-sdk-go/services/sts"
     "github.com/aliyun/aliyun-oss-go-sdk/oss"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/go-resty/resty/v2"
@@ -69,4 +71,36 @@ func (c *ossClient) UploadBytes(name string, b []byte) string {
         url += "/"
     }
     return url + name
+}
+
+// StsToken 获取临时访问token
+// @doc https://help.aliyun.com/document_detail/383950.html
+func (c *ossClient) StsToken() *model.AliyunOssStsRes {
+    cfg := ar.Config.Aliyun.Oss
+    client, err := sts.NewClientWithAccessKey(cfg.RegionId, cfg.AccessKeyId, cfg.AccessKeySecret)
+    if err != nil {
+        snag.Panic(err)
+    }
+
+    // 构建请求对象。
+    request := sts.CreateAssumeRoleRequest()
+    request.Scheme = "https"
+
+    request.RoleArn = cfg.Arn
+    request.RoleSessionName = cfg.RamRole
+
+    // 发起请求，并得到响应。
+    response, err := client.AssumeRole(request)
+    if err != nil {
+        snag.Panic(err)
+    }
+
+    res := response.Credentials
+    return &model.AliyunOssStsRes{
+        AccessKeySecret: res.AccessKeySecret,
+        Expiration:      res.Expiration,
+        AccessKeyId:     res.AccessKeyId,
+        StsToken:        res.SecurityToken,
+        Bucket:          cfg.Bucket,
+    }
 }

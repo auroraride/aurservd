@@ -11,3 +11,11 @@ type Modifier struct {
     Name  string `json:"name,omitempty"`
     Phone string `json:"phone,omitempty"`
 }
+
+type AliyunOssStsRes struct {
+    AccessKeySecret string `json:"accessKeySecret,omitempty"`
+    Expiration      string `json:"expiration,omitempty"`
+    AccessKeyId     string `json:"accessKeyId,omitempty"`
+    StsToken        string `json:"stsToken,omitempty"`
+    Bucket          string `json:"bucket,omitempty"`
+}

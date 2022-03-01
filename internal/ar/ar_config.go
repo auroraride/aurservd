@@ -87,6 +87,9 @@ type config struct {
             Bucket          string
             Endpoint        string
             Url             string
+            Arn             string
+            RamRole         string
+            RegionId        string
         }
         // 语音通知
         Vms struct {
