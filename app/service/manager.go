@@ -21,8 +21,9 @@ import (
 
 type managerService struct {
     cacheKeyPrefix string
-    orm            *ent.ManagerClient
-    ctx            context.Context
+
+    orm *ent.ManagerClient
+    ctx context.Context
 }
 
 func NewManager() *managerService {

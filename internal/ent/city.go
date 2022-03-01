@@ -42,7 +42,7 @@ type City struct {
 	Code string `json:"code,omitempty"`
 	// ParentID holds the value of the "parent_id" field.
 	// 父级
-	ParentID uint64 `json:"parent_id,omitempty"`
+	ParentID *uint64 `json:"parent_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CityQuery when eager-loading is set.
 	Edges CityEdges `json:"edges"`
@@ -177,7 +177,8 @@ func (c *City) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
 			} else if value.Valid {
-				c.ParentID = uint64(value.Int64)
+				c.ParentID = new(uint64)
+				*c.ParentID = uint64(value.Int64)
 			}
 		}
 	}
@@ -241,8 +242,10 @@ func (c *City) String() string {
 	builder.WriteString(c.Adcode)
 	builder.WriteString(", code=")
 	builder.WriteString(c.Code)
-	builder.WriteString(", parent_id=")
-	builder.WriteString(fmt.Sprintf("%v", c.ParentID))
+	if v := c.ParentID; v != nil {
+		builder.WriteString(", parent_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

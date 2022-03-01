@@ -7,7 +7,7 @@ package model
 
 // ManagerSigninReq 管理员登录请求
 type ManagerSigninReq struct {
-    Phone    string `json:"phone" validate:"required"`
+    Phone    string `json:"phone" validate:"required,phone"`
     Password string `json:"password" validate:"required"`
 }
 

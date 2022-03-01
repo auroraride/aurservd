@@ -29,7 +29,7 @@ func (City) Fields() []ent.Field {
         field.String("name").MaxLen(100).Comment("城市"),
         field.String("adcode").MaxLen(10).Unique().Comment("地区编号"),
         field.String("code").MaxLen(10).Comment("编号"),
-        field.Uint64("parent_id").Optional().Comment("父级"),
+        field.Uint64("parent_id").Optional().Nillable().Comment("父级"),
     }
 }
 

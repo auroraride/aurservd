@@ -555,7 +555,7 @@ func (m *CityMutation) ParentID() (r uint64, exists bool) {
 // OldParentID returns the old "parent_id" field's value of the City entity.
 // If the City object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CityMutation) OldParentID(ctx context.Context) (v uint64, err error) {
+func (m *CityMutation) OldParentID(ctx context.Context) (v *uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldParentID is only allowed on UpdateOne operations")
 	}

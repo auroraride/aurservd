@@ -34,8 +34,7 @@ func (*manager) Signin(c echo.Context) (err error) {
 
 func (*manager) Add(c echo.Context) (err error) {
     req := new(model.ManagerAddReq)
-    ctx := c.(*app.ManagerContext)
-    ctx.BindValidate(req)
+    app.GetManagerContext(c).BindValidate(req)
 
     err = service.NewManager().Add(req)
     if err != nil {
