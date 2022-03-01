@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Branch is the predicate function for branch builders.
+type Branch func(*sql.Selector)
+
 // City is the predicate function for city builders.
 type City func(*sql.Selector)
 

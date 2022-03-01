@@ -27,6 +27,9 @@ func (*city) List(c echo.Context) (err error) {
 // Modify 修改城市
 func (*city) Modify(c echo.Context) (err error) {
     req := new(model.CityModifyReq)
-    app.GetManagerContext(c).BindValidate(req)
-    return app.NewResponse(c).SetData(model.CityModifyRes{Open: service.NewCity().Modify(req)}).Send()
+    ctx := app.GetManagerContext(c)
+    ctx.BindValidate(req)
+    return app.NewResponse(c).SetData(
+        model.CityModifyRes{Open: service.NewCity().Modify(req, ctx.Modifier)},
+    ).Send()
 }

@@ -57,16 +57,8 @@ func (pu *PersonUpdate) ClearDeletedAt() *PersonUpdate {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (pu *PersonUpdate) SetLastModify(t time.Time) *PersonUpdate {
-	pu.mutation.SetLastModify(t)
-	return pu
-}
-
-// SetNillableLastModify sets the "last_modify" field if the given value is not nil.
-func (pu *PersonUpdate) SetNillableLastModify(t *time.Time) *PersonUpdate {
-	if t != nil {
-		pu.SetLastModify(*t)
-	}
+func (pu *PersonUpdate) SetLastModify(m *model.Modifier) *PersonUpdate {
+	pu.mutation.SetLastModify(m)
 	return pu
 }
 
@@ -379,14 +371,14 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := pu.mutation.LastModify(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Value:  value,
 			Column: person.FieldLastModify,
 		})
 	}
 	if pu.mutation.LastModifyCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Column: person.FieldLastModify,
 		})
 	}
@@ -599,16 +591,8 @@ func (puo *PersonUpdateOne) ClearDeletedAt() *PersonUpdateOne {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (puo *PersonUpdateOne) SetLastModify(t time.Time) *PersonUpdateOne {
-	puo.mutation.SetLastModify(t)
-	return puo
-}
-
-// SetNillableLastModify sets the "last_modify" field if the given value is not nil.
-func (puo *PersonUpdateOne) SetNillableLastModify(t *time.Time) *PersonUpdateOne {
-	if t != nil {
-		puo.SetLastModify(*t)
-	}
+func (puo *PersonUpdateOne) SetLastModify(m *model.Modifier) *PersonUpdateOne {
+	puo.mutation.SetLastModify(m)
 	return puo
 }
 
@@ -945,14 +929,14 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 	}
 	if value, ok := puo.mutation.LastModify(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Value:  value,
 			Column: person.FieldLastModify,
 		})
 	}
 	if puo.mutation.LastModifyCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Column: person.FieldLastModify,
 		})
 	}

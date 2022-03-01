@@ -9,6 +9,19 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 )
 
+// The BranchFunc type is an adapter to allow the use of ordinary
+// function as Branch mutator.
+type BranchFunc func(context.Context, *ent.BranchMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f BranchFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.BranchMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BranchMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The CityFunc type is an adapter to allow the use of ordinary
 // function as City mutator.
 type CityFunc func(context.Context, *ent.CityMutation) (ent.Value, error)

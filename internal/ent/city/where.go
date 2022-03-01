@@ -114,13 +114,6 @@ func DeletedAt(v time.Time) predicate.City {
 	})
 }
 
-// LastModify applies equality check predicate on the "last_modify" field. It's identical to LastModifyEQ.
-func LastModify(v time.Time) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLastModify), v))
-	})
-}
-
 // Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
 func Remark(v string) predicate.City {
 	return predicate.City(func(s *sql.Selector) {
@@ -402,82 +395,6 @@ func DeletedAtIsNil() predicate.City {
 func DeletedAtNotNil() predicate.City {
 	return predicate.City(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldDeletedAt)))
-	})
-}
-
-// LastModifyEQ applies the EQ predicate on the "last_modify" field.
-func LastModifyEQ(v time.Time) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLastModify), v))
-	})
-}
-
-// LastModifyNEQ applies the NEQ predicate on the "last_modify" field.
-func LastModifyNEQ(v time.Time) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLastModify), v))
-	})
-}
-
-// LastModifyIn applies the In predicate on the "last_modify" field.
-func LastModifyIn(vs ...time.Time) predicate.City {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.City(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldLastModify), v...))
-	})
-}
-
-// LastModifyNotIn applies the NotIn predicate on the "last_modify" field.
-func LastModifyNotIn(vs ...time.Time) predicate.City {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.City(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldLastModify), v...))
-	})
-}
-
-// LastModifyGT applies the GT predicate on the "last_modify" field.
-func LastModifyGT(v time.Time) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLastModify), v))
-	})
-}
-
-// LastModifyGTE applies the GTE predicate on the "last_modify" field.
-func LastModifyGTE(v time.Time) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLastModify), v))
-	})
-}
-
-// LastModifyLT applies the LT predicate on the "last_modify" field.
-func LastModifyLT(v time.Time) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLastModify), v))
-	})
-}
-
-// LastModifyLTE applies the LTE predicate on the "last_modify" field.
-func LastModifyLTE(v time.Time) predicate.City {
-	return predicate.City(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLastModify), v))
 	})
 }
 

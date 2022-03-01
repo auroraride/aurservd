@@ -6,6 +6,7 @@
 package app
 
 import (
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/labstack/echo/v4"
 )
@@ -14,9 +15,10 @@ import (
 type ManagerContext struct {
     *Context
 
-    Manager *ent.Manager
+    Manager  *ent.Manager
+    Modifier *model.Modifier
 }
 
-func GetManagerContext(c echo.Context) *ManagerContext  {
+func GetManagerContext(c echo.Context) *ManagerContext {
     return c.(*ManagerContext)
 }

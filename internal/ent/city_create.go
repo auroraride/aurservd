@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
 )
 
@@ -65,16 +66,8 @@ func (cc *CityCreate) SetNillableDeletedAt(t *time.Time) *CityCreate {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (cc *CityCreate) SetLastModify(t time.Time) *CityCreate {
-	cc.mutation.SetLastModify(t)
-	return cc
-}
-
-// SetNillableLastModify sets the "last_modify" field if the given value is not nil.
-func (cc *CityCreate) SetNillableLastModify(t *time.Time) *CityCreate {
-	if t != nil {
-		cc.SetLastModify(*t)
-	}
+func (cc *CityCreate) SetLastModify(m *model.Modifier) *CityCreate {
+	cc.mutation.SetLastModify(m)
 	return cc
 }
 
@@ -325,11 +318,11 @@ func (cc *CityCreate) createSpec() (*City, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := cc.mutation.LastModify(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Value:  value,
 			Column: city.FieldLastModify,
 		})
-		_node.LastModify = &value
+		_node.LastModify = value
 	}
 	if value, ok := cc.mutation.Remark(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -507,7 +500,7 @@ func (u *CityUpsert) ClearDeletedAt() *CityUpsert {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (u *CityUpsert) SetLastModify(v time.Time) *CityUpsert {
+func (u *CityUpsert) SetLastModify(v *model.Modifier) *CityUpsert {
 	u.Set(city.FieldLastModify, v)
 	return u
 }
@@ -711,7 +704,7 @@ func (u *CityUpsertOne) ClearDeletedAt() *CityUpsertOne {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (u *CityUpsertOne) SetLastModify(v time.Time) *CityUpsertOne {
+func (u *CityUpsertOne) SetLastModify(v *model.Modifier) *CityUpsertOne {
 	return u.Update(func(s *CityUpsert) {
 		s.SetLastModify(v)
 	})
@@ -1097,7 +1090,7 @@ func (u *CityUpsertBulk) ClearDeletedAt() *CityUpsertBulk {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (u *CityUpsertBulk) SetLastModify(v time.Time) *CityUpsertBulk {
+func (u *CityUpsertBulk) SetLastModify(v *model.Modifier) *CityUpsertBulk {
 	return u.Update(func(s *CityUpsert) {
 		s.SetLastModify(v)
 	})

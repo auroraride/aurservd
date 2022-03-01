@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -56,16 +57,8 @@ func (cu *ContractUpdate) ClearDeletedAt() *ContractUpdate {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (cu *ContractUpdate) SetLastModify(t time.Time) *ContractUpdate {
-	cu.mutation.SetLastModify(t)
-	return cu
-}
-
-// SetNillableLastModify sets the "last_modify" field if the given value is not nil.
-func (cu *ContractUpdate) SetNillableLastModify(t *time.Time) *ContractUpdate {
-	if t != nil {
-		cu.SetLastModify(*t)
-	}
+func (cu *ContractUpdate) SetLastModify(m *model.Modifier) *ContractUpdate {
+	cu.mutation.SetLastModify(m)
 	return cu
 }
 
@@ -289,14 +282,14 @@ func (cu *ContractUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := cu.mutation.LastModify(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Value:  value,
 			Column: contract.FieldLastModify,
 		})
 	}
 	if cu.mutation.LastModifyCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Column: contract.FieldLastModify,
 		})
 	}
@@ -435,16 +428,8 @@ func (cuo *ContractUpdateOne) ClearDeletedAt() *ContractUpdateOne {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (cuo *ContractUpdateOne) SetLastModify(t time.Time) *ContractUpdateOne {
-	cuo.mutation.SetLastModify(t)
-	return cuo
-}
-
-// SetNillableLastModify sets the "last_modify" field if the given value is not nil.
-func (cuo *ContractUpdateOne) SetNillableLastModify(t *time.Time) *ContractUpdateOne {
-	if t != nil {
-		cuo.SetLastModify(*t)
-	}
+func (cuo *ContractUpdateOne) SetLastModify(m *model.Modifier) *ContractUpdateOne {
+	cuo.mutation.SetLastModify(m)
 	return cuo
 }
 
@@ -692,14 +677,14 @@ func (cuo *ContractUpdateOne) sqlSave(ctx context.Context) (_node *Contract, err
 	}
 	if value, ok := cuo.mutation.LastModify(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Value:  value,
 			Column: contract.FieldLastModify,
 		})
 	}
 	if cuo.mutation.LastModifyCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Column: contract.FieldLastModify,
 		})
 	}

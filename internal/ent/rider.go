@@ -27,7 +27,7 @@ type Rider struct {
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// LastModify holds the value of the "last_modify" field.
 	// 最后修改人
-	LastModify *time.Time `json:"last_modify,omitempty"`
+	LastModify *model.Modifier `json:"last_modify,omitempty"`
 	// Remark holds the value of the "remark" field.
 	// 备注
 	Remark *string `json:"remark,omitempty"`
@@ -108,7 +108,7 @@ func (*Rider) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case rider.FieldContact:
+		case rider.FieldLastModify, rider.FieldContact:
 			values[i] = new([]byte)
 		case rider.FieldIsNewDevice:
 			values[i] = new(sql.NullBool)
@@ -116,7 +116,7 @@ func (*Rider) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case rider.FieldRemark, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID, rider.FieldEsignAccountID:
 			values[i] = new(sql.NullString)
-		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastModify, rider.FieldLastSigninAt:
+		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastSigninAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Rider", columns[i])
@@ -159,11 +159,12 @@ func (r *Rider) assignValues(columns []string, values []interface{}) error {
 				*r.DeletedAt = value.Time
 			}
 		case rider.FieldLastModify:
-			if value, ok := values[i].(*sql.NullTime); !ok {
+			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field last_modify", values[i])
-			} else if value.Valid {
-				r.LastModify = new(time.Time)
-				*r.LastModify = value.Time
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &r.LastModify); err != nil {
+					return fmt.Errorf("unmarshal field last_modify: %w", err)
+				}
 			}
 		case rider.FieldRemark:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -290,10 +291,8 @@ func (r *Rider) String() string {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	if v := r.LastModify; v != nil {
-		builder.WriteString(", last_modify=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
+	builder.WriteString(", last_modify=")
+	builder.WriteString(fmt.Sprintf("%v", r.LastModify))
 	if v := r.Remark; v != nil {
 		builder.WriteString(", remark=")
 		builder.WriteString(*v)

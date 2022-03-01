@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -30,6 +31,7 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
+	TypeBranch   = "Branch"
 	TypeCity     = "City"
 	TypeContract = "Contract"
 	TypeManager  = "Manager"
@@ -37,6 +39,1038 @@ const (
 	TypeRider    = "Rider"
 	TypeSetting  = "Setting"
 )
+
+// BranchMutation represents an operation that mutates the Branch nodes in the graph.
+type BranchMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uint64
+	created_at    *time.Time
+	updated_at    *time.Time
+	deleted_at    *time.Time
+	creator       **model.Modifier
+	last_modify   **model.Modifier
+	remark        *string
+	city_id       *uint64
+	addcity_id    *int64
+	name          *string
+	lng           *uint64
+	addlng        *int64
+	lat           *uint64
+	addlat        *int64
+	address       *string
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*Branch, error)
+	predicates    []predicate.Branch
+}
+
+var _ ent.Mutation = (*BranchMutation)(nil)
+
+// branchOption allows management of the mutation configuration using functional options.
+type branchOption func(*BranchMutation)
+
+// newBranchMutation creates new mutation for the Branch entity.
+func newBranchMutation(c config, op Op, opts ...branchOption) *BranchMutation {
+	m := &BranchMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeBranch,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withBranchID sets the ID field of the mutation.
+func withBranchID(id uint64) branchOption {
+	return func(m *BranchMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Branch
+		)
+		m.oldValue = func(ctx context.Context) (*Branch, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Branch.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withBranch sets the old Branch of the mutation.
+func withBranch(node *Branch) branchOption {
+	return func(m *BranchMutation) {
+		m.oldValue = func(context.Context) (*Branch, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m BranchMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m BranchMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *BranchMutation) ID() (id uint64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *BranchMutation) IDs(ctx context.Context) ([]uint64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Branch.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *BranchMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *BranchMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Branch entity.
+// If the Branch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BranchMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *BranchMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *BranchMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *BranchMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Branch entity.
+// If the Branch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BranchMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *BranchMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *BranchMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *BranchMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the Branch entity.
+// If the Branch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BranchMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *BranchMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[branch.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *BranchMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[branch.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *BranchMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, branch.FieldDeletedAt)
+}
+
+// SetCreator sets the "creator" field.
+func (m *BranchMutation) SetCreator(value *model.Modifier) {
+	m.creator = &value
+}
+
+// Creator returns the value of the "creator" field in the mutation.
+func (m *BranchMutation) Creator() (r *model.Modifier, exists bool) {
+	v := m.creator
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreator returns the old "creator" field's value of the Branch entity.
+// If the Branch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BranchMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreator requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
+	}
+	return oldValue.Creator, nil
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (m *BranchMutation) ClearCreator() {
+	m.creator = nil
+	m.clearedFields[branch.FieldCreator] = struct{}{}
+}
+
+// CreatorCleared returns if the "creator" field was cleared in this mutation.
+func (m *BranchMutation) CreatorCleared() bool {
+	_, ok := m.clearedFields[branch.FieldCreator]
+	return ok
+}
+
+// ResetCreator resets all changes to the "creator" field.
+func (m *BranchMutation) ResetCreator() {
+	m.creator = nil
+	delete(m.clearedFields, branch.FieldCreator)
+}
+
+// SetLastModify sets the "last_modify" field.
+func (m *BranchMutation) SetLastModify(value *model.Modifier) {
+	m.last_modify = &value
+}
+
+// LastModify returns the value of the "last_modify" field in the mutation.
+func (m *BranchMutation) LastModify() (r *model.Modifier, exists bool) {
+	v := m.last_modify
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastModify returns the old "last_modify" field's value of the Branch entity.
+// If the Branch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BranchMutation) OldLastModify(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastModify is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastModify requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastModify: %w", err)
+	}
+	return oldValue.LastModify, nil
+}
+
+// ClearLastModify clears the value of the "last_modify" field.
+func (m *BranchMutation) ClearLastModify() {
+	m.last_modify = nil
+	m.clearedFields[branch.FieldLastModify] = struct{}{}
+}
+
+// LastModifyCleared returns if the "last_modify" field was cleared in this mutation.
+func (m *BranchMutation) LastModifyCleared() bool {
+	_, ok := m.clearedFields[branch.FieldLastModify]
+	return ok
+}
+
+// ResetLastModify resets all changes to the "last_modify" field.
+func (m *BranchMutation) ResetLastModify() {
+	m.last_modify = nil
+	delete(m.clearedFields, branch.FieldLastModify)
+}
+
+// SetRemark sets the "remark" field.
+func (m *BranchMutation) SetRemark(s string) {
+	m.remark = &s
+}
+
+// Remark returns the value of the "remark" field in the mutation.
+func (m *BranchMutation) Remark() (r string, exists bool) {
+	v := m.remark
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemark returns the old "remark" field's value of the Branch entity.
+// If the Branch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BranchMutation) OldRemark(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemark requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
+	}
+	return oldValue.Remark, nil
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (m *BranchMutation) ClearRemark() {
+	m.remark = nil
+	m.clearedFields[branch.FieldRemark] = struct{}{}
+}
+
+// RemarkCleared returns if the "remark" field was cleared in this mutation.
+func (m *BranchMutation) RemarkCleared() bool {
+	_, ok := m.clearedFields[branch.FieldRemark]
+	return ok
+}
+
+// ResetRemark resets all changes to the "remark" field.
+func (m *BranchMutation) ResetRemark() {
+	m.remark = nil
+	delete(m.clearedFields, branch.FieldRemark)
+}
+
+// SetCityID sets the "city_id" field.
+func (m *BranchMutation) SetCityID(u uint64) {
+	m.city_id = &u
+	m.addcity_id = nil
+}
+
+// CityID returns the value of the "city_id" field in the mutation.
+func (m *BranchMutation) CityID() (r uint64, exists bool) {
+	v := m.city_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCityID returns the old "city_id" field's value of the Branch entity.
+// If the Branch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BranchMutation) OldCityID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCityID: %w", err)
+	}
+	return oldValue.CityID, nil
+}
+
+// AddCityID adds u to the "city_id" field.
+func (m *BranchMutation) AddCityID(u int64) {
+	if m.addcity_id != nil {
+		*m.addcity_id += u
+	} else {
+		m.addcity_id = &u
+	}
+}
+
+// AddedCityID returns the value that was added to the "city_id" field in this mutation.
+func (m *BranchMutation) AddedCityID() (r int64, exists bool) {
+	v := m.addcity_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCityID resets all changes to the "city_id" field.
+func (m *BranchMutation) ResetCityID() {
+	m.city_id = nil
+	m.addcity_id = nil
+}
+
+// SetName sets the "name" field.
+func (m *BranchMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *BranchMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Branch entity.
+// If the Branch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BranchMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *BranchMutation) ResetName() {
+	m.name = nil
+}
+
+// SetLng sets the "lng" field.
+func (m *BranchMutation) SetLng(u uint64) {
+	m.lng = &u
+	m.addlng = nil
+}
+
+// Lng returns the value of the "lng" field in the mutation.
+func (m *BranchMutation) Lng() (r uint64, exists bool) {
+	v := m.lng
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLng returns the old "lng" field's value of the Branch entity.
+// If the Branch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BranchMutation) OldLng(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLng is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLng requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLng: %w", err)
+	}
+	return oldValue.Lng, nil
+}
+
+// AddLng adds u to the "lng" field.
+func (m *BranchMutation) AddLng(u int64) {
+	if m.addlng != nil {
+		*m.addlng += u
+	} else {
+		m.addlng = &u
+	}
+}
+
+// AddedLng returns the value that was added to the "lng" field in this mutation.
+func (m *BranchMutation) AddedLng() (r int64, exists bool) {
+	v := m.addlng
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLng resets all changes to the "lng" field.
+func (m *BranchMutation) ResetLng() {
+	m.lng = nil
+	m.addlng = nil
+}
+
+// SetLat sets the "lat" field.
+func (m *BranchMutation) SetLat(u uint64) {
+	m.lat = &u
+	m.addlat = nil
+}
+
+// Lat returns the value of the "lat" field in the mutation.
+func (m *BranchMutation) Lat() (r uint64, exists bool) {
+	v := m.lat
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLat returns the old "lat" field's value of the Branch entity.
+// If the Branch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BranchMutation) OldLat(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLat is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLat requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLat: %w", err)
+	}
+	return oldValue.Lat, nil
+}
+
+// AddLat adds u to the "lat" field.
+func (m *BranchMutation) AddLat(u int64) {
+	if m.addlat != nil {
+		*m.addlat += u
+	} else {
+		m.addlat = &u
+	}
+}
+
+// AddedLat returns the value that was added to the "lat" field in this mutation.
+func (m *BranchMutation) AddedLat() (r int64, exists bool) {
+	v := m.addlat
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLat resets all changes to the "lat" field.
+func (m *BranchMutation) ResetLat() {
+	m.lat = nil
+	m.addlat = nil
+}
+
+// SetAddress sets the "address" field.
+func (m *BranchMutation) SetAddress(s string) {
+	m.address = &s
+}
+
+// Address returns the value of the "address" field in the mutation.
+func (m *BranchMutation) Address() (r string, exists bool) {
+	v := m.address
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAddress returns the old "address" field's value of the Branch entity.
+// If the Branch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BranchMutation) OldAddress(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAddress is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAddress requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAddress: %w", err)
+	}
+	return oldValue.Address, nil
+}
+
+// ResetAddress resets all changes to the "address" field.
+func (m *BranchMutation) ResetAddress() {
+	m.address = nil
+}
+
+// Where appends a list predicates to the BranchMutation builder.
+func (m *BranchMutation) Where(ps ...predicate.Branch) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *BranchMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Branch).
+func (m *BranchMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *BranchMutation) Fields() []string {
+	fields := make([]string, 0, 11)
+	if m.created_at != nil {
+		fields = append(fields, branch.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, branch.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, branch.FieldDeletedAt)
+	}
+	if m.creator != nil {
+		fields = append(fields, branch.FieldCreator)
+	}
+	if m.last_modify != nil {
+		fields = append(fields, branch.FieldLastModify)
+	}
+	if m.remark != nil {
+		fields = append(fields, branch.FieldRemark)
+	}
+	if m.city_id != nil {
+		fields = append(fields, branch.FieldCityID)
+	}
+	if m.name != nil {
+		fields = append(fields, branch.FieldName)
+	}
+	if m.lng != nil {
+		fields = append(fields, branch.FieldLng)
+	}
+	if m.lat != nil {
+		fields = append(fields, branch.FieldLat)
+	}
+	if m.address != nil {
+		fields = append(fields, branch.FieldAddress)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *BranchMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case branch.FieldCreatedAt:
+		return m.CreatedAt()
+	case branch.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case branch.FieldDeletedAt:
+		return m.DeletedAt()
+	case branch.FieldCreator:
+		return m.Creator()
+	case branch.FieldLastModify:
+		return m.LastModify()
+	case branch.FieldRemark:
+		return m.Remark()
+	case branch.FieldCityID:
+		return m.CityID()
+	case branch.FieldName:
+		return m.Name()
+	case branch.FieldLng:
+		return m.Lng()
+	case branch.FieldLat:
+		return m.Lat()
+	case branch.FieldAddress:
+		return m.Address()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *BranchMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case branch.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case branch.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case branch.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case branch.FieldCreator:
+		return m.OldCreator(ctx)
+	case branch.FieldLastModify:
+		return m.OldLastModify(ctx)
+	case branch.FieldRemark:
+		return m.OldRemark(ctx)
+	case branch.FieldCityID:
+		return m.OldCityID(ctx)
+	case branch.FieldName:
+		return m.OldName(ctx)
+	case branch.FieldLng:
+		return m.OldLng(ctx)
+	case branch.FieldLat:
+		return m.OldLat(ctx)
+	case branch.FieldAddress:
+		return m.OldAddress(ctx)
+	}
+	return nil, fmt.Errorf("unknown Branch field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *BranchMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case branch.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case branch.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case branch.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case branch.FieldCreator:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreator(v)
+		return nil
+	case branch.FieldLastModify:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastModify(v)
+		return nil
+	case branch.FieldRemark:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemark(v)
+		return nil
+	case branch.FieldCityID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCityID(v)
+		return nil
+	case branch.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case branch.FieldLng:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLng(v)
+		return nil
+	case branch.FieldLat:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLat(v)
+		return nil
+	case branch.FieldAddress:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAddress(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Branch field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *BranchMutation) AddedFields() []string {
+	var fields []string
+	if m.addcity_id != nil {
+		fields = append(fields, branch.FieldCityID)
+	}
+	if m.addlng != nil {
+		fields = append(fields, branch.FieldLng)
+	}
+	if m.addlat != nil {
+		fields = append(fields, branch.FieldLat)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *BranchMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case branch.FieldCityID:
+		return m.AddedCityID()
+	case branch.FieldLng:
+		return m.AddedLng()
+	case branch.FieldLat:
+		return m.AddedLat()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *BranchMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case branch.FieldCityID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCityID(v)
+		return nil
+	case branch.FieldLng:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLng(v)
+		return nil
+	case branch.FieldLat:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLat(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Branch numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *BranchMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(branch.FieldDeletedAt) {
+		fields = append(fields, branch.FieldDeletedAt)
+	}
+	if m.FieldCleared(branch.FieldCreator) {
+		fields = append(fields, branch.FieldCreator)
+	}
+	if m.FieldCleared(branch.FieldLastModify) {
+		fields = append(fields, branch.FieldLastModify)
+	}
+	if m.FieldCleared(branch.FieldRemark) {
+		fields = append(fields, branch.FieldRemark)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *BranchMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *BranchMutation) ClearField(name string) error {
+	switch name {
+	case branch.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case branch.FieldCreator:
+		m.ClearCreator()
+		return nil
+	case branch.FieldLastModify:
+		m.ClearLastModify()
+		return nil
+	case branch.FieldRemark:
+		m.ClearRemark()
+		return nil
+	}
+	return fmt.Errorf("unknown Branch nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *BranchMutation) ResetField(name string) error {
+	switch name {
+	case branch.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case branch.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case branch.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case branch.FieldCreator:
+		m.ResetCreator()
+		return nil
+	case branch.FieldLastModify:
+		m.ResetLastModify()
+		return nil
+	case branch.FieldRemark:
+		m.ResetRemark()
+		return nil
+	case branch.FieldCityID:
+		m.ResetCityID()
+		return nil
+	case branch.FieldName:
+		m.ResetName()
+		return nil
+	case branch.FieldLng:
+		m.ResetLng()
+		return nil
+	case branch.FieldLat:
+		m.ResetLat()
+		return nil
+	case branch.FieldAddress:
+		m.ResetAddress()
+		return nil
+	}
+	return fmt.Errorf("unknown Branch field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *BranchMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *BranchMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *BranchMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *BranchMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *BranchMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *BranchMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *BranchMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Branch unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *BranchMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Branch edge %s", name)
+}
 
 // CityMutation represents an operation that mutates the City nodes in the graph.
 type CityMutation struct {
@@ -47,7 +1081,7 @@ type CityMutation struct {
 	created_at      *time.Time
 	updated_at      *time.Time
 	deleted_at      *time.Time
-	last_modify     *time.Time
+	last_modify     **model.Modifier
 	remark          *string
 	open            *bool
 	name            *string
@@ -284,12 +1318,12 @@ func (m *CityMutation) ResetDeletedAt() {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (m *CityMutation) SetLastModify(t time.Time) {
-	m.last_modify = &t
+func (m *CityMutation) SetLastModify(value *model.Modifier) {
+	m.last_modify = &value
 }
 
 // LastModify returns the value of the "last_modify" field in the mutation.
-func (m *CityMutation) LastModify() (r time.Time, exists bool) {
+func (m *CityMutation) LastModify() (r *model.Modifier, exists bool) {
 	v := m.last_modify
 	if v == nil {
 		return
@@ -300,7 +1334,7 @@ func (m *CityMutation) LastModify() (r time.Time, exists bool) {
 // OldLastModify returns the old "last_modify" field's value of the City entity.
 // If the City object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CityMutation) OldLastModify(ctx context.Context) (v *time.Time, err error) {
+func (m *CityMutation) OldLastModify(ctx context.Context) (v *model.Modifier, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLastModify is only allowed on UpdateOne operations")
 	}
@@ -805,7 +1839,7 @@ func (m *CityMutation) SetField(name string, value ent.Value) error {
 		m.SetDeletedAt(v)
 		return nil
 	case city.FieldLastModify:
-		v, ok := value.(time.Time)
+		v, ok := value.(*model.Modifier)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1083,7 +2117,7 @@ type ContractMutation struct {
 	created_at    *time.Time
 	updated_at    *time.Time
 	deleted_at    *time.Time
-	last_modify   *time.Time
+	last_modify   **model.Modifier
 	remark        *string
 	status        *uint8
 	addstatus     *int8
@@ -1318,12 +2352,12 @@ func (m *ContractMutation) ResetDeletedAt() {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (m *ContractMutation) SetLastModify(t time.Time) {
-	m.last_modify = &t
+func (m *ContractMutation) SetLastModify(value *model.Modifier) {
+	m.last_modify = &value
 }
 
 // LastModify returns the value of the "last_modify" field in the mutation.
-func (m *ContractMutation) LastModify() (r time.Time, exists bool) {
+func (m *ContractMutation) LastModify() (r *model.Modifier, exists bool) {
 	v := m.last_modify
 	if v == nil {
 		return
@@ -1334,7 +2368,7 @@ func (m *ContractMutation) LastModify() (r time.Time, exists bool) {
 // OldLastModify returns the old "last_modify" field's value of the Contract entity.
 // If the Contract object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ContractMutation) OldLastModify(ctx context.Context) (v *time.Time, err error) {
+func (m *ContractMutation) OldLastModify(ctx context.Context) (v *model.Modifier, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLastModify is only allowed on UpdateOne operations")
 	}
@@ -1792,7 +2826,7 @@ func (m *ContractMutation) SetField(name string, value ent.Value) error {
 		m.SetDeletedAt(v)
 		return nil
 	case contract.FieldLastModify:
-		v, ok := value.(time.Time)
+		v, ok := value.(*model.Modifier)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2050,7 +3084,7 @@ type ManagerMutation struct {
 	created_at     *time.Time
 	updated_at     *time.Time
 	deleted_at     *time.Time
-	last_modify    *time.Time
+	last_modify    **model.Modifier
 	remark         *string
 	phone          *string
 	name           *string
@@ -2282,12 +3316,12 @@ func (m *ManagerMutation) ResetDeletedAt() {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (m *ManagerMutation) SetLastModify(t time.Time) {
-	m.last_modify = &t
+func (m *ManagerMutation) SetLastModify(value *model.Modifier) {
+	m.last_modify = &value
 }
 
 // LastModify returns the value of the "last_modify" field in the mutation.
-func (m *ManagerMutation) LastModify() (r time.Time, exists bool) {
+func (m *ManagerMutation) LastModify() (r *model.Modifier, exists bool) {
 	v := m.last_modify
 	if v == nil {
 		return
@@ -2298,7 +3332,7 @@ func (m *ManagerMutation) LastModify() (r time.Time, exists bool) {
 // OldLastModify returns the old "last_modify" field's value of the Manager entity.
 // If the Manager object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ManagerMutation) OldLastModify(ctx context.Context) (v *time.Time, err error) {
+func (m *ManagerMutation) OldLastModify(ctx context.Context) (v *model.Modifier, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLastModify is only allowed on UpdateOne operations")
 	}
@@ -2667,7 +3701,7 @@ func (m *ManagerMutation) SetField(name string, value ent.Value) error {
 		m.SetDeletedAt(v)
 		return nil
 	case manager.FieldLastModify:
-		v, ok := value.(time.Time)
+		v, ok := value.(*model.Modifier)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2872,7 +3906,7 @@ type PersonMutation struct {
 	created_at       *time.Time
 	updated_at       *time.Time
 	deleted_at       *time.Time
-	last_modify      *time.Time
+	last_modify      **model.Modifier
 	remark           *string
 	status           *uint8
 	addstatus        *int8
@@ -3115,12 +4149,12 @@ func (m *PersonMutation) ResetDeletedAt() {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (m *PersonMutation) SetLastModify(t time.Time) {
-	m.last_modify = &t
+func (m *PersonMutation) SetLastModify(value *model.Modifier) {
+	m.last_modify = &value
 }
 
 // LastModify returns the value of the "last_modify" field in the mutation.
-func (m *PersonMutation) LastModify() (r time.Time, exists bool) {
+func (m *PersonMutation) LastModify() (r *model.Modifier, exists bool) {
 	v := m.last_modify
 	if v == nil {
 		return
@@ -3131,7 +4165,7 @@ func (m *PersonMutation) LastModify() (r time.Time, exists bool) {
 // OldLastModify returns the old "last_modify" field's value of the Person entity.
 // If the Person object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldLastModify(ctx context.Context) (v *time.Time, err error) {
+func (m *PersonMutation) OldLastModify(ctx context.Context) (v *model.Modifier, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLastModify is only allowed on UpdateOne operations")
 	}
@@ -3865,7 +4899,7 @@ func (m *PersonMutation) SetField(name string, value ent.Value) error {
 		m.SetDeletedAt(v)
 		return nil
 	case person.FieldLastModify:
-		v, ok := value.(time.Time)
+		v, ok := value.(*model.Modifier)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -4199,7 +5233,7 @@ type RiderMutation struct {
 	created_at       *time.Time
 	updated_at       *time.Time
 	deleted_at       *time.Time
-	last_modify      *time.Time
+	last_modify      **model.Modifier
 	remark           *string
 	group_id         *uint64
 	addgroup_id      *int64
@@ -4444,12 +5478,12 @@ func (m *RiderMutation) ResetDeletedAt() {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (m *RiderMutation) SetLastModify(t time.Time) {
-	m.last_modify = &t
+func (m *RiderMutation) SetLastModify(value *model.Modifier) {
+	m.last_modify = &value
 }
 
 // LastModify returns the value of the "last_modify" field in the mutation.
-func (m *RiderMutation) LastModify() (r time.Time, exists bool) {
+func (m *RiderMutation) LastModify() (r *model.Modifier, exists bool) {
 	v := m.last_modify
 	if v == nil {
 		return
@@ -4460,7 +5494,7 @@ func (m *RiderMutation) LastModify() (r time.Time, exists bool) {
 // OldLastModify returns the old "last_modify" field's value of the Rider entity.
 // If the Rider object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RiderMutation) OldLastModify(ctx context.Context) (v *time.Time, err error) {
+func (m *RiderMutation) OldLastModify(ctx context.Context) (v *model.Modifier, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLastModify is only allowed on UpdateOne operations")
 	}
@@ -5329,7 +6363,7 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 		m.SetDeletedAt(v)
 		return nil
 	case rider.FieldLastModify:
-		v, ok := value.(time.Time)
+		v, ok := value.(*model.Modifier)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

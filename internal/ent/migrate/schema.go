@@ -9,13 +9,41 @@ import (
 )
 
 var (
+	// BranchColumns holds the columns for the "branch" table.
+	BranchColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true},
+		{Name: "last_modify", Type: field.TypeJSON, Nullable: true},
+		{Name: "remark", Type: field.TypeString, Nullable: true},
+		{Name: "city_id", Type: field.TypeUint64},
+		{Name: "name", Type: field.TypeString},
+		{Name: "lng", Type: field.TypeUint64},
+		{Name: "lat", Type: field.TypeUint64},
+		{Name: "address", Type: field.TypeString},
+	}
+	// BranchTable holds the schema information for the "branch" table.
+	BranchTable = &schema.Table{
+		Name:       "branch",
+		Columns:    BranchColumns,
+		PrimaryKey: []*schema.Column{BranchColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "branch_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{BranchColumns[3]},
+			},
+		},
+	}
 	// CityColumns holds the columns for the "city" table.
 	CityColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "last_modify", Type: field.TypeTime, Nullable: true},
+		{Name: "last_modify", Type: field.TypeJSON, Nullable: true},
 		{Name: "remark", Type: field.TypeString, Nullable: true},
 		{Name: "open", Type: field.TypeBool, Nullable: true},
 		{Name: "name", Type: field.TypeString, Size: 100},
@@ -70,7 +98,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "last_modify", Type: field.TypeTime, Nullable: true},
+		{Name: "last_modify", Type: field.TypeJSON, Nullable: true},
 		{Name: "remark", Type: field.TypeString, Nullable: true},
 		{Name: "status", Type: field.TypeUint8, Default: 0},
 		{Name: "flow_id", Type: field.TypeString, Unique: true, Size: 40},
@@ -105,7 +133,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "last_modify", Type: field.TypeTime, Nullable: true},
+		{Name: "last_modify", Type: field.TypeJSON, Nullable: true},
 		{Name: "remark", Type: field.TypeString, Nullable: true},
 		{Name: "phone", Type: field.TypeString, Unique: true, Size: 30},
 		{Name: "name", Type: field.TypeString, Size: 30},
@@ -136,7 +164,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "last_modify", Type: field.TypeTime, Nullable: true},
+		{Name: "last_modify", Type: field.TypeJSON, Nullable: true},
 		{Name: "remark", Type: field.TypeString, Nullable: true},
 		{Name: "status", Type: field.TypeUint8, Default: 0},
 		{Name: "block", Type: field.TypeBool, Default: false},
@@ -173,7 +201,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "last_modify", Type: field.TypeTime, Nullable: true},
+		{Name: "last_modify", Type: field.TypeJSON, Nullable: true},
 		{Name: "remark", Type: field.TypeString, Nullable: true},
 		{Name: "group_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "phone", Type: field.TypeString, Unique: true, Size: 11},
@@ -229,6 +257,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		BranchTable,
 		CityTable,
 		ContractTable,
 		ManagerTable,
@@ -239,6 +268,9 @@ var (
 )
 
 func init() {
+	BranchTable.Annotation = &entsql.Annotation{
+		Table: "branch",
+	}
 	CityTable.ForeignKeys[0].RefTable = CityTable
 	CityTable.Annotation = &entsql.Annotation{
 		Table: "city",

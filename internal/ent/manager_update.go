@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -55,16 +56,8 @@ func (mu *ManagerUpdate) ClearDeletedAt() *ManagerUpdate {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (mu *ManagerUpdate) SetLastModify(t time.Time) *ManagerUpdate {
-	mu.mutation.SetLastModify(t)
-	return mu
-}
-
-// SetNillableLastModify sets the "last_modify" field if the given value is not nil.
-func (mu *ManagerUpdate) SetNillableLastModify(t *time.Time) *ManagerUpdate {
-	if t != nil {
-		mu.SetLastModify(*t)
-	}
+func (mu *ManagerUpdate) SetLastModify(m *model.Modifier) *ManagerUpdate {
+	mu.mutation.SetLastModify(m)
 	return mu
 }
 
@@ -261,14 +254,14 @@ func (mu *ManagerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := mu.mutation.LastModify(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Value:  value,
 			Column: manager.FieldLastModify,
 		})
 	}
 	if mu.mutation.LastModifyCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Column: manager.FieldLastModify,
 		})
 	}
@@ -365,16 +358,8 @@ func (muo *ManagerUpdateOne) ClearDeletedAt() *ManagerUpdateOne {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (muo *ManagerUpdateOne) SetLastModify(t time.Time) *ManagerUpdateOne {
-	muo.mutation.SetLastModify(t)
-	return muo
-}
-
-// SetNillableLastModify sets the "last_modify" field if the given value is not nil.
-func (muo *ManagerUpdateOne) SetNillableLastModify(t *time.Time) *ManagerUpdateOne {
-	if t != nil {
-		muo.SetLastModify(*t)
-	}
+func (muo *ManagerUpdateOne) SetLastModify(m *model.Modifier) *ManagerUpdateOne {
+	muo.mutation.SetLastModify(m)
 	return muo
 }
 
@@ -595,14 +580,14 @@ func (muo *ManagerUpdateOne) sqlSave(ctx context.Context) (_node *Manager, err e
 	}
 	if value, ok := muo.mutation.LastModify(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Value:  value,
 			Column: manager.FieldLastModify,
 		})
 	}
 	if muo.mutation.LastModifyCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Column: manager.FieldLastModify,
 		})
 	}

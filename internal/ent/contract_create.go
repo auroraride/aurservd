@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
@@ -66,16 +67,8 @@ func (cc *ContractCreate) SetNillableDeletedAt(t *time.Time) *ContractCreate {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (cc *ContractCreate) SetLastModify(t time.Time) *ContractCreate {
-	cc.mutation.SetLastModify(t)
-	return cc
-}
-
-// SetNillableLastModify sets the "last_modify" field if the given value is not nil.
-func (cc *ContractCreate) SetNillableLastModify(t *time.Time) *ContractCreate {
-	if t != nil {
-		cc.SetLastModify(*t)
-	}
+func (cc *ContractCreate) SetLastModify(m *model.Modifier) *ContractCreate {
+	cc.mutation.SetLastModify(m)
 	return cc
 }
 
@@ -308,11 +301,11 @@ func (cc *ContractCreate) createSpec() (*Contract, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := cc.mutation.LastModify(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Value:  value,
 			Column: contract.FieldLastModify,
 		})
-		_node.LastModify = &value
+		_node.LastModify = value
 	}
 	if value, ok := cc.mutation.Remark(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -471,7 +464,7 @@ func (u *ContractUpsert) ClearDeletedAt() *ContractUpsert {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (u *ContractUpsert) SetLastModify(v time.Time) *ContractUpsert {
+func (u *ContractUpsert) SetLastModify(v *model.Modifier) *ContractUpsert {
 	u.Set(contract.FieldLastModify, v)
 	return u
 }
@@ -675,7 +668,7 @@ func (u *ContractUpsertOne) ClearDeletedAt() *ContractUpsertOne {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (u *ContractUpsertOne) SetLastModify(v time.Time) *ContractUpsertOne {
+func (u *ContractUpsertOne) SetLastModify(v *model.Modifier) *ContractUpsertOne {
 	return u.Update(func(s *ContractUpsert) {
 		s.SetLastModify(v)
 	})
@@ -1061,7 +1054,7 @@ func (u *ContractUpsertBulk) ClearDeletedAt() *ContractUpsertBulk {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (u *ContractUpsertBulk) SetLastModify(v time.Time) *ContractUpsertBulk {
+func (u *ContractUpsertBulk) SetLastModify(v *model.Modifier) *ContractUpsertBulk {
 	return u.Update(func(s *ContractUpsert) {
 		s.SetLastModify(v)
 	})

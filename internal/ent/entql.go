@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -19,8 +20,32 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 6)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 7)}
 	graph.Nodes[0] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   branch.Table,
+			Columns: branch.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: branch.FieldID,
+			},
+		},
+		Type: "Branch",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			branch.FieldCreatedAt:  {Type: field.TypeTime, Column: branch.FieldCreatedAt},
+			branch.FieldUpdatedAt:  {Type: field.TypeTime, Column: branch.FieldUpdatedAt},
+			branch.FieldDeletedAt:  {Type: field.TypeTime, Column: branch.FieldDeletedAt},
+			branch.FieldCreator:    {Type: field.TypeJSON, Column: branch.FieldCreator},
+			branch.FieldLastModify: {Type: field.TypeJSON, Column: branch.FieldLastModify},
+			branch.FieldRemark:     {Type: field.TypeString, Column: branch.FieldRemark},
+			branch.FieldCityID:     {Type: field.TypeUint64, Column: branch.FieldCityID},
+			branch.FieldName:       {Type: field.TypeString, Column: branch.FieldName},
+			branch.FieldLng:        {Type: field.TypeUint64, Column: branch.FieldLng},
+			branch.FieldLat:        {Type: field.TypeUint64, Column: branch.FieldLat},
+			branch.FieldAddress:    {Type: field.TypeString, Column: branch.FieldAddress},
+		},
+	}
+	graph.Nodes[1] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   city.Table,
 			Columns: city.Columns,
@@ -34,7 +59,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			city.FieldCreatedAt:  {Type: field.TypeTime, Column: city.FieldCreatedAt},
 			city.FieldUpdatedAt:  {Type: field.TypeTime, Column: city.FieldUpdatedAt},
 			city.FieldDeletedAt:  {Type: field.TypeTime, Column: city.FieldDeletedAt},
-			city.FieldLastModify: {Type: field.TypeTime, Column: city.FieldLastModify},
+			city.FieldLastModify: {Type: field.TypeJSON, Column: city.FieldLastModify},
 			city.FieldRemark:     {Type: field.TypeString, Column: city.FieldRemark},
 			city.FieldOpen:       {Type: field.TypeBool, Column: city.FieldOpen},
 			city.FieldName:       {Type: field.TypeString, Column: city.FieldName},
@@ -43,7 +68,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			city.FieldParentID:   {Type: field.TypeUint64, Column: city.FieldParentID},
 		},
 	}
-	graph.Nodes[1] = &sqlgraph.Node{
+	graph.Nodes[2] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   contract.Table,
 			Columns: contract.Columns,
@@ -57,7 +82,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			contract.FieldCreatedAt:  {Type: field.TypeTime, Column: contract.FieldCreatedAt},
 			contract.FieldUpdatedAt:  {Type: field.TypeTime, Column: contract.FieldUpdatedAt},
 			contract.FieldDeletedAt:  {Type: field.TypeTime, Column: contract.FieldDeletedAt},
-			contract.FieldLastModify: {Type: field.TypeTime, Column: contract.FieldLastModify},
+			contract.FieldLastModify: {Type: field.TypeJSON, Column: contract.FieldLastModify},
 			contract.FieldRemark:     {Type: field.TypeString, Column: contract.FieldRemark},
 			contract.FieldStatus:     {Type: field.TypeUint8, Column: contract.FieldStatus},
 			contract.FieldRiderID:    {Type: field.TypeUint64, Column: contract.FieldRiderID},
@@ -66,7 +91,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			contract.FieldFiles:      {Type: field.TypeJSON, Column: contract.FieldFiles},
 		},
 	}
-	graph.Nodes[2] = &sqlgraph.Node{
+	graph.Nodes[3] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   manager.Table,
 			Columns: manager.Columns,
@@ -80,7 +105,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			manager.FieldCreatedAt:    {Type: field.TypeTime, Column: manager.FieldCreatedAt},
 			manager.FieldUpdatedAt:    {Type: field.TypeTime, Column: manager.FieldUpdatedAt},
 			manager.FieldDeletedAt:    {Type: field.TypeTime, Column: manager.FieldDeletedAt},
-			manager.FieldLastModify:   {Type: field.TypeTime, Column: manager.FieldLastModify},
+			manager.FieldLastModify:   {Type: field.TypeJSON, Column: manager.FieldLastModify},
 			manager.FieldRemark:       {Type: field.TypeString, Column: manager.FieldRemark},
 			manager.FieldPhone:        {Type: field.TypeString, Column: manager.FieldPhone},
 			manager.FieldName:         {Type: field.TypeString, Column: manager.FieldName},
@@ -88,7 +113,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			manager.FieldLastSigninAt: {Type: field.TypeTime, Column: manager.FieldLastSigninAt},
 		},
 	}
-	graph.Nodes[3] = &sqlgraph.Node{
+	graph.Nodes[4] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   person.Table,
 			Columns: person.Columns,
@@ -102,7 +127,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			person.FieldCreatedAt:      {Type: field.TypeTime, Column: person.FieldCreatedAt},
 			person.FieldUpdatedAt:      {Type: field.TypeTime, Column: person.FieldUpdatedAt},
 			person.FieldDeletedAt:      {Type: field.TypeTime, Column: person.FieldDeletedAt},
-			person.FieldLastModify:     {Type: field.TypeTime, Column: person.FieldLastModify},
+			person.FieldLastModify:     {Type: field.TypeJSON, Column: person.FieldLastModify},
 			person.FieldRemark:         {Type: field.TypeString, Column: person.FieldRemark},
 			person.FieldStatus:         {Type: field.TypeUint8, Column: person.FieldStatus},
 			person.FieldBlock:          {Type: field.TypeBool, Column: person.FieldBlock},
@@ -116,7 +141,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			person.FieldAuthAt:         {Type: field.TypeTime, Column: person.FieldAuthAt},
 		},
 	}
-	graph.Nodes[4] = &sqlgraph.Node{
+	graph.Nodes[5] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   rider.Table,
 			Columns: rider.Columns,
@@ -130,7 +155,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldCreatedAt:      {Type: field.TypeTime, Column: rider.FieldCreatedAt},
 			rider.FieldUpdatedAt:      {Type: field.TypeTime, Column: rider.FieldUpdatedAt},
 			rider.FieldDeletedAt:      {Type: field.TypeTime, Column: rider.FieldDeletedAt},
-			rider.FieldLastModify:     {Type: field.TypeTime, Column: rider.FieldLastModify},
+			rider.FieldLastModify:     {Type: field.TypeJSON, Column: rider.FieldLastModify},
 			rider.FieldRemark:         {Type: field.TypeString, Column: rider.FieldRemark},
 			rider.FieldPersonID:       {Type: field.TypeUint64, Column: rider.FieldPersonID},
 			rider.FieldGroupID:        {Type: field.TypeUint64, Column: rider.FieldGroupID},
@@ -145,7 +170,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldEsignAccountID: {Type: field.TypeString, Column: rider.FieldEsignAccountID},
 		},
 	}
-	graph.Nodes[5] = &sqlgraph.Node{
+	graph.Nodes[6] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   setting.Table,
 			Columns: setting.Columns,
@@ -244,6 +269,100 @@ type predicateAdder interface {
 }
 
 // addPredicate implements the predicateAdder interface.
+func (bq *BranchQuery) addPredicate(pred func(s *sql.Selector)) {
+	bq.predicates = append(bq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the BranchQuery builder.
+func (bq *BranchQuery) Filter() *BranchFilter {
+	return &BranchFilter{bq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *BranchMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the BranchMutation builder.
+func (m *BranchMutation) Filter() *BranchFilter {
+	return &BranchFilter{m}
+}
+
+// BranchFilter provides a generic filtering capability at runtime for BranchQuery.
+type BranchFilter struct {
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *BranchFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[0].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *BranchFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(branch.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *BranchFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(branch.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *BranchFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(branch.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *BranchFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(branch.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *BranchFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(branch.FieldCreator))
+}
+
+// WhereLastModify applies the entql json.RawMessage predicate on the last_modify field.
+func (f *BranchFilter) WhereLastModify(p entql.BytesP) {
+	f.Where(p.Field(branch.FieldLastModify))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *BranchFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(branch.FieldRemark))
+}
+
+// WhereCityID applies the entql uint64 predicate on the city_id field.
+func (f *BranchFilter) WhereCityID(p entql.Uint64P) {
+	f.Where(p.Field(branch.FieldCityID))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *BranchFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(branch.FieldName))
+}
+
+// WhereLng applies the entql uint64 predicate on the lng field.
+func (f *BranchFilter) WhereLng(p entql.Uint64P) {
+	f.Where(p.Field(branch.FieldLng))
+}
+
+// WhereLat applies the entql uint64 predicate on the lat field.
+func (f *BranchFilter) WhereLat(p entql.Uint64P) {
+	f.Where(p.Field(branch.FieldLat))
+}
+
+// WhereAddress applies the entql string predicate on the address field.
+func (f *BranchFilter) WhereAddress(p entql.StringP) {
+	f.Where(p.Field(branch.FieldAddress))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (cq *CityQuery) addPredicate(pred func(s *sql.Selector)) {
 	cq.predicates = append(cq.predicates, pred)
 }
@@ -271,7 +390,7 @@ type CityFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *CityFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[0].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -297,8 +416,8 @@ func (f *CityFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(city.FieldDeletedAt))
 }
 
-// WhereLastModify applies the entql time.Time predicate on the last_modify field.
-func (f *CityFilter) WhereLastModify(p entql.TimeP) {
+// WhereLastModify applies the entql json.RawMessage predicate on the last_modify field.
+func (f *CityFilter) WhereLastModify(p entql.BytesP) {
 	f.Where(p.Field(city.FieldLastModify))
 }
 
@@ -388,7 +507,7 @@ type ContractFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *ContractFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[1].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -414,8 +533,8 @@ func (f *ContractFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(contract.FieldDeletedAt))
 }
 
-// WhereLastModify applies the entql time.Time predicate on the last_modify field.
-func (f *ContractFilter) WhereLastModify(p entql.TimeP) {
+// WhereLastModify applies the entql json.RawMessage predicate on the last_modify field.
+func (f *ContractFilter) WhereLastModify(p entql.BytesP) {
 	f.Where(p.Field(contract.FieldLastModify))
 }
 
@@ -491,7 +610,7 @@ type ManagerFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *ManagerFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[2].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -517,8 +636,8 @@ func (f *ManagerFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(manager.FieldDeletedAt))
 }
 
-// WhereLastModify applies the entql time.Time predicate on the last_modify field.
-func (f *ManagerFilter) WhereLastModify(p entql.TimeP) {
+// WhereLastModify applies the entql json.RawMessage predicate on the last_modify field.
+func (f *ManagerFilter) WhereLastModify(p entql.BytesP) {
 	f.Where(p.Field(manager.FieldLastModify))
 }
 
@@ -575,7 +694,7 @@ type PersonFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PersonFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -601,8 +720,8 @@ func (f *PersonFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(person.FieldDeletedAt))
 }
 
-// WhereLastModify applies the entql time.Time predicate on the last_modify field.
-func (f *PersonFilter) WhereLastModify(p entql.TimeP) {
+// WhereLastModify applies the entql json.RawMessage predicate on the last_modify field.
+func (f *PersonFilter) WhereLastModify(p entql.BytesP) {
 	f.Where(p.Field(person.FieldLastModify))
 }
 
@@ -703,7 +822,7 @@ type RiderFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RiderFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -729,8 +848,8 @@ func (f *RiderFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(rider.FieldDeletedAt))
 }
 
-// WhereLastModify applies the entql time.Time predicate on the last_modify field.
-func (f *RiderFilter) WhereLastModify(p entql.TimeP) {
+// WhereLastModify applies the entql json.RawMessage predicate on the last_modify field.
+func (f *RiderFilter) WhereLastModify(p entql.BytesP) {
 	f.Where(p.Field(rider.FieldLastModify))
 }
 
@@ -850,7 +969,7 @@ type SettingFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SettingFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

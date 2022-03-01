@@ -68,16 +68,8 @@ func (rc *RiderCreate) SetNillableDeletedAt(t *time.Time) *RiderCreate {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (rc *RiderCreate) SetLastModify(t time.Time) *RiderCreate {
-	rc.mutation.SetLastModify(t)
-	return rc
-}
-
-// SetNillableLastModify sets the "last_modify" field if the given value is not nil.
-func (rc *RiderCreate) SetNillableLastModify(t *time.Time) *RiderCreate {
-	if t != nil {
-		rc.SetLastModify(*t)
-	}
+func (rc *RiderCreate) SetLastModify(m *model.Modifier) *RiderCreate {
+	rc.mutation.SetLastModify(m)
 	return rc
 }
 
@@ -411,11 +403,11 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := rc.mutation.LastModify(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Value:  value,
 			Column: rider.FieldLastModify,
 		})
-		_node.LastModify = &value
+		_node.LastModify = value
 	}
 	if value, ok := rc.mutation.Remark(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -641,7 +633,7 @@ func (u *RiderUpsert) ClearDeletedAt() *RiderUpsert {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (u *RiderUpsert) SetLastModify(v time.Time) *RiderUpsert {
+func (u *RiderUpsert) SetLastModify(v *model.Modifier) *RiderUpsert {
 	u.Set(rider.FieldLastModify, v)
 	return u
 }
@@ -959,7 +951,7 @@ func (u *RiderUpsertOne) ClearDeletedAt() *RiderUpsertOne {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (u *RiderUpsertOne) SetLastModify(v time.Time) *RiderUpsertOne {
+func (u *RiderUpsertOne) SetLastModify(v *model.Modifier) *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.SetLastModify(v)
 	})
@@ -1478,7 +1470,7 @@ func (u *RiderUpsertBulk) ClearDeletedAt() *RiderUpsertBulk {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (u *RiderUpsertBulk) SetLastModify(v time.Time) *RiderUpsertBulk {
+func (u *RiderUpsertBulk) SetLastModify(v *model.Modifier) *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.SetLastModify(v)
 	})

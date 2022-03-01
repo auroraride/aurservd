@@ -6,12 +6,53 @@ import (
 	"context"
 	"time"
 
+	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
+
+// SoftDelete returns an soft delete builder for Branch.
+func (c *BranchClient) SoftDelete() *BranchUpdate {
+	mutation := newBranchMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &BranchUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *BranchClient) SoftDeleteOne(b *Branch) *BranchUpdateOne {
+	mutation := newBranchMutation(c.config, OpUpdateOne, withBranch(b))
+	mutation.SetDeletedAt(time.Now())
+	return &BranchUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *BranchClient) SoftDeleteOneID(id uint64) *BranchUpdateOne {
+	mutation := newBranchMutation(c.config, OpUpdateOne, withBranchID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &BranchUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Branch.
+func (c *BranchClient) QueryNotDeleted() *BranchQuery {
+	return c.Query().Where(branch.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Branch not deleted entity by its id.
+func (c *BranchClient) GetNotDeleted(ctx context.Context, id uint64) (*Branch, error) {
+	return c.Query().Where(branch.ID(id), branch.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *BranchClient) GetNotDeletedX(ctx context.Context, id uint64) *Branch {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
 
 // SoftDelete returns an soft delete builder for City.
 func (c *CityClient) SoftDelete() *CityUpdate {

@@ -5,6 +5,7 @@ package ent
 import (
 	"time"
 
+	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -18,6 +19,21 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	branchMixin := schema.Branch{}.Mixin()
+	branchMixinFields0 := branchMixin[0].Fields()
+	_ = branchMixinFields0
+	branchFields := schema.Branch{}.Fields()
+	_ = branchFields
+	// branchDescCreatedAt is the schema descriptor for created_at field.
+	branchDescCreatedAt := branchMixinFields0[0].Descriptor()
+	// branch.DefaultCreatedAt holds the default value on creation for the created_at field.
+	branch.DefaultCreatedAt = branchDescCreatedAt.Default.(func() time.Time)
+	// branchDescUpdatedAt is the schema descriptor for updated_at field.
+	branchDescUpdatedAt := branchMixinFields0[1].Descriptor()
+	// branch.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	branch.DefaultUpdatedAt = branchDescUpdatedAt.Default.(func() time.Time)
+	// branch.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	branch.UpdateDefaultUpdatedAt = branchDescUpdatedAt.UpdateDefault.(func() time.Time)
 	cityMixin := schema.City{}.Mixin()
 	cityMixinFields0 := cityMixin[0].Fields()
 	_ = cityMixinFields0

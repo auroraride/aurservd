@@ -9,6 +9,7 @@ import (
 
 	"github.com/auroraride/aurservd/internal/ent/migrate"
 
+	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -26,6 +27,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Branch is the client for interacting with the Branch builders.
+	Branch *BranchClient
 	// City is the client for interacting with the City builders.
 	City *CityClient
 	// Contract is the client for interacting with the Contract builders.
@@ -51,6 +54,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.Branch = NewBranchClient(c.config)
 	c.City = NewCityClient(c.config)
 	c.Contract = NewContractClient(c.config)
 	c.Manager = NewManagerClient(c.config)
@@ -90,6 +94,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:      ctx,
 		config:   cfg,
+		Branch:   NewBranchClient(cfg),
 		City:     NewCityClient(cfg),
 		Contract: NewContractClient(cfg),
 		Manager:  NewManagerClient(cfg),
@@ -115,6 +120,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:      ctx,
 		config:   cfg,
+		Branch:   NewBranchClient(cfg),
 		City:     NewCityClient(cfg),
 		Contract: NewContractClient(cfg),
 		Manager:  NewManagerClient(cfg),
@@ -127,7 +133,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		City.
+//		Branch.
 //		Query().
 //		Count(ctx)
 //
@@ -150,12 +156,103 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.Branch.Use(hooks...)
 	c.City.Use(hooks...)
 	c.Contract.Use(hooks...)
 	c.Manager.Use(hooks...)
 	c.Person.Use(hooks...)
 	c.Rider.Use(hooks...)
 	c.Setting.Use(hooks...)
+}
+
+// BranchClient is a client for the Branch schema.
+type BranchClient struct {
+	config
+}
+
+// NewBranchClient returns a client for the Branch from the given config.
+func NewBranchClient(c config) *BranchClient {
+	return &BranchClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `branch.Hooks(f(g(h())))`.
+func (c *BranchClient) Use(hooks ...Hook) {
+	c.hooks.Branch = append(c.hooks.Branch, hooks...)
+}
+
+// Create returns a create builder for Branch.
+func (c *BranchClient) Create() *BranchCreate {
+	mutation := newBranchMutation(c.config, OpCreate)
+	return &BranchCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Branch entities.
+func (c *BranchClient) CreateBulk(builders ...*BranchCreate) *BranchCreateBulk {
+	return &BranchCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Branch.
+func (c *BranchClient) Update() *BranchUpdate {
+	mutation := newBranchMutation(c.config, OpUpdate)
+	return &BranchUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *BranchClient) UpdateOne(b *Branch) *BranchUpdateOne {
+	mutation := newBranchMutation(c.config, OpUpdateOne, withBranch(b))
+	return &BranchUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *BranchClient) UpdateOneID(id uint64) *BranchUpdateOne {
+	mutation := newBranchMutation(c.config, OpUpdateOne, withBranchID(id))
+	return &BranchUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Branch.
+func (c *BranchClient) Delete() *BranchDelete {
+	mutation := newBranchMutation(c.config, OpDelete)
+	return &BranchDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *BranchClient) DeleteOne(b *Branch) *BranchDeleteOne {
+	return c.DeleteOneID(b.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *BranchClient) DeleteOneID(id uint64) *BranchDeleteOne {
+	builder := c.Delete().Where(branch.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &BranchDeleteOne{builder}
+}
+
+// Query returns a query builder for Branch.
+func (c *BranchClient) Query() *BranchQuery {
+	return &BranchQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Branch entity by its id.
+func (c *BranchClient) Get(ctx context.Context, id uint64) (*Branch, error) {
+	return c.Query().Where(branch.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *BranchClient) GetX(ctx context.Context, id uint64) *Branch {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *BranchClient) Hooks() []Hook {
+	return c.hooks.Branch
 }
 
 // CityClient is a client for the City schema.

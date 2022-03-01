@@ -3,11 +3,13 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 )
 
@@ -24,7 +26,7 @@ type Manager struct {
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// LastModify holds the value of the "last_modify" field.
 	// 最后修改人
-	LastModify *time.Time `json:"last_modify,omitempty"`
+	LastModify *model.Modifier `json:"last_modify,omitempty"`
 	// Remark holds the value of the "remark" field.
 	// 备注
 	Remark *string `json:"remark,omitempty"`
@@ -47,11 +49,13 @@ func (*Manager) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case manager.FieldLastModify:
+			values[i] = new([]byte)
 		case manager.FieldID:
 			values[i] = new(sql.NullInt64)
 		case manager.FieldRemark, manager.FieldPhone, manager.FieldName, manager.FieldPassword:
 			values[i] = new(sql.NullString)
-		case manager.FieldCreatedAt, manager.FieldUpdatedAt, manager.FieldDeletedAt, manager.FieldLastModify, manager.FieldLastSigninAt:
+		case manager.FieldCreatedAt, manager.FieldUpdatedAt, manager.FieldDeletedAt, manager.FieldLastSigninAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Manager", columns[i])
@@ -94,11 +98,12 @@ func (m *Manager) assignValues(columns []string, values []interface{}) error {
 				*m.DeletedAt = value.Time
 			}
 		case manager.FieldLastModify:
-			if value, ok := values[i].(*sql.NullTime); !ok {
+			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field last_modify", values[i])
-			} else if value.Valid {
-				m.LastModify = new(time.Time)
-				*m.LastModify = value.Time
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &m.LastModify); err != nil {
+					return fmt.Errorf("unmarshal field last_modify: %w", err)
+				}
 			}
 		case manager.FieldRemark:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -168,10 +173,8 @@ func (m *Manager) String() string {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	if v := m.LastModify; v != nil {
-		builder.WriteString(", last_modify=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
+	builder.WriteString(", last_modify=")
+	builder.WriteString(fmt.Sprintf("%v", m.LastModify))
 	if v := m.Remark; v != nil {
 		builder.WriteString(", remark=")
 		builder.WriteString(*v)

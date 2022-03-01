@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -55,16 +56,8 @@ func (cu *CityUpdate) ClearDeletedAt() *CityUpdate {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (cu *CityUpdate) SetLastModify(t time.Time) *CityUpdate {
-	cu.mutation.SetLastModify(t)
-	return cu
-}
-
-// SetNillableLastModify sets the "last_modify" field if the given value is not nil.
-func (cu *CityUpdate) SetNillableLastModify(t *time.Time) *CityUpdate {
-	if t != nil {
-		cu.SetLastModify(*t)
-	}
+func (cu *CityUpdate) SetLastModify(m *model.Modifier) *CityUpdate {
+	cu.mutation.SetLastModify(m)
 	return cu
 }
 
@@ -333,14 +326,14 @@ func (cu *CityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := cu.mutation.LastModify(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Value:  value,
 			Column: city.FieldLastModify,
 		})
 	}
 	if cu.mutation.LastModifyCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Column: city.FieldLastModify,
 		})
 	}
@@ -526,16 +519,8 @@ func (cuo *CityUpdateOne) ClearDeletedAt() *CityUpdateOne {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (cuo *CityUpdateOne) SetLastModify(t time.Time) *CityUpdateOne {
-	cuo.mutation.SetLastModify(t)
-	return cuo
-}
-
-// SetNillableLastModify sets the "last_modify" field if the given value is not nil.
-func (cuo *CityUpdateOne) SetNillableLastModify(t *time.Time) *CityUpdateOne {
-	if t != nil {
-		cuo.SetLastModify(*t)
-	}
+func (cuo *CityUpdateOne) SetLastModify(m *model.Modifier) *CityUpdateOne {
+	cuo.mutation.SetLastModify(m)
 	return cuo
 }
 
@@ -828,14 +813,14 @@ func (cuo *CityUpdateOne) sqlSave(ctx context.Context) (_node *City, err error) 
 	}
 	if value, ok := cuo.mutation.LastModify(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Value:  value,
 			Column: city.FieldLastModify,
 		})
 	}
 	if cuo.mutation.LastModifyCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Column: city.FieldLastModify,
 		})
 	}

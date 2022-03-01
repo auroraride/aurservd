@@ -26,7 +26,7 @@ type Person struct {
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// LastModify holds the value of the "last_modify" field.
 	// 最后修改人
-	LastModify *time.Time `json:"last_modify,omitempty"`
+	LastModify *model.Modifier `json:"last_modify,omitempty"`
 	// Remark holds the value of the "remark" field.
 	// 备注
 	Remark *string `json:"remark,omitempty"`
@@ -88,7 +88,7 @@ func (*Person) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case person.FieldAuthResult:
+		case person.FieldLastModify, person.FieldAuthResult:
 			values[i] = new([]byte)
 		case person.FieldBlock:
 			values[i] = new(sql.NullBool)
@@ -96,7 +96,7 @@ func (*Person) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case person.FieldRemark, person.FieldName, person.FieldIDCardNumber, person.FieldIDCardPortrait, person.FieldIDCardNational, person.FieldAuthFace:
 			values[i] = new(sql.NullString)
-		case person.FieldCreatedAt, person.FieldUpdatedAt, person.FieldDeletedAt, person.FieldLastModify, person.FieldAuthAt:
+		case person.FieldCreatedAt, person.FieldUpdatedAt, person.FieldDeletedAt, person.FieldAuthAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Person", columns[i])
@@ -139,11 +139,12 @@ func (pe *Person) assignValues(columns []string, values []interface{}) error {
 				*pe.DeletedAt = value.Time
 			}
 		case person.FieldLastModify:
-			if value, ok := values[i].(*sql.NullTime); !ok {
+			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field last_modify", values[i])
-			} else if value.Valid {
-				pe.LastModify = new(time.Time)
-				*pe.LastModify = value.Time
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pe.LastModify); err != nil {
+					return fmt.Errorf("unmarshal field last_modify: %w", err)
+				}
 			}
 		case person.FieldRemark:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -256,10 +257,8 @@ func (pe *Person) String() string {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	if v := pe.LastModify; v != nil {
-		builder.WriteString(", last_modify=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
+	builder.WriteString(", last_modify=")
+	builder.WriteString(fmt.Sprintf("%v", pe.LastModify))
 	if v := pe.Remark; v != nil {
 		builder.WriteString(", remark=")
 		builder.WriteString(*v)

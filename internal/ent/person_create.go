@@ -67,16 +67,8 @@ func (pc *PersonCreate) SetNillableDeletedAt(t *time.Time) *PersonCreate {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (pc *PersonCreate) SetLastModify(t time.Time) *PersonCreate {
-	pc.mutation.SetLastModify(t)
-	return pc
-}
-
-// SetNillableLastModify sets the "last_modify" field if the given value is not nil.
-func (pc *PersonCreate) SetNillableLastModify(t *time.Time) *PersonCreate {
-	if t != nil {
-		pc.SetLastModify(*t)
-	}
+func (pc *PersonCreate) SetLastModify(m *model.Modifier) *PersonCreate {
+	pc.mutation.SetLastModify(m)
 	return pc
 }
 
@@ -390,11 +382,11 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := pc.mutation.LastModify(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Value:  value,
 			Column: person.FieldLastModify,
 		})
-		_node.LastModify = &value
+		_node.LastModify = value
 	}
 	if value, ok := pc.mutation.Remark(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -600,7 +592,7 @@ func (u *PersonUpsert) ClearDeletedAt() *PersonUpsert {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (u *PersonUpsert) SetLastModify(v time.Time) *PersonUpsert {
+func (u *PersonUpsert) SetLastModify(v *model.Modifier) *PersonUpsert {
 	u.Set(person.FieldLastModify, v)
 	return u
 }
@@ -876,7 +868,7 @@ func (u *PersonUpsertOne) ClearDeletedAt() *PersonUpsertOne {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (u *PersonUpsertOne) SetLastModify(v time.Time) *PersonUpsertOne {
+func (u *PersonUpsertOne) SetLastModify(v *model.Modifier) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
 		s.SetLastModify(v)
 	})
@@ -1346,7 +1338,7 @@ func (u *PersonUpsertBulk) ClearDeletedAt() *PersonUpsertBulk {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (u *PersonUpsertBulk) SetLastModify(v time.Time) *PersonUpsertBulk {
+func (u *PersonUpsertBulk) SetLastModify(v *model.Modifier) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
 		s.SetLastModify(v)
 	})

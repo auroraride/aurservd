@@ -3,11 +3,13 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
 )
 
@@ -24,7 +26,7 @@ type City struct {
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// LastModify holds the value of the "last_modify" field.
 	// 最后修改人
-	LastModify *time.Time `json:"last_modify,omitempty"`
+	LastModify *model.Modifier `json:"last_modify,omitempty"`
 	// Remark holds the value of the "remark" field.
 	// 备注
 	Remark *string `json:"remark,omitempty"`
@@ -87,13 +89,15 @@ func (*City) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case city.FieldLastModify:
+			values[i] = new([]byte)
 		case city.FieldOpen:
 			values[i] = new(sql.NullBool)
 		case city.FieldID, city.FieldParentID:
 			values[i] = new(sql.NullInt64)
 		case city.FieldRemark, city.FieldName, city.FieldAdcode, city.FieldCode:
 			values[i] = new(sql.NullString)
-		case city.FieldCreatedAt, city.FieldUpdatedAt, city.FieldDeletedAt, city.FieldLastModify:
+		case city.FieldCreatedAt, city.FieldUpdatedAt, city.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type City", columns[i])
@@ -136,11 +140,12 @@ func (c *City) assignValues(columns []string, values []interface{}) error {
 				*c.DeletedAt = value.Time
 			}
 		case city.FieldLastModify:
-			if value, ok := values[i].(*sql.NullTime); !ok {
+			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field last_modify", values[i])
-			} else if value.Valid {
-				c.LastModify = new(time.Time)
-				*c.LastModify = value.Time
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &c.LastModify); err != nil {
+					return fmt.Errorf("unmarshal field last_modify: %w", err)
+				}
 			}
 		case city.FieldRemark:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -226,10 +231,8 @@ func (c *City) String() string {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	if v := c.LastModify; v != nil {
-		builder.WriteString(", last_modify=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
+	builder.WriteString(", last_modify=")
+	builder.WriteString(fmt.Sprintf("%v", c.LastModify))
 	if v := c.Remark; v != nil {
 		builder.WriteString(", remark=")
 		builder.WriteString(*v)

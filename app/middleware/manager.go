@@ -8,6 +8,7 @@ package middleware
 import (
     "context"
     "github.com/auroraride/aurservd/app"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -43,7 +44,12 @@ func ManagerMiddleware() echo.MiddlewareFunc {
             // 重载context
             return next(&app.ManagerContext{
                 Context: c.(*app.Context),
-                Manager:   m,
+                Manager: m,
+                Modifier: &model.Modifier{
+                    ID:    m.ID,
+                    Name:  m.Name,
+                    Phone: m.Phone,
+                },
             })
         }
     }

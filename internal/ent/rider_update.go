@@ -58,16 +58,8 @@ func (ru *RiderUpdate) ClearDeletedAt() *RiderUpdate {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (ru *RiderUpdate) SetLastModify(t time.Time) *RiderUpdate {
-	ru.mutation.SetLastModify(t)
-	return ru
-}
-
-// SetNillableLastModify sets the "last_modify" field if the given value is not nil.
-func (ru *RiderUpdate) SetNillableLastModify(t *time.Time) *RiderUpdate {
-	if t != nil {
-		ru.SetLastModify(*t)
-	}
+func (ru *RiderUpdate) SetLastModify(m *model.Modifier) *RiderUpdate {
+	ru.mutation.SetLastModify(m)
 	return ru
 }
 
@@ -456,14 +448,14 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ru.mutation.LastModify(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Value:  value,
 			Column: rider.FieldLastModify,
 		})
 	}
 	if ru.mutation.LastModifyCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Column: rider.FieldLastModify,
 		})
 	}
@@ -735,16 +727,8 @@ func (ruo *RiderUpdateOne) ClearDeletedAt() *RiderUpdateOne {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (ruo *RiderUpdateOne) SetLastModify(t time.Time) *RiderUpdateOne {
-	ruo.mutation.SetLastModify(t)
-	return ruo
-}
-
-// SetNillableLastModify sets the "last_modify" field if the given value is not nil.
-func (ruo *RiderUpdateOne) SetNillableLastModify(t *time.Time) *RiderUpdateOne {
-	if t != nil {
-		ruo.SetLastModify(*t)
-	}
+func (ruo *RiderUpdateOne) SetLastModify(m *model.Modifier) *RiderUpdateOne {
+	ruo.mutation.SetLastModify(m)
 	return ruo
 }
 
@@ -1157,14 +1141,14 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 	}
 	if value, ok := ruo.mutation.LastModify(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Value:  value,
 			Column: rider.FieldLastModify,
 		})
 	}
 	if ruo.mutation.LastModifyCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Column: rider.FieldLastModify,
 		})
 	}

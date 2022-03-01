@@ -10,9 +10,11 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
+    "github.com/auroraride/aurservd/app/model"
     "time"
 )
 
+// TimeMixin 时间字段
 type TimeMixin struct {
     mixin.Schema
 }
@@ -24,6 +26,7 @@ func (TimeMixin) Fields() []ent.Field {
     }
 }
 
+// DeleteMixin 删除字段
 type DeleteMixin struct {
     mixin.Schema
 }
@@ -40,13 +43,25 @@ func (DeleteMixin) Indexes() []ent.Index {
     }
 }
 
+// LastModify 上次修改人
 type LastModify struct {
     mixin.Schema
 }
 
 func (LastModify) Fields() []ent.Field {
     return []ent.Field{
-        field.Time("last_modify").Nillable().Optional().Comment("最后修改人"),
+        field.JSON("last_modify", &model.Modifier{}).Optional().Comment("最后修改人"),
         field.String("remark").Nillable().Optional().Comment("备注"),
+    }
+}
+
+// Creator 创建人
+type Creator struct {
+    mixin.Schema
+}
+
+func (Creator) Fields() []ent.Field {
+    return []ent.Field{
+        field.JSON("creator", &model.Modifier{}).Optional().Comment("创建人"),
     }
 }

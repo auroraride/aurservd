@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 )
 
@@ -65,16 +66,8 @@ func (mc *ManagerCreate) SetNillableDeletedAt(t *time.Time) *ManagerCreate {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (mc *ManagerCreate) SetLastModify(t time.Time) *ManagerCreate {
-	mc.mutation.SetLastModify(t)
-	return mc
-}
-
-// SetNillableLastModify sets the "last_modify" field if the given value is not nil.
-func (mc *ManagerCreate) SetNillableLastModify(t *time.Time) *ManagerCreate {
-	if t != nil {
-		mc.SetLastModify(*t)
-	}
+func (mc *ManagerCreate) SetLastModify(m *model.Modifier) *ManagerCreate {
+	mc.mutation.SetLastModify(m)
 	return mc
 }
 
@@ -286,11 +279,11 @@ func (mc *ManagerCreate) createSpec() (*Manager, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := mc.mutation.LastModify(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeJSON,
 			Value:  value,
 			Column: manager.FieldLastModify,
 		})
-		_node.LastModify = &value
+		_node.LastModify = value
 	}
 	if value, ok := mc.mutation.Remark(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -429,7 +422,7 @@ func (u *ManagerUpsert) ClearDeletedAt() *ManagerUpsert {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (u *ManagerUpsert) SetLastModify(v time.Time) *ManagerUpsert {
+func (u *ManagerUpsert) SetLastModify(v *model.Modifier) *ManagerUpsert {
 	u.Set(manager.FieldLastModify, v)
 	return u
 }
@@ -615,7 +608,7 @@ func (u *ManagerUpsertOne) ClearDeletedAt() *ManagerUpsertOne {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (u *ManagerUpsertOne) SetLastModify(v time.Time) *ManagerUpsertOne {
+func (u *ManagerUpsertOne) SetLastModify(v *model.Modifier) *ManagerUpsertOne {
 	return u.Update(func(s *ManagerUpsert) {
 		s.SetLastModify(v)
 	})
@@ -980,7 +973,7 @@ func (u *ManagerUpsertBulk) ClearDeletedAt() *ManagerUpsertBulk {
 }
 
 // SetLastModify sets the "last_modify" field.
-func (u *ManagerUpsertBulk) SetLastModify(v time.Time) *ManagerUpsertBulk {
+func (u *ManagerUpsertBulk) SetLastModify(v *model.Modifier) *ManagerUpsertBulk {
 	return u.Update(func(s *ManagerUpsert) {
 		s.SetLastModify(v)
 	})
