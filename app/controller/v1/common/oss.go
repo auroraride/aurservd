@@ -16,6 +16,7 @@ type oss struct {
 
 var Oss = new(oss)
 
+// Token 获取阿里云oss临时凭证
 func (*oss) Token(c echo.Context) error {
     return app.NewResponse(c).SetData(ali.NewOss().StsToken()).Send()
 }

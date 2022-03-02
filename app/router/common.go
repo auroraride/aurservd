@@ -11,9 +11,13 @@ import (
 
 func (r *router) commonRoutes() {
     g := r.Group("/common")
+
     g.GET("/captcha", common.CaptchaGenerate)
+
     g.POST("/captcha", common.CaptchaVerify)
+
     g.POST("/sms", common.SendSmsCode)
+
     g.GET("/oss/token", common.Oss.Token)
 
     g.Static("/demo", "public")
