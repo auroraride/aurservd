@@ -11,8 +11,8 @@ import (
 )
 
 // rideRoutes 骑手路由
-func (r *router) rideRoutes() {
-    g := r.Group("/rider/v1")
+func loadRideRoutes() {
+    g := root.Group("rider/v1")
 
     g.Any("/callback", rapi.Callback.RiderCallback, middleware.BodyDump())          // 骑手api回调中心
     g.Any("/callback/esign", rapi.Callback.ESignCallback, middleware.BodyDumpRaw()) // esign回调中心

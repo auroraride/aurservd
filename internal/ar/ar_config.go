@@ -47,6 +47,7 @@ type EsignConfig struct {
 type config struct {
     App struct {
         Address   string
+        Host      string
         BodyLimit string
         RateLimit float64
         Debug     struct {

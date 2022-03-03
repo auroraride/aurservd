@@ -17,16 +17,30 @@ import (
     "golang.org/x/time/rate"
 )
 
-var r *router
-
-type router struct {
-    *echo.Echo
-}
+var (
+    root *echo.Group
+)
 
 func Run() {
     e := echo.New()
+    root = e.Group("/")
+
+    // 错误处理
+    e.Validator = request.NewGlobalValidator()
+    e.HTTPErrorHandler = func(err error, c echo.Context) {
+        res := app.NewResponse(c).Error(app.StatusError).SetMessage(err.Error())
+        if e, ok := err.(*snag.Error); ok {
+            if data, ok := e.Data.(app.Response); ok {
+                res.Error(data.Code).SetMessage(data.Message).SetData(data.Data)
+            }
+        }
+        _ = res.Send()
+    }
+
+    // 先载入文档路由
+    e.Use(newRedoc())
+
     // e.Logger.SetHeader(`[time] ${time_rfc3339_nano}` + "\n")
-    r = &router{e}
     cfg := ar.Config.App
     corsConfig := mw.DefaultCORSConfig
     corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, []string{
@@ -35,7 +49,7 @@ func Run() {
         app.HeaderDeviceType,
     }...)
     // 加载全局中间件
-    r.Use(
+    root.Use(
         func(next echo.HandlerFunc) echo.HandlerFunc {
             return func(ctx echo.Context) error {
                 c := &app.Context{Context: ctx}
@@ -60,26 +74,10 @@ func Run() {
         mw.RateLimiter(mw.NewRateLimiterMemoryStore(rate.Limit(cfg.RateLimit))),
     )
 
-    r.Validator = request.NewGlobalValidator()
-
-    r.HTTPErrorHandler = func(err error, c echo.Context) {
-        res := app.NewResponse(c).Error(app.StatusError).SetMessage(err.Error())
-        if e, ok := err.(*snag.Error); ok {
-            if data, ok := e.Data.(app.Response); ok {
-                res.Error(data.Code).SetMessage(data.Message).SetData(data.Data)
-            }
-        }
-        _ = res.Send()
-    }
-
     // 载入路由
-    {
-        // demo
-        // dg := r.Group("/demo")
-    }
-    r.commonRoutes()  // 公共API
-    r.rideRoutes()    // 骑手路由
-    r.managerRoutes() // 管理员路由
+    loadCommonRoutes()  // 公共API
+    loadRideRoutes()    // 骑手路由
+    loadManagerRoutes() // 管理员路由
 
-    log.Fatal(r.Start(cfg.Address))
+    log.Fatal(e.Start(cfg.Address))
 }

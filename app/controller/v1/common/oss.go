@@ -16,7 +16,14 @@ type oss struct {
 
 var Oss = new(oss)
 
-// Token 获取阿里云oss临时凭证
+// Token
+// @Router       /common/{id} [get]
+// @Summary      获取阿里云oss临时凭证
+// @Description  上传文件必须，单次获取有效时间为1个小时
+// @Tags         公共接口
+// @Accept       json
+// @Produce      json
+// @Success      200 {object} model.AliyunOssStsRes "请求成功"
 func (*oss) Token(c echo.Context) error {
     return app.NewResponse(c).SetData(ali.NewOss().StsToken()).Send()
 }

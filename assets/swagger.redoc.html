@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Redoc</title>
+    <title>{{ .title }}</title>
     <!-- needed for adaptive design -->
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{{ .description }}">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
 
     <!--
@@ -18,7 +19,11 @@
     </style>
 </head>
 <body>
-<redoc spec-url='http://petstore.swagger.io/v2/swagger.json'></redoc>
-<script src="https://cdn.jsdelivr.net/npm/redoc@latest/bundles/redoc.standalone.js"> </script>
+<redoc
+  spec-url="/docs/swagger.json"
+  hide-download-button
+  disable-search
+/>
+<script src="https://auroraride-public.oss-cn-beijing.aliyuncs.com/assets/redoc.standalone.js"></script>
 </body>
 </html>

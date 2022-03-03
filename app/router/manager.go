@@ -10,8 +10,8 @@ import (
     "github.com/auroraride/aurservd/app/middleware"
 )
 
-func (r *router) managerRoutes() {
-    g := r.Group("/manager/v1")
+func loadManagerRoutes() {
+    g := root.Group("manager/v1")
 
     g.POST("/user/signin", mapi.Manager.Signin) // 登录
 

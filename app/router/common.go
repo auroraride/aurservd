@@ -9,8 +9,8 @@ import (
     "github.com/auroraride/aurservd/app/controller/v1/common"
 )
 
-func (r *router) commonRoutes() {
-    g := r.Group("/common")
+func  loadCommonRoutes() {
+    g := root.Group("common")
 
     g.GET("/captcha", common.CaptchaGenerate)
 
