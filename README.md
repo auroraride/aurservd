@@ -7,6 +7,15 @@
 
 ## 常用命令
 
+## swag
+> 新增了trans作为备注
+> https://github.com/liasica/swag
+```shell
+git clone git@github.com:liasica/swag.git
+cd swag/cmd/swag
+go install
+```
+
 ```bash
 go run ./cmd/ent init TABLE
 go run ./cmd/ent generate

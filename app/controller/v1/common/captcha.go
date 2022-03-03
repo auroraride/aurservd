@@ -14,7 +14,16 @@ import (
     "net/http"
 )
 
-// CaptchaGenerate 生成图片验证码
+// CaptchaGenerate
+// @ID           CaptchaGenerate
+// @Router       /common/captcha [GET]
+// @Summary      C1.生成图片验证码
+// @Description  生成的图片验证码有效时间为10分钟
+// @Tags         [C]公共接口
+// @Accept       png
+// @Produce      png
+// @Success      200  {string}  string  "ok"
+// @Header       200  {string}  X-Captcha-Id  true  "Captcha验证码ID"
 func CaptchaGenerate(c echo.Context) error {
     id, item, err := service.NewCaptcha().DrawCaptcha()
     if err != nil {

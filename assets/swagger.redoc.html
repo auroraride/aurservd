@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ .title }}</title>
+    <title>极光出行API</title>
     <!-- needed for adaptive design -->
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="{{ .description }}">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
 
     <!--
@@ -16,14 +15,31 @@
         margin: 0;
         padding: 0;
       }
+
+      body table th {
+        text-align: center !important;
+      }
+
+      body pre code {
+        text-shadow: none !important;
+      }
     </style>
 </head>
 <body>
-<redoc
-  spec-url="/docs/swagger.json"
-  hide-download-button
-  disable-search
-/>
-<script src="https://auroraride-public.oss-cn-beijing.aliyuncs.com/assets/redoc.standalone.js"></script>
+<div id="main"></div>
+<script src="https://cdn.auroraride.com/assets/redoc.standalone.js"></script>
+<script>
+    Redoc.init("/docs/swagger.json", {
+        disableSearch: true,
+        sortOperationsAlphabetically: true,
+        sortTagsAlphabetically: true,
+        hideDownloadButton: true,
+        hideHostname: true,
+        hideSchemaPattern: true,
+        hideSingleRequestSampleTab: true,
+        hideSchemaTitles: true,
+        expandResponses: '200',
+    }, document.getElementById("main"))
+</script>
 </body>
 </html>

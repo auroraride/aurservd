@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectTasksOptions">
     <TaskOptions isEnabled="true">
-      <option name="arguments" value="init -g ./router/swagger.go -d ./app --exclude ./app/service,./app/router,./app/middleware,./app/request -o ./docs --md ./wiki" />
+      <option name="arguments" value="init -g ./router/swagger.go -d ./app --exclude ./app/service,./app/router,./app/middleware,./app/request -o ./assets/docs --md ./wiki" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
       <option name="exitCodeBehavior" value="ERROR" />
@@ -16,7 +16,7 @@
       <option name="outputFromStdout" value="false" />
       <option name="program" value="swag" />
       <option name="runOnExternalChanges" value="true" />
-      <option name="scopeName" value="SwagPath" />
+      <option name="scopeName" value="Swagger" />
       <option name="trackOnlyRoot" value="false" />
       <option name="workingDir" value="$PROJECT_DIR$" />
       <envs />

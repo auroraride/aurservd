@@ -16,7 +16,16 @@ type city struct{}
 
 var City = new(city)
 
-// List 城市列表
+// List
+// ID            CityList
+// @Router       /manager/v1/city [GET]
+// @Summary      M2.城市列表
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        status           query  model.CityListReq  false  "启用状态"
+// @Success      200  {object}  []model.CityItem  "请求成功"
 func (*city) List(c echo.Context) (err error) {
     req := new(model.CityListReq)
     app.GetManagerContext(c).BindValidate(req)
@@ -24,7 +33,17 @@ func (*city) List(c echo.Context) (err error) {
     return app.NewResponse(c).SetData(service.NewCity().List(req)).Send()
 }
 
-// Modify 修改城市
+// Modify
+// @ID           CityModify
+// @Router       /manager/v1/city [PUT]
+// @Summary      M3.修改城市
+// @Description  desc
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body  model.CityModifyReq  true  "城市数据"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*city) Modify(c echo.Context) (err error) {
     req := new(model.CityModifyReq)
     ctx := app.GetManagerContext(c)

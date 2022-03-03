@@ -3,6 +3,12 @@
 > 接口返回说明查看 **[返回](#返回)**
 
 ### 认证
+项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`
+|  header   |  类型  |  接口  |
+| :-----: | :----: | :--: |
+|  X-Rider-Token   |  string   |  骑手API  |
+| X-Manager-Token | string |  后台API  |
+|  X-Employee-Token   | string |  员工API  |
 
 ### 返回
 一个标准的返回应包含以下结构
@@ -30,7 +36,7 @@
 
 
 比如：
-
+> 默认成功返回
 ```json
 {
   "code": 0,

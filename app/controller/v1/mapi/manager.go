@@ -19,7 +19,15 @@ var (
     Manager = new(manager)
 )
 
-// Signin 管理员登录
+// Signin
+// @ID           ManagerSignin
+// @Router       /manager/v1/user/signin [POST]
+// @Summary      M1.登录
+// @Description  管理员登录
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  model.ManagerSigninRes  "请求成功"
 func (*manager) Signin(c echo.Context) (err error) {
     req := new(model.ManagerSigninReq)
     ctx := c.(*app.Context)

@@ -15,4 +15,7 @@ var (
 
     //go:embed swagger.redoc.html
     SwaggerRedocUI string
+
+    // //go:embed docs/swagger.json
+    // SwaggerSpec []byte
 )

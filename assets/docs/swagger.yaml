@@ -1,0 +1,508 @@
+basePath: /
+definitions:
+  model.AliyunOssStsRes:
+    properties:
+      accessKeyId:
+        type: string
+      accessKeySecret:
+        type: string
+      bucket:
+        type: string
+      expiration:
+        type: string
+      region:
+        type: string
+      stsToken:
+        type: string
+    type: object
+  model.Branch:
+    properties:
+      address:
+        description: 详细地址
+        type: string
+      cityId:
+        description: 城市
+        type: integer
+      contracts:
+        items:
+          $ref: '#/definitions/model.BranchContract'
+        type: array
+      creator:
+        $ref: '#/definitions/model.Modifier'
+      lastModifier:
+        $ref: '#/definitions/model.Modifier'
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      name:
+        description: 网点名称
+        type: string
+      photos:
+        description: 网点照片
+        items:
+          type: string
+        type: array
+    required:
+    - address
+    - cityId
+    - lat
+    - lng
+    - name
+    - photos
+    type: object
+  model.BranchContract:
+    properties:
+      area:
+        description: 网点面积
+        type: number
+      bankNumber:
+        description: 房东银行卡号
+        type: string
+      electricity:
+        description: 电费单价
+        type: number
+      electricityPledge:
+        description: 电费押金
+        type: number
+      endTime:
+        description: 租期结束时间
+        type: string
+      file:
+        description: 合同文件
+        type: string
+      idCardNumber:
+        description: 房东身份证
+        type: string
+      landlordName:
+        description: 房东姓名
+        type: string
+      lease:
+        description: 租期月数
+        type: integer
+      phone:
+        description: 房东手机号
+        type: string
+      pledge:
+        description: 押金
+        type: number
+      rent:
+        description: 租金
+        type: number
+      sheets:
+        description: 底单
+        items:
+          type: string
+        type: array
+      startTime:
+        description: 租期开始时间
+        type: string
+    required:
+    - area
+    - bankNumber
+    - electricity
+    - electricityPledge
+    - endTime
+    - file
+    - idCardNumber
+    - landlordName
+    - lease
+    - phone
+    - pledge
+    - rent
+    - sheets
+    - startTime
+    type: object
+  model.CityItem:
+    properties:
+      children:
+        description: 城市列表
+        items:
+          $ref: '#/definitions/model.CityItem'
+        type: array
+      id:
+        description: 城市或省份ID
+        type: integer
+      name:
+        description: 城市/省份
+        type: string
+      open:
+        description: 是否启用
+        type: boolean
+    type: object
+  model.CityModifyReq:
+    properties:
+      id:
+        description: 城市
+        type: integer
+      open:
+        description: 状态
+        type: boolean
+    required:
+    - id
+    - open
+    type: object
+  model.ManagerSigninRes:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+      token:
+        type: string
+    type: object
+  model.Modifier:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+  model.Pagination:
+    properties:
+      current:
+        description: 当前页
+        type: integer
+      pages:
+        description: 总页数
+        type: integer
+      total:
+        description: 总条数
+        type: integer
+    type: object
+  model.PaginationRes:
+    properties:
+      items:
+        description: 返回数据
+      pagination:
+        $ref: '#/definitions/model.Pagination'
+        description: 分页属性
+    type: object
+  model.SmsReq:
+    properties:
+      captchaCode:
+        description: captcha 验证码
+        type: string
+      phone:
+        description: 手机号
+        type: string
+    required:
+    - captchaCode
+    - phone
+    type: object
+  model.SmsRes:
+    properties:
+      id:
+        description: 任务ID
+        type: string
+    type: object
+  model.StatusResponse:
+    properties:
+      status:
+        description: 默认接口成功返回
+        type: boolean
+    type: object
+info:
+  contact: {}
+  description: |-
+    ### 说明
+    > 接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。
+    > 接口返回说明查看 **[返回](#返回)**
+
+    ### 认证
+    项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`
+    |  header   |  类型  |  接口  |
+    | :-----: | :----: | :--: |
+    |  X-Rider-Token   |  string   |  骑手API  |
+    | X-Manager-Token | string |  后台API  |
+    |  X-Employee-Token   | string |  员工API  |
+
+    ### 返回
+    一个标准的返回应包含以下结构
+
+    |  字段   |  类型  |  必填  |  说明  |
+    | :-----: | :----: | :--: | :--: |
+    |  code   |  int   |  是  |  返回代码  |
+    | message | string |  是  |  返回消息  |
+    |  data   | object |  是  |  返回数据  |
+
+    `code`代码取值说明
+
+    | 二进制 | 十六进制 | 说明 |
+    | :----: | :------: | :--: |
+    | 0  |  0x000  | 请求成功 |
+    | 256 |  0x100  | 请求失败 |
+    | 512 |  0x200  | 需要认证 (需要登录) |
+    | 768 |  0x300  | 没有权限 |
+    | 1024 |  0x400  | 资源未获 |
+    | 1280 |  0x500  | 未知错误 |
+    | 1536 |  0x600  | 需要实名 |
+    | 1792 |  0x700  | 需要验证 (更换设备需要人脸验证) |
+    | 2048 |  0x800  | 需要联系人 |
+    | 2304 |  0x900  | 请求过期 |
+
+
+    比如：
+    > 默认成功返回
+    ```json
+    {
+      "code": 0,
+      "message": "OK",
+      "data": {
+        "status": true
+      }
+    }
+    ```
+  title: 极光出行API
+  version: "1.0"
+paths:
+  /commom/sms:
+    post:
+      consumes:
+      - application/json
+      description: 上传文件必须，单次获取有效时间为1个小时
+      operationId: SendSmsCode
+      parameters:
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.SmsReq'
+      - description: Captcha验证码ID
+        in: header
+        name: X-Captcha-Id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.SmsRes'
+      summary: C2.发送短信验证码
+      tags:
+      - '[C]公共接口'
+  /common/captcha:
+    get:
+      consumes:
+      - image/png
+      description: 生成的图片验证码有效时间为10分钟
+      operationId: CaptchaGenerate
+      produces:
+      - image/png
+      responses:
+        "200":
+          description: ok
+          headers:
+            X-Captcha-Id:
+              description: Captcha验证码ID
+              type: string
+          schema:
+            type: string
+      summary: C1.生成图片验证码
+      tags:
+      - '[C]公共接口'
+  /common/oss/token:
+    get:
+      consumes:
+      - application/json
+      description: 上传文件必须，单次获取有效时间为1个小时
+      operationId: AliyunOssToken
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AliyunOssStsRes'
+      summary: C3.获取阿里云oss临时凭证
+      tags:
+      - '[C]公共接口'
+  /manager/v1/{id}/contract:
+    post:
+      consumes:
+      - application/json
+      operationId: BranchAddContract
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 合同数据
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BranchContract'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M7.新增合同
+      tags:
+      - '[M]管理接口'
+  /manager/v1/branch:
+    get:
+      consumes:
+      - application/json
+      operationId: BranchList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.Branch'
+                  type: array
+              type: object
+      summary: M4.网点列表
+      tags:
+      - '[M]管理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: BranchAdd
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 网点数据
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.Branch'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M5.新增网点
+      tags:
+      - '[M]管理接口'
+  /manager/v1/branch/{id}:
+    put:
+      consumes:
+      - application/json
+      operationId: BranchModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 网点数据
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.Branch'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M6.编辑网点
+      tags:
+      - '[M]管理接口'
+  /manager/v1/city:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 启用状态 0:全部 1:未启用 2:已启用
+        in: query
+        maximum: 2
+        minimum: 0
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CityItem'
+            type: array
+      summary: M2.城市列表
+      tags:
+      - '[M]管理接口'
+    put:
+      consumes:
+      - application/json
+      description: desc
+      operationId: CityModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 城市数据
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CityModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M3.修改城市
+      tags:
+      - '[M]管理接口'
+  /manager/v1/user/signin:
+    post:
+      consumes:
+      - application/json
+      description: 管理员登录
+      operationId: ManagerSignin
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.ManagerSigninRes'
+      summary: M1.登录
+      tags:
+      - '[M]管理接口'
+swagger: "2.0"

@@ -37,16 +37,18 @@ func Run() {
         _ = res.Send()
     }
 
-    // 先载入文档路由
-    e.Use(newRedoc())
-
     // e.Logger.SetHeader(`[time] ${time_rfc3339_nano}` + "\n")
     cfg := ar.Config.App
     corsConfig := mw.DefaultCORSConfig
     corsConfig.AllowHeaders = append(corsConfig.AllowHeaders, []string{
+        app.HeaderContentType,
         app.HeaderCaptchaID,
         app.HeaderDeviceSerial,
         app.HeaderDeviceType,
+        app.HeaderPushId,
+        app.HeaderRiderToken,
+        app.HeaderManagerToken,
+        app.HeaderEmployeeToken,
     }...)
     // 加载全局中间件
     root.Use(
@@ -75,6 +77,7 @@ func Run() {
     )
 
     // 载入路由
+    redocRoute(e)       // 文档
     loadCommonRoutes()  // 公共API
     loadRideRoutes()    // 骑手路由
     loadManagerRoutes() // 管理员路由

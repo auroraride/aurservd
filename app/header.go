@@ -7,6 +7,8 @@ package app
 
 // http headers
 const (
+    // HeaderContentType the ContentType Header
+    HeaderContentType = "Content-Type"
     // HeaderCaptchaID 图片验证码ID
     HeaderCaptchaID = "X-Captcha-Id"
     // HeaderDeviceSerial 骑手设备序列号 (由此判定是否更换了设备)
@@ -19,4 +21,6 @@ const (
     HeaderRiderToken = "X-Rider-Token"
     // HeaderManagerToken 后台token
     HeaderManagerToken = "X-Manager-Token"
+    // HeaderEmployeeToken 员工token
+    HeaderEmployeeToken = "X-Employee-Token"
 )

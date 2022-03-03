@@ -8,6 +8,7 @@ package common
 import (
     "errors"
     "github.com/auroraride/aurservd/app"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/labstack/echo/v4"
@@ -18,15 +19,20 @@ var (
     debugPhones = ar.Config.App.Debug.Phone
 )
 
-type smsReq struct {
-    Phone       string `json:"phone" validate:"required"`       // 手机号
-    CaptchaCode string `json:"captchaCode" validate:"required"` // captcha 验证码
-}
-
-// SendSmsCode 发送短信验证码
+// SendSmsCode
+// @ID           SendSmsCode
+// @Router       /commom/sms [POST]
+// @Summary      C2.发送短信验证码
+// @Description  上传文件必须，单次获取有效时间为1个小时
+// @Tags         [C]公共接口
+// @Param        body  body  model.SmsReq  true  "请求参数"
+// @Param        X-Captcha-Id  header  string  true  "Captcha验证码ID"
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  model.SmsRes  "请求成功"
 func SendSmsCode(c echo.Context) error {
     ctx := c.(*app.Context)
-    req := new(smsReq)
+    req := new(model.SmsReq)
     ctx.BindValidate(req)
     id := ctx.Request().Header.Get(app.HeaderCaptchaID)
     var smsId string

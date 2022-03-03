@@ -14,7 +14,7 @@ type BranchListReq struct {
 
 // Branch 网点请求体
 type Branch struct {
-    ID uint64 `json:"id,omitempty" param:"id"`
+    ID uint64 `json:"id,omitempty" param:"id" swaggerignore:"true"`
 
     CityID    *uint64           `json:"cityId" validate:"required" trans:"城市"`
     Name      *string           `json:"name" validate:"required" trans:"网点名称"`
@@ -30,10 +30,10 @@ type Branch struct {
 
 // BranchContract 网点合同请求体
 type BranchContract struct {
-    ID       uint64 `json:"id,omitempty"`
-    BranchID uint64 `json:"branchId,omitempty" param:"id"`
+    ID       uint64 `json:"id,omitempty" swaggerignore:"true"`
+    BranchID uint64 `json:"branchId,omitempty" param:"id" swaggerignore:"true"`
 
-    LandlordName      string   `json:"landlordName" validate:"required"`
+    LandlordName      string   `json:"landlordName" validate:"required" trans:"房东姓名"`
     IDCardNumber      string   `json:"idCardNumber" validate:"required" trans:"房东身份证"`
     Phone             string   `json:"phone" validate:"required,phone" trans:"房东手机号"`
     BankNumber        string   `json:"bankNumber" validate:"required" trans:"房东银行卡号"`
