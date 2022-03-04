@@ -18,6 +18,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/golang-module/carbon/v2 v2.0.1
+	github.com/h2non/filetype v1.1.3
 	github.com/iancoleman/strcase v0.2.0
 	github.com/jackc/pgx/v4 v4.14.1
 	github.com/jinzhu/copier v0.3.5
@@ -61,7 +62,6 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/google/uuid v1.3.0 // indirect
-	github.com/h2non/filetype v1.1.3 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.10.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
@@ -111,5 +111,6 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
-//replace github.com/swaggo/swag => github.com/liasica/swag v1.8.1-0.20220303160515-016e82b08f2e
-replace github.com/swaggo/swag => /Users/liasica/Downloads/swag
+//replace github.com/swaggo/swag => /Users/liasica/Downloads/swag
+
+replace github.com/swaggo/swag => github.com/liasica/swag v1.8.1-0.20220304020702-d9f054be69eb
