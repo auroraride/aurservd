@@ -10,14 +10,14 @@ node {
         sshagent (credentials: ['Jenkins']) {
             sh "ssh -o StrictHostKeyChecking=no root@39.106.77.239 '${deploy}'"
         }
-        echo '完成Development环境部署'
+        echo '已结束Development环境部署'
     }
     stage('Production') {
-        options {
-            timeout(time: 180, unit: "SECONDS")
+        if (TAG == 'prod') {
+            echo '开始部署Production环境'
+        } else {
+            echo '不需要部署Production环境'
         }
-        input 'Deploy to Production?'
-        echo "开始部署Production环境"
-        echo "已终止部署"
+        echo '已结束Production环境部署'
     }
 }
