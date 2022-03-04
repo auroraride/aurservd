@@ -19,7 +19,7 @@ var City = new(city)
 // List
 // ID            CityList
 // @Router       /manager/v1/city [GET]
-// @Summary      M2.城市列表
+// @Summary      M2.1 城市列表
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -35,8 +35,8 @@ func (*city) List(c echo.Context) (err error) {
 
 // Modify
 // @ID           CityModify
-// @Router       /manager/v1/city [PUT]
-// @Summary      M3.修改城市
+// @Router       /manager/v1/city/{id} [PUT]
+// @Summary      M2.2 修改城市
 // @Description  desc
 // @Tags         [M]管理接口
 // @Accept       json

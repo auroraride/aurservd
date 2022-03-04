@@ -123,7 +123,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M4.网点列表",
+                "summary": "M3.1 网点列表",
                 "operationId": "BranchList",
                 "parameters": [
                     {
@@ -168,7 +168,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M5.新增网点",
+                "summary": "M3.2 新增网点",
                 "operationId": "BranchAdd",
                 "parameters": [
                     {
@@ -209,7 +209,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M6.编辑网点",
+                "summary": "M3.3 编辑网点",
                 "operationId": "BranchModify",
                 "parameters": [
                     {
@@ -250,7 +250,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M2.城市列表",
+                "summary": "M2.1 城市列表",
                 "parameters": [
                     {
                         "type": "string",
@@ -279,7 +279,9 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/manager/v1/city/{id}": {
             "put": {
                 "description": "desc",
                 "consumes": [
@@ -291,7 +293,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M3.修改城市",
+                "summary": "M2.2 修改城市",
                 "operationId": "CityModify",
                 "parameters": [
                     {
@@ -340,7 +342,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M1.登录",
+                "summary": "M1.1 用户登录",
                 "operationId": "ManagerSignin",
                 "responses": {
                     "200": {
@@ -363,7 +365,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M7.新增合同",
+                "summary": "M3.4 新增合同",
                 "operationId": "BranchAddContract",
                 "parameters": [
                     {

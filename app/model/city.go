@@ -28,10 +28,10 @@ type CityListReq struct {
 // CityModifyReq 城市修改请求
 type CityModifyReq struct {
     ID   uint64 `json:"id" param:"id" validate:"required,number" trans:"城市"`
-    Open bool   `json:"open" validate:"required" trans:"状态"`
+    Open *bool  `json:"open" validate:"required" trans:"状态"`
 }
 
 // CityModifyRes 城市修改返回
 type CityModifyRes struct {
-    Open bool `json:"open,omitempty"`
+    Open *bool `json:"open"`
 }

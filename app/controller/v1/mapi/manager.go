@@ -22,7 +22,7 @@ var (
 // Signin
 // @ID           ManagerSignin
 // @Router       /manager/v1/user/signin [POST]
-// @Summary      M1.登录
+// @Summary      M1.1 用户登录
 // @Description  管理员登录
 // @Tags         [M]管理接口
 // @Accept       json

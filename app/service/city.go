@@ -64,10 +64,10 @@ func (s *cityService) List(req *model.CityListReq) (items []*model.CityItem) {
 }
 
 // Modify 修改城市
-func (s *cityService) Modify(req *model.CityModifyReq, mod *model.Modifier) bool {
+func (s *cityService) Modify(req *model.CityModifyReq, mod *model.Modifier) *bool {
     if !s.orm.Query().Where(city.ID(req.ID), city.ParentIDNotNil()).ExistX(context.Background()) {
         snag.Panic("城市ID错误")
     }
-    c := s.orm.UpdateOneID(req.ID).SetOpen(req.Open).SetLastModifier(mod).SaveX(s.ctx)
-    return *c.Open
+    c := s.orm.UpdateOneID(req.ID).SetOpen(*req.Open).SetLastModifier(mod).SaveX(s.ctx)
+    return c.Open
 }
