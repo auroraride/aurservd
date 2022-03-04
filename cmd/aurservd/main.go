@@ -10,12 +10,12 @@ import (
 )
 
 import (
-    "github.com/auroraride/aurservd/app/router"
     "github.com/auroraride/aurservd/cmd/aurservd/internal"
+    "github.com/auroraride/aurservd/cmd/aurservd/internal/script"
 )
 
 func main() {
     internal.Demo()
-    // 启动服务器
-    router.Run()
+    // 启动脚本
+    script.Execute()
 }

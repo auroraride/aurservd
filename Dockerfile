@@ -5,4 +5,4 @@ COPY ./build/release/aurservd /app/
 
 WORKDIR /app
 
-ENTRYPOINT ["/app/aurservd"]
+ENTRYPOINT ["/app/aurservd", "server"]
