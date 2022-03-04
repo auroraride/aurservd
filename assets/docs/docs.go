@@ -302,6 +302,13 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "城市数据",
                         "name": "body",
                         "in": "body",
@@ -570,14 +577,9 @@ const docTemplate = `{
         "model.CityModifyReq": {
             "type": "object",
             "required": [
-                "id",
                 "open"
             ],
             "properties": {
-                "id": {
-                    "description": "城市",
-                    "type": "integer"
-                },
                 "open": {
                     "description": "状态",
                     "type": "boolean"

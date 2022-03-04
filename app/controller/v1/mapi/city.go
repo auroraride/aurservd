@@ -42,6 +42,7 @@ func (*city) List(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        id    path  int  true  "城市ID"
 // @Param        body  body  model.CityModifyReq  true  "城市数据"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*city) Modify(c echo.Context) (err error) {

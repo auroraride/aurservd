@@ -27,7 +27,7 @@ type CityListReq struct {
 
 // CityModifyReq 城市修改请求
 type CityModifyReq struct {
-    ID   uint64 `json:"id" validate:"required,number" trans:"城市"`
+    ID   uint64 `json:"id" param:"status" validate:"required,number" trans:"城市"`
     Open bool   `json:"open" validate:"required" trans:"状态"`
 }
 

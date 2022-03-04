@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="SwagPath" pattern="file[aurservd]:app/controller//*||file[aurservd]:app/model//*||file:app/router/swagger.go||file[aurservd]:wiki//*" />
+</component>

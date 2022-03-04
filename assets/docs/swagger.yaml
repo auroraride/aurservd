@@ -134,14 +134,10 @@ definitions:
     type: object
   model.CityModifyReq:
     properties:
-      id:
-        description: 城市
-        type: integer
       open:
         description: 状态
         type: boolean
     required:
-    - id
     - open
     type: object
   model.ManagerSigninRes:
@@ -473,6 +469,11 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 城市ID
+        in: path
+        name: id
+        required: true
+        type: integer
       - description: 城市数据
         in: body
         name: body

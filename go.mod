@@ -105,4 +105,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
-replace github.com/swaggo/swag => github.com/liasica/swag v1.8.1-0.20220303160515-016e82b08f2e
+//replace github.com/swaggo/swag => github.com/liasica/swag v1.8.1-0.20220303160515-016e82b08f2e
+replace github.com/swaggo/swag => /Users/liasica/Downloads/swag

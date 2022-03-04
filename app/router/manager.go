@@ -19,8 +19,8 @@ func loadManagerRoutes() {
     g.POST("/user/add", mapi.Manager.Add) // 新增管理员
 
     // 城市
-    g.GET("/city", mapi.City.List)   // 城市列表
-    g.PUT("/city", mapi.City.Modify) // 启用或关闭城市
+    g.GET("/city", mapi.City.List)        // 城市列表
+    g.PUT("/city/{id}", mapi.City.Modify) // 启用或关闭城市
 
     // 网点
     g.GET("/branch", mapi.Branch.List)                      // 新增网点
