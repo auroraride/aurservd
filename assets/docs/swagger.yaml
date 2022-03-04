@@ -180,6 +180,28 @@ definitions:
         $ref: '#/definitions/model.Pagination'
         description: 分页属性
     type: object
+  model.ShiguangjuIVRItem:
+    properties:
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 手机号
+        type: string
+      product:
+        description: 套餐
+        type: string
+      status:
+        description: 外呼状态
+        type: boolean
+    type: object
+  model.ShiguangjuIVRRes:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/model.ShiguangjuIVRItem'
+        type: array
+    type: object
   model.SmsReq:
     properties:
       captchaCode:
@@ -490,6 +512,32 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M2.2 修改城市
+      tags:
+      - '[M]管理接口'
+  /manager/v1/csc/irv:
+    post:
+      consumes:
+      - multipart/form-data
+      operationId: CscIvrShiguangju
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 外呼文件
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.ShiguangjuIVRRes'
+      summary: MT1. 时光驹催费工具
       tags:
       - '[M]管理接口'
   /manager/v1/user/signin:

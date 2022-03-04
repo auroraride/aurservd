@@ -27,4 +27,7 @@ func loadManagerRoutes() {
     g.POST("/branch", mapi.Branch.Add)                      // 新增网点
     g.PUT("/branch/:id", mapi.Branch.Modify)                // 编辑网点
     g.POST("/branch/:id/contract", mapi.Branch.AddContract) // 添加合同
+
+    // 客服工具
+    g.POST("/csc/irv", mapi.Csc.IvrShiguangju) // 逾期催费
 }

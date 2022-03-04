@@ -2,6 +2,7 @@
   <configuration default="false" name="aurservd_debug" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="aurservd" />
     <working_directory value="$PROJECT_DIR$" />
+    <parameters value="server" />
     <kind value="DIRECTORY" />
     <package value="github.com/auroraride/aurservd" />
     <directory value="$PROJECT_DIR$/cmd/aurservd" />

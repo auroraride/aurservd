@@ -33,7 +33,7 @@ func NewVms() *vms {
 }
 
 // SendVoiceMessageByTts 发送语音通知
-func (v *vms) SendVoiceMessageByTts(phone, param string, tel, tmplate *string) {
+func (v *vms) SendVoiceMessageByTts(phone, param string, tel, tmplate *string) bool {
     req := &dyvmsapi20170525.SingleCallByTtsRequest{
         CalledShowNumber: tel,
         TtsCode:          tmplate,
@@ -42,8 +42,10 @@ func (v *vms) SendVoiceMessageByTts(phone, param string, tel, tmplate *string) {
         Speed:            tea.Int32(-200),
     }
     res, err := v.client.SingleCallByTts(req)
-    if err != nil {
-        snag.Panic(err)
+    if err == nil {
+        log.Infof("%s, %s 发送语音通知结果: %v", phone, param, res)
+    } else {
+        log.Errorf("%s, %s 发送语音通知结果: %v, 错误信息: %v", phone, param, res, err)
     }
-    log.Infof("%s, %s 发送语音通知结果: %v", phone, param, res)
+    return err == nil && *res.Body.Code == "OK"
 }

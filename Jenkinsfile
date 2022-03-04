@@ -13,6 +13,9 @@ node {
         echo '完成Development环境部署'
     }
     stage('Production') {
+        options {
+            timeout(time: 180, unit: "SECONDS")
+        }
         input 'Deploy to Production?'
         echo "开始部署Production环境"
         echo "已终止部署"

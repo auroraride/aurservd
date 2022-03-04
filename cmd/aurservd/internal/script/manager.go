@@ -34,10 +34,10 @@ func managerAddCmd() *cobra.Command {
             req.Password = password
             err := service.NewManager().Add(req)
             if err != nil {
-                log.Errorf("添加管理员: %s %s失败: %v", name, phone, err)
+                log.Errorf("添加管理员: %s %s 失败: %v", name, phone, err)
                 return
             }
-            log.Printf("添加管理员: %s %s成功", name, phone)
+            log.Printf("添加管理员: %s %s 成功", name, phone)
         },
     }
     cmd.Flags().StringVarP(&name, "name", "n", "", "管理员姓名")
