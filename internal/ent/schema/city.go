@@ -26,7 +26,7 @@ func (City) Annotations() []schema.Annotation {
 func (City) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("id"),
-        field.Bool("open").Optional().Comment("启用"),
+        field.Bool("open").Optional().Nillable().Comment("启用"),
         field.String("name").MaxLen(100).Comment("城市"),
         field.String("code").MaxLen(10).Comment("城市编号"),
         field.Uint64("parent_id").Optional().Nillable().Comment("父级"),

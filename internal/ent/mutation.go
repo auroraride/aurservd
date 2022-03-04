@@ -3312,7 +3312,7 @@ func (m *CityMutation) Open() (r bool, exists bool) {
 // OldOpen returns the old "open" field's value of the City entity.
 // If the City object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CityMutation) OldOpen(ctx context.Context) (v bool, err error) {
+func (m *CityMutation) OldOpen(ctx context.Context) (v *bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldOpen is only allowed on UpdateOne operations")
 	}

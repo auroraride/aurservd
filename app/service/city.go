@@ -35,6 +35,9 @@ func (s *cityService) List(req *model.CityListReq) (items []*model.CityItem) {
         Where(city.ParentIDIsNil()).
         WithChildren(func(query *ent.CityQuery) {
             query.Select(fields...).Order(ent.Asc(city.FieldID))
+            if req.Status > 0 {
+                query.Where(city.Open(req.Status == model.CityStatusOpen))
+            }
         }).
         Order(ent.Asc(city.FieldID))
     if req.Status > 0 {
@@ -66,5 +69,5 @@ func (s *cityService) Modify(req *model.CityModifyReq, mod *model.Modifier) bool
         snag.Panic("城市ID错误")
     }
     c := s.orm.UpdateOneID(req.ID).SetOpen(req.Open).SetLastModifier(mod).SaveX(s.ctx)
-    return c.Open
+    return *c.Open
 }

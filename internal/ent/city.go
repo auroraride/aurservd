@@ -32,7 +32,7 @@ type City struct {
 	Remark *string `json:"remark,omitempty"`
 	// Open holds the value of the "open" field.
 	// 启用
-	Open bool `json:"open,omitempty"`
+	Open *bool `json:"open,omitempty"`
 	// Name holds the value of the "name" field.
 	// 城市
 	Name string `json:"name,omitempty"`
@@ -155,7 +155,8 @@ func (c *City) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field open", values[i])
 			} else if value.Valid {
-				c.Open = value.Bool
+				c.Open = new(bool)
+				*c.Open = value.Bool
 			}
 		case city.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -228,8 +229,10 @@ func (c *City) String() string {
 		builder.WriteString(", remark=")
 		builder.WriteString(*v)
 	}
-	builder.WriteString(", open=")
-	builder.WriteString(fmt.Sprintf("%v", c.Open))
+	if v := c.Open; v != nil {
+		builder.WriteString(", open=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", name=")
 	builder.WriteString(c.Name)
 	builder.WriteString(", code=")

@@ -15,8 +15,8 @@ const (
 // CityItem 城市
 type CityItem struct {
     ID       uint64     `json:"id"`                 // 城市或省份ID
-    Open     bool       `json:"open,omitempty"`     // 是否启用
-    Name     string     `json:"name,omitempty"`     // 城市/省份
+    Open     *bool      `json:"open,omitempty"`     // 是否启用
+    Name     string     `json:"name"`               // 城市/省份
     Children []CityItem `json:"children,omitempty"` // 城市列表
 }
 
@@ -27,7 +27,7 @@ type CityListReq struct {
 
 // CityModifyReq 城市修改请求
 type CityModifyReq struct {
-    ID   uint64 `json:"id" param:"status" validate:"required,number" trans:"城市"`
+    ID   uint64 `json:"id" param:"id" validate:"required,number" trans:"城市"`
     Open bool   `json:"open" validate:"required" trans:"状态"`
 }
 
