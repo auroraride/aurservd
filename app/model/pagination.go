@@ -10,8 +10,8 @@ import (
 )
 
 type PaginationReq struct {
-    Current  int `json:"current,omitempty" query:"current"`
-    PageSize int `json:"pageSize,omitempty" query:"pageSize"`
+    Current  int `json:"current,omitempty" query:"current"`   // 当前页, 从1开始, 默认1
+    PageSize int `json:"pageSize,omitempty" query:"pageSize"` // 每页数据, 默认20
 }
 
 func (p PaginationReq) GetCurrent() int {
