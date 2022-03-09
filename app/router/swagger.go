@@ -17,8 +17,8 @@ import (
 // @description.markdown 极光出行所有API接口文档
 // @BasePath             /
 // doc https://github.com/swaggo/swag/issues/386 https://github.com/swaggo/swag/issues/548 https://github.com/go-openapi/runtime/blob/master/middleware/redoc.go
-func redocRoute(r *echo.Echo) {
-    g := r.Group("/docs")
+func loadRedocRoute() {
+    g := e.Group("/docs")
 
     docs.SwaggerInfo.Host = ar.Config.App.Host
 

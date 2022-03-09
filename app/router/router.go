@@ -19,10 +19,11 @@ import (
 
 var (
     root *echo.Group
+    e    *echo.Echo
 )
 
 func Run() {
-    e := echo.New()
+    e = echo.New()
     root = e.Group("/")
 
     // 错误处理
@@ -77,7 +78,8 @@ func Run() {
     )
 
     // 载入路由
-    redocRoute(e)       // 文档
+    loadCaixinRoutes()  // 凯信
+    loadRedocRoute()    // 文档
     loadCommonRoutes()  // 公共API
     loadRideRoutes()    // 骑手路由
     loadManagerRoutes() // 管理员路由

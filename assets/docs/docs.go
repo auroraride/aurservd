@@ -471,11 +471,11 @@ const docTemplate = `{
             ],
             "properties": {
                 "address": {
-                    "description": "详细地址",
+                    "description": "详细地址 ",
                     "type": "string"
                 },
                 "cityId": {
-                    "description": "城市",
+                    "description": "城市 ",
                     "type": "integer"
                 },
                 "contracts": {
@@ -491,19 +491,19 @@ const docTemplate = `{
                     "$ref": "#/definitions/model.Modifier"
                 },
                 "lat": {
-                    "description": "纬度",
+                    "description": "纬度 ",
                     "type": "number"
                 },
                 "lng": {
-                    "description": "经度",
+                    "description": "经度 ",
                     "type": "number"
                 },
                 "name": {
-                    "description": "网点名称",
+                    "description": "网点名称 ",
                     "type": "string"
                 },
                 "photos": {
-                    "description": "网点照片",
+                    "description": "网点照片 ",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -531,62 +531,62 @@ const docTemplate = `{
             ],
             "properties": {
                 "area": {
-                    "description": "网点面积",
+                    "description": "网点面积 ",
                     "type": "number"
                 },
                 "bankNumber": {
-                    "description": "房东银行卡号",
+                    "description": "房东银行卡号 ",
                     "type": "string"
                 },
                 "electricity": {
-                    "description": "电费单价",
+                    "description": "电费单价 ",
                     "type": "number"
                 },
                 "electricityPledge": {
-                    "description": "电费押金",
+                    "description": "电费押金 ",
                     "type": "number"
                 },
                 "endTime": {
-                    "description": "租期结束时间",
+                    "description": "租期结束时间 ",
                     "type": "string"
                 },
                 "file": {
-                    "description": "合同文件",
+                    "description": "合同文件 ",
                     "type": "string"
                 },
                 "idCardNumber": {
-                    "description": "房东身份证",
+                    "description": "房东身份证 ",
                     "type": "string"
                 },
                 "landlordName": {
-                    "description": "房东姓名",
+                    "description": "房东姓名 ",
                     "type": "string"
                 },
                 "lease": {
-                    "description": "租期月数",
+                    "description": "租期月数 ",
                     "type": "integer"
                 },
                 "phone": {
-                    "description": "房东手机号",
+                    "description": "房东手机号 ",
                     "type": "string"
                 },
                 "pledge": {
-                    "description": "押金",
+                    "description": "押金 ",
                     "type": "number"
                 },
                 "rent": {
-                    "description": "租金",
+                    "description": "租金 ",
                     "type": "number"
                 },
                 "sheets": {
-                    "description": "底单",
+                    "description": "底单 ",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
                 "startTime": {
-                    "description": "租期开始时间",
+                    "description": "租期开始时间 ",
                     "type": "string"
                 }
             }
@@ -622,7 +622,7 @@ const docTemplate = `{
             ],
             "properties": {
                 "open": {
-                    "description": "状态",
+                    "description": "状态 ",
                     "type": "boolean"
                 }
             }
