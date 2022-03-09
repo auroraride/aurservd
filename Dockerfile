@@ -5,7 +5,8 @@ RUN mkdir /app \
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/localtime \
     && apk del tzdata \
-    && rm -rf /var/cache/apk/*
+    && rm -rf /var/cache/apk/* \
+    && rm -rf /var/lib/apt/lists/*
 COPY ./build/release/aurservd /app/
 
 WORKDIR /app
