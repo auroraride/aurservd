@@ -1,6 +1,6 @@
 module github.com/auroraride/aurservd
 
-go 1.17
+go 1.18
 
 require (
 	ariga.io/atlas v0.3.2-0.20220120225051-c3fac7d636dd
