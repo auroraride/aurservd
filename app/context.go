@@ -10,14 +10,27 @@ import (
     "github.com/labstack/echo/v4"
 )
 
-type Context struct {
+type BaseContext struct {
     echo.Context
 
     Device *Device
 }
 
+// Context 获取上下文
+func Context(c echo.Context) *BaseContext {
+    ctx, _ := c.(*BaseContext)
+    return ctx
+}
+
+// NewContext 创建上下文
+func NewContext(c echo.Context) *BaseContext {
+    return &BaseContext{
+        Context: c,
+    }
+}
+
 // BindValidate 绑定并校验数据
-func (c *Context) BindValidate(ptr interface{}) {
+func (c *BaseContext) BindValidate(ptr interface{}) {
     err := c.Bind(ptr)
     if err != nil {
         snag.Panic(err)
@@ -26,4 +39,12 @@ func (c *Context) BindValidate(ptr interface{}) {
     if err != nil {
         snag.Panic(err)
     }
+}
+
+// ContextBinding 绑定上下文并校验数据之后返回
+func ContextBinding[T any](c echo.Context) (*BaseContext, *T) {
+    ctx := Context(c)
+    req := new(T)
+    ctx.BindValidate(req)
+    return ctx, req
 }

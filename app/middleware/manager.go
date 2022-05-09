@@ -42,15 +42,11 @@ func ManagerMiddleware() echo.MiddlewareFunc {
             s.ExtendTokenTime(m.ID, token)
 
             // 重载context
-            return next(&app.ManagerContext{
-                Context: c.(*app.Context),
-                Manager: m,
-                Modifier: &model.Modifier{
-                    ID:    m.ID,
-                    Name:  m.Name,
-                    Phone: m.Phone,
-                },
-            })
+            return next(app.NewManagerContext(c, m, &model.Modifier{
+                ID:    m.ID,
+                Name:  m.Name,
+                Phone: m.Phone,
+            }))
         }
     }
 }

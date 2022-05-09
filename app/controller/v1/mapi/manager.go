@@ -29,10 +29,7 @@ var (
 // @Produce      json
 // @Success      200  {object}  model.ManagerSigninRes  "请求成功"
 func (*manager) Signin(c echo.Context) (err error) {
-    req := new(model.ManagerSigninReq)
-    ctx := c.(*app.Context)
-    ctx.BindValidate(req)
-
+    _, req := app.ContextBinding[model.ManagerSigninReq](c)
     data, err := service.NewManager().Signin(req)
     if err != nil {
         return

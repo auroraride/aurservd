@@ -26,9 +26,7 @@ type rider struct {
 
 // Signin 骑手登录
 func (*rider) Signin(c echo.Context) (err error) {
-    req := new(model.RiderSignupReq)
-    ctx := c.(*app.Context)
-    ctx.BindValidate(req)
+    ctx, req := app.ContextBinding[model.RiderSignupReq](c)
 
     // 校验短信
     if !debugPhones[req.Phone] && !service.NewSms().VerifyCode(req.SmsId, req.SmsCode) {

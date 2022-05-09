@@ -5,11 +5,22 @@
 
 package app
 
-import "github.com/auroraride/aurservd/internal/ent"
+import (
+    "github.com/auroraride/aurservd/internal/ent"
+    "github.com/labstack/echo/v4"
+)
 
 // RiderContext 骑手上下文
 type RiderContext struct {
-    *Context
+    *BaseContext
 
     Rider *ent.Rider
+}
+
+// NewRiderContext 创建骑手上下文
+func NewRiderContext(c echo.Context, rider *ent.Rider) *RiderContext {
+    return &RiderContext{
+        BaseContext: Context(c),
+        Rider:       rider,
+    }
 }

@@ -13,12 +13,22 @@ import (
 
 // ManagerContext 管理员上下文
 type ManagerContext struct {
-    *Context
+    *BaseContext
 
     Manager  *ent.Manager
     Modifier *model.Modifier
 }
 
+// NewManagerContext 新建管理员上下文
+func NewManagerContext(c echo.Context, mgr *ent.Manager, m *model.Modifier) *ManagerContext {
+    return &ManagerContext{
+        BaseContext: Context(c),
+        Manager:     mgr,
+        Modifier:    m,
+    }
+}
+
+// GetManagerContext 获取管理端上下文
 func GetManagerContext(c echo.Context) *ManagerContext {
     return c.(*ManagerContext)
 }

@@ -31,9 +31,7 @@ var (
 // @Produce      json
 // @Success      200  {object}  model.SmsRes  "请求成功"
 func SendSmsCode(c echo.Context) error {
-    ctx := c.(*app.Context)
-    req := new(model.SmsReq)
-    ctx.BindValidate(req)
+    ctx, req := app.ContextBinding[model.SmsReq](c)
     id := ctx.Request().Header.Get(app.HeaderCaptchaID)
     var smsId string
     var err error

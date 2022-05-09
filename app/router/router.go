@@ -53,10 +53,10 @@ func Run() {
     }...)
     // 加载全局中间件
     root.Use(
+        // AppContext
         func(next echo.HandlerFunc) echo.HandlerFunc {
             return func(ctx echo.Context) error {
-                c := &app.Context{Context: ctx}
-                return next(c)
+                return next(app.NewContext(ctx))
             }
         },
         mw.LoggerWithConfig(mw.LoggerConfig{
