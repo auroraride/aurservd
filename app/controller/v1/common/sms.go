@@ -47,5 +47,5 @@ func SendSmsCode(c echo.Context) error {
     } else {
         smsId = req.Phone
     }
-    return app.NewResponse(c).SetData(map[string]string{"id": smsId}).Success().Send()
+    return ctx.SendResponse(model.SmsResponse{Id: smsId})
 }

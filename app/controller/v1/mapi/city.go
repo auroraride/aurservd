@@ -27,10 +27,9 @@ var City = new(city)
 // @Param        status           query  model.CityListReq  false  "启用状态"
 // @Success      200  {object}  []model.CityItem  "请求成功"
 func (*city) List(c echo.Context) (err error) {
-    req := new(model.CityListReq)
-    app.GetManagerContext(c).BindValidate(req)
+    ctx, req := app.ManagerContextAndBinding[model.CityListReq](c)
 
-    return app.NewResponse(c).SetData(service.NewCity().List(req)).Send()
+    return ctx.SendResponse(service.NewCity().List(req))
 }
 
 // Modify
@@ -46,10 +45,9 @@ func (*city) List(c echo.Context) (err error) {
 // @Param        body  body  model.CityModifyReq  true  "城市数据"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*city) Modify(c echo.Context) (err error) {
-    req := new(model.CityModifyReq)
-    ctx := app.GetManagerContext(c)
-    ctx.BindValidate(req)
-    return app.NewResponse(c).SetData(
+    ctx, req := app.ManagerContextAndBinding[model.CityModifyReq](c)
+
+    return ctx.SendResponse(
         model.CityModifyRes{Open: service.NewCity().Modify(req, ctx.Modifier)},
-    ).Send()
+    )
 }

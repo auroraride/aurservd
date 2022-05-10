@@ -5,9 +5,9 @@
 
 package model
 
-// StatusResponse 默认返回
+// StatusResponse 状态返回
 type StatusResponse struct {
-    Status bool `json:"status"` // 默认接口成功返回
+    Status bool `json:"status"`
 }
 
 // Modifier 修改人
@@ -36,4 +36,14 @@ type AliyunOssStsRes struct {
     StsToken        string `json:"stsToken,omitempty"`
     Bucket          string `json:"bucket,omitempty"`
     Region          string `json:"region,omitempty"`
+}
+
+// CaptchaReq 验证码请求
+type CaptchaReq struct {
+    Code string `json:"code"`
+}
+
+// SmsResponse 短信验证码返回
+type SmsResponse struct {
+    Id string `json:"id"`
 }

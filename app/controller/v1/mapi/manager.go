@@ -9,6 +9,7 @@ import (
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
 )
 
@@ -29,21 +30,19 @@ var (
 // @Produce      json
 // @Success      200  {object}  model.ManagerSigninRes  "请求成功"
 func (*manager) Signin(c echo.Context) (err error) {
-    _, req := app.ContextBinding[model.ManagerSigninReq](c)
+    ctx, req := app.ContextBinding[model.ManagerSigninReq](c)
     data, err := service.NewManager().Signin(req)
     if err != nil {
-        return
+        snag.Panic(err)
     }
-    return app.NewResponse(c).SetData(data).Send()
+    return ctx.SendResponse(data)
 }
 
 func (*manager) Add(c echo.Context) (err error) {
-    req := new(model.ManagerAddReq)
-    app.GetManagerContext(c).BindValidate(req)
-
+    ctx, req := app.ManagerContextAndBinding[model.ManagerAddReq](c)
     err = service.NewManager().Add(req)
     if err != nil {
-        return err
+        snag.Panic(err)
     }
-    return app.NewResponse(c).Send()
+    return ctx.SendResponse()
 }

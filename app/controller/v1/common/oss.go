@@ -26,5 +26,5 @@ var Oss = new(oss)
 // @Produce      json
 // @Success      200 {object} model.AliyunOssStsRes "请求成功"
 func (*oss) Token(c echo.Context) error {
-    return app.NewResponse(c).SetData(ali.NewOss().StsToken()).Send()
+    return app.Context(c).SendResponse(ali.NewOss().StsToken())
 }

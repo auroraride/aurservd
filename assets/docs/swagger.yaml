@@ -223,7 +223,6 @@ definitions:
   model.StatusResponse:
     properties:
       status:
-        description: 默认接口成功返回
         type: boolean
     type: object
 info:

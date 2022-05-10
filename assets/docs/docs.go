@@ -749,7 +749,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "status": {
-                    "description": "默认接口成功返回",
                     "type": "boolean"
                 }
             }

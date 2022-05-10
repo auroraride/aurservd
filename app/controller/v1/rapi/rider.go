@@ -11,6 +11,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
 )
 
@@ -40,54 +41,56 @@ func (*rider) Signin(c echo.Context) (err error) {
     if err != nil {
         return
     }
-    return app.NewResponse(c).SetData(data).Send()
+    return ctx.SendResponse(data)
 }
 
 // Contact 添加紧急联系人
 func (r *rider) Contact(c echo.Context) error {
-    ctx := c.(*app.RiderContext)
-    contact := new(model.RiderContact)
-    ctx.BindValidate(contact)
-    service.NewRider().UpdateContact(ctx.Rider, contact)
-    return app.NewResponse(c).Success().Send()
+    ctx, req := app.RiderContextAndBinding[model.RiderContact](c)
+    service.NewRider().UpdateContact(ctx.Rider, req)
+    return ctx.SendResponse()
 }
 
 // Authenticator 实名认证
 func (*rider) Authenticator(c echo.Context) error {
-    ctx := c.(*app.RiderContext)
-    contact := new(model.RiderContact)
-    ctx.BindValidate(contact)
+    ctx, req := app.RiderContextAndBinding[model.RiderContact](c)
     r := service.NewRider()
     // 更新紧急联系人
-    r.UpdateContact(ctx.Rider, contact)
+    r.UpdateContact(ctx.Rider, req)
     // 获取人脸识别URL
-    return app.NewResponse(c).Success().SetData(ar.Map{"url": r.GetFaceAuthUrl(ctx)}).Send()
+    return ctx.SendResponse(model.FaceAuthUrlResponse{
+        Url: r.GetFaceAuthUrl(ctx),
+    })
 }
 
 // AuthResult 实名认证结果
 // TODO 测试认证失败逻辑
 func (r *rider) AuthResult(c echo.Context) error {
-    success, err := service.NewRider().FaceAuthResult(c.(*app.RiderContext))
+    ctx := c.(*app.RiderContext)
+    success, err := service.NewRider().FaceAuthResult(ctx)
     if err != nil {
-        return err
+        snag.Panic(err)
     }
-    return app.NewResponse(c).Success().SetData(ar.Map{"status": success}).Send()
+    return ctx.SendResponse(model.StatusResponse{Status: success})
 }
 
-// FaceResult 获取人脸验证结果
+// FaceResult 获取人脸校验结果
 func (r *rider) FaceResult(c echo.Context) error {
-    success, err := service.NewRider().FaceResult(c.(*app.RiderContext))
+    ctx := c.(*app.RiderContext)
+    success, err := service.NewRider().FaceResult(ctx)
     if err != nil {
-        return err
+        snag.Panic(err)
     }
-    return app.NewResponse(c).Success().SetData(ar.Map{"status": success}).Send()
+    return ctx.SendResponse(model.StatusResponse{Status: success})
 }
 
 func (r *rider) Demo(c echo.Context) error {
-    return app.NewResponse(c).Success().SetData(ar.Map{"status": true}).Send()
+    ctx := c.(*app.RiderContext)
+    return ctx.SendResponse(model.StatusResponse{Status: true})
 }
 
 // Profile 用户信息
 func (r *rider) Profile(c echo.Context) error {
-    return app.NewResponse(c).Success().SetData(ar.Map{"status": true}).Send()
+    ctx := c.(*app.RiderContext)
+    return ctx.SendResponse(model.StatusResponse{Status: true})
 }

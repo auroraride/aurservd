@@ -24,3 +24,8 @@ func NewRiderContext(c echo.Context, rider *ent.Rider) *RiderContext {
         Rider:       rider,
     }
 }
+
+// RiderContextAndBinding 骑手端上下文绑定数据
+func RiderContextAndBinding[T any](c echo.Context) (*RiderContext, *T) {
+    return ContextBindingX[RiderContext, T](c)
+}

@@ -32,3 +32,8 @@ func NewManagerContext(c echo.Context, mgr *ent.Manager, m *model.Modifier) *Man
 func GetManagerContext(c echo.Context) *ManagerContext {
     return c.(*ManagerContext)
 }
+
+// ManagerContextAndBinding 管理端上下文绑定数据
+func ManagerContextAndBinding[T any](c echo.Context) (*ManagerContext, *T) {
+    return ContextBindingX[ManagerContext, T](c)
+}

@@ -5,24 +5,40 @@
 
 package snag
 
-import "errors"
+import "net/http"
 
 type Error struct {
-    error
-    Data interface{}
+    Code    int         `json:"code"`
+    Message string      `json:"message"`
+    Data    interface{} `json:"data,omitempty"`
 }
 
-func NewError(param interface{}) *Error {
+func (e Error) Error() string {
+    return e.Message
+}
+
+func NewError(params ...interface{}) *Error {
     out := &Error{
-        error: errors.New("请求失败"),
+        Message: "server error",
+        Code:    http.StatusBadRequest,
     }
-    switch param.(type) {
-    case string:
-        out.error = errors.New(param.(string))
-    case error:
-        out.error = param.(error)
-    default:
-        out.Data = param
+
+    for _, param := range params {
+        switch param.(type) {
+        case string:
+            out.Message = param.(string)
+            break
+        case error:
+            out.Message = param.(error).Error()
+            break
+        case int:
+            out.Code = param.(int)
+            break
+        default:
+            out.Data = param
+            break
+        }
     }
+
     return out
 }

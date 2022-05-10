@@ -7,9 +7,10 @@ package common
 
 import (
     "bytes"
-    "errors"
     "github.com/auroraride/aurservd/app"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
     "net/http"
 )
@@ -41,20 +42,14 @@ func CaptchaGenerate(c echo.Context) error {
     return c.Stream(http.StatusOK, "image/png", b)
 }
 
-type captchaReq struct {
-    Code string `json:"code"`
-}
-
 // CaptchaVerify 验证
 func CaptchaVerify(c echo.Context) error {
-    r := new(captchaReq)
-    err := c.Bind(r)
-    if err != nil {
-        return err
-    }
+    ctx, req := app.ContextBinding[model.CaptchaReq](c)
+
     id := c.Request().Header.Get(app.HeaderCaptchaID)
-    if !service.NewCaptcha().Verify(id, r.Code, true) {
-        return errors.New("验证码校验失败")
+    if !service.NewCaptcha().Verify(id, req.Code, true) {
+        snag.Panic("验证码校验失败")
     }
-    return app.NewResponse(c).Success().Send()
+
+    return ctx.SendResponse()
 }

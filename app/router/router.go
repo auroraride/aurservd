@@ -6,6 +6,7 @@
 package router
 
 import (
+    "fmt"
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/middleware"
     "github.com/auroraride/aurservd/app/request"
@@ -15,6 +16,7 @@ import (
     mw "github.com/labstack/echo/v4/middleware"
     log "github.com/sirupsen/logrus"
     "golang.org/x/time/rate"
+    "net/http"
 )
 
 var (
@@ -26,16 +28,30 @@ func Run() {
     e = echo.New()
     root = e.Group("/")
 
-    // 错误处理
+    // 校验规则
     e.Validator = request.NewGlobalValidator()
+
+    // 错误处理
     e.HTTPErrorHandler = func(err error, c echo.Context) {
-        res := app.NewResponse(c).Error(app.StatusError).SetMessage(err.Error())
-        if e, ok := err.(*snag.Error); ok {
-            if data, ok := e.Data.(app.Response); ok {
-                res.Error(data.Code).SetMessage(data.Message).SetData(data.Data)
-            }
+        ctx := app.Context(c)
+        if ctx == nil {
+            ctx = app.NewContext(c)
         }
-        _ = res.Send()
+        message := err.Error()
+        code := http.StatusBadRequest
+        var data interface{}
+        switch err.(type) {
+        case *snag.Error:
+            target := err.(*snag.Error)
+            code = target.Code
+            data = target.Data
+        case *echo.HTTPError:
+            target := err.(*echo.HTTPError)
+            code = target.Code
+            message = fmt.Sprintf("%v", target.Message)
+            break
+        }
+        _ = ctx.SendResponse(code, message, data)
     }
 
     // e.Logger.SetHeader(`[time] ${time_rfc3339_nano}` + "\n")

@@ -27,10 +27,8 @@ var Branch = new(branch)
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  model.PaginationRes{items=[]model.Branch}  "请求成功"
 func (*branch) List(c echo.Context) (err error) {
-    req := new(model.BranchListReq)
-    app.GetManagerContext(c).BindValidate(req)
-
-    return app.NewResponse(c).SetData(service.NewBranch().List(req)).Send()
+    ctx, req := app.ManagerContextAndBinding[model.BranchListReq](c)
+    return ctx.SendResponse(service.NewBranch().List(req))
 }
 
 // Add
@@ -44,11 +42,9 @@ func (*branch) List(c echo.Context) (err error) {
 // @Param        body  body  model.Branch  true  "网点数据"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*branch) Add(c echo.Context) (err error) {
-    req := new(model.Branch)
-    ctx := app.GetManagerContext(c)
-    ctx.BindValidate(req)
+    ctx, req := app.ManagerContextAndBinding[model.Branch](c)
     service.NewBranch().Add(req, ctx.Modifier)
-    return app.NewResponse(c).Send()
+    return ctx.SendResponse()
 }
 
 // Modify
@@ -62,11 +58,9 @@ func (*branch) Add(c echo.Context) (err error) {
 // @Param        body  body  model.Branch  true  "网点数据"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*branch) Modify(c echo.Context) (err error) {
-    req := new(model.Branch)
-    ctx := app.GetManagerContext(c)
-    ctx.BindValidate(req)
+    ctx, req := app.ManagerContextAndBinding[model.Branch](c)
     service.NewBranch().Modify(req, ctx.Modifier)
-    return app.NewResponse(c).Send()
+    return ctx.SendResponse()
 }
 
 // AddContract
@@ -80,9 +74,7 @@ func (*branch) Modify(c echo.Context) (err error) {
 // @Param        body  body  model.BranchContract  true  "合同数据"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*branch) AddContract(c echo.Context) (err error) {
-    req := new(model.BranchContract)
-    ctx := app.GetManagerContext(c)
-    ctx.BindValidate(req)
+    ctx, req := app.ManagerContextAndBinding[model.BranchContract](c)
     service.NewBranch().AddContract(req.BranchID, req, ctx.Modifier)
-    return app.NewResponse(c).Send()
+    return ctx.SendResponse()
 }

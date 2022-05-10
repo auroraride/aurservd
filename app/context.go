@@ -48,3 +48,18 @@ func ContextBinding[T any](c echo.Context) (*BaseContext, *T) {
     ctx.BindValidate(req)
     return ctx, req
 }
+
+type ContextWrapper interface {
+    ManagerContext | RiderContext
+}
+
+func ContextX[T ContextWrapper](c any) *T {
+    ctx, _ := c.(*T)
+    return ctx
+}
+func ContextBindingX[K ContextWrapper, T any](c echo.Context) (*K, *T) {
+    ctx := ContextX[K](c)
+    req := new(T)
+    Context(c).BindValidate(req)
+    return ctx, req
+}
