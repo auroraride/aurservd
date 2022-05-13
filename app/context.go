@@ -30,7 +30,7 @@ func NewContext(c echo.Context) *BaseContext {
 }
 
 // BindValidate 绑定并校验数据
-func (c *BaseContext) BindValidate(ptr interface{}) {
+func (c *BaseContext) BindValidate(ptr any) {
     err := c.Bind(ptr)
     if err != nil {
         snag.Panic(err)

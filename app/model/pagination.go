@@ -14,6 +14,17 @@ type PaginationReq struct {
     PageSize int `json:"pageSize,omitempty" query:"pageSize"` // 每页数据, 默认20
 }
 
+type Pagination struct {
+    Current int `json:"current"` // 当前页
+    Pages   int `json:"pages"`   // 总页数
+    Total   int `json:"total"`   // 总条数
+}
+
+type PaginationRes struct {
+    Pagination Pagination `json:"pagination"` // 分页属性
+    Items      any        `json:"items"`      // 返回数据
+}
+
 func (p PaginationReq) GetCurrent() int {
     c := p.Current
     if c < 1 {
@@ -36,15 +47,4 @@ func (p PaginationReq) GetOffset() int {
 
 func (p PaginationReq) GetPages(total int) int {
     return int(math.Ceil(float64(total) / float64(p.GetLimit())))
-}
-
-type Pagination struct {
-    Current int `json:"current"` // 当前页
-    Pages   int `json:"pages"`   // 总页数
-    Total   int `json:"total"`   // 总条数
-}
-
-type PaginationRes struct {
-    Pagination Pagination  `json:"pagination"` // 分页属性
-    Items      interface{} `json:"items"`      // 返回数据
 }

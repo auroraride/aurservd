@@ -30,7 +30,7 @@ var (
     trans    ut.Translator
 )
 
-func (v *GlobalValidator) Validate(i interface{}) error {
+func (v *GlobalValidator) Validate(i any) error {
     err := v.validator.Struct(i)
     if err != nil {
         errs := err.(validator.ValidationErrors)

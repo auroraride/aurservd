@@ -6,6 +6,6 @@
 package model
 
 type Setting struct {
-    Desc  string      `json:"desc"`
-    Value interface{} `json:"value"`
+    Desc  string `json:"desc"`
+    Value any    `json:"value"`
 }

@@ -40,8 +40,6 @@ require (
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
-	github.com/PuerkitoBio/purell v1.1.1 // indirect
-	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.4 // indirect
 	github.com/alibabacloud-go/debug v0.0.0-20190504072949-9472017b5c68 // indirect
@@ -118,4 +116,4 @@ require (
 
 //replace github.com/swaggo/swag => /Users/liasica/Downloads/swag
 
-replace github.com/swaggo/swag => github.com/liasica/swag v1.8.1-0.20220304020702-d9f054be69eb
+replace github.com/swaggo/swag => github.com/liasica/swag v1.8.2-0.20220513065052-184dacb03fd1

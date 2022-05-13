@@ -39,7 +39,7 @@ func Run() {
         }
         message := err.Error()
         code := http.StatusBadRequest
-        var data interface{}
+        var data any
         switch err.(type) {
         case *snag.Error:
             target := err.(*snag.Error)
@@ -94,7 +94,7 @@ func Run() {
     )
 
     // 载入路由
-    loadCaixinRoutes()  // 凯信
+    loadKaixinRoutes()  // 凯信
     loadRedocRoute()    // 文档
     loadCommonRoutes()  // 公共API
     loadRideRoutes()    // 骑手路由

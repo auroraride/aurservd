@@ -12,13 +12,13 @@ import (
 )
 
 type Response struct {
-    Code    int         `json:"code"`
-    Message string      `json:"message"`
-    Data    interface{} `json:"data,omitempty"`
+    Code    int    `json:"code"`
+    Message string `json:"message"`
+    Data    any    `json:"data,omitempty"`
 }
 
 // processParam 处理参数
-func (r *Response) processParam(param interface{}) {
+func (r *Response) processParam(param any) {
     switch param.(type) {
     case string:
         r.Message = param.(string)
@@ -34,7 +34,7 @@ func (r *Response) processParam(param interface{}) {
 }
 
 // SendResponse 发送响应
-func (c *BaseContext) SendResponse(params ...interface{}) error {
+func (c *BaseContext) SendResponse(params ...any) error {
     r := &Response{
         Message: "ok",
         Code:    http.StatusOK,

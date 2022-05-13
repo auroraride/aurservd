@@ -463,11 +463,9 @@
             ],
             "properties": {
                 "address": {
-                    "description": "详细地址 ",
                     "type": "string"
                 },
                 "cityId": {
-                    "description": "城市 ",
                     "type": "integer"
                 },
                 "contracts": {
@@ -483,19 +481,15 @@
                     "$ref": "#/definitions/model.Modifier"
                 },
                 "lat": {
-                    "description": "纬度 ",
                     "type": "number"
                 },
                 "lng": {
-                    "description": "经度 ",
                     "type": "number"
                 },
                 "name": {
-                    "description": "网点名称 ",
                     "type": "string"
                 },
                 "photos": {
-                    "description": "网点照片 ",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -523,62 +517,48 @@
             ],
             "properties": {
                 "area": {
-                    "description": "网点面积 ",
                     "type": "number"
                 },
                 "bankNumber": {
-                    "description": "房东银行卡号 ",
                     "type": "string"
                 },
                 "electricity": {
-                    "description": "电费单价 ",
                     "type": "number"
                 },
                 "electricityPledge": {
-                    "description": "电费押金 ",
                     "type": "number"
                 },
                 "endTime": {
-                    "description": "租期结束时间 ",
                     "type": "string"
                 },
                 "file": {
-                    "description": "合同文件 ",
                     "type": "string"
                 },
                 "idCardNumber": {
-                    "description": "房东身份证 ",
                     "type": "string"
                 },
                 "landlordName": {
-                    "description": "房东姓名 ",
                     "type": "string"
                 },
                 "lease": {
-                    "description": "租期月数 ",
                     "type": "integer"
                 },
                 "phone": {
-                    "description": "房东手机号 ",
                     "type": "string"
                 },
                 "pledge": {
-                    "description": "押金 ",
                     "type": "number"
                 },
                 "rent": {
-                    "description": "租金 ",
                     "type": "number"
                 },
                 "sheets": {
-                    "description": "底单 ",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
                 "startTime": {
-                    "description": "租期开始时间 ",
                     "type": "string"
                 }
             }
@@ -610,11 +590,14 @@
         "model.CityModifyReq": {
             "type": "object",
             "required": [
+                "id",
                 "open"
             ],
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "open": {
-                    "description": "状态 ",
                     "type": "boolean"
                 }
             }
@@ -671,7 +654,8 @@
             "type": "object",
             "properties": {
                 "items": {
-                    "description": "返回数据"
+                    "description": "返回数据",
+                    "type": "any"
                 },
                 "pagination": {
                     "description": "分页属性",

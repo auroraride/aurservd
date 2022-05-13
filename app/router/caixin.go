@@ -10,9 +10,9 @@ import (
     "github.com/labstack/echo/v4"
 )
 
-func loadCaixinRoutes() {
-    e.POST("/caixin/battery", func(c echo.Context) error {
-        return c.JSON(200, map[string]interface{}{"state": "ok", "msg": "ok"})
+func loadKaixinRoutes() {
+    e.POST("/kaixin/battery", func(c echo.Context) error {
+        return c.JSON(200, map[string]any{"state": "ok", "msg": "ok"})
     }, mw.BodyDumpWithConfig(mw.BodyDumpConfig{
         WithRequestHeaders:  true,
         WithResponseHeaders: true,
