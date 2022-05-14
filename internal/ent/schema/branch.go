@@ -38,6 +38,7 @@ func (Branch) Fields() []ent.Field {
 func (Branch) Edges() []ent.Edge {
     return []ent.Edge{
         edge.To("contracts", BranchContract.Type),
+        edge.To("cabinets", Cabinet.Type),
     }
 }
 

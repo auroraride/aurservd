@@ -1029,6 +1029,34 @@ func HasContractsWith(preds ...predicate.BranchContract) predicate.Branch {
 	})
 }
 
+// HasCabinets applies the HasEdge predicate on the "cabinets" edge.
+func HasCabinets() predicate.Branch {
+	return predicate.Branch(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CabinetsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CabinetsTable, CabinetsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCabinetsWith applies the HasEdge predicate on the "cabinets" edge with a given conditions (other predicates).
+func HasCabinetsWith(preds ...predicate.Cabinet) predicate.Branch {
+	return predicate.Branch(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CabinetsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CabinetsTable, CabinetsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Branch) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {

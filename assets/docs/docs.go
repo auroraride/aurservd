@@ -112,6 +112,95 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/battery/model": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M4001 获取电池型号",
+                "operationId": "BatteryModels",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.ItemListRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.BatteryModel"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M4002 创建电池型号",
+                "operationId": "BatteryCreateModel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.ItemRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "item": {
+                                            "$ref": "#/definitions/model.BatteryModel"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/branch": {
             "get": {
                 "consumes": [
@@ -123,7 +212,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M3.1 网点列表",
+                "summary": "M3001 网点列表",
                 "operationId": "BranchList",
                 "parameters": [
                     {
@@ -168,7 +257,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M3.2 新增网点",
+                "summary": "M3002 新增网点",
                 "operationId": "BranchAdd",
                 "parameters": [
                     {
@@ -209,7 +298,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M3.3 编辑网点",
+                "summary": "M3003 编辑网点",
                 "operationId": "BranchModify",
                 "parameters": [
                     {
@@ -250,7 +339,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M2.1 城市列表",
+                "summary": "M2001 城市列表",
                 "parameters": [
                     {
                         "type": "string",
@@ -293,7 +382,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M2.2 修改城市",
+                "summary": "M2002 修改城市",
                 "operationId": "CityModify",
                 "parameters": [
                     {
@@ -341,7 +430,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "MT1. 时光驹催费工具",
+                "summary": "MT1001 时光驹催费工具",
                 "operationId": "CscIvrShiguangju",
                 "parameters": [
                     {
@@ -381,7 +470,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M1.1 用户登录",
+                "summary": "M1001 用户登录",
                 "operationId": "ManagerSignin",
                 "responses": {
                     "200": {
@@ -404,7 +493,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M3.4 新增合同",
+                "summary": "M3004 新增合同",
                 "operationId": "BranchAddContract",
                 "parameters": [
                     {
@@ -455,6 +544,20 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "stsToken": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.BatteryModel": {
+            "type": "object",
+            "properties": {
+                "capacity": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "voltage": {
                     "type": "string"
                 }
             }
@@ -607,6 +710,22 @@ const docTemplate = `{
                 },
                 "open": {
                     "type": "boolean"
+                }
+            }
+        },
+        "model.ItemListRes": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "any"
+                }
+            }
+        },
+        "model.ItemRes": {
+            "type": "object",
+            "properties": {
+                "item": {
+                    "type": "any"
                 }
             }
         },

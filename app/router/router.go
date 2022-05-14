@@ -38,17 +38,24 @@ func Run() {
             ctx = app.NewContext(c)
         }
         message := err.Error()
-        code := http.StatusBadRequest
+        code := int(snag.StatusBadRequest)
         var data any
         switch err.(type) {
         case *snag.Error:
             target := err.(*snag.Error)
-            code = target.Code
+            code = int(target.Code)
             data = target.Data
         case *echo.HTTPError:
             target := err.(*echo.HTTPError)
-            code = target.Code
             message = fmt.Sprintf("%v", target.Message)
+            switch target.Code {
+            case http.StatusNotFound:
+                code = int(snag.StatusNotFound)
+                break
+            default:
+                code = int(snag.StatusBadRequest)
+                break
+            }
             break
         }
         _ = ctx.SendResponse(code, message, data)
@@ -94,8 +101,8 @@ func Run() {
     )
 
     // 载入路由
-    loadKaixinRoutes()  // 凯信
     loadRedocRoute()    // 文档
+    loadKaixinRoutes()  // 凯信
     loadCommonRoutes()  // 公共API
     loadRideRoutes()    // 骑手路由
     loadManagerRoutes() // 管理员路由

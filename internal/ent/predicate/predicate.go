@@ -6,11 +6,17 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// BatteryModel is the predicate function for batterymodel builders.
+type BatteryModel func(*sql.Selector)
+
 // Branch is the predicate function for branch builders.
 type Branch func(*sql.Selector)
 
 // BranchContract is the predicate function for branchcontract builders.
 type BranchContract func(*sql.Selector)
+
+// Cabinet is the predicate function for cabinet builders.
+type Cabinet func(*sql.Selector)
 
 // City is the predicate function for city builders.
 type City func(*sql.Selector)

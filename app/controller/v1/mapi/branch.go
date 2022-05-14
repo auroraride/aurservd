@@ -20,7 +20,7 @@ var Branch = new(branch)
 // List
 // @ID           BranchList
 // @Router       /manager/v1/branch [GET]
-// @Summary      M3.1 网点列表
+// @Summary      M3001 网点列表
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -34,7 +34,7 @@ func (*branch) List(c echo.Context) (err error) {
 // Add
 // @ID           BranchAdd
 // @Router       /manager/v1/branch [POST]
-// @Summary      M3.2 新增网点
+// @Summary      M3002 新增网点
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -50,7 +50,7 @@ func (*branch) Add(c echo.Context) (err error) {
 // Modify
 // @ID           BranchModify
 // @Router       /manager/v1/branch/{id} [PUT]
-// @Summary      M3.3 编辑网点
+// @Summary      M3003 编辑网点
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -66,7 +66,7 @@ func (*branch) Modify(c echo.Context) (err error) {
 // AddContract
 // @ID           BranchAddContract
 // @Router       /manager/v1/{id}/contract [POST]
-// @Summary      M3.4 新增合同
+// @Summary      M3004 新增合同
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json

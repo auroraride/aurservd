@@ -47,3 +47,23 @@ type CaptchaReq struct {
 type SmsResponse struct {
     Id string `json:"id"`
 }
+
+// StatusBoolRes bool状态返回
+type StatusBoolRes struct {
+    Status bool `json:"status"`
+}
+
+// ItemListRes 列表返回
+type ItemListRes struct {
+    Items any `json:"items"`
+}
+
+// ItemRes 单项返回
+type ItemRes struct {
+    Item any `json:"item"`
+}
+
+// IDRes ID返回
+type IDRes struct {
+    ID uint64 `json:"id"`
+}

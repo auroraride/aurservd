@@ -29,19 +29,19 @@ func RiderMiddleware() echo.MiddlewareFunc {
             token := c.Request().Header.Get(app.HeaderRiderToken)
             id, err := ar.Cache.Get(context.Background(), token).Uint64()
             if err != nil {
-                snag.Panic(app.Response{Code: app.StatusUnauthorized, Message: ar.RequireSignin})
+                snag.Panic(snag.StatusUnauthorized)
             }
             s := service.NewRider()
             var u *ent.Rider
             u, err = s.GetRiderById(id)
             if err != nil || u == nil {
-                snag.Panic(app.Response{Code: app.StatusUnauthorized, Message: ar.RequireSignin})
+                snag.Panic(snag.StatusUnauthorized)
             }
 
             // 用户被封禁
             if s.IsBlocked(u) {
                 s.Signout(u)
-                snag.Panic(app.Response{Code: app.StatusForbidden, Message: ar.BlockedMessage})
+                snag.Panic(snag.StatusForbidden, ar.BlockedMessage)
             }
 
             // 延长token有效期
@@ -67,14 +67,10 @@ func RiderRequireAuthAndContact() echo.MiddlewareFunc {
             uri := c.Request().RequestURI
             p := ctx.Rider.Edges.Person
             if ctx.Rider.Contact == nil && uri != "/rider/contact" {
-                snag.Panic(app.Response{Code: app.StatusRequireContact, Message: ar.RequireContact})
+                snag.Panic(snag.StatusRequireContact)
             }
             if p == nil || model.PersonAuthStatus(p.Status).RequireAuth() {
-                snag.Panic(app.Response{
-                    Code:    app.StatusRequireAuth,
-                    Message: ar.RequireVerification,
-                    Data:    ar.Map{"url": service.NewRider().GetFaceAuthUrl(ctx)},
-                })
+                snag.Panic(snag.StatusRequireAuth, ar.Map{"url": service.NewRider().GetFaceAuthUrl(ctx)})
             }
             return next(ctx)
         }
@@ -89,11 +85,7 @@ func RiderFaceMiddleware() echo.MiddlewareFunc {
             u := ctx.Rider
             s := service.NewRider()
             if s.IsNewDevice(u, ctx.Device) {
-                snag.Panic(app.Response{
-                    Code:    app.StatusLocked,
-                    Message: ar.RequireFace,
-                    Data:    ar.Map{"url": s.GetFaceUrl(ctx)},
-                })
+                snag.Panic(snag.StatusLocked, ar.Map{"url": s.GetFaceUrl(ctx)})
             }
             return next(ctx)
         }

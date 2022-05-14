@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"math"
 
@@ -24,7 +23,7 @@ type SettingQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.Setting
-	modifiers  []func(s *sql.Selector)
+	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -107,7 +106,7 @@ func (sq *SettingQuery) FirstIDX(ctx context.Context) uint64 {
 }
 
 // Only returns a single Setting entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one Setting entity is not found.
+// Returns a *NotSingularError when more than one Setting entity is found.
 // Returns a *NotFoundError when no Setting entities are found.
 func (sq *SettingQuery) Only(ctx context.Context) (*Setting, error) {
 	nodes, err := sq.Limit(2).All(ctx)
@@ -134,7 +133,7 @@ func (sq *SettingQuery) OnlyX(ctx context.Context) *Setting {
 }
 
 // OnlyID is like Only, but returns the only Setting ID in the query.
-// Returns a *NotSingularError when exactly one Setting ID is not found.
+// Returns a *NotSingularError when more than one Setting ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (sq *SettingQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
@@ -243,8 +242,9 @@ func (sq *SettingQuery) Clone() *SettingQuery {
 		order:      append([]OrderFunc{}, sq.order...),
 		predicates: append([]predicate.Setting{}, sq.predicates...),
 		// clone intermediate query.
-		sql:  sq.sql.Clone(),
-		path: sq.path,
+		sql:    sq.sql.Clone(),
+		path:   sq.path,
+		unique: sq.unique,
 	}
 }
 
@@ -264,15 +264,17 @@ func (sq *SettingQuery) Clone() *SettingQuery {
 //		Scan(ctx, &v)
 //
 func (sq *SettingQuery) GroupBy(field string, fields ...string) *SettingGroupBy {
-	group := &SettingGroupBy{config: sq.config}
-	group.fields = append([]string{field}, fields...)
-	group.path = func(ctx context.Context) (prev *sql.Selector, err error) {
+	grbuild := &SettingGroupBy{config: sq.config}
+	grbuild.fields = append([]string{field}, fields...)
+	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
 		return sq.sqlQuery(ctx), nil
 	}
-	return group
+	grbuild.label = setting.Label
+	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	return grbuild
 }
 
 // Select allows the selection one or more fields/columns for the given query,
@@ -290,7 +292,10 @@ func (sq *SettingQuery) GroupBy(field string, fields ...string) *SettingGroupBy 
 //
 func (sq *SettingQuery) Select(fields ...string) *SettingSelect {
 	sq.fields = append(sq.fields, fields...)
-	return &SettingSelect{SettingQuery: sq}
+	selbuild := &SettingSelect{SettingQuery: sq}
+	selbuild.label = setting.Label
+	selbuild.flds, selbuild.scan = &sq.fields, selbuild.Scan
+	return selbuild
 }
 
 func (sq *SettingQuery) prepareQuery(ctx context.Context) error {
@@ -309,25 +314,24 @@ func (sq *SettingQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (sq *SettingQuery) sqlAll(ctx context.Context) ([]*Setting, error) {
+func (sq *SettingQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Setting, error) {
 	var (
 		nodes = []*Setting{}
 		_spec = sq.querySpec()
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
-		node := &Setting{config: sq.config}
-		nodes = append(nodes, node)
-		return node.scanValues(columns)
+		return (*Setting).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []interface{}) error {
-		if len(nodes) == 0 {
-			return fmt.Errorf("ent: Assign called without calling ScanValues")
-		}
-		node := nodes[len(nodes)-1]
+		node := &Setting{config: sq.config}
+		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
 	}
 	if len(sq.modifiers) > 0 {
 		_spec.Modifiers = sq.modifiers
+	}
+	for i := range hooks {
+		hooks[i](ctx, _spec)
 	}
 	if err := sqlgraph.QueryNodes(ctx, sq.driver, _spec); err != nil {
 		return nil, err
@@ -450,6 +454,7 @@ func (sq *SettingQuery) Modify(modifiers ...func(s *sql.Selector)) *SettingSelec
 // SettingGroupBy is the group-by builder for Setting entities.
 type SettingGroupBy struct {
 	config
+	selector
 	fields []string
 	fns    []AggregateFunc
 	// intermediate query (i.e. traversal path).
@@ -471,209 +476,6 @@ func (sgb *SettingGroupBy) Scan(ctx context.Context, v interface{}) error {
 	}
 	sgb.sql = query
 	return sgb.sqlScan(ctx, v)
-}
-
-// ScanX is like Scan, but panics if an error occurs.
-func (sgb *SettingGroupBy) ScanX(ctx context.Context, v interface{}) {
-	if err := sgb.Scan(ctx, v); err != nil {
-		panic(err)
-	}
-}
-
-// Strings returns list of strings from group-by.
-// It is only allowed when executing a group-by query with one field.
-func (sgb *SettingGroupBy) Strings(ctx context.Context) ([]string, error) {
-	if len(sgb.fields) > 1 {
-		return nil, errors.New("ent: SettingGroupBy.Strings is not achievable when grouping more than 1 field")
-	}
-	var v []string
-	if err := sgb.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// StringsX is like Strings, but panics if an error occurs.
-func (sgb *SettingGroupBy) StringsX(ctx context.Context) []string {
-	v, err := sgb.Strings(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// String returns a single string from a group-by query.
-// It is only allowed when executing a group-by query with one field.
-func (sgb *SettingGroupBy) String(ctx context.Context) (_ string, err error) {
-	var v []string
-	if v, err = sgb.Strings(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{setting.Label}
-	default:
-		err = fmt.Errorf("ent: SettingGroupBy.Strings returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// StringX is like String, but panics if an error occurs.
-func (sgb *SettingGroupBy) StringX(ctx context.Context) string {
-	v, err := sgb.String(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Ints returns list of ints from group-by.
-// It is only allowed when executing a group-by query with one field.
-func (sgb *SettingGroupBy) Ints(ctx context.Context) ([]int, error) {
-	if len(sgb.fields) > 1 {
-		return nil, errors.New("ent: SettingGroupBy.Ints is not achievable when grouping more than 1 field")
-	}
-	var v []int
-	if err := sgb.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// IntsX is like Ints, but panics if an error occurs.
-func (sgb *SettingGroupBy) IntsX(ctx context.Context) []int {
-	v, err := sgb.Ints(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Int returns a single int from a group-by query.
-// It is only allowed when executing a group-by query with one field.
-func (sgb *SettingGroupBy) Int(ctx context.Context) (_ int, err error) {
-	var v []int
-	if v, err = sgb.Ints(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{setting.Label}
-	default:
-		err = fmt.Errorf("ent: SettingGroupBy.Ints returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// IntX is like Int, but panics if an error occurs.
-func (sgb *SettingGroupBy) IntX(ctx context.Context) int {
-	v, err := sgb.Int(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Float64s returns list of float64s from group-by.
-// It is only allowed when executing a group-by query with one field.
-func (sgb *SettingGroupBy) Float64s(ctx context.Context) ([]float64, error) {
-	if len(sgb.fields) > 1 {
-		return nil, errors.New("ent: SettingGroupBy.Float64s is not achievable when grouping more than 1 field")
-	}
-	var v []float64
-	if err := sgb.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// Float64sX is like Float64s, but panics if an error occurs.
-func (sgb *SettingGroupBy) Float64sX(ctx context.Context) []float64 {
-	v, err := sgb.Float64s(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Float64 returns a single float64 from a group-by query.
-// It is only allowed when executing a group-by query with one field.
-func (sgb *SettingGroupBy) Float64(ctx context.Context) (_ float64, err error) {
-	var v []float64
-	if v, err = sgb.Float64s(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{setting.Label}
-	default:
-		err = fmt.Errorf("ent: SettingGroupBy.Float64s returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// Float64X is like Float64, but panics if an error occurs.
-func (sgb *SettingGroupBy) Float64X(ctx context.Context) float64 {
-	v, err := sgb.Float64(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Bools returns list of bools from group-by.
-// It is only allowed when executing a group-by query with one field.
-func (sgb *SettingGroupBy) Bools(ctx context.Context) ([]bool, error) {
-	if len(sgb.fields) > 1 {
-		return nil, errors.New("ent: SettingGroupBy.Bools is not achievable when grouping more than 1 field")
-	}
-	var v []bool
-	if err := sgb.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// BoolsX is like Bools, but panics if an error occurs.
-func (sgb *SettingGroupBy) BoolsX(ctx context.Context) []bool {
-	v, err := sgb.Bools(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Bool returns a single bool from a group-by query.
-// It is only allowed when executing a group-by query with one field.
-func (sgb *SettingGroupBy) Bool(ctx context.Context) (_ bool, err error) {
-	var v []bool
-	if v, err = sgb.Bools(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{setting.Label}
-	default:
-		err = fmt.Errorf("ent: SettingGroupBy.Bools returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// BoolX is like Bool, but panics if an error occurs.
-func (sgb *SettingGroupBy) BoolX(ctx context.Context) bool {
-	v, err := sgb.Bool(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
 }
 
 func (sgb *SettingGroupBy) sqlScan(ctx context.Context, v interface{}) error {
@@ -717,6 +519,7 @@ func (sgb *SettingGroupBy) sqlQuery() *sql.Selector {
 // SettingSelect is the builder for selecting fields of Setting entities.
 type SettingSelect struct {
 	*SettingQuery
+	selector
 	// intermediate query (i.e. traversal path).
 	sql *sql.Selector
 }
@@ -728,201 +531,6 @@ func (ss *SettingSelect) Scan(ctx context.Context, v interface{}) error {
 	}
 	ss.sql = ss.SettingQuery.sqlQuery(ctx)
 	return ss.sqlScan(ctx, v)
-}
-
-// ScanX is like Scan, but panics if an error occurs.
-func (ss *SettingSelect) ScanX(ctx context.Context, v interface{}) {
-	if err := ss.Scan(ctx, v); err != nil {
-		panic(err)
-	}
-}
-
-// Strings returns list of strings from a selector. It is only allowed when selecting one field.
-func (ss *SettingSelect) Strings(ctx context.Context) ([]string, error) {
-	if len(ss.fields) > 1 {
-		return nil, errors.New("ent: SettingSelect.Strings is not achievable when selecting more than 1 field")
-	}
-	var v []string
-	if err := ss.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// StringsX is like Strings, but panics if an error occurs.
-func (ss *SettingSelect) StringsX(ctx context.Context) []string {
-	v, err := ss.Strings(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// String returns a single string from a selector. It is only allowed when selecting one field.
-func (ss *SettingSelect) String(ctx context.Context) (_ string, err error) {
-	var v []string
-	if v, err = ss.Strings(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{setting.Label}
-	default:
-		err = fmt.Errorf("ent: SettingSelect.Strings returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// StringX is like String, but panics if an error occurs.
-func (ss *SettingSelect) StringX(ctx context.Context) string {
-	v, err := ss.String(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Ints returns list of ints from a selector. It is only allowed when selecting one field.
-func (ss *SettingSelect) Ints(ctx context.Context) ([]int, error) {
-	if len(ss.fields) > 1 {
-		return nil, errors.New("ent: SettingSelect.Ints is not achievable when selecting more than 1 field")
-	}
-	var v []int
-	if err := ss.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// IntsX is like Ints, but panics if an error occurs.
-func (ss *SettingSelect) IntsX(ctx context.Context) []int {
-	v, err := ss.Ints(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Int returns a single int from a selector. It is only allowed when selecting one field.
-func (ss *SettingSelect) Int(ctx context.Context) (_ int, err error) {
-	var v []int
-	if v, err = ss.Ints(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{setting.Label}
-	default:
-		err = fmt.Errorf("ent: SettingSelect.Ints returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// IntX is like Int, but panics if an error occurs.
-func (ss *SettingSelect) IntX(ctx context.Context) int {
-	v, err := ss.Int(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Float64s returns list of float64s from a selector. It is only allowed when selecting one field.
-func (ss *SettingSelect) Float64s(ctx context.Context) ([]float64, error) {
-	if len(ss.fields) > 1 {
-		return nil, errors.New("ent: SettingSelect.Float64s is not achievable when selecting more than 1 field")
-	}
-	var v []float64
-	if err := ss.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// Float64sX is like Float64s, but panics if an error occurs.
-func (ss *SettingSelect) Float64sX(ctx context.Context) []float64 {
-	v, err := ss.Float64s(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Float64 returns a single float64 from a selector. It is only allowed when selecting one field.
-func (ss *SettingSelect) Float64(ctx context.Context) (_ float64, err error) {
-	var v []float64
-	if v, err = ss.Float64s(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{setting.Label}
-	default:
-		err = fmt.Errorf("ent: SettingSelect.Float64s returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// Float64X is like Float64, but panics if an error occurs.
-func (ss *SettingSelect) Float64X(ctx context.Context) float64 {
-	v, err := ss.Float64(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Bools returns list of bools from a selector. It is only allowed when selecting one field.
-func (ss *SettingSelect) Bools(ctx context.Context) ([]bool, error) {
-	if len(ss.fields) > 1 {
-		return nil, errors.New("ent: SettingSelect.Bools is not achievable when selecting more than 1 field")
-	}
-	var v []bool
-	if err := ss.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// BoolsX is like Bools, but panics if an error occurs.
-func (ss *SettingSelect) BoolsX(ctx context.Context) []bool {
-	v, err := ss.Bools(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Bool returns a single bool from a selector. It is only allowed when selecting one field.
-func (ss *SettingSelect) Bool(ctx context.Context) (_ bool, err error) {
-	var v []bool
-	if v, err = ss.Bools(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{setting.Label}
-	default:
-		err = fmt.Errorf("ent: SettingSelect.Bools returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// BoolX is like Bool, but panics if an error occurs.
-func (ss *SettingSelect) BoolX(ctx context.Context) bool {
-	v, err := ss.Bool(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
 }
 
 func (ss *SettingSelect) sqlScan(ctx context.Context, v interface{}) error {

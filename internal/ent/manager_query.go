@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"math"
 
@@ -24,7 +23,7 @@ type ManagerQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.Manager
-	modifiers  []func(s *sql.Selector)
+	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -107,7 +106,7 @@ func (mq *ManagerQuery) FirstIDX(ctx context.Context) uint64 {
 }
 
 // Only returns a single Manager entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one Manager entity is not found.
+// Returns a *NotSingularError when more than one Manager entity is found.
 // Returns a *NotFoundError when no Manager entities are found.
 func (mq *ManagerQuery) Only(ctx context.Context) (*Manager, error) {
 	nodes, err := mq.Limit(2).All(ctx)
@@ -134,7 +133,7 @@ func (mq *ManagerQuery) OnlyX(ctx context.Context) *Manager {
 }
 
 // OnlyID is like Only, but returns the only Manager ID in the query.
-// Returns a *NotSingularError when exactly one Manager ID is not found.
+// Returns a *NotSingularError when more than one Manager ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (mq *ManagerQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
@@ -243,8 +242,9 @@ func (mq *ManagerQuery) Clone() *ManagerQuery {
 		order:      append([]OrderFunc{}, mq.order...),
 		predicates: append([]predicate.Manager{}, mq.predicates...),
 		// clone intermediate query.
-		sql:  mq.sql.Clone(),
-		path: mq.path,
+		sql:    mq.sql.Clone(),
+		path:   mq.path,
+		unique: mq.unique,
 	}
 }
 
@@ -264,15 +264,17 @@ func (mq *ManagerQuery) Clone() *ManagerQuery {
 //		Scan(ctx, &v)
 //
 func (mq *ManagerQuery) GroupBy(field string, fields ...string) *ManagerGroupBy {
-	group := &ManagerGroupBy{config: mq.config}
-	group.fields = append([]string{field}, fields...)
-	group.path = func(ctx context.Context) (prev *sql.Selector, err error) {
+	grbuild := &ManagerGroupBy{config: mq.config}
+	grbuild.fields = append([]string{field}, fields...)
+	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
 		if err := mq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
 		return mq.sqlQuery(ctx), nil
 	}
-	return group
+	grbuild.label = manager.Label
+	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	return grbuild
 }
 
 // Select allows the selection one or more fields/columns for the given query,
@@ -290,7 +292,10 @@ func (mq *ManagerQuery) GroupBy(field string, fields ...string) *ManagerGroupBy 
 //
 func (mq *ManagerQuery) Select(fields ...string) *ManagerSelect {
 	mq.fields = append(mq.fields, fields...)
-	return &ManagerSelect{ManagerQuery: mq}
+	selbuild := &ManagerSelect{ManagerQuery: mq}
+	selbuild.label = manager.Label
+	selbuild.flds, selbuild.scan = &mq.fields, selbuild.Scan
+	return selbuild
 }
 
 func (mq *ManagerQuery) prepareQuery(ctx context.Context) error {
@@ -309,25 +314,24 @@ func (mq *ManagerQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (mq *ManagerQuery) sqlAll(ctx context.Context) ([]*Manager, error) {
+func (mq *ManagerQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Manager, error) {
 	var (
 		nodes = []*Manager{}
 		_spec = mq.querySpec()
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
-		node := &Manager{config: mq.config}
-		nodes = append(nodes, node)
-		return node.scanValues(columns)
+		return (*Manager).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []interface{}) error {
-		if len(nodes) == 0 {
-			return fmt.Errorf("ent: Assign called without calling ScanValues")
-		}
-		node := nodes[len(nodes)-1]
+		node := &Manager{config: mq.config}
+		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
 	}
 	if len(mq.modifiers) > 0 {
 		_spec.Modifiers = mq.modifiers
+	}
+	for i := range hooks {
+		hooks[i](ctx, _spec)
 	}
 	if err := sqlgraph.QueryNodes(ctx, mq.driver, _spec); err != nil {
 		return nil, err
@@ -450,6 +454,7 @@ func (mq *ManagerQuery) Modify(modifiers ...func(s *sql.Selector)) *ManagerSelec
 // ManagerGroupBy is the group-by builder for Manager entities.
 type ManagerGroupBy struct {
 	config
+	selector
 	fields []string
 	fns    []AggregateFunc
 	// intermediate query (i.e. traversal path).
@@ -471,209 +476,6 @@ func (mgb *ManagerGroupBy) Scan(ctx context.Context, v interface{}) error {
 	}
 	mgb.sql = query
 	return mgb.sqlScan(ctx, v)
-}
-
-// ScanX is like Scan, but panics if an error occurs.
-func (mgb *ManagerGroupBy) ScanX(ctx context.Context, v interface{}) {
-	if err := mgb.Scan(ctx, v); err != nil {
-		panic(err)
-	}
-}
-
-// Strings returns list of strings from group-by.
-// It is only allowed when executing a group-by query with one field.
-func (mgb *ManagerGroupBy) Strings(ctx context.Context) ([]string, error) {
-	if len(mgb.fields) > 1 {
-		return nil, errors.New("ent: ManagerGroupBy.Strings is not achievable when grouping more than 1 field")
-	}
-	var v []string
-	if err := mgb.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// StringsX is like Strings, but panics if an error occurs.
-func (mgb *ManagerGroupBy) StringsX(ctx context.Context) []string {
-	v, err := mgb.Strings(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// String returns a single string from a group-by query.
-// It is only allowed when executing a group-by query with one field.
-func (mgb *ManagerGroupBy) String(ctx context.Context) (_ string, err error) {
-	var v []string
-	if v, err = mgb.Strings(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{manager.Label}
-	default:
-		err = fmt.Errorf("ent: ManagerGroupBy.Strings returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// StringX is like String, but panics if an error occurs.
-func (mgb *ManagerGroupBy) StringX(ctx context.Context) string {
-	v, err := mgb.String(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Ints returns list of ints from group-by.
-// It is only allowed when executing a group-by query with one field.
-func (mgb *ManagerGroupBy) Ints(ctx context.Context) ([]int, error) {
-	if len(mgb.fields) > 1 {
-		return nil, errors.New("ent: ManagerGroupBy.Ints is not achievable when grouping more than 1 field")
-	}
-	var v []int
-	if err := mgb.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// IntsX is like Ints, but panics if an error occurs.
-func (mgb *ManagerGroupBy) IntsX(ctx context.Context) []int {
-	v, err := mgb.Ints(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Int returns a single int from a group-by query.
-// It is only allowed when executing a group-by query with one field.
-func (mgb *ManagerGroupBy) Int(ctx context.Context) (_ int, err error) {
-	var v []int
-	if v, err = mgb.Ints(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{manager.Label}
-	default:
-		err = fmt.Errorf("ent: ManagerGroupBy.Ints returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// IntX is like Int, but panics if an error occurs.
-func (mgb *ManagerGroupBy) IntX(ctx context.Context) int {
-	v, err := mgb.Int(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Float64s returns list of float64s from group-by.
-// It is only allowed when executing a group-by query with one field.
-func (mgb *ManagerGroupBy) Float64s(ctx context.Context) ([]float64, error) {
-	if len(mgb.fields) > 1 {
-		return nil, errors.New("ent: ManagerGroupBy.Float64s is not achievable when grouping more than 1 field")
-	}
-	var v []float64
-	if err := mgb.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// Float64sX is like Float64s, but panics if an error occurs.
-func (mgb *ManagerGroupBy) Float64sX(ctx context.Context) []float64 {
-	v, err := mgb.Float64s(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Float64 returns a single float64 from a group-by query.
-// It is only allowed when executing a group-by query with one field.
-func (mgb *ManagerGroupBy) Float64(ctx context.Context) (_ float64, err error) {
-	var v []float64
-	if v, err = mgb.Float64s(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{manager.Label}
-	default:
-		err = fmt.Errorf("ent: ManagerGroupBy.Float64s returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// Float64X is like Float64, but panics if an error occurs.
-func (mgb *ManagerGroupBy) Float64X(ctx context.Context) float64 {
-	v, err := mgb.Float64(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Bools returns list of bools from group-by.
-// It is only allowed when executing a group-by query with one field.
-func (mgb *ManagerGroupBy) Bools(ctx context.Context) ([]bool, error) {
-	if len(mgb.fields) > 1 {
-		return nil, errors.New("ent: ManagerGroupBy.Bools is not achievable when grouping more than 1 field")
-	}
-	var v []bool
-	if err := mgb.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// BoolsX is like Bools, but panics if an error occurs.
-func (mgb *ManagerGroupBy) BoolsX(ctx context.Context) []bool {
-	v, err := mgb.Bools(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Bool returns a single bool from a group-by query.
-// It is only allowed when executing a group-by query with one field.
-func (mgb *ManagerGroupBy) Bool(ctx context.Context) (_ bool, err error) {
-	var v []bool
-	if v, err = mgb.Bools(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{manager.Label}
-	default:
-		err = fmt.Errorf("ent: ManagerGroupBy.Bools returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// BoolX is like Bool, but panics if an error occurs.
-func (mgb *ManagerGroupBy) BoolX(ctx context.Context) bool {
-	v, err := mgb.Bool(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
 }
 
 func (mgb *ManagerGroupBy) sqlScan(ctx context.Context, v interface{}) error {
@@ -717,6 +519,7 @@ func (mgb *ManagerGroupBy) sqlQuery() *sql.Selector {
 // ManagerSelect is the builder for selecting fields of Manager entities.
 type ManagerSelect struct {
 	*ManagerQuery
+	selector
 	// intermediate query (i.e. traversal path).
 	sql *sql.Selector
 }
@@ -728,201 +531,6 @@ func (ms *ManagerSelect) Scan(ctx context.Context, v interface{}) error {
 	}
 	ms.sql = ms.ManagerQuery.sqlQuery(ctx)
 	return ms.sqlScan(ctx, v)
-}
-
-// ScanX is like Scan, but panics if an error occurs.
-func (ms *ManagerSelect) ScanX(ctx context.Context, v interface{}) {
-	if err := ms.Scan(ctx, v); err != nil {
-		panic(err)
-	}
-}
-
-// Strings returns list of strings from a selector. It is only allowed when selecting one field.
-func (ms *ManagerSelect) Strings(ctx context.Context) ([]string, error) {
-	if len(ms.fields) > 1 {
-		return nil, errors.New("ent: ManagerSelect.Strings is not achievable when selecting more than 1 field")
-	}
-	var v []string
-	if err := ms.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// StringsX is like Strings, but panics if an error occurs.
-func (ms *ManagerSelect) StringsX(ctx context.Context) []string {
-	v, err := ms.Strings(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// String returns a single string from a selector. It is only allowed when selecting one field.
-func (ms *ManagerSelect) String(ctx context.Context) (_ string, err error) {
-	var v []string
-	if v, err = ms.Strings(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{manager.Label}
-	default:
-		err = fmt.Errorf("ent: ManagerSelect.Strings returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// StringX is like String, but panics if an error occurs.
-func (ms *ManagerSelect) StringX(ctx context.Context) string {
-	v, err := ms.String(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Ints returns list of ints from a selector. It is only allowed when selecting one field.
-func (ms *ManagerSelect) Ints(ctx context.Context) ([]int, error) {
-	if len(ms.fields) > 1 {
-		return nil, errors.New("ent: ManagerSelect.Ints is not achievable when selecting more than 1 field")
-	}
-	var v []int
-	if err := ms.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// IntsX is like Ints, but panics if an error occurs.
-func (ms *ManagerSelect) IntsX(ctx context.Context) []int {
-	v, err := ms.Ints(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Int returns a single int from a selector. It is only allowed when selecting one field.
-func (ms *ManagerSelect) Int(ctx context.Context) (_ int, err error) {
-	var v []int
-	if v, err = ms.Ints(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{manager.Label}
-	default:
-		err = fmt.Errorf("ent: ManagerSelect.Ints returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// IntX is like Int, but panics if an error occurs.
-func (ms *ManagerSelect) IntX(ctx context.Context) int {
-	v, err := ms.Int(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Float64s returns list of float64s from a selector. It is only allowed when selecting one field.
-func (ms *ManagerSelect) Float64s(ctx context.Context) ([]float64, error) {
-	if len(ms.fields) > 1 {
-		return nil, errors.New("ent: ManagerSelect.Float64s is not achievable when selecting more than 1 field")
-	}
-	var v []float64
-	if err := ms.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// Float64sX is like Float64s, but panics if an error occurs.
-func (ms *ManagerSelect) Float64sX(ctx context.Context) []float64 {
-	v, err := ms.Float64s(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Float64 returns a single float64 from a selector. It is only allowed when selecting one field.
-func (ms *ManagerSelect) Float64(ctx context.Context) (_ float64, err error) {
-	var v []float64
-	if v, err = ms.Float64s(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{manager.Label}
-	default:
-		err = fmt.Errorf("ent: ManagerSelect.Float64s returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// Float64X is like Float64, but panics if an error occurs.
-func (ms *ManagerSelect) Float64X(ctx context.Context) float64 {
-	v, err := ms.Float64(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Bools returns list of bools from a selector. It is only allowed when selecting one field.
-func (ms *ManagerSelect) Bools(ctx context.Context) ([]bool, error) {
-	if len(ms.fields) > 1 {
-		return nil, errors.New("ent: ManagerSelect.Bools is not achievable when selecting more than 1 field")
-	}
-	var v []bool
-	if err := ms.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// BoolsX is like Bools, but panics if an error occurs.
-func (ms *ManagerSelect) BoolsX(ctx context.Context) []bool {
-	v, err := ms.Bools(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Bool returns a single bool from a selector. It is only allowed when selecting one field.
-func (ms *ManagerSelect) Bool(ctx context.Context) (_ bool, err error) {
-	var v []bool
-	if v, err = ms.Bools(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{manager.Label}
-	default:
-		err = fmt.Errorf("ent: ManagerSelect.Bools returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// BoolX is like Bool, but panics if an error occurs.
-func (ms *ManagerSelect) BoolX(ctx context.Context) bool {
-	v, err := ms.Bool(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
 }
 
 func (ms *ManagerSelect) sqlScan(ctx context.Context, v interface{}) error {

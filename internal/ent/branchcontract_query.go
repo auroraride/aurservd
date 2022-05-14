@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"math"
 
@@ -27,7 +26,7 @@ type BranchContractQuery struct {
 	predicates []predicate.BranchContract
 	// eager-loading edges.
 	withBranch *BranchQuery
-	modifiers  []func(s *sql.Selector)
+	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -132,7 +131,7 @@ func (bcq *BranchContractQuery) FirstIDX(ctx context.Context) uint64 {
 }
 
 // Only returns a single BranchContract entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one BranchContract entity is not found.
+// Returns a *NotSingularError when more than one BranchContract entity is found.
 // Returns a *NotFoundError when no BranchContract entities are found.
 func (bcq *BranchContractQuery) Only(ctx context.Context) (*BranchContract, error) {
 	nodes, err := bcq.Limit(2).All(ctx)
@@ -159,7 +158,7 @@ func (bcq *BranchContractQuery) OnlyX(ctx context.Context) *BranchContract {
 }
 
 // OnlyID is like Only, but returns the only BranchContract ID in the query.
-// Returns a *NotSingularError when exactly one BranchContract ID is not found.
+// Returns a *NotSingularError when more than one BranchContract ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (bcq *BranchContractQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
@@ -269,8 +268,9 @@ func (bcq *BranchContractQuery) Clone() *BranchContractQuery {
 		predicates: append([]predicate.BranchContract{}, bcq.predicates...),
 		withBranch: bcq.withBranch.Clone(),
 		// clone intermediate query.
-		sql:  bcq.sql.Clone(),
-		path: bcq.path,
+		sql:    bcq.sql.Clone(),
+		path:   bcq.path,
+		unique: bcq.unique,
 	}
 }
 
@@ -301,15 +301,17 @@ func (bcq *BranchContractQuery) WithBranch(opts ...func(*BranchQuery)) *BranchCo
 //		Scan(ctx, &v)
 //
 func (bcq *BranchContractQuery) GroupBy(field string, fields ...string) *BranchContractGroupBy {
-	group := &BranchContractGroupBy{config: bcq.config}
-	group.fields = append([]string{field}, fields...)
-	group.path = func(ctx context.Context) (prev *sql.Selector, err error) {
+	grbuild := &BranchContractGroupBy{config: bcq.config}
+	grbuild.fields = append([]string{field}, fields...)
+	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
 		if err := bcq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
 		return bcq.sqlQuery(ctx), nil
 	}
-	return group
+	grbuild.label = branchcontract.Label
+	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	return grbuild
 }
 
 // Select allows the selection one or more fields/columns for the given query,
@@ -327,7 +329,10 @@ func (bcq *BranchContractQuery) GroupBy(field string, fields ...string) *BranchC
 //
 func (bcq *BranchContractQuery) Select(fields ...string) *BranchContractSelect {
 	bcq.fields = append(bcq.fields, fields...)
-	return &BranchContractSelect{BranchContractQuery: bcq}
+	selbuild := &BranchContractSelect{BranchContractQuery: bcq}
+	selbuild.label = branchcontract.Label
+	selbuild.flds, selbuild.scan = &bcq.fields, selbuild.Scan
+	return selbuild
 }
 
 func (bcq *BranchContractQuery) prepareQuery(ctx context.Context) error {
@@ -346,7 +351,7 @@ func (bcq *BranchContractQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (bcq *BranchContractQuery) sqlAll(ctx context.Context) ([]*BranchContract, error) {
+func (bcq *BranchContractQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*BranchContract, error) {
 	var (
 		nodes       = []*BranchContract{}
 		_spec       = bcq.querySpec()
@@ -355,20 +360,19 @@ func (bcq *BranchContractQuery) sqlAll(ctx context.Context) ([]*BranchContract, 
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
-		node := &BranchContract{config: bcq.config}
-		nodes = append(nodes, node)
-		return node.scanValues(columns)
+		return (*BranchContract).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []interface{}) error {
-		if len(nodes) == 0 {
-			return fmt.Errorf("ent: Assign called without calling ScanValues")
-		}
-		node := nodes[len(nodes)-1]
+		node := &BranchContract{config: bcq.config}
+		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(bcq.modifiers) > 0 {
 		_spec.Modifiers = bcq.modifiers
+	}
+	for i := range hooks {
+		hooks[i](ctx, _spec)
 	}
 	if err := sqlgraph.QueryNodes(ctx, bcq.driver, _spec); err != nil {
 		return nil, err
@@ -518,6 +522,7 @@ func (bcq *BranchContractQuery) Modify(modifiers ...func(s *sql.Selector)) *Bran
 // BranchContractGroupBy is the group-by builder for BranchContract entities.
 type BranchContractGroupBy struct {
 	config
+	selector
 	fields []string
 	fns    []AggregateFunc
 	// intermediate query (i.e. traversal path).
@@ -539,209 +544,6 @@ func (bcgb *BranchContractGroupBy) Scan(ctx context.Context, v interface{}) erro
 	}
 	bcgb.sql = query
 	return bcgb.sqlScan(ctx, v)
-}
-
-// ScanX is like Scan, but panics if an error occurs.
-func (bcgb *BranchContractGroupBy) ScanX(ctx context.Context, v interface{}) {
-	if err := bcgb.Scan(ctx, v); err != nil {
-		panic(err)
-	}
-}
-
-// Strings returns list of strings from group-by.
-// It is only allowed when executing a group-by query with one field.
-func (bcgb *BranchContractGroupBy) Strings(ctx context.Context) ([]string, error) {
-	if len(bcgb.fields) > 1 {
-		return nil, errors.New("ent: BranchContractGroupBy.Strings is not achievable when grouping more than 1 field")
-	}
-	var v []string
-	if err := bcgb.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// StringsX is like Strings, but panics if an error occurs.
-func (bcgb *BranchContractGroupBy) StringsX(ctx context.Context) []string {
-	v, err := bcgb.Strings(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// String returns a single string from a group-by query.
-// It is only allowed when executing a group-by query with one field.
-func (bcgb *BranchContractGroupBy) String(ctx context.Context) (_ string, err error) {
-	var v []string
-	if v, err = bcgb.Strings(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{branchcontract.Label}
-	default:
-		err = fmt.Errorf("ent: BranchContractGroupBy.Strings returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// StringX is like String, but panics if an error occurs.
-func (bcgb *BranchContractGroupBy) StringX(ctx context.Context) string {
-	v, err := bcgb.String(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Ints returns list of ints from group-by.
-// It is only allowed when executing a group-by query with one field.
-func (bcgb *BranchContractGroupBy) Ints(ctx context.Context) ([]int, error) {
-	if len(bcgb.fields) > 1 {
-		return nil, errors.New("ent: BranchContractGroupBy.Ints is not achievable when grouping more than 1 field")
-	}
-	var v []int
-	if err := bcgb.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// IntsX is like Ints, but panics if an error occurs.
-func (bcgb *BranchContractGroupBy) IntsX(ctx context.Context) []int {
-	v, err := bcgb.Ints(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Int returns a single int from a group-by query.
-// It is only allowed when executing a group-by query with one field.
-func (bcgb *BranchContractGroupBy) Int(ctx context.Context) (_ int, err error) {
-	var v []int
-	if v, err = bcgb.Ints(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{branchcontract.Label}
-	default:
-		err = fmt.Errorf("ent: BranchContractGroupBy.Ints returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// IntX is like Int, but panics if an error occurs.
-func (bcgb *BranchContractGroupBy) IntX(ctx context.Context) int {
-	v, err := bcgb.Int(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Float64s returns list of float64s from group-by.
-// It is only allowed when executing a group-by query with one field.
-func (bcgb *BranchContractGroupBy) Float64s(ctx context.Context) ([]float64, error) {
-	if len(bcgb.fields) > 1 {
-		return nil, errors.New("ent: BranchContractGroupBy.Float64s is not achievable when grouping more than 1 field")
-	}
-	var v []float64
-	if err := bcgb.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// Float64sX is like Float64s, but panics if an error occurs.
-func (bcgb *BranchContractGroupBy) Float64sX(ctx context.Context) []float64 {
-	v, err := bcgb.Float64s(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Float64 returns a single float64 from a group-by query.
-// It is only allowed when executing a group-by query with one field.
-func (bcgb *BranchContractGroupBy) Float64(ctx context.Context) (_ float64, err error) {
-	var v []float64
-	if v, err = bcgb.Float64s(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{branchcontract.Label}
-	default:
-		err = fmt.Errorf("ent: BranchContractGroupBy.Float64s returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// Float64X is like Float64, but panics if an error occurs.
-func (bcgb *BranchContractGroupBy) Float64X(ctx context.Context) float64 {
-	v, err := bcgb.Float64(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Bools returns list of bools from group-by.
-// It is only allowed when executing a group-by query with one field.
-func (bcgb *BranchContractGroupBy) Bools(ctx context.Context) ([]bool, error) {
-	if len(bcgb.fields) > 1 {
-		return nil, errors.New("ent: BranchContractGroupBy.Bools is not achievable when grouping more than 1 field")
-	}
-	var v []bool
-	if err := bcgb.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// BoolsX is like Bools, but panics if an error occurs.
-func (bcgb *BranchContractGroupBy) BoolsX(ctx context.Context) []bool {
-	v, err := bcgb.Bools(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Bool returns a single bool from a group-by query.
-// It is only allowed when executing a group-by query with one field.
-func (bcgb *BranchContractGroupBy) Bool(ctx context.Context) (_ bool, err error) {
-	var v []bool
-	if v, err = bcgb.Bools(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{branchcontract.Label}
-	default:
-		err = fmt.Errorf("ent: BranchContractGroupBy.Bools returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// BoolX is like Bool, but panics if an error occurs.
-func (bcgb *BranchContractGroupBy) BoolX(ctx context.Context) bool {
-	v, err := bcgb.Bool(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
 }
 
 func (bcgb *BranchContractGroupBy) sqlScan(ctx context.Context, v interface{}) error {
@@ -785,6 +587,7 @@ func (bcgb *BranchContractGroupBy) sqlQuery() *sql.Selector {
 // BranchContractSelect is the builder for selecting fields of BranchContract entities.
 type BranchContractSelect struct {
 	*BranchContractQuery
+	selector
 	// intermediate query (i.e. traversal path).
 	sql *sql.Selector
 }
@@ -796,201 +599,6 @@ func (bcs *BranchContractSelect) Scan(ctx context.Context, v interface{}) error 
 	}
 	bcs.sql = bcs.BranchContractQuery.sqlQuery(ctx)
 	return bcs.sqlScan(ctx, v)
-}
-
-// ScanX is like Scan, but panics if an error occurs.
-func (bcs *BranchContractSelect) ScanX(ctx context.Context, v interface{}) {
-	if err := bcs.Scan(ctx, v); err != nil {
-		panic(err)
-	}
-}
-
-// Strings returns list of strings from a selector. It is only allowed when selecting one field.
-func (bcs *BranchContractSelect) Strings(ctx context.Context) ([]string, error) {
-	if len(bcs.fields) > 1 {
-		return nil, errors.New("ent: BranchContractSelect.Strings is not achievable when selecting more than 1 field")
-	}
-	var v []string
-	if err := bcs.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// StringsX is like Strings, but panics if an error occurs.
-func (bcs *BranchContractSelect) StringsX(ctx context.Context) []string {
-	v, err := bcs.Strings(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// String returns a single string from a selector. It is only allowed when selecting one field.
-func (bcs *BranchContractSelect) String(ctx context.Context) (_ string, err error) {
-	var v []string
-	if v, err = bcs.Strings(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{branchcontract.Label}
-	default:
-		err = fmt.Errorf("ent: BranchContractSelect.Strings returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// StringX is like String, but panics if an error occurs.
-func (bcs *BranchContractSelect) StringX(ctx context.Context) string {
-	v, err := bcs.String(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Ints returns list of ints from a selector. It is only allowed when selecting one field.
-func (bcs *BranchContractSelect) Ints(ctx context.Context) ([]int, error) {
-	if len(bcs.fields) > 1 {
-		return nil, errors.New("ent: BranchContractSelect.Ints is not achievable when selecting more than 1 field")
-	}
-	var v []int
-	if err := bcs.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// IntsX is like Ints, but panics if an error occurs.
-func (bcs *BranchContractSelect) IntsX(ctx context.Context) []int {
-	v, err := bcs.Ints(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Int returns a single int from a selector. It is only allowed when selecting one field.
-func (bcs *BranchContractSelect) Int(ctx context.Context) (_ int, err error) {
-	var v []int
-	if v, err = bcs.Ints(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{branchcontract.Label}
-	default:
-		err = fmt.Errorf("ent: BranchContractSelect.Ints returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// IntX is like Int, but panics if an error occurs.
-func (bcs *BranchContractSelect) IntX(ctx context.Context) int {
-	v, err := bcs.Int(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Float64s returns list of float64s from a selector. It is only allowed when selecting one field.
-func (bcs *BranchContractSelect) Float64s(ctx context.Context) ([]float64, error) {
-	if len(bcs.fields) > 1 {
-		return nil, errors.New("ent: BranchContractSelect.Float64s is not achievable when selecting more than 1 field")
-	}
-	var v []float64
-	if err := bcs.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// Float64sX is like Float64s, but panics if an error occurs.
-func (bcs *BranchContractSelect) Float64sX(ctx context.Context) []float64 {
-	v, err := bcs.Float64s(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Float64 returns a single float64 from a selector. It is only allowed when selecting one field.
-func (bcs *BranchContractSelect) Float64(ctx context.Context) (_ float64, err error) {
-	var v []float64
-	if v, err = bcs.Float64s(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{branchcontract.Label}
-	default:
-		err = fmt.Errorf("ent: BranchContractSelect.Float64s returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// Float64X is like Float64, but panics if an error occurs.
-func (bcs *BranchContractSelect) Float64X(ctx context.Context) float64 {
-	v, err := bcs.Float64(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Bools returns list of bools from a selector. It is only allowed when selecting one field.
-func (bcs *BranchContractSelect) Bools(ctx context.Context) ([]bool, error) {
-	if len(bcs.fields) > 1 {
-		return nil, errors.New("ent: BranchContractSelect.Bools is not achievable when selecting more than 1 field")
-	}
-	var v []bool
-	if err := bcs.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// BoolsX is like Bools, but panics if an error occurs.
-func (bcs *BranchContractSelect) BoolsX(ctx context.Context) []bool {
-	v, err := bcs.Bools(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Bool returns a single bool from a selector. It is only allowed when selecting one field.
-func (bcs *BranchContractSelect) Bool(ctx context.Context) (_ bool, err error) {
-	var v []bool
-	if v, err = bcs.Bools(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{branchcontract.Label}
-	default:
-		err = fmt.Errorf("ent: BranchContractSelect.Bools returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// BoolX is like Bool, but panics if an error occurs.
-func (bcs *BranchContractSelect) BoolX(ctx context.Context) bool {
-	v, err := bcs.Bool(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
 }
 
 func (bcs *BranchContractSelect) sqlScan(ctx context.Context, v interface{}) error {

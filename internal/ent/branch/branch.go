@@ -37,6 +37,8 @@ const (
 	FieldPhotos = "photos"
 	// EdgeContracts holds the string denoting the contracts edge name in mutations.
 	EdgeContracts = "contracts"
+	// EdgeCabinets holds the string denoting the cabinets edge name in mutations.
+	EdgeCabinets = "cabinets"
 	// Table holds the table name of the branch in the database.
 	Table = "branch"
 	// ContractsTable is the table that holds the contracts relation/edge.
@@ -46,6 +48,13 @@ const (
 	ContractsInverseTable = "branch_contract"
 	// ContractsColumn is the table column denoting the contracts relation/edge.
 	ContractsColumn = "branch_id"
+	// CabinetsTable is the table that holds the cabinets relation/edge.
+	CabinetsTable = "cabinet"
+	// CabinetsInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	CabinetsInverseTable = "cabinet"
+	// CabinetsColumn is the table column denoting the cabinets relation/edge.
+	CabinetsColumn = "branch_id"
 )
 
 // Columns holds all SQL columns for branch fields.

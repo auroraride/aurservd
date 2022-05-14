@@ -18,8 +18,16 @@ type BaseContext struct {
 
 // Context 获取上下文
 func Context(c echo.Context) *BaseContext {
-    ctx, _ := c.(*BaseContext)
-    return ctx
+    switch c.(type) {
+    case *ManagerContext:
+        return c.(*ManagerContext).BaseContext
+    case *RiderContext:
+        return c.(*RiderContext).BaseContext
+    case *BaseContext:
+        return c.(*BaseContext)
+    default:
+        return nil
+    }
 }
 
 // NewContext 创建上下文

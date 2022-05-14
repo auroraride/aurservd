@@ -7,6 +7,8 @@ package app
 
 import (
     "bytes"
+    "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/pkg/snag"
     jsoniter "github.com/json-iterator/go"
     "net/http"
 )
@@ -37,11 +39,15 @@ func (r *Response) processParam(param any) {
 func (c *BaseContext) SendResponse(params ...any) error {
     r := &Response{
         Message: "ok",
-        Code:    http.StatusOK,
+        Code:    int(snag.StatusOK),
     }
 
     for _, param := range params {
         r.processParam(param)
+    }
+
+    if r.Code == int(snag.StatusOK) && r.Data == nil {
+        r.Data = model.StatusResponse{Status: true}
     }
 
     buffer := &bytes.Buffer{}

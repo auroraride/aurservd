@@ -5,8 +5,10 @@ package ent
 import (
 	"time"
 
+	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -20,6 +22,21 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	batterymodelMixin := schema.BatteryModel{}.Mixin()
+	batterymodelMixinFields0 := batterymodelMixin[0].Fields()
+	_ = batterymodelMixinFields0
+	batterymodelFields := schema.BatteryModel{}.Fields()
+	_ = batterymodelFields
+	// batterymodelDescCreatedAt is the schema descriptor for created_at field.
+	batterymodelDescCreatedAt := batterymodelMixinFields0[0].Descriptor()
+	// batterymodel.DefaultCreatedAt holds the default value on creation for the created_at field.
+	batterymodel.DefaultCreatedAt = batterymodelDescCreatedAt.Default.(func() time.Time)
+	// batterymodelDescUpdatedAt is the schema descriptor for updated_at field.
+	batterymodelDescUpdatedAt := batterymodelMixinFields0[1].Descriptor()
+	// batterymodel.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	batterymodel.DefaultUpdatedAt = batterymodelDescUpdatedAt.Default.(func() time.Time)
+	// batterymodel.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	batterymodel.UpdateDefaultUpdatedAt = batterymodelDescUpdatedAt.UpdateDefault.(func() time.Time)
 	branchMixin := schema.Branch{}.Mixin()
 	branchMixinFields0 := branchMixin[0].Fields()
 	_ = branchMixinFields0
@@ -50,6 +67,21 @@ func init() {
 	branchcontract.DefaultUpdatedAt = branchcontractDescUpdatedAt.Default.(func() time.Time)
 	// branchcontract.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	branchcontract.UpdateDefaultUpdatedAt = branchcontractDescUpdatedAt.UpdateDefault.(func() time.Time)
+	cabinetMixin := schema.Cabinet{}.Mixin()
+	cabinetMixinFields0 := cabinetMixin[0].Fields()
+	_ = cabinetMixinFields0
+	cabinetFields := schema.Cabinet{}.Fields()
+	_ = cabinetFields
+	// cabinetDescCreatedAt is the schema descriptor for created_at field.
+	cabinetDescCreatedAt := cabinetMixinFields0[0].Descriptor()
+	// cabinet.DefaultCreatedAt holds the default value on creation for the created_at field.
+	cabinet.DefaultCreatedAt = cabinetDescCreatedAt.Default.(func() time.Time)
+	// cabinetDescUpdatedAt is the schema descriptor for updated_at field.
+	cabinetDescUpdatedAt := cabinetMixinFields0[1].Descriptor()
+	// cabinet.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	cabinet.DefaultUpdatedAt = cabinetDescUpdatedAt.Default.(func() time.Time)
+	// cabinet.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	cabinet.UpdateDefaultUpdatedAt = cabinetDescUpdatedAt.UpdateDefault.(func() time.Time)
 	cityMixin := schema.City{}.Mixin()
 	cityMixinFields0 := cityMixin[0].Fields()
 	_ = cityMixinFields0

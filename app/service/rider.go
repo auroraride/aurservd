@@ -78,8 +78,7 @@ func (r *riderService) Signin(phone string, device *app.Device) (res *model.Ride
 
     // 判定用户是否被封禁
     if r.IsBlocked(u) {
-        err = errors.New(ar.BlockedMessage)
-        return
+        snag.Panic(snag.StatusForbidden, ar.BlockedMessage)
     }
 
     token := xid.New().String() + utils.RandTokenString()

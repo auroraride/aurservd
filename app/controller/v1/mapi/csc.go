@@ -19,7 +19,7 @@ var Csc = new(csc)
 // IvrShiguangju
 // @ID           CscIvrShiguangju
 // @Router       /manager/v1/csc/irv [POST]
-// @Summary      MT1. 时光驹催费工具
+// @Summary      MT1001 时光驹催费工具
 // @Tags         [M]管理接口
 // @Accept       mpfd
 // @Produce      json
@@ -32,7 +32,5 @@ func (*csc) IvrShiguangju(c echo.Context) (err error) {
         snag.Panic(err)
     }
 
-    return app.NewResponse(c).
-        SetData(service.NewCSC().ParseNameListShiguangju(file)).
-        Send()
+    return app.Context(c).SendResponse(service.NewCSC().ParseNameListShiguangju(file))
 }

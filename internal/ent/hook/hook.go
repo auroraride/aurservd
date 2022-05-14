@@ -9,6 +9,19 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 )
 
+// The BatteryModelFunc type is an adapter to allow the use of ordinary
+// function as BatteryModel mutator.
+type BatteryModelFunc func(context.Context, *ent.BatteryModelMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f BatteryModelFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.BatteryModelMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BatteryModelMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The BranchFunc type is an adapter to allow the use of ordinary
 // function as Branch mutator.
 type BranchFunc func(context.Context, *ent.BranchMutation) (ent.Value, error)
@@ -31,6 +44,19 @@ func (f BranchContractFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 	mv, ok := m.(*ent.BranchContractMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BranchContractMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The CabinetFunc type is an adapter to allow the use of ordinary
+// function as Cabinet mutator.
+type CabinetFunc func(context.Context, *ent.CabinetMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CabinetFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.CabinetMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CabinetMutation", m)
 	}
 	return f(ctx, mv)
 }

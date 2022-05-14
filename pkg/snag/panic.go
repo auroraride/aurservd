@@ -5,6 +5,6 @@
 
 package snag
 
-func Panic(params ...interface{}) {
+func Panic(params ...any) {
     panic(NewError(params...))
 }

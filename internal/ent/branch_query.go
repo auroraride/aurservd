@@ -5,7 +5,6 @@ package ent
 import (
 	"context"
 	"database/sql/driver"
-	"errors"
 	"fmt"
 	"math"
 
@@ -14,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -28,7 +28,8 @@ type BranchQuery struct {
 	predicates []predicate.Branch
 	// eager-loading edges.
 	withContracts *BranchContractQuery
-	modifiers     []func(s *sql.Selector)
+	withCabinets  *CabinetQuery
+	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -87,6 +88,28 @@ func (bq *BranchQuery) QueryContracts() *BranchContractQuery {
 	return query
 }
 
+// QueryCabinets chains the current query on the "cabinets" edge.
+func (bq *BranchQuery) QueryCabinets() *CabinetQuery {
+	query := &CabinetQuery{config: bq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(branch.Table, branch.FieldID, selector),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, branch.CabinetsTable, branch.CabinetsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Branch entity from the query.
 // Returns a *NotFoundError when no Branch was found.
 func (bq *BranchQuery) First(ctx context.Context) (*Branch, error) {
@@ -133,7 +156,7 @@ func (bq *BranchQuery) FirstIDX(ctx context.Context) uint64 {
 }
 
 // Only returns a single Branch entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one Branch entity is not found.
+// Returns a *NotSingularError when more than one Branch entity is found.
 // Returns a *NotFoundError when no Branch entities are found.
 func (bq *BranchQuery) Only(ctx context.Context) (*Branch, error) {
 	nodes, err := bq.Limit(2).All(ctx)
@@ -160,7 +183,7 @@ func (bq *BranchQuery) OnlyX(ctx context.Context) *Branch {
 }
 
 // OnlyID is like Only, but returns the only Branch ID in the query.
-// Returns a *NotSingularError when exactly one Branch ID is not found.
+// Returns a *NotSingularError when more than one Branch ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (bq *BranchQuery) OnlyID(ctx context.Context) (id uint64, err error) {
 	var ids []uint64
@@ -269,9 +292,11 @@ func (bq *BranchQuery) Clone() *BranchQuery {
 		order:         append([]OrderFunc{}, bq.order...),
 		predicates:    append([]predicate.Branch{}, bq.predicates...),
 		withContracts: bq.withContracts.Clone(),
+		withCabinets:  bq.withCabinets.Clone(),
 		// clone intermediate query.
-		sql:  bq.sql.Clone(),
-		path: bq.path,
+		sql:    bq.sql.Clone(),
+		path:   bq.path,
+		unique: bq.unique,
 	}
 }
 
@@ -283,6 +308,17 @@ func (bq *BranchQuery) WithContracts(opts ...func(*BranchContractQuery)) *Branch
 		opt(query)
 	}
 	bq.withContracts = query
+	return bq
+}
+
+// WithCabinets tells the query-builder to eager-load the nodes that are connected to
+// the "cabinets" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BranchQuery) WithCabinets(opts ...func(*CabinetQuery)) *BranchQuery {
+	query := &CabinetQuery{config: bq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withCabinets = query
 	return bq
 }
 
@@ -302,15 +338,17 @@ func (bq *BranchQuery) WithContracts(opts ...func(*BranchContractQuery)) *Branch
 //		Scan(ctx, &v)
 //
 func (bq *BranchQuery) GroupBy(field string, fields ...string) *BranchGroupBy {
-	group := &BranchGroupBy{config: bq.config}
-	group.fields = append([]string{field}, fields...)
-	group.path = func(ctx context.Context) (prev *sql.Selector, err error) {
+	grbuild := &BranchGroupBy{config: bq.config}
+	grbuild.fields = append([]string{field}, fields...)
+	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
 		if err := bq.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
 		return bq.sqlQuery(ctx), nil
 	}
-	return group
+	grbuild.label = branch.Label
+	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	return grbuild
 }
 
 // Select allows the selection one or more fields/columns for the given query,
@@ -328,7 +366,10 @@ func (bq *BranchQuery) GroupBy(field string, fields ...string) *BranchGroupBy {
 //
 func (bq *BranchQuery) Select(fields ...string) *BranchSelect {
 	bq.fields = append(bq.fields, fields...)
-	return &BranchSelect{BranchQuery: bq}
+	selbuild := &BranchSelect{BranchQuery: bq}
+	selbuild.label = branch.Label
+	selbuild.flds, selbuild.scan = &bq.fields, selbuild.Scan
+	return selbuild
 }
 
 func (bq *BranchQuery) prepareQuery(ctx context.Context) error {
@@ -347,29 +388,29 @@ func (bq *BranchQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (bq *BranchQuery) sqlAll(ctx context.Context) ([]*Branch, error) {
+func (bq *BranchQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Branch, error) {
 	var (
 		nodes       = []*Branch{}
 		_spec       = bq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			bq.withContracts != nil,
+			bq.withCabinets != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
-		node := &Branch{config: bq.config}
-		nodes = append(nodes, node)
-		return node.scanValues(columns)
+		return (*Branch).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []interface{}) error {
-		if len(nodes) == 0 {
-			return fmt.Errorf("ent: Assign called without calling ScanValues")
-		}
-		node := nodes[len(nodes)-1]
+		node := &Branch{config: bq.config}
+		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(bq.modifiers) > 0 {
 		_spec.Modifiers = bq.modifiers
+	}
+	for i := range hooks {
+		hooks[i](ctx, _spec)
 	}
 	if err := sqlgraph.QueryNodes(ctx, bq.driver, _spec); err != nil {
 		return nil, err
@@ -400,6 +441,31 @@ func (bq *BranchQuery) sqlAll(ctx context.Context) ([]*Branch, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "branch_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Contracts = append(node.Edges.Contracts, n)
+		}
+	}
+
+	if query := bq.withCabinets; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Branch)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Cabinets = []*Cabinet{}
+		}
+		query.Where(predicate.Cabinet(func(s *sql.Selector) {
+			s.Where(sql.InValues(branch.CabinetsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.BranchID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "branch_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Cabinets = append(node.Edges.Cabinets, n)
 		}
 	}
 
@@ -518,6 +584,7 @@ func (bq *BranchQuery) Modify(modifiers ...func(s *sql.Selector)) *BranchSelect 
 // BranchGroupBy is the group-by builder for Branch entities.
 type BranchGroupBy struct {
 	config
+	selector
 	fields []string
 	fns    []AggregateFunc
 	// intermediate query (i.e. traversal path).
@@ -539,209 +606,6 @@ func (bgb *BranchGroupBy) Scan(ctx context.Context, v interface{}) error {
 	}
 	bgb.sql = query
 	return bgb.sqlScan(ctx, v)
-}
-
-// ScanX is like Scan, but panics if an error occurs.
-func (bgb *BranchGroupBy) ScanX(ctx context.Context, v interface{}) {
-	if err := bgb.Scan(ctx, v); err != nil {
-		panic(err)
-	}
-}
-
-// Strings returns list of strings from group-by.
-// It is only allowed when executing a group-by query with one field.
-func (bgb *BranchGroupBy) Strings(ctx context.Context) ([]string, error) {
-	if len(bgb.fields) > 1 {
-		return nil, errors.New("ent: BranchGroupBy.Strings is not achievable when grouping more than 1 field")
-	}
-	var v []string
-	if err := bgb.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// StringsX is like Strings, but panics if an error occurs.
-func (bgb *BranchGroupBy) StringsX(ctx context.Context) []string {
-	v, err := bgb.Strings(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// String returns a single string from a group-by query.
-// It is only allowed when executing a group-by query with one field.
-func (bgb *BranchGroupBy) String(ctx context.Context) (_ string, err error) {
-	var v []string
-	if v, err = bgb.Strings(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{branch.Label}
-	default:
-		err = fmt.Errorf("ent: BranchGroupBy.Strings returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// StringX is like String, but panics if an error occurs.
-func (bgb *BranchGroupBy) StringX(ctx context.Context) string {
-	v, err := bgb.String(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Ints returns list of ints from group-by.
-// It is only allowed when executing a group-by query with one field.
-func (bgb *BranchGroupBy) Ints(ctx context.Context) ([]int, error) {
-	if len(bgb.fields) > 1 {
-		return nil, errors.New("ent: BranchGroupBy.Ints is not achievable when grouping more than 1 field")
-	}
-	var v []int
-	if err := bgb.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// IntsX is like Ints, but panics if an error occurs.
-func (bgb *BranchGroupBy) IntsX(ctx context.Context) []int {
-	v, err := bgb.Ints(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Int returns a single int from a group-by query.
-// It is only allowed when executing a group-by query with one field.
-func (bgb *BranchGroupBy) Int(ctx context.Context) (_ int, err error) {
-	var v []int
-	if v, err = bgb.Ints(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{branch.Label}
-	default:
-		err = fmt.Errorf("ent: BranchGroupBy.Ints returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// IntX is like Int, but panics if an error occurs.
-func (bgb *BranchGroupBy) IntX(ctx context.Context) int {
-	v, err := bgb.Int(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Float64s returns list of float64s from group-by.
-// It is only allowed when executing a group-by query with one field.
-func (bgb *BranchGroupBy) Float64s(ctx context.Context) ([]float64, error) {
-	if len(bgb.fields) > 1 {
-		return nil, errors.New("ent: BranchGroupBy.Float64s is not achievable when grouping more than 1 field")
-	}
-	var v []float64
-	if err := bgb.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// Float64sX is like Float64s, but panics if an error occurs.
-func (bgb *BranchGroupBy) Float64sX(ctx context.Context) []float64 {
-	v, err := bgb.Float64s(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Float64 returns a single float64 from a group-by query.
-// It is only allowed when executing a group-by query with one field.
-func (bgb *BranchGroupBy) Float64(ctx context.Context) (_ float64, err error) {
-	var v []float64
-	if v, err = bgb.Float64s(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{branch.Label}
-	default:
-		err = fmt.Errorf("ent: BranchGroupBy.Float64s returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// Float64X is like Float64, but panics if an error occurs.
-func (bgb *BranchGroupBy) Float64X(ctx context.Context) float64 {
-	v, err := bgb.Float64(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Bools returns list of bools from group-by.
-// It is only allowed when executing a group-by query with one field.
-func (bgb *BranchGroupBy) Bools(ctx context.Context) ([]bool, error) {
-	if len(bgb.fields) > 1 {
-		return nil, errors.New("ent: BranchGroupBy.Bools is not achievable when grouping more than 1 field")
-	}
-	var v []bool
-	if err := bgb.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// BoolsX is like Bools, but panics if an error occurs.
-func (bgb *BranchGroupBy) BoolsX(ctx context.Context) []bool {
-	v, err := bgb.Bools(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Bool returns a single bool from a group-by query.
-// It is only allowed when executing a group-by query with one field.
-func (bgb *BranchGroupBy) Bool(ctx context.Context) (_ bool, err error) {
-	var v []bool
-	if v, err = bgb.Bools(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{branch.Label}
-	default:
-		err = fmt.Errorf("ent: BranchGroupBy.Bools returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// BoolX is like Bool, but panics if an error occurs.
-func (bgb *BranchGroupBy) BoolX(ctx context.Context) bool {
-	v, err := bgb.Bool(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
 }
 
 func (bgb *BranchGroupBy) sqlScan(ctx context.Context, v interface{}) error {
@@ -785,6 +649,7 @@ func (bgb *BranchGroupBy) sqlQuery() *sql.Selector {
 // BranchSelect is the builder for selecting fields of Branch entities.
 type BranchSelect struct {
 	*BranchQuery
+	selector
 	// intermediate query (i.e. traversal path).
 	sql *sql.Selector
 }
@@ -796,201 +661,6 @@ func (bs *BranchSelect) Scan(ctx context.Context, v interface{}) error {
 	}
 	bs.sql = bs.BranchQuery.sqlQuery(ctx)
 	return bs.sqlScan(ctx, v)
-}
-
-// ScanX is like Scan, but panics if an error occurs.
-func (bs *BranchSelect) ScanX(ctx context.Context, v interface{}) {
-	if err := bs.Scan(ctx, v); err != nil {
-		panic(err)
-	}
-}
-
-// Strings returns list of strings from a selector. It is only allowed when selecting one field.
-func (bs *BranchSelect) Strings(ctx context.Context) ([]string, error) {
-	if len(bs.fields) > 1 {
-		return nil, errors.New("ent: BranchSelect.Strings is not achievable when selecting more than 1 field")
-	}
-	var v []string
-	if err := bs.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// StringsX is like Strings, but panics if an error occurs.
-func (bs *BranchSelect) StringsX(ctx context.Context) []string {
-	v, err := bs.Strings(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// String returns a single string from a selector. It is only allowed when selecting one field.
-func (bs *BranchSelect) String(ctx context.Context) (_ string, err error) {
-	var v []string
-	if v, err = bs.Strings(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{branch.Label}
-	default:
-		err = fmt.Errorf("ent: BranchSelect.Strings returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// StringX is like String, but panics if an error occurs.
-func (bs *BranchSelect) StringX(ctx context.Context) string {
-	v, err := bs.String(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Ints returns list of ints from a selector. It is only allowed when selecting one field.
-func (bs *BranchSelect) Ints(ctx context.Context) ([]int, error) {
-	if len(bs.fields) > 1 {
-		return nil, errors.New("ent: BranchSelect.Ints is not achievable when selecting more than 1 field")
-	}
-	var v []int
-	if err := bs.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// IntsX is like Ints, but panics if an error occurs.
-func (bs *BranchSelect) IntsX(ctx context.Context) []int {
-	v, err := bs.Ints(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Int returns a single int from a selector. It is only allowed when selecting one field.
-func (bs *BranchSelect) Int(ctx context.Context) (_ int, err error) {
-	var v []int
-	if v, err = bs.Ints(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{branch.Label}
-	default:
-		err = fmt.Errorf("ent: BranchSelect.Ints returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// IntX is like Int, but panics if an error occurs.
-func (bs *BranchSelect) IntX(ctx context.Context) int {
-	v, err := bs.Int(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Float64s returns list of float64s from a selector. It is only allowed when selecting one field.
-func (bs *BranchSelect) Float64s(ctx context.Context) ([]float64, error) {
-	if len(bs.fields) > 1 {
-		return nil, errors.New("ent: BranchSelect.Float64s is not achievable when selecting more than 1 field")
-	}
-	var v []float64
-	if err := bs.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// Float64sX is like Float64s, but panics if an error occurs.
-func (bs *BranchSelect) Float64sX(ctx context.Context) []float64 {
-	v, err := bs.Float64s(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Float64 returns a single float64 from a selector. It is only allowed when selecting one field.
-func (bs *BranchSelect) Float64(ctx context.Context) (_ float64, err error) {
-	var v []float64
-	if v, err = bs.Float64s(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{branch.Label}
-	default:
-		err = fmt.Errorf("ent: BranchSelect.Float64s returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// Float64X is like Float64, but panics if an error occurs.
-func (bs *BranchSelect) Float64X(ctx context.Context) float64 {
-	v, err := bs.Float64(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Bools returns list of bools from a selector. It is only allowed when selecting one field.
-func (bs *BranchSelect) Bools(ctx context.Context) ([]bool, error) {
-	if len(bs.fields) > 1 {
-		return nil, errors.New("ent: BranchSelect.Bools is not achievable when selecting more than 1 field")
-	}
-	var v []bool
-	if err := bs.Scan(ctx, &v); err != nil {
-		return nil, err
-	}
-	return v, nil
-}
-
-// BoolsX is like Bools, but panics if an error occurs.
-func (bs *BranchSelect) BoolsX(ctx context.Context) []bool {
-	v, err := bs.Bools(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
-}
-
-// Bool returns a single bool from a selector. It is only allowed when selecting one field.
-func (bs *BranchSelect) Bool(ctx context.Context) (_ bool, err error) {
-	var v []bool
-	if v, err = bs.Bools(ctx); err != nil {
-		return
-	}
-	switch len(v) {
-	case 1:
-		return v[0], nil
-	case 0:
-		err = &NotFoundError{branch.Label}
-	default:
-		err = fmt.Errorf("ent: BranchSelect.Bools returned %d results when one was expected", len(v))
-	}
-	return
-}
-
-// BoolX is like Bool, but panics if an error occurs.
-func (bs *BranchSelect) BoolX(ctx context.Context) bool {
-	v, err := bs.Bool(ctx)
-	if err != nil {
-		panic(err)
-	}
-	return v
 }
 
 func (bs *BranchSelect) sqlScan(ctx context.Context, v interface{}) error {

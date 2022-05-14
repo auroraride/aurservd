@@ -37,3 +37,8 @@ func (s ContractStatus) String() string {
     }
     return "未知"
 }
+
+// ContractSignResultReq 合同签署结果请求
+type ContractSignResultReq struct {
+    Sn string `json:"sn" param:"sn" validate:"required"`
+}

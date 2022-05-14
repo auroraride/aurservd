@@ -29,13 +29,13 @@ func ManagerMiddleware() echo.MiddlewareFunc {
             token := c.Request().Header.Get(app.HeaderManagerToken)
             id, err := ar.Cache.Get(context.Background(), token).Uint64()
             if err != nil {
-                snag.Panic(app.Response{Code: app.StatusUnauthorized, Message: ar.RequireSignin})
+                snag.Panic(snag.StatusUnauthorized)
             }
             s := service.NewManager()
             var m *ent.Manager
             m, err = s.GetManagerById(id)
             if err != nil || m == nil {
-                snag.Panic(app.Response{Code: app.StatusUnauthorized, Message: ar.RequireSignin})
+                snag.Panic(snag.StatusUnauthorized)
             }
 
             // 延长token有效期

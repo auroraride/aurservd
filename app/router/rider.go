@@ -39,4 +39,7 @@ func loadRideRoutes() {
     contract := g.Group("/contract")
     contract.POST("/sign", rapi.Contract.Sign)
     contract.GET("/:sn", rapi.Contract.SignResult)
+
+    // 获取网点
+
 }

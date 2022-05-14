@@ -60,9 +60,11 @@ type Branch struct {
 type BranchEdges struct {
 	// Contracts holds the value of the contracts edge.
 	Contracts []*BranchContract `json:"contracts,omitempty"`
+	// Cabinets holds the value of the cabinets edge.
+	Cabinets []*Cabinet `json:"cabinets,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // ContractsOrErr returns the Contracts value or an error if the edge
@@ -72,6 +74,15 @@ func (e BranchEdges) ContractsOrErr() ([]*BranchContract, error) {
 		return e.Contracts, nil
 	}
 	return nil, &NotLoadedError{edge: "contracts"}
+}
+
+// CabinetsOrErr returns the Cabinets value or an error if the edge
+// was not loaded in eager-loading.
+func (e BranchEdges) CabinetsOrErr() ([]*Cabinet, error) {
+	if e.loadedTypes[1] {
+		return e.Cabinets, nil
+	}
+	return nil, &NotLoadedError{edge: "cabinets"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -198,6 +209,11 @@ func (b *Branch) assignValues(columns []string, values []interface{}) error {
 // QueryContracts queries the "contracts" edge of the Branch entity.
 func (b *Branch) QueryContracts() *BranchContractQuery {
 	return (&BranchClient{config: b.config}).QueryContracts(b)
+}
+
+// QueryCabinets queries the "cabinets" edge of the Branch entity.
+func (b *Branch) QueryCabinets() *CabinetQuery {
+	return (&BranchClient{config: b.config}).QueryCabinets(b)
 }
 
 // Update returns a builder for updating this Branch.

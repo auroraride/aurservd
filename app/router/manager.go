@@ -30,4 +30,8 @@ func loadManagerRoutes() {
 
     // 客服工具
     g.POST("/csc/irv", mapi.Csc.IvrShiguangju) // 逾期催费
+
+    // 电池
+    g.GET("/battery/model", mapi.Battery.ListModels)
+    g.POST("/battery/model", mapi.Battery.CreateModel)
 }
