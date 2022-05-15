@@ -142,6 +142,14 @@ func (s *branchService) Modify(req *model.Branch, mod *model.Modifier) {
         SetLat(*req.Lat).
         SetPhotos(req.Photos).
         SetLastModifier(mod).
-        SetCreator(mod).
         SaveX(s.ctx)
+}
+
+// Selector 网点选择列表
+func (s *branchService) Selector() *model.ItemListRes {
+    items := make([]model.BranchSampleItem, 0)
+    s.orm.Query().Select(branch.FieldID, branch.FieldName).ScanX(s.ctx, &items)
+    res := new(model.ItemListRes)
+    model.SetItemListResItems[model.BranchSampleItem](res, items)
+    return res
 }

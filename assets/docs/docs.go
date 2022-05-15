@@ -296,6 +296,53 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/branch/selector": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M3005 网点选择列表",
+                "operationId": "BranchSelector",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.ItemListRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.BranchSampleItem"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/branch/{id}": {
             "put": {
                 "consumes": [
@@ -937,6 +984,17 @@ const docTemplate = `{
                 },
                 "startTime": {
                     "description": "租期开始时间 ",
+                    "type": "string"
+                }
+            }
+        },
+        "model.BranchSampleItem": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
                     "type": "string"
                 }
             }

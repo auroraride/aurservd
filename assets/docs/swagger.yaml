@@ -136,6 +136,13 @@ definitions:
     - sheets
     - startTime
     type: object
+  model.BranchSampleItem:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   model.CabinetCreateReq:
     properties:
       branchId:
@@ -647,6 +654,34 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M3003 编辑网点
+      tags:
+      - '[M]管理接口'
+  /manager/v1/branch/selector:
+    get:
+      consumes:
+      - application/json
+      operationId: BranchSelector
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.ItemListRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.BranchSampleItem'
+                  type: array
+              type: object
+      summary: M3005 网点选择列表
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet:

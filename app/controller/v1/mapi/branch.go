@@ -31,6 +31,20 @@ func (*branch) List(c echo.Context) (err error) {
     return ctx.SendResponse(service.NewBranch().List(req))
 }
 
+// Selector
+// @ID           BranchSelector
+// @Router       /manager/v1/branch/selector [GET]
+// @Summary      M3005 网点选择列表
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Success      200  {object}  model.ItemListRes{items=[]model.BranchSampleItem}  "请求成功"
+func (*branch) Selector(c echo.Context) (err error) {
+    ctx := app.Context(c)
+    return ctx.SendResponse(service.NewBranch().Selector())
+}
+
 // Add
 // @ID           BranchAdd
 // @Router       /manager/v1/branch [POST]

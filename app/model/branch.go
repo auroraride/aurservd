@@ -28,6 +28,11 @@ type Branch struct {
     LastModifier *Modifier `json:"lastModifier,omitempty"`
 }
 
+type BranchSampleItem struct {
+    ID   uint64 `json:"id"`
+    Name string `json:"name"`
+}
+
 // BranchContract 网点合同请求体
 type BranchContract struct {
     ID       uint64 `json:"id,omitempty" swaggerignore:"true"`
