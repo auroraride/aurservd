@@ -5,6 +5,8 @@
 
 package model
 
+import "github.com/jinzhu/copier"
+
 // StatusResponse 状态返回
 type StatusResponse struct {
     Status bool `json:"status"`
@@ -55,7 +57,12 @@ type StatusBoolRes struct {
 
 // ItemListRes 列表返回
 type ItemListRes struct {
-    Items any `json:"items"`
+    Items []any `json:"items" kind:"slice"`
+}
+
+func SetItemListResItems[T any](res *ItemListRes, items []T) {
+    res.Items = make([]any, len(items))
+    _ = copier.Copy(&res.Items, items)
 }
 
 // ItemRes 单项返回

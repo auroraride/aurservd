@@ -25,6 +25,7 @@ require (
 	github.com/json-iterator/go v1.1.12
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
+	github.com/lithammer/shortuuid/v4 v4.0.0
 	github.com/mattn/go-colorable v0.1.12
 	github.com/mojocn/base64Captcha v1.3.5
 	github.com/rs/xid v1.4.0
@@ -116,4 +117,4 @@ require (
 
 //replace github.com/swaggo/swag => /Users/liasica/Downloads/swag
 
-replace github.com/swaggo/swag => github.com/liasica/swag v1.8.2-0.20220513065052-184dacb03fd1
+replace github.com/swaggo/swag => github.com/liasica/swag v1.8.2-0.20220513063800-632ccd8046a2

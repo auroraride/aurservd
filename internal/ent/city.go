@@ -53,9 +53,11 @@ type CityEdges struct {
 	Parent *City `json:"parent,omitempty"`
 	// Children holds the value of the children edge.
 	Children []*City `json:"children,omitempty"`
+	// Branches holds the value of the branches edge.
+	Branches []*Branch `json:"branches,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // ParentOrErr returns the Parent value or an error if the edge
@@ -79,6 +81,15 @@ func (e CityEdges) ChildrenOrErr() ([]*City, error) {
 		return e.Children, nil
 	}
 	return nil, &NotLoadedError{edge: "children"}
+}
+
+// BranchesOrErr returns the Branches value or an error if the edge
+// was not loaded in eager-loading.
+func (e CityEdges) BranchesOrErr() ([]*Branch, error) {
+	if e.loadedTypes[2] {
+		return e.Branches, nil
+	}
+	return nil, &NotLoadedError{edge: "branches"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -190,6 +201,11 @@ func (c *City) QueryParent() *CityQuery {
 // QueryChildren queries the "children" edge of the City entity.
 func (c *City) QueryChildren() *CityQuery {
 	return (&CityClient{config: c.config}).QueryChildren(c)
+}
+
+// QueryBranches queries the "branches" edge of the City entity.
+func (c *City) QueryBranches() *BranchQuery {
+	return (&CityClient{config: c.config}).QueryBranches(c)
 }
 
 // Update returns a builder for updating this City.

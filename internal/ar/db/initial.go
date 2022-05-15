@@ -8,7 +8,7 @@ package db
 import "github.com/auroraride/aurservd/internal/ent"
 
 type Options struct {
-    City bool
+    City    bool
     Manager bool
 }
 

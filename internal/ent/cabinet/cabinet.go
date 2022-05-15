@@ -25,8 +25,10 @@ const (
 	FieldRemark = "remark"
 	// FieldBranchID holds the string denoting the branch_id field in the database.
 	FieldBranchID = "branch_id"
-	// FieldModelID holds the string denoting the model_id field in the database.
-	FieldModelID = "model_id"
+	// FieldSn holds the string denoting the sn field in the database.
+	FieldSn = "sn"
+	// FieldBrand holds the string denoting the brand field in the database.
+	FieldBrand = "brand"
 	// FieldSerial holds the string denoting the serial field in the database.
 	FieldSerial = "serial"
 	// FieldName holds the string denoting the name field in the database.
@@ -35,10 +37,12 @@ const (
 	FieldDoors = "doors"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldModels holds the string denoting the models field in the database.
+	FieldModels = "models"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
 	EdgeBranch = "branch"
-	// EdgeModel holds the string denoting the model edge name in mutations.
-	EdgeModel = "model"
+	// EdgeBms holds the string denoting the bms edge name in mutations.
+	EdgeBms = "bms"
 	// Table holds the table name of the cabinet in the database.
 	Table = "cabinet"
 	// BranchTable is the table that holds the branch relation/edge.
@@ -48,13 +52,11 @@ const (
 	BranchInverseTable = "branch"
 	// BranchColumn is the table column denoting the branch relation/edge.
 	BranchColumn = "branch_id"
-	// ModelTable is the table that holds the model relation/edge.
-	ModelTable = "cabinet"
-	// ModelInverseTable is the table name for the BatteryModel entity.
+	// BmsTable is the table that holds the bms relation/edge. The primary key declared below.
+	BmsTable = "cabinet_bms"
+	// BmsInverseTable is the table name for the BatteryModel entity.
 	// It exists in this package in order to avoid circular dependency with the "batterymodel" package.
-	ModelInverseTable = "battery_model"
-	// ModelColumn is the table column denoting the model relation/edge.
-	ModelColumn = "model_id"
+	BmsInverseTable = "battery_model"
 )
 
 // Columns holds all SQL columns for cabinet fields.
@@ -67,12 +69,20 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldBranchID,
-	FieldModelID,
+	FieldSn,
+	FieldBrand,
 	FieldSerial,
 	FieldName,
 	FieldDoors,
 	FieldStatus,
+	FieldModels,
 }
+
+var (
+	// BmsPrimaryKey and BmsColumn2 are the table columns denoting the
+	// primary key for the bms relation (M2M).
+	BmsPrimaryKey = []string{"cabinet_id", "battery_model_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {

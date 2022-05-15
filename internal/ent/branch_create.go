@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/city"
 )
 
 // BranchCreate is the builder for creating a Branch entity.
@@ -159,6 +160,11 @@ func (bc *BranchCreate) AddCabinets(c ...*Cabinet) *BranchCreate {
 	return bc.AddCabinetIDs(ids...)
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (bc *BranchCreate) SetCity(c *City) *BranchCreate {
+	return bc.SetCityID(c.ID)
+}
+
 // Mutation returns the BranchMutation object of the builder.
 func (bc *BranchCreate) Mutation() *BranchMutation {
 	return bc.mutation
@@ -266,6 +272,9 @@ func (bc *BranchCreate) check() error {
 	if _, ok := bc.mutation.Photos(); !ok {
 		return &ValidationError{Name: "photos", err: errors.New(`ent: missing required field "Branch.photos"`)}
 	}
+	if _, ok := bc.mutation.CityID(); !ok {
+		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Branch.city"`)}
+	}
 	return nil
 }
 
@@ -341,14 +350,6 @@ func (bc *BranchCreate) createSpec() (*Branch, *sqlgraph.CreateSpec) {
 			Column: branch.FieldRemark,
 		})
 		_node.Remark = &value
-	}
-	if value, ok := bc.mutation.CityID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
-			Value:  value,
-			Column: branch.FieldCityID,
-		})
-		_node.CityID = value
 	}
 	if value, ok := bc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -426,6 +427,26 @@ func (bc *BranchCreate) createSpec() (*Branch, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   branch.CityTable,
+			Columns: []string{branch.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -587,12 +608,6 @@ func (u *BranchUpsert) SetCityID(v uint64) *BranchUpsert {
 // UpdateCityID sets the "city_id" field to the value that was provided on create.
 func (u *BranchUpsert) UpdateCityID() *BranchUpsert {
 	u.SetExcluded(branch.FieldCityID)
-	return u
-}
-
-// AddCityID adds v to the "city_id" field.
-func (u *BranchUpsert) AddCityID(v uint64) *BranchUpsert {
-	u.Add(branch.FieldCityID, v)
 	return u
 }
 
@@ -831,13 +846,6 @@ func (u *BranchUpsertOne) ClearRemark() *BranchUpsertOne {
 func (u *BranchUpsertOne) SetCityID(v uint64) *BranchUpsertOne {
 	return u.Update(func(s *BranchUpsert) {
 		s.SetCityID(v)
-	})
-}
-
-// AddCityID adds v to the "city_id" field.
-func (u *BranchUpsertOne) AddCityID(v uint64) *BranchUpsertOne {
-	return u.Update(func(s *BranchUpsert) {
-		s.AddCityID(v)
 	})
 }
 
@@ -1259,13 +1267,6 @@ func (u *BranchUpsertBulk) ClearRemark() *BranchUpsertBulk {
 func (u *BranchUpsertBulk) SetCityID(v uint64) *BranchUpsertBulk {
 	return u.Update(func(s *BranchUpsert) {
 		s.SetCityID(v)
-	})
-}
-
-// AddCityID adds v to the "city_id" field.
-func (u *BranchUpsertBulk) AddCityID(v uint64) *BranchUpsertBulk {
-	return u.Update(func(s *BranchUpsert) {
-		s.AddCityID(v)
 	})
 }
 

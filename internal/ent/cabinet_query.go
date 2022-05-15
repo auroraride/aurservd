@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -27,7 +28,7 @@ type CabinetQuery struct {
 	predicates []predicate.Cabinet
 	// eager-loading edges.
 	withBranch *BranchQuery
-	withModel  *BatteryModelQuery
+	withBms    *BatteryModelQuery
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -87,8 +88,8 @@ func (cq *CabinetQuery) QueryBranch() *BranchQuery {
 	return query
 }
 
-// QueryModel chains the current query on the "model" edge.
-func (cq *CabinetQuery) QueryModel() *BatteryModelQuery {
+// QueryBms chains the current query on the "bms" edge.
+func (cq *CabinetQuery) QueryBms() *BatteryModelQuery {
 	query := &BatteryModelQuery{config: cq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
@@ -101,7 +102,7 @@ func (cq *CabinetQuery) QueryModel() *BatteryModelQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
 			sqlgraph.To(batterymodel.Table, batterymodel.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, cabinet.ModelTable, cabinet.ModelColumn),
+			sqlgraph.Edge(sqlgraph.M2M, false, cabinet.BmsTable, cabinet.BmsPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -291,7 +292,7 @@ func (cq *CabinetQuery) Clone() *CabinetQuery {
 		order:      append([]OrderFunc{}, cq.order...),
 		predicates: append([]predicate.Cabinet{}, cq.predicates...),
 		withBranch: cq.withBranch.Clone(),
-		withModel:  cq.withModel.Clone(),
+		withBms:    cq.withBms.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
@@ -310,14 +311,14 @@ func (cq *CabinetQuery) WithBranch(opts ...func(*BranchQuery)) *CabinetQuery {
 	return cq
 }
 
-// WithModel tells the query-builder to eager-load the nodes that are connected to
-// the "model" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *CabinetQuery) WithModel(opts ...func(*BatteryModelQuery)) *CabinetQuery {
+// WithBms tells the query-builder to eager-load the nodes that are connected to
+// the "bms" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CabinetQuery) WithBms(opts ...func(*BatteryModelQuery)) *CabinetQuery {
 	query := &BatteryModelQuery{config: cq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	cq.withModel = query
+	cq.withBms = query
 	return cq
 }
 
@@ -393,7 +394,7 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 		_spec       = cq.querySpec()
 		loadedTypes = [2]bool{
 			cq.withBranch != nil,
-			cq.withModel != nil,
+			cq.withBms != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -444,28 +445,55 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 		}
 	}
 
-	if query := cq.withModel; query != nil {
-		ids := make([]uint64, 0, len(nodes))
-		nodeids := make(map[uint64][]*Cabinet)
-		for i := range nodes {
-			fk := nodes[i].ModelID
-			if _, ok := nodeids[fk]; !ok {
-				ids = append(ids, fk)
-			}
-			nodeids[fk] = append(nodeids[fk], nodes[i])
+	if query := cq.withBms; query != nil {
+		edgeids := make([]driver.Value, len(nodes))
+		byid := make(map[uint64]*Cabinet)
+		nids := make(map[uint64]map[*Cabinet]struct{})
+		for i, node := range nodes {
+			edgeids[i] = node.ID
+			byid[node.ID] = node
+			node.Edges.Bms = []*BatteryModel{}
 		}
-		query.Where(batterymodel.IDIn(ids...))
-		neighbors, err := query.All(ctx)
+		query.Where(func(s *sql.Selector) {
+			joinT := sql.Table(cabinet.BmsTable)
+			s.Join(joinT).On(s.C(batterymodel.FieldID), joinT.C(cabinet.BmsPrimaryKey[1]))
+			s.Where(sql.InValues(joinT.C(cabinet.BmsPrimaryKey[0]), edgeids...))
+			columns := s.SelectedColumns()
+			s.Select(joinT.C(cabinet.BmsPrimaryKey[0]))
+			s.AppendSelect(columns...)
+			s.SetDistinct(false)
+		})
+		neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]interface{}, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]interface{}{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []interface{}) error {
+				outValue := uint64(values[0].(*sql.NullInt64).Int64)
+				inValue := uint64(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Cabinet]struct{}{byid[outValue]: struct{}{}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byid[outValue]] = struct{}{}
+				return nil
+			}
+		})
 		if err != nil {
 			return nil, err
 		}
 		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
+			nodes, ok := nids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "model_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected "bms" node returned %v`, n.ID)
 			}
-			for i := range nodes {
-				nodes[i].Edges.Model = n
+			for kn := range nodes {
+				kn.Edges.Bms = append(kn.Edges.Bms, n)
 			}
 		}
 	}

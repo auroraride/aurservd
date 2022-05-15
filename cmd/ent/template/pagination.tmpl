@@ -1,0 +1,44 @@
+{{/*
+Copyright (C) liasica. 2021-present.
+
+Created at 2022-05-15
+Based on ent by liasica, magicrolan@qq.com.
+*/}}
+
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "pagination" }}
+
+{{ $pkg := replace $.Config.Package "internal/ent" "app/model" }}
+{{ template "header" $ }}
+
+import (
+    "context"
+
+    "{{ $pkg }}"
+)
+
+{{ range $n := $.Nodes }}
+{{ $client := print $n.Name "Client" }}
+
+{{ $builder := $n.QueryName }}
+{{ $receiver := receiver $builder }}
+
+// Pagination returns pagination query builder for {{ $builder }}.
+func ({{ $receiver }} *{{ $builder }}) Pagination(req model.PaginationReq) *{{ $builder }} {
+    {{ $receiver }}.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return {{ $receiver }}
+}
+
+// PaginationResult returns pagination for {{ $builder }}.
+func ({{ $receiver }} *{{ $builder }}) PaginationResult(req model.PaginationReq) model.Pagination {
+    total := {{ $receiver }}.Clone().CountX(context.Background())
+	return model.Pagination{
+	    Current: req.GetCurrent(),
+        Pages:   req.GetPages(total),
+	    Total: total,
+	}
+}
+
+{{ end }}
+{{ end }}

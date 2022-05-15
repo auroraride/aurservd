@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -159,6 +160,21 @@ func (cu *CityUpdate) AddChildren(c ...*City) *CityUpdate {
 	return cu.AddChildIDs(ids...)
 }
 
+// AddBranchIDs adds the "branches" edge to the Branch entity by IDs.
+func (cu *CityUpdate) AddBranchIDs(ids ...uint64) *CityUpdate {
+	cu.mutation.AddBranchIDs(ids...)
+	return cu
+}
+
+// AddBranches adds the "branches" edges to the Branch entity.
+func (cu *CityUpdate) AddBranches(b ...*Branch) *CityUpdate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return cu.AddBranchIDs(ids...)
+}
+
 // Mutation returns the CityMutation object of the builder.
 func (cu *CityUpdate) Mutation() *CityMutation {
 	return cu.mutation
@@ -189,6 +205,27 @@ func (cu *CityUpdate) RemoveChildren(c ...*City) *CityUpdate {
 		ids[i] = c[i].ID
 	}
 	return cu.RemoveChildIDs(ids...)
+}
+
+// ClearBranches clears all "branches" edges to the Branch entity.
+func (cu *CityUpdate) ClearBranches() *CityUpdate {
+	cu.mutation.ClearBranches()
+	return cu
+}
+
+// RemoveBranchIDs removes the "branches" edge to Branch entities by IDs.
+func (cu *CityUpdate) RemoveBranchIDs(ids ...uint64) *CityUpdate {
+	cu.mutation.RemoveBranchIDs(ids...)
+	return cu
+}
+
+// RemoveBranches removes "branches" edges to Branch entities.
+func (cu *CityUpdate) RemoveBranches(b ...*Branch) *CityUpdate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return cu.RemoveBranchIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -455,6 +492,60 @@ func (cu *CityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if cu.mutation.BranchesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   city.BranchesTable,
+			Columns: []string{city.BranchesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: branch.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.RemovedBranchesIDs(); len(nodes) > 0 && !cu.mutation.BranchesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   city.BranchesTable,
+			Columns: []string{city.BranchesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: branch.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.BranchesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   city.BranchesTable,
+			Columns: []string{city.BranchesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: branch.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{city.Label}
@@ -604,6 +695,21 @@ func (cuo *CityUpdateOne) AddChildren(c ...*City) *CityUpdateOne {
 	return cuo.AddChildIDs(ids...)
 }
 
+// AddBranchIDs adds the "branches" edge to the Branch entity by IDs.
+func (cuo *CityUpdateOne) AddBranchIDs(ids ...uint64) *CityUpdateOne {
+	cuo.mutation.AddBranchIDs(ids...)
+	return cuo
+}
+
+// AddBranches adds the "branches" edges to the Branch entity.
+func (cuo *CityUpdateOne) AddBranches(b ...*Branch) *CityUpdateOne {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return cuo.AddBranchIDs(ids...)
+}
+
 // Mutation returns the CityMutation object of the builder.
 func (cuo *CityUpdateOne) Mutation() *CityMutation {
 	return cuo.mutation
@@ -634,6 +740,27 @@ func (cuo *CityUpdateOne) RemoveChildren(c ...*City) *CityUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return cuo.RemoveChildIDs(ids...)
+}
+
+// ClearBranches clears all "branches" edges to the Branch entity.
+func (cuo *CityUpdateOne) ClearBranches() *CityUpdateOne {
+	cuo.mutation.ClearBranches()
+	return cuo
+}
+
+// RemoveBranchIDs removes the "branches" edge to Branch entities by IDs.
+func (cuo *CityUpdateOne) RemoveBranchIDs(ids ...uint64) *CityUpdateOne {
+	cuo.mutation.RemoveBranchIDs(ids...)
+	return cuo
+}
+
+// RemoveBranches removes "branches" edges to Branch entities.
+func (cuo *CityUpdateOne) RemoveBranches(b ...*Branch) *CityUpdateOne {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return cuo.RemoveBranchIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -916,6 +1043,60 @@ func (cuo *CityUpdateOne) sqlSave(ctx context.Context) (_node *City, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.BranchesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   city.BranchesTable,
+			Columns: []string{city.BranchesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: branch.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.RemovedBranchesIDs(); len(nodes) > 0 && !cuo.mutation.BranchesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   city.BranchesTable,
+			Columns: []string{city.BranchesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: branch.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.BranchesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   city.BranchesTable,
+			Columns: []string{city.BranchesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: branch.FieldID,
 				},
 			},
 		}

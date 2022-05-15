@@ -48,18 +48,26 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true},
 		{Name: "remark", Type: field.TypeString, Nullable: true},
-		{Name: "city_id", Type: field.TypeUint64},
 		{Name: "name", Type: field.TypeString},
 		{Name: "lng", Type: field.TypeFloat64},
 		{Name: "lat", Type: field.TypeFloat64},
 		{Name: "address", Type: field.TypeString},
 		{Name: "photos", Type: field.TypeJSON},
+		{Name: "city_id", Type: field.TypeUint64},
 	}
 	// BranchTable holds the schema information for the "branch" table.
 	BranchTable = &schema.Table{
 		Name:       "branch",
 		Columns:    BranchColumns,
 		PrimaryKey: []*schema.Column{BranchColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "branch_city_branches",
+				Columns:    []*schema.Column{BranchColumns[12]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "branch_deleted_at",
@@ -69,12 +77,12 @@ var (
 			{
 				Name:    "branch_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{BranchColumns[7]},
+				Columns: []*schema.Column{BranchColumns[12]},
 			},
 			{
 				Name:    "branch_lng_lat",
 				Unique:  false,
-				Columns: []*schema.Column{BranchColumns[9], BranchColumns[10]},
+				Columns: []*schema.Column{BranchColumns[8], BranchColumns[9]},
 			},
 		},
 	}
@@ -133,11 +141,13 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true},
 		{Name: "remark", Type: field.TypeString, Nullable: true},
-		{Name: "serial", Type: field.TypeString, Unique: true},
+		{Name: "sn", Type: field.TypeString, Unique: true},
+		{Name: "brand", Type: field.TypeString},
+		{Name: "serial", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
 		{Name: "doors", Type: field.TypeUint},
 		{Name: "status", Type: field.TypeUint},
-		{Name: "model_id", Type: field.TypeUint64},
+		{Name: "models", Type: field.TypeJSON},
 		{Name: "branch_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// CabinetTable holds the schema information for the "cabinet" table.
@@ -147,14 +157,8 @@ var (
 		PrimaryKey: []*schema.Column{CabinetColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "cabinet_battery_model_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[11]},
-				RefColumns: []*schema.Column{BatteryModelColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
 				Symbol:     "cabinet_branch_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[12]},
+				Columns:    []*schema.Column{CabinetColumns[14]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -168,7 +172,32 @@ var (
 			{
 				Name:    "cabinet_branch_id",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[12]},
+				Columns: []*schema.Column{CabinetColumns[14]},
+			},
+			{
+				Name:    "cabinet_brand",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetColumns[8]},
+			},
+			{
+				Name:    "cabinet_serial",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetColumns[9]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+			{
+				Name:    "cabinet_name",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetColumns[10]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
 			},
 		},
 	}
@@ -379,6 +408,31 @@ var (
 		Columns:    SettingColumns,
 		PrimaryKey: []*schema.Column{SettingColumns[0]},
 	}
+	// CabinetBmsColumns holds the columns for the "cabinet_bms" table.
+	CabinetBmsColumns = []*schema.Column{
+		{Name: "cabinet_id", Type: field.TypeInt},
+		{Name: "battery_model_id", Type: field.TypeInt},
+	}
+	// CabinetBmsTable holds the schema information for the "cabinet_bms" table.
+	CabinetBmsTable = &schema.Table{
+		Name:       "cabinet_bms",
+		Columns:    CabinetBmsColumns,
+		PrimaryKey: []*schema.Column{CabinetBmsColumns[0], CabinetBmsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "cabinet_bms_cabinet_id",
+				Columns:    []*schema.Column{CabinetBmsColumns[0]},
+				RefColumns: []*schema.Column{CabinetColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "cabinet_bms_battery_model_id",
+				Columns:    []*schema.Column{CabinetBmsColumns[1]},
+				RefColumns: []*schema.Column{BatteryModelColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		BatteryModelTable,
@@ -391,6 +445,7 @@ var (
 		PersonTable,
 		RiderTable,
 		SettingTable,
+		CabinetBmsTable,
 	}
 )
 
@@ -398,6 +453,7 @@ func init() {
 	BatteryModelTable.Annotation = &entsql.Annotation{
 		Table: "battery_model",
 	}
+	BranchTable.ForeignKeys[0].RefTable = CityTable
 	BranchTable.Annotation = &entsql.Annotation{
 		Table: "branch",
 	}
@@ -405,8 +461,7 @@ func init() {
 	BranchContractTable.Annotation = &entsql.Annotation{
 		Table: "branch_contract",
 	}
-	CabinetTable.ForeignKeys[0].RefTable = BatteryModelTable
-	CabinetTable.ForeignKeys[1].RefTable = BranchTable
+	CabinetTable.ForeignKeys[0].RefTable = BranchTable
 	CabinetTable.Annotation = &entsql.Annotation{
 		Table: "cabinet",
 	}
@@ -431,4 +486,6 @@ func init() {
 	SettingTable.Annotation = &entsql.Annotation{
 		Table: "setting",
 	}
+	CabinetBmsTable.ForeignKeys[0].RefTable = CabinetTable
+	CabinetBmsTable.ForeignKeys[1].RefTable = BatteryModelTable
 }

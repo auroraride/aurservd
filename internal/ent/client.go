@@ -279,7 +279,7 @@ func (c *BatteryModelClient) QueryCabinets(bm *BatteryModel) *CabinetQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(batterymodel.Table, batterymodel.FieldID, id),
 			sqlgraph.To(cabinet.Table, cabinet.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, batterymodel.CabinetsTable, batterymodel.CabinetsColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, batterymodel.CabinetsTable, batterymodel.CabinetsPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(bm.driver.Dialect(), step)
 		return fromV, nil
@@ -402,6 +402,22 @@ func (c *BranchClient) QueryCabinets(b *Branch) *CabinetQuery {
 			sqlgraph.From(branch.Table, branch.FieldID, id),
 			sqlgraph.To(cabinet.Table, cabinet.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, branch.CabinetsTable, branch.CabinetsColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCity queries the city edge of a Branch.
+func (c *BranchClient) QueryCity(b *Branch) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(branch.Table, branch.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, branch.CityTable, branch.CityColumn),
 		)
 		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
 		return fromV, nil
@@ -621,15 +637,15 @@ func (c *CabinetClient) QueryBranch(ca *Cabinet) *BranchQuery {
 	return query
 }
 
-// QueryModel queries the model edge of a Cabinet.
-func (c *CabinetClient) QueryModel(ca *Cabinet) *BatteryModelQuery {
+// QueryBms queries the bms edge of a Cabinet.
+func (c *CabinetClient) QueryBms(ca *Cabinet) *BatteryModelQuery {
 	query := &BatteryModelQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := ca.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
 			sqlgraph.To(batterymodel.Table, batterymodel.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, cabinet.ModelTable, cabinet.ModelColumn),
+			sqlgraph.Edge(sqlgraph.M2M, false, cabinet.BmsTable, cabinet.BmsPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
 		return fromV, nil
@@ -752,6 +768,22 @@ func (c *CityClient) QueryChildren(ci *City) *CityQuery {
 			sqlgraph.From(city.Table, city.FieldID, id),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, city.ChildrenTable, city.ChildrenColumn),
+		)
+		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBranches queries the branches edge of a City.
+func (c *CityClient) QueryBranches(ci *City) *BranchQuery {
+	query := &BranchQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ci.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(city.Table, city.FieldID, id),
+			sqlgraph.To(branch.Table, branch.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, city.BranchesTable, city.BranchesColumn),
 		)
 		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
 		return fromV, nil

@@ -758,7 +758,7 @@ func HasCabinets() predicate.BatteryModel {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(CabinetsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CabinetsTable, CabinetsColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, CabinetsTable, CabinetsPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -770,7 +770,7 @@ func HasCabinetsWith(preds ...predicate.Cabinet) predicate.BatteryModel {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(CabinetsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CabinetsTable, CabinetsColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, CabinetsTable, CabinetsPrimaryKey...),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

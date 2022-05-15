@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -27,6 +28,7 @@ type CityQuery struct {
 	// eager-loading edges.
 	withParent   *CityQuery
 	withChildren *CityQuery
+	withBranches *BranchQuery
 	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -101,6 +103,28 @@ func (cq *CityQuery) QueryChildren() *CityQuery {
 			sqlgraph.From(city.Table, city.FieldID, selector),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, city.ChildrenTable, city.ChildrenColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBranches chains the current query on the "branches" edge.
+func (cq *CityQuery) QueryBranches() *BranchQuery {
+	query := &BranchQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(city.Table, city.FieldID, selector),
+			sqlgraph.To(branch.Table, branch.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, city.BranchesTable, city.BranchesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -291,6 +315,7 @@ func (cq *CityQuery) Clone() *CityQuery {
 		predicates:   append([]predicate.City{}, cq.predicates...),
 		withParent:   cq.withParent.Clone(),
 		withChildren: cq.withChildren.Clone(),
+		withBranches: cq.withBranches.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
@@ -317,6 +342,17 @@ func (cq *CityQuery) WithChildren(opts ...func(*CityQuery)) *CityQuery {
 		opt(query)
 	}
 	cq.withChildren = query
+	return cq
+}
+
+// WithBranches tells the query-builder to eager-load the nodes that are connected to
+// the "branches" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CityQuery) WithBranches(opts ...func(*BranchQuery)) *CityQuery {
+	query := &BranchQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withBranches = query
 	return cq
 }
 
@@ -390,9 +426,10 @@ func (cq *CityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*City, e
 	var (
 		nodes       = []*City{}
 		_spec       = cq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			cq.withParent != nil,
 			cq.withChildren != nil,
+			cq.withBranches != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -471,6 +508,31 @@ func (cq *CityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*City, e
 				return nil, fmt.Errorf(`unexpected foreign-key "parent_id" returned %v for node %v`, *fk, n.ID)
 			}
 			node.Edges.Children = append(node.Edges.Children, n)
+		}
+	}
+
+	if query := cq.withBranches; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*City)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Branches = []*Branch{}
+		}
+		query.Where(predicate.Branch(func(s *sql.Selector) {
+			s.Where(sql.InValues(city.BranchesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.CityID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "city_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Branches = append(node.Edges.Branches, n)
 		}
 	}
 

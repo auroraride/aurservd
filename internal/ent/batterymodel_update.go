@@ -309,10 +309,10 @@ func (bmu *BatteryModelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if bmu.mutation.CabinetsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   batterymodel.CabinetsTable,
-			Columns: []string{batterymodel.CabinetsColumn},
+			Columns: batterymodel.CabinetsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -325,10 +325,10 @@ func (bmu *BatteryModelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := bmu.mutation.RemovedCabinetsIDs(); len(nodes) > 0 && !bmu.mutation.CabinetsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   batterymodel.CabinetsTable,
-			Columns: []string{batterymodel.CabinetsColumn},
+			Columns: batterymodel.CabinetsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -344,10 +344,10 @@ func (bmu *BatteryModelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := bmu.mutation.CabinetsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   batterymodel.CabinetsTable,
-			Columns: []string{batterymodel.CabinetsColumn},
+			Columns: batterymodel.CabinetsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -683,10 +683,10 @@ func (bmuo *BatteryModelUpdateOne) sqlSave(ctx context.Context) (_node *BatteryM
 	}
 	if bmuo.mutation.CabinetsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   batterymodel.CabinetsTable,
-			Columns: []string{batterymodel.CabinetsColumn},
+			Columns: batterymodel.CabinetsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -699,10 +699,10 @@ func (bmuo *BatteryModelUpdateOne) sqlSave(ctx context.Context) (_node *BatteryM
 	}
 	if nodes := bmuo.mutation.RemovedCabinetsIDs(); len(nodes) > 0 && !bmuo.mutation.CabinetsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   batterymodel.CabinetsTable,
-			Columns: []string{batterymodel.CabinetsColumn},
+			Columns: batterymodel.CabinetsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -718,10 +718,10 @@ func (bmuo *BatteryModelUpdateOne) sqlSave(ctx context.Context) (_node *BatteryM
 	}
 	if nodes := bmuo.mutation.CabinetsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   batterymodel.CabinetsTable,
-			Columns: []string{batterymodel.CabinetsColumn},
+			Columns: batterymodel.CabinetsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

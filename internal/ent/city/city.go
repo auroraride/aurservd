@@ -33,6 +33,8 @@ const (
 	EdgeParent = "parent"
 	// EdgeChildren holds the string denoting the children edge name in mutations.
 	EdgeChildren = "children"
+	// EdgeBranches holds the string denoting the branches edge name in mutations.
+	EdgeBranches = "branches"
 	// Table holds the table name of the city in the database.
 	Table = "city"
 	// ParentTable is the table that holds the parent relation/edge.
@@ -43,6 +45,13 @@ const (
 	ChildrenTable = "city"
 	// ChildrenColumn is the table column denoting the children relation/edge.
 	ChildrenColumn = "parent_id"
+	// BranchesTable is the table that holds the branches relation/edge.
+	BranchesTable = "branch"
+	// BranchesInverseTable is the table name for the Branch entity.
+	// It exists in this package in order to avoid circular dependency with the "branch" package.
+	BranchesInverseTable = "branch"
+	// BranchesColumn is the table column denoting the branches relation/edge.
+	BranchesColumn = "city_id"
 )
 
 // Columns holds all SQL columns for city fields.

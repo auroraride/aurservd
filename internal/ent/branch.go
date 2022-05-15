@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/branch"
+	"github.com/auroraride/aurservd/internal/ent/city"
 )
 
 // Branch is the model entity for the Branch schema.
@@ -62,9 +63,11 @@ type BranchEdges struct {
 	Contracts []*BranchContract `json:"contracts,omitempty"`
 	// Cabinets holds the value of the cabinets edge.
 	Cabinets []*Cabinet `json:"cabinets,omitempty"`
+	// City holds the value of the city edge.
+	City *City `json:"city,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // ContractsOrErr returns the Contracts value or an error if the edge
@@ -83,6 +86,20 @@ func (e BranchEdges) CabinetsOrErr() ([]*Cabinet, error) {
 		return e.Cabinets, nil
 	}
 	return nil, &NotLoadedError{edge: "cabinets"}
+}
+
+// CityOrErr returns the City value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e BranchEdges) CityOrErr() (*City, error) {
+	if e.loadedTypes[2] {
+		if e.City == nil {
+			// The edge city was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: city.Label}
+		}
+		return e.City, nil
+	}
+	return nil, &NotLoadedError{edge: "city"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -214,6 +231,11 @@ func (b *Branch) QueryContracts() *BranchContractQuery {
 // QueryCabinets queries the "cabinets" edge of the Branch entity.
 func (b *Branch) QueryCabinets() *CabinetQuery {
 	return (&BranchClient{config: b.config}).QueryCabinets(b)
+}
+
+// QueryCity queries the "city" edge of the Branch entity.
+func (b *Branch) QueryCity() *CityQuery {
+	return (&BranchClient{config: b.config}).QueryCity(b)
 }
 
 // Update returns a builder for updating this Branch.

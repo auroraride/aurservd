@@ -36,13 +36,13 @@ func OpenDatabase() *orm {
 }
 
 func openPgx(dsn string) (c *ent.Client) {
-    db, err := sql.Open("pgx", dsn)
+    pgx, err := sql.Open("pgx", dsn)
     if err != nil {
         log.Fatalf("数据库打开失败: %v", err)
     }
 
     // 从db变量中构造一个ent.Driver对象。
-    drv := entsql.OpenDB(dialect.Postgres, db)
+    drv := entsql.OpenDB(dialect.Postgres, pgx)
     return ent.NewClient(ent.Driver(drv))
 }
 
@@ -54,7 +54,7 @@ func (c *orm) autoMigrate() {
         schema.WithAtlas(true),
         migrate.WithDropIndex(true),
         migrate.WithDropColumn(true),
-        migrate.WithGlobalUniqueID(true),
+        // migrate.WithGlobalUniqueID(true),
         schema.WithApplyHook(func(next schema.Applier) schema.Applier {
             return schema.ApplyFunc(func(ctx context.Context, conn dialect.ExecQuerier, plan *atlasMigrate.Plan) error {
                 for _, change := range plan.Changes {

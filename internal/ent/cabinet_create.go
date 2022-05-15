@@ -107,9 +107,15 @@ func (cc *CabinetCreate) SetNillableBranchID(u *uint64) *CabinetCreate {
 	return cc
 }
 
-// SetModelID sets the "model_id" field.
-func (cc *CabinetCreate) SetModelID(u uint64) *CabinetCreate {
-	cc.mutation.SetModelID(u)
+// SetSn sets the "sn" field.
+func (cc *CabinetCreate) SetSn(s string) *CabinetCreate {
+	cc.mutation.SetSn(s)
+	return cc
+}
+
+// SetBrand sets the "brand" field.
+func (cc *CabinetCreate) SetBrand(s string) *CabinetCreate {
+	cc.mutation.SetBrand(s)
 	return cc
 }
 
@@ -137,14 +143,30 @@ func (cc *CabinetCreate) SetStatus(u uint) *CabinetCreate {
 	return cc
 }
 
+// SetModels sets the "models" field.
+func (cc *CabinetCreate) SetModels(mm []model.BatteryModel) *CabinetCreate {
+	cc.mutation.SetModels(mm)
+	return cc
+}
+
 // SetBranch sets the "branch" edge to the Branch entity.
 func (cc *CabinetCreate) SetBranch(b *Branch) *CabinetCreate {
 	return cc.SetBranchID(b.ID)
 }
 
-// SetModel sets the "model" edge to the BatteryModel entity.
-func (cc *CabinetCreate) SetModel(b *BatteryModel) *CabinetCreate {
-	return cc.SetModelID(b.ID)
+// AddBmIDs adds the "bms" edge to the BatteryModel entity by IDs.
+func (cc *CabinetCreate) AddBmIDs(ids ...uint64) *CabinetCreate {
+	cc.mutation.AddBmIDs(ids...)
+	return cc
+}
+
+// AddBms adds the "bms" edges to the BatteryModel entity.
+func (cc *CabinetCreate) AddBms(b ...*BatteryModel) *CabinetCreate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return cc.AddBmIDs(ids...)
 }
 
 // Mutation returns the CabinetMutation object of the builder.
@@ -236,8 +258,11 @@ func (cc *CabinetCreate) check() error {
 	if _, ok := cc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Cabinet.updated_at"`)}
 	}
-	if _, ok := cc.mutation.ModelID(); !ok {
-		return &ValidationError{Name: "model_id", err: errors.New(`ent: missing required field "Cabinet.model_id"`)}
+	if _, ok := cc.mutation.Sn(); !ok {
+		return &ValidationError{Name: "sn", err: errors.New(`ent: missing required field "Cabinet.sn"`)}
+	}
+	if _, ok := cc.mutation.Brand(); !ok {
+		return &ValidationError{Name: "brand", err: errors.New(`ent: missing required field "Cabinet.brand"`)}
 	}
 	if _, ok := cc.mutation.Serial(); !ok {
 		return &ValidationError{Name: "serial", err: errors.New(`ent: missing required field "Cabinet.serial"`)}
@@ -251,8 +276,8 @@ func (cc *CabinetCreate) check() error {
 	if _, ok := cc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Cabinet.status"`)}
 	}
-	if _, ok := cc.mutation.ModelID(); !ok {
-		return &ValidationError{Name: "model", err: errors.New(`ent: missing required edge "Cabinet.model"`)}
+	if _, ok := cc.mutation.Models(); !ok {
+		return &ValidationError{Name: "models", err: errors.New(`ent: missing required field "Cabinet.models"`)}
 	}
 	return nil
 }
@@ -330,6 +355,22 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 		})
 		_node.Remark = &value
 	}
+	if value, ok := cc.mutation.Sn(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: cabinet.FieldSn,
+		})
+		_node.Sn = value
+	}
+	if value, ok := cc.mutation.Brand(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: cabinet.FieldBrand,
+		})
+		_node.Brand = value
+	}
 	if value, ok := cc.mutation.Serial(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -362,6 +403,14 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 		})
 		_node.Status = value
 	}
+	if value, ok := cc.mutation.Models(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: cabinet.FieldModels,
+		})
+		_node.Models = value
+	}
 	if nodes := cc.mutation.BranchIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -382,12 +431,12 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 		_node.BranchID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := cc.mutation.ModelIDs(); len(nodes) > 0 {
+	if nodes := cc.mutation.BmsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   cabinet.ModelTable,
-			Columns: []string{cabinet.ModelColumn},
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   cabinet.BmsTable,
+			Columns: cabinet.BmsPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -399,7 +448,6 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ModelID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -570,15 +618,27 @@ func (u *CabinetUpsert) ClearBranchID() *CabinetUpsert {
 	return u
 }
 
-// SetModelID sets the "model_id" field.
-func (u *CabinetUpsert) SetModelID(v uint64) *CabinetUpsert {
-	u.Set(cabinet.FieldModelID, v)
+// SetSn sets the "sn" field.
+func (u *CabinetUpsert) SetSn(v string) *CabinetUpsert {
+	u.Set(cabinet.FieldSn, v)
 	return u
 }
 
-// UpdateModelID sets the "model_id" field to the value that was provided on create.
-func (u *CabinetUpsert) UpdateModelID() *CabinetUpsert {
-	u.SetExcluded(cabinet.FieldModelID)
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateSn() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldSn)
+	return u
+}
+
+// SetBrand sets the "brand" field.
+func (u *CabinetUpsert) SetBrand(v string) *CabinetUpsert {
+	u.Set(cabinet.FieldBrand, v)
+	return u
+}
+
+// UpdateBrand sets the "brand" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateBrand() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldBrand)
 	return u
 }
 
@@ -639,6 +699,18 @@ func (u *CabinetUpsert) UpdateStatus() *CabinetUpsert {
 // AddStatus adds v to the "status" field.
 func (u *CabinetUpsert) AddStatus(v uint) *CabinetUpsert {
 	u.Add(cabinet.FieldStatus, v)
+	return u
+}
+
+// SetModels sets the "models" field.
+func (u *CabinetUpsert) SetModels(v []model.BatteryModel) *CabinetUpsert {
+	u.Set(cabinet.FieldModels, v)
+	return u
+}
+
+// UpdateModels sets the "models" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateModels() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldModels)
 	return u
 }
 
@@ -822,17 +894,31 @@ func (u *CabinetUpsertOne) ClearBranchID() *CabinetUpsertOne {
 	})
 }
 
-// SetModelID sets the "model_id" field.
-func (u *CabinetUpsertOne) SetModelID(v uint64) *CabinetUpsertOne {
+// SetSn sets the "sn" field.
+func (u *CabinetUpsertOne) SetSn(v string) *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
-		s.SetModelID(v)
+		s.SetSn(v)
 	})
 }
 
-// UpdateModelID sets the "model_id" field to the value that was provided on create.
-func (u *CabinetUpsertOne) UpdateModelID() *CabinetUpsertOne {
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateSn() *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateModelID()
+		s.UpdateSn()
+	})
+}
+
+// SetBrand sets the "brand" field.
+func (u *CabinetUpsertOne) SetBrand(v string) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetBrand(v)
+	})
+}
+
+// UpdateBrand sets the "brand" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateBrand() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateBrand()
 	})
 }
 
@@ -903,6 +989,20 @@ func (u *CabinetUpsertOne) AddStatus(v uint) *CabinetUpsertOne {
 func (u *CabinetUpsertOne) UpdateStatus() *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// SetModels sets the "models" field.
+func (u *CabinetUpsertOne) SetModels(v []model.BatteryModel) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetModels(v)
+	})
+}
+
+// UpdateModels sets the "models" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateModels() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateModels()
 	})
 }
 
@@ -1250,17 +1350,31 @@ func (u *CabinetUpsertBulk) ClearBranchID() *CabinetUpsertBulk {
 	})
 }
 
-// SetModelID sets the "model_id" field.
-func (u *CabinetUpsertBulk) SetModelID(v uint64) *CabinetUpsertBulk {
+// SetSn sets the "sn" field.
+func (u *CabinetUpsertBulk) SetSn(v string) *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
-		s.SetModelID(v)
+		s.SetSn(v)
 	})
 }
 
-// UpdateModelID sets the "model_id" field to the value that was provided on create.
-func (u *CabinetUpsertBulk) UpdateModelID() *CabinetUpsertBulk {
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateSn() *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateModelID()
+		s.UpdateSn()
+	})
+}
+
+// SetBrand sets the "brand" field.
+func (u *CabinetUpsertBulk) SetBrand(v string) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetBrand(v)
+	})
+}
+
+// UpdateBrand sets the "brand" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateBrand() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateBrand()
 	})
 }
 
@@ -1331,6 +1445,20 @@ func (u *CabinetUpsertBulk) AddStatus(v uint) *CabinetUpsertBulk {
 func (u *CabinetUpsertBulk) UpdateStatus() *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// SetModels sets the "models" field.
+func (u *CabinetUpsertBulk) SetModels(v []model.BatteryModel) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetModels(v)
+	})
+}
+
+// UpdateModels sets the "models" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateModels() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateModels()
 	})
 }
 

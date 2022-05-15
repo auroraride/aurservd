@@ -72,6 +72,7 @@ func GenerateCmd(postRun ...func(*gen.Config)) *cobra.Command {
             ),
             // Args: cobra.ExactArgs(1),
             Run: func(cmd *cobra.Command, path []string) {
+
                 if features == nil {
                     features = []string{"sql/modifier", "sql/upsert", "privacy", "entql"}
                 }
@@ -79,7 +80,10 @@ func GenerateCmd(postRun ...func(*gen.Config)) *cobra.Command {
                     entc.Storage(storage),
                     entc.FeatureNames(features...),
                 }
-                templates = append(templates, "./cmd/ent/template/softdelete.tmpl")
+                templates = append(templates,
+                    "./cmd/ent/template/softdelete.tmpl",
+                    "./cmd/ent/template/pagination.tmpl",
+                )
                 for _, tmpl := range templates {
                     typ := "dir"
                     if parts := strings.SplitN(tmpl, "=", 2); len(parts) > 1 {

@@ -29,8 +29,15 @@ func NewBattery(modifier *model.Modifier) *batteryService {
 }
 
 // ListModels 列举电池型号
-func (s *batteryService) ListModels() (res []model.BatteryModel) {
-    s.orm.Query().Order(ent.Desc(batterymodel.FieldCreatedAt)).Select(batterymodel.FieldCapacity, batterymodel.FieldID, batterymodel.FieldVoltage).ScanX(s.ctx, &res)
+func (s *batteryService) ListModels() (res *model.ItemListRes) {
+    res = new(model.ItemListRes)
+    var items []model.BatteryModel
+    s.orm.Query().
+        Order(ent.Desc(batterymodel.FieldCreatedAt)).
+        Select(batterymodel.FieldCapacity, batterymodel.FieldID, batterymodel.FieldVoltage).
+        ScanX(s.ctx, &items)
+
+    model.SetItemListResItems[model.BatteryModel](res, items)
     return
 }
 
@@ -48,6 +55,8 @@ func (s *batteryService) CreateModel(req *model.BatteryModelCreateReq) model.Bat
     item := s.orm.Create().
         SetVoltage(req.Voltage).
         SetCapacity(req.Capacity).
+        SetLastModifier(s.modifier).
+        SetCreator(s.modifier).
         SaveX(s.ctx)
     return model.BatteryModel{
         ID:       item.ID,

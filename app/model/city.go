@@ -12,7 +12,13 @@ const (
     CityStatusOpen           // 已启用
 )
 
-// CityItem 城市
+// City 城市
+type City struct {
+    ID   uint64 `json:"id"`   // 城市ID
+    Name string `json:"name"` // 城市
+}
+
+// CityItem 城市或省份
 type CityItem struct {
     ID       uint64     `json:"id"`                 // 城市或省份ID
     Open     *bool      `json:"open,omitempty"`     // 是否启用

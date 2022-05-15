@@ -169,6 +169,15 @@
                         "name": "X-Manager-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "description": "电池型号数据",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BatteryModelCreateReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -315,6 +324,142 @@
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/cabinet": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M5002 查询电柜",
+                "operationId": "CabinetQuery",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "brand",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "serial",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "电柜状态 0未投放 1运营中 2维护中",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.CabinetItem"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M5001 创建电柜",
+                "operationId": "CabinetCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "电柜数据",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CabinetCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.ItemRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "item": {
+                                            "$ref": "#/definitions/model.CabinetItem"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -554,6 +699,23 @@
                 }
             }
         },
+        "model.BatteryModelCreateReq": {
+            "type": "object",
+            "required": [
+                "capacity",
+                "voltage"
+            ],
+            "properties": {
+                "capacity": {
+                    "description": "容量 ",
+                    "type": "string"
+                },
+                "voltage": {
+                    "description": "电压 ",
+                    "type": "string"
+                }
+            }
+        },
         "model.Branch": {
             "type": "object",
             "required": [
@@ -566,9 +728,11 @@
             ],
             "properties": {
                 "address": {
+                    "description": "详细地址 ",
                     "type": "string"
                 },
                 "cityId": {
+                    "description": "城市 ",
                     "type": "integer"
                 },
                 "contracts": {
@@ -584,15 +748,19 @@
                     "$ref": "#/definitions/model.Modifier"
                 },
                 "lat": {
+                    "description": "纬度 ",
                     "type": "number"
                 },
                 "lng": {
+                    "description": "经度 ",
                     "type": "number"
                 },
                 "name": {
+                    "description": "网点名称 ",
                     "type": "string"
                 },
                 "photos": {
+                    "description": "网点照片 ",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -620,48 +788,202 @@
             ],
             "properties": {
                 "area": {
+                    "description": "网点面积 ",
                     "type": "number"
                 },
                 "bankNumber": {
+                    "description": "房东银行卡号 ",
                     "type": "string"
                 },
                 "electricity": {
+                    "description": "电费单价 ",
                     "type": "number"
                 },
                 "electricityPledge": {
+                    "description": "电费押金 ",
                     "type": "number"
                 },
                 "endTime": {
+                    "description": "租期结束时间 ",
                     "type": "string"
                 },
                 "file": {
+                    "description": "合同文件 ",
                     "type": "string"
                 },
                 "idCardNumber": {
+                    "description": "房东身份证 ",
                     "type": "string"
                 },
                 "landlordName": {
+                    "description": "房东姓名 ",
                     "type": "string"
                 },
                 "lease": {
+                    "description": "租期月数 ",
                     "type": "integer"
                 },
                 "phone": {
+                    "description": "房东手机号 ",
                     "type": "string"
                 },
                 "pledge": {
+                    "description": "押金 ",
                     "type": "number"
                 },
                 "rent": {
+                    "description": "租金 ",
                     "type": "number"
                 },
                 "sheets": {
+                    "description": "底单 ",
                     "type": "array",
                     "items": {
                         "type": "string"
                     }
                 },
                 "startTime": {
+                    "description": "租期开始时间 ",
+                    "type": "string"
+                }
+            }
+        },
+        "model.CabinetCreateReq": {
+            "type": "object",
+            "required": [
+                "brand",
+                "doors",
+                "models",
+                "name",
+                "serial"
+            ],
+            "properties": {
+                "branchId": {
+                    "description": "网点",
+                    "type": "integer"
+                },
+                "brand": {
+                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
+                    "type": "string",
+                    "enum": [
+                        "KAIXIN",
+                        "YUNDONG"
+                    ]
+                },
+                "doors": {
+                    "description": "柜门数量 ",
+                    "type": "integer"
+                },
+                "models": {
+                    "description": "电池型号 ",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "name": {
+                    "description": "电柜名称 ",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注 ",
+                    "type": "string"
+                },
+                "serial": {
+                    "description": "电柜原始编码 ",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "电柜状态 0未投放 1运营中 2维护中",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
+        "model.CabinetItem": {
+            "type": "object",
+            "required": [
+                "brand",
+                "doors",
+                "name",
+                "serial"
+            ],
+            "properties": {
+                "branchId": {
+                    "description": "网点",
+                    "type": "integer"
+                },
+                "brand": {
+                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
+                    "type": "string",
+                    "enum": [
+                        "KAIXIN",
+                        "YUNDONG"
+                    ]
+                },
+                "city": {
+                    "description": "城市",
+                    "$ref": "#/definitions/model.City"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "doors": {
+                    "description": "柜门数量 ",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "models": {
+                    "description": "电池型号",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BatteryModel"
+                    }
+                },
+                "name": {
+                    "description": "电柜名称 ",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注 ",
+                    "type": "string"
+                },
+                "serial": {
+                    "description": "电柜原始编码 ",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "平台编码",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "电柜状态 0未投放 1运营中 2维护中",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
+        "model.City": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "城市",
                     "type": "string"
                 }
             }
@@ -693,14 +1015,11 @@
         "model.CityModifyReq": {
             "type": "object",
             "required": [
-                "id",
                 "open"
             ],
             "properties": {
-                "id": {
-                    "type": "integer"
-                },
                 "open": {
+                    "description": "状态 ",
                     "type": "boolean"
                 }
             }
@@ -709,7 +1028,10 @@
             "type": "object",
             "properties": {
                 "items": {
-                    "type": "any"
+                    "type": "array",
+                    "items": {
+                        "type": "any"
+                    }
                 }
             }
         },

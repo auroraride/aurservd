@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -103,14 +104,7 @@ func (bu *BranchUpdate) ClearRemark() *BranchUpdate {
 
 // SetCityID sets the "city_id" field.
 func (bu *BranchUpdate) SetCityID(u uint64) *BranchUpdate {
-	bu.mutation.ResetCityID()
 	bu.mutation.SetCityID(u)
-	return bu
-}
-
-// AddCityID adds u to the "city_id" field.
-func (bu *BranchUpdate) AddCityID(u int64) *BranchUpdate {
-	bu.mutation.AddCityID(u)
 	return bu
 }
 
@@ -188,6 +182,11 @@ func (bu *BranchUpdate) AddCabinets(c ...*Cabinet) *BranchUpdate {
 	return bu.AddCabinetIDs(ids...)
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (bu *BranchUpdate) SetCity(c *City) *BranchUpdate {
+	return bu.SetCityID(c.ID)
+}
+
 // Mutation returns the BranchMutation object of the builder.
 func (bu *BranchUpdate) Mutation() *BranchMutation {
 	return bu.mutation
@@ -235,6 +234,12 @@ func (bu *BranchUpdate) RemoveCabinets(c ...*Cabinet) *BranchUpdate {
 	return bu.RemoveCabinetIDs(ids...)
 }
 
+// ClearCity clears the "city" edge to the City entity.
+func (bu *BranchUpdate) ClearCity() *BranchUpdate {
+	bu.mutation.ClearCity()
+	return bu
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (bu *BranchUpdate) Save(ctx context.Context) (int, error) {
 	var (
@@ -243,12 +248,18 @@ func (bu *BranchUpdate) Save(ctx context.Context) (int, error) {
 	)
 	bu.defaults()
 	if len(bu.hooks) == 0 {
+		if err = bu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = bu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*BranchMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = bu.check(); err != nil {
+				return 0, err
 			}
 			bu.mutation = mutation
 			affected, err = bu.sqlSave(ctx)
@@ -296,6 +307,14 @@ func (bu *BranchUpdate) defaults() {
 		v := branch.UpdateDefaultUpdatedAt()
 		bu.mutation.SetUpdatedAt(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (bu *BranchUpdate) check() error {
+	if _, ok := bu.mutation.CityID(); bu.mutation.CityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Branch.city"`)
+	}
+	return nil
 }
 
 func (bu *BranchUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -373,20 +392,6 @@ func (bu *BranchUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: branch.FieldRemark,
-		})
-	}
-	if value, ok := bu.mutation.CityID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
-			Value:  value,
-			Column: branch.FieldCityID,
-		})
-	}
-	if value, ok := bu.mutation.AddedCityID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
-			Value:  value,
-			Column: branch.FieldCityID,
 		})
 	}
 	if value, ok := bu.mutation.Name(); ok {
@@ -546,6 +551,41 @@ func (bu *BranchUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   branch.CityTable,
+			Columns: []string{branch.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   branch.CityTable,
+			Columns: []string{branch.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{branch.Label}
@@ -637,14 +677,7 @@ func (buo *BranchUpdateOne) ClearRemark() *BranchUpdateOne {
 
 // SetCityID sets the "city_id" field.
 func (buo *BranchUpdateOne) SetCityID(u uint64) *BranchUpdateOne {
-	buo.mutation.ResetCityID()
 	buo.mutation.SetCityID(u)
-	return buo
-}
-
-// AddCityID adds u to the "city_id" field.
-func (buo *BranchUpdateOne) AddCityID(u int64) *BranchUpdateOne {
-	buo.mutation.AddCityID(u)
 	return buo
 }
 
@@ -722,6 +755,11 @@ func (buo *BranchUpdateOne) AddCabinets(c ...*Cabinet) *BranchUpdateOne {
 	return buo.AddCabinetIDs(ids...)
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (buo *BranchUpdateOne) SetCity(c *City) *BranchUpdateOne {
+	return buo.SetCityID(c.ID)
+}
+
 // Mutation returns the BranchMutation object of the builder.
 func (buo *BranchUpdateOne) Mutation() *BranchMutation {
 	return buo.mutation
@@ -769,6 +807,12 @@ func (buo *BranchUpdateOne) RemoveCabinets(c ...*Cabinet) *BranchUpdateOne {
 	return buo.RemoveCabinetIDs(ids...)
 }
 
+// ClearCity clears the "city" edge to the City entity.
+func (buo *BranchUpdateOne) ClearCity() *BranchUpdateOne {
+	buo.mutation.ClearCity()
+	return buo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (buo *BranchUpdateOne) Select(field string, fields ...string) *BranchUpdateOne {
@@ -784,12 +828,18 @@ func (buo *BranchUpdateOne) Save(ctx context.Context) (*Branch, error) {
 	)
 	buo.defaults()
 	if len(buo.hooks) == 0 {
+		if err = buo.check(); err != nil {
+			return nil, err
+		}
 		node, err = buo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*BranchMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = buo.check(); err != nil {
+				return nil, err
 			}
 			buo.mutation = mutation
 			node, err = buo.sqlSave(ctx)
@@ -837,6 +887,14 @@ func (buo *BranchUpdateOne) defaults() {
 		v := branch.UpdateDefaultUpdatedAt()
 		buo.mutation.SetUpdatedAt(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (buo *BranchUpdateOne) check() error {
+	if _, ok := buo.mutation.CityID(); buo.mutation.CityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Branch.city"`)
+	}
+	return nil
 }
 
 func (buo *BranchUpdateOne) sqlSave(ctx context.Context) (_node *Branch, err error) {
@@ -931,20 +989,6 @@ func (buo *BranchUpdateOne) sqlSave(ctx context.Context) (_node *Branch, err err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: branch.FieldRemark,
-		})
-	}
-	if value, ok := buo.mutation.CityID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
-			Value:  value,
-			Column: branch.FieldCityID,
-		})
-	}
-	if value, ok := buo.mutation.AddedCityID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
-			Value:  value,
-			Column: branch.FieldCityID,
 		})
 	}
 	if value, ok := buo.mutation.Name(); ok {
@@ -1096,6 +1140,41 @@ func (buo *BranchUpdateOne) sqlSave(ctx context.Context) (_node *Branch, err err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: cabinet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   branch.CityTable,
+			Columns: []string{branch.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   branch.CityTable,
+			Columns: []string{branch.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
 				},
 			},
 		}

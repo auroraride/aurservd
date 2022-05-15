@@ -24,11 +24,25 @@ definitions:
       voltage:
         type: string
     type: object
+  model.BatteryModelCreateReq:
+    properties:
+      capacity:
+        description: '容量 '
+        type: string
+      voltage:
+        description: '电压 '
+        type: string
+    required:
+    - capacity
+    - voltage
+    type: object
   model.Branch:
     properties:
       address:
+        description: '详细地址 '
         type: string
       cityId:
+        description: '城市 '
         type: integer
       contracts:
         items:
@@ -39,12 +53,16 @@ definitions:
       lastModifier:
         $ref: '#/definitions/model.Modifier'
       lat:
+        description: '纬度 '
         type: number
       lng:
+        description: '经度 '
         type: number
       name:
+        description: '网点名称 '
         type: string
       photos:
+        description: '网点照片 '
         items:
           type: string
         type: array
@@ -59,34 +77,48 @@ definitions:
   model.BranchContract:
     properties:
       area:
+        description: '网点面积 '
         type: number
       bankNumber:
+        description: '房东银行卡号 '
         type: string
       electricity:
+        description: '电费单价 '
         type: number
       electricityPledge:
+        description: '电费押金 '
         type: number
       endTime:
+        description: '租期结束时间 '
         type: string
       file:
+        description: '合同文件 '
         type: string
       idCardNumber:
+        description: '房东身份证 '
         type: string
       landlordName:
+        description: '房东姓名 '
         type: string
       lease:
+        description: '租期月数 '
         type: integer
       phone:
+        description: '房东手机号 '
         type: string
       pledge:
+        description: '押金 '
         type: number
       rent:
+        description: '租金 '
         type: number
       sheets:
+        description: '底单 '
         items:
           type: string
         type: array
       startTime:
+        description: '租期开始时间 '
         type: string
     required:
     - area
@@ -103,6 +135,110 @@ definitions:
     - rent
     - sheets
     - startTime
+    type: object
+  model.CabinetCreateReq:
+    properties:
+      branchId:
+        description: 网点
+        type: integer
+      brand:
+        description: 品牌 KAIXIN(凯信) YUNDONG(云动)
+        enum:
+        - KAIXIN
+        - YUNDONG
+        type: string
+      doors:
+        description: '柜门数量 '
+        type: integer
+      models:
+        description: '电池型号 '
+        items:
+          type: integer
+        type: array
+      name:
+        description: '电柜名称 '
+        type: string
+      remark:
+        description: '备注 '
+        type: string
+      serial:
+        description: '电柜原始编码 '
+        type: string
+      status:
+        description: 电柜状态 0未投放 1运营中 2维护中
+        enum:
+        - 0
+        - 1
+        - 2
+        type: integer
+    required:
+    - brand
+    - doors
+    - models
+    - name
+    - serial
+    type: object
+  model.CabinetItem:
+    properties:
+      branchId:
+        description: 网点
+        type: integer
+      brand:
+        description: 品牌 KAIXIN(凯信) YUNDONG(云动)
+        enum:
+        - KAIXIN
+        - YUNDONG
+        type: string
+      city:
+        $ref: '#/definitions/model.City'
+        description: 城市
+      createdAt:
+        description: 创建时间
+        type: string
+      doors:
+        description: '柜门数量 '
+        type: integer
+      id:
+        description: 电柜ID
+        type: integer
+      models:
+        description: 电池型号
+        items:
+          $ref: '#/definitions/model.BatteryModel'
+        type: array
+      name:
+        description: '电柜名称 '
+        type: string
+      remark:
+        description: '备注 '
+        type: string
+      serial:
+        description: '电柜原始编码 '
+        type: string
+      sn:
+        description: 平台编码
+        type: string
+      status:
+        description: 电柜状态 0未投放 1运营中 2维护中
+        enum:
+        - 0
+        - 1
+        - 2
+        type: integer
+    required:
+    - brand
+    - doors
+    - name
+    - serial
+    type: object
+  model.City:
+    properties:
+      id:
+        description: 城市ID
+        type: integer
+      name:
+        description: 城市
+        type: string
     type: object
   model.CityItem:
     properties:
@@ -123,18 +259,18 @@ definitions:
     type: object
   model.CityModifyReq:
     properties:
-      id:
-        type: integer
       open:
+        description: '状态 '
         type: boolean
     required:
-    - id
     - open
     type: object
   model.ItemListRes:
     properties:
       items:
-        type: any
+        items:
+          type: any
+        type: array
     type: object
   model.ItemRes:
     properties:
@@ -411,6 +547,12 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 电池型号数据
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BatteryModelCreateReq'
       produces:
       - application/json
       responses:
@@ -505,6 +647,89 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M3003 编辑网点
+      tags:
+      - '[M]管理接口'
+  /manager/v1/cabinet:
+    get:
+      consumes:
+      - application/json
+      operationId: CabinetQuery
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - in: query
+        name: brand
+        type: string
+      - in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - in: query
+        name: name
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: serial
+        type: string
+      - description: 电柜状态 0未投放 1运营中 2维护中
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.CabinetItem'
+                  type: array
+              type: object
+      summary: M5002 查询电柜
+      tags:
+      - '[M]管理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: CabinetCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 电柜数据
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CabinetCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.ItemRes'
+            - properties:
+                item:
+                  $ref: '#/definitions/model.CabinetItem'
+              type: object
+      summary: M5001 创建电柜
       tags:
       - '[M]管理接口'
   /manager/v1/city:

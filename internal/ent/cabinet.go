@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 )
@@ -38,11 +37,14 @@ type Cabinet struct {
 	// BranchID holds the value of the "branch_id" field.
 	// 网点
 	BranchID uint64 `json:"branch_id,omitempty"`
-	// ModelID holds the value of the "model_id" field.
-	// 电池型号
-	ModelID uint64 `json:"model_id,omitempty"`
-	// Serial holds the value of the "serial" field.
+	// Sn holds the value of the "sn" field.
 	// 编号
+	Sn string `json:"sn,omitempty"`
+	// Brand holds the value of the "brand" field.
+	// 品牌
+	Brand string `json:"brand,omitempty"`
+	// Serial holds the value of the "serial" field.
+	// 原始编号
 	Serial string `json:"serial,omitempty"`
 	// Name holds the value of the "name" field.
 	// 名称
@@ -53,6 +55,9 @@ type Cabinet struct {
 	// Status holds the value of the "status" field.
 	// 状态
 	Status uint `json:"status,omitempty"`
+	// Models holds the value of the "models" field.
+	// 电池型号
+	Models []model.BatteryModel `json:"models,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CabinetQuery when eager-loading is set.
 	Edges CabinetEdges `json:"edges"`
@@ -62,8 +67,8 @@ type Cabinet struct {
 type CabinetEdges struct {
 	// Branch holds the value of the branch edge.
 	Branch *Branch `json:"branch,omitempty"`
-	// Model holds the value of the model edge.
-	Model *BatteryModel `json:"model,omitempty"`
+	// Bms holds the value of the bms edge.
+	Bms []*BatteryModel `json:"bms,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
@@ -83,18 +88,13 @@ func (e CabinetEdges) BranchOrErr() (*Branch, error) {
 	return nil, &NotLoadedError{edge: "branch"}
 }
 
-// ModelOrErr returns the Model value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e CabinetEdges) ModelOrErr() (*BatteryModel, error) {
+// BmsOrErr returns the Bms value or an error if the edge
+// was not loaded in eager-loading.
+func (e CabinetEdges) BmsOrErr() ([]*BatteryModel, error) {
 	if e.loadedTypes[1] {
-		if e.Model == nil {
-			// The edge model was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: batterymodel.Label}
-		}
-		return e.Model, nil
+		return e.Bms, nil
 	}
-	return nil, &NotLoadedError{edge: "model"}
+	return nil, &NotLoadedError{edge: "bms"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -102,11 +102,11 @@ func (*Cabinet) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case cabinet.FieldCreator, cabinet.FieldLastModifier:
+		case cabinet.FieldCreator, cabinet.FieldLastModifier, cabinet.FieldModels:
 			values[i] = new([]byte)
-		case cabinet.FieldID, cabinet.FieldBranchID, cabinet.FieldModelID, cabinet.FieldDoors, cabinet.FieldStatus:
+		case cabinet.FieldID, cabinet.FieldBranchID, cabinet.FieldDoors, cabinet.FieldStatus:
 			values[i] = new(sql.NullInt64)
-		case cabinet.FieldRemark, cabinet.FieldSerial, cabinet.FieldName:
+		case cabinet.FieldRemark, cabinet.FieldSn, cabinet.FieldBrand, cabinet.FieldSerial, cabinet.FieldName:
 			values[i] = new(sql.NullString)
 		case cabinet.FieldCreatedAt, cabinet.FieldUpdatedAt, cabinet.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -179,11 +179,17 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				c.BranchID = uint64(value.Int64)
 			}
-		case cabinet.FieldModelID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field model_id", values[i])
+		case cabinet.FieldSn:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field sn", values[i])
 			} else if value.Valid {
-				c.ModelID = uint64(value.Int64)
+				c.Sn = value.String
+			}
+		case cabinet.FieldBrand:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field brand", values[i])
+			} else if value.Valid {
+				c.Brand = value.String
 			}
 		case cabinet.FieldSerial:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -209,6 +215,14 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				c.Status = uint(value.Int64)
 			}
+		case cabinet.FieldModels:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field models", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &c.Models); err != nil {
+					return fmt.Errorf("unmarshal field models: %w", err)
+				}
+			}
 		}
 	}
 	return nil
@@ -219,9 +233,9 @@ func (c *Cabinet) QueryBranch() *BranchQuery {
 	return (&CabinetClient{config: c.config}).QueryBranch(c)
 }
 
-// QueryModel queries the "model" edge of the Cabinet entity.
-func (c *Cabinet) QueryModel() *BatteryModelQuery {
-	return (&CabinetClient{config: c.config}).QueryModel(c)
+// QueryBms queries the "bms" edge of the Cabinet entity.
+func (c *Cabinet) QueryBms() *BatteryModelQuery {
+	return (&CabinetClient{config: c.config}).QueryBms(c)
 }
 
 // Update returns a builder for updating this Cabinet.
@@ -265,8 +279,10 @@ func (c *Cabinet) String() string {
 	}
 	builder.WriteString(", branch_id=")
 	builder.WriteString(fmt.Sprintf("%v", c.BranchID))
-	builder.WriteString(", model_id=")
-	builder.WriteString(fmt.Sprintf("%v", c.ModelID))
+	builder.WriteString(", sn=")
+	builder.WriteString(c.Sn)
+	builder.WriteString(", brand=")
+	builder.WriteString(c.Brand)
 	builder.WriteString(", serial=")
 	builder.WriteString(c.Serial)
 	builder.WriteString(", name=")
@@ -275,6 +291,8 @@ func (c *Cabinet) String() string {
 	builder.WriteString(fmt.Sprintf("%v", c.Doors))
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", c.Status))
+	builder.WriteString(", models=")
+	builder.WriteString(fmt.Sprintf("%v", c.Models))
 	builder.WriteByte(')')
 	return builder.String()
 }

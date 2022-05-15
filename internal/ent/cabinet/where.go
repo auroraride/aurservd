@@ -128,10 +128,17 @@ func BranchID(v uint64) predicate.Cabinet {
 	})
 }
 
-// ModelID applies equality check predicate on the "model_id" field. It's identical to ModelIDEQ.
-func ModelID(v uint64) predicate.Cabinet {
+// Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
+func Sn(v string) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldModelID), v))
+		s.Where(sql.EQ(s.C(FieldSn), v))
+	})
+}
+
+// Brand applies equality check predicate on the "brand" field. It's identical to BrandEQ.
+func Brand(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBrand), v))
 	})
 }
 
@@ -620,22 +627,22 @@ func BranchIDNotNil() predicate.Cabinet {
 	})
 }
 
-// ModelIDEQ applies the EQ predicate on the "model_id" field.
-func ModelIDEQ(v uint64) predicate.Cabinet {
+// SnEQ applies the EQ predicate on the "sn" field.
+func SnEQ(v string) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldModelID), v))
+		s.Where(sql.EQ(s.C(FieldSn), v))
 	})
 }
 
-// ModelIDNEQ applies the NEQ predicate on the "model_id" field.
-func ModelIDNEQ(v uint64) predicate.Cabinet {
+// SnNEQ applies the NEQ predicate on the "sn" field.
+func SnNEQ(v string) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldModelID), v))
+		s.Where(sql.NEQ(s.C(FieldSn), v))
 	})
 }
 
-// ModelIDIn applies the In predicate on the "model_id" field.
-func ModelIDIn(vs ...uint64) predicate.Cabinet {
+// SnIn applies the In predicate on the "sn" field.
+func SnIn(vs ...string) predicate.Cabinet {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -647,12 +654,12 @@ func ModelIDIn(vs ...uint64) predicate.Cabinet {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldModelID), v...))
+		s.Where(sql.In(s.C(FieldSn), v...))
 	})
 }
 
-// ModelIDNotIn applies the NotIn predicate on the "model_id" field.
-func ModelIDNotIn(vs ...uint64) predicate.Cabinet {
+// SnNotIn applies the NotIn predicate on the "sn" field.
+func SnNotIn(vs ...string) predicate.Cabinet {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -664,7 +671,181 @@ func ModelIDNotIn(vs ...uint64) predicate.Cabinet {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldModelID), v...))
+		s.Where(sql.NotIn(s.C(FieldSn), v...))
+	})
+}
+
+// SnGT applies the GT predicate on the "sn" field.
+func SnGT(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldSn), v))
+	})
+}
+
+// SnGTE applies the GTE predicate on the "sn" field.
+func SnGTE(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldSn), v))
+	})
+}
+
+// SnLT applies the LT predicate on the "sn" field.
+func SnLT(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldSn), v))
+	})
+}
+
+// SnLTE applies the LTE predicate on the "sn" field.
+func SnLTE(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldSn), v))
+	})
+}
+
+// SnContains applies the Contains predicate on the "sn" field.
+func SnContains(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldSn), v))
+	})
+}
+
+// SnHasPrefix applies the HasPrefix predicate on the "sn" field.
+func SnHasPrefix(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldSn), v))
+	})
+}
+
+// SnHasSuffix applies the HasSuffix predicate on the "sn" field.
+func SnHasSuffix(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldSn), v))
+	})
+}
+
+// SnEqualFold applies the EqualFold predicate on the "sn" field.
+func SnEqualFold(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldSn), v))
+	})
+}
+
+// SnContainsFold applies the ContainsFold predicate on the "sn" field.
+func SnContainsFold(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldSn), v))
+	})
+}
+
+// BrandEQ applies the EQ predicate on the "brand" field.
+func BrandEQ(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBrand), v))
+	})
+}
+
+// BrandNEQ applies the NEQ predicate on the "brand" field.
+func BrandNEQ(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldBrand), v))
+	})
+}
+
+// BrandIn applies the In predicate on the "brand" field.
+func BrandIn(vs ...string) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldBrand), v...))
+	})
+}
+
+// BrandNotIn applies the NotIn predicate on the "brand" field.
+func BrandNotIn(vs ...string) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldBrand), v...))
+	})
+}
+
+// BrandGT applies the GT predicate on the "brand" field.
+func BrandGT(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldBrand), v))
+	})
+}
+
+// BrandGTE applies the GTE predicate on the "brand" field.
+func BrandGTE(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldBrand), v))
+	})
+}
+
+// BrandLT applies the LT predicate on the "brand" field.
+func BrandLT(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldBrand), v))
+	})
+}
+
+// BrandLTE applies the LTE predicate on the "brand" field.
+func BrandLTE(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldBrand), v))
+	})
+}
+
+// BrandContains applies the Contains predicate on the "brand" field.
+func BrandContains(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldBrand), v))
+	})
+}
+
+// BrandHasPrefix applies the HasPrefix predicate on the "brand" field.
+func BrandHasPrefix(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldBrand), v))
+	})
+}
+
+// BrandHasSuffix applies the HasSuffix predicate on the "brand" field.
+func BrandHasSuffix(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldBrand), v))
+	})
+}
+
+// BrandEqualFold applies the EqualFold predicate on the "brand" field.
+func BrandEqualFold(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldBrand), v))
+	})
+}
+
+// BrandContainsFold applies the ContainsFold predicate on the "brand" field.
+func BrandContainsFold(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldBrand), v))
 	})
 }
 
@@ -1070,25 +1251,25 @@ func HasBranchWith(preds ...predicate.Branch) predicate.Cabinet {
 	})
 }
 
-// HasModel applies the HasEdge predicate on the "model" edge.
-func HasModel() predicate.Cabinet {
+// HasBms applies the HasEdge predicate on the "bms" edge.
+func HasBms() predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ModelTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ModelTable, ModelColumn),
+			sqlgraph.To(BmsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, BmsTable, BmsPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasModelWith applies the HasEdge predicate on the "model" edge with a given conditions (other predicates).
-func HasModelWith(preds ...predicate.BatteryModel) predicate.Cabinet {
+// HasBmsWith applies the HasEdge predicate on the "bms" edge with a given conditions (other predicates).
+func HasBmsWith(preds ...predicate.BatteryModel) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ModelInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ModelTable, ModelColumn),
+			sqlgraph.To(BmsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, BmsTable, BmsPrimaryKey...),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

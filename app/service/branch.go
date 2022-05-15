@@ -91,19 +91,13 @@ func (s *branchService) List(req *model.BranchListReq) (res model.PaginationRes)
         q.Where(branch.CityID(*req.CityID))
     }
 
-    total := s.orm.Query().CountX(s.ctx)
-    res.Pagination = model.Pagination{
-        Current: req.GetCurrent(),
-        Pages:   req.GetPages(total),
-        Total:   total,
-    }
+    res.Pagination = q.PaginationResult(req.PaginationReq)
 
     items := q.
         WithContracts(func(query *ent.BranchContractQuery) {
             query.Order(ent.Desc(branchcontract.FieldID))
         }).
-        Offset(req.GetOffset()).
-        Limit(req.GetLimit()).
+        Pagination(req.PaginationReq).
         AllX(s.ctx)
 
     rs := make([]*model.Branch, len(items))

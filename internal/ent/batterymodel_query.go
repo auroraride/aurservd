@@ -78,7 +78,7 @@ func (bmq *BatteryModelQuery) QueryCabinets() *CabinetQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(batterymodel.Table, batterymodel.FieldID, selector),
 			sqlgraph.To(cabinet.Table, cabinet.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, batterymodel.CabinetsTable, batterymodel.CabinetsColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, batterymodel.CabinetsTable, batterymodel.CabinetsPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(bmq.driver.Dialect(), step)
 		return fromU, nil
@@ -383,27 +383,55 @@ func (bmq *BatteryModelQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	}
 
 	if query := bmq.withCabinets; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[uint64]*BatteryModel)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Cabinets = []*Cabinet{}
+		edgeids := make([]driver.Value, len(nodes))
+		byid := make(map[uint64]*BatteryModel)
+		nids := make(map[uint64]map[*BatteryModel]struct{})
+		for i, node := range nodes {
+			edgeids[i] = node.ID
+			byid[node.ID] = node
+			node.Edges.Cabinets = []*Cabinet{}
 		}
-		query.Where(predicate.Cabinet(func(s *sql.Selector) {
-			s.Where(sql.InValues(batterymodel.CabinetsColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
+		query.Where(func(s *sql.Selector) {
+			joinT := sql.Table(batterymodel.CabinetsTable)
+			s.Join(joinT).On(s.C(cabinet.FieldID), joinT.C(batterymodel.CabinetsPrimaryKey[0]))
+			s.Where(sql.InValues(joinT.C(batterymodel.CabinetsPrimaryKey[1]), edgeids...))
+			columns := s.SelectedColumns()
+			s.Select(joinT.C(batterymodel.CabinetsPrimaryKey[1]))
+			s.AppendSelect(columns...)
+			s.SetDistinct(false)
+		})
+		neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]interface{}, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]interface{}{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []interface{}) error {
+				outValue := uint64(values[0].(*sql.NullInt64).Int64)
+				inValue := uint64(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*BatteryModel]struct{}{byid[outValue]: struct{}{}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byid[outValue]] = struct{}{}
+				return nil
+			}
+		})
 		if err != nil {
 			return nil, err
 		}
 		for _, n := range neighbors {
-			fk := n.ModelID
-			node, ok := nodeids[fk]
+			nodes, ok := nids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "model_id" returned %v for node %v`, fk, n.ID)
+				return nil, fmt.Errorf(`unexpected "cabinets" node returned %v`, n.ID)
 			}
-			node.Edges.Cabinets = append(node.Edges.Cabinets, n)
+			for kn := range nodes {
+				kn.Edges.Cabinets = append(kn.Edges.Cabinets, n)
+			}
 		}
 	}
 

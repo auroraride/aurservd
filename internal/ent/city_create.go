@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/city"
 )
 
@@ -149,6 +150,21 @@ func (cc *CityCreate) AddChildren(c ...*City) *CityCreate {
 		ids[i] = c[i].ID
 	}
 	return cc.AddChildIDs(ids...)
+}
+
+// AddBranchIDs adds the "branches" edge to the Branch entity by IDs.
+func (cc *CityCreate) AddBranchIDs(ids ...uint64) *CityCreate {
+	cc.mutation.AddBranchIDs(ids...)
+	return cc
+}
+
+// AddBranches adds the "branches" edges to the Branch entity.
+func (cc *CityCreate) AddBranches(b ...*Branch) *CityCreate {
+	ids := make([]uint64, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return cc.AddBranchIDs(ids...)
 }
 
 // Mutation returns the CityMutation object of the builder.
@@ -385,6 +401,25 @@ func (cc *CityCreate) createSpec() (*City, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.BranchesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   city.BranchesTable,
+			Columns: []string{city.BranchesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: branch.FieldID,
 				},
 			},
 		}

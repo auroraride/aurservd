@@ -5,7 +5,7 @@
 
 package model
 
-// BatteryModel 电池型号列表项
+// BatteryModel 电池型号
 type BatteryModel struct {
     ID       uint64 `json:"id"`
     Voltage  string `json:"voltage"`

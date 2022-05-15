@@ -39,6 +39,7 @@ func (Branch) Edges() []ent.Edge {
     return []ent.Edge{
         edge.To("contracts", BranchContract.Type),
         edge.To("cabinets", Cabinet.Type),
+        edge.From("city", City.Type).Ref("branches").Required().Unique().Field("city_id"),
     }
 }
 

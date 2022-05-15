@@ -27,7 +27,7 @@ var Battery = new(battery)
 // @Success      200  {object}  model.ItemListRes{items=[]model.BatteryModel}  "请求成功"
 func (*battery) ListModels(c echo.Context) (err error) {
     ctx := app.Context(c)
-    return ctx.SendResponse(model.ItemListRes{Items: service.NewBattery(nil).ListModels()})
+    return ctx.SendResponse(service.NewBattery(nil).ListModels())
 }
 
 // CreateModel
@@ -38,6 +38,7 @@ func (*battery) ListModels(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body  model.BatteryModelCreateReq  true  "电池型号数据"
 // @Success      200  {object}  model.ItemRes{item=model.BatteryModel}  "请求成功"
 func (*battery) CreateModel(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.BatteryModelCreateReq](c)

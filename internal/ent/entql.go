@@ -122,11 +122,13 @@ var schemaGraph = func() *sqlgraph.Schema {
 			cabinet.FieldLastModifier: {Type: field.TypeJSON, Column: cabinet.FieldLastModifier},
 			cabinet.FieldRemark:       {Type: field.TypeString, Column: cabinet.FieldRemark},
 			cabinet.FieldBranchID:     {Type: field.TypeUint64, Column: cabinet.FieldBranchID},
-			cabinet.FieldModelID:      {Type: field.TypeUint64, Column: cabinet.FieldModelID},
+			cabinet.FieldSn:           {Type: field.TypeString, Column: cabinet.FieldSn},
+			cabinet.FieldBrand:        {Type: field.TypeString, Column: cabinet.FieldBrand},
 			cabinet.FieldSerial:       {Type: field.TypeString, Column: cabinet.FieldSerial},
 			cabinet.FieldName:         {Type: field.TypeString, Column: cabinet.FieldName},
 			cabinet.FieldDoors:        {Type: field.TypeUint, Column: cabinet.FieldDoors},
 			cabinet.FieldStatus:       {Type: field.TypeUint, Column: cabinet.FieldStatus},
+			cabinet.FieldModels:       {Type: field.TypeJSON, Column: cabinet.FieldModels},
 		},
 	}
 	graph.Nodes[4] = &sqlgraph.Node{
@@ -273,10 +275,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 	graph.MustAddE(
 		"cabinets",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   batterymodel.CabinetsTable,
-			Columns: []string{batterymodel.CabinetsColumn},
+			Columns: batterymodel.CabinetsPrimaryKey,
 			Bidi:    false,
 		},
 		"BatteryModel",
@@ -307,6 +309,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Cabinet",
 	)
 	graph.MustAddE(
+		"city",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   branch.CityTable,
+			Columns: []string{branch.CityColumn},
+			Bidi:    false,
+		},
+		"Branch",
+		"City",
+	)
+	graph.MustAddE(
 		"branch",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -331,12 +345,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Branch",
 	)
 	graph.MustAddE(
-		"model",
+		"bms",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   cabinet.ModelTable,
-			Columns: []string{cabinet.ModelColumn},
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   cabinet.BmsTable,
+			Columns: cabinet.BmsPrimaryKey,
 			Bidi:    false,
 		},
 		"Cabinet",
@@ -365,6 +379,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"City",
 		"City",
+	)
+	graph.MustAddE(
+		"branches",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   city.BranchesTable,
+			Columns: []string{city.BranchesColumn},
+			Bidi:    false,
+		},
+		"City",
+		"Branch",
 	)
 	graph.MustAddE(
 		"rider",
@@ -645,6 +671,20 @@ func (f *BranchFilter) WhereHasCabinetsWith(preds ...predicate.Cabinet) {
 	})))
 }
 
+// WhereHasCity applies a predicate to check if query has an edge city.
+func (f *BranchFilter) WhereHasCity() {
+	f.Where(entql.HasEdge("city"))
+}
+
+// WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
+func (f *BranchFilter) WhereHasCityWith(preds ...predicate.City) {
+	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (bcq *BranchContractQuery) addPredicate(pred func(s *sql.Selector)) {
 	bcq.predicates = append(bcq.predicates, pred)
@@ -879,9 +919,14 @@ func (f *CabinetFilter) WhereBranchID(p entql.Uint64P) {
 	f.Where(p.Field(cabinet.FieldBranchID))
 }
 
-// WhereModelID applies the entql uint64 predicate on the model_id field.
-func (f *CabinetFilter) WhereModelID(p entql.Uint64P) {
-	f.Where(p.Field(cabinet.FieldModelID))
+// WhereSn applies the entql string predicate on the sn field.
+func (f *CabinetFilter) WhereSn(p entql.StringP) {
+	f.Where(p.Field(cabinet.FieldSn))
+}
+
+// WhereBrand applies the entql string predicate on the brand field.
+func (f *CabinetFilter) WhereBrand(p entql.StringP) {
+	f.Where(p.Field(cabinet.FieldBrand))
 }
 
 // WhereSerial applies the entql string predicate on the serial field.
@@ -904,6 +949,11 @@ func (f *CabinetFilter) WhereStatus(p entql.UintP) {
 	f.Where(p.Field(cabinet.FieldStatus))
 }
 
+// WhereModels applies the entql json.RawMessage predicate on the models field.
+func (f *CabinetFilter) WhereModels(p entql.BytesP) {
+	f.Where(p.Field(cabinet.FieldModels))
+}
+
 // WhereHasBranch applies a predicate to check if query has an edge branch.
 func (f *CabinetFilter) WhereHasBranch() {
 	f.Where(entql.HasEdge("branch"))
@@ -918,14 +968,14 @@ func (f *CabinetFilter) WhereHasBranchWith(preds ...predicate.Branch) {
 	})))
 }
 
-// WhereHasModel applies a predicate to check if query has an edge model.
-func (f *CabinetFilter) WhereHasModel() {
-	f.Where(entql.HasEdge("model"))
+// WhereHasBms applies a predicate to check if query has an edge bms.
+func (f *CabinetFilter) WhereHasBms() {
+	f.Where(entql.HasEdge("bms"))
 }
 
-// WhereHasModelWith applies a predicate to check if query has an edge model with a given conditions (other predicates).
-func (f *CabinetFilter) WhereHasModelWith(preds ...predicate.BatteryModel) {
-	f.Where(entql.HasEdgeWith("model", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasBmsWith applies a predicate to check if query has an edge bms with a given conditions (other predicates).
+func (f *CabinetFilter) WhereHasBmsWith(preds ...predicate.BatteryModel) {
+	f.Where(entql.HasEdgeWith("bms", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -1039,6 +1089,20 @@ func (f *CityFilter) WhereHasChildren() {
 // WhereHasChildrenWith applies a predicate to check if query has an edge children with a given conditions (other predicates).
 func (f *CityFilter) WhereHasChildrenWith(preds ...predicate.City) {
 	f.Where(entql.HasEdgeWith("children", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasBranches applies a predicate to check if query has an edge branches.
+func (f *CityFilter) WhereHasBranches() {
+	f.Where(entql.HasEdge("branches"))
+}
+
+// WhereHasBranchesWith applies a predicate to check if query has an edge branches with a given conditions (other predicates).
+func (f *CityFilter) WhereHasBranchesWith(preds ...predicate.Branch) {
+	f.Where(entql.HasEdgeWith("branches", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

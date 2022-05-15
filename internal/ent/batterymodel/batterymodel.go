@@ -31,13 +31,11 @@ const (
 	EdgeCabinets = "cabinets"
 	// Table holds the table name of the batterymodel in the database.
 	Table = "battery_model"
-	// CabinetsTable is the table that holds the cabinets relation/edge.
-	CabinetsTable = "cabinet"
+	// CabinetsTable is the table that holds the cabinets relation/edge. The primary key declared below.
+	CabinetsTable = "cabinet_bms"
 	// CabinetsInverseTable is the table name for the Cabinet entity.
 	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
 	CabinetsInverseTable = "cabinet"
-	// CabinetsColumn is the table column denoting the cabinets relation/edge.
-	CabinetsColumn = "model_id"
 )
 
 // Columns holds all SQL columns for batterymodel fields.
@@ -52,6 +50,12 @@ var Columns = []string{
 	FieldVoltage,
 	FieldCapacity,
 }
+
+var (
+	// CabinetsPrimaryKey and CabinetsColumn2 are the table columns denoting the
+	// primary key for the cabinets relation (M2M).
+	CabinetsPrimaryKey = []string{"cabinet_id", "battery_model_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
