@@ -63,3 +63,21 @@ type CabinetQueryReq struct {
     Brand  *string        `json:"brand" query:"brand"`
     Status *CabinetStatus `json:"status" query:"status"`
 }
+
+// CabinetModifyReq 电柜修改请求
+type CabinetModifyReq struct {
+    ID       uint64         `json:"id" param:"id"`
+    BranchID *uint64        `json:"branchId"`                                // 网点
+    Status   *CabinetStatus `json:"status" enums:"0,1,2"`                    // 电柜状态 0未投放 1运营中 2维护中
+    Brand    *CabinetBrand  `json:"brand" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
+    Serial   *string        `json:"serial" trans:"电柜原始编码"`
+    Name     *string        `json:"name" trans:"电柜名称"`
+    Doors    *uint          `json:"doors" trans:"柜门数量"`
+    Remark   *string        `json:"remark" trans:"备注"`
+    Models   *[]uint64      `json:"models" trans:"电池型号" validate:"required"`
+}
+
+// CabinetDeleteReq 电柜删除请求
+type CabinetDeleteReq struct {
+    ID uint64 `json:"id" param:"id"`
+}

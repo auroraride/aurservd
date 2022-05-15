@@ -48,3 +48,37 @@ func (*cabinet) Query(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetQueryReq](c)
     return ctx.SendResponse(service.NewCabinet().Query(req))
 }
+
+// Modify
+// @ID           CabinetModify
+// @Router       /manager/v1/cabinet/{id} [PUT]
+// @Summary      M5003 编辑电柜
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body  model.CabinetCreateReq  true  "电柜数据"
+// @Param        id    path  int  true  "电柜ID"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*cabinet) Modify(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.CabinetModifyReq](c)
+    service.NewCabinet().Modify(req)
+    return ctx.SendResponse()
+}
+
+// Delete
+// @ID           CabinetDelete
+// @Router       /manager/v1/cabinet/{id} [DELETE]
+// @Summary      M5004 删除电柜
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        id    path  int  true  "电柜ID"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*cabinet) Delete(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.CabinetDeleteReq](c)
+    service.NewCabinet().Delete(ctx.Modifier, req)
+
+    return ctx.SendResponse()
+}

@@ -732,6 +732,63 @@ paths:
       summary: M5001 创建电柜
       tags:
       - '[M]管理接口'
+  /manager/v1/cabinet/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: CabinetDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 电柜ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M5004 删除电柜
+      tags:
+      - '[M]管理接口'
+    put:
+      consumes:
+      - application/json
+      operationId: CabinetModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 电柜数据
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CabinetCreateReq'
+      - description: 电柜ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M5003 编辑电柜
+      tags:
+      - '[M]管理接口'
   /manager/v1/city:
     get:
       consumes:

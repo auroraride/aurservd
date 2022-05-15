@@ -16,14 +16,12 @@ import (
 
 type batteryService struct {
     ctx      context.Context
-    modifier *model.Modifier
     orm      *ent.BatteryModelClient
 }
 
-func NewBattery(modifier *model.Modifier) *batteryService {
+func NewBattery() *batteryService {
     return &batteryService{
         ctx:      context.Background(),
-        modifier: modifier,
         orm:      ar.Ent.BatteryModel,
     }
 }
@@ -42,7 +40,7 @@ func (s *batteryService) ListModels() (res *model.ItemListRes) {
 }
 
 // CreateModel 创建电池型号
-func (s *batteryService) CreateModel(req *model.BatteryModelCreateReq) model.BatteryModel {
+func (s *batteryService) CreateModel(modifier *model.Modifier, req *model.BatteryModelCreateReq) model.BatteryModel {
     // 查找同型号电池是否存在
     if s.orm.Query().
         Where(batterymodel.Capacity(req.Capacity)).
@@ -55,12 +53,17 @@ func (s *batteryService) CreateModel(req *model.BatteryModelCreateReq) model.Bat
     item := s.orm.Create().
         SetVoltage(req.Voltage).
         SetCapacity(req.Capacity).
-        SetLastModifier(s.modifier).
-        SetCreator(s.modifier).
+        SetLastModifier(modifier).
+        SetCreator(modifier).
         SaveX(s.ctx)
     return model.BatteryModel{
         ID:       item.ID,
         Voltage:  item.Voltage,
         Capacity: item.Capacity,
     }
+}
+
+// QueryIDs 根据ID查询电池型号
+func (s *batteryService) QueryIDs(ids []uint64) []*ent.BatteryModel {
+    return s.orm.Query().Where(batterymodel.IDIn(ids...)).AllX(s.ctx)
 }

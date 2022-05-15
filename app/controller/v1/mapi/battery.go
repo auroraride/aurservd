@@ -27,7 +27,7 @@ var Battery = new(battery)
 // @Success      200  {object}  model.ItemListRes{items=[]model.BatteryModel}  "请求成功"
 func (*battery) ListModels(c echo.Context) (err error) {
     ctx := app.Context(c)
-    return ctx.SendResponse(service.NewBattery(nil).ListModels())
+    return ctx.SendResponse(service.NewBattery().ListModels())
 }
 
 // CreateModel
@@ -42,5 +42,5 @@ func (*battery) ListModels(c echo.Context) (err error) {
 // @Success      200  {object}  model.ItemRes{item=model.BatteryModel}  "请求成功"
 func (*battery) CreateModel(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.BatteryModelCreateReq](c)
-    return ctx.SendResponse(model.ItemRes{Item: service.NewBattery(ctx.Modifier).CreateModel(req)})
+    return ctx.SendResponse(model.ItemRes{Item: service.NewBattery().CreateModel(ctx.Modifier, req)})
 }

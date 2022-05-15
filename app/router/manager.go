@@ -38,4 +38,6 @@ func loadManagerRoutes() {
     // 电柜
     g.POST("/cabinet", mapi.Cabinet.Create)
     g.GET("/cabinet", mapi.Cabinet.Query)
+    g.PUT("/cabinet/:id", mapi.Cabinet.Modify)
+    g.DELETE("/cabinet/:id", mapi.Cabinet.Delete)
 }
