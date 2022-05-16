@@ -8,6 +8,7 @@ package utils
 import (
     "crypto/hmac"
     "crypto/md5"
+    "crypto/sha1"
     "crypto/sha256"
     "encoding/base64"
     "encoding/hex"
@@ -34,4 +35,11 @@ func Sha256Base64String(s string, secret string) string {
     h.Write([]byte(s))
     buf := h.Sum(nil)
     return base64.StdEncoding.EncodeToString(buf)
+}
+
+// HmacSha1Hexadecimal 获取Hmac-sha1 Hexadecimal加密字符串
+func HmacSha1Hexadecimal(input, key string) string {
+    h := hmac.New(sha1.New, []byte(key))
+    h.Write([]byte(input))
+    return hex.EncodeToString(h.Sum(nil))
 }

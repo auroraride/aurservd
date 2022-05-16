@@ -9,9 +9,12 @@ import "github.com/spf13/cobra"
 
 func Execute() {
     rootCmd := &cobra.Command{
-        Use: "aurservd",
+        Use:   "aurservd",
         Short: "极光出行管理端控制台",
     }
-    rootCmd.AddCommand(managerCmd, serverCmd)
+    rootCmd.AddCommand(
+        managerCmd,
+        serverCommand(),
+    )
     _ = rootCmd.Execute()
 }

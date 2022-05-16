@@ -6,15 +6,27 @@
 package script
 
 import (
+    pvd "github.com/auroraride/aurservd/app/provider"
     "github.com/auroraride/aurservd/app/router"
     "github.com/spf13/cobra"
 )
 
-var serverCmd = &cobra.Command{
-    Use:   "server",
-    Short: "启动API服务",
-    Run: func(cmd *cobra.Command, args []string) {
-        // 启动服务器
-        router.Run()
-    },
+func serverCommand() *cobra.Command {
+    var (
+        provider bool
+    )
+
+    cmd := &cobra.Command{
+        Use:   "server",
+        Short: "启动API服务",
+        Run: func(cmd *cobra.Command, args []string) {
+            pvd.Run()
+            // 启动服务器
+            router.Run()
+        },
+    }
+
+    cmd.Flags().BoolVarP(&provider, "provider", "p", false, "启动电柜状态轮询")
+
+    return cmd
 }

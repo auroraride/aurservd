@@ -71,8 +71,10 @@ type config struct {
         }
     }
     ThirdParty struct {
-        Yunfuture struct {
-            Token string
+        Yundong struct {
+            Appid  string
+            Appkey string
+            Url    string
         }
     } `mapstructure:"third_party"`
     Logging struct {
