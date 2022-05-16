@@ -51,7 +51,7 @@ type LastModifier struct {
 func (LastModifier) Fields() []ent.Field {
     return []ent.Field{
         field.JSON("last_modifier", &model.Modifier{}).Optional().Comment("最后修改人"),
-        field.String("remark").Nillable().Optional().Comment("备注"),
+        field.String("remark").Optional().Comment("备注"),
     }
 }
 

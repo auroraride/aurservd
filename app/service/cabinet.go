@@ -104,9 +104,9 @@ func (s *cabinetService) Query(req *model.CabinetQueryReq) (res *model.Paginatio
     items := q.Pagination(req.PaginationReq).AllX(s.ctx)
     out := make([]model.CabinetItem, len(items))
     for i, item := range items {
+        _ = copier.Copy(&out[i], item)
         if item.Edges.Branch != nil {
             city := item.Edges.Branch.Edges.City
-            _ = copier.Copy(&out[i], item)
             out[i].City = model.City{
                 ID:   city.ID,
                 Name: city.Name,

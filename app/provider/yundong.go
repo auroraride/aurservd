@@ -186,15 +186,15 @@ func (p *yundong) UpdateStatus() {
                     }
                     errs := make([]string, 0)
                     bin := model.CabinetBin{
-                        Name:          fmt.Sprintf("%d号仓", index+1),
-                        BatterySN:     ds.BatterySN,
-                        Full:          e.IsBatteryFull(),
-                        Battery:       hasBattery,
-                        Electricity:   e,
-                        OpenStatus:    ds.Doorstatus == 1,
-                        DoorHealth:    ds.HealthStatus == 0,
-                        Current:       float64(ds.Chargei) / 1000,
-                        Voltage:       float64(ds.Totalv) / 1000,
+                        Name:        fmt.Sprintf("%d号仓", index+1),
+                        BatterySN:   ds.BatterySN,
+                        Full:        e.IsBatteryFull(),
+                        Battery:     hasBattery,
+                        Electricity: e,
+                        OpenStatus:  ds.Doorstatus == 1,
+                        DoorHealth:  ds.HealthStatus == 0,
+                        Current:     float64(ds.Chargei) / 1000,
+                        Voltage:     float64(ds.Totalv) / 1000,
                     }
                     if bin.Voltage == 0 && hasBattery {
                         errs = append(errs, "有电池无电压")
@@ -206,13 +206,17 @@ func (p *yundong) UpdateStatus() {
                         bins[index].Locked = item.Bin[index].Locked
                     }
                 }
-                up.SetHealth(uint(res.Data.Isonline)).SetBin(bins).SetBatteryNum(num).SetBin(bins)
+                up.SetHealth(uint(res.Data.Isonline)).
+                    SetBin(bins).
+                    SetBatteryNum(num).
+                    SetBin(bins).
+                    SetDoors(uint(len(doors)))
             } else {
                 // 未获取到电柜状态设置为离线
                 up.SetHealth(model.CabinetHealthStatusOffline)
             }
 
-            Save:
+        Save:
             // 存储电柜信息
             up.SaveX(context.Background())
 

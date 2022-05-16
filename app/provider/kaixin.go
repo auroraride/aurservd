@@ -44,15 +44,15 @@ func NewKaixin() *kaixin {
         user:   "AURORARIDE",
         logger: NewLogger("kaixin"),
         errors: map[string]string{
-            "1": "电池充电过慢",
-            "2": "电池充电过快",
-            "3": "220V 丢失/充电器损坏",
-            "4": "充电器状态错误",
-            "5": "电池未连接到充电器",
-            "6": "行程开关故障",
-            "7": "充电触点接触不良",
-            "8": "电池无法充满",
-            "9": "电池无法充电",
+            "1":  "电池充电过慢",
+            "2":  "电池充电过快",
+            "3":  "220V 丢失/充电器损坏",
+            "4":  "充电器状态错误",
+            "5":  "电池未连接到充电器",
+            "6":  "行程开关故障",
+            "7":  "充电触点接触不良",
+            "8":  "电池无法充满",
+            "9":  "电池无法充电",
             "10": "充电器通讯故障",
             "11": "行程开关接触不良",
             "12": "已取出，未解绑",
@@ -189,15 +189,15 @@ func (p *kaixin) UpdateStatus() {
                     }
                     errs := GetChargerErrors(ds.Bft)
                     bin := model.CabinetBin{
-                        Name:          fmt.Sprintf("%d号仓", index+1),
-                        BatterySN:     ds.Bcd,
-                        Full:          e.IsBatteryFull(),
-                        Battery:       hasBattery,
-                        Electricity:   e,
-                        OpenStatus:    ds.Dst == 1,
-                        DoorHealth:    ds.Dft == 1,
-                        Current:       ds.Bci,
-                        Voltage:       ds.Bcu,
+                        Name:        fmt.Sprintf("%d号仓", index+1),
+                        BatterySN:   ds.Bcd,
+                        Full:        e.IsBatteryFull(),
+                        Battery:     hasBattery,
+                        Electricity: e,
+                        OpenStatus:  ds.Dst == 1,
+                        DoorHealth:  ds.Dft == 1,
+                        Current:     ds.Bci,
+                        Voltage:     ds.Bcu,
                     }
                     if bin.Voltage == 0 && hasBattery {
                         errs = append(errs, "有电池无电压")
@@ -209,7 +209,10 @@ func (p *kaixin) UpdateStatus() {
                         bins[index].Locked = item.Bin[index].Locked
                     }
                 }
-                up.SetHealth(model.CabinetHealthStatusOnline).SetBatteryFullNum(full).SetBatteryNum(num).SetBin(bins)
+                up.SetHealth(model.CabinetHealthStatusOnline).
+                    SetBatteryFullNum(full).SetBatteryNum(num).
+                    SetBin(bins).
+                    SetDoors(uint(len(doors)))
             } else {
                 // 未获取到电柜状态设置为离线
                 up.SetHealth(model.CabinetHealthStatusOffline)

@@ -15,10 +15,10 @@ type Provider interface {
 }
 
 func Run(start bool) {
-    // yd := NewYundong()
-    kx := NewKaixin()
+    yd := NewYundong()
+    // kx := NewKaixin()
     if start {
-        StartCabinetProvider(kx)
+        StartCabinetProvider(yd)
     }
 }
 
