@@ -28,6 +28,7 @@ func StartCabinetProvider(providers ...Provider) {
         go func() {
             for {
                 provider.PrepareRequest()
+                // TODO 保存历史仓位信息(转换后的)
                 provider.UpdateStatus()
                 time.Sleep(1 * time.Minute)
             }
