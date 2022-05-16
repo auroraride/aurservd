@@ -17,9 +17,6 @@ import (
 
 var (
     Rider = new(rider)
-
-    // 登录debug
-    debugPhones = ar.Config.App.Debug.Phone
 )
 
 type rider struct {
@@ -30,6 +27,7 @@ func (*rider) Signin(c echo.Context) (err error) {
     ctx, req := app.ContextBinding[model.RiderSignupReq](c)
 
     // 校验短信
+    debugPhones := ar.Config.App.Debug.Phone
     if !debugPhones[req.Phone] && !service.NewSms().VerifyCode(req.SmsId, req.SmsCode) {
         return errors.New("短信验证码校验失败")
     }

@@ -6,13 +6,14 @@
 package boot
 
 import (
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/logger"
     "os"
     "time"
 )
 
-func init() {
+func Bootstrap() {
     // 设置全局时区
     tz := "Asia/Shanghai"
     _ = os.Setenv("TZ", tz)
@@ -34,4 +35,7 @@ func init() {
     // 加载数据库
     ar.OpenDatabase()
     ar.NewCache()
+
+    // 加载其他数据
+    model.BatteryElectricityBootstrap()
 }

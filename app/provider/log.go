@@ -42,14 +42,14 @@ func (l *Logger) Write(data any) {
         Response: data,
     })
     buffer.Write(b)
-    buffer.WriteString("\n\n")
+    buffer.WriteString("\n")
 
     // 写入日志文件
     l.mu.Lock()
     defer l.mu.Unlock()
 
     file, _ := os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
-    _, _ = file.Write(b)
+    _, _ = file.Write(buffer.Bytes())
     if err := file.Close(); err != nil {
         return
     }

@@ -49,7 +49,8 @@ func (s *cabinetService) CreateCabinet(modifier *model.Modifier, req *model.Cabi
         SetLastModifier(modifier).
         SetCreator(modifier).
         SetNillableRemark(req.Remark).
-        SetBrand(req.Brand.String())
+        SetBrand(req.Brand.String()).
+        SetHealth(model.CabinetHealthStatusOffline)
     if req.BranchID != nil {
         q.SetBranchID(*req.BranchID)
     }
@@ -103,11 +104,13 @@ func (s *cabinetService) Query(req *model.CabinetQueryReq) (res *model.Paginatio
     items := q.Pagination(req.PaginationReq).AllX(s.ctx)
     out := make([]model.CabinetItem, len(items))
     for i, item := range items {
-        city := item.Edges.Branch.Edges.City
-        _ = copier.Copy(&out[i], item)
-        out[i].City = model.City{
-            ID:   city.ID,
-            Name: city.Name,
+        if item.Edges.Branch != nil {
+            city := item.Edges.Branch.Edges.City
+            _ = copier.Copy(&out[i], item)
+            out[i].City = model.City{
+                ID:   city.ID,
+                Name: city.Name,
+            }
         }
     }
     res.Items = out

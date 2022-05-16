@@ -115,20 +115,24 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Cabinet",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			cabinet.FieldCreatedAt:    {Type: field.TypeTime, Column: cabinet.FieldCreatedAt},
-			cabinet.FieldUpdatedAt:    {Type: field.TypeTime, Column: cabinet.FieldUpdatedAt},
-			cabinet.FieldDeletedAt:    {Type: field.TypeTime, Column: cabinet.FieldDeletedAt},
-			cabinet.FieldCreator:      {Type: field.TypeJSON, Column: cabinet.FieldCreator},
-			cabinet.FieldLastModifier: {Type: field.TypeJSON, Column: cabinet.FieldLastModifier},
-			cabinet.FieldRemark:       {Type: field.TypeString, Column: cabinet.FieldRemark},
-			cabinet.FieldBranchID:     {Type: field.TypeUint64, Column: cabinet.FieldBranchID},
-			cabinet.FieldSn:           {Type: field.TypeString, Column: cabinet.FieldSn},
-			cabinet.FieldBrand:        {Type: field.TypeString, Column: cabinet.FieldBrand},
-			cabinet.FieldSerial:       {Type: field.TypeString, Column: cabinet.FieldSerial},
-			cabinet.FieldName:         {Type: field.TypeString, Column: cabinet.FieldName},
-			cabinet.FieldDoors:        {Type: field.TypeUint, Column: cabinet.FieldDoors},
-			cabinet.FieldStatus:       {Type: field.TypeUint, Column: cabinet.FieldStatus},
-			cabinet.FieldModels:       {Type: field.TypeJSON, Column: cabinet.FieldModels},
+			cabinet.FieldCreatedAt:      {Type: field.TypeTime, Column: cabinet.FieldCreatedAt},
+			cabinet.FieldUpdatedAt:      {Type: field.TypeTime, Column: cabinet.FieldUpdatedAt},
+			cabinet.FieldDeletedAt:      {Type: field.TypeTime, Column: cabinet.FieldDeletedAt},
+			cabinet.FieldCreator:        {Type: field.TypeJSON, Column: cabinet.FieldCreator},
+			cabinet.FieldLastModifier:   {Type: field.TypeJSON, Column: cabinet.FieldLastModifier},
+			cabinet.FieldRemark:         {Type: field.TypeString, Column: cabinet.FieldRemark},
+			cabinet.FieldBranchID:       {Type: field.TypeUint64, Column: cabinet.FieldBranchID},
+			cabinet.FieldSn:             {Type: field.TypeString, Column: cabinet.FieldSn},
+			cabinet.FieldBrand:          {Type: field.TypeString, Column: cabinet.FieldBrand},
+			cabinet.FieldSerial:         {Type: field.TypeString, Column: cabinet.FieldSerial},
+			cabinet.FieldName:           {Type: field.TypeString, Column: cabinet.FieldName},
+			cabinet.FieldDoors:          {Type: field.TypeUint, Column: cabinet.FieldDoors},
+			cabinet.FieldStatus:         {Type: field.TypeUint, Column: cabinet.FieldStatus},
+			cabinet.FieldModels:         {Type: field.TypeJSON, Column: cabinet.FieldModels},
+			cabinet.FieldHealth:         {Type: field.TypeUint, Column: cabinet.FieldHealth},
+			cabinet.FieldBin:            {Type: field.TypeJSON, Column: cabinet.FieldBin},
+			cabinet.FieldBatteryNum:     {Type: field.TypeUint, Column: cabinet.FieldBatteryNum},
+			cabinet.FieldBatteryFullNum: {Type: field.TypeUint, Column: cabinet.FieldBatteryFullNum},
 		},
 	}
 	graph.Nodes[4] = &sqlgraph.Node{
@@ -952,6 +956,26 @@ func (f *CabinetFilter) WhereStatus(p entql.UintP) {
 // WhereModels applies the entql json.RawMessage predicate on the models field.
 func (f *CabinetFilter) WhereModels(p entql.BytesP) {
 	f.Where(p.Field(cabinet.FieldModels))
+}
+
+// WhereHealth applies the entql uint predicate on the health field.
+func (f *CabinetFilter) WhereHealth(p entql.UintP) {
+	f.Where(p.Field(cabinet.FieldHealth))
+}
+
+// WhereBin applies the entql json.RawMessage predicate on the bin field.
+func (f *CabinetFilter) WhereBin(p entql.BytesP) {
+	f.Where(p.Field(cabinet.FieldBin))
+}
+
+// WhereBatteryNum applies the entql uint predicate on the battery_num field.
+func (f *CabinetFilter) WhereBatteryNum(p entql.UintP) {
+	f.Where(p.Field(cabinet.FieldBatteryNum))
+}
+
+// WhereBatteryFullNum applies the entql uint predicate on the battery_full_num field.
+func (f *CabinetFilter) WhereBatteryFullNum(p entql.UintP) {
+	f.Where(p.Field(cabinet.FieldBatteryFullNum))
 }
 
 // WhereHasBranch applies a predicate to check if query has an edge branch.

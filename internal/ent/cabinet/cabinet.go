@@ -39,6 +39,14 @@ const (
 	FieldStatus = "status"
 	// FieldModels holds the string denoting the models field in the database.
 	FieldModels = "models"
+	// FieldHealth holds the string denoting the health field in the database.
+	FieldHealth = "health"
+	// FieldBin holds the string denoting the bin field in the database.
+	FieldBin = "bin"
+	// FieldBatteryNum holds the string denoting the battery_num field in the database.
+	FieldBatteryNum = "battery_num"
+	// FieldBatteryFullNum holds the string denoting the battery_full_num field in the database.
+	FieldBatteryFullNum = "battery_full_num"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
 	EdgeBranch = "branch"
 	// EdgeBms holds the string denoting the bms edge name in mutations.
@@ -76,6 +84,10 @@ var Columns = []string{
 	FieldDoors,
 	FieldStatus,
 	FieldModels,
+	FieldHealth,
+	FieldBin,
+	FieldBatteryNum,
+	FieldBatteryFullNum,
 }
 
 var (
@@ -101,4 +113,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultBatteryNum holds the default value on creation for the "battery_num" field.
+	DefaultBatteryNum uint
+	// DefaultBatteryFullNum holds the default value on creation for the "battery_full_num" field.
+	DefaultBatteryFullNum uint
 )

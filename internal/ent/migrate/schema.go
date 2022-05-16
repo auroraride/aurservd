@@ -148,6 +148,10 @@ var (
 		{Name: "doors", Type: field.TypeUint},
 		{Name: "status", Type: field.TypeUint},
 		{Name: "models", Type: field.TypeJSON},
+		{Name: "health", Type: field.TypeUint},
+		{Name: "bin", Type: field.TypeJSON, Nullable: true},
+		{Name: "battery_num", Type: field.TypeUint, Default: 0},
+		{Name: "battery_full_num", Type: field.TypeUint, Default: 0},
 		{Name: "branch_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// CabinetTable holds the schema information for the "cabinet" table.
@@ -158,7 +162,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cabinet_branch_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[14]},
+				Columns:    []*schema.Column{CabinetColumns[18]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -172,7 +176,7 @@ var (
 			{
 				Name:    "cabinet_branch_id",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[14]},
+				Columns: []*schema.Column{CabinetColumns[18]},
 			},
 			{
 				Name:    "cabinet_brand",

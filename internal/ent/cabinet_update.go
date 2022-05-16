@@ -177,6 +177,73 @@ func (cu *CabinetUpdate) SetModels(mm []model.BatteryModel) *CabinetUpdate {
 	return cu
 }
 
+// SetHealth sets the "health" field.
+func (cu *CabinetUpdate) SetHealth(u uint) *CabinetUpdate {
+	cu.mutation.ResetHealth()
+	cu.mutation.SetHealth(u)
+	return cu
+}
+
+// AddHealth adds u to the "health" field.
+func (cu *CabinetUpdate) AddHealth(u int) *CabinetUpdate {
+	cu.mutation.AddHealth(u)
+	return cu
+}
+
+// SetBin sets the "bin" field.
+func (cu *CabinetUpdate) SetBin(mb []model.CabinetBin) *CabinetUpdate {
+	cu.mutation.SetBin(mb)
+	return cu
+}
+
+// ClearBin clears the value of the "bin" field.
+func (cu *CabinetUpdate) ClearBin() *CabinetUpdate {
+	cu.mutation.ClearBin()
+	return cu
+}
+
+// SetBatteryNum sets the "battery_num" field.
+func (cu *CabinetUpdate) SetBatteryNum(u uint) *CabinetUpdate {
+	cu.mutation.ResetBatteryNum()
+	cu.mutation.SetBatteryNum(u)
+	return cu
+}
+
+// SetNillableBatteryNum sets the "battery_num" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableBatteryNum(u *uint) *CabinetUpdate {
+	if u != nil {
+		cu.SetBatteryNum(*u)
+	}
+	return cu
+}
+
+// AddBatteryNum adds u to the "battery_num" field.
+func (cu *CabinetUpdate) AddBatteryNum(u int) *CabinetUpdate {
+	cu.mutation.AddBatteryNum(u)
+	return cu
+}
+
+// SetBatteryFullNum sets the "battery_full_num" field.
+func (cu *CabinetUpdate) SetBatteryFullNum(u uint) *CabinetUpdate {
+	cu.mutation.ResetBatteryFullNum()
+	cu.mutation.SetBatteryFullNum(u)
+	return cu
+}
+
+// SetNillableBatteryFullNum sets the "battery_full_num" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableBatteryFullNum(u *uint) *CabinetUpdate {
+	if u != nil {
+		cu.SetBatteryFullNum(*u)
+	}
+	return cu
+}
+
+// AddBatteryFullNum adds u to the "battery_full_num" field.
+func (cu *CabinetUpdate) AddBatteryFullNum(u int) *CabinetUpdate {
+	cu.mutation.AddBatteryFullNum(u)
+	return cu
+}
+
 // SetBranch sets the "branch" edge to the Branch entity.
 func (cu *CabinetUpdate) SetBranch(b *Branch) *CabinetUpdate {
 	return cu.SetBranchID(b.ID)
@@ -432,6 +499,61 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: cabinet.FieldModels,
 		})
 	}
+	if value, ok := cu.mutation.Health(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint,
+			Value:  value,
+			Column: cabinet.FieldHealth,
+		})
+	}
+	if value, ok := cu.mutation.AddedHealth(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint,
+			Value:  value,
+			Column: cabinet.FieldHealth,
+		})
+	}
+	if value, ok := cu.mutation.Bin(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: cabinet.FieldBin,
+		})
+	}
+	if cu.mutation.BinCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: cabinet.FieldBin,
+		})
+	}
+	if value, ok := cu.mutation.BatteryNum(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint,
+			Value:  value,
+			Column: cabinet.FieldBatteryNum,
+		})
+	}
+	if value, ok := cu.mutation.AddedBatteryNum(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint,
+			Value:  value,
+			Column: cabinet.FieldBatteryNum,
+		})
+	}
+	if value, ok := cu.mutation.BatteryFullNum(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint,
+			Value:  value,
+			Column: cabinet.FieldBatteryFullNum,
+		})
+	}
+	if value, ok := cu.mutation.AddedBatteryFullNum(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint,
+			Value:  value,
+			Column: cabinet.FieldBatteryFullNum,
+		})
+	}
 	if cu.mutation.BranchCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -683,6 +805,73 @@ func (cuo *CabinetUpdateOne) AddStatus(u int) *CabinetUpdateOne {
 // SetModels sets the "models" field.
 func (cuo *CabinetUpdateOne) SetModels(mm []model.BatteryModel) *CabinetUpdateOne {
 	cuo.mutation.SetModels(mm)
+	return cuo
+}
+
+// SetHealth sets the "health" field.
+func (cuo *CabinetUpdateOne) SetHealth(u uint) *CabinetUpdateOne {
+	cuo.mutation.ResetHealth()
+	cuo.mutation.SetHealth(u)
+	return cuo
+}
+
+// AddHealth adds u to the "health" field.
+func (cuo *CabinetUpdateOne) AddHealth(u int) *CabinetUpdateOne {
+	cuo.mutation.AddHealth(u)
+	return cuo
+}
+
+// SetBin sets the "bin" field.
+func (cuo *CabinetUpdateOne) SetBin(mb []model.CabinetBin) *CabinetUpdateOne {
+	cuo.mutation.SetBin(mb)
+	return cuo
+}
+
+// ClearBin clears the value of the "bin" field.
+func (cuo *CabinetUpdateOne) ClearBin() *CabinetUpdateOne {
+	cuo.mutation.ClearBin()
+	return cuo
+}
+
+// SetBatteryNum sets the "battery_num" field.
+func (cuo *CabinetUpdateOne) SetBatteryNum(u uint) *CabinetUpdateOne {
+	cuo.mutation.ResetBatteryNum()
+	cuo.mutation.SetBatteryNum(u)
+	return cuo
+}
+
+// SetNillableBatteryNum sets the "battery_num" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableBatteryNum(u *uint) *CabinetUpdateOne {
+	if u != nil {
+		cuo.SetBatteryNum(*u)
+	}
+	return cuo
+}
+
+// AddBatteryNum adds u to the "battery_num" field.
+func (cuo *CabinetUpdateOne) AddBatteryNum(u int) *CabinetUpdateOne {
+	cuo.mutation.AddBatteryNum(u)
+	return cuo
+}
+
+// SetBatteryFullNum sets the "battery_full_num" field.
+func (cuo *CabinetUpdateOne) SetBatteryFullNum(u uint) *CabinetUpdateOne {
+	cuo.mutation.ResetBatteryFullNum()
+	cuo.mutation.SetBatteryFullNum(u)
+	return cuo
+}
+
+// SetNillableBatteryFullNum sets the "battery_full_num" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableBatteryFullNum(u *uint) *CabinetUpdateOne {
+	if u != nil {
+		cuo.SetBatteryFullNum(*u)
+	}
+	return cuo
+}
+
+// AddBatteryFullNum adds u to the "battery_full_num" field.
+func (cuo *CabinetUpdateOne) AddBatteryFullNum(u int) *CabinetUpdateOne {
+	cuo.mutation.AddBatteryFullNum(u)
 	return cuo
 }
 
@@ -963,6 +1152,61 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 			Type:   field.TypeJSON,
 			Value:  value,
 			Column: cabinet.FieldModels,
+		})
+	}
+	if value, ok := cuo.mutation.Health(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint,
+			Value:  value,
+			Column: cabinet.FieldHealth,
+		})
+	}
+	if value, ok := cuo.mutation.AddedHealth(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint,
+			Value:  value,
+			Column: cabinet.FieldHealth,
+		})
+	}
+	if value, ok := cuo.mutation.Bin(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: cabinet.FieldBin,
+		})
+	}
+	if cuo.mutation.BinCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: cabinet.FieldBin,
+		})
+	}
+	if value, ok := cuo.mutation.BatteryNum(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint,
+			Value:  value,
+			Column: cabinet.FieldBatteryNum,
+		})
+	}
+	if value, ok := cuo.mutation.AddedBatteryNum(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint,
+			Value:  value,
+			Column: cabinet.FieldBatteryNum,
+		})
+	}
+	if value, ok := cuo.mutation.BatteryFullNum(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint,
+			Value:  value,
+			Column: cabinet.FieldBatteryFullNum,
+		})
+	}
+	if value, ok := cuo.mutation.AddedBatteryFullNum(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint,
+			Value:  value,
+			Column: cabinet.FieldBatteryFullNum,
 		})
 	}
 	if cuo.mutation.BranchCleared() {

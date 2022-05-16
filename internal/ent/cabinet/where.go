@@ -170,6 +170,27 @@ func Status(v uint) predicate.Cabinet {
 	})
 }
 
+// Health applies equality check predicate on the "health" field. It's identical to HealthEQ.
+func Health(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldHealth), v))
+	})
+}
+
+// BatteryNum applies equality check predicate on the "battery_num" field. It's identical to BatteryNumEQ.
+func BatteryNum(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBatteryNum), v))
+	})
+}
+
+// BatteryFullNum applies equality check predicate on the "battery_full_num" field. It's identical to BatteryFullNumEQ.
+func BatteryFullNum(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBatteryFullNum), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
@@ -1220,6 +1241,248 @@ func StatusLT(v uint) predicate.Cabinet {
 func StatusLTE(v uint) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldStatus), v))
+	})
+}
+
+// HealthEQ applies the EQ predicate on the "health" field.
+func HealthEQ(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldHealth), v))
+	})
+}
+
+// HealthNEQ applies the NEQ predicate on the "health" field.
+func HealthNEQ(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldHealth), v))
+	})
+}
+
+// HealthIn applies the In predicate on the "health" field.
+func HealthIn(vs ...uint) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldHealth), v...))
+	})
+}
+
+// HealthNotIn applies the NotIn predicate on the "health" field.
+func HealthNotIn(vs ...uint) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldHealth), v...))
+	})
+}
+
+// HealthGT applies the GT predicate on the "health" field.
+func HealthGT(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldHealth), v))
+	})
+}
+
+// HealthGTE applies the GTE predicate on the "health" field.
+func HealthGTE(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldHealth), v))
+	})
+}
+
+// HealthLT applies the LT predicate on the "health" field.
+func HealthLT(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldHealth), v))
+	})
+}
+
+// HealthLTE applies the LTE predicate on the "health" field.
+func HealthLTE(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldHealth), v))
+	})
+}
+
+// BinIsNil applies the IsNil predicate on the "bin" field.
+func BinIsNil() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldBin)))
+	})
+}
+
+// BinNotNil applies the NotNil predicate on the "bin" field.
+func BinNotNil() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldBin)))
+	})
+}
+
+// BatteryNumEQ applies the EQ predicate on the "battery_num" field.
+func BatteryNumEQ(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBatteryNum), v))
+	})
+}
+
+// BatteryNumNEQ applies the NEQ predicate on the "battery_num" field.
+func BatteryNumNEQ(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldBatteryNum), v))
+	})
+}
+
+// BatteryNumIn applies the In predicate on the "battery_num" field.
+func BatteryNumIn(vs ...uint) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldBatteryNum), v...))
+	})
+}
+
+// BatteryNumNotIn applies the NotIn predicate on the "battery_num" field.
+func BatteryNumNotIn(vs ...uint) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldBatteryNum), v...))
+	})
+}
+
+// BatteryNumGT applies the GT predicate on the "battery_num" field.
+func BatteryNumGT(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldBatteryNum), v))
+	})
+}
+
+// BatteryNumGTE applies the GTE predicate on the "battery_num" field.
+func BatteryNumGTE(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldBatteryNum), v))
+	})
+}
+
+// BatteryNumLT applies the LT predicate on the "battery_num" field.
+func BatteryNumLT(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldBatteryNum), v))
+	})
+}
+
+// BatteryNumLTE applies the LTE predicate on the "battery_num" field.
+func BatteryNumLTE(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldBatteryNum), v))
+	})
+}
+
+// BatteryFullNumEQ applies the EQ predicate on the "battery_full_num" field.
+func BatteryFullNumEQ(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBatteryFullNum), v))
+	})
+}
+
+// BatteryFullNumNEQ applies the NEQ predicate on the "battery_full_num" field.
+func BatteryFullNumNEQ(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldBatteryFullNum), v))
+	})
+}
+
+// BatteryFullNumIn applies the In predicate on the "battery_full_num" field.
+func BatteryFullNumIn(vs ...uint) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldBatteryFullNum), v...))
+	})
+}
+
+// BatteryFullNumNotIn applies the NotIn predicate on the "battery_full_num" field.
+func BatteryFullNumNotIn(vs ...uint) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldBatteryFullNum), v...))
+	})
+}
+
+// BatteryFullNumGT applies the GT predicate on the "battery_full_num" field.
+func BatteryFullNumGT(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldBatteryFullNum), v))
+	})
+}
+
+// BatteryFullNumGTE applies the GTE predicate on the "battery_full_num" field.
+func BatteryFullNumGTE(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldBatteryFullNum), v))
+	})
+}
+
+// BatteryFullNumLT applies the LT predicate on the "battery_full_num" field.
+func BatteryFullNumLT(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldBatteryFullNum), v))
+	})
+}
+
+// BatteryFullNumLTE applies the LTE predicate on the "battery_full_num" field.
+func BatteryFullNumLTE(v uint) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldBatteryFullNum), v))
 	})
 }
 

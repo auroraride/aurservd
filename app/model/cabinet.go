@@ -5,7 +5,9 @@
 
 package model
 
-import "time"
+import (
+    "time"
+)
 
 // CabinetBrand 电柜品牌
 type CabinetBrand string
@@ -26,6 +28,13 @@ const (
     CabinetStatusPending     CabinetStatus = iota // 未投放
     CabinetStatusOK                               // 运营中
     CabinetStatusMaintenance                      // 维护中
+)
+
+// 设备健康状态
+const (
+    CabinetHealthStatusOffline uint = iota // 离线
+    CabinetHealthStatusOnline              // 在线
+    CabinetHealthStatusFault               // 故障
 )
 
 // Cabinet 电柜基础属性
@@ -87,16 +96,16 @@ type CabinetDeleteReq struct {
 // CabinetBin 仓位详细信息
 // TODO: (锁定状态 / 备注信息) 需要携带到下次的状态更新中
 type CabinetBin struct {
-    Name          string  `json:"name"`          // 柜门名称
-    SN            string  `json:"sn"`            // 序列号
-    Locked        bool    `json:"locked"`        // 是否锁定
-    Full          bool    `json:"full"`          // 是否满电
-    Status        bool    `json:"status"`        // 是否有电池
-    Electricity   float64 `json:"electricity"`   // 当前电量
-    OpenStatus    uint    `json:"openStatus"`    // 开门状态 0关闭 1开启
-    DoorHealth    uint    `json:"doorHealth"`    // 柜门状态 0正常 1故障
-    Current       float64 `json:"current"`       // 充电电流(A) 1000mA = 1A
-    Voltage       float64 `json:"voltage"`       // 电压(V) 1000mV = 1V
-    ChargerStatus uint    `json:"chargerStatus"` // 充电器状态 0:正常 1:电池充电过慢 2:电池充电过快 3:220V 丢失/充电器损坏 4:充电器状态错误 5:电池未连接到充电器 6:行程开关故障 7:充电触点接触不良 8:电池无法充满 9:电池无法充电 10:充电器通讯故障 11:行程开关接触不良 12:已取出，未解绑
-    Remark        string  `json:"remark"`        // 备注
+    Name          string             `json:"name"`          // 柜门名称
+    BatterySN     string             `json:"batterySN"`     // 电池序列号
+    Locked        bool               `json:"locked"`        // 是否锁定
+    Full          bool               `json:"full"`          // 是否满电
+    Battery       bool               `json:"battery"`       // 是否有电池
+    Electricity   BatteryElectricity `json:"electricity"`   // 当前电量
+    OpenStatus    bool               `json:"openStatus"`    // 是否开门
+    DoorHealth    bool               `json:"doorHealth"`    // 柜门是否正常
+    Current       float64            `json:"current"`       // 充电电流(A) 1000mA = 1A
+    Voltage       float64            `json:"voltage"`       // 电压(V) 1000mV = 1V
+    ChargerErrors []string           `json:"chargerErrors"` // 充电器状态 空数组代表正常,非空数组为故障信息
+    Remark        string             `json:"remark"`        // 备注
 }

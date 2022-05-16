@@ -53,11 +53,23 @@ type Cabinet struct {
 	// 柜门数量
 	Doors uint `json:"doors,omitempty"`
 	// Status holds the value of the "status" field.
-	// 状态
+	// 投放状态
 	Status uint `json:"status,omitempty"`
 	// Models holds the value of the "models" field.
 	// 电池型号
 	Models []model.BatteryModel `json:"models,omitempty"`
+	// Health holds the value of the "health" field.
+	// 健康状态 0未知 1正常 2离线 3故障
+	Health uint `json:"health,omitempty"`
+	// Bin holds the value of the "bin" field.
+	// 仓位信息
+	Bin []model.CabinetBin `json:"bin,omitempty"`
+	// BatteryNum holds the value of the "battery_num" field.
+	// 电池总数
+	BatteryNum uint `json:"battery_num,omitempty"`
+	// BatteryFullNum holds the value of the "battery_full_num" field.
+	// 满电电池数
+	BatteryFullNum uint `json:"battery_full_num,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CabinetQuery when eager-loading is set.
 	Edges CabinetEdges `json:"edges"`
@@ -102,9 +114,9 @@ func (*Cabinet) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case cabinet.FieldCreator, cabinet.FieldLastModifier, cabinet.FieldModels:
+		case cabinet.FieldCreator, cabinet.FieldLastModifier, cabinet.FieldModels, cabinet.FieldBin:
 			values[i] = new([]byte)
-		case cabinet.FieldID, cabinet.FieldBranchID, cabinet.FieldDoors, cabinet.FieldStatus:
+		case cabinet.FieldID, cabinet.FieldBranchID, cabinet.FieldDoors, cabinet.FieldStatus, cabinet.FieldHealth, cabinet.FieldBatteryNum, cabinet.FieldBatteryFullNum:
 			values[i] = new(sql.NullInt64)
 		case cabinet.FieldRemark, cabinet.FieldSn, cabinet.FieldBrand, cabinet.FieldSerial, cabinet.FieldName:
 			values[i] = new(sql.NullString)
@@ -223,6 +235,32 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 					return fmt.Errorf("unmarshal field models: %w", err)
 				}
 			}
+		case cabinet.FieldHealth:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field health", values[i])
+			} else if value.Valid {
+				c.Health = uint(value.Int64)
+			}
+		case cabinet.FieldBin:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field bin", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &c.Bin); err != nil {
+					return fmt.Errorf("unmarshal field bin: %w", err)
+				}
+			}
+		case cabinet.FieldBatteryNum:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field battery_num", values[i])
+			} else if value.Valid {
+				c.BatteryNum = uint(value.Int64)
+			}
+		case cabinet.FieldBatteryFullNum:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field battery_full_num", values[i])
+			} else if value.Valid {
+				c.BatteryFullNum = uint(value.Int64)
+			}
 		}
 	}
 	return nil
@@ -293,6 +331,14 @@ func (c *Cabinet) String() string {
 	builder.WriteString(fmt.Sprintf("%v", c.Status))
 	builder.WriteString(", models=")
 	builder.WriteString(fmt.Sprintf("%v", c.Models))
+	builder.WriteString(", health=")
+	builder.WriteString(fmt.Sprintf("%v", c.Health))
+	builder.WriteString(", bin=")
+	builder.WriteString(fmt.Sprintf("%v", c.Bin))
+	builder.WriteString(", battery_num=")
+	builder.WriteString(fmt.Sprintf("%v", c.BatteryNum))
+	builder.WriteString(", battery_full_num=")
+	builder.WriteString(fmt.Sprintf("%v", c.BatteryFullNum))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -5,7 +5,9 @@
 
 package provider
 
-import "time"
+import (
+    "time"
+)
 
 type Provider interface {
     PrepareRequest()
@@ -13,9 +15,10 @@ type Provider interface {
 }
 
 func Run(start bool) {
-    Yundong = NewYundong()
+    // yd := NewYundong()
+    kx := NewKaixin()
     if start {
-        StartCabinetProvider(Yundong)
+        StartCabinetProvider(kx)
     }
 }
 

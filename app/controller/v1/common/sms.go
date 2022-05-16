@@ -14,11 +14,6 @@ import (
     "github.com/labstack/echo/v4"
 )
 
-var (
-    // debug
-    debugPhones = ar.Config.App.Debug.Phone
-)
-
 // SendSmsCode
 // @ID           SendSmsCode
 // @Router       /commom/sms [POST]
@@ -35,6 +30,7 @@ func SendSmsCode(c echo.Context) error {
     id := ctx.Request().Header.Get(app.HeaderCaptchaID)
     var smsId string
     var err error
+    debugPhones := ar.Config.App.Debug.Phone
     if debugPhones[req.Phone] {
         if !debugPhones[req.Phone] && !service.NewCaptcha().Verify(id, req.CaptchaCode, false) {
             return errors.New("图形验证码校验失败")

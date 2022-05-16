@@ -76,6 +76,10 @@ type config struct {
             Appkey string
             Url    string
         }
+        Kaixin struct {
+            Url string
+            Key string
+        }
     } `mapstructure:"third_party"`
     Logging struct {
         Color bool   // 是否启用日志颜色
