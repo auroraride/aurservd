@@ -14,6 +14,7 @@ import (
     "github.com/go-resty/resty/v2"
     log "github.com/sirupsen/logrus"
     "strconv"
+    "sync"
     "time"
 )
 
@@ -80,6 +81,7 @@ func (p *yundong) FetchToken(tokenRequest bool) (token string) {
             }
         } else {
             token = res.Token
+            ar.Cache.Set(context.Background(), yundongTokenKey, token, time.Duration(int64(res.Expirets)-time.Now().Unix())*time.Second)
         }
     }
     return
@@ -134,14 +136,24 @@ func (r YDStatusRes) String() string {
 }
 
 func (p *yundong) UpdateStatus() {
-    res := new(YDStatusRes)
-    _, err := p.RequestClient(false).
-        SetResult(res).
-        Get(p.GetUrl(yundongStatusUrl))
-    if err != nil || res.Code != 0 {
-        log.Errorf("云动状态获取失败, err: %s, res: %s", err, res)
-        return
+    var wg sync.WaitGroup
+    wg.Add(len(p.items))
+    logs := make([]*YDStatusRes, len(p.items))
+    for i, item := range p.items {
+        res := new(YDStatusRes)
+        _, err := p.RequestClient(false).
+            SetResult(res).
+            Get(p.GetUrl(yundongStatusUrl))
+        if err != nil || res.Code != 0 {
+            log.Errorf("云动状态获取失败, serial: %s, err: %s, res: %s", item.Serial, err, res)
+            continue
+        }
+        logs[i] = res
+        // 更新电柜信息
     }
-    // 更新电柜状态
-    p.logger.Write(res)
+
+    wg.Wait()
+
+    // 存储电柜日志
+    p.logger.Write(logs)
 }

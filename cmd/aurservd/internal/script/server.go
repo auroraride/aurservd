@@ -20,7 +20,7 @@ func serverCommand() *cobra.Command {
         Use:   "server",
         Short: "启动API服务",
         Run: func(cmd *cobra.Command, args []string) {
-            pvd.Run()
+            pvd.Run(provider)
             // 启动服务器
             router.Run()
         },

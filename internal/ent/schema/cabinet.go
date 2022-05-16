@@ -33,7 +33,7 @@ func (Cabinet) Fields() []ent.Field {
         field.String("serial").Comment("原始编号"),
         field.String("name").Comment("名称"),
         field.Uint("doors").Comment("柜门数量"),
-        field.Uint("status").Comment("状态"),
+        field.Uint("status").Comment("投放状态"),
         field.JSON("models", []model.BatteryModel{}).Comment("电池型号"),
     }
 }

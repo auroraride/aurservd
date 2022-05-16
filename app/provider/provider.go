@@ -5,30 +5,28 @@
 
 package provider
 
-import (
-    "time"
-)
+import "time"
 
 type Provider interface {
     PrepareRequest()
     UpdateStatus()
 }
 
-func Run() {
+func Run(start bool) {
     Yundong = NewYundong()
+    if start {
+        StartCabinetProvider(Yundong)
+    }
 }
 
 func StartCabinetProvider(providers ...Provider) {
     for _, p := range providers {
         provider := p
-        ticker := time.NewTicker(time.Minute * 1)
         go func() {
             for {
-                select {
-                case <-ticker.C:
-                    provider.PrepareRequest()
-                    provider.UpdateStatus()
-                }
+                provider.PrepareRequest()
+                provider.UpdateStatus()
+                time.Sleep(1 * time.Minute)
             }
         }()
     }
