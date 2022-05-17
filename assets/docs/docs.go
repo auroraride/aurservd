@@ -521,6 +521,43 @@ const docTemplate = `{
             }
         },
         "/manager/v1/cabinet/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M5005 获取电柜详细信息",
+                "operationId": "CabinetDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜平台编码",
+                        "name": "sn",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.CabinetDetailRes"
+                        }
+                    }
+                }
+            },
             "put": {
                 "consumes": [
                     "application/json"
@@ -999,6 +1036,58 @@ const docTemplate = `{
                 }
             }
         },
+        "model.CabinetBin": {
+            "type": "object",
+            "properties": {
+                "battery": {
+                    "description": "是否有电池",
+                    "type": "boolean"
+                },
+                "batterySN": {
+                    "description": "电池序列号",
+                    "type": "string"
+                },
+                "chargerErrors": {
+                    "description": "故障信息",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "current": {
+                    "description": "充电电流(A)",
+                    "type": "number"
+                },
+                "doorHealth": {
+                    "description": "是否锁仓 (柜门是否正常)",
+                    "type": "boolean"
+                },
+                "electricity": {
+                    "description": "当前电量",
+                    "type": "number"
+                },
+                "full": {
+                    "description": "是否满电",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "柜门名称",
+                    "type": "string"
+                },
+                "openStatus": {
+                    "description": "是否开门",
+                    "type": "boolean"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "voltage": {
+                    "description": "电压(V)",
+                    "type": "number"
+                }
+            }
+        },
         "model.CabinetCreateReq": {
             "type": "object",
             "required": [
@@ -1042,6 +1131,84 @@ const docTemplate = `{
                 },
                 "serial": {
                     "description": "电柜原始编码 ",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "电柜状态 0未投放 1运营中 2维护中",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
+        "model.CabinetDetailRes": {
+            "type": "object",
+            "required": [
+                "brand",
+                "doors",
+                "name",
+                "serial"
+            ],
+            "properties": {
+                "bins": {
+                    "description": "仓位信息",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CabinetBin"
+                    }
+                },
+                "branchId": {
+                    "description": "网点",
+                    "type": "integer"
+                },
+                "brand": {
+                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
+                    "type": "string",
+                    "enum": [
+                        "KAIXIN",
+                        "YUNDONG"
+                    ]
+                },
+                "city": {
+                    "description": "城市",
+                    "$ref": "#/definitions/model.City"
+                },
+                "createdAt": {
+                    "description": "创建时间",
+                    "type": "string"
+                },
+                "doors": {
+                    "description": "柜门数量 ",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "models": {
+                    "description": "电池型号",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BatteryModel"
+                    }
+                },
+                "name": {
+                    "description": "电柜名称 ",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注 ",
+                    "type": "string"
+                },
+                "serial": {
+                    "description": "电柜原始编码 ",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "平台编码",
                     "type": "string"
                 },
                 "status": {

@@ -143,6 +143,44 @@ definitions:
       name:
         type: string
     type: object
+  model.CabinetBin:
+    properties:
+      battery:
+        description: 是否有电池
+        type: boolean
+      batterySN:
+        description: 电池序列号
+        type: string
+      chargerErrors:
+        description: 故障信息
+        items:
+          type: string
+        type: array
+      current:
+        description: 充电电流(A)
+        type: number
+      doorHealth:
+        description: 是否锁仓 (柜门是否正常)
+        type: boolean
+      electricity:
+        description: 当前电量
+        type: number
+      full:
+        description: 是否满电
+        type: boolean
+      name:
+        description: 柜门名称
+        type: string
+      openStatus:
+        description: 是否开门
+        type: boolean
+      remark:
+        description: 备注
+        type: string
+      voltage:
+        description: 电压(V)
+        type: number
+    type: object
   model.CabinetCreateReq:
     properties:
       branchId:
@@ -182,6 +220,64 @@ definitions:
     - brand
     - doors
     - models
+    - name
+    - serial
+    type: object
+  model.CabinetDetailRes:
+    properties:
+      bins:
+        description: 仓位信息
+        items:
+          $ref: '#/definitions/model.CabinetBin'
+        type: array
+      branchId:
+        description: 网点
+        type: integer
+      brand:
+        description: 品牌 KAIXIN(凯信) YUNDONG(云动)
+        enum:
+        - KAIXIN
+        - YUNDONG
+        type: string
+      city:
+        $ref: '#/definitions/model.City'
+        description: 城市
+      createdAt:
+        description: 创建时间
+        type: string
+      doors:
+        description: '柜门数量 '
+        type: integer
+      id:
+        description: 电柜ID
+        type: integer
+      models:
+        description: 电池型号
+        items:
+          $ref: '#/definitions/model.BatteryModel'
+        type: array
+      name:
+        description: '电柜名称 '
+        type: string
+      remark:
+        description: '备注 '
+        type: string
+      serial:
+        description: '电柜原始编码 '
+        type: string
+      sn:
+        description: 平台编码
+        type: string
+      status:
+        description: 电柜状态 0未投放 1运营中 2维护中
+        enum:
+        - 0
+        - 1
+        - 2
+        type: integer
+    required:
+    - brand
+    - doors
     - name
     - serial
     type: object
@@ -791,6 +887,31 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M5004 删除电柜
+      tags:
+      - '[M]管理接口'
+    get:
+      consumes:
+      - application/json
+      operationId: CabinetDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 电柜平台编码
+        in: path
+        name: sn
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.CabinetDetailRes'
+      summary: M5005 获取电柜详细信息
       tags:
       - '[M]管理接口'
     put:

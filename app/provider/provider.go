@@ -72,7 +72,7 @@ func StartCabinetProvider(providers ...Provider) {
                         ca := up.SaveX(context.Background())
 
                         go func() {
-                            lg := GenerateSlsLogGroup(times, ca)
+                            lg := GenerateSlsLogGroup(ca)
                             if lg != nil {
                                 err = ali.NewSls().PutLogs(slsCfg.Project, slsCfg.Cabinet, lg)
                                 if err != nil {

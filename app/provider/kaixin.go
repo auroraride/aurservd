@@ -171,7 +171,7 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
         var full uint = 0
         var num uint = 0
         for index, ds := range doors {
-            e := model.NewBatteryElectricity(ds.Cpg)
+            e := model.NewBatteryElectricity(utils.NewNumber().Decimal(ds.Cpg))
             hasBattery := ds.Bex == 2
             if hasBattery {
                 num += 1
@@ -188,8 +188,8 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
                 Electricity: e,
                 OpenStatus:  ds.Dst == 1,
                 DoorHealth:  ds.Dft == 1,
-                Current:     ds.Bci,
-                Voltage:     ds.Bcu,
+                Current:     utils.NewNumber().Decimal(ds.Bci),
+                Voltage:     utils.NewNumber().Decimal(ds.Bcu),
             }
             if bin.Voltage == 0 && hasBattery {
                 errs = append(errs, "有电池无电压")
@@ -198,7 +198,6 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
             bins[index] = bin
             if len(item.Bin) > index {
                 bins[index].Remark = item.Bin[index].Remark
-                bins[index].Locked = item.Bin[index].Locked
             }
         }
         up.SetBatteryFullNum(full).

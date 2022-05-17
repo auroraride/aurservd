@@ -74,3 +74,8 @@ type ItemRes struct {
 type IDRes struct {
     ID uint64 `json:"id"`
 }
+
+// IDParamReq id param 请求
+type IDParamReq struct {
+    ID uint64 `json:"id" param:"id"`
+}

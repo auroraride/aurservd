@@ -181,7 +181,7 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
         bins := make([]model.CabinetBin, len(res.Data.Doorstatus))
         doors := res.GetBins()
         for index, ds := range doors {
-            e := model.NewBatteryElectricity(ds.Soc)
+            e := model.NewBatteryElectricity(utils.NewNumber().Decimal(ds.Soc))
             hasBattery := ds.Putbattery == 1
             if hasBattery {
                 num += 1
@@ -195,8 +195,8 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
                 Electricity: e,
                 OpenStatus:  ds.Doorstatus == 1,
                 DoorHealth:  ds.HealthStatus == 0,
-                Current:     float64(ds.Chargei) / 1000,
-                Voltage:     float64(ds.Totalv) / 1000,
+                Current:     utils.NewNumber().Decimal(float64(ds.Chargei) / 1000),
+                Voltage:     utils.NewNumber().Decimal(float64(ds.Totalv) / 1000),
             }
             if bin.Full {
                 full += 1
@@ -208,7 +208,6 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
             bins[index] = bin
             if len(item.Bin) > index {
                 bins[index].Remark = item.Bin[index].Remark
-                bins[index].Locked = item.Bin[index].Locked
             }
         }
         up.SetBin(bins).

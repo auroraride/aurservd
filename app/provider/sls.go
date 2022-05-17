@@ -18,11 +18,9 @@ import (
 )
 
 type CabinetLog struct {
-    Times       int                      `sls:"轮次"`
     Serial      string                   `sls:"编码"`
     Name        string                   `sls:"仓位"`
     BatterySN   string                   `sls:"电池序列号"`
-    Locked      bool                     `sls:"是否锁定"`
     Full        bool                     `sls:"是否满电"`
     Battery     bool                     `sls:"是否有电池"`
     Electricity model.BatteryElectricity `sls:"当前电量"`
@@ -60,7 +58,7 @@ func parseLogContent(c *CabinetLog) (contents []*sls.LogContent) {
     return
 }
 
-func GenerateSlsLogGroup(times int, cabinet *ent.Cabinet) (lg *sls.LogGroup) {
+func GenerateSlsLogGroup(cabinet *ent.Cabinet) (lg *sls.LogGroup) {
     t := tea.Uint32(uint32(time.Now().Unix()))
     lg = &sls.LogGroup{
         Source: tea.String(cabinet.Serial),
@@ -70,7 +68,6 @@ func GenerateSlsLogGroup(times int, cabinet *ent.Cabinet) (lg *sls.LogGroup) {
     for i, bin := range cabinet.Bin {
         c := new(CabinetLog)
         _ = copier.Copy(c, bin)
-        c.Times = times
         c.Serial = cabinet.Serial
         c.Errors = strings.Join(bin.ChargerErrors, ",")
         logs[i] = &sls.Log{

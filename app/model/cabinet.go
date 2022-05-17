@@ -69,9 +69,9 @@ type CabinetItem struct {
     ID uint64 `json:"id"` // 电柜ID
     Sn string `json:"sn"` // 平台编码
     Cabinet
-    Models    []BatteryModel `json:"models"`    // 电池型号
-    City      City           `json:"city"`      // 城市
-    CreatedAt time.Time      `json:"createdAt"` // 创建时间
+    Models    []BatteryModel `json:"models"`         // 电池型号
+    City      *City          `json:"city,omitempty"` // 城市
+    CreatedAt time.Time      `json:"createdAt"`      // 创建时间
 }
 
 // CabinetQueryReq 电柜查询请求
@@ -106,18 +106,28 @@ type CabinetDeleteReq struct {
 // CabinetBin 仓位详细信息
 // 1000mA = 1A
 // 1000mV = 1V
-// TODO: (锁定状态 / 备注信息) 需要携带到下次的状态更新中
+// (锁定状态 / 备注信息) 需要携带到下次的状态更新中
 type CabinetBin struct {
     Name          string             `json:"name"`          // 柜门名称
     BatterySN     string             `json:"batterySN"`     // 电池序列号
-    Locked        bool               `json:"locked"`        // 是否锁定
     Full          bool               `json:"full"`          // 是否满电
     Battery       bool               `json:"battery"`       // 是否有电池
     Electricity   BatteryElectricity `json:"electricity"`   // 当前电量
     OpenStatus    bool               `json:"openStatus"`    // 是否开门
-    DoorHealth    bool               `json:"doorHealth"`    // 柜门是否正常
+    DoorHealth    bool               `json:"doorHealth"`    // 是否锁仓 (柜门是否正常)
     Current       float64            `json:"current"`       // 充电电流(A)
     Voltage       float64            `json:"voltage"`       // 电压(V)
     ChargerErrors []string           `json:"chargerErrors"` // 故障信息
     Remark        string             `json:"remark"`        // 备注
+}
+
+// CabinetSnParamReq sn请求
+type CabinetSnParamReq struct {
+    Sn string `json:"sn" param:"sn" validate:"required"`
+}
+
+// CabinetDetailRes 电柜详细信息返回
+type CabinetDetailRes struct {
+    CabinetItem
+    Bin []CabinetBin `json:"bins"` // 仓位信息
 }

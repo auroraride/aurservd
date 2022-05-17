@@ -41,4 +41,5 @@ func loadManagerRoutes() {
     g.GET("/cabinet", mapi.Cabinet.Query)
     g.PUT("/cabinet/:id", mapi.Cabinet.Modify)
     g.DELETE("/cabinet/:id", mapi.Cabinet.Delete)
+    g.GET("/cabinet/:id", mapi.Cabinet.Detail)
 }

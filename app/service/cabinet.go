@@ -8,6 +8,7 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/provider"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/branch"
@@ -107,7 +108,7 @@ func (s *cabinetService) Query(req *model.CabinetQueryReq) (res *model.Paginatio
         _ = copier.Copy(&out[i], item)
         if item.Edges.Branch != nil {
             city := item.Edges.Branch.Edges.City
-            out[i].City = model.City{
+            out[i].City = &model.City{
                 ID:   city.ID,
                 Name: city.Name,
             }
@@ -160,4 +161,36 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
 // Delete 删除电柜
 func (s *cabinetService) Delete(modifier *model.Modifier, req *model.CabinetDeleteReq) {
     s.orm.SoftDeleteOneID(req.ID).SetLastModifier(modifier).SaveX(s.ctx)
+}
+
+// LockBin TODO 锁仓 (将柜门标记为故障)
+func (s *cabinetService) LockBin() {
+
+}
+
+// UpdateStatus 立即更新电柜状态
+func (s *cabinetService) UpdateStatus(item *ent.Cabinet) *ent.Cabinet {
+    var prov provider.Provider
+    if item.Brand == model.CabinetBrandKaixin.Value() {
+        prov = provider.NewKaixin()
+    } else {
+        prov = provider.NewYundong()
+    }
+    up := s.orm.UpdateOne(item)
+    prov.UpdateStatus(up, item)
+    return up.SaveX(s.ctx)
+}
+
+// Detail 电柜详细信息
+func (s *cabinetService) Detail(id uint64) *model.CabinetDetailRes {
+    item := s.orm.Query().
+        Where(cabinet.ID(id)).
+        OnlyX(s.ctx)
+    if item == nil {
+        snag.Panic("未找到电柜")
+    }
+    item = s.UpdateStatus(item)
+    res := new(model.CabinetDetailRes)
+    _ = copier.Copy(res, item)
+    return res
 }

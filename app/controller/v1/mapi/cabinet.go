@@ -82,3 +82,19 @@ func (*cabinet) Delete(c echo.Context) (err error) {
 
     return ctx.SendResponse()
 }
+
+// Detail
+// @ID           CabinetDetail
+// @Router       /manager/v1/cabinet/{id} [GET]
+// @Summary      M5005 获取电柜详细信息
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        sn    path  string  true  "电柜平台编码"
+// @Success      200  {object}  model.CabinetDetailRes  "请求成功"
+func (*cabinet) Detail(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+
+    return ctx.SendResponse(service.NewCabinet().Detail(req.ID))
+}
