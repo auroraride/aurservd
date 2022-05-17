@@ -119,6 +119,13 @@ type config struct {
                 }
             }
         }
+        Sls struct {
+            AccessKeyId     string
+            AccessKeySecret string
+            Endpoint        string
+            Project         string
+            Cabinet         string // 电柜日志logstore
+        }
     }
     Baidu struct {
         Face struct {

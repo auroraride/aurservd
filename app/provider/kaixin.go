@@ -10,6 +10,7 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
@@ -17,8 +18,6 @@ import (
     log "github.com/sirupsen/logrus"
     "strconv"
     "strings"
-    "sync"
-    "time"
 )
 
 type kaixin struct {
@@ -27,6 +26,18 @@ type kaixin struct {
     user   string
     logger *Logger
     errors map[string]string
+}
+
+func (p *kaixin) Cabinets() ([]*ent.Cabinet, error) {
+    return ar.Ent.Cabinet.Query().Where(cabinet.Brand(model.CabinetBrandKaixin.String())).All(context.Background())
+}
+
+func (p *kaixin) Brand() string {
+    return "凯信"
+}
+
+func (p *kaixin) Logger() *Logger {
+    return p.logger
 }
 
 type kaixinUrl string
@@ -130,106 +141,71 @@ func GetChargerErrors(n int) (errors []string) {
     return
 }
 
-func (p *kaixin) UpdateStatus() {
-    log.Info("开始轮询获取凯信电柜状态")
-    start := time.Now()
+func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
+    res := new(KXStatusRes)
+    url := p.GetUrl(kaixinUrlDetailData)
+    client := resty.New().R().
+        SetFormData(map[string]string{
+            "user":      p.user,
+            "cupboard":  item.Serial,
+            "checkcode": p.Detailcode(item.Serial),
+        })
+    r, err := client.Post(url)
 
-    var wg sync.WaitGroup
-
-    items, err := ar.Ent.Cabinet.Query().Where(cabinet.Brand(model.CabinetBrandKaixin.String())).All(context.Background())
     if err != nil {
-        log.Errorf("凯信电柜查询失败: %#v", err)
-        return
+        msg := fmt.Sprintf("凯信状态获取失败, serial: %s, err: %#v", item.Serial, err)
+        log.Error(msg)
+        return msg
     }
 
-    length := len(items)
-    wg.Add(length)
-    logs := make([]*KXStatusRes, length)
+    err = jsoniter.Unmarshal(r.Body(), res)
+    if err != nil {
+        msg := fmt.Sprintf("凯信状态获取失败, serial: %s, err: %#v", item.Serial, err)
+        log.Error(msg)
+        return msg
+    }
 
-    go func() {
-        for i, item := range items {
-            up := ar.Ent.Cabinet.UpdateOne(item)
-            res := new(KXStatusRes)
-            url := p.GetUrl(kaixinUrlDetailData)
-            var r *resty.Response
-            client := resty.New().R().
-                SetFormData(map[string]string{
-                    "user":      p.user,
-                    "cupboard":  item.Serial,
-                    "checkcode": p.Detailcode(item.Serial),
-                })
-            r, err = client.Post(url)
 
-            if err != nil {
-                log.Errorf("凯信状态获取失败, serial: %s, err: %#v", item.Serial, err)
-                goto Save
+    if res.State == "ok" {
+        doors := res.GetBins()
+        bins := make([]model.CabinetBin, len(doors))
+        var full uint = 0
+        var num uint = 0
+        for index, ds := range doors {
+            e := model.NewBatteryElectricity(ds.Cpg)
+            hasBattery := ds.Bex == 2
+            if hasBattery {
+                num += 1
             }
-
-            err = jsoniter.Unmarshal(r.Body(), res)
-            if err != nil {
-                log.Errorf("凯信状态获取失败, serial: %s, err: %#v, body: %s", item.Serial, err, r.Body())
-                goto Save
+            if e.IsBatteryFull() {
+                full += 1
             }
-
-            logs[i] = res
-
-            if res.State == "ok" {
-                doors := res.GetBins()
-                bins := make([]model.CabinetBin, len(doors))
-                var full uint = 0
-                var num uint = 0
-                for index, ds := range doors {
-                    e := model.NewBatteryElectricity(ds.Cpg)
-                    hasBattery := ds.Bex == 2
-                    if hasBattery {
-                        num += 1
-                    }
-                    if e.IsBatteryFull() {
-                        full += 1
-                    }
-                    errs := GetChargerErrors(ds.Bft)
-                    bin := model.CabinetBin{
-                        Name:        fmt.Sprintf("%d号仓", index+1),
-                        BatterySN:   ds.Bcd,
-                        Full:        e.IsBatteryFull(),
-                        Battery:     hasBattery,
-                        Electricity: e,
-                        OpenStatus:  ds.Dst == 1,
-                        DoorHealth:  ds.Dft == 1,
-                        Current:     ds.Bci,
-                        Voltage:     ds.Bcu,
-                    }
-                    if bin.Voltage == 0 && hasBattery {
-                        errs = append(errs, "有电池无电压")
-                    }
-                    bin.ChargerErrors = errs
-                    bins[index] = bin
-                    if len(item.Bin) > index {
-                        bins[index].Remark = item.Bin[index].Remark
-                        bins[index].Locked = item.Bin[index].Locked
-                    }
-                }
-                up.SetHealth(model.CabinetHealthStatusOnline).
-                    SetBatteryFullNum(full).SetBatteryNum(num).
-                    SetBin(bins).
-                    SetDoors(uint(len(doors)))
-            } else {
-                // 未获取到电柜状态设置为离线
-                up.SetHealth(model.CabinetHealthStatusOffline)
+            errs := GetChargerErrors(ds.Bft)
+            bin := model.CabinetBin{
+                Name:        fmt.Sprintf("%d号仓", index+1),
+                BatterySN:   ds.Bcd,
+                Full:        e.IsBatteryFull(),
+                Battery:     hasBattery,
+                Electricity: e,
+                OpenStatus:  ds.Dst == 1,
+                DoorHealth:  ds.Dft == 1,
+                Current:     ds.Bci,
+                Voltage:     ds.Bcu,
             }
-
-        Save:
-            // 存储电柜信息
-            up.SaveX(context.Background())
-
-            wg.Done()
+            if bin.Voltage == 0 && hasBattery {
+                errs = append(errs, "有电池无电压")
+            }
+            bin.ChargerErrors = errs
+            bins[index] = bin
+            if len(item.Bin) > index {
+                bins[index].Remark = item.Bin[index].Remark
+                bins[index].Locked = item.Bin[index].Locked
+            }
         }
-    }()
-
-    wg.Wait()
-
-    // 写入电柜日志
-    p.logger.Write(logs)
-
-    log.Infof("凯信电柜状态轮询完成, 耗时%.2fs", time.Now().Sub(start).Seconds())
+        up.SetBatteryFullNum(full).SetBatteryNum(num).
+            SetBin(bins).
+            SetHealth(model.CabinetHealthStatusOnline).
+            SetDoors(uint(len(doors)))
+    }
+    return res
 }

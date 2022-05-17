@@ -22,8 +22,9 @@ type Logger struct {
 }
 
 type logData struct {
-    Time     string `json:"time"`
-    Response any    `json:"response"`
+    Time   string `json:"time"`
+    Times  int    `json:"times"`
+    Result any    `json:"result"`
 }
 
 func NewLogger(name string) *Logger {
@@ -33,15 +34,18 @@ func NewLogger(name string) *Logger {
     }
 }
 
-func (l *Logger) Write(data any) {
+func (l *Logger) Write(times int, data any) {
     path := fmt.Sprintf("runtime/logs/%s/%s.log", l.name, time.Now().Format(carbon.DateLayout))
-    var buffer bytes.Buffer
     _ = utils.NewFile(path).CreateDirectoryIfNotExist()
-    b, _ := jsoniter.Marshal(logData{
-        Time:     time.Now().Format(carbon.DateTimeLayout),
-        Response: data,
+
+    buffer := &bytes.Buffer{}
+    encoder := jsoniter.NewEncoder(buffer)
+    encoder.SetEscapeHTML(false)
+    _ = encoder.Encode(logData{
+        Time:   time.Now().Format(carbon.DateTimeLayout),
+        Times:  times,
+        Result: data,
     })
-    buffer.Write(b)
     buffer.WriteString("\n")
 
     // 写入日志文件

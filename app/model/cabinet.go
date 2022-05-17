@@ -21,6 +21,16 @@ func (cb CabinetBrand) String() string {
     return string(cb)
 }
 
+func (cb CabinetBrand) Name() string {
+    switch cb {
+    case CabinetBrandKaixin:
+        return "凯信"
+    case CabinetBrandYundong:
+        return "云动"
+    }
+    return "Unknown"
+}
+
 // CabinetStatus 设备状态
 type CabinetStatus uint
 
