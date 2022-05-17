@@ -25,6 +25,7 @@ type yundong struct {
     appid           string
     appkey          string
     tokenRetryTimes int // token获取重试次数
+    retryTimes      int
 }
 
 func (p *yundong) Logger() *Logger {
@@ -54,6 +55,7 @@ func NewYundong() *yundong {
 
 func (p *yundong) PrepareRequest() {
     p.tokenRetryTimes = 0
+    p.retryTimes = 0
 }
 
 func (p *yundong) GetUrl(path Yundongurl) string {
@@ -72,6 +74,10 @@ type YDTokenRes struct {
 func (p *yundong) FetchToken(tokenRequest bool) (token string) {
     if tokenRequest {
         return
+    }
+    // 如果需要刷新token则删除缓存token
+    if p.retryTimes > 0 {
+        ar.Cache.Del(context.Background(), yundongTokenKey)
     }
     token = ar.Cache.Get(context.Background(), yundongTokenKey).Val()
     if token == "" {
@@ -156,6 +162,11 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
     _, err := p.RequestClient(false).
         SetResult(res).
         Get(p.GetUrl(yundongStatusUrl) + "?cabinetNo=" + item.Serial)
+    // token 请求失败, 重新请求token后重试
+    if res.Code == 1000 && p.retryTimes < 1 {
+        p.retryTimes += 1
+        return p.UpdateStatus(up, item)
+    }
     if err != nil || res.Code != 0 {
         msg := fmt.Sprintf("云动状态获取失败, serial: %s, err: %#v, res: %s", item.Serial, err, res)
         log.Error(msg)
@@ -171,9 +182,6 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
         doors := res.GetBins()
         for index, ds := range doors {
             e := model.NewBatteryElectricity(ds.Soc)
-            if e.IsBatteryFull() {
-                full += 1
-            }
             hasBattery := ds.Putbattery == 1
             if hasBattery {
                 num += 1
@@ -190,7 +198,10 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
                 Current:     float64(ds.Chargei) / 1000,
                 Voltage:     float64(ds.Totalv) / 1000,
             }
-            if bin.Voltage == 0 && hasBattery {
+            if bin.Full {
+                full += 1
+            }
+            if hasBattery && bin.Voltage == 0 && bin.Current == 0 && bin.Electricity == 0 {
                 errs = append(errs, "有电池无电压")
             }
             bin.ChargerErrors = errs
@@ -202,8 +213,8 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
         }
         up.SetBin(bins).
             SetBatteryNum(num).
+            SetBatteryFullNum(full).
             SetHealth(uint(res.Data.Isonline)).
-            SetBin(bins).
             SetDoors(uint(len(doors)))
     }
     return res

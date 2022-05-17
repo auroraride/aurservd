@@ -12,7 +12,6 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/jinzhu/copier"
-    log "github.com/sirupsen/logrus"
     "reflect"
     "strings"
     "time"
@@ -21,14 +20,14 @@ import (
 type CabinetLog struct {
     Times       int                      `sls:"轮次"`
     Serial      string                   `sls:"编码"`
-    Name        string                   `sls:"柜门名称"`
+    Name        string                   `sls:"仓位"`
     BatterySN   string                   `sls:"电池序列号"`
     Locked      bool                     `sls:"是否锁定"`
     Full        bool                     `sls:"是否满电"`
     Battery     bool                     `sls:"是否有电池"`
     Electricity model.BatteryElectricity `sls:"当前电量"`
     OpenStatus  bool                     `sls:"是否开门"`
-    DoorHealth  bool                     `sls:"柜门是否正常"`
+    DoorHealth  bool                     `sls:"仓门是否正常"`
     Current     float64                  `sls:"充电电流(A)"`
     Voltage     float64                  `sls:"电压(V)"`
     Errors      string                   `sls:"故障信息"`
@@ -37,13 +36,11 @@ type CabinetLog struct {
 
 func parseLogContent(c *CabinetLog) (contents []*sls.LogContent) {
     t := reflect.TypeOf(c).Elem()
+    n := t.NumField()
     value := reflect.ValueOf(c).Elem()
 
-    n := t.NumField()
-    log.Println(n)
-
-    contents = make([]*sls.LogContent, t.NumField())
-    for i := 0; i < t.NumField(); i++ {
+    contents = make([]*sls.LogContent, n)
+    for i := 0; i < n; i++ {
         tag, _ := t.Field(i).Tag.Lookup("sls")
         v := value.Field(i)
         cv := ""

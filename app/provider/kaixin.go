@@ -165,7 +165,6 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
         return msg
     }
 
-
     if res.State == "ok" {
         doors := res.GetBins()
         bins := make([]model.CabinetBin, len(doors))
@@ -202,7 +201,8 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
                 bins[index].Locked = item.Bin[index].Locked
             }
         }
-        up.SetBatteryFullNum(full).SetBatteryNum(num).
+        up.SetBatteryFullNum(full).
+            SetBatteryNum(num).
             SetBin(bins).
             SetHealth(model.CabinetHealthStatusOnline).
             SetDoors(uint(len(doors)))

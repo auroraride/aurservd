@@ -38,4 +38,5 @@ func LoadWithConfig(cfg Config) {
     consoleFormatter := LogFormat{EnableColor: cfg.Color, Console: true}
     fileFormatter := LogFormat{EnableColor: false, SaveJson: cfg.Json}
     log.AddHook(NewLocalHook(w, consoleFormatter, fileFormatter, GetLogLevel(cfg.Level)...))
+    log.SetReportCaller(true)
 }
