@@ -9,6 +9,10 @@ import (
     "time"
 )
 
+const (
+    CabinetBinBatteryFault = "有电池无电压"
+)
+
 // CabinetBrand 电柜品牌
 type CabinetBrand string
 
@@ -130,4 +134,9 @@ type CabinetSnParamReq struct {
 type CabinetDetailRes struct {
     CabinetItem
     Bin []CabinetBin `json:"bins"` // 仓位信息
+}
+
+// CanUse 仓位是否可以换电
+func (cb CabinetBin) CanUse() bool {
+    return cb.Battery && cb.Electricity.IsBatteryFull() && !cb.OpenStatus && cb.DoorHealth && len(cb.ChargerErrors) == 0
 }

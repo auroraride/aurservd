@@ -202,7 +202,7 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
                 full += 1
             }
             if hasBattery && bin.Voltage == 0 && bin.Current == 0 && bin.Electricity == 0 {
-                errs = append(errs, "有电池无电压")
+                errs = append(errs, model.CabinetBinBatteryFault)
             }
             bin.ChargerErrors = errs
             bins[index] = bin

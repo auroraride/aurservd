@@ -192,7 +192,7 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
                 Voltage:     utils.NewNumber().Decimal(ds.Bcu),
             }
             if bin.Voltage == 0 && hasBattery {
-                errs = append(errs, "有电池无电压")
+                errs = append(errs, model.CabinetBinBatteryFault)
             }
             bin.ChargerErrors = errs
             bins[index] = bin
