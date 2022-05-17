@@ -144,7 +144,7 @@ func (r *YDStatusRes) GetBins() (bins []YDBin) {
 }
 
 func (p *yundong) Cabinets() ([]*ent.Cabinet, error) {
-    return ar.Ent.Cabinet.Query().Where(cabinet.Brand(model.CabinetBrandYundong.String())).All(context.Background())
+    return ar.Ent.Cabinet.Query().Where(cabinet.Brand(model.CabinetBrandYundong.Value())).All(context.Background())
 }
 
 func (p *yundong) Brand() string {

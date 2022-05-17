@@ -49,7 +49,7 @@ func (s *cabinetService) CreateCabinet(modifier *model.Modifier, req *model.Cabi
         SetLastModifier(modifier).
         SetCreator(modifier).
         SetNillableRemark(req.Remark).
-        SetBrand(req.Brand.String()).
+        SetBrand(req.Brand.Value()).
         SetHealth(model.CabinetHealthStatusOffline)
     if req.BranchID != nil {
         q.SetBranchID(*req.BranchID)
@@ -143,7 +143,7 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
         q.SetStatus(uint(*req.Status))
     }
     if req.Brand != nil {
-        q.SetBrand(req.Brand.String())
+        q.SetBrand(req.Brand.Value())
     }
     if req.Serial != nil {
         q.SetSerial(*req.Serial)

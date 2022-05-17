@@ -29,7 +29,7 @@ type kaixin struct {
 }
 
 func (p *kaixin) Cabinets() ([]*ent.Cabinet, error) {
-    return ar.Ent.Cabinet.Query().Where(cabinet.Brand(model.CabinetBrandKaixin.String())).All(context.Background())
+    return ar.Ent.Cabinet.Query().Where(cabinet.Brand(model.CabinetBrandKaixin.Value())).All(context.Background())
 }
 
 func (p *kaixin) Brand() string {

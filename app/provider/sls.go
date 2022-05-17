@@ -6,39 +6,80 @@
 package provider
 
 import (
+    "fmt"
     "github.com/alibabacloud-go/tea/tea"
     sls "github.com/aliyun/aliyun-log-go-sdk"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/jinzhu/copier"
+    log "github.com/sirupsen/logrus"
+    "reflect"
+    "strings"
     "time"
 )
 
 type CabinetLog struct {
-    Times int `json:"times"` // 第%d轮
+    Times       int                      `sls:"轮次"`
+    Serial      string                   `sls:"编码"`
+    Name        string                   `sls:"柜门名称"`
+    BatterySN   string                   `sls:"电池序列号"`
+    Locked      bool                     `sls:"是否锁定"`
+    Full        bool                     `sls:"是否满电"`
+    Battery     bool                     `sls:"是否有电池"`
+    Electricity model.BatteryElectricity `sls:"当前电量"`
+    OpenStatus  bool                     `sls:"是否开门"`
+    DoorHealth  bool                     `sls:"柜门是否正常"`
+    Current     float64                  `sls:"充电电流(A)"`
+    Voltage     float64                  `sls:"电压(V)"`
+    Errors      string                   `sls:"故障信息"`
+    Remark      string                   `sls:"备注"`
 }
 
-func GenerateSlsLogGroup(cabinet *ent.Cabinet) (lg *sls.LogGroup) {
+func parseLogContent(c *CabinetLog) (contents []*sls.LogContent) {
+    t := reflect.TypeOf(c).Elem()
+    value := reflect.ValueOf(c).Elem()
+
+    n := t.NumField()
+    log.Println(n)
+
+    contents = make([]*sls.LogContent, t.NumField())
+    for i := 0; i < t.NumField(); i++ {
+        tag, _ := t.Field(i).Tag.Lookup("sls")
+        v := value.Field(i)
+        cv := ""
+        if v.Type().Kind() == reflect.Bool {
+            cv = "否"
+            if v.Bool() {
+                cv = "是"
+            }
+        } else {
+            cv = fmt.Sprintf("%v", v.Interface())
+        }
+        contents[i] = &sls.LogContent{
+            Key:   tea.String(tag),
+            Value: tea.String(cv),
+        }
+    }
+    return
+}
+
+func GenerateSlsLogGroup(times int, cabinet *ent.Cabinet) (lg *sls.LogGroup) {
+    t := tea.Uint32(uint32(time.Now().Unix()))
     lg = &sls.LogGroup{
         Source: tea.String(cabinet.Serial),
-        Topic:  tea.String(model.CabinetBrand(cabinet.Brand).Name()),
+        Topic:  tea.String(model.CabinetBrand(cabinet.Brand).String()),
     }
-    logs := []*sls.Log{
-        {
-            Time: tea.Uint32(uint32(time.Now().Unix())),
-            Contents: []*sls.LogContent{
-                {
-
-                },
-                {
-                    Key:   tea.String("name"),
-                    Value: tea.String("1号仓"),
-                },
-                {
-                    Key:   tea.String("battery"),
-                    Value: tea.String("true"),
-                },
-            },
-        },
+    logs := make([]*sls.Log, len(cabinet.Bin))
+    for i, bin := range cabinet.Bin {
+        c := new(CabinetLog)
+        _ = copier.Copy(c, bin)
+        c.Times = times
+        c.Serial = cabinet.Serial
+        c.Errors = strings.Join(bin.ChargerErrors, ",")
+        logs[i] = &sls.Log{
+            Time:     t,
+            Contents: parseLogContent(c),
+        }
     }
     lg.Logs = logs
     return

@@ -17,11 +17,11 @@ const (
     CabinetBrandYundong CabinetBrand = "YUNDONG" // 云动电柜
 )
 
-func (cb CabinetBrand) String() string {
+func (cb CabinetBrand) Value() string {
     return string(cb)
 }
 
-func (cb CabinetBrand) Name() string {
+func (cb CabinetBrand) String() string {
     switch cb {
     case CabinetBrandKaixin:
         return "凯信"
@@ -104,6 +104,8 @@ type CabinetDeleteReq struct {
 }
 
 // CabinetBin 仓位详细信息
+// 1000mA = 1A
+// 1000mV = 1V
 // TODO: (锁定状态 / 备注信息) 需要携带到下次的状态更新中
 type CabinetBin struct {
     Name          string             `json:"name"`          // 柜门名称
@@ -114,8 +116,8 @@ type CabinetBin struct {
     Electricity   BatteryElectricity `json:"electricity"`   // 当前电量
     OpenStatus    bool               `json:"openStatus"`    // 是否开门
     DoorHealth    bool               `json:"doorHealth"`    // 柜门是否正常
-    Current       float64            `json:"current"`       // 充电电流(A) 1000mA = 1A
-    Voltage       float64            `json:"voltage"`       // 电压(V) 1000mV = 1V
-    ChargerErrors []string           `json:"chargerErrors"` // 充电器状态 空数组代表正常,非空数组为故障信息
+    Current       float64            `json:"current"`       // 充电电流(A)
+    Voltage       float64            `json:"voltage"`       // 电压(V)
+    ChargerErrors []string           `json:"chargerErrors"` // 故障信息
     Remark        string             `json:"remark"`        // 备注
 }

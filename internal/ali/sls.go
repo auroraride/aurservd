@@ -10,8 +10,6 @@ import (
     "github.com/alibabacloud-go/tea/tea"
     sls "github.com/aliyun/aliyun-log-go-sdk"
     "github.com/auroraride/aurservd/internal/ar"
-    log "github.com/sirupsen/logrus"
-    "time"
 )
 
 type slsClient struct {
@@ -35,31 +33,4 @@ func NewSls() *slsClient {
     }
 
     return client
-}
-
-func (c *slsClient) PutLog() {
-    logs := []*sls.Log{
-        {
-            Time: tea.Uint32(uint32(time.Now().Unix())),
-            Contents: []*sls.LogContent{
-                {
-                    Key:   tea.String("name"),
-                    Value: tea.String("1号仓"),
-                },
-                {
-                    Key:   tea.String("battery"),
-                    Value: tea.String("true"),
-                },
-            },
-        },
-    }
-    err := c.PutLogs(c.project, "cabinet-dev", &sls.LogGroup{
-        Logs: logs,
-        Category: tea.String("YUNDONG"),
-        Topic: tea.String("NCAWDFA0L75N027"),
-    })
-    if err != nil {
-        log.Error(err)
-        return
-    }
 }

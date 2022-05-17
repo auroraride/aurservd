@@ -72,10 +72,12 @@ func StartCabinetProvider(providers ...Provider) {
                         ca := up.SaveX(context.Background())
 
                         go func() {
-                            lg := GenerateSlsLogGroup(ca)
-                            err = ali.NewSls().PutLogs(slsCfg.Project, slsCfg.Cabinet, lg)
-                            if err != nil {
-                                log.Errorf("阿里云SLS提交失败: %#v", err)
+                            lg := GenerateSlsLogGroup(times, ca)
+                            if lg != nil {
+                                err = ali.NewSls().PutLogs(slsCfg.Project, slsCfg.Cabinet, lg)
+                                if err != nil {
+                                    log.Errorf("阿里云SLS提交失败: %#v", err)
+                                }
                             }
                         }()
 
