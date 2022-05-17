@@ -22,6 +22,7 @@ type Provider interface {
     Brand() string
     Logger() *Logger
     UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any
+    DoorOperate(user, serial, operation string, door int) bool
 }
 
 func Run(start bool) {
@@ -33,7 +34,6 @@ func Run(start bool) {
 }
 
 // StartCabinetProvider 开始执行任务
-// TODO 保存历史仓位信息(转换后的)
 func StartCabinetProvider(providers ...Provider) {
     slsCfg := ar.Config.Aliyun.Sls
     for _, p := range providers {
@@ -72,7 +72,8 @@ func StartCabinetProvider(providers ...Provider) {
                         ca := up.SaveX(context.Background())
 
                         go func() {
-                            lg := GenerateSlsLogGroup(ca)
+                            // 保存历史仓位信息(转换后的)
+                            lg := GenerateSlsStatusLogGroup(ca)
                             if lg != nil {
                                 err = ali.NewSls().PutLogs(slsCfg.Project, slsCfg.Cabinet, lg)
                                 if err != nil {

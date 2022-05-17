@@ -86,7 +86,7 @@ func (*cabinet) Delete(c echo.Context) (err error) {
 // Detail
 // @ID           CabinetDetail
 // @Router       /manager/v1/cabinet/{id} [GET]
-// @Summary      M5005 获取电柜详细信息
+// @Summary      M5005 获取并更新电柜详细信息
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -95,6 +95,23 @@ func (*cabinet) Delete(c echo.Context) (err error) {
 // @Success      200  {object}  model.CabinetDetailRes  "请求成功"
 func (*cabinet) Detail(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-
     return ctx.SendResponse(service.NewCabinet().Detail(req.ID))
+}
+
+// DoorOperate
+// @ID           CabinetDoorOperate
+// @Router       /manager/v1/cabinet/door-operate [POST]
+// @Summary      M5006 柜门操作
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body  model.CabinetDoorOperateReq  true  "柜门操作请求"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*cabinet) DoorOperate(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.CabinetDoorOperateReq](c)
+
+    return ctx.SendResponse(
+        model.StatusResponse{Status: service.NewCabinet().DoorOperate(ctx.Modifier, req)},
+    )
 }

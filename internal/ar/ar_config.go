@@ -126,6 +126,7 @@ type config struct {
             Endpoint        string
             Project         string
             Cabinet         string // 电柜日志logstore
+            Operation       string // 操作日志logstore
         }
     }
     Baidu struct {

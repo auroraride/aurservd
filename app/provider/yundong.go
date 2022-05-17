@@ -19,6 +19,7 @@ import (
     "time"
 )
 
+// TODO 维护一个全局的token
 type yundong struct {
     logger          *Logger
     url             string
@@ -26,6 +27,12 @@ type yundong struct {
     appkey          string
     tokenRetryTimes int // token获取重试次数
     retryTimes      int
+}
+
+// YDRes 云动通用返回
+type YDRes struct {
+    Code int    `json:"code,omitempty"`
+    Msg  string `json:"msg,omitempty"`
 }
 
 func (p *yundong) Logger() *Logger {
@@ -37,8 +44,9 @@ type Yundongurl string
 const (
     yundongTokenKey = "YUNDONGTOKEN"
 
-    yundongTokenUrl  Yundongurl = "/token"
-    yundongStatusUrl Yundongurl = "/cabinet/status"
+    yundongTokenUrl   Yundongurl = "/token"
+    yundongStatusUrl  Yundongurl = "/cabinet/status"
+    yundongControlUrl Yundongurl = "/cabinet/control"
 )
 
 func NewYundong() *yundong {
@@ -217,4 +225,38 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
             SetDoors(uint(len(doors)))
     }
     return res
+}
+
+// DoorOperate 云动柜门操作
+func (p *yundong) DoorOperate(user, serial, operation string, door int) (state bool) {
+    type params struct {
+        Doorno []int `json:"doorno"`
+    }
+    type body struct {
+        CabinetSN  string `json:"cabinetSN"`
+        EmployCode string `json:"employCode"`
+        Params     params `json:"params"`
+        Action     string `json:"action"`
+    }
+
+    res := new(YDRes)
+    _, err := p.RequestClient(false).
+        SetResult(res).
+        SetBody(body{
+            CabinetSN:  serial,
+            EmployCode: user,
+            Params:     params{Doorno: []int{door}},
+            Action:     operation,
+        }).
+        Post(p.GetUrl(yundongControlUrl))
+    // token 请求失败, 重新请求token后重试
+    if res.Code == 1000 && p.retryTimes < 1 {
+        p.retryTimes += 1
+        return p.DoorOperate(user, serial, operation, door)
+    }
+    if err != nil {
+        log.Error(err)
+        return
+    }
+    return res.Code == 0
 }

@@ -140,3 +140,53 @@ type CabinetDetailRes struct {
 func (cb CabinetBin) CanUse() bool {
     return cb.Battery && cb.Electricity.IsBatteryFull() && !cb.OpenStatus && cb.DoorHealth && len(cb.ChargerErrors) == 0
 }
+
+// CabinetDoorOperate 柜门操作
+type CabinetDoorOperate uint
+
+const (
+    CabinetDoorOperateOpen   CabinetDoorOperate = iota + 1 // 开仓
+    CabinetDoorOperateLock                                 // 锁定(标记为故障)
+    CabinetDoorOperateUnlock                               // 解锁(取消标记故障)
+)
+
+func (cdo CabinetDoorOperate) String() string {
+    switch cdo {
+    case CabinetDoorOperateOpen:
+        return "开仓"
+    case CabinetDoorOperateLock:
+        return "锁定"
+    case CabinetDoorOperateUnlock:
+        return "解锁"
+    }
+    return ""
+}
+
+var CabinetDoorOperates = map[CabinetDoorOperate]map[CabinetBrand]string{
+    CabinetDoorOperateOpen: {
+        CabinetBrandKaixin:  "1",
+        CabinetBrandYundong: "opendoor",
+    },
+    CabinetDoorOperateLock: {
+        CabinetBrandKaixin:  "3",
+        CabinetBrandYundong: "disabledoor",
+    },
+    CabinetDoorOperateUnlock: {
+        CabinetBrandKaixin:  "4",
+        CabinetBrandYundong: "enabledoor",
+    },
+}
+
+// Value 获取柜门操作值
+func (cdo CabinetDoorOperate) Value(brand CabinetBrand) (v string, ex bool) {
+    v, ex = CabinetDoorOperates[cdo][brand]
+    return
+}
+
+// CabinetDoorOperateReq 仓门操作
+type CabinetDoorOperateReq struct {
+    ID        *uint64             `json:"id" validate:"required"`        // 电柜ID
+    Index     *int                `json:"index" validate:"required"`     // 仓门index
+    Remark    *string             `json:"remark" validate:"required"`    // 操作原因
+    Operation *CabinetDoorOperate `json:"operation" validate:"required"` // 操作方式 1:开仓 2:锁定(标记为故障) 3:解锁(取消标记故障)
+}

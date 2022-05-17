@@ -520,6 +520,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/cabinet/door-operate": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M5006 柜门操作",
+                "operationId": "CabinetDoorOperate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "柜门操作请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CabinetDoorOperateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/cabinet/{id}": {
             "get": {
                 "consumes": [
@@ -531,7 +572,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M5005 获取电柜详细信息",
+                "summary": "M5005 获取并更新电柜详细信息",
                 "operationId": "CabinetDetail",
                 "parameters": [
                     {
@@ -1219,6 +1260,33 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                }
+            }
+        },
+        "model.CabinetDoorOperateReq": {
+            "type": "object",
+            "required": [
+                "id",
+                "index",
+                "operation",
+                "remark"
+            ],
+            "properties": {
+                "id": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "index": {
+                    "description": "仓门index",
+                    "type": "integer"
+                },
+                "operation": {
+                    "description": "操作方式 1:开仓 2:锁定(标记为故障) 3:解锁(取消标记故障)",
+                    "type": "integer"
+                },
+                "remark": {
+                    "description": "操作原因",
+                    "type": "string"
                 }
             }
         },

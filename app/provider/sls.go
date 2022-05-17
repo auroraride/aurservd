@@ -32,10 +32,22 @@ type CabinetLog struct {
     Remark      string                   `sls:"备注"`
 }
 
-func parseLogContent(c *CabinetLog) (contents []*sls.LogContent) {
-    t := reflect.TypeOf(c).Elem()
+type OperationLog struct {
+    User      string                   `sls:"操作人"`
+    UserID    uint64                   `sls:"操作人ID"`
+    Phone     string                   `sls:"操作人电话"`
+    Serial    string                   `sls:"编码"`
+    Name      string                   `sls:"仓位"`
+    Operation model.CabinetDoorOperate `sls:"操作"`
+    Success   bool                     `sls:"是否成功"`
+    Remark    string                   `sls:"备注"`
+}
+
+// ParseLogContent 转换为sls日志
+func ParseLogContent(pointer any) (contents []*sls.LogContent) {
+    t := reflect.TypeOf(pointer).Elem()
     n := t.NumField()
-    value := reflect.ValueOf(c).Elem()
+    value := reflect.ValueOf(pointer).Elem()
 
     contents = make([]*sls.LogContent, n)
     for i := 0; i < n; i++ {
@@ -58,7 +70,8 @@ func parseLogContent(c *CabinetLog) (contents []*sls.LogContent) {
     return
 }
 
-func GenerateSlsLogGroup(cabinet *ent.Cabinet) (lg *sls.LogGroup) {
+// GenerateSlsStatusLogGroup 生成status log日志
+func GenerateSlsStatusLogGroup(cabinet *ent.Cabinet) (lg *sls.LogGroup) {
     t := tea.Uint32(uint32(time.Now().Unix()))
     lg = &sls.LogGroup{
         Source: tea.String(cabinet.Serial),
@@ -72,7 +85,7 @@ func GenerateSlsLogGroup(cabinet *ent.Cabinet) (lg *sls.LogGroup) {
         c.Errors = strings.Join(bin.ChargerErrors, ",")
         logs[i] = &sls.Log{
             Time:     t,
-            Contents: parseLogContent(c),
+            Contents: ParseLogContent(c),
         }
     }
     lg.Logs = logs

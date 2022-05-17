@@ -81,6 +81,13 @@ func (p *kaixin) GetUrl(path kaixinUrl) string {
 
 func (p *kaixin) PrepareRequest() {}
 
+type KXRes[T any] struct {
+    Cupboard string `json:"cupboard"`
+    Data     T      `json:"data,omitempty"`
+    Msg      string `json:"msg"`
+    State    string `json:"state"`
+}
+
 type KXBin struct {
     Bcd string  `json:"bcd"`
     Bci float64 `json:"bci"`
@@ -95,17 +102,13 @@ type KXBin struct {
     Dst int     `json:"dst"`
 }
 
-type KXStatusRes struct {
-    Cupboard string `json:"cupboard"`
-    Data     []struct {
-        Col     string  `json:"col"`
-        Content []KXBin `json:"content"`
-    } `json:"data"`
-    Msg   string `json:"msg"`
-    State string `json:"state"`
+type KXStatusData []struct {
+    Col     string  `json:"col"`
+    Content []KXBin `json:"content"`
 }
+type KXStatusRes KXRes[KXStatusData]
 
-func (r *KXStatusRes) String() string {
+func (r *KXRes[T]) String() string {
     return fmt.Sprintf("Code: %s, Message: %s", r.State, r.Msg)
 }
 
@@ -118,7 +121,7 @@ func (r *KXStatusRes) CountBins() (n int) {
 }
 
 // GetBins 获取仓位
-func (r *KXStatusRes) GetBins() (bins []KXBin) {
+func (r KXStatusRes) GetBins() (bins []KXBin) {
     bins = make([]KXBin, r.CountBins())
     for _, d := range r.Data {
         for _, bin := range d.Content {
@@ -207,4 +210,35 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
             SetDoors(uint(len(doors)))
     }
     return res
+}
+
+type KXOperationRes KXRes[any]
+
+// DoorOperate 操作柜门
+func (p *kaixin) DoorOperate(user, serial, operation string, door int) (state bool) {
+    res := new(KXOperationRes)
+    url := p.GetUrl(kaixinUrlDoorOperation)
+    d := strconv.Itoa(door)
+    client := resty.New().R().
+        SetFormData(map[string]string{
+            "user":      user,
+            "cupboard":  serial,
+            "checkcode": utils.Md5String(utils.Md5String(user+serial+d+operation) + p.key),
+            "door":      d,
+            "operation": operation,
+        })
+    r, err := client.Post(url)
+
+    if err != nil {
+        log.Error(err)
+        return
+    }
+
+    err = jsoniter.Unmarshal(r.Body(), res)
+    if err != nil {
+        log.Error(err)
+        return
+    }
+
+    return res.State == "ok"
 }

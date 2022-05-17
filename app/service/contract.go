@@ -135,7 +135,7 @@ func (s *contractService) Sign(u *ent.Rider) string {
 }
 
 // Result 合同签署结果
-func (s *contractService) Result(u *ent.Rider, sn string) model.StatusBoolRes {
+func (s *contractService) Result(u *ent.Rider, sn string) model.StatusResponse {
     orm := ar.Ent.Contract
     // 查询合同是否存在
     c, err := orm.Query().
@@ -156,5 +156,5 @@ func (s *contractService) Result(u *ent.Rider, sn string) model.StatusBoolRes {
     if err != nil {
         snag.Panic(err)
     }
-    return model.StatusBoolRes{Status: success}
+    return model.StatusResponse{Status: success}
 }

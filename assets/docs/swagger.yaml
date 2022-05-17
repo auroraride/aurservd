@@ -281,6 +281,26 @@ definitions:
     - name
     - serial
     type: object
+  model.CabinetDoorOperateReq:
+    properties:
+      id:
+        description: 电柜ID
+        type: integer
+      index:
+        description: 仓门index
+        type: integer
+      operation:
+        description: 操作方式 1:开仓 2:锁定(标记为故障) 3:解锁(取消标记故障)
+        type: integer
+      remark:
+        description: 操作原因
+        type: string
+    required:
+    - id
+    - index
+    - operation
+    - remark
+    type: object
   model.CabinetItem:
     properties:
       branchId:
@@ -911,7 +931,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.CabinetDetailRes'
-      summary: M5005 获取电柜详细信息
+      summary: M5005 获取并更新电柜详细信息
       tags:
       - '[M]管理接口'
     put:
@@ -943,6 +963,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M5003 编辑电柜
+      tags:
+      - '[M]管理接口'
+  /manager/v1/cabinet/door-operate:
+    post:
+      consumes:
+      - application/json
+      operationId: CabinetDoorOperate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 柜门操作请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CabinetDoorOperateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M5006 柜门操作
       tags:
       - '[M]管理接口'
   /manager/v1/city:

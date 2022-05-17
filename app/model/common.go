@@ -50,11 +50,6 @@ type SmsResponse struct {
     Id string `json:"id"`
 }
 
-// StatusBoolRes bool状态返回
-type StatusBoolRes struct {
-    Status bool `json:"status"`
-}
-
 // ItemListRes 列表返回
 type ItemListRes struct {
     Items []any `json:"items" kind:"slice"`

@@ -7,8 +7,11 @@ package service
 
 import (
     "context"
+    "github.com/alibabacloud-go/tea/tea"
+    sls "github.com/aliyun/aliyun-log-go-sdk"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/provider"
+    "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/branch"
@@ -16,6 +19,8 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/jinzhu/copier"
     "github.com/lithammer/shortuuid/v4"
+    log "github.com/sirupsen/logrus"
+    "time"
 )
 
 type cabinetService struct {
@@ -163,11 +168,6 @@ func (s *cabinetService) Delete(modifier *model.Modifier, req *model.CabinetDele
     s.orm.SoftDeleteOneID(req.ID).SetLastModifier(modifier).SaveX(s.ctx)
 }
 
-// LockBin TODO 锁仓 (将柜门标记为故障)
-func (s *cabinetService) LockBin() {
-
-}
-
 // UpdateStatus 立即更新电柜状态
 func (s *cabinetService) UpdateStatus(item *ent.Cabinet) *ent.Cabinet {
     var prov provider.Provider
@@ -193,4 +193,62 @@ func (s *cabinetService) Detail(id uint64) *model.CabinetDetailRes {
     res := new(model.CabinetDetailRes)
     _ = copier.Copy(res, item)
     return res
+}
+
+// DoorOperate 操作柜门
+func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.CabinetDoorOperateReq) (state bool) {
+    // 查找柜子和仓位
+    item := s.orm.Query().Where(cabinet.ID(*req.ID)).OnlyX(s.ctx)
+    if item == nil {
+        snag.Panic("该电柜未找到")
+    }
+    if len(item.Bin) < *req.Index {
+        snag.Panic("该柜门未找到")
+    }
+
+    brand := model.CabinetBrand(item.Brand)
+    op, ok := req.Operation.Value(brand)
+    if !ok {
+        snag.Panic("操作方式错误")
+    }
+    switch brand {
+    case model.CabinetBrandYundong:
+        yd := provider.NewYundong()
+        yd.PrepareRequest()
+        state = yd.DoorOperate(modifier.Name, item.Serial, op, *req.Index)
+        break
+    case model.CabinetBrandKaixin:
+        state = provider.NewKaixin().DoorOperate(modifier.Name, item.Serial, op, *req.Index)
+        break
+    }
+    // TODO 如果成功, 更新数据库或重新获取
+    if state {}
+    go func() {
+        // 上传日志
+        slsCfg := ar.Config.Aliyun.Sls
+        lg := &sls.LogGroup{
+            Source: tea.String(item.Serial),
+            Topic:  tea.String(brand.String()),
+            Logs: []*sls.Log{{
+                Time: tea.Uint32(uint32(time.Now().Unix())),
+                Contents: provider.ParseLogContent(&provider.OperationLog{
+                    User:      modifier.Name,
+                    UserID:    modifier.ID,
+                    Phone:     modifier.Phone,
+                    Serial:    item.Serial,
+                    Name:      item.Bin[*req.Index].Name,
+                    Operation: *req.Operation,
+                    Success:   state,
+                    Remark:    *req.Remark,
+                }),
+            },
+            },
+        }
+        err := ali.NewSls().PutLogs(slsCfg.Project, slsCfg.Operation, lg)
+        if err != nil {
+            log.Error(err)
+            return
+        }
+    }()
+    return
 }
