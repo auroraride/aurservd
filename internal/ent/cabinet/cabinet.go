@@ -113,6 +113,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultHealth holds the default value on creation for the "health" field.
+	DefaultHealth uint
 	// DefaultBatteryNum holds the default value on creation for the "battery_num" field.
 	DefaultBatteryNum uint
 	// DefaultBatteryFullNum holds the default value on creation for the "battery_full_num" field.

@@ -184,6 +184,14 @@ func (cu *CabinetUpdate) SetHealth(u uint) *CabinetUpdate {
 	return cu
 }
 
+// SetNillableHealth sets the "health" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableHealth(u *uint) *CabinetUpdate {
+	if u != nil {
+		cu.SetHealth(*u)
+	}
+	return cu
+}
+
 // AddHealth adds u to the "health" field.
 func (cu *CabinetUpdate) AddHealth(u int) *CabinetUpdate {
 	cu.mutation.AddHealth(u)
@@ -812,6 +820,14 @@ func (cuo *CabinetUpdateOne) SetModels(mm []model.BatteryModel) *CabinetUpdateOn
 func (cuo *CabinetUpdateOne) SetHealth(u uint) *CabinetUpdateOne {
 	cuo.mutation.ResetHealth()
 	cuo.mutation.SetHealth(u)
+	return cuo
+}
+
+// SetNillableHealth sets the "health" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableHealth(u *uint) *CabinetUpdateOne {
+	if u != nil {
+		cuo.SetHealth(*u)
+	}
 	return cuo
 }
 

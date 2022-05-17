@@ -29,7 +29,7 @@ type Manager struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// Remark holds the value of the "remark" field.
 	// 备注
-	Remark *string `json:"remark,omitempty"`
+	Remark string `json:"remark,omitempty"`
 	// Phone holds the value of the "phone" field.
 	// 账户/手机号
 	Phone string `json:"phone,omitempty"`
@@ -109,8 +109,7 @@ func (m *Manager) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
-				m.Remark = new(string)
-				*m.Remark = value.String
+				m.Remark = value.String
 			}
 		case manager.FieldPhone:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -175,10 +174,8 @@ func (m *Manager) String() string {
 	}
 	builder.WriteString(", last_modifier=")
 	builder.WriteString(fmt.Sprintf("%v", m.LastModifier))
-	if v := m.Remark; v != nil {
-		builder.WriteString(", remark=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString(", remark=")
+	builder.WriteString(m.Remark)
 	builder.WriteString(", phone=")
 	builder.WriteString(m.Phone)
 	builder.WriteString(", name=")

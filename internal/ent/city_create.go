@@ -344,7 +344,7 @@ func (cc *CityCreate) createSpec() (*City, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: city.FieldRemark,
 		})
-		_node.Remark = &value
+		_node.Remark = value
 	}
 	if value, ok := cc.mutation.Open(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

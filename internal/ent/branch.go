@@ -33,7 +33,7 @@ type Branch struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// Remark holds the value of the "remark" field.
 	// 备注
-	Remark *string `json:"remark,omitempty"`
+	Remark string `json:"remark,omitempty"`
 	// CityID holds the value of the "city_id" field.
 	// 城市ID
 	CityID uint64 `json:"city_id,omitempty"`
@@ -177,8 +177,7 @@ func (b *Branch) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
-				b.Remark = new(string)
-				*b.Remark = value.String
+				b.Remark = value.String
 			}
 		case branch.FieldCityID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -273,10 +272,8 @@ func (b *Branch) String() string {
 	builder.WriteString(fmt.Sprintf("%v", b.Creator))
 	builder.WriteString(", last_modifier=")
 	builder.WriteString(fmt.Sprintf("%v", b.LastModifier))
-	if v := b.Remark; v != nil {
-		builder.WriteString(", remark=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString(", remark=")
+	builder.WriteString(b.Remark)
 	builder.WriteString(", city_id=")
 	builder.WriteString(fmt.Sprintf("%v", b.CityID))
 	builder.WriteString(", name=")

@@ -415,7 +415,7 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: rider.FieldRemark,
 		})
-		_node.Remark = &value
+		_node.Remark = value
 	}
 	if value, ok := rc.mutation.GroupID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

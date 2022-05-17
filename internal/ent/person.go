@@ -29,7 +29,7 @@ type Person struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// Remark holds the value of the "remark" field.
 	// 备注
-	Remark *string `json:"remark,omitempty"`
+	Remark string `json:"remark,omitempty"`
 	// Status holds the value of the "status" field.
 	// 认证状态
 	Status uint8 `json:"status,omitempty"`
@@ -150,8 +150,7 @@ func (pe *Person) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
-				pe.Remark = new(string)
-				*pe.Remark = value.String
+				pe.Remark = value.String
 			}
 		case person.FieldStatus:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -259,10 +258,8 @@ func (pe *Person) String() string {
 	}
 	builder.WriteString(", last_modifier=")
 	builder.WriteString(fmt.Sprintf("%v", pe.LastModifier))
-	if v := pe.Remark; v != nil {
-		builder.WriteString(", remark=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString(", remark=")
+	builder.WriteString(pe.Remark)
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", pe.Status))
 	builder.WriteString(", block=")

@@ -349,7 +349,7 @@ func (bc *BranchCreate) createSpec() (*Branch, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: branch.FieldRemark,
 		})
-		_node.Remark = &value
+		_node.Remark = value
 	}
 	if value, ok := bc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

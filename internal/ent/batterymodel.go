@@ -32,7 +32,7 @@ type BatteryModel struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// Remark holds the value of the "remark" field.
 	// 备注
-	Remark *string `json:"remark,omitempty"`
+	Remark string `json:"remark,omitempty"`
 	// Voltage holds the value of the "voltage" field.
 	// 电压
 	Voltage string `json:"voltage,omitempty"`
@@ -135,8 +135,7 @@ func (bm *BatteryModel) assignValues(columns []string, values []interface{}) err
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
-				bm.Remark = new(string)
-				*bm.Remark = value.String
+				bm.Remark = value.String
 			}
 		case batterymodel.FieldVoltage:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -195,10 +194,8 @@ func (bm *BatteryModel) String() string {
 	builder.WriteString(fmt.Sprintf("%v", bm.Creator))
 	builder.WriteString(", last_modifier=")
 	builder.WriteString(fmt.Sprintf("%v", bm.LastModifier))
-	if v := bm.Remark; v != nil {
-		builder.WriteString(", remark=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString(", remark=")
+	builder.WriteString(bm.Remark)
 	builder.WriteString(", voltage=")
 	builder.WriteString(bm.Voltage)
 	builder.WriteString(", capacity=")

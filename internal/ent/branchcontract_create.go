@@ -398,7 +398,7 @@ func (bcc *BranchContractCreate) createSpec() (*BranchContract, *sqlgraph.Create
 			Value:  value,
 			Column: branchcontract.FieldRemark,
 		})
-		_node.Remark = &value
+		_node.Remark = value
 	}
 	if value, ok := bcc.mutation.LandlordName(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

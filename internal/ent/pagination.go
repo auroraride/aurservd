@@ -16,7 +16,8 @@ func (bmq *BatteryModelQuery) Pagination(req model.PaginationReq) *BatteryModelQ
 
 // PaginationResult returns pagination for BatteryModelQuery.
 func (bmq *BatteryModelQuery) PaginationResult(req model.PaginationReq) model.Pagination {
-	total := bmq.Clone().CountX(context.Background())
+	ids := bmq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
 	return model.Pagination{
 		Current: req.GetCurrent(),
 		Pages:   req.GetPages(total),
@@ -32,7 +33,8 @@ func (bq *BranchQuery) Pagination(req model.PaginationReq) *BranchQuery {
 
 // PaginationResult returns pagination for BranchQuery.
 func (bq *BranchQuery) PaginationResult(req model.PaginationReq) model.Pagination {
-	total := bq.Clone().CountX(context.Background())
+	ids := bq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
 	return model.Pagination{
 		Current: req.GetCurrent(),
 		Pages:   req.GetPages(total),
@@ -48,7 +50,8 @@ func (bcq *BranchContractQuery) Pagination(req model.PaginationReq) *BranchContr
 
 // PaginationResult returns pagination for BranchContractQuery.
 func (bcq *BranchContractQuery) PaginationResult(req model.PaginationReq) model.Pagination {
-	total := bcq.Clone().CountX(context.Background())
+	ids := bcq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
 	return model.Pagination{
 		Current: req.GetCurrent(),
 		Pages:   req.GetPages(total),
@@ -64,7 +67,8 @@ func (cq *CabinetQuery) Pagination(req model.PaginationReq) *CabinetQuery {
 
 // PaginationResult returns pagination for CabinetQuery.
 func (cq *CabinetQuery) PaginationResult(req model.PaginationReq) model.Pagination {
-	total := cq.Clone().CountX(context.Background())
+	ids := cq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
 	return model.Pagination{
 		Current: req.GetCurrent(),
 		Pages:   req.GetPages(total),
@@ -80,7 +84,8 @@ func (cq *CityQuery) Pagination(req model.PaginationReq) *CityQuery {
 
 // PaginationResult returns pagination for CityQuery.
 func (cq *CityQuery) PaginationResult(req model.PaginationReq) model.Pagination {
-	total := cq.Clone().CountX(context.Background())
+	ids := cq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
 	return model.Pagination{
 		Current: req.GetCurrent(),
 		Pages:   req.GetPages(total),
@@ -96,7 +101,8 @@ func (cq *ContractQuery) Pagination(req model.PaginationReq) *ContractQuery {
 
 // PaginationResult returns pagination for ContractQuery.
 func (cq *ContractQuery) PaginationResult(req model.PaginationReq) model.Pagination {
-	total := cq.Clone().CountX(context.Background())
+	ids := cq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
 	return model.Pagination{
 		Current: req.GetCurrent(),
 		Pages:   req.GetPages(total),
@@ -112,7 +118,8 @@ func (mq *ManagerQuery) Pagination(req model.PaginationReq) *ManagerQuery {
 
 // PaginationResult returns pagination for ManagerQuery.
 func (mq *ManagerQuery) PaginationResult(req model.PaginationReq) model.Pagination {
-	total := mq.Clone().CountX(context.Background())
+	ids := mq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
 	return model.Pagination{
 		Current: req.GetCurrent(),
 		Pages:   req.GetPages(total),
@@ -128,7 +135,8 @@ func (pq *PersonQuery) Pagination(req model.PaginationReq) *PersonQuery {
 
 // PaginationResult returns pagination for PersonQuery.
 func (pq *PersonQuery) PaginationResult(req model.PaginationReq) model.Pagination {
-	total := pq.Clone().CountX(context.Background())
+	ids := pq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
 	return model.Pagination{
 		Current: req.GetCurrent(),
 		Pages:   req.GetPages(total),
@@ -144,7 +152,8 @@ func (rq *RiderQuery) Pagination(req model.PaginationReq) *RiderQuery {
 
 // PaginationResult returns pagination for RiderQuery.
 func (rq *RiderQuery) PaginationResult(req model.PaginationReq) model.Pagination {
-	total := rq.Clone().CountX(context.Background())
+	ids := rq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
 	return model.Pagination{
 		Current: req.GetCurrent(),
 		Pages:   req.GetPages(total),
@@ -160,7 +169,8 @@ func (sq *SettingQuery) Pagination(req model.PaginationReq) *SettingQuery {
 
 // PaginationResult returns pagination for SettingQuery.
 func (sq *SettingQuery) PaginationResult(req model.PaginationReq) model.Pagination {
-	total := sq.Clone().CountX(context.Background())
+	ids := sq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
 	return model.Pagination{
 		Current: req.GetCurrent(),
 		Pages:   req.GetPages(total),

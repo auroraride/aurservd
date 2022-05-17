@@ -403,7 +403,7 @@ func (m *BatteryModelMutation) Remark() (r string, exists bool) {
 // OldRemark returns the old "remark" field's value of the BatteryModel entity.
 // If the BatteryModel object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BatteryModelMutation) OldRemark(ctx context.Context) (v *string, err error) {
+func (m *BatteryModelMutation) OldRemark(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
 	}
@@ -1274,7 +1274,7 @@ func (m *BranchMutation) Remark() (r string, exists bool) {
 // OldRemark returns the old "remark" field's value of the Branch entity.
 // If the Branch object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BranchMutation) OldRemark(ctx context.Context) (v *string, err error) {
+func (m *BranchMutation) OldRemark(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
 	}
@@ -2555,7 +2555,7 @@ func (m *BranchContractMutation) Remark() (r string, exists bool) {
 // OldRemark returns the old "remark" field's value of the BranchContract entity.
 // If the BranchContract object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BranchContractMutation) OldRemark(ctx context.Context) (v *string, err error) {
+func (m *BranchContractMutation) OldRemark(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
 	}
@@ -4280,7 +4280,7 @@ func (m *CabinetMutation) Remark() (r string, exists bool) {
 // OldRemark returns the old "remark" field's value of the Cabinet entity.
 // If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetMutation) OldRemark(ctx context.Context) (v *string, err error) {
+func (m *CabinetMutation) OldRemark(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
 	}
@@ -5878,7 +5878,7 @@ func (m *CityMutation) Remark() (r string, exists bool) {
 // OldRemark returns the old "remark" field's value of the City entity.
 // If the City object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CityMutation) OldRemark(ctx context.Context) (v *string, err error) {
+func (m *CityMutation) OldRemark(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
 	}
@@ -6939,7 +6939,7 @@ func (m *ContractMutation) Remark() (r string, exists bool) {
 // OldRemark returns the old "remark" field's value of the Contract entity.
 // If the Contract object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ContractMutation) OldRemark(ctx context.Context) (v *string, err error) {
+func (m *ContractMutation) OldRemark(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
 	}
@@ -7903,7 +7903,7 @@ func (m *ManagerMutation) Remark() (r string, exists bool) {
 // OldRemark returns the old "remark" field's value of the Manager entity.
 // If the Manager object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ManagerMutation) OldRemark(ctx context.Context) (v *string, err error) {
+func (m *ManagerMutation) OldRemark(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
 	}
@@ -8736,7 +8736,7 @@ func (m *PersonMutation) Remark() (r string, exists bool) {
 // OldRemark returns the old "remark" field's value of the Person entity.
 // If the Person object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldRemark(ctx context.Context) (v *string, err error) {
+func (m *PersonMutation) OldRemark(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
 	}
@@ -10065,7 +10065,7 @@ func (m *RiderMutation) Remark() (r string, exists bool) {
 // OldRemark returns the old "remark" field's value of the Rider entity.
 // If the Rider object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RiderMutation) OldRemark(ctx context.Context) (v *string, err error) {
+func (m *RiderMutation) OldRemark(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
 	}

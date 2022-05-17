@@ -394,7 +394,7 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: person.FieldRemark,
 		})
-		_node.Remark = &value
+		_node.Remark = value
 	}
 	if value, ok := pc.mutation.Status(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

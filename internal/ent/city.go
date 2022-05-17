@@ -29,7 +29,7 @@ type City struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// Remark holds the value of the "remark" field.
 	// 备注
-	Remark *string `json:"remark,omitempty"`
+	Remark string `json:"remark,omitempty"`
 	// Open holds the value of the "open" field.
 	// 启用
 	Open *bool `json:"open,omitempty"`
@@ -159,8 +159,7 @@ func (c *City) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
-				c.Remark = new(string)
-				*c.Remark = value.String
+				c.Remark = value.String
 			}
 		case city.FieldOpen:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -241,10 +240,8 @@ func (c *City) String() string {
 	}
 	builder.WriteString(", last_modifier=")
 	builder.WriteString(fmt.Sprintf("%v", c.LastModifier))
-	if v := c.Remark; v != nil {
-		builder.WriteString(", remark=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString(", remark=")
+	builder.WriteString(c.Remark)
 	if v := c.Open; v != nil {
 		builder.WriteString(", open=")
 		builder.WriteString(fmt.Sprintf("%v", *v))

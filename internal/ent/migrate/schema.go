@@ -148,7 +148,7 @@ var (
 		{Name: "doors", Type: field.TypeUint},
 		{Name: "status", Type: field.TypeUint},
 		{Name: "models", Type: field.TypeJSON},
-		{Name: "health", Type: field.TypeUint},
+		{Name: "health", Type: field.TypeUint, Default: 0},
 		{Name: "bin", Type: field.TypeJSON, Nullable: true},
 		{Name: "battery_num", Type: field.TypeUint, Default: 0},
 		{Name: "battery_full_num", Type: field.TypeUint, Default: 0},

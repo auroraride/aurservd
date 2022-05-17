@@ -30,7 +30,7 @@ type Contract struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// Remark holds the value of the "remark" field.
 	// 备注
-	Remark *string `json:"remark,omitempty"`
+	Remark string `json:"remark,omitempty"`
 	// Status holds the value of the "status" field.
 	// 状态
 	Status uint8 `json:"status,omitempty"`
@@ -139,8 +139,7 @@ func (c *Contract) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
-				c.Remark = new(string)
-				*c.Remark = value.String
+				c.Remark = value.String
 			}
 		case contract.FieldStatus:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -217,10 +216,8 @@ func (c *Contract) String() string {
 	}
 	builder.WriteString(", last_modifier=")
 	builder.WriteString(fmt.Sprintf("%v", c.LastModifier))
-	if v := c.Remark; v != nil {
-		builder.WriteString(", remark=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString(", remark=")
+	builder.WriteString(c.Remark)
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", c.Status))
 	builder.WriteString(", rider_id=")

@@ -155,6 +155,14 @@ func (cc *CabinetCreate) SetHealth(u uint) *CabinetCreate {
 	return cc
 }
 
+// SetNillableHealth sets the "health" field if the given value is not nil.
+func (cc *CabinetCreate) SetNillableHealth(u *uint) *CabinetCreate {
+	if u != nil {
+		cc.SetHealth(*u)
+	}
+	return cc
+}
+
 // SetBin sets the "bin" field.
 func (cc *CabinetCreate) SetBin(mb []model.CabinetBin) *CabinetCreate {
 	cc.mutation.SetBin(mb)
@@ -288,6 +296,10 @@ func (cc *CabinetCreate) defaults() {
 		v := cabinet.DefaultUpdatedAt()
 		cc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := cc.mutation.Health(); !ok {
+		v := cabinet.DefaultHealth
+		cc.mutation.SetHealth(v)
+	}
 	if _, ok := cc.mutation.BatteryNum(); !ok {
 		v := cabinet.DefaultBatteryNum
 		cc.mutation.SetBatteryNum(v)
@@ -410,7 +422,7 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: cabinet.FieldRemark,
 		})
-		_node.Remark = &value
+		_node.Remark = value
 	}
 	if value, ok := cc.mutation.Sn(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

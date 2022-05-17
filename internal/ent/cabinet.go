@@ -33,7 +33,7 @@ type Cabinet struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// Remark holds the value of the "remark" field.
 	// 备注
-	Remark *string `json:"remark,omitempty"`
+	Remark string `json:"remark,omitempty"`
 	// BranchID holds the value of the "branch_id" field.
 	// 网点
 	BranchID uint64 `json:"branch_id,omitempty"`
@@ -182,8 +182,7 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
-				c.Remark = new(string)
-				*c.Remark = value.String
+				c.Remark = value.String
 			}
 		case cabinet.FieldBranchID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -311,10 +310,8 @@ func (c *Cabinet) String() string {
 	builder.WriteString(fmt.Sprintf("%v", c.Creator))
 	builder.WriteString(", last_modifier=")
 	builder.WriteString(fmt.Sprintf("%v", c.LastModifier))
-	if v := c.Remark; v != nil {
-		builder.WriteString(", remark=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString(", remark=")
+	builder.WriteString(c.Remark)
 	builder.WriteString(", branch_id=")
 	builder.WriteString(fmt.Sprintf("%v", c.BranchID))
 	builder.WriteString(", sn=")

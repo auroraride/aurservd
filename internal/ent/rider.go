@@ -30,7 +30,7 @@ type Rider struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// Remark holds the value of the "remark" field.
 	// 备注
-	Remark *string `json:"remark,omitempty"`
+	Remark string `json:"remark,omitempty"`
 	// PersonID holds the value of the "person_id" field.
 	// 实人
 	PersonID *uint64 `json:"person_id,omitempty"`
@@ -170,8 +170,7 @@ func (r *Rider) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
-				r.Remark = new(string)
-				*r.Remark = value.String
+				r.Remark = value.String
 			}
 		case rider.FieldPersonID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -293,10 +292,8 @@ func (r *Rider) String() string {
 	}
 	builder.WriteString(", last_modifier=")
 	builder.WriteString(fmt.Sprintf("%v", r.LastModifier))
-	if v := r.Remark; v != nil {
-		builder.WriteString(", remark=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString(", remark=")
+	builder.WriteString(r.Remark)
 	if v := r.PersonID; v != nil {
 		builder.WriteString(", person_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))

@@ -33,7 +33,7 @@ type BranchContract struct {
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// Remark holds the value of the "remark" field.
 	// 备注
-	Remark *string `json:"remark,omitempty"`
+	Remark string `json:"remark,omitempty"`
 	// BranchID holds the value of the "branch_id" field.
 	// 网点ID
 	BranchID uint64 `json:"branch_id,omitempty"`
@@ -182,8 +182,7 @@ func (bc *BranchContract) assignValues(columns []string, values []interface{}) e
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
-				bc.Remark = new(string)
-				*bc.Remark = value.String
+				bc.Remark = value.String
 			}
 		case branchcontract.FieldBranchID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -322,10 +321,8 @@ func (bc *BranchContract) String() string {
 	builder.WriteString(fmt.Sprintf("%v", bc.Creator))
 	builder.WriteString(", last_modifier=")
 	builder.WriteString(fmt.Sprintf("%v", bc.LastModifier))
-	if v := bc.Remark; v != nil {
-		builder.WriteString(", remark=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString(", remark=")
+	builder.WriteString(bc.Remark)
 	builder.WriteString(", branch_id=")
 	builder.WriteString(fmt.Sprintf("%v", bc.BranchID))
 	builder.WriteString(", landlord_name=")

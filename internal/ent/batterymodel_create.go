@@ -288,7 +288,7 @@ func (bmc *BatteryModelCreate) createSpec() (*BatteryModel, *sqlgraph.CreateSpec
 			Value:  value,
 			Column: batterymodel.FieldRemark,
 		})
-		_node.Remark = &value
+		_node.Remark = value
 	}
 	if value, ok := bmc.mutation.Voltage(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

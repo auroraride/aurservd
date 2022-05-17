@@ -32,7 +32,8 @@ func ({{ $receiver }} *{{ $builder }}) Pagination(req model.PaginationReq) *{{ $
 
 // PaginationResult returns pagination for {{ $builder }}.
 func ({{ $receiver }} *{{ $builder }}) PaginationResult(req model.PaginationReq) model.Pagination {
-    total := {{ $receiver }}.Clone().CountX(context.Background())
+    ids := {{ $receiver }}.Clone().Select("{{ $n.ID.Name }}").GroupBy("{{ $n.ID.Name }}").IntsX(context.Background())
+    total := len(ids)
 	return model.Pagination{
 	    Current: req.GetCurrent(),
         Pages:   req.GetPages(total),

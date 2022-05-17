@@ -291,7 +291,7 @@ func (mc *ManagerCreate) createSpec() (*Manager, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: manager.FieldRemark,
 		})
-		_node.Remark = &value
+		_node.Remark = value
 	}
 	if value, ok := mc.mutation.Phone(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
