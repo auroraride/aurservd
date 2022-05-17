@@ -212,6 +212,10 @@ func (f LogFormat) Format(entry *logrus.Entry) (out []byte, err error) {
     buf.WriteString(t)
     buf.WriteString(lp)
     buf.WriteString(l)
+    if entry.HasCaller() {
+        buf.WriteString(lp)
+        buf.WriteString(fmt.Sprintf("{%s} %s:%d", entry.Caller.Function, entry.Caller.File, entry.Caller.Line))
+    }
     buf.WriteString(mp)
     buf.WriteString(entry.Message)
     buf.WriteString(s)

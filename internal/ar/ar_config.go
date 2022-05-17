@@ -48,6 +48,7 @@ type config struct {
     App struct {
         Address   string
         Host      string
+        Mode      string
         BodyLimit string
         RateLimit float64
         Debug     struct {
