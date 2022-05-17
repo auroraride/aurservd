@@ -91,7 +91,7 @@ func (*cabinet) Delete(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        sn    path  string  true  "电柜平台编码"
+// @Param        id    path  int  true  "电柜ID"
 // @Success      200  {object}  model.CabinetDetailRes  "请求成功"
 func (*cabinet) Detail(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)

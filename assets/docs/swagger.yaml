@@ -899,11 +899,11 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 电柜平台编码
+      - description: 电柜ID
         in: path
-        name: sn
+        name: id
         required: true
-        type: string
+        type: integer
       produces:
       - application/json
       responses:

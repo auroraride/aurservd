@@ -542,9 +542,9 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "string",
-                        "description": "电柜平台编码",
-                        "name": "sn",
+                        "type": "integer",
+                        "description": "电柜ID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
