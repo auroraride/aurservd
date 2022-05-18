@@ -4,6 +4,8 @@ package rider
 
 import (
 	"time"
+
+	"entgo.io/ent"
 )
 
 const (
@@ -47,6 +49,8 @@ const (
 	EdgePerson = "person"
 	// EdgeContract holds the string denoting the contract edge name in mutations.
 	EdgeContract = "contract"
+	// EdgeFaults holds the string denoting the faults edge name in mutations.
+	EdgeFaults = "faults"
 	// Table holds the table name of the rider in the database.
 	Table = "rider"
 	// PersonTable is the table that holds the person relation/edge.
@@ -63,6 +67,13 @@ const (
 	ContractInverseTable = "contract"
 	// ContractColumn is the table column denoting the contract relation/edge.
 	ContractColumn = "rider_id"
+	// FaultsTable is the table that holds the faults relation/edge.
+	FaultsTable = "cabinet_fault"
+	// FaultsInverseTable is the table name for the CabinetFault entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinetfault" package.
+	FaultsInverseTable = "cabinet_fault"
+	// FaultsColumn is the table column denoting the faults relation/edge.
+	FaultsColumn = "rider_id"
 )
 
 // Columns holds all SQL columns for rider fields.
@@ -96,7 +107,14 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "github.com/auroraride/aurservd/internal/ent/runtime"
+//
 var (
+	Hooks [1]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

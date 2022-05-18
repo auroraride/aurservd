@@ -21,7 +21,7 @@ func RiderMiddleware() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
             url := c.Request().RequestURI
-            if url == "/rider/signin" {
+            if url == "/rider/v1/signin" {
                 return next(c)
             }
 

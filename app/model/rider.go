@@ -38,3 +38,10 @@ type RiderContact struct {
     Phone    string `json:"phone" validate:"required,phone" trans:"联系人电话"`
     Relation string `json:"relation" validate:"required" trans:"关系"`
 }
+
+// RiderSampleItem 骑手简单信息
+type RiderSampleItem struct {
+    ID    uint64 `json:"id"`
+    Name  string `json:"name"`
+    Phone string `json:"phone"`
+}

@@ -65,9 +65,11 @@ type BranchEdges struct {
 	Cabinets []*Cabinet `json:"cabinets,omitempty"`
 	// City holds the value of the city edge.
 	City *City `json:"city,omitempty"`
+	// Faults holds the value of the faults edge.
+	Faults []*CabinetFault `json:"faults,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // ContractsOrErr returns the Contracts value or an error if the edge
@@ -100,6 +102,15 @@ func (e BranchEdges) CityOrErr() (*City, error) {
 		return e.City, nil
 	}
 	return nil, &NotLoadedError{edge: "city"}
+}
+
+// FaultsOrErr returns the Faults value or an error if the edge
+// was not loaded in eager-loading.
+func (e BranchEdges) FaultsOrErr() ([]*CabinetFault, error) {
+	if e.loadedTypes[3] {
+		return e.Faults, nil
+	}
+	return nil, &NotLoadedError{edge: "faults"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -235,6 +246,11 @@ func (b *Branch) QueryCabinets() *CabinetQuery {
 // QueryCity queries the "city" edge of the Branch entity.
 func (b *Branch) QueryCity() *CityQuery {
 	return (&BranchClient{config: b.config}).QueryCity(b)
+}
+
+// QueryFaults queries the "faults" edge of the Branch entity.
+func (b *Branch) QueryFaults() *CabinetFaultQuery {
+	return (&BranchClient{config: b.config}).QueryFaults(b)
 }
 
 // Update returns a builder for updating this Branch.

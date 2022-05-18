@@ -7,6 +7,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -23,7 +24,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 10)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 11)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   batterymodel.Table,
@@ -137,6 +138,37 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[4] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
+			Table:   cabinetfault.Table,
+			Columns: cabinetfault.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: cabinetfault.FieldID,
+			},
+		},
+		Type: "CabinetFault",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			cabinetfault.FieldCreatedAt:    {Type: field.TypeTime, Column: cabinetfault.FieldCreatedAt},
+			cabinetfault.FieldUpdatedAt:    {Type: field.TypeTime, Column: cabinetfault.FieldUpdatedAt},
+			cabinetfault.FieldDeletedAt:    {Type: field.TypeTime, Column: cabinetfault.FieldDeletedAt},
+			cabinetfault.FieldCreator:      {Type: field.TypeJSON, Column: cabinetfault.FieldCreator},
+			cabinetfault.FieldLastModifier: {Type: field.TypeJSON, Column: cabinetfault.FieldLastModifier},
+			cabinetfault.FieldRemark:       {Type: field.TypeString, Column: cabinetfault.FieldRemark},
+			cabinetfault.FieldStatus:       {Type: field.TypeUint8, Column: cabinetfault.FieldStatus},
+			cabinetfault.FieldCity:         {Type: field.TypeJSON, Column: cabinetfault.FieldCity},
+			cabinetfault.FieldBranchID:     {Type: field.TypeUint64, Column: cabinetfault.FieldBranchID},
+			cabinetfault.FieldCabinetID:    {Type: field.TypeUint64, Column: cabinetfault.FieldCabinetID},
+			cabinetfault.FieldRiderID:      {Type: field.TypeUint64, Column: cabinetfault.FieldRiderID},
+			cabinetfault.FieldCabinetName:  {Type: field.TypeString, Column: cabinetfault.FieldCabinetName},
+			cabinetfault.FieldBrand:        {Type: field.TypeString, Column: cabinetfault.FieldBrand},
+			cabinetfault.FieldSerial:       {Type: field.TypeString, Column: cabinetfault.FieldSerial},
+			cabinetfault.FieldModels:       {Type: field.TypeJSON, Column: cabinetfault.FieldModels},
+			cabinetfault.FieldFault:        {Type: field.TypeString, Column: cabinetfault.FieldFault},
+			cabinetfault.FieldAttachments:  {Type: field.TypeJSON, Column: cabinetfault.FieldAttachments},
+			cabinetfault.FieldDescription:  {Type: field.TypeString, Column: cabinetfault.FieldDescription},
+		},
+	}
+	graph.Nodes[5] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
 			Table:   city.Table,
 			Columns: city.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -157,7 +189,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			city.FieldParentID:     {Type: field.TypeUint64, Column: city.FieldParentID},
 		},
 	}
-	graph.Nodes[5] = &sqlgraph.Node{
+	graph.Nodes[6] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   contract.Table,
 			Columns: contract.Columns,
@@ -180,7 +212,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			contract.FieldFiles:        {Type: field.TypeJSON, Column: contract.FieldFiles},
 		},
 	}
-	graph.Nodes[6] = &sqlgraph.Node{
+	graph.Nodes[7] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   manager.Table,
 			Columns: manager.Columns,
@@ -202,7 +234,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			manager.FieldLastSigninAt: {Type: field.TypeTime, Column: manager.FieldLastSigninAt},
 		},
 	}
-	graph.Nodes[7] = &sqlgraph.Node{
+	graph.Nodes[8] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   person.Table,
 			Columns: person.Columns,
@@ -230,7 +262,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			person.FieldAuthAt:         {Type: field.TypeTime, Column: person.FieldAuthAt},
 		},
 	}
-	graph.Nodes[8] = &sqlgraph.Node{
+	graph.Nodes[9] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   rider.Table,
 			Columns: rider.Columns,
@@ -259,7 +291,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldEsignAccountID: {Type: field.TypeString, Column: rider.FieldEsignAccountID},
 		},
 	}
-	graph.Nodes[9] = &sqlgraph.Node{
+	graph.Nodes[10] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   setting.Table,
 			Columns: setting.Columns,
@@ -325,6 +357,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"City",
 	)
 	graph.MustAddE(
+		"faults",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   branch.FaultsTable,
+			Columns: []string{branch.FaultsColumn},
+			Bidi:    false,
+		},
+		"Branch",
+		"CabinetFault",
+	)
+	graph.MustAddE(
 		"branch",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -359,6 +403,54 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Cabinet",
 		"BatteryModel",
+	)
+	graph.MustAddE(
+		"faults",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.FaultsTable,
+			Columns: []string{cabinet.FaultsColumn},
+			Bidi:    false,
+		},
+		"Cabinet",
+		"CabinetFault",
+	)
+	graph.MustAddE(
+		"branch",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cabinetfault.BranchTable,
+			Columns: []string{cabinetfault.BranchColumn},
+			Bidi:    false,
+		},
+		"CabinetFault",
+		"Branch",
+	)
+	graph.MustAddE(
+		"cabinet",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cabinetfault.CabinetTable,
+			Columns: []string{cabinetfault.CabinetColumn},
+			Bidi:    false,
+		},
+		"CabinetFault",
+		"Cabinet",
+	)
+	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cabinetfault.RiderTable,
+			Columns: []string{cabinetfault.RiderColumn},
+			Bidi:    false,
+		},
+		"CabinetFault",
+		"Rider",
 	)
 	graph.MustAddE(
 		"parent",
@@ -443,6 +535,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Rider",
 		"Contract",
+	)
+	graph.MustAddE(
+		"faults",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.FaultsTable,
+			Columns: []string{rider.FaultsColumn},
+			Bidi:    false,
+		},
+		"Rider",
+		"CabinetFault",
 	)
 	return graph
 }()
@@ -683,6 +787,20 @@ func (f *BranchFilter) WhereHasCity() {
 // WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
 func (f *BranchFilter) WhereHasCityWith(preds ...predicate.City) {
 	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasFaults applies a predicate to check if query has an edge faults.
+func (f *BranchFilter) WhereHasFaults() {
+	f.Where(entql.HasEdge("faults"))
+}
+
+// WhereHasFaultsWith applies a predicate to check if query has an edge faults with a given conditions (other predicates).
+func (f *BranchFilter) WhereHasFaultsWith(preds ...predicate.CabinetFault) {
+	f.Where(entql.HasEdgeWith("faults", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -1006,6 +1124,192 @@ func (f *CabinetFilter) WhereHasBmsWith(preds ...predicate.BatteryModel) {
 	})))
 }
 
+// WhereHasFaults applies a predicate to check if query has an edge faults.
+func (f *CabinetFilter) WhereHasFaults() {
+	f.Where(entql.HasEdge("faults"))
+}
+
+// WhereHasFaultsWith applies a predicate to check if query has an edge faults with a given conditions (other predicates).
+func (f *CabinetFilter) WhereHasFaultsWith(preds ...predicate.CabinetFault) {
+	f.Where(entql.HasEdgeWith("faults", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (cfq *CabinetFaultQuery) addPredicate(pred func(s *sql.Selector)) {
+	cfq.predicates = append(cfq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the CabinetFaultQuery builder.
+func (cfq *CabinetFaultQuery) Filter() *CabinetFaultFilter {
+	return &CabinetFaultFilter{cfq.config, cfq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *CabinetFaultMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the CabinetFaultMutation builder.
+func (m *CabinetFaultMutation) Filter() *CabinetFaultFilter {
+	return &CabinetFaultFilter{m.config, m}
+}
+
+// CabinetFaultFilter provides a generic filtering capability at runtime for CabinetFaultQuery.
+type CabinetFaultFilter struct {
+	config
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *CabinetFaultFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *CabinetFaultFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(cabinetfault.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *CabinetFaultFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(cabinetfault.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *CabinetFaultFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(cabinetfault.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *CabinetFaultFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(cabinetfault.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *CabinetFaultFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(cabinetfault.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *CabinetFaultFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(cabinetfault.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *CabinetFaultFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(cabinetfault.FieldRemark))
+}
+
+// WhereStatus applies the entql uint8 predicate on the status field.
+func (f *CabinetFaultFilter) WhereStatus(p entql.Uint8P) {
+	f.Where(p.Field(cabinetfault.FieldStatus))
+}
+
+// WhereCity applies the entql json.RawMessage predicate on the city field.
+func (f *CabinetFaultFilter) WhereCity(p entql.BytesP) {
+	f.Where(p.Field(cabinetfault.FieldCity))
+}
+
+// WhereBranchID applies the entql uint64 predicate on the branch_id field.
+func (f *CabinetFaultFilter) WhereBranchID(p entql.Uint64P) {
+	f.Where(p.Field(cabinetfault.FieldBranchID))
+}
+
+// WhereCabinetID applies the entql uint64 predicate on the cabinet_id field.
+func (f *CabinetFaultFilter) WhereCabinetID(p entql.Uint64P) {
+	f.Where(p.Field(cabinetfault.FieldCabinetID))
+}
+
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *CabinetFaultFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(cabinetfault.FieldRiderID))
+}
+
+// WhereCabinetName applies the entql string predicate on the cabinet_name field.
+func (f *CabinetFaultFilter) WhereCabinetName(p entql.StringP) {
+	f.Where(p.Field(cabinetfault.FieldCabinetName))
+}
+
+// WhereBrand applies the entql string predicate on the brand field.
+func (f *CabinetFaultFilter) WhereBrand(p entql.StringP) {
+	f.Where(p.Field(cabinetfault.FieldBrand))
+}
+
+// WhereSerial applies the entql string predicate on the serial field.
+func (f *CabinetFaultFilter) WhereSerial(p entql.StringP) {
+	f.Where(p.Field(cabinetfault.FieldSerial))
+}
+
+// WhereModels applies the entql json.RawMessage predicate on the models field.
+func (f *CabinetFaultFilter) WhereModels(p entql.BytesP) {
+	f.Where(p.Field(cabinetfault.FieldModels))
+}
+
+// WhereFault applies the entql string predicate on the fault field.
+func (f *CabinetFaultFilter) WhereFault(p entql.StringP) {
+	f.Where(p.Field(cabinetfault.FieldFault))
+}
+
+// WhereAttachments applies the entql json.RawMessage predicate on the attachments field.
+func (f *CabinetFaultFilter) WhereAttachments(p entql.BytesP) {
+	f.Where(p.Field(cabinetfault.FieldAttachments))
+}
+
+// WhereDescription applies the entql string predicate on the description field.
+func (f *CabinetFaultFilter) WhereDescription(p entql.StringP) {
+	f.Where(p.Field(cabinetfault.FieldDescription))
+}
+
+// WhereHasBranch applies a predicate to check if query has an edge branch.
+func (f *CabinetFaultFilter) WhereHasBranch() {
+	f.Where(entql.HasEdge("branch"))
+}
+
+// WhereHasBranchWith applies a predicate to check if query has an edge branch with a given conditions (other predicates).
+func (f *CabinetFaultFilter) WhereHasBranchWith(preds ...predicate.Branch) {
+	f.Where(entql.HasEdgeWith("branch", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCabinet applies a predicate to check if query has an edge cabinet.
+func (f *CabinetFaultFilter) WhereHasCabinet() {
+	f.Where(entql.HasEdge("cabinet"))
+}
+
+// WhereHasCabinetWith applies a predicate to check if query has an edge cabinet with a given conditions (other predicates).
+func (f *CabinetFaultFilter) WhereHasCabinetWith(preds ...predicate.Cabinet) {
+	f.Where(entql.HasEdgeWith("cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *CabinetFaultFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *CabinetFaultFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (cq *CityQuery) addPredicate(pred func(s *sql.Selector)) {
 	cq.predicates = append(cq.predicates, pred)
@@ -1035,7 +1339,7 @@ type CityFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *CityFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1162,7 +1466,7 @@ type ContractFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *ContractFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1266,7 +1570,7 @@ type ManagerFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *ManagerFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1351,7 +1655,7 @@ type PersonFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PersonFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1480,7 +1784,7 @@ type RiderFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RiderFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1599,6 +1903,20 @@ func (f *RiderFilter) WhereHasContractWith(preds ...predicate.Contract) {
 	})))
 }
 
+// WhereHasFaults applies a predicate to check if query has an edge faults.
+func (f *RiderFilter) WhereHasFaults() {
+	f.Where(entql.HasEdge("faults"))
+}
+
+// WhereHasFaultsWith applies a predicate to check if query has an edge faults with a given conditions (other predicates).
+func (f *RiderFilter) WhereHasFaultsWith(preds ...predicate.CabinetFault) {
+	f.Where(entql.HasEdgeWith("faults", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (sq *SettingQuery) addPredicate(pred func(s *sql.Selector)) {
 	sq.predicates = append(sq.predicates, pred)
@@ -1628,7 +1946,7 @@ type SettingFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SettingFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

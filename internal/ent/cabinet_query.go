@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -29,6 +30,7 @@ type CabinetQuery struct {
 	// eager-loading edges.
 	withBranch *BranchQuery
 	withBms    *BatteryModelQuery
+	withFaults *CabinetFaultQuery
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -103,6 +105,28 @@ func (cq *CabinetQuery) QueryBms() *BatteryModelQuery {
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
 			sqlgraph.To(batterymodel.Table, batterymodel.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, cabinet.BmsTable, cabinet.BmsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryFaults chains the current query on the "faults" edge.
+func (cq *CabinetQuery) QueryFaults() *CabinetFaultQuery {
+	query := &CabinetFaultQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
+			sqlgraph.To(cabinetfault.Table, cabinetfault.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, cabinet.FaultsTable, cabinet.FaultsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -293,6 +317,7 @@ func (cq *CabinetQuery) Clone() *CabinetQuery {
 		predicates: append([]predicate.Cabinet{}, cq.predicates...),
 		withBranch: cq.withBranch.Clone(),
 		withBms:    cq.withBms.Clone(),
+		withFaults: cq.withFaults.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
@@ -319,6 +344,17 @@ func (cq *CabinetQuery) WithBms(opts ...func(*BatteryModelQuery)) *CabinetQuery 
 		opt(query)
 	}
 	cq.withBms = query
+	return cq
+}
+
+// WithFaults tells the query-builder to eager-load the nodes that are connected to
+// the "faults" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CabinetQuery) WithFaults(opts ...func(*CabinetFaultQuery)) *CabinetQuery {
+	query := &CabinetFaultQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withFaults = query
 	return cq
 }
 
@@ -392,9 +428,10 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 	var (
 		nodes       = []*Cabinet{}
 		_spec       = cq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			cq.withBranch != nil,
 			cq.withBms != nil,
+			cq.withFaults != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -495,6 +532,31 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 			for kn := range nodes {
 				kn.Edges.Bms = append(kn.Edges.Bms, n)
 			}
+		}
+	}
+
+	if query := cq.withFaults; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Cabinet)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Faults = []*CabinetFault{}
+		}
+		query.Where(predicate.CabinetFault(func(s *sql.Selector) {
+			s.Where(sql.InValues(cabinet.FaultsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.CabinetID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Faults = append(node.Edges.Faults, n)
 		}
 	}
 

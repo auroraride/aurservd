@@ -45,11 +45,13 @@ func (Rider) Edges() []ent.Edge {
     return []ent.Edge{
         edge.From("person", Person.Type).Ref("rider").Unique().Field("person_id"),
         edge.To("contract", Contract.Type),
+        edge.To("faults", CabinetFault.Type),
     }
 }
 
 func (Rider) Mixin() []ent.Mixin {
     return []ent.Mixin{
+        internal.SonyflakeIDMixin{},
         internal.TimeMixin{},
         internal.DeleteMixin{},
         internal.LastModifier{},

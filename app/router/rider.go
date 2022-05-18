@@ -42,4 +42,7 @@ func loadRideRoutes() {
 
     // 获取网点
 
+    // 电柜
+    cabinet := g.Group("/cabinet")
+    cabinet.POST("/report", rapi.Cabinet.Report)
 }

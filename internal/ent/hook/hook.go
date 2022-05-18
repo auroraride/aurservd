@@ -61,6 +61,19 @@ func (f CabinetFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return f(ctx, mv)
 }
 
+// The CabinetFaultFunc type is an adapter to allow the use of ordinary
+// function as CabinetFault mutator.
+type CabinetFaultFunc func(context.Context, *ent.CabinetFaultMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CabinetFaultFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.CabinetFaultMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CabinetFaultMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The CityFunc type is an adapter to allow the use of ordinary
 // function as City mutator.
 type CityFunc func(context.Context, *ent.CityMutation) (ent.Value, error)

@@ -76,6 +76,23 @@ func (cq *CabinetQuery) PaginationResult(req model.PaginationReq) model.Paginati
 	}
 }
 
+// Pagination returns pagination query builder for CabinetFaultQuery.
+func (cfq *CabinetFaultQuery) Pagination(req model.PaginationReq) *CabinetFaultQuery {
+	cfq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return cfq
+}
+
+// PaginationResult returns pagination for CabinetFaultQuery.
+func (cfq *CabinetFaultQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := cfq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for CityQuery.
 func (cq *CityQuery) Pagination(req model.PaginationReq) *CityQuery {
 	cq.Offset(req.GetOffset()).Limit(req.GetLimit())

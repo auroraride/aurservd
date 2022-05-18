@@ -2,7 +2,307 @@
 
 package runtime
 
-// The schema-stitching logic is generated in github.com/auroraride/aurservd/internal/ent/runtime.go
+import (
+	"time"
+
+	"github.com/auroraride/aurservd/internal/ent/batterymodel"
+	"github.com/auroraride/aurservd/internal/ent/branch"
+	"github.com/auroraride/aurservd/internal/ent/branchcontract"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
+	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/manager"
+	"github.com/auroraride/aurservd/internal/ent/person"
+	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/schema"
+	"github.com/auroraride/aurservd/internal/ent/setting"
+)
+
+// The init function reads all schema descriptors with runtime code
+// (default values, validators, hooks and policies) and stitches it
+// to their package variables.
+func init() {
+	batterymodelMixin := schema.BatteryModel{}.Mixin()
+	batterymodelMixinFields0 := batterymodelMixin[0].Fields()
+	_ = batterymodelMixinFields0
+	batterymodelFields := schema.BatteryModel{}.Fields()
+	_ = batterymodelFields
+	// batterymodelDescCreatedAt is the schema descriptor for created_at field.
+	batterymodelDescCreatedAt := batterymodelMixinFields0[0].Descriptor()
+	// batterymodel.DefaultCreatedAt holds the default value on creation for the created_at field.
+	batterymodel.DefaultCreatedAt = batterymodelDescCreatedAt.Default.(func() time.Time)
+	// batterymodelDescUpdatedAt is the schema descriptor for updated_at field.
+	batterymodelDescUpdatedAt := batterymodelMixinFields0[1].Descriptor()
+	// batterymodel.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	batterymodel.DefaultUpdatedAt = batterymodelDescUpdatedAt.Default.(func() time.Time)
+	// batterymodel.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	batterymodel.UpdateDefaultUpdatedAt = batterymodelDescUpdatedAt.UpdateDefault.(func() time.Time)
+	branchMixin := schema.Branch{}.Mixin()
+	branchMixinFields0 := branchMixin[0].Fields()
+	_ = branchMixinFields0
+	branchFields := schema.Branch{}.Fields()
+	_ = branchFields
+	// branchDescCreatedAt is the schema descriptor for created_at field.
+	branchDescCreatedAt := branchMixinFields0[0].Descriptor()
+	// branch.DefaultCreatedAt holds the default value on creation for the created_at field.
+	branch.DefaultCreatedAt = branchDescCreatedAt.Default.(func() time.Time)
+	// branchDescUpdatedAt is the schema descriptor for updated_at field.
+	branchDescUpdatedAt := branchMixinFields0[1].Descriptor()
+	// branch.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	branch.DefaultUpdatedAt = branchDescUpdatedAt.Default.(func() time.Time)
+	// branch.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	branch.UpdateDefaultUpdatedAt = branchDescUpdatedAt.UpdateDefault.(func() time.Time)
+	branchcontractMixin := schema.BranchContract{}.Mixin()
+	branchcontractMixinFields0 := branchcontractMixin[0].Fields()
+	_ = branchcontractMixinFields0
+	branchcontractFields := schema.BranchContract{}.Fields()
+	_ = branchcontractFields
+	// branchcontractDescCreatedAt is the schema descriptor for created_at field.
+	branchcontractDescCreatedAt := branchcontractMixinFields0[0].Descriptor()
+	// branchcontract.DefaultCreatedAt holds the default value on creation for the created_at field.
+	branchcontract.DefaultCreatedAt = branchcontractDescCreatedAt.Default.(func() time.Time)
+	// branchcontractDescUpdatedAt is the schema descriptor for updated_at field.
+	branchcontractDescUpdatedAt := branchcontractMixinFields0[1].Descriptor()
+	// branchcontract.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	branchcontract.DefaultUpdatedAt = branchcontractDescUpdatedAt.Default.(func() time.Time)
+	// branchcontract.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	branchcontract.UpdateDefaultUpdatedAt = branchcontractDescUpdatedAt.UpdateDefault.(func() time.Time)
+	cabinetMixin := schema.Cabinet{}.Mixin()
+	cabinetMixinFields0 := cabinetMixin[0].Fields()
+	_ = cabinetMixinFields0
+	cabinetFields := schema.Cabinet{}.Fields()
+	_ = cabinetFields
+	// cabinetDescCreatedAt is the schema descriptor for created_at field.
+	cabinetDescCreatedAt := cabinetMixinFields0[0].Descriptor()
+	// cabinet.DefaultCreatedAt holds the default value on creation for the created_at field.
+	cabinet.DefaultCreatedAt = cabinetDescCreatedAt.Default.(func() time.Time)
+	// cabinetDescUpdatedAt is the schema descriptor for updated_at field.
+	cabinetDescUpdatedAt := cabinetMixinFields0[1].Descriptor()
+	// cabinet.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	cabinet.DefaultUpdatedAt = cabinetDescUpdatedAt.Default.(func() time.Time)
+	// cabinet.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	cabinet.UpdateDefaultUpdatedAt = cabinetDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// cabinetDescHealth is the schema descriptor for health field.
+	cabinetDescHealth := cabinetFields[8].Descriptor()
+	// cabinet.DefaultHealth holds the default value on creation for the health field.
+	cabinet.DefaultHealth = cabinetDescHealth.Default.(uint)
+	// cabinetDescBatteryNum is the schema descriptor for battery_num field.
+	cabinetDescBatteryNum := cabinetFields[10].Descriptor()
+	// cabinet.DefaultBatteryNum holds the default value on creation for the battery_num field.
+	cabinet.DefaultBatteryNum = cabinetDescBatteryNum.Default.(uint)
+	// cabinetDescBatteryFullNum is the schema descriptor for battery_full_num field.
+	cabinetDescBatteryFullNum := cabinetFields[11].Descriptor()
+	// cabinet.DefaultBatteryFullNum holds the default value on creation for the battery_full_num field.
+	cabinet.DefaultBatteryFullNum = cabinetDescBatteryFullNum.Default.(uint)
+	cabinetfaultMixin := schema.CabinetFault{}.Mixin()
+	cabinetfaultMixinFields0 := cabinetfaultMixin[0].Fields()
+	_ = cabinetfaultMixinFields0
+	cabinetfaultFields := schema.CabinetFault{}.Fields()
+	_ = cabinetfaultFields
+	// cabinetfaultDescCreatedAt is the schema descriptor for created_at field.
+	cabinetfaultDescCreatedAt := cabinetfaultMixinFields0[0].Descriptor()
+	// cabinetfault.DefaultCreatedAt holds the default value on creation for the created_at field.
+	cabinetfault.DefaultCreatedAt = cabinetfaultDescCreatedAt.Default.(func() time.Time)
+	// cabinetfaultDescUpdatedAt is the schema descriptor for updated_at field.
+	cabinetfaultDescUpdatedAt := cabinetfaultMixinFields0[1].Descriptor()
+	// cabinetfault.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	cabinetfault.DefaultUpdatedAt = cabinetfaultDescUpdatedAt.Default.(func() time.Time)
+	// cabinetfault.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	cabinetfault.UpdateDefaultUpdatedAt = cabinetfaultDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// cabinetfaultDescStatus is the schema descriptor for status field.
+	cabinetfaultDescStatus := cabinetfaultFields[0].Descriptor()
+	// cabinetfault.DefaultStatus holds the default value on creation for the status field.
+	cabinetfault.DefaultStatus = cabinetfaultDescStatus.Default.(uint8)
+	cityMixin := schema.City{}.Mixin()
+	cityMixinFields0 := cityMixin[0].Fields()
+	_ = cityMixinFields0
+	cityFields := schema.City{}.Fields()
+	_ = cityFields
+	// cityDescCreatedAt is the schema descriptor for created_at field.
+	cityDescCreatedAt := cityMixinFields0[0].Descriptor()
+	// city.DefaultCreatedAt holds the default value on creation for the created_at field.
+	city.DefaultCreatedAt = cityDescCreatedAt.Default.(func() time.Time)
+	// cityDescUpdatedAt is the schema descriptor for updated_at field.
+	cityDescUpdatedAt := cityMixinFields0[1].Descriptor()
+	// city.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	city.DefaultUpdatedAt = cityDescUpdatedAt.Default.(func() time.Time)
+	// city.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	city.UpdateDefaultUpdatedAt = cityDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// cityDescName is the schema descriptor for name field.
+	cityDescName := cityFields[2].Descriptor()
+	// city.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	city.NameValidator = cityDescName.Validators[0].(func(string) error)
+	// cityDescCode is the schema descriptor for code field.
+	cityDescCode := cityFields[3].Descriptor()
+	// city.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	city.CodeValidator = cityDescCode.Validators[0].(func(string) error)
+	contractMixin := schema.Contract{}.Mixin()
+	contractMixinFields0 := contractMixin[0].Fields()
+	_ = contractMixinFields0
+	contractFields := schema.Contract{}.Fields()
+	_ = contractFields
+	// contractDescCreatedAt is the schema descriptor for created_at field.
+	contractDescCreatedAt := contractMixinFields0[0].Descriptor()
+	// contract.DefaultCreatedAt holds the default value on creation for the created_at field.
+	contract.DefaultCreatedAt = contractDescCreatedAt.Default.(func() time.Time)
+	// contractDescUpdatedAt is the schema descriptor for updated_at field.
+	contractDescUpdatedAt := contractMixinFields0[1].Descriptor()
+	// contract.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	contract.DefaultUpdatedAt = contractDescUpdatedAt.Default.(func() time.Time)
+	// contract.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	contract.UpdateDefaultUpdatedAt = contractDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// contractDescStatus is the schema descriptor for status field.
+	contractDescStatus := contractFields[0].Descriptor()
+	// contract.DefaultStatus holds the default value on creation for the status field.
+	contract.DefaultStatus = contractDescStatus.Default.(uint8)
+	// contractDescFlowID is the schema descriptor for flow_id field.
+	contractDescFlowID := contractFields[2].Descriptor()
+	// contract.FlowIDValidator is a validator for the "flow_id" field. It is called by the builders before save.
+	contract.FlowIDValidator = func() func(string) error {
+		validators := contractDescFlowID.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(flow_id string) error {
+			for _, fn := range fns {
+				if err := fn(flow_id); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// contractDescSn is the schema descriptor for sn field.
+	contractDescSn := contractFields[3].Descriptor()
+	// contract.SnValidator is a validator for the "sn" field. It is called by the builders before save.
+	contract.SnValidator = func() func(string) error {
+		validators := contractDescSn.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(sn string) error {
+			for _, fn := range fns {
+				if err := fn(sn); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	managerMixin := schema.Manager{}.Mixin()
+	managerMixinFields0 := managerMixin[0].Fields()
+	_ = managerMixinFields0
+	managerFields := schema.Manager{}.Fields()
+	_ = managerFields
+	// managerDescCreatedAt is the schema descriptor for created_at field.
+	managerDescCreatedAt := managerMixinFields0[0].Descriptor()
+	// manager.DefaultCreatedAt holds the default value on creation for the created_at field.
+	manager.DefaultCreatedAt = managerDescCreatedAt.Default.(func() time.Time)
+	// managerDescUpdatedAt is the schema descriptor for updated_at field.
+	managerDescUpdatedAt := managerMixinFields0[1].Descriptor()
+	// manager.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	manager.DefaultUpdatedAt = managerDescUpdatedAt.Default.(func() time.Time)
+	// manager.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	manager.UpdateDefaultUpdatedAt = managerDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// managerDescPhone is the schema descriptor for phone field.
+	managerDescPhone := managerFields[0].Descriptor()
+	// manager.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
+	manager.PhoneValidator = managerDescPhone.Validators[0].(func(string) error)
+	// managerDescName is the schema descriptor for name field.
+	managerDescName := managerFields[1].Descriptor()
+	// manager.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	manager.NameValidator = managerDescName.Validators[0].(func(string) error)
+	personMixin := schema.Person{}.Mixin()
+	personMixinFields0 := personMixin[0].Fields()
+	_ = personMixinFields0
+	personFields := schema.Person{}.Fields()
+	_ = personFields
+	// personDescCreatedAt is the schema descriptor for created_at field.
+	personDescCreatedAt := personMixinFields0[0].Descriptor()
+	// person.DefaultCreatedAt holds the default value on creation for the created_at field.
+	person.DefaultCreatedAt = personDescCreatedAt.Default.(func() time.Time)
+	// personDescUpdatedAt is the schema descriptor for updated_at field.
+	personDescUpdatedAt := personMixinFields0[1].Descriptor()
+	// person.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	person.DefaultUpdatedAt = personDescUpdatedAt.Default.(func() time.Time)
+	// person.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	person.UpdateDefaultUpdatedAt = personDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// personDescStatus is the schema descriptor for status field.
+	personDescStatus := personFields[0].Descriptor()
+	// person.DefaultStatus holds the default value on creation for the status field.
+	person.DefaultStatus = personDescStatus.Default.(uint8)
+	// personDescBlock is the schema descriptor for block field.
+	personDescBlock := personFields[1].Descriptor()
+	// person.DefaultBlock holds the default value on creation for the block field.
+	person.DefaultBlock = personDescBlock.Default.(bool)
+	// personDescName is the schema descriptor for name field.
+	personDescName := personFields[2].Descriptor()
+	// person.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	person.NameValidator = personDescName.Validators[0].(func(string) error)
+	// personDescIDCardNumber is the schema descriptor for id_card_number field.
+	personDescIDCardNumber := personFields[3].Descriptor()
+	// person.IDCardNumberValidator is a validator for the "id_card_number" field. It is called by the builders before save.
+	person.IDCardNumberValidator = personDescIDCardNumber.Validators[0].(func(string) error)
+	// personDescIDCardType is the schema descriptor for id_card_type field.
+	personDescIDCardType := personFields[4].Descriptor()
+	// person.DefaultIDCardType holds the default value on creation for the id_card_type field.
+	person.DefaultIDCardType = personDescIDCardType.Default.(uint8)
+	riderMixin := schema.Rider{}.Mixin()
+	riderMixinHooks0 := riderMixin[0].Hooks()
+	rider.Hooks[0] = riderMixinHooks0[0]
+	riderMixinFields1 := riderMixin[1].Fields()
+	_ = riderMixinFields1
+	riderFields := schema.Rider{}.Fields()
+	_ = riderFields
+	// riderDescCreatedAt is the schema descriptor for created_at field.
+	riderDescCreatedAt := riderMixinFields1[0].Descriptor()
+	// rider.DefaultCreatedAt holds the default value on creation for the created_at field.
+	rider.DefaultCreatedAt = riderDescCreatedAt.Default.(func() time.Time)
+	// riderDescUpdatedAt is the schema descriptor for updated_at field.
+	riderDescUpdatedAt := riderMixinFields1[1].Descriptor()
+	// rider.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	rider.DefaultUpdatedAt = riderDescUpdatedAt.Default.(func() time.Time)
+	// rider.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	rider.UpdateDefaultUpdatedAt = riderDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// riderDescPhone is the schema descriptor for phone field.
+	riderDescPhone := riderFields[2].Descriptor()
+	// rider.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
+	rider.PhoneValidator = riderDescPhone.Validators[0].(func(string) error)
+	// riderDescLastDevice is the schema descriptor for last_device field.
+	riderDescLastDevice := riderFields[5].Descriptor()
+	// rider.LastDeviceValidator is a validator for the "last_device" field. It is called by the builders before save.
+	rider.LastDeviceValidator = riderDescLastDevice.Validators[0].(func(string) error)
+	// riderDescIsNewDevice is the schema descriptor for is_new_device field.
+	riderDescIsNewDevice := riderFields[6].Descriptor()
+	// rider.DefaultIsNewDevice holds the default value on creation for the is_new_device field.
+	rider.DefaultIsNewDevice = riderDescIsNewDevice.Default.(bool)
+	// riderDescPushID is the schema descriptor for push_id field.
+	riderDescPushID := riderFields[8].Descriptor()
+	// rider.PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
+	rider.PushIDValidator = riderDescPushID.Validators[0].(func(string) error)
+	settingMixin := schema.Setting{}.Mixin()
+	settingMixinFields0 := settingMixin[0].Fields()
+	_ = settingMixinFields0
+	settingFields := schema.Setting{}.Fields()
+	_ = settingFields
+	// settingDescCreatedAt is the schema descriptor for created_at field.
+	settingDescCreatedAt := settingMixinFields0[0].Descriptor()
+	// setting.DefaultCreatedAt holds the default value on creation for the created_at field.
+	setting.DefaultCreatedAt = settingDescCreatedAt.Default.(func() time.Time)
+	// settingDescUpdatedAt is the schema descriptor for updated_at field.
+	settingDescUpdatedAt := settingMixinFields0[1].Descriptor()
+	// setting.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	setting.DefaultUpdatedAt = settingDescUpdatedAt.Default.(func() time.Time)
+	// setting.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	setting.UpdateDefaultUpdatedAt = settingDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// settingDescKey is the schema descriptor for key field.
+	settingDescKey := settingFields[0].Descriptor()
+	// setting.KeyValidator is a validator for the "key" field. It is called by the builders before save.
+	setting.KeyValidator = settingDescKey.Validators[0].(func(string) error)
+}
 
 const (
 	Version = "v0.10.2-0.20220502113020-4ac82f5bb3f0"           // Version of ent codegen.

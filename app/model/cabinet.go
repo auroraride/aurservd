@@ -53,8 +53,8 @@ const (
 
 // Cabinet 电柜基础属性
 type Cabinet struct {
-    BranchID *uint64       `json:"branchId"`                                                    // 网点
-    Status   CabinetStatus `json:"status" enums:"0,1,2"`                                        // 电柜状态 0未投放 1运营中 2维护中
+    BranchID *uint64       `json:"branchId"`                                                      // 网点
+    Status   CabinetStatus `json:"status" enums:"0,1,2"`                                          // 电柜状态 0未投放 1运营中 2维护中
     Brand    CabinetBrand  `json:"brand" validate:"required" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
     Serial   string        `json:"serial" validate:"required" trans:"电柜原始编码"`
     Name     string        `json:"name" validate:"required" trans:"电柜名称"`
@@ -92,8 +92,8 @@ type CabinetQueryReq struct {
 // CabinetModifyReq 电柜修改请求
 type CabinetModifyReq struct {
     ID       uint64         `json:"id" param:"id"`
-    BranchID *uint64        `json:"branchId"`                                // 网点
-    Status   *CabinetStatus `json:"status" enums:"0,1,2"`                    // 电柜状态 0未投放 1运营中 2维护中
+    BranchID *uint64        `json:"branchId"`                                  // 网点
+    Status   *CabinetStatus `json:"status" enums:"0,1,2"`                      // 电柜状态 0未投放 1运营中 2维护中
     Brand    *CabinetBrand  `json:"brand" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
     Serial   *string        `json:"serial" trans:"电柜原始编码"`
     Name     *string        `json:"name" trans:"电柜名称"`
@@ -191,4 +191,12 @@ type CabinetDoorOperateReq struct {
     Remark    *string             `json:"remark" validate:"required"`    // 操作原因
     Operation *CabinetDoorOperate `json:"operation" validate:"required"` // 操作方式 1:开仓 2:锁定(标记为故障) 3:解锁(取消标记故障)
     Phone     *string             `json:"phone"`                         // 骑手手机号
+}
+
+// CabinetFaultReportReq 故障上报请求体
+type CabinetFaultReportReq struct {
+    CabinetID   uint64   `json:"cabinetId" validate:"required" trans:"电柜ID"`
+    Fault       string   `json:"fault" validate:"required" trans:"故障"`
+    Description string   `json:"description" validate:"required" trans:"故障描述"`
+    Attachments []string `json:"attachments" validate:"max=3"` // 附件
 }

@@ -28,6 +28,7 @@ type hooks struct {
 	Branch         []ent.Hook
 	BranchContract []ent.Hook
 	Cabinet        []ent.Hook
+	CabinetFault   []ent.Hook
 	City           []ent.Hook
 	Contract       []ent.Hook
 	Manager        []ent.Hook

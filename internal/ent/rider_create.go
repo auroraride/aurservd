@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -209,6 +210,12 @@ func (rc *RiderCreate) SetNillableEsignAccountID(s *string) *RiderCreate {
 	return rc
 }
 
+// SetID sets the "id" field.
+func (rc *RiderCreate) SetID(u uint64) *RiderCreate {
+	rc.mutation.SetID(u)
+	return rc
+}
+
 // SetPerson sets the "person" edge to the Person entity.
 func (rc *RiderCreate) SetPerson(p *Person) *RiderCreate {
 	return rc.SetPersonID(p.ID)
@@ -229,6 +236,21 @@ func (rc *RiderCreate) AddContract(c ...*Contract) *RiderCreate {
 	return rc.AddContractIDs(ids...)
 }
 
+// AddFaultIDs adds the "faults" edge to the CabinetFault entity by IDs.
+func (rc *RiderCreate) AddFaultIDs(ids ...uint64) *RiderCreate {
+	rc.mutation.AddFaultIDs(ids...)
+	return rc
+}
+
+// AddFaults adds the "faults" edges to the CabinetFault entity.
+func (rc *RiderCreate) AddFaults(c ...*CabinetFault) *RiderCreate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return rc.AddFaultIDs(ids...)
+}
+
 // Mutation returns the RiderMutation object of the builder.
 func (rc *RiderCreate) Mutation() *RiderMutation {
 	return rc.mutation
@@ -240,7 +262,9 @@ func (rc *RiderCreate) Save(ctx context.Context) (*Rider, error) {
 		err  error
 		node *Rider
 	)
-	rc.defaults()
+	if err := rc.defaults(); err != nil {
+		return nil, err
+	}
 	if len(rc.hooks) == 0 {
 		if err = rc.check(); err != nil {
 			return nil, err
@@ -299,12 +323,18 @@ func (rc *RiderCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (rc *RiderCreate) defaults() {
+func (rc *RiderCreate) defaults() error {
 	if _, ok := rc.mutation.CreatedAt(); !ok {
+		if rider.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized rider.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := rider.DefaultCreatedAt()
 		rc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := rc.mutation.UpdatedAt(); !ok {
+		if rider.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized rider.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := rider.DefaultUpdatedAt()
 		rc.mutation.SetUpdatedAt(v)
 	}
@@ -312,6 +342,7 @@ func (rc *RiderCreate) defaults() {
 		v := rider.DefaultIsNewDevice
 		rc.mutation.SetIsNewDevice(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -360,8 +391,10 @@ func (rc *RiderCreate) sqlSave(ctx context.Context) (*Rider, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = uint64(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = uint64(id)
+	}
 	return _node, nil
 }
 
@@ -377,6 +410,10 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 		}
 	)
 	_spec.OnConflict = rc.conflict
+	if id, ok := rc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := rc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -528,6 +565,25 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: contract.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.FaultsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.FaultsTable,
+			Columns: []string{rider.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetfault.FieldID,
 				},
 			},
 		}
@@ -854,18 +910,24 @@ func (u *RiderUpsert) ClearEsignAccountID() *RiderUpsert {
 	return u
 }
 
-// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.Rider.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(rider.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 //
 func (u *RiderUpsertOne) UpdateNewValues() *RiderUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(rider.FieldID)
+		}
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(rider.FieldCreatedAt)
 		}
@@ -1286,7 +1348,7 @@ func (rcb *RiderCreateBulk) Save(ctx context.Context) ([]*Rider, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = uint64(id)
 				}
@@ -1377,6 +1439,9 @@ type RiderUpsertBulk struct {
 //	client.Rider.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(rider.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 //
@@ -1384,6 +1449,10 @@ func (u *RiderUpsertBulk) UpdateNewValues() *RiderUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(rider.FieldID)
+				return
+			}
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(rider.FieldCreatedAt)
 			}

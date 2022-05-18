@@ -205,6 +205,61 @@ var (
 			},
 		},
 	}
+	// CabinetFaultColumns holds the columns for the "cabinet_fault" table.
+	CabinetFaultColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true},
+		{Name: "remark", Type: field.TypeString, Nullable: true},
+		{Name: "status", Type: field.TypeUint8, Default: 0},
+		{Name: "city", Type: field.TypeJSON},
+		{Name: "cabinet_name", Type: field.TypeString},
+		{Name: "brand", Type: field.TypeString},
+		{Name: "serial", Type: field.TypeString},
+		{Name: "models", Type: field.TypeJSON},
+		{Name: "fault", Type: field.TypeString, Nullable: true},
+		{Name: "attachments", Type: field.TypeJSON, Nullable: true},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "branch_id", Type: field.TypeUint64},
+		{Name: "cabinet_id", Type: field.TypeUint64},
+		{Name: "rider_id", Type: field.TypeUint64},
+	}
+	// CabinetFaultTable holds the schema information for the "cabinet_fault" table.
+	CabinetFaultTable = &schema.Table{
+		Name:       "cabinet_fault",
+		Columns:    CabinetFaultColumns,
+		PrimaryKey: []*schema.Column{CabinetFaultColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "cabinet_fault_branch_faults",
+				Columns:    []*schema.Column{CabinetFaultColumns[16]},
+				RefColumns: []*schema.Column{BranchColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "cabinet_fault_cabinet_faults",
+				Columns:    []*schema.Column{CabinetFaultColumns[17]},
+				RefColumns: []*schema.Column{CabinetColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "cabinet_fault_rider_faults",
+				Columns:    []*schema.Column{CabinetFaultColumns[18]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "cabinetfault_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetFaultColumns[3]},
+			},
+		},
+	}
 	// CityColumns holds the columns for the "city" table.
 	CityColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -443,6 +498,7 @@ var (
 		BranchTable,
 		BranchContractTable,
 		CabinetTable,
+		CabinetFaultTable,
 		CityTable,
 		ContractTable,
 		ManagerTable,
@@ -468,6 +524,12 @@ func init() {
 	CabinetTable.ForeignKeys[0].RefTable = BranchTable
 	CabinetTable.Annotation = &entsql.Annotation{
 		Table: "cabinet",
+	}
+	CabinetFaultTable.ForeignKeys[0].RefTable = BranchTable
+	CabinetFaultTable.ForeignKeys[1].RefTable = CabinetTable
+	CabinetFaultTable.ForeignKeys[2].RefTable = RiderTable
+	CabinetFaultTable.Annotation = &entsql.Annotation{
+		Table: "cabinet_fault",
 	}
 	CityTable.ForeignKeys[0].RefTable = CityTable
 	CityTable.Annotation = &entsql.Annotation{

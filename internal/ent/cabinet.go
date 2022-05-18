@@ -81,9 +81,11 @@ type CabinetEdges struct {
 	Branch *Branch `json:"branch,omitempty"`
 	// Bms holds the value of the bms edge.
 	Bms []*BatteryModel `json:"bms,omitempty"`
+	// Faults holds the value of the faults edge.
+	Faults []*CabinetFault `json:"faults,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // BranchOrErr returns the Branch value or an error if the edge
@@ -107,6 +109,15 @@ func (e CabinetEdges) BmsOrErr() ([]*BatteryModel, error) {
 		return e.Bms, nil
 	}
 	return nil, &NotLoadedError{edge: "bms"}
+}
+
+// FaultsOrErr returns the Faults value or an error if the edge
+// was not loaded in eager-loading.
+func (e CabinetEdges) FaultsOrErr() ([]*CabinetFault, error) {
+	if e.loadedTypes[2] {
+		return e.Faults, nil
+	}
+	return nil, &NotLoadedError{edge: "faults"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -273,6 +284,11 @@ func (c *Cabinet) QueryBranch() *BranchQuery {
 // QueryBms queries the "bms" edge of the Cabinet entity.
 func (c *Cabinet) QueryBms() *BatteryModelQuery {
 	return (&CabinetClient{config: c.config}).QueryBms(c)
+}
+
+// QueryFaults queries the "faults" edge of the Cabinet entity.
+func (c *Cabinet) QueryFaults() *CabinetFaultQuery {
+	return (&CabinetClient{config: c.config}).QueryFaults(c)
 }
 
 // Update returns a builder for updating this Cabinet.

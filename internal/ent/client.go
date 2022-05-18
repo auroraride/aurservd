@@ -13,6 +13,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -38,6 +39,8 @@ type Client struct {
 	BranchContract *BranchContractClient
 	// Cabinet is the client for interacting with the Cabinet builders.
 	Cabinet *CabinetClient
+	// CabinetFault is the client for interacting with the CabinetFault builders.
+	CabinetFault *CabinetFaultClient
 	// City is the client for interacting with the City builders.
 	City *CityClient
 	// Contract is the client for interacting with the Contract builders.
@@ -67,6 +70,7 @@ func (c *Client) init() {
 	c.Branch = NewBranchClient(c.config)
 	c.BranchContract = NewBranchContractClient(c.config)
 	c.Cabinet = NewCabinetClient(c.config)
+	c.CabinetFault = NewCabinetFaultClient(c.config)
 	c.City = NewCityClient(c.config)
 	c.Contract = NewContractClient(c.config)
 	c.Manager = NewManagerClient(c.config)
@@ -110,6 +114,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Branch:         NewBranchClient(cfg),
 		BranchContract: NewBranchContractClient(cfg),
 		Cabinet:        NewCabinetClient(cfg),
+		CabinetFault:   NewCabinetFaultClient(cfg),
 		City:           NewCityClient(cfg),
 		Contract:       NewContractClient(cfg),
 		Manager:        NewManagerClient(cfg),
@@ -139,6 +144,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Branch:         NewBranchClient(cfg),
 		BranchContract: NewBranchContractClient(cfg),
 		Cabinet:        NewCabinetClient(cfg),
+		CabinetFault:   NewCabinetFaultClient(cfg),
 		City:           NewCityClient(cfg),
 		Contract:       NewContractClient(cfg),
 		Manager:        NewManagerClient(cfg),
@@ -178,6 +184,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Branch.Use(hooks...)
 	c.BranchContract.Use(hooks...)
 	c.Cabinet.Use(hooks...)
+	c.CabinetFault.Use(hooks...)
 	c.City.Use(hooks...)
 	c.Contract.Use(hooks...)
 	c.Manager.Use(hooks...)
@@ -425,6 +432,22 @@ func (c *BranchClient) QueryCity(b *Branch) *CityQuery {
 	return query
 }
 
+// QueryFaults queries the faults edge of a Branch.
+func (c *BranchClient) QueryFaults(b *Branch) *CabinetFaultQuery {
+	query := &CabinetFaultQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(branch.Table, branch.FieldID, id),
+			sqlgraph.To(cabinetfault.Table, cabinetfault.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, branch.FaultsTable, branch.FaultsColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *BranchClient) Hooks() []Hook {
 	return c.hooks.Branch
@@ -653,9 +676,163 @@ func (c *CabinetClient) QueryBms(ca *Cabinet) *BatteryModelQuery {
 	return query
 }
 
+// QueryFaults queries the faults edge of a Cabinet.
+func (c *CabinetClient) QueryFaults(ca *Cabinet) *CabinetFaultQuery {
+	query := &CabinetFaultQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
+			sqlgraph.To(cabinetfault.Table, cabinetfault.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, cabinet.FaultsTable, cabinet.FaultsColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *CabinetClient) Hooks() []Hook {
 	return c.hooks.Cabinet
+}
+
+// CabinetFaultClient is a client for the CabinetFault schema.
+type CabinetFaultClient struct {
+	config
+}
+
+// NewCabinetFaultClient returns a client for the CabinetFault from the given config.
+func NewCabinetFaultClient(c config) *CabinetFaultClient {
+	return &CabinetFaultClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `cabinetfault.Hooks(f(g(h())))`.
+func (c *CabinetFaultClient) Use(hooks ...Hook) {
+	c.hooks.CabinetFault = append(c.hooks.CabinetFault, hooks...)
+}
+
+// Create returns a create builder for CabinetFault.
+func (c *CabinetFaultClient) Create() *CabinetFaultCreate {
+	mutation := newCabinetFaultMutation(c.config, OpCreate)
+	return &CabinetFaultCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CabinetFault entities.
+func (c *CabinetFaultClient) CreateBulk(builders ...*CabinetFaultCreate) *CabinetFaultCreateBulk {
+	return &CabinetFaultCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CabinetFault.
+func (c *CabinetFaultClient) Update() *CabinetFaultUpdate {
+	mutation := newCabinetFaultMutation(c.config, OpUpdate)
+	return &CabinetFaultUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CabinetFaultClient) UpdateOne(cf *CabinetFault) *CabinetFaultUpdateOne {
+	mutation := newCabinetFaultMutation(c.config, OpUpdateOne, withCabinetFault(cf))
+	return &CabinetFaultUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CabinetFaultClient) UpdateOneID(id uint64) *CabinetFaultUpdateOne {
+	mutation := newCabinetFaultMutation(c.config, OpUpdateOne, withCabinetFaultID(id))
+	return &CabinetFaultUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CabinetFault.
+func (c *CabinetFaultClient) Delete() *CabinetFaultDelete {
+	mutation := newCabinetFaultMutation(c.config, OpDelete)
+	return &CabinetFaultDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *CabinetFaultClient) DeleteOne(cf *CabinetFault) *CabinetFaultDeleteOne {
+	return c.DeleteOneID(cf.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *CabinetFaultClient) DeleteOneID(id uint64) *CabinetFaultDeleteOne {
+	builder := c.Delete().Where(cabinetfault.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CabinetFaultDeleteOne{builder}
+}
+
+// Query returns a query builder for CabinetFault.
+func (c *CabinetFaultClient) Query() *CabinetFaultQuery {
+	return &CabinetFaultQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a CabinetFault entity by its id.
+func (c *CabinetFaultClient) Get(ctx context.Context, id uint64) (*CabinetFault, error) {
+	return c.Query().Where(cabinetfault.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CabinetFaultClient) GetX(ctx context.Context, id uint64) *CabinetFault {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryBranch queries the branch edge of a CabinetFault.
+func (c *CabinetFaultClient) QueryBranch(cf *CabinetFault) *BranchQuery {
+	query := &BranchQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := cf.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinetfault.Table, cabinetfault.FieldID, id),
+			sqlgraph.To(branch.Table, branch.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cabinetfault.BranchTable, cabinetfault.BranchColumn),
+		)
+		fromV = sqlgraph.Neighbors(cf.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCabinet queries the cabinet edge of a CabinetFault.
+func (c *CabinetFaultClient) QueryCabinet(cf *CabinetFault) *CabinetQuery {
+	query := &CabinetQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := cf.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinetfault.Table, cabinetfault.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cabinetfault.CabinetTable, cabinetfault.CabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(cf.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRider queries the rider edge of a CabinetFault.
+func (c *CabinetFaultClient) QueryRider(cf *CabinetFault) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := cf.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinetfault.Table, cabinetfault.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cabinetfault.RiderTable, cabinetfault.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(cf.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CabinetFaultClient) Hooks() []Hook {
+	return c.hooks.CabinetFault
 }
 
 // CityClient is a client for the City schema.
@@ -1215,9 +1392,26 @@ func (c *RiderClient) QueryContract(r *Rider) *ContractQuery {
 	return query
 }
 
+// QueryFaults queries the faults edge of a Rider.
+func (c *RiderClient) QueryFaults(r *Rider) *CabinetFaultQuery {
+	query := &CabinetFaultQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rider.Table, rider.FieldID, id),
+			sqlgraph.To(cabinetfault.Table, cabinetfault.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.FaultsTable, rider.FaultsColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *RiderClient) Hooks() []Hook {
-	return c.hooks.Rider
+	hooks := c.hooks.Rider
+	return append(hooks[:len(hooks):len(hooks)], rider.Hooks[:]...)
 }
 
 // SettingClient is a client for the Setting schema.

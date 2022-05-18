@@ -51,6 +51,8 @@ const (
 	EdgeBranch = "branch"
 	// EdgeBms holds the string denoting the bms edge name in mutations.
 	EdgeBms = "bms"
+	// EdgeFaults holds the string denoting the faults edge name in mutations.
+	EdgeFaults = "faults"
 	// Table holds the table name of the cabinet in the database.
 	Table = "cabinet"
 	// BranchTable is the table that holds the branch relation/edge.
@@ -65,6 +67,13 @@ const (
 	// BmsInverseTable is the table name for the BatteryModel entity.
 	// It exists in this package in order to avoid circular dependency with the "batterymodel" package.
 	BmsInverseTable = "battery_model"
+	// FaultsTable is the table that holds the faults relation/edge.
+	FaultsTable = "cabinet_fault"
+	// FaultsInverseTable is the table name for the CabinetFault entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinetfault" package.
+	FaultsInverseTable = "cabinet_fault"
+	// FaultsColumn is the table column denoting the faults relation/edge.
+	FaultsColumn = "cabinet_id"
 )
 
 // Columns holds all SQL columns for cabinet fields.

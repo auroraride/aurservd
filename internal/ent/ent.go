@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -44,6 +45,7 @@ func columnChecker(table string) func(string) error {
 		branch.Table:         branch.ValidColumn,
 		branchcontract.Table: branchcontract.ValidColumn,
 		cabinet.Table:        cabinet.ValidColumn,
+		cabinetfault.Table:   cabinetfault.ValidColumn,
 		city.Table:           city.ValidColumn,
 		contract.Table:       contract.ValidColumn,
 		manager.Table:        manager.ValidColumn,

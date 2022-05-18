@@ -9,14 +9,12 @@ import (
     "github.com/auroraride/aurservd/cmd/aurservd/internal"
     "github.com/auroraride/aurservd/cmd/aurservd/internal/script"
     "github.com/auroraride/aurservd/internal/boot"
-    log "github.com/sirupsen/logrus"
 )
 
 func main() {
     boot.Bootstrap()
 
     internal.Demo()
-    log.Println("test")
     // 启动脚本
     script.Execute()
 }

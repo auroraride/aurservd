@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 )
 
@@ -163,6 +164,21 @@ func (bc *BranchCreate) AddCabinets(c ...*Cabinet) *BranchCreate {
 // SetCity sets the "city" edge to the City entity.
 func (bc *BranchCreate) SetCity(c *City) *BranchCreate {
 	return bc.SetCityID(c.ID)
+}
+
+// AddFaultIDs adds the "faults" edge to the CabinetFault entity by IDs.
+func (bc *BranchCreate) AddFaultIDs(ids ...uint64) *BranchCreate {
+	bc.mutation.AddFaultIDs(ids...)
+	return bc
+}
+
+// AddFaults adds the "faults" edges to the CabinetFault entity.
+func (bc *BranchCreate) AddFaults(c ...*CabinetFault) *BranchCreate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return bc.AddFaultIDs(ids...)
 }
 
 // Mutation returns the BranchMutation object of the builder.
@@ -447,6 +463,25 @@ func (bc *BranchCreate) createSpec() (*Branch, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.CityID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.FaultsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   branch.FaultsTable,
+			Columns: []string{branch.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetfault.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

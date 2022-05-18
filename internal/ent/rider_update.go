@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -287,6 +288,21 @@ func (ru *RiderUpdate) AddContract(c ...*Contract) *RiderUpdate {
 	return ru.AddContractIDs(ids...)
 }
 
+// AddFaultIDs adds the "faults" edge to the CabinetFault entity by IDs.
+func (ru *RiderUpdate) AddFaultIDs(ids ...uint64) *RiderUpdate {
+	ru.mutation.AddFaultIDs(ids...)
+	return ru
+}
+
+// AddFaults adds the "faults" edges to the CabinetFault entity.
+func (ru *RiderUpdate) AddFaults(c ...*CabinetFault) *RiderUpdate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ru.AddFaultIDs(ids...)
+}
+
 // Mutation returns the RiderMutation object of the builder.
 func (ru *RiderUpdate) Mutation() *RiderMutation {
 	return ru.mutation
@@ -319,13 +335,36 @@ func (ru *RiderUpdate) RemoveContract(c ...*Contract) *RiderUpdate {
 	return ru.RemoveContractIDs(ids...)
 }
 
+// ClearFaults clears all "faults" edges to the CabinetFault entity.
+func (ru *RiderUpdate) ClearFaults() *RiderUpdate {
+	ru.mutation.ClearFaults()
+	return ru
+}
+
+// RemoveFaultIDs removes the "faults" edge to CabinetFault entities by IDs.
+func (ru *RiderUpdate) RemoveFaultIDs(ids ...uint64) *RiderUpdate {
+	ru.mutation.RemoveFaultIDs(ids...)
+	return ru
+}
+
+// RemoveFaults removes "faults" edges to CabinetFault entities.
+func (ru *RiderUpdate) RemoveFaults(c ...*CabinetFault) *RiderUpdate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ru.RemoveFaultIDs(ids...)
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ru *RiderUpdate) Save(ctx context.Context) (int, error) {
 	var (
 		err      error
 		affected int
 	)
-	ru.defaults()
+	if err := ru.defaults(); err != nil {
+		return 0, err
+	}
 	if len(ru.hooks) == 0 {
 		if err = ru.check(); err != nil {
 			return 0, err
@@ -381,11 +420,15 @@ func (ru *RiderUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (ru *RiderUpdate) defaults() {
+func (ru *RiderUpdate) defaults() error {
 	if _, ok := ru.mutation.UpdatedAt(); !ok {
+		if rider.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized rider.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := rider.UpdateDefaultUpdatedAt()
 		ru.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -681,6 +724,60 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ru.mutation.FaultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.FaultsTable,
+			Columns: []string{rider.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetfault.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.RemovedFaultsIDs(); len(nodes) > 0 && !ru.mutation.FaultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.FaultsTable,
+			Columns: []string{rider.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetfault.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.FaultsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.FaultsTable,
+			Columns: []string{rider.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetfault.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{rider.Label}
@@ -956,6 +1053,21 @@ func (ruo *RiderUpdateOne) AddContract(c ...*Contract) *RiderUpdateOne {
 	return ruo.AddContractIDs(ids...)
 }
 
+// AddFaultIDs adds the "faults" edge to the CabinetFault entity by IDs.
+func (ruo *RiderUpdateOne) AddFaultIDs(ids ...uint64) *RiderUpdateOne {
+	ruo.mutation.AddFaultIDs(ids...)
+	return ruo
+}
+
+// AddFaults adds the "faults" edges to the CabinetFault entity.
+func (ruo *RiderUpdateOne) AddFaults(c ...*CabinetFault) *RiderUpdateOne {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ruo.AddFaultIDs(ids...)
+}
+
 // Mutation returns the RiderMutation object of the builder.
 func (ruo *RiderUpdateOne) Mutation() *RiderMutation {
 	return ruo.mutation
@@ -988,6 +1100,27 @@ func (ruo *RiderUpdateOne) RemoveContract(c ...*Contract) *RiderUpdateOne {
 	return ruo.RemoveContractIDs(ids...)
 }
 
+// ClearFaults clears all "faults" edges to the CabinetFault entity.
+func (ruo *RiderUpdateOne) ClearFaults() *RiderUpdateOne {
+	ruo.mutation.ClearFaults()
+	return ruo
+}
+
+// RemoveFaultIDs removes the "faults" edge to CabinetFault entities by IDs.
+func (ruo *RiderUpdateOne) RemoveFaultIDs(ids ...uint64) *RiderUpdateOne {
+	ruo.mutation.RemoveFaultIDs(ids...)
+	return ruo
+}
+
+// RemoveFaults removes "faults" edges to CabinetFault entities.
+func (ruo *RiderUpdateOne) RemoveFaults(c ...*CabinetFault) *RiderUpdateOne {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ruo.RemoveFaultIDs(ids...)
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (ruo *RiderUpdateOne) Select(field string, fields ...string) *RiderUpdateOne {
@@ -1001,7 +1134,9 @@ func (ruo *RiderUpdateOne) Save(ctx context.Context) (*Rider, error) {
 		err  error
 		node *Rider
 	)
-	ruo.defaults()
+	if err := ruo.defaults(); err != nil {
+		return nil, err
+	}
 	if len(ruo.hooks) == 0 {
 		if err = ruo.check(); err != nil {
 			return nil, err
@@ -1057,11 +1192,15 @@ func (ruo *RiderUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (ruo *RiderUpdateOne) defaults() {
+func (ruo *RiderUpdateOne) defaults() error {
 	if _, ok := ruo.mutation.UpdatedAt(); !ok {
+		if rider.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized rider.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := rider.UpdateDefaultUpdatedAt()
 		ruo.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -1366,6 +1505,60 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: contract.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ruo.mutation.FaultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.FaultsTable,
+			Columns: []string{rider.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetfault.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.RemovedFaultsIDs(); len(nodes) > 0 && !ruo.mutation.FaultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.FaultsTable,
+			Columns: []string{rider.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetfault.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.FaultsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.FaultsTable,
+			Columns: []string{rider.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetfault.FieldID,
 				},
 			},
 		}

@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -272,6 +273,21 @@ func (cu *CabinetUpdate) AddBms(b ...*BatteryModel) *CabinetUpdate {
 	return cu.AddBmIDs(ids...)
 }
 
+// AddFaultIDs adds the "faults" edge to the CabinetFault entity by IDs.
+func (cu *CabinetUpdate) AddFaultIDs(ids ...uint64) *CabinetUpdate {
+	cu.mutation.AddFaultIDs(ids...)
+	return cu
+}
+
+// AddFaults adds the "faults" edges to the CabinetFault entity.
+func (cu *CabinetUpdate) AddFaults(c ...*CabinetFault) *CabinetUpdate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cu.AddFaultIDs(ids...)
+}
+
 // Mutation returns the CabinetMutation object of the builder.
 func (cu *CabinetUpdate) Mutation() *CabinetMutation {
 	return cu.mutation
@@ -302,6 +318,27 @@ func (cu *CabinetUpdate) RemoveBms(b ...*BatteryModel) *CabinetUpdate {
 		ids[i] = b[i].ID
 	}
 	return cu.RemoveBmIDs(ids...)
+}
+
+// ClearFaults clears all "faults" edges to the CabinetFault entity.
+func (cu *CabinetUpdate) ClearFaults() *CabinetUpdate {
+	cu.mutation.ClearFaults()
+	return cu
+}
+
+// RemoveFaultIDs removes the "faults" edge to CabinetFault entities by IDs.
+func (cu *CabinetUpdate) RemoveFaultIDs(ids ...uint64) *CabinetUpdate {
+	cu.mutation.RemoveFaultIDs(ids...)
+	return cu
+}
+
+// RemoveFaults removes "faults" edges to CabinetFault entities.
+func (cu *CabinetUpdate) RemoveFaults(c ...*CabinetFault) *CabinetUpdate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cu.RemoveFaultIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -651,6 +688,60 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if cu.mutation.FaultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.FaultsTable,
+			Columns: []string{cabinet.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetfault.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.RemovedFaultsIDs(); len(nodes) > 0 && !cu.mutation.FaultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.FaultsTable,
+			Columns: []string{cabinet.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetfault.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.FaultsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.FaultsTable,
+			Columns: []string{cabinet.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetfault.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{cabinet.Label}
@@ -911,6 +1002,21 @@ func (cuo *CabinetUpdateOne) AddBms(b ...*BatteryModel) *CabinetUpdateOne {
 	return cuo.AddBmIDs(ids...)
 }
 
+// AddFaultIDs adds the "faults" edge to the CabinetFault entity by IDs.
+func (cuo *CabinetUpdateOne) AddFaultIDs(ids ...uint64) *CabinetUpdateOne {
+	cuo.mutation.AddFaultIDs(ids...)
+	return cuo
+}
+
+// AddFaults adds the "faults" edges to the CabinetFault entity.
+func (cuo *CabinetUpdateOne) AddFaults(c ...*CabinetFault) *CabinetUpdateOne {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cuo.AddFaultIDs(ids...)
+}
+
 // Mutation returns the CabinetMutation object of the builder.
 func (cuo *CabinetUpdateOne) Mutation() *CabinetMutation {
 	return cuo.mutation
@@ -941,6 +1047,27 @@ func (cuo *CabinetUpdateOne) RemoveBms(b ...*BatteryModel) *CabinetUpdateOne {
 		ids[i] = b[i].ID
 	}
 	return cuo.RemoveBmIDs(ids...)
+}
+
+// ClearFaults clears all "faults" edges to the CabinetFault entity.
+func (cuo *CabinetUpdateOne) ClearFaults() *CabinetUpdateOne {
+	cuo.mutation.ClearFaults()
+	return cuo
+}
+
+// RemoveFaultIDs removes the "faults" edge to CabinetFault entities by IDs.
+func (cuo *CabinetUpdateOne) RemoveFaultIDs(ids ...uint64) *CabinetUpdateOne {
+	cuo.mutation.RemoveFaultIDs(ids...)
+	return cuo
+}
+
+// RemoveFaults removes "faults" edges to CabinetFault entities.
+func (cuo *CabinetUpdateOne) RemoveFaults(c ...*CabinetFault) *CabinetUpdateOne {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cuo.RemoveFaultIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1306,6 +1433,60 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: batterymodel.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.FaultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.FaultsTable,
+			Columns: []string{cabinet.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetfault.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.RemovedFaultsIDs(); len(nodes) > 0 && !cuo.mutation.FaultsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.FaultsTable,
+			Columns: []string{cabinet.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetfault.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.FaultsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.FaultsTable,
+			Columns: []string{cabinet.FaultsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetfault.FieldID,
 				},
 			},
 		}
