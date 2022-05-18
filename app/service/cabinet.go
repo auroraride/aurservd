@@ -17,6 +17,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/golang-module/carbon/v2"
     "github.com/jinzhu/copier"
     "github.com/lithammer/shortuuid/v4"
     log "github.com/sirupsen/logrus"
@@ -197,11 +198,9 @@ func (s *cabinetService) Detail(id uint64) *model.CabinetDetailRes {
 
 // DoorOperate 操作柜门
 func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.CabinetDoorOperateReq) (state bool) {
+    now := time.Now()
     // 查找柜子和仓位
-    item := s.orm.Query().Where(cabinet.ID(*req.ID)).OnlyX(s.ctx)
-    if item == nil {
-        snag.Panic("该电柜未找到")
-    }
+    item := s.QueryOne(*req.ID)
     if len(item.Bin) < *req.Index {
         snag.Panic("该柜门未找到")
     }
@@ -231,29 +230,81 @@ func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.Cabine
         prov.UpdateStatus(up, item)
         up.SetBin(bins).SaveX(s.ctx)
     }
-    // 上传日志
-    slsCfg := ar.Config.Aliyun.Sls
-    lg := &sls.LogGroup{
-        Source: tea.String(item.Serial),
-        Topic:  tea.String(brand.String()),
-        Logs: []*sls.Log{{
-            Time: tea.Uint32(uint32(time.Now().Unix())),
-            Contents: provider.ParseLogContent(&provider.OperationLog{
-                User:      modifier.Name,
-                UserID:    modifier.ID,
-                Phone:     modifier.Phone,
-                Serial:    item.Serial,
-                Name:      item.Bin[*req.Index].Name,
-                Operation: *req.Operation,
-                Success:   state,
-                Remark:    *req.Remark,
-            }),
-        }},
-    }
-    err := ali.NewSls().PutLogs(slsCfg.Project, slsCfg.Operation, lg)
-    if err != nil {
-        log.Error(err)
-        return
-    }
+    go func() {
+        // 上传日志
+        slsCfg := ar.Config.Aliyun.Sls
+        lg := &sls.LogGroup{
+            Logs: []*sls.Log{{
+                Time: tea.Uint32(uint32(now.Unix())),
+                Contents: provider.ParseLogContent(&provider.OperationLog{
+                    Brand:     brand.String(),
+                    User:      modifier.Name,
+                    UserID:    modifier.ID,
+                    Phone:     modifier.Phone,
+                    Serial:    item.Serial,
+                    Name:      item.Bin[*req.Index].Name,
+                    Operation: req.Operation.String(),
+                    Success:   state,
+                    Remark:    *req.Remark,
+                    Time:      now.Format(carbon.DateTimeLayout),
+                }),
+            }},
+        }
+        err := ali.NewSls().PutLogs(slsCfg.Project, slsCfg.Operation, lg)
+        if err != nil {
+            log.Error(err)
+            return
+        }
+    }()
     return
+}
+
+// Reboot 重启电柜
+func (s *cabinetService) Reboot(modifier *model.Modifier, req *model.IDPostReq) bool {
+    now := time.Now()
+
+    item := s.QueryOne(req.ID)
+    if item.Brand == model.CabinetBrandKaixin.Value() {
+        snag.Panic("凯信电柜不支持该操作")
+    }
+    var prov provider.Provider
+    var state bool
+    prov = provider.NewYundong()
+    state = prov.Reboot(modifier.Name, item.Serial)
+
+    // 如果成功, 重新获取状态更新数据
+    up := ar.Ent.Cabinet.UpdateOne(item).SetHealth(model.CabinetHealthStatusOnline)
+    if state {
+        // 更新仓位备注
+        prov.UpdateStatus(up, item)
+        up.SaveX(s.ctx)
+    }
+
+    brand := model.CabinetBrand(item.Brand)
+    go func() {
+        // 上传日志
+        slsCfg := ar.Config.Aliyun.Sls
+        lg := &sls.LogGroup{
+            Logs: []*sls.Log{{
+                Time: tea.Uint32(uint32(now.Unix())),
+                Contents: provider.ParseLogContent(&provider.OperationLog{
+                    Brand:     brand.String(),
+                    User:      modifier.Name,
+                    UserID:    modifier.ID,
+                    Phone:     modifier.Phone,
+                    Serial:    item.Serial,
+                    Operation: "重启",
+                    Success:   state,
+                    Time:      now.Format(carbon.DateTimeLayout),
+                }),
+            }},
+        }
+        err := ali.NewSls().PutLogs(slsCfg.Project, slsCfg.Operation, lg)
+        if err != nil {
+            log.Error(err)
+            return
+        }
+    }()
+
+    return state
 }

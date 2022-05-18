@@ -110,8 +110,24 @@ func (*cabinet) Detail(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) DoorOperate(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetDoorOperateReq](c)
-
     return ctx.SendResponse(
         model.StatusResponse{Status: service.NewCabinet().DoorOperate(ctx.Modifier, req)},
+    )
+}
+
+// Reboot
+// @ID           CabinetReboot
+// @Router       /manager/v1/cabinet/reboot [POST]
+// @Summary      M5007 重启电柜
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body  model.IDPostReq  true  "重启请求"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*cabinet) Reboot(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.IDPostReq](c)
+    return ctx.SendResponse(
+        model.StatusResponse{Status: service.NewCabinet().Reboot(ctx.Modifier, req)},
     )
 }

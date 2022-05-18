@@ -70,7 +70,12 @@ type IDRes struct {
     ID uint64 `json:"id"`
 }
 
+// IDPostReq ID post请求
+type IDPostReq struct {
+    ID uint64 `json:"id" validate:"required"`
+}
+
 // IDParamReq id param 请求
 type IDParamReq struct {
-    ID uint64 `json:"id" param:"id"`
+    ID uint64 `json:"id" param:"id" validate:"required"`
 }

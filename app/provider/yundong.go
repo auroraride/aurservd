@@ -44,9 +44,10 @@ type Yundongurl string
 const (
     yundongTokenKey = "YUNDONGTOKEN"
 
-    yundongTokenUrl   Yundongurl = "/token"
-    yundongStatusUrl  Yundongurl = "/cabinet/status"
-    yundongControlUrl Yundongurl = "/cabinet/control"
+    yundongTokenUrl    Yundongurl = "/token"
+    yundongStatusUrl   Yundongurl = "/cabinet/status"
+    yundongControlUrl  Yundongurl = "/cabinet/control"
+    yundongOperatedUrl Yundongurl = "/cabinet/operated"
 )
 
 func NewYundong() *yundong {
@@ -258,6 +259,35 @@ func (p *yundong) DoorOperate(user, serial, operation string, door int) (state b
     if res.Code == 1000 && p.retryTimes < 1 {
         p.retryTimes += 1
         return p.DoorOperate(user, serial, operation, door)
+    }
+    if err != nil {
+        log.Error(err)
+        return
+    }
+    return res.Code == 0
+}
+
+func (p *yundong) Reboot(user string, serial string) (state bool) {
+    type body struct {
+        CabinetSN  string `json:"cabinetSN"`
+        EmployCode string `json:"employCode"`
+        Action     string `json:"action"`
+    }
+
+    res := new(YDRes)
+    r, err := p.RequestClient(false).
+        SetResult(res).
+        SetBody(body{
+            CabinetSN:  serial,
+            EmployCode: user,
+            Action:     "rebootCabinet",
+        }).
+        Post(p.GetUrl(yundongOperatedUrl))
+    log.Info(string(r.Body()))
+    // token 请求失败, 重新请求token后重试
+    if res.Code == 1000 && p.retryTimes < 1 {
+        p.retryTimes += 1
+        return p.Reboot(user, serial)
     }
     if err != nil {
         log.Error(err)

@@ -391,6 +391,13 @@ definitions:
     required:
     - open
     type: object
+  model.IDPostReq:
+    properties:
+      id:
+        type: integer
+    required:
+    - id
+    type: object
   model.ItemListRes:
     properties:
       items:
@@ -993,6 +1000,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M5006 柜门操作
+      tags:
+      - '[M]管理接口'
+  /manager/v1/cabinet/reboot:
+    post:
+      consumes:
+      - application/json
+      operationId: CabinetReboot
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 重启请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.IDPostReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M5007 重启电柜
       tags:
       - '[M]管理接口'
   /manager/v1/city:

@@ -23,6 +23,7 @@ type Provider interface {
     Logger() *Logger
     UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any
     DoorOperate(user, serial, operation string, door int) bool
+    Reboot(name string, serial string) bool
 }
 
 func Run(start bool) {

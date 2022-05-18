@@ -28,6 +28,10 @@ type kaixin struct {
     errors map[string]string
 }
 
+func (p *kaixin) Reboot(name string, serial string) bool {
+    return false
+}
+
 func (p *kaixin) Cabinets() ([]*ent.Cabinet, error) {
     return ar.Ent.Cabinet.Query().Where(cabinet.Brand(model.CabinetBrandKaixin.Value())).All(context.Background())
 }

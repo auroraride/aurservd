@@ -46,7 +46,7 @@ func (l *Logger) Write(times int, data any) {
         Times:  times,
         Result: data,
     })
-    buffer.WriteString("\n")
+    // buffer.WriteString("\n")
 
     // 写入日志文件
     l.mu.Lock()
