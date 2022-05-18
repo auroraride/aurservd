@@ -17,10 +17,11 @@ import (
 )
 
 type Config struct {
-    Color bool   // 是否启用日志颜色
-    Level string // 日志等级
-    Age   int    // 日志保存时间（小时）
-    Json  bool   // 日志以json格式保存
+    Color    bool   // 是否启用日志颜色
+    Level    string // 日志等级
+    Age      int    // 日志保存时间（小时）
+    Json     bool   // 日志以json格式保存
+    RootPath string
 }
 
 func LoadWithConfig(cfg Config) {
@@ -35,8 +36,8 @@ func LoadWithConfig(cfg Config) {
         panic(err)
     }
 
-    consoleFormatter := LogFormat{EnableColor: cfg.Color, Console: true}
-    fileFormatter := LogFormat{EnableColor: false, SaveJson: cfg.Json}
+    consoleFormatter := LogFormat{EnableColor: cfg.Color, Console: true, RootPath: cfg.RootPath}
+    fileFormatter := LogFormat{EnableColor: false, SaveJson: cfg.Json, RootPath: cfg.RootPath}
     log.AddHook(NewLocalHook(w, consoleFormatter, fileFormatter, GetLogLevel(cfg.Level)...))
     log.SetReportCaller(true)
 }

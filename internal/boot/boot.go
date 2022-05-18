@@ -26,10 +26,11 @@ func Bootstrap() {
     // 配置日志
     l := ar.Config.Logging
     logger.LoadWithConfig(logger.Config{
-        Color: l.Color,
-        Level: l.Level,
-        Age:   l.Age,
-        Json:  l.Json,
+        Color:    l.Color,
+        Level:    l.Level,
+        Age:      l.Age,
+        Json:     l.Json,
+        RootPath: l.RootPath,
     })
 
     // 加载数据库

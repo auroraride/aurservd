@@ -183,6 +183,7 @@ type LogFormat struct {
     EnableColor bool
     SaveJson    bool
     Console     bool
+    RootPath    string
 }
 
 // Format implements logrus.Formatter
@@ -214,7 +215,8 @@ func (f LogFormat) Format(entry *logrus.Entry) (out []byte, err error) {
     buf.WriteString(l)
     if entry.HasCaller() {
         buf.WriteString(lp)
-        buf.WriteString(fmt.Sprintf("{%s} %s:%d", entry.Caller.Function, entry.Caller.File, entry.Caller.Line))
+        buf.WriteString(fmt.Sprintf("%s:%d", strings.ReplaceAll(entry.Caller.File, f.RootPath, ""), entry.Caller.Line))
+        // buf.WriteString(fmt.Sprintf("{%s} %s:%d", entry.Caller.Function, entry.Caller.File, entry.Caller.Line))
     }
     buf.WriteString(mp)
     buf.WriteString(entry.Message)
