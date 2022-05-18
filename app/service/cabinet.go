@@ -211,44 +211,46 @@ func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.Cabine
     if !ok {
         snag.Panic("操作方式错误")
     }
+    var prov provider.Provider
+    up := ar.Ent.Cabinet.UpdateOne(item).SetHealth(model.CabinetHealthStatusOnline)
     switch brand {
     case model.CabinetBrandYundong:
-        yd := provider.NewYundong()
-        yd.PrepareRequest()
-        state = yd.DoorOperate(modifier.Name, item.Serial, op, *req.Index)
+        prov = provider.NewYundong()
         break
     case model.CabinetBrandKaixin:
-        state = provider.NewKaixin().DoorOperate(modifier.Name, item.Serial, op, *req.Index)
+        prov = provider.NewKaixin()
         break
     }
-    // TODO 如果成功, 更新数据库或重新获取
-    if state {}
-    go func() {
-        // 上传日志
-        slsCfg := ar.Config.Aliyun.Sls
-        lg := &sls.LogGroup{
-            Source: tea.String(item.Serial),
-            Topic:  tea.String(brand.String()),
-            Logs: []*sls.Log{{
-                Time: tea.Uint32(uint32(time.Now().Unix())),
-                Contents: provider.ParseLogContent(&provider.OperationLog{
-                    User:      modifier.Name,
-                    UserID:    modifier.ID,
-                    Phone:     modifier.Phone,
-                    Serial:    item.Serial,
-                    Name:      item.Bin[*req.Index].Name,
-                    Operation: *req.Operation,
-                    Success:   state,
-                    Remark:    *req.Remark,
-                }),
-            },
-            },
-        }
-        err := ali.NewSls().PutLogs(slsCfg.Project, slsCfg.Operation, lg)
-        if err != nil {
-            log.Error(err)
-            return
-        }
-    }()
+    prov.PrepareRequest()
+    state = prov.DoorOperate(modifier.Name, item.Serial, op, *req.Index)
+    // 如果成功, 重新获取状态更新数据
+    if state {
+        prov.UpdateStatus(up, item)
+        up.SaveX(s.ctx)
+    }
+    // 上传日志
+    slsCfg := ar.Config.Aliyun.Sls
+    lg := &sls.LogGroup{
+        Source: tea.String(item.Serial),
+        Topic:  tea.String(brand.String()),
+        Logs: []*sls.Log{{
+            Time: tea.Uint32(uint32(time.Now().Unix())),
+            Contents: provider.ParseLogContent(&provider.OperationLog{
+                User:      modifier.Name,
+                UserID:    modifier.ID,
+                Phone:     modifier.Phone,
+                Serial:    item.Serial,
+                Name:      item.Bin[*req.Index].Name,
+                Operation: *req.Operation,
+                Success:   state,
+                Remark:    *req.Remark,
+            }),
+        }},
+    }
+    err := ali.NewSls().PutLogs(slsCfg.Project, slsCfg.Operation, lg)
+    if err != nil {
+        log.Error(err)
+        return
+    }
     return
 }

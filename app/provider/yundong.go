@@ -89,9 +89,11 @@ func (p *yundong) FetchToken(tokenRequest bool) (token string) {
     }
     token = ar.Cache.Get(context.Background(), yundongTokenKey).Val()
     if token == "" {
-        r := p.RequestClient(true)
+        client := p.RequestClient(true)
         res := new(YDTokenRes)
-        _, err := r.SetResult(res).Post(p.GetUrl(yundongTokenUrl))
+        r, err := client.SetResult(res).Post(p.GetUrl(yundongTokenUrl))
+
+        log.Info(string(r.Body()))
         if err != nil || res.Code != 0 {
             p.tokenRetryTimes += 1
             if p.tokenRetryTimes < 2 {
@@ -167,7 +169,7 @@ func (p *yundong) Brand() string {
 
 func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
     res := new(YDStatusRes)
-    _, err := p.RequestClient(false).
+    r, err := p.RequestClient(false).
         SetResult(res).
         Get(p.GetUrl(yundongStatusUrl) + "?cabinetNo=" + item.Serial)
     // token 请求失败, 重新请求token后重试
@@ -175,6 +177,8 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
         p.retryTimes += 1
         return p.UpdateStatus(up, item)
     }
+
+    log.Infof("云动状态获取结果：%s", string(r.Body()))
     if err != nil || res.Code != 0 {
         msg := fmt.Sprintf("云动状态获取失败, serial: %s, err: %#v, res: %s", item.Serial, err, res)
         log.Error(msg)
@@ -240,7 +244,7 @@ func (p *yundong) DoorOperate(user, serial, operation string, door int) (state b
     }
 
     res := new(YDRes)
-    _, err := p.RequestClient(false).
+    r, err := p.RequestClient(false).
         SetResult(res).
         SetBody(body{
             CabinetSN:  serial,
@@ -249,6 +253,7 @@ func (p *yundong) DoorOperate(user, serial, operation string, door int) (state b
             Action:     operation,
         }).
         Post(p.GetUrl(yundongControlUrl))
+    log.Info(string(r.Body()))
     // token 请求失败, 重新请求token后重试
     if res.Code == 1000 && p.retryTimes < 1 {
         p.retryTimes += 1

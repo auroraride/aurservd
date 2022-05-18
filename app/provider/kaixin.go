@@ -161,6 +161,7 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
         return msg
     }
 
+    log.Infof("凯信状态获取结果：%s", string(r.Body()))
     err = jsoniter.Unmarshal(r.Body(), res)
     if err != nil {
         msg := fmt.Sprintf("凯信状态获取失败, serial: %s, err: %#v", item.Serial, err)
@@ -228,6 +229,7 @@ func (p *kaixin) DoorOperate(user, serial, operation string, door int) (state bo
             "operation": operation,
         })
     r, err := client.Post(url)
+    log.Info(string(r.Body()))
 
     if err != nil {
         log.Error(err)
