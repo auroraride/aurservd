@@ -28,7 +28,7 @@ type kaixin struct {
     errors map[string]string
 }
 
-func (p *kaixin) Reboot(name string, serial string) bool {
+func (p *kaixin) Reboot(code string, serial string) bool {
     return false
 }
 
@@ -220,15 +220,15 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
 type KXOperationRes KXRes[any]
 
 // DoorOperate 操作柜门
-func (p *kaixin) DoorOperate(user, serial, operation string, door int) (state bool) {
+func (p *kaixin) DoorOperate(code, serial, operation string, door int) (state bool) {
     res := new(KXOperationRes)
     url := p.GetUrl(kaixinUrlDoorOperation)
     d := strconv.Itoa(door)
     client := resty.New().R().
         SetFormData(map[string]string{
-            "user":      user,
+            "user":      code,
             "cupboard":  serial,
-            "checkcode": utils.Md5String(utils.Md5String(user+serial+d+operation) + p.key),
+            "checkcode": utils.Md5String(utils.Md5String(code+serial+d+operation) + p.key),
             "door":      d,
             "operation": operation,
         })

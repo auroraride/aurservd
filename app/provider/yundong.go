@@ -14,6 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
+    "github.com/golang-module/carbon/v2"
     log "github.com/sirupsen/logrus"
     "strconv"
     "time"
@@ -21,12 +22,13 @@ import (
 
 // TODO 维护一个全局的token
 type yundong struct {
-    logger          *Logger
-    url             string
-    appid           string
-    appkey          string
-    tokenRetryTimes int // token获取重试次数
-    retryTimes      int
+    logger            *Logger
+    url               string
+    appid             string
+    appkey            string
+    tokenRetryTimes   int // token获取重试次数
+    retryTimes        int
+    operateRetryTimes int // 获取操作日志判定操作是否成功重试次数 30次为上限
 }
 
 // YDRes 云动通用返回
@@ -48,6 +50,7 @@ const (
     yundongStatusUrl   Yundongurl = "/cabinet/status"
     yundongControlUrl  Yundongurl = "/cabinet/control"
     yundongOperatedUrl Yundongurl = "/cabinet/operated"
+    yundongOperatorlog Yundongurl = "/cabinet/operatorlog"
 )
 
 func NewYundong() *yundong {
@@ -65,6 +68,7 @@ func NewYundong() *yundong {
 func (p *yundong) PrepareRequest() {
     p.tokenRetryTimes = 0
     p.retryTimes = 0
+    p.operateRetryTimes = 0
 }
 
 func (p *yundong) GetUrl(path Yundongurl) string {
@@ -207,7 +211,7 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
                 Battery:     hasBattery,
                 Electricity: e,
                 OpenStatus:  ds.Doorstatus == 1,
-                DoorHealth:  ds.HealthStatus == 0,
+                DoorHealth:  ds.IsEnable,
                 Current:     utils.NewNumber().Decimal(float64(ds.Chargei) / 1000),
                 Voltage:     utils.NewNumber().Decimal(float64(ds.Totalv) / 1000),
             }
@@ -233,7 +237,8 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
 }
 
 // DoorOperate 云动柜门操作
-func (p *yundong) DoorOperate(user, serial, operation string, door int) (state bool) {
+// TODO user携带操作ID，比对操作日志实时获取状态
+func (p *yundong) DoorOperate(code, serial, operation string, door int) (state bool) {
     type params struct {
         Doorno []int `json:"doorno"`
     }
@@ -245,29 +250,37 @@ func (p *yundong) DoorOperate(user, serial, operation string, door int) (state b
     }
 
     res := new(YDRes)
+    now := time.Now()
+
     r, err := p.RequestClient(false).
         SetResult(res).
         SetBody(body{
             CabinetSN:  serial,
-            EmployCode: user,
+            EmployCode: code,
             Params:     params{Doorno: []int{door}},
             Action:     operation,
         }).
         Post(p.GetUrl(yundongControlUrl))
+    if t, err := time.Parse(time.RFC1123, r.Header().Get("Date")); err == nil {
+        now = t
+    }
     log.Info(string(r.Body()))
     // token 请求失败, 重新请求token后重试
     if res.Code == 1000 && p.retryTimes < 1 {
         p.retryTimes += 1
-        return p.DoorOperate(user, serial, operation, door)
+        return p.DoorOperate(code, serial, operation, door)
     }
     if err != nil {
         log.Error(err)
         return
     }
-    return res.Code == 0
+    start := now.Add(-10 * time.Second).Format(carbon.DateTimeLayout)
+    end := now.Add(10 * time.Second).Format(carbon.DateTimeLayout)
+
+    return res.Code == 0 && p.GetOperateState(code, serial, start, end)
 }
 
-func (p *yundong) Reboot(user string, serial string) (state bool) {
+func (p *yundong) Reboot(code string, serial string) (state bool) {
     type body struct {
         CabinetSN  string `json:"cabinetSN"`
         EmployCode string `json:"employCode"`
@@ -279,7 +292,7 @@ func (p *yundong) Reboot(user string, serial string) (state bool) {
         SetResult(res).
         SetBody(body{
             CabinetSN:  serial,
-            EmployCode: user,
+            EmployCode: code,
             Action:     "rebootCabinet",
         }).
         Post(p.GetUrl(yundongOperatedUrl))
@@ -287,11 +300,58 @@ func (p *yundong) Reboot(user string, serial string) (state bool) {
     // token 请求失败, 重新请求token后重试
     if res.Code == 1000 && p.retryTimes < 1 {
         p.retryTimes += 1
-        return p.Reboot(user, serial)
+        return p.Reboot(code, serial)
     }
     if err != nil {
         log.Error(err)
         return
     }
     return res.Code == 0
+}
+
+type OperatorlogData struct {
+    Actiontime time.Time `json:"actiontime"`
+    EmployCode string    `json:"employCode"`
+    Params     struct {
+        Doorno []interface{} `json:"doorno,omitempty"`
+    } `json:"params"`
+    Action string `json:"action"`
+    Result string `json:"result"`
+}
+
+type OperatorlogRes struct {
+    Code  int               `json:"code"`
+    Msg   string            `json:"msg"`
+    Total int               `json:"total"`
+    Data  []OperatorlogData `json:"data"`
+}
+
+// GetOperateState 获取操作日志判定操作是否成功
+func (p *yundong) GetOperateState(opId, serial, start, end string) (state bool) {
+    res := new(OperatorlogRes)
+    r, err := p.RequestClient(false).
+        SetResult(res).
+        Get(fmt.Sprintf("%s?cabinetSN=%s&starttime=%s&endtime=%s&pageNo=0&pageNum=50", p.GetUrl(yundongOperatorlog), serial, start, end))
+    log.Info(string(r.Body()))
+    // token 请求失败, 重新请求token后重试
+    if res.Code == 1000 && p.retryTimes < 1 {
+        p.retryTimes += 1
+        return p.GetOperateState(opId, serial, start, end)
+    }
+    if err != nil {
+        log.Error(err)
+        return
+    }
+    for _, d := range res.Data {
+        if d.EmployCode == opId && d.Result == "succ" {
+            return true
+        }
+    }
+    // 重复30次查询
+    if !state {
+        time.Sleep(2 * time.Second)
+        p.operateRetryTimes += 1
+        return p.GetOperateState(opId, serial, start, end)
+    }
+    return
 }

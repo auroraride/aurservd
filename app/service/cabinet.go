@@ -198,6 +198,7 @@ func (s *cabinetService) Detail(id uint64) *model.CabinetDetailRes {
 
 // DoorOperate 操作柜门
 func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.CabinetDoorOperateReq) (state bool) {
+    opId := shortuuid.New()
     now := time.Now()
     // 查找柜子和仓位
     item := s.QueryOne(*req.ID)
@@ -221,7 +222,7 @@ func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.Cabine
         break
     }
     prov.PrepareRequest()
-    state = prov.DoorOperate(modifier.Name, item.Serial, op, *req.Index)
+    state = prov.DoorOperate(modifier.Name+"-"+opId, item.Serial, op, *req.Index)
     // 如果成功, 重新获取状态更新数据
     if state {
         // 更新仓位备注
@@ -237,6 +238,7 @@ func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.Cabine
             Logs: []*sls.Log{{
                 Time: tea.Uint32(uint32(now.Unix())),
                 Contents: provider.ParseLogContent(&provider.OperationLog{
+                    ID:        opId,
                     Brand:     brand.String(),
                     User:      modifier.Name,
                     UserID:    modifier.ID,
@@ -262,6 +264,7 @@ func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.Cabine
 // Reboot 重启电柜
 func (s *cabinetService) Reboot(modifier *model.Modifier, req *model.IDPostReq) bool {
     now := time.Now()
+    opId := shortuuid.New()
 
     item := s.QueryOne(req.ID)
     if item.Brand == model.CabinetBrandKaixin.Value() {
@@ -270,7 +273,7 @@ func (s *cabinetService) Reboot(modifier *model.Modifier, req *model.IDPostReq) 
     var prov provider.Provider
     var state bool
     prov = provider.NewYundong()
-    state = prov.Reboot(modifier.Name, item.Serial)
+    state = prov.Reboot(modifier.Name+"-"+opId, item.Serial)
 
     // 如果成功, 重新获取状态更新数据
     up := ar.Ent.Cabinet.UpdateOne(item).SetHealth(model.CabinetHealthStatusOnline)
@@ -288,6 +291,7 @@ func (s *cabinetService) Reboot(modifier *model.Modifier, req *model.IDPostReq) 
             Logs: []*sls.Log{{
                 Time: tea.Uint32(uint32(now.Unix())),
                 Contents: provider.ParseLogContent(&provider.OperationLog{
+                    ID:        opId,
                     Brand:     brand.String(),
                     User:      modifier.Name,
                     UserID:    modifier.ID,

@@ -36,6 +36,7 @@ type CabinetLog struct {
 }
 
 type OperationLog struct {
+    ID        string `sls:"操作ID"`
     Brand     string `sls:"品牌"`
     Serial    string `sls:"编码"`
     Name      string `sls:"仓位"`
