@@ -1276,6 +1276,10 @@
                     "description": "操作方式 1:开仓 2:锁定(标记为故障) 3:解锁(取消标记故障)",
                     "type": "integer"
                 },
+                "phone": {
+                    "description": "骑手手机号",
+                    "type": "string"
+                },
                 "remark": {
                     "description": "操作原因",
                     "type": "string"

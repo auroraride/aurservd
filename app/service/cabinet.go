@@ -225,8 +225,11 @@ func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.Cabine
     state = prov.DoorOperate(modifier.Name, item.Serial, op, *req.Index)
     // 如果成功, 重新获取状态更新数据
     if state {
+        // 更新仓位备注
+        bins := item.Bin
+        bins[*req.Index].Remark = *req.Remark
         prov.UpdateStatus(up, item)
-        up.SaveX(s.ctx)
+        up.SetBin(bins).SaveX(s.ctx)
     }
     // 上传日志
     slsCfg := ar.Config.Aliyun.Sls
