@@ -10,6 +10,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
     "github.com/labstack/echo/v4"
+    log "github.com/sirupsen/logrus"
 )
 
 type cabinet struct{}
@@ -130,4 +131,11 @@ func (*cabinet) Reboot(c echo.Context) (err error) {
     return ctx.SendResponse(
         model.StatusResponse{Status: service.NewCabinet().Reboot(ctx.Modifier, req)},
     )
+}
+
+// Fault TODO 故障列表
+func (*cabinet) Fault(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.CabinetFaultReportReq](c)
+    log.Println(req)
+    return ctx.SendResponse()
 }
