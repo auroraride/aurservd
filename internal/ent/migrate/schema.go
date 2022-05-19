@@ -468,6 +468,7 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true},
 		{Name: "remark", Type: field.TypeString, Nullable: true},
+		{Name: "enable", Type: field.TypeBool},
 		{Name: "name", Type: field.TypeString},
 		{Name: "start", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "date"}},
 		{Name: "end", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "date"}},
@@ -492,14 +493,19 @@ var (
 				Columns: []*schema.Column{PlanColumns[3]},
 			},
 			{
+				Name:    "plan_enable",
+				Unique:  false,
+				Columns: []*schema.Column{PlanColumns[7]},
+			},
+			{
 				Name:    "plan_start_end",
 				Unique:  false,
-				Columns: []*schema.Column{PlanColumns[8], PlanColumns[9]},
+				Columns: []*schema.Column{PlanColumns[9], PlanColumns[10]},
 			},
 			{
 				Name:    "plan_name",
 				Unique:  false,
-				Columns: []*schema.Column{PlanColumns[7]},
+				Columns: []*schema.Column{PlanColumns[8]},
 				Annotation: &entsql.IndexAnnotation{
 					Types: map[string]string{
 						"postgres": "GIN",

@@ -26,6 +26,7 @@ func (Plan) Annotations() []schema.Annotation {
 // Fields of the Plan.
 func (Plan) Fields() []ent.Field {
     return []ent.Field{
+        field.Bool("enable").Comment("是否启用"),
         field.String("name").Comment("骑士卡名称"),
         field.Time("start").SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("有效期开始日期"),
         field.Time("end").SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("有效期结束日期"),
@@ -54,6 +55,7 @@ func (Plan) Mixin() []ent.Mixin {
 
 func (Plan) Indexes() []ent.Index {
     return []ent.Index{
+        index.Fields("enable"),
         index.Fields("start", "end"),
         index.Fields("name").Annotations(
             entsql.IndexTypes(map[string]string{

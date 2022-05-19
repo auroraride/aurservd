@@ -101,6 +101,12 @@ func (pu *PlanUpdate) ClearRemark() *PlanUpdate {
 	return pu
 }
 
+// SetEnable sets the "enable" field.
+func (pu *PlanUpdate) SetEnable(b bool) *PlanUpdate {
+	pu.mutation.SetEnable(b)
+	return pu
+}
+
 // SetName sets the "name" field.
 func (pu *PlanUpdate) SetName(s string) *PlanUpdate {
 	pu.mutation.SetName(s)
@@ -375,6 +381,13 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: plan.FieldRemark,
 		})
 	}
+	if value, ok := pu.mutation.Enable(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: plan.FieldEnable,
+		})
+	}
 	if value, ok := pu.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -632,6 +645,12 @@ func (puo *PlanUpdateOne) SetNillableRemark(s *string) *PlanUpdateOne {
 // ClearRemark clears the value of the "remark" field.
 func (puo *PlanUpdateOne) ClearRemark() *PlanUpdateOne {
 	puo.mutation.ClearRemark()
+	return puo
+}
+
+// SetEnable sets the "enable" field.
+func (puo *PlanUpdateOne) SetEnable(b bool) *PlanUpdateOne {
+	puo.mutation.SetEnable(b)
 	return puo
 }
 
@@ -931,6 +950,13 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: plan.FieldRemark,
+		})
+	}
+	if value, ok := puo.mutation.Enable(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: plan.FieldEnable,
 		})
 	}
 	if value, ok := puo.mutation.Name(); ok {

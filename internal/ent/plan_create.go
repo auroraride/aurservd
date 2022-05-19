@@ -93,6 +93,12 @@ func (pc *PlanCreate) SetNillableRemark(s *string) *PlanCreate {
 	return pc
 }
 
+// SetEnable sets the "enable" field.
+func (pc *PlanCreate) SetEnable(b bool) *PlanCreate {
+	pc.mutation.SetEnable(b)
+	return pc
+}
+
 // SetName sets the "name" field.
 func (pc *PlanCreate) SetName(s string) *PlanCreate {
 	pc.mutation.SetName(s)
@@ -248,6 +254,9 @@ func (pc *PlanCreate) check() error {
 	if _, ok := pc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Plan.updated_at"`)}
 	}
+	if _, ok := pc.mutation.Enable(); !ok {
+		return &ValidationError{Name: "enable", err: errors.New(`ent: missing required field "Plan.enable"`)}
+	}
 	if _, ok := pc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Plan.name"`)}
 	}
@@ -341,6 +350,14 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 			Column: plan.FieldRemark,
 		})
 		_node.Remark = value
+	}
+	if value, ok := pc.mutation.Enable(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: plan.FieldEnable,
+		})
+		_node.Enable = value
 	}
 	if value, ok := pc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -575,6 +592,18 @@ func (u *PlanUpsert) UpdateRemark() *PlanUpsert {
 // ClearRemark clears the value of the "remark" field.
 func (u *PlanUpsert) ClearRemark() *PlanUpsert {
 	u.SetNull(plan.FieldRemark)
+	return u
+}
+
+// SetEnable sets the "enable" field.
+func (u *PlanUpsert) SetEnable(v bool) *PlanUpsert {
+	u.Set(plan.FieldEnable, v)
+	return u
+}
+
+// UpdateEnable sets the "enable" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateEnable() *PlanUpsert {
+	u.SetExcluded(plan.FieldEnable)
 	return u
 }
 
@@ -824,6 +853,20 @@ func (u *PlanUpsertOne) UpdateRemark() *PlanUpsertOne {
 func (u *PlanUpsertOne) ClearRemark() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetEnable sets the "enable" field.
+func (u *PlanUpsertOne) SetEnable(v bool) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetEnable(v)
+	})
+}
+
+// UpdateEnable sets the "enable" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateEnable() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateEnable()
 	})
 }
 
@@ -1252,6 +1295,20 @@ func (u *PlanUpsertBulk) UpdateRemark() *PlanUpsertBulk {
 func (u *PlanUpsertBulk) ClearRemark() *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetEnable sets the "enable" field.
+func (u *PlanUpsertBulk) SetEnable(v bool) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetEnable(v)
+	})
+}
+
+// UpdateEnable sets the "enable" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateEnable() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateEnable()
 	})
 }
 

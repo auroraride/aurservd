@@ -721,7 +721,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M3004 新增合同
+      summary: M30004 新增合同
       tags:
       - '[M]管理接口'
   /manager/v1/battery/model:
@@ -749,7 +749,7 @@ paths:
                     $ref: '#/definitions/model.BatteryModel'
                   type: array
               type: object
-      summary: M4001 获取电池型号
+      summary: M40001 获取电池型号
       tags:
       - '[M]管理接口'
     post:
@@ -780,7 +780,7 @@ paths:
                 item:
                   $ref: '#/definitions/model.BatteryModel'
               type: object
-      summary: M4002 创建电池型号
+      summary: M40002 创建电池型号
       tags:
       - '[M]管理接口'
   /manager/v1/branch:
@@ -808,7 +808,7 @@ paths:
                     $ref: '#/definitions/model.Branch'
                   type: array
               type: object
-      summary: M3001 网点列表
+      summary: M30001 网点列表
       tags:
       - '[M]管理接口'
     post:
@@ -834,7 +834,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M3002 新增网点
+      summary: M30002 新增网点
       tags:
       - '[M]管理接口'
   /manager/v1/branch/{id}:
@@ -861,7 +861,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M3003 编辑网点
+      summary: M30003 编辑网点
       tags:
       - '[M]管理接口'
   /manager/v1/branch/selector:
@@ -889,7 +889,7 @@ paths:
                     $ref: '#/definitions/model.BranchSampleItem'
                   type: array
               type: object
-      summary: M3005 网点选择列表
+      summary: M30005 网点选择列表
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet:
@@ -941,7 +941,7 @@ paths:
                     $ref: '#/definitions/model.CabinetItem'
                   type: array
               type: object
-      summary: M5002 查询电柜
+      summary: M50002 查询电柜
       tags:
       - '[M]管理接口'
     post:
@@ -972,7 +972,7 @@ paths:
                 item:
                   $ref: '#/definitions/model.CabinetItem'
               type: object
-      summary: M5001 创建电柜
+      summary: M50001 创建电柜
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet/{id}:
@@ -998,7 +998,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5004 删除电柜
+      summary: M50004 删除电柜
       tags:
       - '[M]管理接口'
     get:
@@ -1023,7 +1023,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.CabinetDetailRes'
-      summary: M5005 获取并更新电柜详细信息
+      summary: M50005 获取并更新电柜详细信息
       tags:
       - '[M]管理接口'
     put:
@@ -1054,7 +1054,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5003 编辑电柜
+      summary: M50003 编辑电柜
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet/door-operate:
@@ -1081,7 +1081,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5006 柜门操作
+      summary: M50006 柜门操作
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet/fault:
@@ -1135,7 +1135,7 @@ paths:
                     $ref: '#/definitions/model.CabinetFaultItem'
                   type: array
               type: object
-      summary: M5008 故障列表
+      summary: M50008 故障列表
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet/reboot:
@@ -1162,7 +1162,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5007 重启电柜
+      summary: M50007 重启电柜
       tags:
       - '[M]管理接口'
   /manager/v1/city:
@@ -1190,7 +1190,7 @@ paths:
             items:
               $ref: '#/definitions/model.CityItem'
             type: array
-      summary: M2001 城市列表
+      summary: M20001 城市列表
       tags:
       - '[M]管理接口'
   /manager/v1/city/{id}:
@@ -1223,7 +1223,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M2002 修改城市
+      summary: M20002 修改城市
       tags:
       - '[M]管理接口'
   /manager/v1/csc/irv:
@@ -1281,7 +1281,28 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M5009 处理故障
+      summary: M50009 处理故障
+      tags:
+      - '[M]管理接口'
+  /manager/v1/plan:
+    post:
+      consumes:
+      - application/json
+      operationId: PlanCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M60001 创建骑士卡
       tags:
       - '[M]管理接口'
   /manager/v1/user/signin:
@@ -1297,7 +1318,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ManagerSigninRes'
-      summary: M1001 用户登录
+      summary: M10001 用户登录
       tags:
       - '[M]管理接口'
 swagger: "2.0"

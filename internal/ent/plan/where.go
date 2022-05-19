@@ -121,6 +121,13 @@ func Remark(v string) predicate.Plan {
 	})
 }
 
+// Enable applies equality check predicate on the "enable" field. It's identical to EnableEQ.
+func Enable(v bool) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEnable), v))
+	})
+}
+
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
@@ -555,6 +562,20 @@ func RemarkEqualFold(v string) predicate.Plan {
 func RemarkContainsFold(v string) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
+	})
+}
+
+// EnableEQ applies the EQ predicate on the "enable" field.
+func EnableEQ(v bool) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEnable), v))
+	})
+}
+
+// EnableNEQ applies the NEQ predicate on the "enable" field.
+func EnableNEQ(v bool) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEnable), v))
 	})
 }
 

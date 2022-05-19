@@ -11552,6 +11552,7 @@ type PlanMutation struct {
 	creator       **model.Modifier
 	last_modifier **model.Modifier
 	remark        *string
+	enable        *bool
 	name          *string
 	start         *time.Time
 	end           *time.Time
@@ -11937,6 +11938,42 @@ func (m *PlanMutation) RemarkCleared() bool {
 func (m *PlanMutation) ResetRemark() {
 	m.remark = nil
 	delete(m.clearedFields, plan.FieldRemark)
+}
+
+// SetEnable sets the "enable" field.
+func (m *PlanMutation) SetEnable(b bool) {
+	m.enable = &b
+}
+
+// Enable returns the value of the "enable" field in the mutation.
+func (m *PlanMutation) Enable() (r bool, exists bool) {
+	v := m.enable
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEnable returns the old "enable" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldEnable(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEnable is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEnable requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEnable: %w", err)
+	}
+	return oldValue.Enable, nil
+}
+
+// ResetEnable resets all changes to the "enable" field.
+func (m *PlanMutation) ResetEnable() {
+	m.enable = nil
 }
 
 // SetName sets the "name" field.
@@ -12342,7 +12379,7 @@ func (m *PlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlanMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, plan.FieldCreatedAt)
 	}
@@ -12360,6 +12397,9 @@ func (m *PlanMutation) Fields() []string {
 	}
 	if m.remark != nil {
 		fields = append(fields, plan.FieldRemark)
+	}
+	if m.enable != nil {
+		fields = append(fields, plan.FieldEnable)
 	}
 	if m.name != nil {
 		fields = append(fields, plan.FieldName)
@@ -12399,6 +12439,8 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.LastModifier()
 	case plan.FieldRemark:
 		return m.Remark()
+	case plan.FieldEnable:
+		return m.Enable()
 	case plan.FieldName:
 		return m.Name()
 	case plan.FieldStart:
@@ -12432,6 +12474,8 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldLastModifier(ctx)
 	case plan.FieldRemark:
 		return m.OldRemark(ctx)
+	case plan.FieldEnable:
+		return m.OldEnable(ctx)
 	case plan.FieldName:
 		return m.OldName(ctx)
 	case plan.FieldStart:
@@ -12494,6 +12538,13 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRemark(v)
+		return nil
+	case plan.FieldEnable:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEnable(v)
 		return nil
 	case plan.FieldName:
 		v, ok := value.(string)
@@ -12669,6 +12720,9 @@ func (m *PlanMutation) ResetField(name string) error {
 		return nil
 	case plan.FieldRemark:
 		m.ResetRemark()
+		return nil
+	case plan.FieldEnable:
+		m.ResetEnable()
 		return nil
 	case plan.FieldName:
 		m.ResetName()

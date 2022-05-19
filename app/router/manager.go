@@ -46,4 +46,7 @@ func loadManagerRoutes() {
     g.POST("/cabinet/reboot", mapi.Cabinet.Reboot)
     g.GET("/cabinet/fault", mapi.Cabinet.Fault)
     g.PUT("/cabinet/fault/:id", mapi.Cabinet.FaultDeal)
+
+    // 骑士卡
+    g.POST("/plan", mapi.Plan.Create)
 }

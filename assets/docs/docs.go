@@ -123,7 +123,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M4001 获取电池型号",
+                "summary": "M40001 获取电池型号",
                 "operationId": "BatteryModels",
                 "parameters": [
                     {
@@ -168,7 +168,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M4002 创建电池型号",
+                "summary": "M40002 创建电池型号",
                 "operationId": "BatteryCreateModel",
                 "parameters": [
                     {
@@ -221,7 +221,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M3001 网点列表",
+                "summary": "M30001 网点列表",
                 "operationId": "BranchList",
                 "parameters": [
                     {
@@ -266,7 +266,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M3002 新增网点",
+                "summary": "M30002 新增网点",
                 "operationId": "BranchAdd",
                 "parameters": [
                     {
@@ -307,7 +307,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M3005 网点选择列表",
+                "summary": "M30005 网点选择列表",
                 "operationId": "BranchSelector",
                 "parameters": [
                     {
@@ -354,7 +354,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M3003 编辑网点",
+                "summary": "M30003 编辑网点",
                 "operationId": "BranchModify",
                 "parameters": [
                     {
@@ -395,7 +395,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M5002 查询电柜",
+                "summary": "M50002 查询电柜",
                 "operationId": "CabinetQuery",
                 "parameters": [
                     {
@@ -478,7 +478,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M5001 创建电柜",
+                "summary": "M50001 创建电柜",
                 "operationId": "CabinetCreate",
                 "parameters": [
                     {
@@ -531,7 +531,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M5006 柜门操作",
+                "summary": "M50006 柜门操作",
                 "operationId": "CabinetDoorOperate",
                 "parameters": [
                     {
@@ -572,7 +572,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M5008 故障列表",
+                "summary": "M50008 故障列表",
                 "operationId": "CabinetFault",
                 "parameters": [
                     {
@@ -661,7 +661,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M5007 重启电柜",
+                "summary": "M50007 重启电柜",
                 "operationId": "CabinetReboot",
                 "parameters": [
                     {
@@ -702,7 +702,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M5005 获取并更新电柜详细信息",
+                "summary": "M50005 获取并更新电柜详细信息",
                 "operationId": "CabinetDetail",
                 "parameters": [
                     {
@@ -739,7 +739,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M5003 编辑电柜",
+                "summary": "M50003 编辑电柜",
                 "operationId": "CabinetModify",
                 "parameters": [
                     {
@@ -785,7 +785,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M5004 删除电柜",
+                "summary": "M50004 删除电柜",
                 "operationId": "CabinetDelete",
                 "parameters": [
                     {
@@ -824,7 +824,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M2001 城市列表",
+                "summary": "M20001 城市列表",
                 "parameters": [
                     {
                         "type": "string",
@@ -867,7 +867,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M2002 修改城市",
+                "summary": "M20002 修改城市",
                 "operationId": "CityModify",
                 "parameters": [
                     {
@@ -954,7 +954,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M5009 处理故障",
+                "summary": "M50009 处理故障",
                 "operationId": "CabinetFaultDeal",
                 "parameters": [
                     {
@@ -991,6 +991,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/plan": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M60001 创建骑士卡",
+                "operationId": "PlanCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/user/signin": {
             "post": {
                 "description": "管理员登录",
@@ -1003,7 +1035,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M1001 用户登录",
+                "summary": "M10001 用户登录",
                 "operationId": "ManagerSignin",
                 "responses": {
                     "200": {
@@ -1026,7 +1058,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M3004 新增合同",
+                "summary": "M30004 新增合同",
                 "operationId": "BranchAddContract",
                 "parameters": [
                     {

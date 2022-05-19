@@ -33,6 +33,9 @@ type Plan struct {
 	// Remark holds the value of the "remark" field.
 	// 备注
 	Remark string `json:"remark,omitempty"`
+	// Enable holds the value of the "enable" field.
+	// 是否启用
+	Enable bool `json:"enable,omitempty"`
 	// Name holds the value of the "name" field.
 	// 骑士卡名称
 	Name string `json:"name,omitempty"`
@@ -92,6 +95,8 @@ func (*Plan) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case plan.FieldCreator, plan.FieldLastModifier:
 			values[i] = new([]byte)
+		case plan.FieldEnable:
+			values[i] = new(sql.NullBool)
 		case plan.FieldPrice, plan.FieldCommission:
 			values[i] = new(sql.NullFloat64)
 		case plan.FieldID, plan.FieldDays:
@@ -161,6 +166,12 @@ func (pl *Plan) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
 				pl.Remark = value.String
+			}
+		case plan.FieldEnable:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field enable", values[i])
+			} else if value.Valid {
+				pl.Enable = value.Bool
 			}
 		case plan.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -250,6 +261,8 @@ func (pl *Plan) String() string {
 	builder.WriteString(fmt.Sprintf("%v", pl.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(pl.Remark)
+	builder.WriteString(", enable=")
+	builder.WriteString(fmt.Sprintf("%v", pl.Enable))
 	builder.WriteString(", name=")
 	builder.WriteString(pl.Name)
 	builder.WriteString(", start=")
