@@ -943,6 +943,54 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/fault/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M5009 处理故障",
+                "operationId": "CabinetFaultDeal",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "故障ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CabinetFaultDealReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/user/signin": {
             "post": {
                 "description": "管理员登录",
@@ -1452,6 +1500,28 @@ const docTemplate = `{
                 }
             }
         },
+        "model.CabinetFaultDealReq": {
+            "type": "object",
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "remark": {
+                    "description": "备注 ",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "故障状态 0未处理 1已处理",
+                    "type": "integer",
+                    "maximum": 1,
+                    "minimum": 0,
+                    "enum": [
+                        0,
+                        1
+                    ]
+                }
+            }
+        },
         "model.CabinetFaultItem": {
             "type": "object",
             "properties": {
@@ -1489,6 +1559,10 @@ const docTemplate = `{
                 "rider": {
                     "description": "骑手信息",
                     "$ref": "#/definitions/model.RiderSampleInfo"
+                },
+                "status": {
+                    "description": "故障状态 0未处理 1已处理",
+                    "type": "integer"
                 }
             }
         },

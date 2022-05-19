@@ -30,6 +30,15 @@ func NewCabinetFault() *cabinetFaultService {
     }
 }
 
+// Query 查找故障
+func (s *cabinetFaultService) Query(id uint64) *ent.CabinetFault {
+    cf, err := s.orm.Query().Where(cabinetfault.ID(id)).Only(s.ctx)
+    if err != nil || cf == nil {
+        snag.Panic("未找到故障")
+    }
+    return cf
+}
+
 // Report 骑手故障上报
 func (s *cabinetFaultService) Report(rider *ent.Rider, req *model.CabinetFaultReportReq) bool {
     // 获取电柜信息
@@ -121,4 +130,13 @@ func (s *cabinetFaultService) List(req *model.CabinetFaultListReq) (res *model.P
     }
     res.Items = out
     return
+}
+
+// Deal 处理故障
+func (s *cabinetFaultService) Deal(m *model.Modifier, req *model.CabinetFaultDealReq) {
+    s.orm.UpdateOne(s.Query(*req.ID)).
+        SetRemark(*req.Remark).
+        SetStatus(*req.Status).
+        SetLastModifier(m).
+        SaveX(s.ctx)
 }

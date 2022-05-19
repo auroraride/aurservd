@@ -45,4 +45,5 @@ func loadManagerRoutes() {
     g.POST("/cabinet/door-operate", mapi.Cabinet.DoorOperate)
     g.POST("/cabinet/reboot", mapi.Cabinet.Reboot)
     g.GET("/cabinet/fault", mapi.Cabinet.Fault)
+    g.PUT("/cabinet/fault/:id", mapi.Cabinet.FaultDeal)
 }

@@ -324,6 +324,22 @@ definitions:
         description: 电柜编号
         type: string
     type: object
+  model.CabinetFaultDealReq:
+    properties:
+      remark:
+        description: '备注 '
+        type: string
+      status:
+        description: 故障状态 0未处理 1已处理
+        enum:
+        - 0
+        - 1
+        maximum: 1
+        minimum: 0
+        type: integer
+    required:
+    - status
+    type: object
   model.CabinetFaultItem:
     properties:
       attachments:
@@ -352,6 +368,9 @@ definitions:
       rider:
         $ref: '#/definitions/model.RiderSampleInfo'
         description: 骑手信息
+      status:
+        description: 故障状态 0未处理 1已处理
+        type: integer
     type: object
   model.CabinetItem:
     properties:
@@ -1231,6 +1250,38 @@ paths:
           schema:
             $ref: '#/definitions/model.ShiguangjuIVRRes'
       summary: MT1001 时光驹催费工具
+      tags:
+      - '[M]管理接口'
+  /manager/v1/fault/{id}:
+    put:
+      consumes:
+      - application/json
+      operationId: CabinetFaultDeal
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 故障ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CabinetFaultDealReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M5009 处理故障
       tags:
       - '[M]管理接口'
   /manager/v1/user/signin:

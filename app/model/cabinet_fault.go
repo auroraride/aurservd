@@ -44,6 +44,7 @@ type CabinetFaultCabinet struct {
 // CabinetFaultItem 故障信息
 type CabinetFaultItem struct {
     ID          uint64              `json:"id"`          // 故障ID
+    Status      uint8               `json:"status"`      // 故障状态 0未处理 1已处理
     City        City                `json:"city"`        // 城市信息
     Cabinet     CabinetFaultCabinet `json:"cabinet"`     // 电柜信息
     Fault       string              `json:"fault"`       // 故障原因
@@ -51,4 +52,11 @@ type CabinetFaultItem struct {
     Attachments []string            `json:"attachments"` // 故障附件
     Description string              `json:"description"` // 故障描述
     CreatedAt   time.Time           `json:"createdAt"`   // 提交时间
+}
+
+// CabinetFaultDealReq 故障处理请求
+type CabinetFaultDealReq struct {
+    ID     *uint64 `json:"id" validate:"required" trans:"故障ID" param:"id"`
+    Status *uint8  `json:"status" validate:"required,gte=0,lte=1" enums:"0,1" trans:"故障状态"` // 0未处理 1已处理
+    Remark *string `json:"remark" trans:"备注"`
 }

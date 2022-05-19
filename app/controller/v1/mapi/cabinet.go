@@ -148,3 +148,20 @@ func (*cabinet) Fault(c echo.Context) (err error) {
         service.NewCabinetFault().List(req),
     )
 }
+
+// FaultDeal
+// @ID           CabinetFaultDeal
+// @Router       /manager/v1/fault/{id} [PUT]
+// @Summary      M5009 处理故障
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        id    path  int  true  "故障ID"
+// @Param        body  body  model.CabinetFaultDealReq  true  "desc"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*cabinet) FaultDeal(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.CabinetFaultDealReq](c)
+    service.NewCabinetFault().Deal(ctx.Modifier, req)
+    return ctx.SendResponse()
+}
