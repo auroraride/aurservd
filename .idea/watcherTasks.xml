@@ -16,7 +16,7 @@
       <option name="outputFromStdout" value="false" />
       <option name="program" value="swag" />
       <option name="runOnExternalChanges" value="true" />
-      <option name="scopeName" value="SwagPath" />
+      <option name="scopeName" value="Swagger" />
       <option name="trackOnlyRoot" value="false" />
       <option name="workingDir" value="$PROJECT_DIR$" />
       <envs />

@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Swagger" pattern="file[aurservd]:app/controller//*||file[aurservd]:app/router//*||file[aurservd]:wiki//*" />
+</component>
