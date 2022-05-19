@@ -13,6 +13,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
 
@@ -39,9 +40,9 @@ type CabinetFault struct {
 	// Status holds the value of the "status" field.
 	// 故障状态 0未处理 1已处理
 	Status uint8 `json:"status,omitempty"`
-	// City holds the value of the "city" field.
-	// 城市
-	City model.City `json:"city,omitempty"`
+	// CityID holds the value of the "city_id" field.
+	// 城市ID
+	CityID uint64 `json:"city_id,omitempty"`
 	// BranchID holds the value of the "branch_id" field.
 	// 网点ID
 	BranchID uint64 `json:"branch_id,omitempty"`
@@ -51,18 +52,6 @@ type CabinetFault struct {
 	// RiderID holds the value of the "rider_id" field.
 	// 骑手ID
 	RiderID uint64 `json:"rider_id,omitempty"`
-	// CabinetName holds the value of the "cabinet_name" field.
-	// 电柜名称
-	CabinetName string `json:"cabinet_name,omitempty"`
-	// Brand holds the value of the "brand" field.
-	// 电柜品牌
-	Brand string `json:"brand,omitempty"`
-	// Serial holds the value of the "serial" field.
-	// 电柜编号
-	Serial string `json:"serial,omitempty"`
-	// Models holds the value of the "models" field.
-	// 电池型号
-	Models []model.BatteryModel `json:"models,omitempty"`
 	// Fault holds the value of the "fault" field.
 	// 故障内容
 	Fault string `json:"fault,omitempty"`
@@ -85,9 +74,11 @@ type CabinetFaultEdges struct {
 	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// Rider holds the value of the rider edge.
 	Rider *Rider `json:"rider,omitempty"`
+	// City holds the value of the city edge.
+	City *City `json:"city,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // BranchOrErr returns the Branch value or an error if the edge
@@ -132,16 +123,30 @@ func (e CabinetFaultEdges) RiderOrErr() (*Rider, error) {
 	return nil, &NotLoadedError{edge: "rider"}
 }
 
+// CityOrErr returns the City value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CabinetFaultEdges) CityOrErr() (*City, error) {
+	if e.loadedTypes[3] {
+		if e.City == nil {
+			// The edge city was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: city.Label}
+		}
+		return e.City, nil
+	}
+	return nil, &NotLoadedError{edge: "city"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*CabinetFault) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case cabinetfault.FieldCreator, cabinetfault.FieldLastModifier, cabinetfault.FieldCity, cabinetfault.FieldModels, cabinetfault.FieldAttachments:
+		case cabinetfault.FieldCreator, cabinetfault.FieldLastModifier, cabinetfault.FieldAttachments:
 			values[i] = new([]byte)
-		case cabinetfault.FieldID, cabinetfault.FieldStatus, cabinetfault.FieldBranchID, cabinetfault.FieldCabinetID, cabinetfault.FieldRiderID:
+		case cabinetfault.FieldID, cabinetfault.FieldStatus, cabinetfault.FieldCityID, cabinetfault.FieldBranchID, cabinetfault.FieldCabinetID, cabinetfault.FieldRiderID:
 			values[i] = new(sql.NullInt64)
-		case cabinetfault.FieldRemark, cabinetfault.FieldCabinetName, cabinetfault.FieldBrand, cabinetfault.FieldSerial, cabinetfault.FieldFault, cabinetfault.FieldDescription:
+		case cabinetfault.FieldRemark, cabinetfault.FieldFault, cabinetfault.FieldDescription:
 			values[i] = new(sql.NullString)
 		case cabinetfault.FieldCreatedAt, cabinetfault.FieldUpdatedAt, cabinetfault.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -213,13 +218,11 @@ func (cf *CabinetFault) assignValues(columns []string, values []interface{}) err
 			} else if value.Valid {
 				cf.Status = uint8(value.Int64)
 			}
-		case cabinetfault.FieldCity:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field city", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &cf.City); err != nil {
-					return fmt.Errorf("unmarshal field city: %w", err)
-				}
+		case cabinetfault.FieldCityID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field city_id", values[i])
+			} else if value.Valid {
+				cf.CityID = uint64(value.Int64)
 			}
 		case cabinetfault.FieldBranchID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -238,32 +241,6 @@ func (cf *CabinetFault) assignValues(columns []string, values []interface{}) err
 				return fmt.Errorf("unexpected type %T for field rider_id", values[i])
 			} else if value.Valid {
 				cf.RiderID = uint64(value.Int64)
-			}
-		case cabinetfault.FieldCabinetName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field cabinet_name", values[i])
-			} else if value.Valid {
-				cf.CabinetName = value.String
-			}
-		case cabinetfault.FieldBrand:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field brand", values[i])
-			} else if value.Valid {
-				cf.Brand = value.String
-			}
-		case cabinetfault.FieldSerial:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field serial", values[i])
-			} else if value.Valid {
-				cf.Serial = value.String
-			}
-		case cabinetfault.FieldModels:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field models", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &cf.Models); err != nil {
-					return fmt.Errorf("unmarshal field models: %w", err)
-				}
 			}
 		case cabinetfault.FieldFault:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -305,6 +282,11 @@ func (cf *CabinetFault) QueryRider() *RiderQuery {
 	return (&CabinetFaultClient{config: cf.config}).QueryRider(cf)
 }
 
+// QueryCity queries the "city" edge of the CabinetFault entity.
+func (cf *CabinetFault) QueryCity() *CityQuery {
+	return (&CabinetFaultClient{config: cf.config}).QueryCity(cf)
+}
+
 // Update returns a builder for updating this CabinetFault.
 // Note that you need to call CabinetFault.Unwrap() before calling this method if this CabinetFault
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -344,22 +326,14 @@ func (cf *CabinetFault) String() string {
 	builder.WriteString(cf.Remark)
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", cf.Status))
-	builder.WriteString(", city=")
-	builder.WriteString(fmt.Sprintf("%v", cf.City))
+	builder.WriteString(", city_id=")
+	builder.WriteString(fmt.Sprintf("%v", cf.CityID))
 	builder.WriteString(", branch_id=")
 	builder.WriteString(fmt.Sprintf("%v", cf.BranchID))
 	builder.WriteString(", cabinet_id=")
 	builder.WriteString(fmt.Sprintf("%v", cf.CabinetID))
 	builder.WriteString(", rider_id=")
 	builder.WriteString(fmt.Sprintf("%v", cf.RiderID))
-	builder.WriteString(", cabinet_name=")
-	builder.WriteString(cf.CabinetName)
-	builder.WriteString(", brand=")
-	builder.WriteString(cf.Brand)
-	builder.WriteString(", serial=")
-	builder.WriteString(cf.Serial)
-	builder.WriteString(", models=")
-	builder.WriteString(fmt.Sprintf("%v", cf.Models))
 	builder.WriteString(", fault=")
 	builder.WriteString(cf.Fault)
 	builder.WriteString(", attachments=")

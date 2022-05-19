@@ -11,7 +11,11 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
+    "github.com/auroraride/aurservd/internal/ent/cabinetfault"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/golang-module/carbon/v2"
+    "github.com/jinzhu/copier"
+    "time"
 )
 
 type cabinetFaultService struct {
@@ -48,20 +52,73 @@ func (s *cabinetFaultService) Report(rider *ent.Rider, req *model.CabinetFaultRe
     branch := ca.Edges.Branch
     city := branch.Edges.City
     s.orm.Create().
-        SetBrand(ca.Brand).
-        SetCity(model.City{
-            ID:   city.ID,
-            Name: city.Name,
-        }).
+        // SetBrand(ca.Brand).
+        // SetCity(model.City{
+        //     ID:   city.ID,
+        //     Name: city.Name,
+        // }).
         SetCabinetID(ca.ID).
         SetBranchID(branch.ID).
         SetRiderID(rider.ID).
-        SetCabinetName(ca.Name).
-        SetSerial(ca.Serial).
-        SetModels(ca.Models).
+        SetCityID(city.ID).
+        // SetCabinetName(ca.Name).
+        // SetSerial(ca.Serial).
+        // SetModels(ca.Models).
         SetDescription(req.Description).
         SetAttachments(attachments).
         SetFault(req.Fault).
         SaveX(s.ctx)
     return true
+}
+
+// List 分页列举故障列表
+func (s *cabinetFaultService) List(req *model.CabinetFaultListReq) (res *model.PaginationRes) {
+    cq := ar.Ent.Cabinet.Query()
+    q := s.orm.Query().
+        WithBranch().
+        WithRider(func(rq *ent.RiderQuery) {
+            rq.WithPerson()
+        }).
+        WithCity()
+    if req.CityID != nil {
+        q.Where(cabinetfault.CityID(*req.CityID))
+    }
+    if req.CabinetName != nil {
+        cq.Where(cabinet.NameContainsFold(*req.CabinetName))
+    }
+    if req.Serial != nil {
+        cq.Where(cabinet.SerialContainsFold(*req.Serial))
+    }
+    if req.Status != nil {
+        q.Where(cabinetfault.Status(*req.Status))
+    }
+    if req.Start != nil {
+        start, err := time.Parse(carbon.DateLayout, *req.Start)
+        if err != nil {
+            snag.Panic("日期格式错误")
+        }
+        q.Where(cabinetfault.CreatedAtGTE(start))
+    }
+    if req.End != nil {
+        end, err := time.Parse(carbon.DateLayout, *req.End)
+        if err != nil {
+            snag.Panic("日期格式错误")
+        }
+        end.AddDate(0, 0, 1)
+        q.Where(cabinetfault.CreatedAtLT(end))
+    }
+    q.WithCabinet(func(query *ent.CabinetQuery) {
+        query = cq
+    })
+    res = &model.PaginationRes{Pagination: q.PaginationResult(req.PaginationReq)}
+    items := q.Pagination(req.PaginationReq).AllX(s.ctx)
+    out := make([]model.CabinetFaultItem, len(items))
+    for i, item := range items {
+        _ = copier.Copy(&out[i], item)
+        _ = copier.Copy(&out[i].City, item.Edges.City)
+        _ = copier.Copy(&out[i].Cabinet, item.Edges.Cabinet)
+        out[i].Rider = NewRider().GetRiderSampleInfo(item.Edges.Rider)
+    }
+    res.Items = out
+    return
 }

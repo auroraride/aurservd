@@ -154,14 +154,10 @@ var schemaGraph = func() *sqlgraph.Schema {
 			cabinetfault.FieldLastModifier: {Type: field.TypeJSON, Column: cabinetfault.FieldLastModifier},
 			cabinetfault.FieldRemark:       {Type: field.TypeString, Column: cabinetfault.FieldRemark},
 			cabinetfault.FieldStatus:       {Type: field.TypeUint8, Column: cabinetfault.FieldStatus},
-			cabinetfault.FieldCity:         {Type: field.TypeJSON, Column: cabinetfault.FieldCity},
+			cabinetfault.FieldCityID:       {Type: field.TypeUint64, Column: cabinetfault.FieldCityID},
 			cabinetfault.FieldBranchID:     {Type: field.TypeUint64, Column: cabinetfault.FieldBranchID},
 			cabinetfault.FieldCabinetID:    {Type: field.TypeUint64, Column: cabinetfault.FieldCabinetID},
 			cabinetfault.FieldRiderID:      {Type: field.TypeUint64, Column: cabinetfault.FieldRiderID},
-			cabinetfault.FieldCabinetName:  {Type: field.TypeString, Column: cabinetfault.FieldCabinetName},
-			cabinetfault.FieldBrand:        {Type: field.TypeString, Column: cabinetfault.FieldBrand},
-			cabinetfault.FieldSerial:       {Type: field.TypeString, Column: cabinetfault.FieldSerial},
-			cabinetfault.FieldModels:       {Type: field.TypeJSON, Column: cabinetfault.FieldModels},
 			cabinetfault.FieldFault:        {Type: field.TypeString, Column: cabinetfault.FieldFault},
 			cabinetfault.FieldAttachments:  {Type: field.TypeJSON, Column: cabinetfault.FieldAttachments},
 			cabinetfault.FieldDescription:  {Type: field.TypeString, Column: cabinetfault.FieldDescription},
@@ -453,6 +449,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Rider",
 	)
 	graph.MustAddE(
+		"city",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cabinetfault.CityTable,
+			Columns: []string{cabinetfault.CityColumn},
+			Bidi:    false,
+		},
+		"CabinetFault",
+		"City",
+	)
+	graph.MustAddE(
 		"parent",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -487,6 +495,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"City",
 		"Branch",
+	)
+	graph.MustAddE(
+		"faults",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   city.FaultsTable,
+			Columns: []string{city.FaultsColumn},
+			Bidi:    false,
+		},
+		"City",
+		"CabinetFault",
 	)
 	graph.MustAddE(
 		"rider",
@@ -1213,9 +1233,9 @@ func (f *CabinetFaultFilter) WhereStatus(p entql.Uint8P) {
 	f.Where(p.Field(cabinetfault.FieldStatus))
 }
 
-// WhereCity applies the entql json.RawMessage predicate on the city field.
-func (f *CabinetFaultFilter) WhereCity(p entql.BytesP) {
-	f.Where(p.Field(cabinetfault.FieldCity))
+// WhereCityID applies the entql uint64 predicate on the city_id field.
+func (f *CabinetFaultFilter) WhereCityID(p entql.Uint64P) {
+	f.Where(p.Field(cabinetfault.FieldCityID))
 }
 
 // WhereBranchID applies the entql uint64 predicate on the branch_id field.
@@ -1231,26 +1251,6 @@ func (f *CabinetFaultFilter) WhereCabinetID(p entql.Uint64P) {
 // WhereRiderID applies the entql uint64 predicate on the rider_id field.
 func (f *CabinetFaultFilter) WhereRiderID(p entql.Uint64P) {
 	f.Where(p.Field(cabinetfault.FieldRiderID))
-}
-
-// WhereCabinetName applies the entql string predicate on the cabinet_name field.
-func (f *CabinetFaultFilter) WhereCabinetName(p entql.StringP) {
-	f.Where(p.Field(cabinetfault.FieldCabinetName))
-}
-
-// WhereBrand applies the entql string predicate on the brand field.
-func (f *CabinetFaultFilter) WhereBrand(p entql.StringP) {
-	f.Where(p.Field(cabinetfault.FieldBrand))
-}
-
-// WhereSerial applies the entql string predicate on the serial field.
-func (f *CabinetFaultFilter) WhereSerial(p entql.StringP) {
-	f.Where(p.Field(cabinetfault.FieldSerial))
-}
-
-// WhereModels applies the entql json.RawMessage predicate on the models field.
-func (f *CabinetFaultFilter) WhereModels(p entql.BytesP) {
-	f.Where(p.Field(cabinetfault.FieldModels))
 }
 
 // WhereFault applies the entql string predicate on the fault field.
@@ -1304,6 +1304,20 @@ func (f *CabinetFaultFilter) WhereHasRider() {
 // WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
 func (f *CabinetFaultFilter) WhereHasRiderWith(preds ...predicate.Rider) {
 	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCity applies a predicate to check if query has an edge city.
+func (f *CabinetFaultFilter) WhereHasCity() {
+	f.Where(entql.HasEdge("city"))
+}
+
+// WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
+func (f *CabinetFaultFilter) WhereHasCityWith(preds ...predicate.City) {
+	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -1431,6 +1445,20 @@ func (f *CityFilter) WhereHasBranches() {
 // WhereHasBranchesWith applies a predicate to check if query has an edge branches with a given conditions (other predicates).
 func (f *CityFilter) WhereHasBranchesWith(preds ...predicate.Branch) {
 	f.Where(entql.HasEdgeWith("branches", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasFaults applies a predicate to check if query has an edge faults.
+func (f *CityFilter) WhereHasFaults() {
+	f.Where(entql.HasEdge("faults"))
+}
+
+// WhereHasFaultsWith applies a predicate to check if query has an edge faults with a given conditions (other predicates).
+func (f *CityFilter) WhereHasFaultsWith(preds ...predicate.CabinetFault) {
+	f.Where(entql.HasEdgeWith("faults", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

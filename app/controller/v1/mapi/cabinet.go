@@ -10,7 +10,6 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
     "github.com/labstack/echo/v4"
-    log "github.com/sirupsen/logrus"
 )
 
 type cabinet struct{}
@@ -133,9 +132,19 @@ func (*cabinet) Reboot(c echo.Context) (err error) {
     )
 }
 
-// Fault TODO 故障列表
+// Fault
+// @ID           CabinetFault
+// @Router       /manager/v1/cabinet/fault [GET]
+// @Summary      M5008 故障列表
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query  model.CabinetFaultListReq  false  "请求体"
+// @Success      200  {object}  model.PaginationRes{items=[]model.CabinetFaultItem}  "请求成功"
 func (*cabinet) Fault(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.CabinetFaultReportReq](c)
-    log.Println(req)
-    return ctx.SendResponse()
+    ctx, req := app.ManagerContextAndBinding[model.CabinetFaultListReq](c)
+    return ctx.SendResponse(
+        service.NewCabinetFault().List(req),
+    )
 }

@@ -28,6 +28,11 @@ var (
 		PrimaryKey: []*schema.Column{BatteryModelColumns[0]},
 		Indexes: []*schema.Index{
 			{
+				Name:    "batterymodel_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{BatteryModelColumns[1]},
+			},
+			{
 				Name:    "batterymodel_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{BatteryModelColumns[3]},
@@ -69,6 +74,11 @@ var (
 			},
 		},
 		Indexes: []*schema.Index{
+			{
+				Name:    "branch_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{BranchColumns[1]},
+			},
 			{
 				Name:    "branch_deleted_at",
 				Unique:  false,
@@ -126,6 +136,11 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
+				Name:    "branchcontract_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{BranchContractColumns[1]},
+			},
+			{
 				Name:    "branchcontract_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{BranchContractColumns[3]},
@@ -168,6 +183,11 @@ var (
 			},
 		},
 		Indexes: []*schema.Index{
+			{
+				Name:    "cabinet_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetColumns[1]},
+			},
 			{
 				Name:    "cabinet_deleted_at",
 				Unique:  false,
@@ -215,16 +235,12 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true},
 		{Name: "remark", Type: field.TypeString, Nullable: true},
 		{Name: "status", Type: field.TypeUint8, Default: 0},
-		{Name: "city", Type: field.TypeJSON},
-		{Name: "cabinet_name", Type: field.TypeString},
-		{Name: "brand", Type: field.TypeString},
-		{Name: "serial", Type: field.TypeString},
-		{Name: "models", Type: field.TypeJSON},
 		{Name: "fault", Type: field.TypeString, Nullable: true},
 		{Name: "attachments", Type: field.TypeJSON, Nullable: true},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 		{Name: "branch_id", Type: field.TypeUint64},
 		{Name: "cabinet_id", Type: field.TypeUint64},
+		{Name: "city_id", Type: field.TypeUint64},
 		{Name: "rider_id", Type: field.TypeUint64},
 	}
 	// CabinetFaultTable holds the schema information for the "cabinet_fault" table.
@@ -235,28 +251,44 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cabinet_fault_branch_faults",
-				Columns:    []*schema.Column{CabinetFaultColumns[16]},
+				Columns:    []*schema.Column{CabinetFaultColumns[11]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "cabinet_fault_cabinet_faults",
-				Columns:    []*schema.Column{CabinetFaultColumns[17]},
+				Columns:    []*schema.Column{CabinetFaultColumns[12]},
 				RefColumns: []*schema.Column{CabinetColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
+				Symbol:     "cabinet_fault_city_faults",
+				Columns:    []*schema.Column{CabinetFaultColumns[13]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
 				Symbol:     "cabinet_fault_rider_faults",
-				Columns:    []*schema.Column{CabinetFaultColumns[18]},
+				Columns:    []*schema.Column{CabinetFaultColumns[14]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
+				Name:    "cabinetfault_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetFaultColumns[1]},
+			},
+			{
 				Name:    "cabinetfault_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{CabinetFaultColumns[3]},
+			},
+			{
+				Name:    "cabinetfault_status",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetFaultColumns[7]},
 			},
 		},
 	}
@@ -287,6 +319,11 @@ var (
 			},
 		},
 		Indexes: []*schema.Index{
+			{
+				Name:    "city_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{CityColumns[1]},
+			},
 			{
 				Name:    "city_deleted_at",
 				Unique:  false,
@@ -333,6 +370,11 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
+				Name:    "contract_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{ContractColumns[1]},
+			},
+			{
 				Name:    "contract_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{ContractColumns[3]},
@@ -358,6 +400,11 @@ var (
 		Columns:    ManagerColumns,
 		PrimaryKey: []*schema.Column{ManagerColumns[0]},
 		Indexes: []*schema.Index{
+			{
+				Name:    "manager_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{ManagerColumns[1]},
+			},
 			{
 				Name:    "manager_deleted_at",
 				Unique:  false,
@@ -395,6 +442,11 @@ var (
 		Columns:    PersonColumns,
 		PrimaryKey: []*schema.Column{PersonColumns[0]},
 		Indexes: []*schema.Index{
+			{
+				Name:    "person_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PersonColumns[1]},
+			},
 			{
 				Name:    "person_deleted_at",
 				Unique:  false,
@@ -442,6 +494,11 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
+				Name:    "rider_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{RiderColumns[1]},
+			},
+			{
 				Name:    "rider_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{RiderColumns[3]},
@@ -466,6 +523,13 @@ var (
 		Name:       "setting",
 		Columns:    SettingColumns,
 		PrimaryKey: []*schema.Column{SettingColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "setting_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SettingColumns[1]},
+			},
+		},
 	}
 	// CabinetBmsColumns holds the columns for the "cabinet_bms" table.
 	CabinetBmsColumns = []*schema.Column{
@@ -527,7 +591,8 @@ func init() {
 	}
 	CabinetFaultTable.ForeignKeys[0].RefTable = BranchTable
 	CabinetFaultTable.ForeignKeys[1].RefTable = CabinetTable
-	CabinetFaultTable.ForeignKeys[2].RefTable = RiderTable
+	CabinetFaultTable.ForeignKeys[2].RefTable = CityTable
+	CabinetFaultTable.ForeignKeys[3].RefTable = RiderTable
 	CabinetFaultTable.Annotation = &entsql.Annotation{
 		Table: "cabinet_fault",
 	}

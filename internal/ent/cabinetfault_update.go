@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
@@ -123,9 +124,9 @@ func (cfu *CabinetFaultUpdate) AddStatus(u int8) *CabinetFaultUpdate {
 	return cfu
 }
 
-// SetCity sets the "city" field.
-func (cfu *CabinetFaultUpdate) SetCity(m model.City) *CabinetFaultUpdate {
-	cfu.mutation.SetCity(m)
+// SetCityID sets the "city_id" field.
+func (cfu *CabinetFaultUpdate) SetCityID(u uint64) *CabinetFaultUpdate {
+	cfu.mutation.SetCityID(u)
 	return cfu
 }
 
@@ -144,30 +145,6 @@ func (cfu *CabinetFaultUpdate) SetCabinetID(u uint64) *CabinetFaultUpdate {
 // SetRiderID sets the "rider_id" field.
 func (cfu *CabinetFaultUpdate) SetRiderID(u uint64) *CabinetFaultUpdate {
 	cfu.mutation.SetRiderID(u)
-	return cfu
-}
-
-// SetCabinetName sets the "cabinet_name" field.
-func (cfu *CabinetFaultUpdate) SetCabinetName(s string) *CabinetFaultUpdate {
-	cfu.mutation.SetCabinetName(s)
-	return cfu
-}
-
-// SetBrand sets the "brand" field.
-func (cfu *CabinetFaultUpdate) SetBrand(s string) *CabinetFaultUpdate {
-	cfu.mutation.SetBrand(s)
-	return cfu
-}
-
-// SetSerial sets the "serial" field.
-func (cfu *CabinetFaultUpdate) SetSerial(s string) *CabinetFaultUpdate {
-	cfu.mutation.SetSerial(s)
-	return cfu
-}
-
-// SetModels sets the "models" field.
-func (cfu *CabinetFaultUpdate) SetModels(mm []model.BatteryModel) *CabinetFaultUpdate {
-	cfu.mutation.SetModels(mm)
 	return cfu
 }
 
@@ -238,6 +215,11 @@ func (cfu *CabinetFaultUpdate) SetRider(r *Rider) *CabinetFaultUpdate {
 	return cfu.SetRiderID(r.ID)
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (cfu *CabinetFaultUpdate) SetCity(c *City) *CabinetFaultUpdate {
+	return cfu.SetCityID(c.ID)
+}
+
 // Mutation returns the CabinetFaultMutation object of the builder.
 func (cfu *CabinetFaultUpdate) Mutation() *CabinetFaultMutation {
 	return cfu.mutation
@@ -258,6 +240,12 @@ func (cfu *CabinetFaultUpdate) ClearCabinet() *CabinetFaultUpdate {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (cfu *CabinetFaultUpdate) ClearRider() *CabinetFaultUpdate {
 	cfu.mutation.ClearRider()
+	return cfu
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (cfu *CabinetFaultUpdate) ClearCity() *CabinetFaultUpdate {
+	cfu.mutation.ClearCity()
 	return cfu
 }
 
@@ -340,6 +328,9 @@ func (cfu *CabinetFaultUpdate) check() error {
 	}
 	if _, ok := cfu.mutation.RiderID(); cfu.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "CabinetFault.rider"`)
+	}
+	if _, ok := cfu.mutation.CityID(); cfu.mutation.CityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "CabinetFault.city"`)
 	}
 	return nil
 }
@@ -433,41 +424,6 @@ func (cfu *CabinetFaultUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeUint8,
 			Value:  value,
 			Column: cabinetfault.FieldStatus,
-		})
-	}
-	if value, ok := cfu.mutation.City(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinetfault.FieldCity,
-		})
-	}
-	if value, ok := cfu.mutation.CabinetName(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinetfault.FieldCabinetName,
-		})
-	}
-	if value, ok := cfu.mutation.Brand(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinetfault.FieldBrand,
-		})
-	}
-	if value, ok := cfu.mutation.Serial(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinetfault.FieldSerial,
-		})
-	}
-	if value, ok := cfu.mutation.Models(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinetfault.FieldModels,
 		})
 	}
 	if value, ok := cfu.mutation.Fault(); ok {
@@ -614,6 +570,41 @@ func (cfu *CabinetFaultUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if cfu.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cabinetfault.CityTable,
+			Columns: []string{cabinetfault.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cfu.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cabinetfault.CityTable,
+			Columns: []string{cabinetfault.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cfu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{cabinetfault.Label}
@@ -724,9 +715,9 @@ func (cfuo *CabinetFaultUpdateOne) AddStatus(u int8) *CabinetFaultUpdateOne {
 	return cfuo
 }
 
-// SetCity sets the "city" field.
-func (cfuo *CabinetFaultUpdateOne) SetCity(m model.City) *CabinetFaultUpdateOne {
-	cfuo.mutation.SetCity(m)
+// SetCityID sets the "city_id" field.
+func (cfuo *CabinetFaultUpdateOne) SetCityID(u uint64) *CabinetFaultUpdateOne {
+	cfuo.mutation.SetCityID(u)
 	return cfuo
 }
 
@@ -745,30 +736,6 @@ func (cfuo *CabinetFaultUpdateOne) SetCabinetID(u uint64) *CabinetFaultUpdateOne
 // SetRiderID sets the "rider_id" field.
 func (cfuo *CabinetFaultUpdateOne) SetRiderID(u uint64) *CabinetFaultUpdateOne {
 	cfuo.mutation.SetRiderID(u)
-	return cfuo
-}
-
-// SetCabinetName sets the "cabinet_name" field.
-func (cfuo *CabinetFaultUpdateOne) SetCabinetName(s string) *CabinetFaultUpdateOne {
-	cfuo.mutation.SetCabinetName(s)
-	return cfuo
-}
-
-// SetBrand sets the "brand" field.
-func (cfuo *CabinetFaultUpdateOne) SetBrand(s string) *CabinetFaultUpdateOne {
-	cfuo.mutation.SetBrand(s)
-	return cfuo
-}
-
-// SetSerial sets the "serial" field.
-func (cfuo *CabinetFaultUpdateOne) SetSerial(s string) *CabinetFaultUpdateOne {
-	cfuo.mutation.SetSerial(s)
-	return cfuo
-}
-
-// SetModels sets the "models" field.
-func (cfuo *CabinetFaultUpdateOne) SetModels(mm []model.BatteryModel) *CabinetFaultUpdateOne {
-	cfuo.mutation.SetModels(mm)
 	return cfuo
 }
 
@@ -839,6 +806,11 @@ func (cfuo *CabinetFaultUpdateOne) SetRider(r *Rider) *CabinetFaultUpdateOne {
 	return cfuo.SetRiderID(r.ID)
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (cfuo *CabinetFaultUpdateOne) SetCity(c *City) *CabinetFaultUpdateOne {
+	return cfuo.SetCityID(c.ID)
+}
+
 // Mutation returns the CabinetFaultMutation object of the builder.
 func (cfuo *CabinetFaultUpdateOne) Mutation() *CabinetFaultMutation {
 	return cfuo.mutation
@@ -859,6 +831,12 @@ func (cfuo *CabinetFaultUpdateOne) ClearCabinet() *CabinetFaultUpdateOne {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (cfuo *CabinetFaultUpdateOne) ClearRider() *CabinetFaultUpdateOne {
 	cfuo.mutation.ClearRider()
+	return cfuo
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (cfuo *CabinetFaultUpdateOne) ClearCity() *CabinetFaultUpdateOne {
+	cfuo.mutation.ClearCity()
 	return cfuo
 }
 
@@ -948,6 +926,9 @@ func (cfuo *CabinetFaultUpdateOne) check() error {
 	}
 	if _, ok := cfuo.mutation.RiderID(); cfuo.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "CabinetFault.rider"`)
+	}
+	if _, ok := cfuo.mutation.CityID(); cfuo.mutation.CityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "CabinetFault.city"`)
 	}
 	return nil
 }
@@ -1058,41 +1039,6 @@ func (cfuo *CabinetFaultUpdateOne) sqlSave(ctx context.Context) (_node *CabinetF
 			Type:   field.TypeUint8,
 			Value:  value,
 			Column: cabinetfault.FieldStatus,
-		})
-	}
-	if value, ok := cfuo.mutation.City(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinetfault.FieldCity,
-		})
-	}
-	if value, ok := cfuo.mutation.CabinetName(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinetfault.FieldCabinetName,
-		})
-	}
-	if value, ok := cfuo.mutation.Brand(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinetfault.FieldBrand,
-		})
-	}
-	if value, ok := cfuo.mutation.Serial(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinetfault.FieldSerial,
-		})
-	}
-	if value, ok := cfuo.mutation.Models(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinetfault.FieldModels,
 		})
 	}
 	if value, ok := cfuo.mutation.Fault(); ok {
@@ -1231,6 +1177,41 @@ func (cfuo *CabinetFaultUpdateOne) sqlSave(ctx context.Context) (_node *CabinetF
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: rider.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cfuo.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cabinetfault.CityTable,
+			Columns: []string{cabinetfault.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cfuo.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cabinetfault.CityTable,
+			Columns: []string{cabinetfault.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
 				},
 			},
 		}

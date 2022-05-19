@@ -830,6 +830,22 @@ func (c *CabinetFaultClient) QueryRider(cf *CabinetFault) *RiderQuery {
 	return query
 }
 
+// QueryCity queries the city edge of a CabinetFault.
+func (c *CabinetFaultClient) QueryCity(cf *CabinetFault) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := cf.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinetfault.Table, cabinetfault.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cabinetfault.CityTable, cabinetfault.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(cf.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *CabinetFaultClient) Hooks() []Hook {
 	return c.hooks.CabinetFault
@@ -961,6 +977,22 @@ func (c *CityClient) QueryBranches(ci *City) *BranchQuery {
 			sqlgraph.From(city.Table, city.FieldID, id),
 			sqlgraph.To(branch.Table, branch.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, city.BranchesTable, city.BranchesColumn),
+		)
+		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryFaults queries the faults edge of a City.
+func (c *CityClient) QueryFaults(ci *City) *CabinetFaultQuery {
+	query := &CabinetFaultQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ci.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(city.Table, city.FieldID, id),
+			sqlgraph.To(cabinetfault.Table, cabinetfault.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, city.FaultsTable, city.FaultsColumn),
 		)
 		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
 		return fromV, nil

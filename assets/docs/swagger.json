@@ -553,6 +553,95 @@
                 }
             }
         },
+        "/manager/v1/cabinet/fault": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M5008 故障列表",
+                "operationId": "CabinetFault",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "cabinetName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "serial",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.CabinetFaultItem"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/cabinet/reboot": {
             "post": {
                 "consumes": [
@@ -1327,6 +1416,74 @@
                 }
             }
         },
+        "model.CabinetFaultCabinet": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "description": "电柜品牌",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "models": {
+                    "description": "电池型号",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BatteryModel"
+                    }
+                },
+                "name": {
+                    "description": "电柜名称",
+                    "type": "string"
+                },
+                "serial": {
+                    "description": "电柜编号",
+                    "type": "string"
+                }
+            }
+        },
+        "model.CabinetFaultItem": {
+            "type": "object",
+            "properties": {
+                "attachments": {
+                    "description": "故障附件",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "cabinet": {
+                    "description": "电柜信息",
+                    "$ref": "#/definitions/model.CabinetFaultCabinet"
+                },
+                "city": {
+                    "description": "城市信息",
+                    "$ref": "#/definitions/model.City"
+                },
+                "createdAt": {
+                    "description": "提交时间",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "故障描述",
+                    "type": "string"
+                },
+                "fault": {
+                    "description": "故障原因",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "故障ID",
+                    "type": "integer"
+                },
+                "rider": {
+                    "description": "骑手信息",
+                    "$ref": "#/definitions/model.RiderSampleInfo"
+                }
+            }
+        },
         "model.CabinetItem": {
             "type": "object",
             "required": [
@@ -1535,6 +1692,23 @@
                 "pagination": {
                     "description": "分页属性",
                     "$ref": "#/definitions/model.Pagination"
+                }
+            }
+        },
+        "model.RiderSampleInfo": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "骑手ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "骑手姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "骑手电话",
+                    "type": "string"
                 }
             }
         },

@@ -5,14 +5,18 @@
 
 package model
 
+// RiderTokenPermission 骑手token权限, 以此判定登陆后动作
+type RiderTokenPermission uint8
+
 const (
     RiderTokenPermissionCommon    RiderTokenPermission = iota // 普通权限
     RiderTokenPermissionAuth                                  // 需要实名验证
     RiderTokenPermissionNewDevice                             // 更换设备需要人脸验证
 )
 
-// RiderTokenPermission 骑手token权限, 以此判定登陆后动作
-type RiderTokenPermission uint8
+// RiderContext TODO 骑手上下文
+type RiderContext struct {
+}
 
 // RiderSignupReq 骑手登录请求数据
 type RiderSignupReq struct {
@@ -39,9 +43,9 @@ type RiderContact struct {
     Relation string `json:"relation" validate:"required" trans:"关系"`
 }
 
-// RiderSampleItem 骑手简单信息
-type RiderSampleItem struct {
-    ID    uint64 `json:"id"`
-    Name  string `json:"name"`
-    Phone string `json:"phone"`
+// RiderSampleInfo 骑手简单信息
+type RiderSampleInfo struct {
+    ID    uint64 `json:"id"`    // 骑手ID
+    Name  string `json:"name"`  // 骑手姓名
+    Phone string `json:"phone"` // 骑手电话
 }

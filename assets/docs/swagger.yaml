@@ -304,6 +304,55 @@ definitions:
     - operation
     - remark
     type: object
+  model.CabinetFaultCabinet:
+    properties:
+      brand:
+        description: 电柜品牌
+        type: string
+      id:
+        description: 电柜ID
+        type: integer
+      models:
+        description: 电池型号
+        items:
+          $ref: '#/definitions/model.BatteryModel'
+        type: array
+      name:
+        description: 电柜名称
+        type: string
+      serial:
+        description: 电柜编号
+        type: string
+    type: object
+  model.CabinetFaultItem:
+    properties:
+      attachments:
+        description: 故障附件
+        items:
+          type: string
+        type: array
+      cabinet:
+        $ref: '#/definitions/model.CabinetFaultCabinet'
+        description: 电柜信息
+      city:
+        $ref: '#/definitions/model.City'
+        description: 城市信息
+      createdAt:
+        description: 提交时间
+        type: string
+      description:
+        description: 故障描述
+        type: string
+      fault:
+        description: 故障原因
+        type: string
+      id:
+        description: 故障ID
+        type: integer
+      rider:
+        $ref: '#/definitions/model.RiderSampleInfo'
+        description: 骑手信息
+    type: object
   model.CabinetItem:
     properties:
       branchId:
@@ -450,6 +499,18 @@ definitions:
       pagination:
         $ref: '#/definitions/model.Pagination'
         description: 分页属性
+    type: object
+  model.RiderSampleInfo:
+    properties:
+      id:
+        description: 骑手ID
+        type: integer
+      name:
+        description: 骑手姓名
+        type: string
+      phone:
+        description: 骑手电话
+        type: string
     type: object
   model.ShiguangjuIVRItem:
     properties:
@@ -1000,6 +1061,60 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M5006 柜门操作
+      tags:
+      - '[M]管理接口'
+  /manager/v1/cabinet/fault:
+    get:
+      consumes:
+      - application/json
+      operationId: CabinetFault
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - in: query
+        name: cabinetName
+        type: string
+      - in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - in: query
+        name: end
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: serial
+        type: string
+      - in: query
+        name: start
+        type: string
+      - in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.CabinetFaultItem'
+                  type: array
+              type: object
+      summary: M5008 故障列表
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet/reboot:

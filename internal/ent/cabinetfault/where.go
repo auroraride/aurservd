@@ -128,6 +128,13 @@ func Status(v uint8) predicate.CabinetFault {
 	})
 }
 
+// CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
+func CityID(v uint64) predicate.CabinetFault {
+	return predicate.CabinetFault(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCityID), v))
+	})
+}
+
 // BranchID applies equality check predicate on the "branch_id" field. It's identical to BranchIDEQ.
 func BranchID(v uint64) predicate.CabinetFault {
 	return predicate.CabinetFault(func(s *sql.Selector) {
@@ -146,27 +153,6 @@ func CabinetID(v uint64) predicate.CabinetFault {
 func RiderID(v uint64) predicate.CabinetFault {
 	return predicate.CabinetFault(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldRiderID), v))
-	})
-}
-
-// CabinetName applies equality check predicate on the "cabinet_name" field. It's identical to CabinetNameEQ.
-func CabinetName(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCabinetName), v))
-	})
-}
-
-// Brand applies equality check predicate on the "brand" field. It's identical to BrandEQ.
-func Brand(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBrand), v))
-	})
-}
-
-// Serial applies equality check predicate on the "serial" field. It's identical to SerialEQ.
-func Serial(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSerial), v))
 	})
 }
 
@@ -655,6 +641,54 @@ func StatusLTE(v uint8) predicate.CabinetFault {
 	})
 }
 
+// CityIDEQ applies the EQ predicate on the "city_id" field.
+func CityIDEQ(v uint64) predicate.CabinetFault {
+	return predicate.CabinetFault(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCityID), v))
+	})
+}
+
+// CityIDNEQ applies the NEQ predicate on the "city_id" field.
+func CityIDNEQ(v uint64) predicate.CabinetFault {
+	return predicate.CabinetFault(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldCityID), v))
+	})
+}
+
+// CityIDIn applies the In predicate on the "city_id" field.
+func CityIDIn(vs ...uint64) predicate.CabinetFault {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.CabinetFault(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldCityID), v...))
+	})
+}
+
+// CityIDNotIn applies the NotIn predicate on the "city_id" field.
+func CityIDNotIn(vs ...uint64) predicate.CabinetFault {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.CabinetFault(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldCityID), v...))
+	})
+}
+
 // BranchIDEQ applies the EQ predicate on the "branch_id" field.
 func BranchIDEQ(v uint64) predicate.CabinetFault {
 	return predicate.CabinetFault(func(s *sql.Selector) {
@@ -796,339 +830,6 @@ func RiderIDNotIn(vs ...uint64) predicate.CabinetFault {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldRiderID), v...))
-	})
-}
-
-// CabinetNameEQ applies the EQ predicate on the "cabinet_name" field.
-func CabinetNameEQ(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCabinetName), v))
-	})
-}
-
-// CabinetNameNEQ applies the NEQ predicate on the "cabinet_name" field.
-func CabinetNameNEQ(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCabinetName), v))
-	})
-}
-
-// CabinetNameIn applies the In predicate on the "cabinet_name" field.
-func CabinetNameIn(vs ...string) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldCabinetName), v...))
-	})
-}
-
-// CabinetNameNotIn applies the NotIn predicate on the "cabinet_name" field.
-func CabinetNameNotIn(vs ...string) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldCabinetName), v...))
-	})
-}
-
-// CabinetNameGT applies the GT predicate on the "cabinet_name" field.
-func CabinetNameGT(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCabinetName), v))
-	})
-}
-
-// CabinetNameGTE applies the GTE predicate on the "cabinet_name" field.
-func CabinetNameGTE(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCabinetName), v))
-	})
-}
-
-// CabinetNameLT applies the LT predicate on the "cabinet_name" field.
-func CabinetNameLT(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCabinetName), v))
-	})
-}
-
-// CabinetNameLTE applies the LTE predicate on the "cabinet_name" field.
-func CabinetNameLTE(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCabinetName), v))
-	})
-}
-
-// CabinetNameContains applies the Contains predicate on the "cabinet_name" field.
-func CabinetNameContains(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldCabinetName), v))
-	})
-}
-
-// CabinetNameHasPrefix applies the HasPrefix predicate on the "cabinet_name" field.
-func CabinetNameHasPrefix(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldCabinetName), v))
-	})
-}
-
-// CabinetNameHasSuffix applies the HasSuffix predicate on the "cabinet_name" field.
-func CabinetNameHasSuffix(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldCabinetName), v))
-	})
-}
-
-// CabinetNameEqualFold applies the EqualFold predicate on the "cabinet_name" field.
-func CabinetNameEqualFold(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldCabinetName), v))
-	})
-}
-
-// CabinetNameContainsFold applies the ContainsFold predicate on the "cabinet_name" field.
-func CabinetNameContainsFold(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldCabinetName), v))
-	})
-}
-
-// BrandEQ applies the EQ predicate on the "brand" field.
-func BrandEQ(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBrand), v))
-	})
-}
-
-// BrandNEQ applies the NEQ predicate on the "brand" field.
-func BrandNEQ(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBrand), v))
-	})
-}
-
-// BrandIn applies the In predicate on the "brand" field.
-func BrandIn(vs ...string) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldBrand), v...))
-	})
-}
-
-// BrandNotIn applies the NotIn predicate on the "brand" field.
-func BrandNotIn(vs ...string) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldBrand), v...))
-	})
-}
-
-// BrandGT applies the GT predicate on the "brand" field.
-func BrandGT(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldBrand), v))
-	})
-}
-
-// BrandGTE applies the GTE predicate on the "brand" field.
-func BrandGTE(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldBrand), v))
-	})
-}
-
-// BrandLT applies the LT predicate on the "brand" field.
-func BrandLT(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldBrand), v))
-	})
-}
-
-// BrandLTE applies the LTE predicate on the "brand" field.
-func BrandLTE(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldBrand), v))
-	})
-}
-
-// BrandContains applies the Contains predicate on the "brand" field.
-func BrandContains(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldBrand), v))
-	})
-}
-
-// BrandHasPrefix applies the HasPrefix predicate on the "brand" field.
-func BrandHasPrefix(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldBrand), v))
-	})
-}
-
-// BrandHasSuffix applies the HasSuffix predicate on the "brand" field.
-func BrandHasSuffix(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldBrand), v))
-	})
-}
-
-// BrandEqualFold applies the EqualFold predicate on the "brand" field.
-func BrandEqualFold(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldBrand), v))
-	})
-}
-
-// BrandContainsFold applies the ContainsFold predicate on the "brand" field.
-func BrandContainsFold(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldBrand), v))
-	})
-}
-
-// SerialEQ applies the EQ predicate on the "serial" field.
-func SerialEQ(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSerial), v))
-	})
-}
-
-// SerialNEQ applies the NEQ predicate on the "serial" field.
-func SerialNEQ(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSerial), v))
-	})
-}
-
-// SerialIn applies the In predicate on the "serial" field.
-func SerialIn(vs ...string) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldSerial), v...))
-	})
-}
-
-// SerialNotIn applies the NotIn predicate on the "serial" field.
-func SerialNotIn(vs ...string) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldSerial), v...))
-	})
-}
-
-// SerialGT applies the GT predicate on the "serial" field.
-func SerialGT(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldSerial), v))
-	})
-}
-
-// SerialGTE applies the GTE predicate on the "serial" field.
-func SerialGTE(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldSerial), v))
-	})
-}
-
-// SerialLT applies the LT predicate on the "serial" field.
-func SerialLT(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldSerial), v))
-	})
-}
-
-// SerialLTE applies the LTE predicate on the "serial" field.
-func SerialLTE(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldSerial), v))
-	})
-}
-
-// SerialContains applies the Contains predicate on the "serial" field.
-func SerialContains(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldSerial), v))
-	})
-}
-
-// SerialHasPrefix applies the HasPrefix predicate on the "serial" field.
-func SerialHasPrefix(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldSerial), v))
-	})
-}
-
-// SerialHasSuffix applies the HasSuffix predicate on the "serial" field.
-func SerialHasSuffix(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldSerial), v))
-	})
-}
-
-// SerialEqualFold applies the EqualFold predicate on the "serial" field.
-func SerialEqualFold(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldSerial), v))
-	})
-}
-
-// SerialContainsFold applies the ContainsFold predicate on the "serial" field.
-func SerialContainsFold(v string) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldSerial), v))
 	})
 }
 
@@ -1471,6 +1172,34 @@ func HasRiderWith(preds ...predicate.Rider) predicate.CabinetFault {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(RiderInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, RiderTable, RiderColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCity applies the HasEdge predicate on the "city" edge.
+func HasCity() predicate.CabinetFault {
+	return predicate.CabinetFault(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CityTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CityTable, CityColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCityWith applies the HasEdge predicate on the "city" edge with a given conditions (other predicates).
+func HasCityWith(preds ...predicate.City) predicate.CabinetFault {
+	return predicate.CabinetFault(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CityInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CityTable, CityColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

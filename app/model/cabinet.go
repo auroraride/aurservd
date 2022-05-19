@@ -73,9 +73,9 @@ type CabinetItem struct {
     ID uint64 `json:"id"` // 电柜ID
     Sn string `json:"sn"` // 平台编码
     Cabinet
-    Models    []BatteryModel `json:"models"`         // 电池型号
-    City      *City          `json:"city,omitempty"` // 城市
-    CreatedAt time.Time      `json:"createdAt"`      // 创建时间
+    Models    []BatteryModel `json:"models"`              // 电池型号
+    City      *City          `json:"city,omitempty"`      // 城市
+    CreatedAt time.Time      `json:"createdAt,omitempty"` // 创建时间
 }
 
 // CabinetQueryReq 电柜查询请求
@@ -191,12 +191,4 @@ type CabinetDoorOperateReq struct {
     Remark    *string             `json:"remark" validate:"required"`    // 操作原因
     Operation *CabinetDoorOperate `json:"operation" validate:"required"` // 操作方式 1:开仓 2:锁定(标记为故障) 3:解锁(取消标记故障)
     Phone     *string             `json:"phone"`                         // 骑手手机号
-}
-
-// CabinetFaultReportReq 故障上报请求体
-type CabinetFaultReportReq struct {
-    CabinetID   uint64   `json:"cabinetId" validate:"required" trans:"电柜ID"`
-    Fault       string   `json:"fault" validate:"required" trans:"故障"`
-    Description string   `json:"description" validate:"required" trans:"故障描述"`
-    Attachments []string `json:"attachments" validate:"max=3"` // 附件
 }

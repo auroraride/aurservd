@@ -30,6 +30,12 @@ func (TimeMixin) Fields() []ent.Field {
     }
 }
 
+func (TimeMixin) Indexes() []ent.Index {
+    return []ent.Index{
+        index.Fields("created_at"),
+    }
+}
+
 // DeleteMixin 删除字段
 type DeleteMixin struct {
     mixin.Schema

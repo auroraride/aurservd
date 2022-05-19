@@ -6,7 +6,7 @@ import (
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
-    "github.com/auroraride/aurservd/app/model"
+    "entgo.io/ent/schema/index"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -26,14 +26,15 @@ func (CabinetFault) Annotations() []schema.Annotation {
 func (CabinetFault) Fields() []ent.Field {
     return []ent.Field{
         field.Uint8("status").Default(0).Comment("故障状态 0未处理 1已处理"),
-        field.JSON("city", model.City{}).Comment("城市"),
+        // field.JSON("city", model.City{}).Comment("城市"),
+        field.Uint64("city_id").Comment("城市ID"),
         field.Uint64("branch_id").Comment("网点ID"),
         field.Uint64("cabinet_id").Comment("电柜ID"),
         field.Uint64("rider_id").Comment("骑手ID"),
-        field.String("cabinet_name").Comment("电柜名称"),
-        field.String("brand").Comment("电柜品牌"),
-        field.String("serial").Comment("电柜编号"),
-        field.JSON("models", []model.BatteryModel{}).Comment("电池型号"),
+        // field.String("cabinet_name").Comment("电柜名称"),
+        // field.String("brand").Comment("电柜品牌"),
+        // field.String("serial").Comment("电柜编号"),
+        // field.JSON("models", []model.BatteryModel{}).Comment("电池型号"),
         field.String("fault").Optional().Comment("故障内容"),
         field.JSON("attachments", []string{}).Optional().Comment("附件"),
         field.String("description").Optional().Comment("故障留言"),
@@ -46,6 +47,7 @@ func (CabinetFault) Edges() []ent.Edge {
         edge.From("branch", Branch.Type).Ref("faults").Required().Unique().Field("branch_id"),
         edge.From("cabinet", Cabinet.Type).Ref("faults").Required().Unique().Field("cabinet_id"),
         edge.From("rider", Rider.Type).Ref("faults").Required().Unique().Field("rider_id"),
+        edge.From("city", City.Type).Ref("faults").Required().Unique().Field("city_id"),
     }
 }
 
@@ -59,5 +61,18 @@ func (CabinetFault) Mixin() []ent.Mixin {
 }
 
 func (CabinetFault) Indexes() []ent.Index {
-    return nil
+    return []ent.Index{
+        // index.Fields("city").Annotations(
+        //     entsql.IndexTypes(map[string]string{
+        //         dialect.Postgres: "GIN",
+        //     }),
+        // ),
+        // index.Fields("cabinet_name"),
+        index.Fields("status"),
+        // index.Fields("models").Annotations(
+        //     entsql.IndexTypes(map[string]string{
+        //         dialect.Postgres: "GIN",
+        //     }),
+        // ),
+    }
 }

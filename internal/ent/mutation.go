@@ -5741,11 +5741,6 @@ type CabinetFaultMutation struct {
 	remark         *string
 	status         *uint8
 	addstatus      *int8
-	city           *model.City
-	cabinet_name   *string
-	brand          *string
-	serial         *string
-	models         *[]model.BatteryModel
 	fault          *string
 	attachments    *[]string
 	description    *string
@@ -5756,6 +5751,8 @@ type CabinetFaultMutation struct {
 	clearedcabinet bool
 	rider          *uint64
 	clearedrider   bool
+	city           *uint64
+	clearedcity    bool
 	done           bool
 	oldValue       func(context.Context) (*CabinetFault, error)
 	predicates     []predicate.CabinetFault
@@ -6183,13 +6180,13 @@ func (m *CabinetFaultMutation) ResetStatus() {
 	m.addstatus = nil
 }
 
-// SetCity sets the "city" field.
-func (m *CabinetFaultMutation) SetCity(value model.City) {
-	m.city = &value
+// SetCityID sets the "city_id" field.
+func (m *CabinetFaultMutation) SetCityID(u uint64) {
+	m.city = &u
 }
 
-// City returns the value of the "city" field in the mutation.
-func (m *CabinetFaultMutation) City() (r model.City, exists bool) {
+// CityID returns the value of the "city_id" field in the mutation.
+func (m *CabinetFaultMutation) CityID() (r uint64, exists bool) {
 	v := m.city
 	if v == nil {
 		return
@@ -6197,25 +6194,25 @@ func (m *CabinetFaultMutation) City() (r model.City, exists bool) {
 	return *v, true
 }
 
-// OldCity returns the old "city" field's value of the CabinetFault entity.
+// OldCityID returns the old "city_id" field's value of the CabinetFault entity.
 // If the CabinetFault object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetFaultMutation) OldCity(ctx context.Context) (v model.City, err error) {
+func (m *CabinetFaultMutation) OldCityID(ctx context.Context) (v uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCity is only allowed on UpdateOne operations")
+		return v, errors.New("OldCityID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCity requires an ID field in the mutation")
+		return v, errors.New("OldCityID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCity: %w", err)
+		return v, fmt.Errorf("querying old value for OldCityID: %w", err)
 	}
-	return oldValue.City, nil
+	return oldValue.CityID, nil
 }
 
-// ResetCity resets all changes to the "city" field.
-func (m *CabinetFaultMutation) ResetCity() {
+// ResetCityID resets all changes to the "city_id" field.
+func (m *CabinetFaultMutation) ResetCityID() {
 	m.city = nil
 }
 
@@ -6325,150 +6322,6 @@ func (m *CabinetFaultMutation) OldRiderID(ctx context.Context) (v uint64, err er
 // ResetRiderID resets all changes to the "rider_id" field.
 func (m *CabinetFaultMutation) ResetRiderID() {
 	m.rider = nil
-}
-
-// SetCabinetName sets the "cabinet_name" field.
-func (m *CabinetFaultMutation) SetCabinetName(s string) {
-	m.cabinet_name = &s
-}
-
-// CabinetName returns the value of the "cabinet_name" field in the mutation.
-func (m *CabinetFaultMutation) CabinetName() (r string, exists bool) {
-	v := m.cabinet_name
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCabinetName returns the old "cabinet_name" field's value of the CabinetFault entity.
-// If the CabinetFault object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetFaultMutation) OldCabinetName(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCabinetName is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCabinetName requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCabinetName: %w", err)
-	}
-	return oldValue.CabinetName, nil
-}
-
-// ResetCabinetName resets all changes to the "cabinet_name" field.
-func (m *CabinetFaultMutation) ResetCabinetName() {
-	m.cabinet_name = nil
-}
-
-// SetBrand sets the "brand" field.
-func (m *CabinetFaultMutation) SetBrand(s string) {
-	m.brand = &s
-}
-
-// Brand returns the value of the "brand" field in the mutation.
-func (m *CabinetFaultMutation) Brand() (r string, exists bool) {
-	v := m.brand
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldBrand returns the old "brand" field's value of the CabinetFault entity.
-// If the CabinetFault object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetFaultMutation) OldBrand(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBrand is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBrand requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBrand: %w", err)
-	}
-	return oldValue.Brand, nil
-}
-
-// ResetBrand resets all changes to the "brand" field.
-func (m *CabinetFaultMutation) ResetBrand() {
-	m.brand = nil
-}
-
-// SetSerial sets the "serial" field.
-func (m *CabinetFaultMutation) SetSerial(s string) {
-	m.serial = &s
-}
-
-// Serial returns the value of the "serial" field in the mutation.
-func (m *CabinetFaultMutation) Serial() (r string, exists bool) {
-	v := m.serial
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSerial returns the old "serial" field's value of the CabinetFault entity.
-// If the CabinetFault object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetFaultMutation) OldSerial(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSerial is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSerial requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSerial: %w", err)
-	}
-	return oldValue.Serial, nil
-}
-
-// ResetSerial resets all changes to the "serial" field.
-func (m *CabinetFaultMutation) ResetSerial() {
-	m.serial = nil
-}
-
-// SetModels sets the "models" field.
-func (m *CabinetFaultMutation) SetModels(mm []model.BatteryModel) {
-	m.models = &mm
-}
-
-// Models returns the value of the "models" field in the mutation.
-func (m *CabinetFaultMutation) Models() (r []model.BatteryModel, exists bool) {
-	v := m.models
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldModels returns the old "models" field's value of the CabinetFault entity.
-// If the CabinetFault object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetFaultMutation) OldModels(ctx context.Context) (v []model.BatteryModel, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldModels is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldModels requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldModels: %w", err)
-	}
-	return oldValue.Models, nil
-}
-
-// ResetModels resets all changes to the "models" field.
-func (m *CabinetFaultMutation) ResetModels() {
-	m.models = nil
 }
 
 // SetFault sets the "fault" field.
@@ -6696,6 +6549,32 @@ func (m *CabinetFaultMutation) ResetRider() {
 	m.clearedrider = false
 }
 
+// ClearCity clears the "city" edge to the City entity.
+func (m *CabinetFaultMutation) ClearCity() {
+	m.clearedcity = true
+}
+
+// CityCleared reports if the "city" edge to the City entity was cleared.
+func (m *CabinetFaultMutation) CityCleared() bool {
+	return m.clearedcity
+}
+
+// CityIDs returns the "city" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CityID instead. It exists only for internal usage by the builders.
+func (m *CabinetFaultMutation) CityIDs() (ids []uint64) {
+	if id := m.city; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCity resets all changes to the "city" edge.
+func (m *CabinetFaultMutation) ResetCity() {
+	m.city = nil
+	m.clearedcity = false
+}
+
 // Where appends a list predicates to the CabinetFaultMutation builder.
 func (m *CabinetFaultMutation) Where(ps ...predicate.CabinetFault) {
 	m.predicates = append(m.predicates, ps...)
@@ -6715,7 +6594,7 @@ func (m *CabinetFaultMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CabinetFaultMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, cabinetfault.FieldCreatedAt)
 	}
@@ -6738,7 +6617,7 @@ func (m *CabinetFaultMutation) Fields() []string {
 		fields = append(fields, cabinetfault.FieldStatus)
 	}
 	if m.city != nil {
-		fields = append(fields, cabinetfault.FieldCity)
+		fields = append(fields, cabinetfault.FieldCityID)
 	}
 	if m.branch != nil {
 		fields = append(fields, cabinetfault.FieldBranchID)
@@ -6748,18 +6627,6 @@ func (m *CabinetFaultMutation) Fields() []string {
 	}
 	if m.rider != nil {
 		fields = append(fields, cabinetfault.FieldRiderID)
-	}
-	if m.cabinet_name != nil {
-		fields = append(fields, cabinetfault.FieldCabinetName)
-	}
-	if m.brand != nil {
-		fields = append(fields, cabinetfault.FieldBrand)
-	}
-	if m.serial != nil {
-		fields = append(fields, cabinetfault.FieldSerial)
-	}
-	if m.models != nil {
-		fields = append(fields, cabinetfault.FieldModels)
 	}
 	if m.fault != nil {
 		fields = append(fields, cabinetfault.FieldFault)
@@ -6792,22 +6659,14 @@ func (m *CabinetFaultMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case cabinetfault.FieldStatus:
 		return m.Status()
-	case cabinetfault.FieldCity:
-		return m.City()
+	case cabinetfault.FieldCityID:
+		return m.CityID()
 	case cabinetfault.FieldBranchID:
 		return m.BranchID()
 	case cabinetfault.FieldCabinetID:
 		return m.CabinetID()
 	case cabinetfault.FieldRiderID:
 		return m.RiderID()
-	case cabinetfault.FieldCabinetName:
-		return m.CabinetName()
-	case cabinetfault.FieldBrand:
-		return m.Brand()
-	case cabinetfault.FieldSerial:
-		return m.Serial()
-	case cabinetfault.FieldModels:
-		return m.Models()
 	case cabinetfault.FieldFault:
 		return m.Fault()
 	case cabinetfault.FieldAttachments:
@@ -6837,22 +6696,14 @@ func (m *CabinetFaultMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldRemark(ctx)
 	case cabinetfault.FieldStatus:
 		return m.OldStatus(ctx)
-	case cabinetfault.FieldCity:
-		return m.OldCity(ctx)
+	case cabinetfault.FieldCityID:
+		return m.OldCityID(ctx)
 	case cabinetfault.FieldBranchID:
 		return m.OldBranchID(ctx)
 	case cabinetfault.FieldCabinetID:
 		return m.OldCabinetID(ctx)
 	case cabinetfault.FieldRiderID:
 		return m.OldRiderID(ctx)
-	case cabinetfault.FieldCabinetName:
-		return m.OldCabinetName(ctx)
-	case cabinetfault.FieldBrand:
-		return m.OldBrand(ctx)
-	case cabinetfault.FieldSerial:
-		return m.OldSerial(ctx)
-	case cabinetfault.FieldModels:
-		return m.OldModels(ctx)
 	case cabinetfault.FieldFault:
 		return m.OldFault(ctx)
 	case cabinetfault.FieldAttachments:
@@ -6917,12 +6768,12 @@ func (m *CabinetFaultMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetStatus(v)
 		return nil
-	case cabinetfault.FieldCity:
-		v, ok := value.(model.City)
+	case cabinetfault.FieldCityID:
+		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetCity(v)
+		m.SetCityID(v)
 		return nil
 	case cabinetfault.FieldBranchID:
 		v, ok := value.(uint64)
@@ -6944,34 +6795,6 @@ func (m *CabinetFaultMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRiderID(v)
-		return nil
-	case cabinetfault.FieldCabinetName:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCabinetName(v)
-		return nil
-	case cabinetfault.FieldBrand:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetBrand(v)
-		return nil
-	case cabinetfault.FieldSerial:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSerial(v)
-		return nil
-	case cabinetfault.FieldModels:
-		v, ok := value.([]model.BatteryModel)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetModels(v)
 		return nil
 	case cabinetfault.FieldFault:
 		v, ok := value.(string)
@@ -7124,8 +6947,8 @@ func (m *CabinetFaultMutation) ResetField(name string) error {
 	case cabinetfault.FieldStatus:
 		m.ResetStatus()
 		return nil
-	case cabinetfault.FieldCity:
-		m.ResetCity()
+	case cabinetfault.FieldCityID:
+		m.ResetCityID()
 		return nil
 	case cabinetfault.FieldBranchID:
 		m.ResetBranchID()
@@ -7135,18 +6958,6 @@ func (m *CabinetFaultMutation) ResetField(name string) error {
 		return nil
 	case cabinetfault.FieldRiderID:
 		m.ResetRiderID()
-		return nil
-	case cabinetfault.FieldCabinetName:
-		m.ResetCabinetName()
-		return nil
-	case cabinetfault.FieldBrand:
-		m.ResetBrand()
-		return nil
-	case cabinetfault.FieldSerial:
-		m.ResetSerial()
-		return nil
-	case cabinetfault.FieldModels:
-		m.ResetModels()
 		return nil
 	case cabinetfault.FieldFault:
 		m.ResetFault()
@@ -7163,7 +6974,7 @@ func (m *CabinetFaultMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CabinetFaultMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.branch != nil {
 		edges = append(edges, cabinetfault.EdgeBranch)
 	}
@@ -7172,6 +6983,9 @@ func (m *CabinetFaultMutation) AddedEdges() []string {
 	}
 	if m.rider != nil {
 		edges = append(edges, cabinetfault.EdgeRider)
+	}
+	if m.city != nil {
+		edges = append(edges, cabinetfault.EdgeCity)
 	}
 	return edges
 }
@@ -7192,13 +7006,17 @@ func (m *CabinetFaultMutation) AddedIDs(name string) []ent.Value {
 		if id := m.rider; id != nil {
 			return []ent.Value{*id}
 		}
+	case cabinetfault.EdgeCity:
+		if id := m.city; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CabinetFaultMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	return edges
 }
 
@@ -7212,7 +7030,7 @@ func (m *CabinetFaultMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CabinetFaultMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedbranch {
 		edges = append(edges, cabinetfault.EdgeBranch)
 	}
@@ -7221,6 +7039,9 @@ func (m *CabinetFaultMutation) ClearedEdges() []string {
 	}
 	if m.clearedrider {
 		edges = append(edges, cabinetfault.EdgeRider)
+	}
+	if m.clearedcity {
+		edges = append(edges, cabinetfault.EdgeCity)
 	}
 	return edges
 }
@@ -7235,6 +7056,8 @@ func (m *CabinetFaultMutation) EdgeCleared(name string) bool {
 		return m.clearedcabinet
 	case cabinetfault.EdgeRider:
 		return m.clearedrider
+	case cabinetfault.EdgeCity:
+		return m.clearedcity
 	}
 	return false
 }
@@ -7252,6 +7075,9 @@ func (m *CabinetFaultMutation) ClearEdge(name string) error {
 	case cabinetfault.EdgeRider:
 		m.ClearRider()
 		return nil
+	case cabinetfault.EdgeCity:
+		m.ClearCity()
+		return nil
 	}
 	return fmt.Errorf("unknown CabinetFault unique edge %s", name)
 }
@@ -7268,6 +7094,9 @@ func (m *CabinetFaultMutation) ResetEdge(name string) error {
 		return nil
 	case cabinetfault.EdgeRider:
 		m.ResetRider()
+		return nil
+	case cabinetfault.EdgeCity:
+		m.ResetCity()
 		return nil
 	}
 	return fmt.Errorf("unknown CabinetFault edge %s", name)
@@ -7296,6 +7125,9 @@ type CityMutation struct {
 	branches        map[uint64]struct{}
 	removedbranches map[uint64]struct{}
 	clearedbranches bool
+	faults          map[uint64]struct{}
+	removedfaults   map[uint64]struct{}
+	clearedfaults   bool
 	done            bool
 	oldValue        func(context.Context) (*City, error)
 	predicates      []predicate.City
@@ -7928,6 +7760,60 @@ func (m *CityMutation) ResetBranches() {
 	m.removedbranches = nil
 }
 
+// AddFaultIDs adds the "faults" edge to the CabinetFault entity by ids.
+func (m *CityMutation) AddFaultIDs(ids ...uint64) {
+	if m.faults == nil {
+		m.faults = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.faults[ids[i]] = struct{}{}
+	}
+}
+
+// ClearFaults clears the "faults" edge to the CabinetFault entity.
+func (m *CityMutation) ClearFaults() {
+	m.clearedfaults = true
+}
+
+// FaultsCleared reports if the "faults" edge to the CabinetFault entity was cleared.
+func (m *CityMutation) FaultsCleared() bool {
+	return m.clearedfaults
+}
+
+// RemoveFaultIDs removes the "faults" edge to the CabinetFault entity by IDs.
+func (m *CityMutation) RemoveFaultIDs(ids ...uint64) {
+	if m.removedfaults == nil {
+		m.removedfaults = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.faults, ids[i])
+		m.removedfaults[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedFaults returns the removed IDs of the "faults" edge to the CabinetFault entity.
+func (m *CityMutation) RemovedFaultsIDs() (ids []uint64) {
+	for id := range m.removedfaults {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// FaultsIDs returns the "faults" edge IDs in the mutation.
+func (m *CityMutation) FaultsIDs() (ids []uint64) {
+	for id := range m.faults {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetFaults resets all changes to the "faults" edge.
+func (m *CityMutation) ResetFaults() {
+	m.faults = nil
+	m.clearedfaults = false
+	m.removedfaults = nil
+}
+
 // Where appends a list predicates to the CityMutation builder.
 func (m *CityMutation) Where(ps ...predicate.City) {
 	m.predicates = append(m.predicates, ps...)
@@ -8218,7 +8104,7 @@ func (m *CityMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CityMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.parent != nil {
 		edges = append(edges, city.EdgeParent)
 	}
@@ -8227,6 +8113,9 @@ func (m *CityMutation) AddedEdges() []string {
 	}
 	if m.branches != nil {
 		edges = append(edges, city.EdgeBranches)
+	}
+	if m.faults != nil {
+		edges = append(edges, city.EdgeFaults)
 	}
 	return edges
 }
@@ -8251,18 +8140,27 @@ func (m *CityMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case city.EdgeFaults:
+		ids := make([]ent.Value, 0, len(m.faults))
+		for id := range m.faults {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CityMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedchildren != nil {
 		edges = append(edges, city.EdgeChildren)
 	}
 	if m.removedbranches != nil {
 		edges = append(edges, city.EdgeBranches)
+	}
+	if m.removedfaults != nil {
+		edges = append(edges, city.EdgeFaults)
 	}
 	return edges
 }
@@ -8283,13 +8181,19 @@ func (m *CityMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case city.EdgeFaults:
+		ids := make([]ent.Value, 0, len(m.removedfaults))
+		for id := range m.removedfaults {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CityMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedparent {
 		edges = append(edges, city.EdgeParent)
 	}
@@ -8298,6 +8202,9 @@ func (m *CityMutation) ClearedEdges() []string {
 	}
 	if m.clearedbranches {
 		edges = append(edges, city.EdgeBranches)
+	}
+	if m.clearedfaults {
+		edges = append(edges, city.EdgeFaults)
 	}
 	return edges
 }
@@ -8312,6 +8219,8 @@ func (m *CityMutation) EdgeCleared(name string) bool {
 		return m.clearedchildren
 	case city.EdgeBranches:
 		return m.clearedbranches
+	case city.EdgeFaults:
+		return m.clearedfaults
 	}
 	return false
 }
@@ -8339,6 +8248,9 @@ func (m *CityMutation) ResetEdge(name string) error {
 		return nil
 	case city.EdgeBranches:
 		m.ResetBranches()
+		return nil
+	case city.EdgeFaults:
+		m.ResetFaults()
 		return nil
 	}
 	return fmt.Errorf("unknown City edge %s", name)

@@ -41,6 +41,7 @@ func (City) Edges() []ent.Edge {
             Field("parent_id").
             Unique(),
         edge.To("branches", Branch.Type),
+        edge.To("faults", CabinetFault.Type),
     }
 }
 
@@ -58,4 +59,3 @@ func (City) Indexes() []ent.Index {
         index.Fields("parent_id"),
     }
 }
-

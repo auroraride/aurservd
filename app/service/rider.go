@@ -290,3 +290,12 @@ func (r *riderService) ExtendTokenTime(id uint64, token string) {
         SetLastSigninAt(time.Now()).
         Exec(context.Background())
 }
+
+// GetRiderSampleInfo 获取骑手简单信息
+func (*riderService) GetRiderSampleInfo(rider *ent.Rider) model.RiderSampleInfo {
+    return model.RiderSampleInfo{
+        ID:    rider.ID,
+        Name:  rider.Edges.Person.Name,
+        Phone: rider.Phone,
+    }
+}

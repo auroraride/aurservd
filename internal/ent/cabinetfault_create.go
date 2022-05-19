@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
 
@@ -108,9 +109,9 @@ func (cfc *CabinetFaultCreate) SetNillableStatus(u *uint8) *CabinetFaultCreate {
 	return cfc
 }
 
-// SetCity sets the "city" field.
-func (cfc *CabinetFaultCreate) SetCity(m model.City) *CabinetFaultCreate {
-	cfc.mutation.SetCity(m)
+// SetCityID sets the "city_id" field.
+func (cfc *CabinetFaultCreate) SetCityID(u uint64) *CabinetFaultCreate {
+	cfc.mutation.SetCityID(u)
 	return cfc
 }
 
@@ -129,30 +130,6 @@ func (cfc *CabinetFaultCreate) SetCabinetID(u uint64) *CabinetFaultCreate {
 // SetRiderID sets the "rider_id" field.
 func (cfc *CabinetFaultCreate) SetRiderID(u uint64) *CabinetFaultCreate {
 	cfc.mutation.SetRiderID(u)
-	return cfc
-}
-
-// SetCabinetName sets the "cabinet_name" field.
-func (cfc *CabinetFaultCreate) SetCabinetName(s string) *CabinetFaultCreate {
-	cfc.mutation.SetCabinetName(s)
-	return cfc
-}
-
-// SetBrand sets the "brand" field.
-func (cfc *CabinetFaultCreate) SetBrand(s string) *CabinetFaultCreate {
-	cfc.mutation.SetBrand(s)
-	return cfc
-}
-
-// SetSerial sets the "serial" field.
-func (cfc *CabinetFaultCreate) SetSerial(s string) *CabinetFaultCreate {
-	cfc.mutation.SetSerial(s)
-	return cfc
-}
-
-// SetModels sets the "models" field.
-func (cfc *CabinetFaultCreate) SetModels(mm []model.BatteryModel) *CabinetFaultCreate {
-	cfc.mutation.SetModels(mm)
 	return cfc
 }
 
@@ -203,6 +180,11 @@ func (cfc *CabinetFaultCreate) SetCabinet(c *Cabinet) *CabinetFaultCreate {
 // SetRider sets the "rider" edge to the Rider entity.
 func (cfc *CabinetFaultCreate) SetRider(r *Rider) *CabinetFaultCreate {
 	return cfc.SetRiderID(r.ID)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (cfc *CabinetFaultCreate) SetCity(c *City) *CabinetFaultCreate {
+	return cfc.SetCityID(c.ID)
 }
 
 // Mutation returns the CabinetFaultMutation object of the builder.
@@ -301,8 +283,8 @@ func (cfc *CabinetFaultCreate) check() error {
 	if _, ok := cfc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "CabinetFault.status"`)}
 	}
-	if _, ok := cfc.mutation.City(); !ok {
-		return &ValidationError{Name: "city", err: errors.New(`ent: missing required field "CabinetFault.city"`)}
+	if _, ok := cfc.mutation.CityID(); !ok {
+		return &ValidationError{Name: "city_id", err: errors.New(`ent: missing required field "CabinetFault.city_id"`)}
 	}
 	if _, ok := cfc.mutation.BranchID(); !ok {
 		return &ValidationError{Name: "branch_id", err: errors.New(`ent: missing required field "CabinetFault.branch_id"`)}
@@ -313,18 +295,6 @@ func (cfc *CabinetFaultCreate) check() error {
 	if _, ok := cfc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "CabinetFault.rider_id"`)}
 	}
-	if _, ok := cfc.mutation.CabinetName(); !ok {
-		return &ValidationError{Name: "cabinet_name", err: errors.New(`ent: missing required field "CabinetFault.cabinet_name"`)}
-	}
-	if _, ok := cfc.mutation.Brand(); !ok {
-		return &ValidationError{Name: "brand", err: errors.New(`ent: missing required field "CabinetFault.brand"`)}
-	}
-	if _, ok := cfc.mutation.Serial(); !ok {
-		return &ValidationError{Name: "serial", err: errors.New(`ent: missing required field "CabinetFault.serial"`)}
-	}
-	if _, ok := cfc.mutation.Models(); !ok {
-		return &ValidationError{Name: "models", err: errors.New(`ent: missing required field "CabinetFault.models"`)}
-	}
 	if _, ok := cfc.mutation.BranchID(); !ok {
 		return &ValidationError{Name: "branch", err: errors.New(`ent: missing required edge "CabinetFault.branch"`)}
 	}
@@ -333,6 +303,9 @@ func (cfc *CabinetFaultCreate) check() error {
 	}
 	if _, ok := cfc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "CabinetFault.rider"`)}
+	}
+	if _, ok := cfc.mutation.CityID(); !ok {
+		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "CabinetFault.city"`)}
 	}
 	return nil
 }
@@ -418,46 +391,6 @@ func (cfc *CabinetFaultCreate) createSpec() (*CabinetFault, *sqlgraph.CreateSpec
 		})
 		_node.Status = value
 	}
-	if value, ok := cfc.mutation.City(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinetfault.FieldCity,
-		})
-		_node.City = value
-	}
-	if value, ok := cfc.mutation.CabinetName(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinetfault.FieldCabinetName,
-		})
-		_node.CabinetName = value
-	}
-	if value, ok := cfc.mutation.Brand(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinetfault.FieldBrand,
-		})
-		_node.Brand = value
-	}
-	if value, ok := cfc.mutation.Serial(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: cabinetfault.FieldSerial,
-		})
-		_node.Serial = value
-	}
-	if value, ok := cfc.mutation.Models(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinetfault.FieldModels,
-		})
-		_node.Models = value
-	}
 	if value, ok := cfc.mutation.Fault(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -540,6 +473,26 @@ func (cfc *CabinetFaultCreate) createSpec() (*CabinetFault, *sqlgraph.CreateSpec
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.RiderID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cfc.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   cabinetfault.CityTable,
+			Columns: []string{cabinetfault.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -710,15 +663,15 @@ func (u *CabinetFaultUpsert) AddStatus(v uint8) *CabinetFaultUpsert {
 	return u
 }
 
-// SetCity sets the "city" field.
-func (u *CabinetFaultUpsert) SetCity(v model.City) *CabinetFaultUpsert {
-	u.Set(cabinetfault.FieldCity, v)
+// SetCityID sets the "city_id" field.
+func (u *CabinetFaultUpsert) SetCityID(v uint64) *CabinetFaultUpsert {
+	u.Set(cabinetfault.FieldCityID, v)
 	return u
 }
 
-// UpdateCity sets the "city" field to the value that was provided on create.
-func (u *CabinetFaultUpsert) UpdateCity() *CabinetFaultUpsert {
-	u.SetExcluded(cabinetfault.FieldCity)
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *CabinetFaultUpsert) UpdateCityID() *CabinetFaultUpsert {
+	u.SetExcluded(cabinetfault.FieldCityID)
 	return u
 }
 
@@ -755,54 +708,6 @@ func (u *CabinetFaultUpsert) SetRiderID(v uint64) *CabinetFaultUpsert {
 // UpdateRiderID sets the "rider_id" field to the value that was provided on create.
 func (u *CabinetFaultUpsert) UpdateRiderID() *CabinetFaultUpsert {
 	u.SetExcluded(cabinetfault.FieldRiderID)
-	return u
-}
-
-// SetCabinetName sets the "cabinet_name" field.
-func (u *CabinetFaultUpsert) SetCabinetName(v string) *CabinetFaultUpsert {
-	u.Set(cabinetfault.FieldCabinetName, v)
-	return u
-}
-
-// UpdateCabinetName sets the "cabinet_name" field to the value that was provided on create.
-func (u *CabinetFaultUpsert) UpdateCabinetName() *CabinetFaultUpsert {
-	u.SetExcluded(cabinetfault.FieldCabinetName)
-	return u
-}
-
-// SetBrand sets the "brand" field.
-func (u *CabinetFaultUpsert) SetBrand(v string) *CabinetFaultUpsert {
-	u.Set(cabinetfault.FieldBrand, v)
-	return u
-}
-
-// UpdateBrand sets the "brand" field to the value that was provided on create.
-func (u *CabinetFaultUpsert) UpdateBrand() *CabinetFaultUpsert {
-	u.SetExcluded(cabinetfault.FieldBrand)
-	return u
-}
-
-// SetSerial sets the "serial" field.
-func (u *CabinetFaultUpsert) SetSerial(v string) *CabinetFaultUpsert {
-	u.Set(cabinetfault.FieldSerial, v)
-	return u
-}
-
-// UpdateSerial sets the "serial" field to the value that was provided on create.
-func (u *CabinetFaultUpsert) UpdateSerial() *CabinetFaultUpsert {
-	u.SetExcluded(cabinetfault.FieldSerial)
-	return u
-}
-
-// SetModels sets the "models" field.
-func (u *CabinetFaultUpsert) SetModels(v []model.BatteryModel) *CabinetFaultUpsert {
-	u.Set(cabinetfault.FieldModels, v)
-	return u
-}
-
-// UpdateModels sets the "models" field to the value that was provided on create.
-func (u *CabinetFaultUpsert) UpdateModels() *CabinetFaultUpsert {
-	u.SetExcluded(cabinetfault.FieldModels)
 	return u
 }
 
@@ -1040,17 +945,17 @@ func (u *CabinetFaultUpsertOne) UpdateStatus() *CabinetFaultUpsertOne {
 	})
 }
 
-// SetCity sets the "city" field.
-func (u *CabinetFaultUpsertOne) SetCity(v model.City) *CabinetFaultUpsertOne {
+// SetCityID sets the "city_id" field.
+func (u *CabinetFaultUpsertOne) SetCityID(v uint64) *CabinetFaultUpsertOne {
 	return u.Update(func(s *CabinetFaultUpsert) {
-		s.SetCity(v)
+		s.SetCityID(v)
 	})
 }
 
-// UpdateCity sets the "city" field to the value that was provided on create.
-func (u *CabinetFaultUpsertOne) UpdateCity() *CabinetFaultUpsertOne {
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *CabinetFaultUpsertOne) UpdateCityID() *CabinetFaultUpsertOne {
 	return u.Update(func(s *CabinetFaultUpsert) {
-		s.UpdateCity()
+		s.UpdateCityID()
 	})
 }
 
@@ -1093,62 +998,6 @@ func (u *CabinetFaultUpsertOne) SetRiderID(v uint64) *CabinetFaultUpsertOne {
 func (u *CabinetFaultUpsertOne) UpdateRiderID() *CabinetFaultUpsertOne {
 	return u.Update(func(s *CabinetFaultUpsert) {
 		s.UpdateRiderID()
-	})
-}
-
-// SetCabinetName sets the "cabinet_name" field.
-func (u *CabinetFaultUpsertOne) SetCabinetName(v string) *CabinetFaultUpsertOne {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.SetCabinetName(v)
-	})
-}
-
-// UpdateCabinetName sets the "cabinet_name" field to the value that was provided on create.
-func (u *CabinetFaultUpsertOne) UpdateCabinetName() *CabinetFaultUpsertOne {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.UpdateCabinetName()
-	})
-}
-
-// SetBrand sets the "brand" field.
-func (u *CabinetFaultUpsertOne) SetBrand(v string) *CabinetFaultUpsertOne {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.SetBrand(v)
-	})
-}
-
-// UpdateBrand sets the "brand" field to the value that was provided on create.
-func (u *CabinetFaultUpsertOne) UpdateBrand() *CabinetFaultUpsertOne {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.UpdateBrand()
-	})
-}
-
-// SetSerial sets the "serial" field.
-func (u *CabinetFaultUpsertOne) SetSerial(v string) *CabinetFaultUpsertOne {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.SetSerial(v)
-	})
-}
-
-// UpdateSerial sets the "serial" field to the value that was provided on create.
-func (u *CabinetFaultUpsertOne) UpdateSerial() *CabinetFaultUpsertOne {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.UpdateSerial()
-	})
-}
-
-// SetModels sets the "models" field.
-func (u *CabinetFaultUpsertOne) SetModels(v []model.BatteryModel) *CabinetFaultUpsertOne {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.SetModels(v)
-	})
-}
-
-// UpdateModels sets the "models" field to the value that was provided on create.
-func (u *CabinetFaultUpsertOne) UpdateModels() *CabinetFaultUpsertOne {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.UpdateModels()
 	})
 }
 
@@ -1559,17 +1408,17 @@ func (u *CabinetFaultUpsertBulk) UpdateStatus() *CabinetFaultUpsertBulk {
 	})
 }
 
-// SetCity sets the "city" field.
-func (u *CabinetFaultUpsertBulk) SetCity(v model.City) *CabinetFaultUpsertBulk {
+// SetCityID sets the "city_id" field.
+func (u *CabinetFaultUpsertBulk) SetCityID(v uint64) *CabinetFaultUpsertBulk {
 	return u.Update(func(s *CabinetFaultUpsert) {
-		s.SetCity(v)
+		s.SetCityID(v)
 	})
 }
 
-// UpdateCity sets the "city" field to the value that was provided on create.
-func (u *CabinetFaultUpsertBulk) UpdateCity() *CabinetFaultUpsertBulk {
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *CabinetFaultUpsertBulk) UpdateCityID() *CabinetFaultUpsertBulk {
 	return u.Update(func(s *CabinetFaultUpsert) {
-		s.UpdateCity()
+		s.UpdateCityID()
 	})
 }
 
@@ -1612,62 +1461,6 @@ func (u *CabinetFaultUpsertBulk) SetRiderID(v uint64) *CabinetFaultUpsertBulk {
 func (u *CabinetFaultUpsertBulk) UpdateRiderID() *CabinetFaultUpsertBulk {
 	return u.Update(func(s *CabinetFaultUpsert) {
 		s.UpdateRiderID()
-	})
-}
-
-// SetCabinetName sets the "cabinet_name" field.
-func (u *CabinetFaultUpsertBulk) SetCabinetName(v string) *CabinetFaultUpsertBulk {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.SetCabinetName(v)
-	})
-}
-
-// UpdateCabinetName sets the "cabinet_name" field to the value that was provided on create.
-func (u *CabinetFaultUpsertBulk) UpdateCabinetName() *CabinetFaultUpsertBulk {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.UpdateCabinetName()
-	})
-}
-
-// SetBrand sets the "brand" field.
-func (u *CabinetFaultUpsertBulk) SetBrand(v string) *CabinetFaultUpsertBulk {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.SetBrand(v)
-	})
-}
-
-// UpdateBrand sets the "brand" field to the value that was provided on create.
-func (u *CabinetFaultUpsertBulk) UpdateBrand() *CabinetFaultUpsertBulk {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.UpdateBrand()
-	})
-}
-
-// SetSerial sets the "serial" field.
-func (u *CabinetFaultUpsertBulk) SetSerial(v string) *CabinetFaultUpsertBulk {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.SetSerial(v)
-	})
-}
-
-// UpdateSerial sets the "serial" field to the value that was provided on create.
-func (u *CabinetFaultUpsertBulk) UpdateSerial() *CabinetFaultUpsertBulk {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.UpdateSerial()
-	})
-}
-
-// SetModels sets the "models" field.
-func (u *CabinetFaultUpsertBulk) SetModels(v []model.BatteryModel) *CabinetFaultUpsertBulk {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.SetModels(v)
-	})
-}
-
-// UpdateModels sets the "models" field to the value that was provided on create.
-func (u *CabinetFaultUpsertBulk) UpdateModels() *CabinetFaultUpsertBulk {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.UpdateModels()
 	})
 }
 

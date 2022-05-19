@@ -35,6 +35,8 @@ const (
 	EdgeChildren = "children"
 	// EdgeBranches holds the string denoting the branches edge name in mutations.
 	EdgeBranches = "branches"
+	// EdgeFaults holds the string denoting the faults edge name in mutations.
+	EdgeFaults = "faults"
 	// Table holds the table name of the city in the database.
 	Table = "city"
 	// ParentTable is the table that holds the parent relation/edge.
@@ -52,6 +54,13 @@ const (
 	BranchesInverseTable = "branch"
 	// BranchesColumn is the table column denoting the branches relation/edge.
 	BranchesColumn = "city_id"
+	// FaultsTable is the table that holds the faults relation/edge.
+	FaultsTable = "cabinet_fault"
+	// FaultsInverseTable is the table name for the CabinetFault entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinetfault" package.
+	FaultsInverseTable = "cabinet_fault"
+	// FaultsColumn is the table column denoting the faults relation/edge.
+	FaultsColumn = "city_id"
 )
 
 // Columns holds all SQL columns for city fields.
