@@ -527,6 +527,47 @@ definitions:
     required:
     - enable
     type: object
+  model.PlanItemRes:
+    properties:
+      cities:
+        items:
+          $ref: '#/definitions/model.City'
+        type: array
+      commission:
+        description: 提成
+        type: number
+      days:
+        description: '有效天数 '
+        minimum: 1
+        type: integer
+      enable:
+        description: 是否启用
+        type: boolean
+      end:
+        description: '结束日期 '
+        type: string
+      id:
+        type: integer
+      models:
+        items:
+          $ref: '#/definitions/model.BatteryModel'
+        type: array
+      name:
+        description: '骑士卡名称 '
+        type: string
+      price:
+        description: '价格 '
+        type: number
+      start:
+        description: '开始日期 '
+        type: string
+    required:
+    - days
+    - end
+    - name
+    - price
+    - start
+    type: object
   model.RiderSampleInfo:
     properties:
       id:
@@ -1293,6 +1334,53 @@ paths:
       tags:
       - '[M]管理接口'
   /manager/v1/plan:
+    get:
+      consumes:
+      - application/json
+      operationId: PlanList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 启用状态
+        in: query
+        name: enable
+        type: boolean
+      - description: 骑士卡名称
+        in: query
+        name: name
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.PlanItemRes'
+                  type: array
+              type: object
+      summary: M60004 列举骑士卡
+      tags:
+      - '[M]管理接口'
     post:
       consumes:
       - application/json

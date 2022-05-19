@@ -48,4 +48,3 @@ func (p PaginationReq) GetOffset() int {
 func (p PaginationReq) GetPages(total int) int {
     return int(math.Ceil(float64(total) / float64(p.GetLimit())))
 }
-

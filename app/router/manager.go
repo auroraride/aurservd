@@ -48,6 +48,7 @@ func loadManagerRoutes() {
     g.PUT("/cabinet/fault/:id", mapi.Cabinet.FaultDeal)
 
     // 骑士卡
+    g.GET("/plan", mapi.Plan.List)
     g.POST("/plan", mapi.Plan.Create)
     g.PUT("/plan/:id", mapi.Plan.UpdateEnable)
     g.DELETE("/plan/:id", mapi.Plan.Delete)

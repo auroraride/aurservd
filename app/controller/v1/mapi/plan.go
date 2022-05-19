@@ -63,3 +63,18 @@ func (*plan) Delete(c echo.Context) (err error) {
     service.NewPlan().Delete(ctx.Modifier, req)
     return ctx.SendResponse()
 }
+
+// List
+// @ID           PlanList
+// @Router       /manager/v1/plan [GET]
+// @Summary      M60004 列举骑士卡
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query  model.PlanListReq  true  "desc"
+// @Success      200  {object}  model.PaginationRes{items=[]model.PlanItemRes}  "请求成功"
+func (*plan) List(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.PlanListReq](c)
+    return ctx.SendResponse(service.NewPlan().List(req))
+}

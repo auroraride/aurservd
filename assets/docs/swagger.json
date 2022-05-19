@@ -984,6 +984,81 @@
             }
         },
         "/manager/v1/plan": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M60004 列举骑士卡",
+                "operationId": "PlanList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "启用状态",
+                        "name": "enable",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "骑士卡名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.PlanItemRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -1895,6 +1970,62 @@
                 "enable": {
                     "description": "启用或禁用",
                     "type": "boolean"
+                }
+            }
+        },
+        "model.PlanItemRes": {
+            "type": "object",
+            "required": [
+                "days",
+                "end",
+                "name",
+                "price",
+                "start"
+            ],
+            "properties": {
+                "cities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.City"
+                    }
+                },
+                "commission": {
+                    "description": "提成",
+                    "type": "number"
+                },
+                "days": {
+                    "description": "有效天数 ",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
+                "end": {
+                    "description": "结束日期 ",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "models": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BatteryModel"
+                    }
+                },
+                "name": {
+                    "description": "骑士卡名称 ",
+                    "type": "string"
+                },
+                "price": {
+                    "description": "价格 ",
+                    "type": "number"
+                },
+                "start": {
+                    "description": "开始日期 ",
+                    "type": "string"
                 }
             }
         },

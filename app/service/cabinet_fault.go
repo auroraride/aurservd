@@ -82,21 +82,21 @@ func (s *cabinetFaultService) Report(rider *ent.Rider, req *model.CabinetFaultRe
 
 // List 分页列举故障列表
 func (s *cabinetFaultService) List(req *model.CabinetFaultListReq) (res *model.PaginationRes) {
-    cq := ar.Ent.Cabinet.QueryNotDeleted()
     q := s.orm.QueryNotDeleted().
         WithBranch().
         WithRider(func(rq *ent.RiderQuery) {
             rq.WithPerson()
         }).
-        WithCity()
+        WithCity().
+        WithCabinet()
     if req.CityID != nil {
         q.Where(cabinetfault.CityID(*req.CityID))
     }
     if req.CabinetName != nil {
-        cq.Where(cabinet.NameContainsFold(*req.CabinetName))
+        q.Where(cabinetfault.HasCabinetWith(cabinet.NameContainsFold(*req.CabinetName)))
     }
     if req.Serial != nil {
-        cq.Where(cabinet.SerialContainsFold(*req.Serial))
+        q.Where(cabinetfault.HasCabinetWith(cabinet.SerialContainsFold(*req.Serial)))
     }
     if req.Status != nil {
         q.Where(cabinetfault.Status(*req.Status))
@@ -116,9 +116,6 @@ func (s *cabinetFaultService) List(req *model.CabinetFaultListReq) (res *model.P
         end.AddDate(0, 0, 1)
         q.Where(cabinetfault.CreatedAtLT(end))
     }
-    q.WithCabinet(func(query *ent.CabinetQuery) {
-        query = cq
-    })
     res = &model.PaginationRes{Pagination: q.PaginationResult(req.PaginationReq)}
     items := q.Pagination(req.PaginationReq).AllX(s.ctx)
     out := make([]model.CabinetFaultItem, len(items))
