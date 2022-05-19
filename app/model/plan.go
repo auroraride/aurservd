@@ -16,3 +16,9 @@ type PlanCreateReq struct {
     Days       uint     `json:"days" validate:"required,min=1" trans:"有效天数"`
     Commission float64  `json:"commission"` // 提成
 }
+
+// PlanEnableModifyReq 骑士卡状态修改请求
+type PlanEnableModifyReq struct {
+    ID     uint64 `json:"id" validate:"required" param:"id"` // 骑士卡ID
+    Enable *bool  `json:"enable" validate:"required"`        // 启用或禁用
+}

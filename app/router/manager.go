@@ -49,4 +49,6 @@ func loadManagerRoutes() {
 
     // 骑士卡
     g.POST("/plan", mapi.Plan.Create)
+    g.PUT("/plan/:id", mapi.Plan.UpdateEnable)
+    g.DELETE("/plan/:id", mapi.Plan.Delete)
 }

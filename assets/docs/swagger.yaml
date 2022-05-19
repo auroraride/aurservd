@@ -519,6 +519,14 @@ definitions:
         $ref: '#/definitions/model.Pagination'
         description: 分页属性
     type: object
+  model.PlanEnableModifyReq:
+    properties:
+      enable:
+        description: 启用或禁用
+        type: boolean
+    required:
+    - enable
+    type: object
   model.RiderSampleInfo:
     properties:
       id:
@@ -1303,6 +1311,63 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M60001 创建骑士卡
+      tags:
+      - '[M]管理接口'
+  /manager/v1/plan/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: PlanDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 骑士卡ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M60003 删除骑士卡
+      tags:
+      - '[M]管理接口'
+    put:
+      consumes:
+      - application/json
+      operationId: PlanUpdateEnable
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 骑士卡ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.PlanEnableModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M60002 上下架骑士卡
       tags:
       - '[M]管理接口'
   /manager/v1/user/signin:
