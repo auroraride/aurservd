@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/person"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
 
@@ -371,6 +372,46 @@ func (c *PersonClient) GetNotDeleted(ctx context.Context, id uint64) (*Person, e
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *PersonClient) GetNotDeletedX(ctx context.Context, id uint64) *Person {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for Plan.
+func (c *PlanClient) SoftDelete() *PlanUpdate {
+	mutation := newPlanMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &PlanUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *PlanClient) SoftDeleteOne(pl *Plan) *PlanUpdateOne {
+	mutation := newPlanMutation(c.config, OpUpdateOne, withPlan(pl))
+	mutation.SetDeletedAt(time.Now())
+	return &PlanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *PlanClient) SoftDeleteOneID(id uint64) *PlanUpdateOne {
+	mutation := newPlanMutation(c.config, OpUpdateOne, withPlanID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &PlanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Plan.
+func (c *PlanClient) QueryNotDeleted() *PlanQuery {
+	return c.Query().Where(plan.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Plan not deleted entity by its id.
+func (c *PlanClient) GetNotDeleted(ctx context.Context, id uint64) (*Plan, error) {
+	return c.Query().Where(plan.ID(id), plan.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *PlanClient) GetNotDeletedX(ctx context.Context, id uint64) *Plan {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

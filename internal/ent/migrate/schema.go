@@ -459,6 +459,55 @@ var (
 			},
 		},
 	}
+	// PlanColumns holds the columns for the "plan" table.
+	PlanColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true},
+		{Name: "remark", Type: field.TypeString, Nullable: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "start", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "end", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "price", Type: field.TypeFloat64},
+		{Name: "days", Type: field.TypeUint},
+		{Name: "commission", Type: field.TypeFloat64},
+	}
+	// PlanTable holds the schema information for the "plan" table.
+	PlanTable = &schema.Table{
+		Name:       "plan",
+		Columns:    PlanColumns,
+		PrimaryKey: []*schema.Column{PlanColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "plan_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PlanColumns[1]},
+			},
+			{
+				Name:    "plan_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{PlanColumns[3]},
+			},
+			{
+				Name:    "plan_start_end",
+				Unique:  false,
+				Columns: []*schema.Column{PlanColumns[8], PlanColumns[9]},
+			},
+			{
+				Name:    "plan_name",
+				Unique:  false,
+				Columns: []*schema.Column{PlanColumns[7]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+		},
+	}
 	// RiderColumns holds the columns for the "rider" table.
 	RiderColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -556,6 +605,56 @@ var (
 			},
 		},
 	}
+	// PlanPmsColumns holds the columns for the "plan_pms" table.
+	PlanPmsColumns = []*schema.Column{
+		{Name: "plan_id", Type: field.TypeInt},
+		{Name: "battery_model_id", Type: field.TypeInt},
+	}
+	// PlanPmsTable holds the schema information for the "plan_pms" table.
+	PlanPmsTable = &schema.Table{
+		Name:       "plan_pms",
+		Columns:    PlanPmsColumns,
+		PrimaryKey: []*schema.Column{PlanPmsColumns[0], PlanPmsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "plan_pms_plan_id",
+				Columns:    []*schema.Column{PlanPmsColumns[0]},
+				RefColumns: []*schema.Column{PlanColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "plan_pms_battery_model_id",
+				Columns:    []*schema.Column{PlanPmsColumns[1]},
+				RefColumns: []*schema.Column{BatteryModelColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// PlanCitiesColumns holds the columns for the "plan_cities" table.
+	PlanCitiesColumns = []*schema.Column{
+		{Name: "plan_id", Type: field.TypeInt},
+		{Name: "city_id", Type: field.TypeUint64},
+	}
+	// PlanCitiesTable holds the schema information for the "plan_cities" table.
+	PlanCitiesTable = &schema.Table{
+		Name:       "plan_cities",
+		Columns:    PlanCitiesColumns,
+		PrimaryKey: []*schema.Column{PlanCitiesColumns[0], PlanCitiesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "plan_cities_plan_id",
+				Columns:    []*schema.Column{PlanCitiesColumns[0]},
+				RefColumns: []*schema.Column{PlanColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "plan_cities_city_id",
+				Columns:    []*schema.Column{PlanCitiesColumns[1]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		BatteryModelTable,
@@ -567,9 +666,12 @@ var (
 		ContractTable,
 		ManagerTable,
 		PersonTable,
+		PlanTable,
 		RiderTable,
 		SettingTable,
 		CabinetBmsTable,
+		PlanPmsTable,
+		PlanCitiesTable,
 	}
 )
 
@@ -610,6 +712,9 @@ func init() {
 	PersonTable.Annotation = &entsql.Annotation{
 		Table: "person",
 	}
+	PlanTable.Annotation = &entsql.Annotation{
+		Table: "plan",
+	}
 	RiderTable.ForeignKeys[0].RefTable = PersonTable
 	RiderTable.Annotation = &entsql.Annotation{
 		Table: "rider",
@@ -619,4 +724,8 @@ func init() {
 	}
 	CabinetBmsTable.ForeignKeys[0].RefTable = CabinetTable
 	CabinetBmsTable.ForeignKeys[1].RefTable = BatteryModelTable
+	PlanPmsTable.ForeignKeys[0].RefTable = PlanTable
+	PlanPmsTable.ForeignKeys[1].RefTable = BatteryModelTable
+	PlanCitiesTable.ForeignKeys[0].RefTable = PlanTable
+	PlanCitiesTable.ForeignKeys[1].RefTable = CityTable
 }

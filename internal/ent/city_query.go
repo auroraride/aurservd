@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -31,6 +32,7 @@ type CityQuery struct {
 	withChildren *CityQuery
 	withBranches *BranchQuery
 	withFaults   *CabinetFaultQuery
+	withPlans    *PlanQuery
 	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -149,6 +151,28 @@ func (cq *CityQuery) QueryFaults() *CabinetFaultQuery {
 			sqlgraph.From(city.Table, city.FieldID, selector),
 			sqlgraph.To(cabinetfault.Table, cabinetfault.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, city.FaultsTable, city.FaultsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPlans chains the current query on the "plans" edge.
+func (cq *CityQuery) QueryPlans() *PlanQuery {
+	query := &PlanQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(city.Table, city.FieldID, selector),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, city.PlansTable, city.PlansPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -341,6 +365,7 @@ func (cq *CityQuery) Clone() *CityQuery {
 		withChildren: cq.withChildren.Clone(),
 		withBranches: cq.withBranches.Clone(),
 		withFaults:   cq.withFaults.Clone(),
+		withPlans:    cq.withPlans.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
@@ -389,6 +414,17 @@ func (cq *CityQuery) WithFaults(opts ...func(*CabinetFaultQuery)) *CityQuery {
 		opt(query)
 	}
 	cq.withFaults = query
+	return cq
+}
+
+// WithPlans tells the query-builder to eager-load the nodes that are connected to
+// the "plans" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CityQuery) WithPlans(opts ...func(*PlanQuery)) *CityQuery {
+	query := &PlanQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withPlans = query
 	return cq
 }
 
@@ -462,11 +498,12 @@ func (cq *CityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*City, e
 	var (
 		nodes       = []*City{}
 		_spec       = cq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			cq.withParent != nil,
 			cq.withChildren != nil,
 			cq.withBranches != nil,
 			cq.withFaults != nil,
+			cq.withPlans != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -595,6 +632,59 @@ func (cq *CityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*City, e
 				return nil, fmt.Errorf(`unexpected foreign-key "city_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Faults = append(node.Edges.Faults, n)
+		}
+	}
+
+	if query := cq.withPlans; query != nil {
+		edgeids := make([]driver.Value, len(nodes))
+		byid := make(map[uint64]*City)
+		nids := make(map[uint64]map[*City]struct{})
+		for i, node := range nodes {
+			edgeids[i] = node.ID
+			byid[node.ID] = node
+			node.Edges.Plans = []*Plan{}
+		}
+		query.Where(func(s *sql.Selector) {
+			joinT := sql.Table(city.PlansTable)
+			s.Join(joinT).On(s.C(plan.FieldID), joinT.C(city.PlansPrimaryKey[0]))
+			s.Where(sql.InValues(joinT.C(city.PlansPrimaryKey[1]), edgeids...))
+			columns := s.SelectedColumns()
+			s.Select(joinT.C(city.PlansPrimaryKey[1]))
+			s.AppendSelect(columns...)
+			s.SetDistinct(false)
+		})
+		neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]interface{}, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]interface{}{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []interface{}) error {
+				outValue := uint64(values[0].(*sql.NullInt64).Int64)
+				inValue := uint64(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*City]struct{}{byid[outValue]: struct{}{}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byid[outValue]] = struct{}{}
+				return nil
+			}
+		})
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected "plans" node returned %v`, n.ID)
+			}
+			for kn := range nodes {
+				kn.Edges.Plans = append(kn.Edges.Plans, n)
+			}
 		}
 	}
 

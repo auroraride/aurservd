@@ -161,6 +161,23 @@ func (pq *PersonQuery) PaginationResult(req model.PaginationReq) model.Paginatio
 	}
 }
 
+// Pagination returns pagination query builder for PlanQuery.
+func (pq *PlanQuery) Pagination(req model.PaginationReq) *PlanQuery {
+	pq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return pq
+}
+
+// PaginationResult returns pagination for PlanQuery.
+func (pq *PlanQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := pq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for RiderQuery.
 func (rq *RiderQuery) Pagination(req model.PaginationReq) *RiderQuery {
 	rq.Offset(req.GetOffset()).Limit(req.GetLimit())

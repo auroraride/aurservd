@@ -33,6 +33,9 @@ type Manager func(*sql.Selector)
 // Person is the predicate function for person builders.
 type Person func(*sql.Selector)
 
+// Plan is the predicate function for plan builders.
+type Plan func(*sql.Selector)
+
 // Rider is the predicate function for rider builders.
 type Rider func(*sql.Selector)
 

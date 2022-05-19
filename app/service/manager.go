@@ -36,7 +36,7 @@ func NewManager() *managerService {
 
 // Add 新增管理员
 func (s *managerService) Add(req *model.ManagerAddReq) error {
-    if s.orm.Query().Where(manager.Phone(req.Phone)).ExistX(s.ctx) {
+    if s.orm.QueryNotDeleted().Where(manager.Phone(req.Phone)).ExistX(s.ctx) {
         return errors.New("用户已存在")
     }
     password, _ := utils.PasswordGenerate(req.Password)
@@ -46,7 +46,7 @@ func (s *managerService) Add(req *model.ManagerAddReq) error {
 // Signin 管理员登录
 func (s *managerService) Signin(req *model.ManagerSigninReq) (res *model.ManagerSigninRes, err error) {
     var u *ent.Manager
-    u, err = s.orm.Query().Where(manager.Phone(req.Phone)).Only(s.ctx)
+    u, err = s.orm.QueryNotDeleted().Where(manager.Phone(req.Phone)).Only(s.ctx)
     if err != nil {
         log.Errorf("[M] 管理员查询失败: %v", err)
         return nil, errors.New(ar.UserNotFound)

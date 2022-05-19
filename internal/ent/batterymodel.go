@@ -48,9 +48,11 @@ type BatteryModel struct {
 type BatteryModelEdges struct {
 	// Cabinets holds the value of the cabinets edge.
 	Cabinets []*Cabinet `json:"cabinets,omitempty"`
+	// Plans holds the value of the plans edge.
+	Plans []*Plan `json:"plans,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // CabinetsOrErr returns the Cabinets value or an error if the edge
@@ -60,6 +62,15 @@ func (e BatteryModelEdges) CabinetsOrErr() ([]*Cabinet, error) {
 		return e.Cabinets, nil
 	}
 	return nil, &NotLoadedError{edge: "cabinets"}
+}
+
+// PlansOrErr returns the Plans value or an error if the edge
+// was not loaded in eager-loading.
+func (e BatteryModelEdges) PlansOrErr() ([]*Plan, error) {
+	if e.loadedTypes[1] {
+		return e.Plans, nil
+	}
+	return nil, &NotLoadedError{edge: "plans"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -157,6 +168,11 @@ func (bm *BatteryModel) assignValues(columns []string, values []interface{}) err
 // QueryCabinets queries the "cabinets" edge of the BatteryModel entity.
 func (bm *BatteryModel) QueryCabinets() *CabinetQuery {
 	return (&BatteryModelClient{config: bm.config}).QueryCabinets(bm)
+}
+
+// QueryPlans queries the "plans" edge of the BatteryModel entity.
+func (bm *BatteryModel) QueryPlans() *PlanQuery {
+	return (&BatteryModelClient{config: bm.config}).QueryPlans(bm)
 }
 
 // Update returns a builder for updating this BatteryModel.

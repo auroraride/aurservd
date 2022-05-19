@@ -138,7 +138,7 @@ func (s *contractService) Sign(u *ent.Rider) string {
 func (s *contractService) Result(u *ent.Rider, sn string) model.StatusResponse {
     orm := ar.Ent.Contract
     // 查询合同是否存在
-    c, err := orm.Query().
+    c, err := orm.QueryNotDeleted().
         Where(contract.Sn(sn), contract.RiderID(u.ID)).
         Only(context.Background())
     if err != nil || c == nil {

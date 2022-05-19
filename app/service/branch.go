@@ -84,7 +84,7 @@ func (s *branchService) AddContract(id uint64, req *model.BranchContract, mod *m
 
 // List 网点列表
 func (s *branchService) List(req *model.BranchListReq) (res model.PaginationRes) {
-    q := s.orm.Query().
+    q := s.orm.QueryNotDeleted().
         Order(ent.Desc(branch.FieldID))
 
     if req.CityID != nil {
@@ -129,7 +129,7 @@ func (s *branchService) List(req *model.BranchListReq) (res model.PaginationRes)
 // Modify 修改网点
 // TODO 从结构体更新
 func (s *branchService) Modify(req *model.Branch, mod *model.Modifier) {
-    b := s.orm.Query().Where(branch.ID(req.ID)).OnlyX(s.ctx)
+    b := s.orm.QueryNotDeleted().Where(branch.ID(req.ID)).OnlyX(s.ctx)
     if b == nil {
         snag.Panic("网点不存在")
     }
@@ -148,7 +148,7 @@ func (s *branchService) Modify(req *model.Branch, mod *model.Modifier) {
 // Selector 网点选择列表
 func (s *branchService) Selector() *model.ItemListRes {
     items := make([]model.BranchSampleItem, 0)
-    s.orm.Query().Select(branch.FieldID, branch.FieldName).ScanX(s.ctx, &items)
+    s.orm.QueryNotDeleted().Select(branch.FieldID, branch.FieldName).ScanX(s.ctx, &items)
     res := new(model.ItemListRes)
     model.SetItemListResItems[model.BranchSampleItem](res, items)
     return res

@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -27,6 +28,7 @@ type BatteryModelQuery struct {
 	predicates []predicate.BatteryModel
 	// eager-loading edges.
 	withCabinets *CabinetQuery
+	withPlans    *PlanQuery
 	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -79,6 +81,28 @@ func (bmq *BatteryModelQuery) QueryCabinets() *CabinetQuery {
 			sqlgraph.From(batterymodel.Table, batterymodel.FieldID, selector),
 			sqlgraph.To(cabinet.Table, cabinet.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, batterymodel.CabinetsTable, batterymodel.CabinetsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(bmq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPlans chains the current query on the "plans" edge.
+func (bmq *BatteryModelQuery) QueryPlans() *PlanQuery {
+	query := &PlanQuery{config: bmq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bmq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bmq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(batterymodel.Table, batterymodel.FieldID, selector),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, batterymodel.PlansTable, batterymodel.PlansPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(bmq.driver.Dialect(), step)
 		return fromU, nil
@@ -268,6 +292,7 @@ func (bmq *BatteryModelQuery) Clone() *BatteryModelQuery {
 		order:        append([]OrderFunc{}, bmq.order...),
 		predicates:   append([]predicate.BatteryModel{}, bmq.predicates...),
 		withCabinets: bmq.withCabinets.Clone(),
+		withPlans:    bmq.withPlans.Clone(),
 		// clone intermediate query.
 		sql:    bmq.sql.Clone(),
 		path:   bmq.path,
@@ -283,6 +308,17 @@ func (bmq *BatteryModelQuery) WithCabinets(opts ...func(*CabinetQuery)) *Battery
 		opt(query)
 	}
 	bmq.withCabinets = query
+	return bmq
+}
+
+// WithPlans tells the query-builder to eager-load the nodes that are connected to
+// the "plans" edge. The optional arguments are used to configure the query builder of the edge.
+func (bmq *BatteryModelQuery) WithPlans(opts ...func(*PlanQuery)) *BatteryModelQuery {
+	query := &PlanQuery{config: bmq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	bmq.withPlans = query
 	return bmq
 }
 
@@ -356,8 +392,9 @@ func (bmq *BatteryModelQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	var (
 		nodes       = []*BatteryModel{}
 		_spec       = bmq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			bmq.withCabinets != nil,
+			bmq.withPlans != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -431,6 +468,59 @@ func (bmq *BatteryModelQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 			}
 			for kn := range nodes {
 				kn.Edges.Cabinets = append(kn.Edges.Cabinets, n)
+			}
+		}
+	}
+
+	if query := bmq.withPlans; query != nil {
+		edgeids := make([]driver.Value, len(nodes))
+		byid := make(map[uint64]*BatteryModel)
+		nids := make(map[uint64]map[*BatteryModel]struct{})
+		for i, node := range nodes {
+			edgeids[i] = node.ID
+			byid[node.ID] = node
+			node.Edges.Plans = []*Plan{}
+		}
+		query.Where(func(s *sql.Selector) {
+			joinT := sql.Table(batterymodel.PlansTable)
+			s.Join(joinT).On(s.C(plan.FieldID), joinT.C(batterymodel.PlansPrimaryKey[0]))
+			s.Where(sql.InValues(joinT.C(batterymodel.PlansPrimaryKey[1]), edgeids...))
+			columns := s.SelectedColumns()
+			s.Select(joinT.C(batterymodel.PlansPrimaryKey[1]))
+			s.AppendSelect(columns...)
+			s.SetDistinct(false)
+		})
+		neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]interface{}, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]interface{}{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []interface{}) error {
+				outValue := uint64(values[0].(*sql.NullInt64).Int64)
+				inValue := uint64(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*BatteryModel]struct{}{byid[outValue]: struct{}{}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byid[outValue]] = struct{}{}
+				return nil
+			}
+		})
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected "plans" node returned %v`, n.ID)
+			}
+			for kn := range nodes {
+				kn.Edges.Plans = append(kn.Edges.Plans, n)
 			}
 		}
 	}

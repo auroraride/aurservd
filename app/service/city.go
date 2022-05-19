@@ -31,7 +31,7 @@ func (s *cityService) List(req *model.CityListReq) (items []*model.CityItem) {
     fields := []string{
         city.FieldID, city.FieldName, city.FieldParentID, city.FieldOpen,
     }
-    q := s.orm.Query().
+    q := s.orm.QueryNotDeleted().
         Where(city.ParentIDIsNil()).
         WithChildren(func(query *ent.CityQuery) {
             query.Select(fields...).Order(ent.Asc(city.FieldID))
@@ -65,7 +65,7 @@ func (s *cityService) List(req *model.CityListReq) (items []*model.CityItem) {
 
 // Modify 修改城市
 func (s *cityService) Modify(req *model.CityModifyReq, mod *model.Modifier) *bool {
-    if !s.orm.Query().Where(city.ID(req.ID), city.ParentIDNotNil()).ExistX(context.Background()) {
+    if !s.orm.QueryNotDeleted().Where(city.ID(req.ID), city.ParentIDNotNil()).ExistX(context.Background()) {
         snag.Panic("城市ID错误")
     }
     c := s.orm.UpdateOneID(req.ID).SetOpen(*req.Open).SetLastModifier(mod).SaveX(s.ctx)

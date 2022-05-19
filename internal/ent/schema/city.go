@@ -42,6 +42,7 @@ func (City) Edges() []ent.Edge {
             Unique(),
         edge.To("branches", Branch.Type),
         edge.To("faults", CabinetFault.Type),
+        edge.From("plans", Plan.Type).Ref("cities"),
     }
 }
 

@@ -63,7 +63,7 @@ func (r *riderService) Signin(phone string, device *app.Device) (res *model.Ride
     ctx := context.Background()
     orm := ar.Ent.Rider
     var u *ent.Rider
-    u, err = orm.Query().Where(rider.Phone(phone)).WithPerson().Only(ctx)
+    u, err = orm.QueryNotDeleted().Where(rider.Phone(phone)).WithPerson().Only(ctx)
     if err != nil {
         // 创建骑手
         u, err = orm.Create().
@@ -184,7 +184,7 @@ func (r *riderService) FaceAuthResult(c *app.RiderContext) (success bool, err er
         Spoofing:       res.VerifyResult.Spoofing,
     }
     // 判断用户是否被封禁
-    blocked, _ := ar.Ent.Person.Query().Where(person.IDCardNumber(detail.IdCardNumber), person.Block(true)).Exist(context.Background())
+    blocked, _ := ar.Ent.Person.QueryNotDeleted().Where(person.IDCardNumber(detail.IdCardNumber), person.Block(true)).Exist(context.Background())
     if blocked {
         panic(errors.New(""))
     }

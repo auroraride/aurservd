@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/person"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/schema"
 	"github.com/auroraride/aurservd/internal/ent/setting"
@@ -250,6 +251,21 @@ func init() {
 	personDescIDCardType := personFields[4].Descriptor()
 	// person.DefaultIDCardType holds the default value on creation for the id_card_type field.
 	person.DefaultIDCardType = personDescIDCardType.Default.(uint8)
+	planMixin := schema.Plan{}.Mixin()
+	planMixinFields0 := planMixin[0].Fields()
+	_ = planMixinFields0
+	planFields := schema.Plan{}.Fields()
+	_ = planFields
+	// planDescCreatedAt is the schema descriptor for created_at field.
+	planDescCreatedAt := planMixinFields0[0].Descriptor()
+	// plan.DefaultCreatedAt holds the default value on creation for the created_at field.
+	plan.DefaultCreatedAt = planDescCreatedAt.Default.(func() time.Time)
+	// planDescUpdatedAt is the schema descriptor for updated_at field.
+	planDescUpdatedAt := planMixinFields0[1].Descriptor()
+	// plan.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	plan.DefaultUpdatedAt = planDescUpdatedAt.Default.(func() time.Time)
+	// plan.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	plan.UpdateDefaultUpdatedAt = planDescUpdatedAt.UpdateDefault.(func() time.Time)
 	riderMixin := schema.Rider{}.Mixin()
 	riderMixinHooks0 := riderMixin[0].Hooks()
 	rider.Hooks[0] = riderMixinHooks0[0]

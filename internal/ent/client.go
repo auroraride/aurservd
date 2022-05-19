@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/person"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 
@@ -49,6 +50,8 @@ type Client struct {
 	Manager *ManagerClient
 	// Person is the client for interacting with the Person builders.
 	Person *PersonClient
+	// Plan is the client for interacting with the Plan builders.
+	Plan *PlanClient
 	// Rider is the client for interacting with the Rider builders.
 	Rider *RiderClient
 	// Setting is the client for interacting with the Setting builders.
@@ -75,6 +78,7 @@ func (c *Client) init() {
 	c.Contract = NewContractClient(c.config)
 	c.Manager = NewManagerClient(c.config)
 	c.Person = NewPersonClient(c.config)
+	c.Plan = NewPlanClient(c.config)
 	c.Rider = NewRiderClient(c.config)
 	c.Setting = NewSettingClient(c.config)
 }
@@ -119,6 +123,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Contract:       NewContractClient(cfg),
 		Manager:        NewManagerClient(cfg),
 		Person:         NewPersonClient(cfg),
+		Plan:           NewPlanClient(cfg),
 		Rider:          NewRiderClient(cfg),
 		Setting:        NewSettingClient(cfg),
 	}, nil
@@ -149,6 +154,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Contract:       NewContractClient(cfg),
 		Manager:        NewManagerClient(cfg),
 		Person:         NewPersonClient(cfg),
+		Plan:           NewPlanClient(cfg),
 		Rider:          NewRiderClient(cfg),
 		Setting:        NewSettingClient(cfg),
 	}, nil
@@ -189,6 +195,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Contract.Use(hooks...)
 	c.Manager.Use(hooks...)
 	c.Person.Use(hooks...)
+	c.Plan.Use(hooks...)
 	c.Rider.Use(hooks...)
 	c.Setting.Use(hooks...)
 }
@@ -287,6 +294,22 @@ func (c *BatteryModelClient) QueryCabinets(bm *BatteryModel) *CabinetQuery {
 			sqlgraph.From(batterymodel.Table, batterymodel.FieldID, id),
 			sqlgraph.To(cabinet.Table, cabinet.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, batterymodel.CabinetsTable, batterymodel.CabinetsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(bm.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlans queries the plans edge of a BatteryModel.
+func (c *BatteryModelClient) QueryPlans(bm *BatteryModel) *PlanQuery {
+	query := &PlanQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := bm.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(batterymodel.Table, batterymodel.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, batterymodel.PlansTable, batterymodel.PlansPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(bm.driver.Dialect(), step)
 		return fromV, nil
@@ -1000,6 +1023,22 @@ func (c *CityClient) QueryFaults(ci *City) *CabinetFaultQuery {
 	return query
 }
 
+// QueryPlans queries the plans edge of a City.
+func (c *CityClient) QueryPlans(ci *City) *PlanQuery {
+	query := &PlanQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ci.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(city.Table, city.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, city.PlansTable, city.PlansPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *CityClient) Hooks() []Hook {
 	return c.hooks.City
@@ -1305,6 +1344,128 @@ func (c *PersonClient) QueryRider(pe *Person) *RiderQuery {
 // Hooks returns the client hooks.
 func (c *PersonClient) Hooks() []Hook {
 	return c.hooks.Person
+}
+
+// PlanClient is a client for the Plan schema.
+type PlanClient struct {
+	config
+}
+
+// NewPlanClient returns a client for the Plan from the given config.
+func NewPlanClient(c config) *PlanClient {
+	return &PlanClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `plan.Hooks(f(g(h())))`.
+func (c *PlanClient) Use(hooks ...Hook) {
+	c.hooks.Plan = append(c.hooks.Plan, hooks...)
+}
+
+// Create returns a create builder for Plan.
+func (c *PlanClient) Create() *PlanCreate {
+	mutation := newPlanMutation(c.config, OpCreate)
+	return &PlanCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Plan entities.
+func (c *PlanClient) CreateBulk(builders ...*PlanCreate) *PlanCreateBulk {
+	return &PlanCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Plan.
+func (c *PlanClient) Update() *PlanUpdate {
+	mutation := newPlanMutation(c.config, OpUpdate)
+	return &PlanUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PlanClient) UpdateOne(pl *Plan) *PlanUpdateOne {
+	mutation := newPlanMutation(c.config, OpUpdateOne, withPlan(pl))
+	return &PlanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PlanClient) UpdateOneID(id uint64) *PlanUpdateOne {
+	mutation := newPlanMutation(c.config, OpUpdateOne, withPlanID(id))
+	return &PlanUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Plan.
+func (c *PlanClient) Delete() *PlanDelete {
+	mutation := newPlanMutation(c.config, OpDelete)
+	return &PlanDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *PlanClient) DeleteOne(pl *Plan) *PlanDeleteOne {
+	return c.DeleteOneID(pl.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *PlanClient) DeleteOneID(id uint64) *PlanDeleteOne {
+	builder := c.Delete().Where(plan.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PlanDeleteOne{builder}
+}
+
+// Query returns a query builder for Plan.
+func (c *PlanClient) Query() *PlanQuery {
+	return &PlanQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Plan entity by its id.
+func (c *PlanClient) Get(ctx context.Context, id uint64) (*Plan, error) {
+	return c.Query().Where(plan.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PlanClient) GetX(ctx context.Context, id uint64) *Plan {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryPms queries the pms edge of a Plan.
+func (c *PlanClient) QueryPms(pl *Plan) *BatteryModelQuery {
+	query := &BatteryModelQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, id),
+			sqlgraph.To(batterymodel.Table, batterymodel.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, plan.PmsTable, plan.PmsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCities queries the cities edge of a Plan.
+func (c *PlanClient) QueryCities(pl *Plan) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, plan.CitiesTable, plan.CitiesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PlanClient) Hooks() []Hook {
+	return c.hooks.Plan
 }
 
 // RiderClient is a client for the Rider schema.

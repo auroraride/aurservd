@@ -32,7 +32,7 @@ func NewCabinetFault() *cabinetFaultService {
 
 // Query 查找故障
 func (s *cabinetFaultService) Query(id uint64) *ent.CabinetFault {
-    cf, err := s.orm.Query().Where(cabinetfault.ID(id)).Only(s.ctx)
+    cf, err := s.orm.QueryNotDeleted().Where(cabinetfault.ID(id)).Only(s.ctx)
     if err != nil || cf == nil {
         snag.Panic("未找到故障")
     }
@@ -42,7 +42,7 @@ func (s *cabinetFaultService) Query(id uint64) *ent.CabinetFault {
 // Report 骑手故障上报
 func (s *cabinetFaultService) Report(rider *ent.Rider, req *model.CabinetFaultReportReq) bool {
     // 获取电柜信息
-    ca, _ := ar.Ent.Cabinet.Query().
+    ca, _ := ar.Ent.Cabinet.QueryNotDeleted().
         Where(cabinet.ID(req.CabinetID)).
         WithBranch(func(bq *ent.BranchQuery) {
             bq.WithCity()
@@ -82,8 +82,8 @@ func (s *cabinetFaultService) Report(rider *ent.Rider, req *model.CabinetFaultRe
 
 // List 分页列举故障列表
 func (s *cabinetFaultService) List(req *model.CabinetFaultListReq) (res *model.PaginationRes) {
-    cq := ar.Ent.Cabinet.Query()
-    q := s.orm.Query().
+    cq := ar.Ent.Cabinet.QueryNotDeleted()
+    q := s.orm.QueryNotDeleted().
         WithBranch().
         WithRider(func(rq *ent.RiderQuery) {
             rq.WithPerson()

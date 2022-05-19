@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -127,6 +128,21 @@ func (bmu *BatteryModelUpdate) AddCabinets(c ...*Cabinet) *BatteryModelUpdate {
 	return bmu.AddCabinetIDs(ids...)
 }
 
+// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
+func (bmu *BatteryModelUpdate) AddPlanIDs(ids ...uint64) *BatteryModelUpdate {
+	bmu.mutation.AddPlanIDs(ids...)
+	return bmu
+}
+
+// AddPlans adds the "plans" edges to the Plan entity.
+func (bmu *BatteryModelUpdate) AddPlans(p ...*Plan) *BatteryModelUpdate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return bmu.AddPlanIDs(ids...)
+}
+
 // Mutation returns the BatteryModelMutation object of the builder.
 func (bmu *BatteryModelUpdate) Mutation() *BatteryModelMutation {
 	return bmu.mutation
@@ -151,6 +167,27 @@ func (bmu *BatteryModelUpdate) RemoveCabinets(c ...*Cabinet) *BatteryModelUpdate
 		ids[i] = c[i].ID
 	}
 	return bmu.RemoveCabinetIDs(ids...)
+}
+
+// ClearPlans clears all "plans" edges to the Plan entity.
+func (bmu *BatteryModelUpdate) ClearPlans() *BatteryModelUpdate {
+	bmu.mutation.ClearPlans()
+	return bmu
+}
+
+// RemovePlanIDs removes the "plans" edge to Plan entities by IDs.
+func (bmu *BatteryModelUpdate) RemovePlanIDs(ids ...uint64) *BatteryModelUpdate {
+	bmu.mutation.RemovePlanIDs(ids...)
+	return bmu
+}
+
+// RemovePlans removes "plans" edges to Plan entities.
+func (bmu *BatteryModelUpdate) RemovePlans(p ...*Plan) *BatteryModelUpdate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return bmu.RemovePlanIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -361,6 +398,60 @@ func (bmu *BatteryModelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bmu.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   batterymodel.PlansTable,
+			Columns: batterymodel.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bmu.mutation.RemovedPlansIDs(); len(nodes) > 0 && !bmu.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   batterymodel.PlansTable,
+			Columns: batterymodel.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bmu.mutation.PlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   batterymodel.PlansTable,
+			Columns: batterymodel.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bmu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{batterymodel.Label}
@@ -477,6 +568,21 @@ func (bmuo *BatteryModelUpdateOne) AddCabinets(c ...*Cabinet) *BatteryModelUpdat
 	return bmuo.AddCabinetIDs(ids...)
 }
 
+// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
+func (bmuo *BatteryModelUpdateOne) AddPlanIDs(ids ...uint64) *BatteryModelUpdateOne {
+	bmuo.mutation.AddPlanIDs(ids...)
+	return bmuo
+}
+
+// AddPlans adds the "plans" edges to the Plan entity.
+func (bmuo *BatteryModelUpdateOne) AddPlans(p ...*Plan) *BatteryModelUpdateOne {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return bmuo.AddPlanIDs(ids...)
+}
+
 // Mutation returns the BatteryModelMutation object of the builder.
 func (bmuo *BatteryModelUpdateOne) Mutation() *BatteryModelMutation {
 	return bmuo.mutation
@@ -501,6 +607,27 @@ func (bmuo *BatteryModelUpdateOne) RemoveCabinets(c ...*Cabinet) *BatteryModelUp
 		ids[i] = c[i].ID
 	}
 	return bmuo.RemoveCabinetIDs(ids...)
+}
+
+// ClearPlans clears all "plans" edges to the Plan entity.
+func (bmuo *BatteryModelUpdateOne) ClearPlans() *BatteryModelUpdateOne {
+	bmuo.mutation.ClearPlans()
+	return bmuo
+}
+
+// RemovePlanIDs removes the "plans" edge to Plan entities by IDs.
+func (bmuo *BatteryModelUpdateOne) RemovePlanIDs(ids ...uint64) *BatteryModelUpdateOne {
+	bmuo.mutation.RemovePlanIDs(ids...)
+	return bmuo
+}
+
+// RemovePlans removes "plans" edges to Plan entities.
+func (bmuo *BatteryModelUpdateOne) RemovePlans(p ...*Plan) *BatteryModelUpdateOne {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return bmuo.RemovePlanIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -727,6 +854,60 @@ func (bmuo *BatteryModelUpdateOne) sqlSave(ctx context.Context) (_node *BatteryM
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: cabinet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if bmuo.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   batterymodel.PlansTable,
+			Columns: batterymodel.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bmuo.mutation.RemovedPlansIDs(); len(nodes) > 0 && !bmuo.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   batterymodel.PlansTable,
+			Columns: batterymodel.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bmuo.mutation.PlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   batterymodel.PlansTable,
+			Columns: batterymodel.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
 				},
 			},
 		}

@@ -30,6 +30,8 @@ type Tx struct {
 	Manager *ManagerClient
 	// Person is the client for interacting with the Person builders.
 	Person *PersonClient
+	// Plan is the client for interacting with the Plan builders.
+	Plan *PlanClient
 	// Rider is the client for interacting with the Rider builders.
 	Rider *RiderClient
 	// Setting is the client for interacting with the Setting builders.
@@ -178,6 +180,7 @@ func (tx *Tx) init() {
 	tx.Contract = NewContractClient(tx.config)
 	tx.Manager = NewManagerClient(tx.config)
 	tx.Person = NewPersonClient(tx.config)
+	tx.Plan = NewPlanClient(tx.config)
 	tx.Rider = NewRiderClient(tx.config)
 	tx.Setting = NewSettingClient(tx.config)
 }

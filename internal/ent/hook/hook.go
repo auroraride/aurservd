@@ -126,6 +126,19 @@ func (f PersonFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, erro
 	return f(ctx, mv)
 }
 
+// The PlanFunc type is an adapter to allow the use of ordinary
+// function as Plan mutator.
+type PlanFunc func(context.Context, *ent.PlanMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PlanFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.PlanMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlanMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The RiderFunc type is an adapter to allow the use of ordinary
 // function as Rider mutator.
 type RiderFunc func(context.Context, *ent.RiderMutation) (ent.Value, error)

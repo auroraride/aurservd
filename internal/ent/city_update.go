@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -191,6 +192,21 @@ func (cu *CityUpdate) AddFaults(c ...*CabinetFault) *CityUpdate {
 	return cu.AddFaultIDs(ids...)
 }
 
+// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
+func (cu *CityUpdate) AddPlanIDs(ids ...uint64) *CityUpdate {
+	cu.mutation.AddPlanIDs(ids...)
+	return cu
+}
+
+// AddPlans adds the "plans" edges to the Plan entity.
+func (cu *CityUpdate) AddPlans(p ...*Plan) *CityUpdate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return cu.AddPlanIDs(ids...)
+}
+
 // Mutation returns the CityMutation object of the builder.
 func (cu *CityUpdate) Mutation() *CityMutation {
 	return cu.mutation
@@ -263,6 +279,27 @@ func (cu *CityUpdate) RemoveFaults(c ...*CabinetFault) *CityUpdate {
 		ids[i] = c[i].ID
 	}
 	return cu.RemoveFaultIDs(ids...)
+}
+
+// ClearPlans clears all "plans" edges to the Plan entity.
+func (cu *CityUpdate) ClearPlans() *CityUpdate {
+	cu.mutation.ClearPlans()
+	return cu
+}
+
+// RemovePlanIDs removes the "plans" edge to Plan entities by IDs.
+func (cu *CityUpdate) RemovePlanIDs(ids ...uint64) *CityUpdate {
+	cu.mutation.RemovePlanIDs(ids...)
+	return cu
+}
+
+// RemovePlans removes "plans" edges to Plan entities.
+func (cu *CityUpdate) RemovePlans(p ...*Plan) *CityUpdate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return cu.RemovePlanIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -637,6 +674,60 @@ func (cu *CityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if cu.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   city.PlansTable,
+			Columns: city.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.RemovedPlansIDs(); len(nodes) > 0 && !cu.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   city.PlansTable,
+			Columns: city.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.PlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   city.PlansTable,
+			Columns: city.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{city.Label}
@@ -816,6 +907,21 @@ func (cuo *CityUpdateOne) AddFaults(c ...*CabinetFault) *CityUpdateOne {
 	return cuo.AddFaultIDs(ids...)
 }
 
+// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
+func (cuo *CityUpdateOne) AddPlanIDs(ids ...uint64) *CityUpdateOne {
+	cuo.mutation.AddPlanIDs(ids...)
+	return cuo
+}
+
+// AddPlans adds the "plans" edges to the Plan entity.
+func (cuo *CityUpdateOne) AddPlans(p ...*Plan) *CityUpdateOne {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return cuo.AddPlanIDs(ids...)
+}
+
 // Mutation returns the CityMutation object of the builder.
 func (cuo *CityUpdateOne) Mutation() *CityMutation {
 	return cuo.mutation
@@ -888,6 +994,27 @@ func (cuo *CityUpdateOne) RemoveFaults(c ...*CabinetFault) *CityUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return cuo.RemoveFaultIDs(ids...)
+}
+
+// ClearPlans clears all "plans" edges to the Plan entity.
+func (cuo *CityUpdateOne) ClearPlans() *CityUpdateOne {
+	cuo.mutation.ClearPlans()
+	return cuo
+}
+
+// RemovePlanIDs removes the "plans" edge to Plan entities by IDs.
+func (cuo *CityUpdateOne) RemovePlanIDs(ids ...uint64) *CityUpdateOne {
+	cuo.mutation.RemovePlanIDs(ids...)
+	return cuo
+}
+
+// RemovePlans removes "plans" edges to Plan entities.
+func (cuo *CityUpdateOne) RemovePlans(p ...*Plan) *CityUpdateOne {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return cuo.RemovePlanIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1278,6 +1405,60 @@ func (cuo *CityUpdateOne) sqlSave(ctx context.Context) (_node *City, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: cabinetfault.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   city.PlansTable,
+			Columns: city.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.RemovedPlansIDs(); len(nodes) > 0 && !cuo.mutation.PlansCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   city.PlansTable,
+			Columns: city.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.PlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   city.PlansTable,
+			Columns: city.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
 				},
 			},
 		}

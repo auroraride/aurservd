@@ -38,7 +38,7 @@ func NewCabinet() *cabinetService {
 
 // QueryOne 查询单个电柜
 func (s *cabinetService) QueryOne(id uint64) *ent.Cabinet {
-    c := s.orm.Query().Where(cabinet.ID(id)).OnlyX(s.ctx)
+    c := s.orm.QueryNotDeleted().Where(cabinet.ID(id)).OnlyX(s.ctx)
     if c == nil {
         snag.Panic("未找到电柜")
     }
@@ -85,7 +85,7 @@ func (s *cabinetService) CreateCabinet(modifier *model.Modifier, req *model.Cabi
 // Query 查询电柜
 func (s *cabinetService) Query(req *model.CabinetQueryReq) (res *model.PaginationRes) {
     res = new(model.PaginationRes)
-    q := s.orm.Query().Where(cabinet.DeletedAtIsNil()).WithBranch(
+    q := s.orm.QueryNotDeleted().Where(cabinet.DeletedAtIsNil()).WithBranch(
         func(bq *ent.BranchQuery) {
             bq.WithCity()
         },
@@ -184,7 +184,7 @@ func (s *cabinetService) UpdateStatus(item *ent.Cabinet) *ent.Cabinet {
 
 // Detail 电柜详细信息
 func (s *cabinetService) Detail(id uint64) *model.CabinetDetailRes {
-    item := s.orm.Query().
+    item := s.orm.QueryNotDeleted().
         Where(cabinet.ID(id)).
         OnlyX(s.ctx)
     if item == nil {

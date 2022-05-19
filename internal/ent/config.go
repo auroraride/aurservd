@@ -33,6 +33,7 @@ type hooks struct {
 	Contract       []ent.Hook
 	Manager        []ent.Hook
 	Person         []ent.Hook
+	Plan           []ent.Hook
 	Rider          []ent.Hook
 	Setting        []ent.Hook
 }

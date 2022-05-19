@@ -15,14 +15,14 @@ import (
 )
 
 type batteryService struct {
-    ctx      context.Context
-    orm      *ent.BatteryModelClient
+    ctx context.Context
+    orm *ent.BatteryModelClient
 }
 
 func NewBattery() *batteryService {
     return &batteryService{
-        ctx:      context.Background(),
-        orm:      ar.Ent.BatteryModel,
+        ctx: context.Background(),
+        orm: ar.Ent.BatteryModel,
     }
 }
 
@@ -30,7 +30,7 @@ func NewBattery() *batteryService {
 func (s *batteryService) ListModels() (res *model.ItemListRes) {
     res = new(model.ItemListRes)
     var items []model.BatteryModel
-    s.orm.Query().
+    s.orm.QueryNotDeleted().
         Order(ent.Desc(batterymodel.FieldCreatedAt)).
         Select(batterymodel.FieldCapacity, batterymodel.FieldID, batterymodel.FieldVoltage).
         ScanX(s.ctx, &items)
@@ -42,7 +42,7 @@ func (s *batteryService) ListModels() (res *model.ItemListRes) {
 // CreateModel 创建电池型号
 func (s *batteryService) CreateModel(modifier *model.Modifier, req *model.BatteryModelCreateReq) model.BatteryModel {
     // 查找同型号电池是否存在
-    if s.orm.Query().
+    if s.orm.QueryNotDeleted().
         Where(batterymodel.Capacity(req.Capacity)).
         Where(batterymodel.Voltage(req.Voltage)).
         Where(batterymodel.DeletedAtIsNil()).
@@ -65,5 +65,5 @@ func (s *batteryService) CreateModel(modifier *model.Modifier, req *model.Batter
 
 // QueryIDs 根据ID查询电池型号
 func (s *batteryService) QueryIDs(ids []uint64) []*ent.BatteryModel {
-    return s.orm.Query().Where(batterymodel.IDIn(ids...)).AllX(s.ctx)
+    return s.orm.QueryNotDeleted().Where(batterymodel.IDIn(ids...)).AllX(s.ctx)
 }

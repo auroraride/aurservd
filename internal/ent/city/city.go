@@ -37,6 +37,8 @@ const (
 	EdgeBranches = "branches"
 	// EdgeFaults holds the string denoting the faults edge name in mutations.
 	EdgeFaults = "faults"
+	// EdgePlans holds the string denoting the plans edge name in mutations.
+	EdgePlans = "plans"
 	// Table holds the table name of the city in the database.
 	Table = "city"
 	// ParentTable is the table that holds the parent relation/edge.
@@ -61,6 +63,11 @@ const (
 	FaultsInverseTable = "cabinet_fault"
 	// FaultsColumn is the table column denoting the faults relation/edge.
 	FaultsColumn = "city_id"
+	// PlansTable is the table that holds the plans relation/edge. The primary key declared below.
+	PlansTable = "plan_cities"
+	// PlansInverseTable is the table name for the Plan entity.
+	// It exists in this package in order to avoid circular dependency with the "plan" package.
+	PlansInverseTable = "plan"
 )
 
 // Columns holds all SQL columns for city fields.
@@ -76,6 +83,12 @@ var Columns = []string{
 	FieldCode,
 	FieldParentID,
 }
+
+var (
+	// PlansPrimaryKey and PlansColumn2 are the table columns denoting the
+	// primary key for the plans relation (M2M).
+	PlansPrimaryKey = []string{"plan_id", "city_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {

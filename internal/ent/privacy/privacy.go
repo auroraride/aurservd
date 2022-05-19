@@ -381,6 +381,30 @@ func (f PersonMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PersonMutation", m)
 }
 
+// The PlanQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type PlanQueryRuleFunc func(context.Context, *ent.PlanQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f PlanQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PlanQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PlanQuery", q)
+}
+
+// The PlanMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type PlanMutationRuleFunc func(context.Context, *ent.PlanMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f PlanMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PlanMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PlanMutation", m)
+}
+
 // The RiderQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type RiderQueryRuleFunc func(context.Context, *ent.RiderQuery) error
@@ -482,6 +506,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.PersonQuery:
 		return q.Filter(), nil
+	case *ent.PlanQuery:
+		return q.Filter(), nil
 	case *ent.RiderQuery:
 		return q.Filter(), nil
 	case *ent.SettingQuery:
@@ -510,6 +536,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.ManagerMutation:
 		return m.Filter(), nil
 	case *ent.PersonMutation:
+		return m.Filter(), nil
+	case *ent.PlanMutation:
 		return m.Filter(), nil
 	case *ent.RiderMutation:
 		return m.Filter(), nil

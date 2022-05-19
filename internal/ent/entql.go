@@ -12,6 +12,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/person"
+	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/setting"
@@ -24,7 +25,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 11)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 12)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   batterymodel.Table,
@@ -260,6 +261,31 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[9] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
+			Table:   plan.Table,
+			Columns: plan.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: plan.FieldID,
+			},
+		},
+		Type: "Plan",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			plan.FieldCreatedAt:    {Type: field.TypeTime, Column: plan.FieldCreatedAt},
+			plan.FieldUpdatedAt:    {Type: field.TypeTime, Column: plan.FieldUpdatedAt},
+			plan.FieldDeletedAt:    {Type: field.TypeTime, Column: plan.FieldDeletedAt},
+			plan.FieldCreator:      {Type: field.TypeJSON, Column: plan.FieldCreator},
+			plan.FieldLastModifier: {Type: field.TypeJSON, Column: plan.FieldLastModifier},
+			plan.FieldRemark:       {Type: field.TypeString, Column: plan.FieldRemark},
+			plan.FieldName:         {Type: field.TypeString, Column: plan.FieldName},
+			plan.FieldStart:        {Type: field.TypeTime, Column: plan.FieldStart},
+			plan.FieldEnd:          {Type: field.TypeTime, Column: plan.FieldEnd},
+			plan.FieldPrice:        {Type: field.TypeFloat64, Column: plan.FieldPrice},
+			plan.FieldDays:         {Type: field.TypeUint, Column: plan.FieldDays},
+			plan.FieldCommission:   {Type: field.TypeFloat64, Column: plan.FieldCommission},
+		},
+	}
+	graph.Nodes[10] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
 			Table:   rider.Table,
 			Columns: rider.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -287,7 +313,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldEsignAccountID: {Type: field.TypeString, Column: rider.FieldEsignAccountID},
 		},
 	}
-	graph.Nodes[10] = &sqlgraph.Node{
+	graph.Nodes[11] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   setting.Table,
 			Columns: setting.Columns,
@@ -315,6 +341,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"BatteryModel",
 		"Cabinet",
+	)
+	graph.MustAddE(
+		"plans",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   batterymodel.PlansTable,
+			Columns: batterymodel.PlansPrimaryKey,
+			Bidi:    false,
+		},
+		"BatteryModel",
+		"Plan",
 	)
 	graph.MustAddE(
 		"contracts",
@@ -509,6 +547,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"CabinetFault",
 	)
 	graph.MustAddE(
+		"plans",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   city.PlansTable,
+			Columns: city.PlansPrimaryKey,
+			Bidi:    false,
+		},
+		"City",
+		"Plan",
+	)
+	graph.MustAddE(
 		"rider",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -531,6 +581,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Person",
 		"Rider",
+	)
+	graph.MustAddE(
+		"pms",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   plan.PmsTable,
+			Columns: plan.PmsPrimaryKey,
+			Bidi:    false,
+		},
+		"Plan",
+		"BatteryModel",
+	)
+	graph.MustAddE(
+		"cities",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   plan.CitiesTable,
+			Columns: plan.CitiesPrimaryKey,
+			Bidi:    false,
+		},
+		"Plan",
+		"City",
 	)
 	graph.MustAddE(
 		"person",
@@ -665,6 +739,20 @@ func (f *BatteryModelFilter) WhereHasCabinets() {
 // WhereHasCabinetsWith applies a predicate to check if query has an edge cabinets with a given conditions (other predicates).
 func (f *BatteryModelFilter) WhereHasCabinetsWith(preds ...predicate.Cabinet) {
 	f.Where(entql.HasEdgeWith("cabinets", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasPlans applies a predicate to check if query has an edge plans.
+func (f *BatteryModelFilter) WhereHasPlans() {
+	f.Where(entql.HasEdge("plans"))
+}
+
+// WhereHasPlansWith applies a predicate to check if query has an edge plans with a given conditions (other predicates).
+func (f *BatteryModelFilter) WhereHasPlansWith(preds ...predicate.Plan) {
+	f.Where(entql.HasEdgeWith("plans", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -1465,6 +1553,20 @@ func (f *CityFilter) WhereHasFaultsWith(preds ...predicate.CabinetFault) {
 	})))
 }
 
+// WhereHasPlans applies a predicate to check if query has an edge plans.
+func (f *CityFilter) WhereHasPlans() {
+	f.Where(entql.HasEdge("plans"))
+}
+
+// WhereHasPlansWith applies a predicate to check if query has an edge plans with a given conditions (other predicates).
+func (f *CityFilter) WhereHasPlansWith(preds ...predicate.Plan) {
+	f.Where(entql.HasEdgeWith("plans", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (cq *ContractQuery) addPredicate(pred func(s *sql.Selector)) {
 	cq.predicates = append(cq.predicates, pred)
@@ -1784,6 +1886,134 @@ func (f *PersonFilter) WhereHasRiderWith(preds ...predicate.Rider) {
 }
 
 // addPredicate implements the predicateAdder interface.
+func (pq *PlanQuery) addPredicate(pred func(s *sql.Selector)) {
+	pq.predicates = append(pq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the PlanQuery builder.
+func (pq *PlanQuery) Filter() *PlanFilter {
+	return &PlanFilter{pq.config, pq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *PlanMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the PlanMutation builder.
+func (m *PlanMutation) Filter() *PlanFilter {
+	return &PlanFilter{m.config, m}
+}
+
+// PlanFilter provides a generic filtering capability at runtime for PlanQuery.
+type PlanFilter struct {
+	config
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *PlanFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *PlanFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(plan.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *PlanFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(plan.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *PlanFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(plan.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *PlanFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(plan.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *PlanFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(plan.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *PlanFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(plan.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *PlanFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(plan.FieldRemark))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *PlanFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(plan.FieldName))
+}
+
+// WhereStart applies the entql time.Time predicate on the start field.
+func (f *PlanFilter) WhereStart(p entql.TimeP) {
+	f.Where(p.Field(plan.FieldStart))
+}
+
+// WhereEnd applies the entql time.Time predicate on the end field.
+func (f *PlanFilter) WhereEnd(p entql.TimeP) {
+	f.Where(p.Field(plan.FieldEnd))
+}
+
+// WherePrice applies the entql float64 predicate on the price field.
+func (f *PlanFilter) WherePrice(p entql.Float64P) {
+	f.Where(p.Field(plan.FieldPrice))
+}
+
+// WhereDays applies the entql uint predicate on the days field.
+func (f *PlanFilter) WhereDays(p entql.UintP) {
+	f.Where(p.Field(plan.FieldDays))
+}
+
+// WhereCommission applies the entql float64 predicate on the commission field.
+func (f *PlanFilter) WhereCommission(p entql.Float64P) {
+	f.Where(p.Field(plan.FieldCommission))
+}
+
+// WhereHasPms applies a predicate to check if query has an edge pms.
+func (f *PlanFilter) WhereHasPms() {
+	f.Where(entql.HasEdge("pms"))
+}
+
+// WhereHasPmsWith applies a predicate to check if query has an edge pms with a given conditions (other predicates).
+func (f *PlanFilter) WhereHasPmsWith(preds ...predicate.BatteryModel) {
+	f.Where(entql.HasEdgeWith("pms", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCities applies a predicate to check if query has an edge cities.
+func (f *PlanFilter) WhereHasCities() {
+	f.Where(entql.HasEdge("cities"))
+}
+
+// WhereHasCitiesWith applies a predicate to check if query has an edge cities with a given conditions (other predicates).
+func (f *PlanFilter) WhereHasCitiesWith(preds ...predicate.City) {
+	f.Where(entql.HasEdgeWith("cities", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (rq *RiderQuery) addPredicate(pred func(s *sql.Selector)) {
 	rq.predicates = append(rq.predicates, pred)
 }
@@ -1812,7 +2042,7 @@ type RiderFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RiderFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -1974,7 +2204,7 @@ type SettingFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SettingFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
