@@ -1474,4 +1474,25 @@ paths:
       summary: M10001 用户登录
       tags:
       - '[M]管理接口'
+  /rider/v1/signin:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderSignin
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R10001 登录或注册
+      tags:
+      - '[R]骑手接口'
 swagger: "2.0"

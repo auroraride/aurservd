@@ -23,6 +23,15 @@ type rider struct {
 }
 
 // Signin 骑手登录
+// Signin
+// @ID           RiderSignin
+// @Router       /rider/v1/signin [POST]
+// @Summary      R10001 登录或注册
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*rider) Signin(c echo.Context) (err error) {
     ctx, req := app.ContextBinding[model.RiderSignupReq](c)
 
