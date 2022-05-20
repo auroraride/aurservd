@@ -70,6 +70,7 @@ func (*branch) Add(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        body  body  model.Branch  true  "网点数据"
+// @Param        id  path  int  true  "网点ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*branch) Modify(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.Branch](c)
@@ -86,6 +87,7 @@ func (*branch) Modify(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        body  body  model.BranchContract  true  "合同数据"
+// @Param        id  path  int  true  "网点ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*branch) AddContract(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.BranchContract](c)

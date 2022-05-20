@@ -51,6 +51,7 @@ type RiderSampleInfo struct {
 }
 
 // RiderListReq 骑手列表请求
+// TODO status 以下还未做
 type RiderListReq struct {
     PaginationReq
 
@@ -59,7 +60,6 @@ type RiderListReq struct {
     Start    *string `json:"start"`    // 注册开始时间, 格式为: 2022-01-01
     End      *string `json:"end"`      // 注册结束时间, 格式为: 2022-01-01
 
-    // TODO 以下还未做
     Status *uint8  `json:"status"` // 用户状态 0:未使用 1:未开通 2:计费中 3:寄存中 4:已过期 5:暂停中 6:已退租 7:已欠费 8:未认证 9:未办理 10:即将到期 11:已禁用 12:黑名单
     CityID *uint64 `json:"cityId"` // 注册城市
     PlanID *uint64 `json:"planId"` // 骑士卡
@@ -74,6 +74,6 @@ type RiderItem struct {
     IDCardNumber string          `json:"idCardNumber"`         // 身份证
     Deposit      float64         `json:"deposit"`              // 押金
     City         *City           `json:"city,omitempty"`       // 注册城市
-    Enterprise   *EnterpriseItem `json:"enterprise,omitempty"` // 团签信息, 若无此字段则为个签用户
+    Enterprise   *EnterpriseItem `json:"enterprise,omitempty"` // 团签企业信息, 若无此字段则为个签用户
     UserPlan     *UserPlanItem   `json:"userPlan,omitempty"`   // 当前有效骑士卡, 若无此字段则代表当前无有效骑士卡
 }

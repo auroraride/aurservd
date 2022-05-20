@@ -6,9 +6,13 @@
 package router
 
 import (
+    "encoding/json"
     "github.com/auroraride/aurservd/assets"
     "github.com/auroraride/aurservd/assets/docs"
     "github.com/auroraride/aurservd/internal/ar"
+    "github.com/getkin/kin-openapi/openapi2"
+    "github.com/getkin/kin-openapi/openapi2conv"
+    jsoniter "github.com/json-iterator/go"
     "github.com/labstack/echo/v4"
 )
 
@@ -27,6 +31,16 @@ func loadRedocRoute() {
     })
 
     g.GET("/swagger.json", func(c echo.Context) error {
-        return c.Blob(200, "application/json", []byte(docs.SwaggerInfo.ReadDoc()))
+        return c.Blob(200, "text/plain", assets.SwaggerSpecYaml)
+    })
+
+    g.GET("/oai3", func(c echo.Context) (err error) {
+        var doc2 openapi2.T
+        if err = json.Unmarshal(assets.SwaggerSpec, &doc2); err != nil {
+            return
+        }
+        doc, err := openapi2conv.ToV3(&doc2)
+        b, _ := jsoniter.Marshal(doc)
+        return c.Blob(200, "application/json", b)
     })
 }

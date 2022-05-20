@@ -6,4 +6,6 @@
 package model
 
 type EnterpriseItem struct {
+    ID   uint64 `json:"id"`   // 企业ID
+    Name string `json:"name"` // 企业名称
 }

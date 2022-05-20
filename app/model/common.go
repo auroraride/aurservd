@@ -52,7 +52,7 @@ type SmsResponse struct {
 
 // ItemListRes 列表返回
 type ItemListRes struct {
-    Items []any `json:"items" kind:"slice"`
+    Items []interface{} `json:"items" kind:"slice"`
 }
 
 func SetItemListResItems[T any](res *ItemListRes, items []T) {
@@ -62,7 +62,7 @@ func SetItemListResItems[T any](res *ItemListRes, items []T) {
 
 // ItemRes 单项返回
 type ItemRes struct {
-    Item any `json:"item"`
+    Item interface{} `json:"item"`
 }
 
 // IDRes ID返回

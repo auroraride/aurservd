@@ -13,6 +13,7 @@ require (
 	github.com/aliyun/aliyun-log-go-sdk v0.1.35
 	github.com/aliyun/aliyun-oss-go-sdk v2.2.2+incompatible
 	github.com/fsnotify/fsnotify v1.5.4
+	github.com/getkin/kin-openapi v0.94.0
 	github.com/go-playground/locales v0.14.0
 	github.com/go-playground/universal-translator v0.18.0
 	github.com/go-playground/validator/v10 v10.11.0
@@ -31,6 +32,7 @@ require (
 	github.com/mojocn/base64Captcha v1.3.5
 	github.com/rs/xid v1.4.0
 	github.com/sirupsen/logrus v1.8.1
+	github.com/sony/sonyflake v1.0.0
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.11.0
 	github.com/swaggo/swag v1.8.1
@@ -56,6 +58,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/clbanning/mxj/v2 v2.5.5 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-kit/kit v0.10.0 // indirect
 	github.com/go-logfmt/logfmt v0.5.0 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
@@ -100,7 +103,6 @@ require (
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
-	github.com/sony/sonyflake v1.0.0 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect

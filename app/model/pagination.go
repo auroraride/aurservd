@@ -21,8 +21,8 @@ type Pagination struct {
 }
 
 type PaginationRes struct {
-    Pagination Pagination `json:"pagination"` // 分页属性
-    Items      any        `json:"items"`      // 返回数据
+    Pagination Pagination  `json:"pagination"` // 分页属性
+    Items      interface{} `json:"items"`      // 返回数据
 }
 
 // ParsePaginationResponse 处理分页数据

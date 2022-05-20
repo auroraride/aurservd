@@ -372,6 +372,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/model.Branch"
                         }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "网点ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -1254,7 +1261,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "TODO 以下还未做",
+                        "description": "用户状态 0:未使用 1:未开通 2:计费中 3:寄存中 4:已过期 5:暂停中 6:已退租 7:已欠费 8:未认证 9:未办理 10:即将到期 11:已禁用 12:黑名单",
                         "name": "status",
                         "in": "query"
                     }
@@ -1337,6 +1344,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/model.BranchContract"
                         }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "网点ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -2012,7 +2026,17 @@ const docTemplate = `{
             }
         },
         "model.EnterpriseItem": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "企业ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "企业名称",
+                    "type": "string"
+                }
+            }
         },
         "model.IDPostReq": {
             "type": "object",
@@ -2030,18 +2054,14 @@ const docTemplate = `{
             "properties": {
                 "items": {
                     "type": "array",
-                    "items": {
-                        "type": "any"
-                    }
+                    "items": {}
                 }
             }
         },
         "model.ItemRes": {
             "type": "object",
             "properties": {
-                "item": {
-                    "type": "any"
-                }
+                "item": {}
             }
         },
         "model.ManagerSigninRes": {
@@ -2096,8 +2116,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "items": {
-                    "description": "返回数据",
-                    "type": "any"
+                    "description": "返回数据"
                 },
                 "pagination": {
                     "description": "分页属性",
@@ -2185,7 +2204,7 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "enterprise": {
-                    "description": "团签信息, 若无此字段则为个签用户",
+                    "description": "团签企业信息, 若无此字段则为个签用户",
                     "$ref": "#/definitions/model.EnterpriseItem"
                 },
                 "id": {

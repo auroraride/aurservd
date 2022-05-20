@@ -460,6 +460,13 @@ definitions:
     - open
     type: object
   model.EnterpriseItem:
+    properties:
+      id:
+        description: 企业ID
+        type: integer
+      name:
+        description: 企业名称
+        type: string
     type: object
   model.IDPostReq:
     properties:
@@ -471,14 +478,12 @@ definitions:
   model.ItemListRes:
     properties:
       items:
-        items:
-          type: any
+        items: {}
         type: array
     type: object
   model.ItemRes:
     properties:
-      item:
-        type: any
+      item: {}
     type: object
   model.ManagerSigninRes:
     properties:
@@ -516,7 +521,6 @@ definitions:
     properties:
       items:
         description: 返回数据
-        type: any
       pagination:
         $ref: '#/definitions/model.Pagination'
         description: 分页属性
@@ -580,7 +584,7 @@ definitions:
         type: number
       enterprise:
         $ref: '#/definitions/model.EnterpriseItem'
-        description: 团签信息, 若无此字段则为个签用户
+        description: 团签企业信息, 若无此字段则为个签用户
       id:
         type: integer
       idCardNumber:
@@ -804,6 +808,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/model.BranchContract'
+      - description: 网点ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -944,6 +953,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/model.Branch'
+      - description: 网点ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -1542,7 +1556,8 @@ paths:
         in: query
         name: start
         type: string
-      - description: TODO 以下还未做
+      - description: 用户状态 0:未使用 1:未开通 2:计费中 3:寄存中 4:已过期 5:暂停中 6:已退租 7:已欠费 8:未认证 9:未办理
+          10:即将到期 11:已禁用 12:黑名单
         in: query
         name: status
         type: integer

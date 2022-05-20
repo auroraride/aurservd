@@ -21,6 +21,11 @@ go run ./cmd/ent init TABLE
 go run ./cmd/ent generate
 ```
 
+> 转换为OpenAPI3: 
+- https://github.com/getkin/kin-openapi
+- https://github.com/swaggo/swag/issues/386
+
+
 ## 第三方服务列表
 - 阿里云
   - SLS: 存储日志
