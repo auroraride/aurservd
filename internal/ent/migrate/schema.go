@@ -580,7 +580,7 @@ var (
 		{Name: "push_id", Type: field.TypeString, Unique: true, Nullable: true, Size: 60},
 		{Name: "last_signin_at", Type: field.TypeTime, Nullable: true},
 		{Name: "esign_account_id", Type: field.TypeString, Nullable: true},
-		{Name: "plan_at", Type: field.TypeTime, SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "plan_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "date"}},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "person_id", Type: field.TypeUint64, Nullable: true},

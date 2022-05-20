@@ -15,26 +15,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/hook"
     "github.com/sony/sonyflake"
-    "time"
 )
-
-// TimeMixin 时间字段
-type TimeMixin struct {
-    mixin.Schema
-}
-
-func (TimeMixin) Fields() []ent.Field {
-    return []ent.Field{
-        field.Time("created_at").Immutable().Default(time.Now),
-        field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
-    }
-}
-
-func (TimeMixin) Indexes() []ent.Index {
-    return []ent.Index{
-        index.Fields("created_at"),
-    }
-}
 
 // DeleteMixin 删除字段
 type DeleteMixin struct {

@@ -6,6 +6,7 @@
 package boot
 
 import (
+    "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/logger"
@@ -39,4 +40,7 @@ func Bootstrap() {
 
     // 加载其他数据
     model.BatteryElectricityBootstrap()
+
+    // 初始化日志
+    logging.Boot()
 }

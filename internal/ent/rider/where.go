@@ -1639,6 +1639,20 @@ func PlanAtLTE(v time.Time) predicate.Rider {
 	})
 }
 
+// PlanAtIsNil applies the IsNil predicate on the "plan_at" field.
+func PlanAtIsNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPlanAt)))
+	})
+}
+
+// PlanAtNotNil applies the NotNil predicate on the "plan_at" field.
+func PlanAtNotNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPlanAt)))
+	})
+}
+
 // HasPerson applies the HasEdge predicate on the "person" edge.
 func HasPerson() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {

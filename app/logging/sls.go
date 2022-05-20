@@ -3,7 +3,7 @@
 // Created at 2022-05-20
 // Based on aurservd by liasica, magicrolan@qq.com.
 
-package logger
+package logging
 
 import (
     "fmt"

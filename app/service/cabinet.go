@@ -9,7 +9,7 @@ import (
     "context"
     "github.com/alibabacloud-go/tea/tea"
     sls "github.com/aliyun/aliyun-log-go-sdk"
-    "github.com/auroraride/aurservd/app/logger"
+    "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/provider"
     "github.com/auroraride/aurservd/internal/ali"
@@ -236,7 +236,7 @@ func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.Cabine
         lg := &sls.LogGroup{
             Logs: []*sls.Log{{
                 Time: tea.Uint32(uint32(now.Unix())),
-                Contents: logger.ParseLogContent(&provider.OperationLog{
+                Contents: logging.ParseLogContent(&logging.DoorOperateLog{
                     ID:        opId,
                     Brand:     brand.String(),
                     User:      modifier.Name,
@@ -251,7 +251,7 @@ func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.Cabine
                 }),
             }},
         }
-        err := ali.NewSls().PutLogs(slsCfg.Project, slsCfg.Operation, lg)
+        err := ali.NewSls().PutLogs(slsCfg.Project, slsCfg.Door, lg)
         if err != nil {
             log.Error(err)
             return
@@ -289,7 +289,7 @@ func (s *cabinetService) Reboot(modifier *model.Modifier, req *model.IDPostReq) 
         lg := &sls.LogGroup{
             Logs: []*sls.Log{{
                 Time: tea.Uint32(uint32(now.Unix())),
-                Contents: logger.ParseLogContent(&provider.OperationLog{
+                Contents: logging.ParseLogContent(&logging.DoorOperateLog{
                     ID:        opId,
                     Brand:     brand.String(),
                     User:      modifier.Name,
@@ -302,7 +302,7 @@ func (s *cabinetService) Reboot(modifier *model.Modifier, req *model.IDPostReq) 
                 }),
             }},
         }
-        err := ali.NewSls().PutLogs(slsCfg.Project, slsCfg.Operation, lg)
+        err := ali.NewSls().PutLogs(slsCfg.Project, slsCfg.Door, lg)
         if err != nil {
             log.Error(err)
             return

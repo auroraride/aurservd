@@ -13,7 +13,7 @@ import (
 
 var (
     matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
-    matchAllCap   = regexp.MustCompile("([a-z0-9])([A-Z])")
+    matchAllCap   = regexp.MustCompile("([a-z\\d])([A-Z])")
 )
 
 func StrToFirstUpper(str string) string {

@@ -232,6 +232,14 @@ func (rc *RiderCreate) SetPlanAt(t time.Time) *RiderCreate {
 	return rc
 }
 
+// SetNillablePlanAt sets the "plan_at" field if the given value is not nil.
+func (rc *RiderCreate) SetNillablePlanAt(t *time.Time) *RiderCreate {
+	if t != nil {
+		rc.SetPlanAt(*t)
+	}
+	return rc
+}
+
 // SetID sets the "id" field.
 func (rc *RiderCreate) SetID(u uint64) *RiderCreate {
 	rc.mutation.SetID(u)
@@ -411,9 +419,6 @@ func (rc *RiderCreate) check() error {
 		if err := rider.PushIDValidator(v); err != nil {
 			return &ValidationError{Name: "push_id", err: fmt.Errorf(`ent: validator failed for field "Rider.push_id": %w`, err)}
 		}
-	}
-	if _, ok := rc.mutation.PlanAt(); !ok {
-		return &ValidationError{Name: "plan_at", err: errors.New(`ent: missing required field "Rider.plan_at"`)}
 	}
 	return nil
 }
@@ -1009,6 +1014,12 @@ func (u *RiderUpsert) UpdatePlanAt() *RiderUpsert {
 	return u
 }
 
+// ClearPlanAt clears the value of the "plan_at" field.
+func (u *RiderUpsert) ClearPlanAt() *RiderUpsert {
+	u.SetNull(rider.FieldPlanAt)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -1395,6 +1406,13 @@ func (u *RiderUpsertOne) SetPlanAt(v time.Time) *RiderUpsertOne {
 func (u *RiderUpsertOne) UpdatePlanAt() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.UpdatePlanAt()
+	})
+}
+
+// ClearPlanAt clears the value of the "plan_at" field.
+func (u *RiderUpsertOne) ClearPlanAt() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearPlanAt()
 	})
 }
 
@@ -1949,6 +1967,13 @@ func (u *RiderUpsertBulk) SetPlanAt(v time.Time) *RiderUpsertBulk {
 func (u *RiderUpsertBulk) UpdatePlanAt() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.UpdatePlanAt()
+	})
+}
+
+// ClearPlanAt clears the value of the "plan_at" field.
+func (u *RiderUpsertBulk) ClearPlanAt() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearPlanAt()
 	})
 }
 

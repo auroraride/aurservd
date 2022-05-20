@@ -289,6 +289,20 @@ func (ru *RiderUpdate) SetPlanAt(t time.Time) *RiderUpdate {
 	return ru
 }
 
+// SetNillablePlanAt sets the "plan_at" field if the given value is not nil.
+func (ru *RiderUpdate) SetNillablePlanAt(t *time.Time) *RiderUpdate {
+	if t != nil {
+		ru.SetPlanAt(*t)
+	}
+	return ru
+}
+
+// ClearPlanAt clears the value of the "plan_at" field.
+func (ru *RiderUpdate) ClearPlanAt() *RiderUpdate {
+	ru.mutation.ClearPlanAt()
+	return ru
+}
+
 // SetPerson sets the "person" edge to the Person entity.
 func (ru *RiderUpdate) SetPerson(p *Person) *RiderUpdate {
 	return ru.SetPersonID(p.ID)
@@ -662,6 +676,12 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
+			Column: rider.FieldPlanAt,
+		})
+	}
+	if ru.mutation.PlanAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
 			Column: rider.FieldPlanAt,
 		})
 	}
@@ -1152,6 +1172,20 @@ func (ruo *RiderUpdateOne) SetPlanAt(t time.Time) *RiderUpdateOne {
 	return ruo
 }
 
+// SetNillablePlanAt sets the "plan_at" field if the given value is not nil.
+func (ruo *RiderUpdateOne) SetNillablePlanAt(t *time.Time) *RiderUpdateOne {
+	if t != nil {
+		ruo.SetPlanAt(*t)
+	}
+	return ruo
+}
+
+// ClearPlanAt clears the value of the "plan_at" field.
+func (ruo *RiderUpdateOne) ClearPlanAt() *RiderUpdateOne {
+	ruo.mutation.ClearPlanAt()
+	return ruo
+}
+
 // SetPerson sets the "person" edge to the Person entity.
 func (ruo *RiderUpdateOne) SetPerson(p *Person) *RiderUpdateOne {
 	return ruo.SetPersonID(p.ID)
@@ -1549,6 +1583,12 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
+			Column: rider.FieldPlanAt,
+		})
+	}
+	if ruo.mutation.PlanAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
 			Column: rider.FieldPlanAt,
 		})
 	}

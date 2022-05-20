@@ -14698,9 +14698,22 @@ func (m *RiderMutation) OldPlanAt(ctx context.Context) (v time.Time, err error) 
 	return oldValue.PlanAt, nil
 }
 
+// ClearPlanAt clears the value of the "plan_at" field.
+func (m *RiderMutation) ClearPlanAt() {
+	m.plan_at = nil
+	m.clearedFields[rider.FieldPlanAt] = struct{}{}
+}
+
+// PlanAtCleared returns if the "plan_at" field was cleared in this mutation.
+func (m *RiderMutation) PlanAtCleared() bool {
+	_, ok := m.clearedFields[rider.FieldPlanAt]
+	return ok
+}
+
 // ResetPlanAt resets all changes to the "plan_at" field.
 func (m *RiderMutation) ResetPlanAt() {
 	m.plan_at = nil
+	delete(m.clearedFields, rider.FieldPlanAt)
 }
 
 // ClearPerson clears the "person" edge to the Person entity.
@@ -15265,6 +15278,9 @@ func (m *RiderMutation) ClearedFields() []string {
 	if m.FieldCleared(rider.FieldEsignAccountID) {
 		fields = append(fields, rider.FieldEsignAccountID)
 	}
+	if m.FieldCleared(rider.FieldPlanAt) {
+		fields = append(fields, rider.FieldPlanAt)
+	}
 	return fields
 }
 
@@ -15311,6 +15327,9 @@ func (m *RiderMutation) ClearField(name string) error {
 		return nil
 	case rider.FieldEsignAccountID:
 		m.ClearEsignAccountID()
+		return nil
+	case rider.FieldPlanAt:
+		m.ClearPlanAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider nullable field %s", name)
