@@ -283,6 +283,12 @@ func (ru *RiderUpdate) ClearEsignAccountID() *RiderUpdate {
 	return ru
 }
 
+// SetPlanAt sets the "plan_at" field.
+func (ru *RiderUpdate) SetPlanAt(t time.Time) *RiderUpdate {
+	ru.mutation.SetPlanAt(t)
+	return ru
+}
+
 // SetPerson sets the "person" edge to the Person entity.
 func (ru *RiderUpdate) SetPerson(p *Person) *RiderUpdate {
 	return ru.SetPersonID(p.ID)
@@ -650,6 +656,13 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: rider.FieldEsignAccountID,
+		})
+	}
+	if value, ok := ru.mutation.PlanAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: rider.FieldPlanAt,
 		})
 	}
 	if ru.mutation.PersonCleared() {
@@ -1133,6 +1146,12 @@ func (ruo *RiderUpdateOne) ClearEsignAccountID() *RiderUpdateOne {
 	return ruo
 }
 
+// SetPlanAt sets the "plan_at" field.
+func (ruo *RiderUpdateOne) SetPlanAt(t time.Time) *RiderUpdateOne {
+	ruo.mutation.SetPlanAt(t)
+	return ruo
+}
+
 // SetPerson sets the "person" edge to the Person entity.
 func (ruo *RiderUpdateOne) SetPerson(p *Person) *RiderUpdateOne {
 	return ruo.SetPersonID(p.ID)
@@ -1524,6 +1543,13 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: rider.FieldEsignAccountID,
+		})
+	}
+	if value, ok := ruo.mutation.PlanAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: rider.FieldPlanAt,
 		})
 	}
 	if ruo.mutation.PersonCleared() {

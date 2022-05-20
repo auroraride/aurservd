@@ -69,6 +69,9 @@ type Rider struct {
 	// EsignAccountID holds the value of the "esign_account_id" field.
 	// E签宝账户ID
 	EsignAccountID string `json:"esign_account_id,omitempty"`
+	// PlanAt holds the value of the "plan_at" field.
+	// 骑行卡到期日期
+	PlanAt time.Time `json:"plan_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RiderQuery when eager-loading is set.
 	Edges RiderEdges `json:"edges"`
@@ -164,7 +167,7 @@ func (*Rider) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case rider.FieldRemark, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID, rider.FieldEsignAccountID:
 			values[i] = new(sql.NullString)
-		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastSigninAt:
+		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastSigninAt, rider.FieldPlanAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Rider", columns[i])
@@ -299,6 +302,12 @@ func (r *Rider) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				r.EsignAccountID = value.String
 			}
+		case rider.FieldPlanAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field plan_at", values[i])
+			} else if value.Valid {
+				r.PlanAt = value.Time
+			}
 		}
 	}
 	return nil
@@ -398,6 +407,8 @@ func (r *Rider) String() string {
 	}
 	builder.WriteString(", esign_account_id=")
 	builder.WriteString(r.EsignAccountID)
+	builder.WriteString(", plan_at=")
+	builder.WriteString(r.PlanAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

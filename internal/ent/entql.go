@@ -334,6 +334,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldPushID:         {Type: field.TypeString, Column: rider.FieldPushID},
 			rider.FieldLastSigninAt:   {Type: field.TypeTime, Column: rider.FieldLastSigninAt},
 			rider.FieldEsignAccountID: {Type: field.TypeString, Column: rider.FieldEsignAccountID},
+			rider.FieldPlanAt:         {Type: field.TypeTime, Column: rider.FieldPlanAt},
 		},
 	}
 	graph.Nodes[12] = &sqlgraph.Node{
@@ -2315,6 +2316,11 @@ func (f *RiderFilter) WhereLastSigninAt(p entql.TimeP) {
 // WhereEsignAccountID applies the entql string predicate on the esign_account_id field.
 func (f *RiderFilter) WhereEsignAccountID(p entql.StringP) {
 	f.Where(p.Field(rider.FieldEsignAccountID))
+}
+
+// WherePlanAt applies the entql time.Time predicate on the plan_at field.
+func (f *RiderFilter) WherePlanAt(p entql.TimeP) {
+	f.Where(p.Field(rider.FieldPlanAt))
 }
 
 // WhereHasPerson applies a predicate to check if query has an edge person.

@@ -13769,6 +13769,7 @@ type RiderMutation struct {
 	push_id           *string
 	last_signin_at    *time.Time
 	esign_account_id  *string
+	plan_at           *time.Time
 	clearedFields     map[string]struct{}
 	person            *uint64
 	clearedperson     bool
@@ -14666,6 +14667,42 @@ func (m *RiderMutation) ResetEsignAccountID() {
 	delete(m.clearedFields, rider.FieldEsignAccountID)
 }
 
+// SetPlanAt sets the "plan_at" field.
+func (m *RiderMutation) SetPlanAt(t time.Time) {
+	m.plan_at = &t
+}
+
+// PlanAt returns the value of the "plan_at" field in the mutation.
+func (m *RiderMutation) PlanAt() (r time.Time, exists bool) {
+	v := m.plan_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlanAt returns the old "plan_at" field's value of the Rider entity.
+// If the Rider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderMutation) OldPlanAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlanAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlanAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlanAt: %w", err)
+	}
+	return oldValue.PlanAt, nil
+}
+
+// ResetPlanAt resets all changes to the "plan_at" field.
+func (m *RiderMutation) ResetPlanAt() {
+	m.plan_at = nil
+}
+
 // ClearPerson clears the "person" edge to the Person entity.
 func (m *RiderMutation) ClearPerson() {
 	m.clearedperson = true
@@ -14871,7 +14908,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -14923,6 +14960,9 @@ func (m *RiderMutation) Fields() []string {
 	if m.esign_account_id != nil {
 		fields = append(fields, rider.FieldEsignAccountID)
 	}
+	if m.plan_at != nil {
+		fields = append(fields, rider.FieldPlanAt)
+	}
 	return fields
 }
 
@@ -14965,6 +15005,8 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.LastSigninAt()
 	case rider.FieldEsignAccountID:
 		return m.EsignAccountID()
+	case rider.FieldPlanAt:
+		return m.PlanAt()
 	}
 	return nil, false
 }
@@ -15008,6 +15050,8 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldLastSigninAt(ctx)
 	case rider.FieldEsignAccountID:
 		return m.OldEsignAccountID(ctx)
+	case rider.FieldPlanAt:
+		return m.OldPlanAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Rider field %s", name)
 }
@@ -15135,6 +15179,13 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEsignAccountID(v)
+		return nil
+	case rider.FieldPlanAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlanAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)
@@ -15319,6 +15370,9 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldEsignAccountID:
 		m.ResetEsignAccountID()
+		return nil
+	case rider.FieldPlanAt:
+		m.ResetPlanAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)

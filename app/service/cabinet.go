@@ -9,6 +9,7 @@ import (
     "context"
     "github.com/alibabacloud-go/tea/tea"
     sls "github.com/aliyun/aliyun-log-go-sdk"
+    "github.com/auroraride/aurservd/app/logger"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/provider"
     "github.com/auroraride/aurservd/internal/ali"
@@ -235,7 +236,7 @@ func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.Cabine
         lg := &sls.LogGroup{
             Logs: []*sls.Log{{
                 Time: tea.Uint32(uint32(now.Unix())),
-                Contents: provider.ParseLogContent(&provider.OperationLog{
+                Contents: logger.ParseLogContent(&provider.OperationLog{
                     ID:        opId,
                     Brand:     brand.String(),
                     User:      modifier.Name,
@@ -288,7 +289,7 @@ func (s *cabinetService) Reboot(modifier *model.Modifier, req *model.IDPostReq) 
         lg := &sls.LogGroup{
             Logs: []*sls.Log{{
                 Time: tea.Uint32(uint32(now.Unix())),
-                Contents: provider.ParseLogContent(&provider.OperationLog{
+                Contents: logger.ParseLogContent(&provider.OperationLog{
                     ID:        opId,
                     Brand:     brand.String(),
                     User:      modifier.Name,

@@ -226,6 +226,12 @@ func (rc *RiderCreate) SetNillableEsignAccountID(s *string) *RiderCreate {
 	return rc
 }
 
+// SetPlanAt sets the "plan_at" field.
+func (rc *RiderCreate) SetPlanAt(t time.Time) *RiderCreate {
+	rc.mutation.SetPlanAt(t)
+	return rc
+}
+
 // SetID sets the "id" field.
 func (rc *RiderCreate) SetID(u uint64) *RiderCreate {
 	rc.mutation.SetID(u)
@@ -406,6 +412,9 @@ func (rc *RiderCreate) check() error {
 			return &ValidationError{Name: "push_id", err: fmt.Errorf(`ent: validator failed for field "Rider.push_id": %w`, err)}
 		}
 	}
+	if _, ok := rc.mutation.PlanAt(); !ok {
+		return &ValidationError{Name: "plan_at", err: errors.New(`ent: missing required field "Rider.plan_at"`)}
+	}
 	return nil
 }
 
@@ -551,6 +560,14 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			Column: rider.FieldEsignAccountID,
 		})
 		_node.EsignAccountID = value
+	}
+	if value, ok := rc.mutation.PlanAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: rider.FieldPlanAt,
+		})
+		_node.PlanAt = value
 	}
 	if nodes := rc.mutation.PersonIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -980,6 +997,18 @@ func (u *RiderUpsert) ClearEsignAccountID() *RiderUpsert {
 	return u
 }
 
+// SetPlanAt sets the "plan_at" field.
+func (u *RiderUpsert) SetPlanAt(v time.Time) *RiderUpsert {
+	u.Set(rider.FieldPlanAt, v)
+	return u
+}
+
+// UpdatePlanAt sets the "plan_at" field to the value that was provided on create.
+func (u *RiderUpsert) UpdatePlanAt() *RiderUpsert {
+	u.SetExcluded(rider.FieldPlanAt)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -1352,6 +1381,20 @@ func (u *RiderUpsertOne) UpdateEsignAccountID() *RiderUpsertOne {
 func (u *RiderUpsertOne) ClearEsignAccountID() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearEsignAccountID()
+	})
+}
+
+// SetPlanAt sets the "plan_at" field.
+func (u *RiderUpsertOne) SetPlanAt(v time.Time) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetPlanAt(v)
+	})
+}
+
+// UpdatePlanAt sets the "plan_at" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdatePlanAt() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdatePlanAt()
 	})
 }
 
@@ -1892,6 +1935,20 @@ func (u *RiderUpsertBulk) UpdateEsignAccountID() *RiderUpsertBulk {
 func (u *RiderUpsertBulk) ClearEsignAccountID() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearEsignAccountID()
+	})
+}
+
+// SetPlanAt sets the "plan_at" field.
+func (u *RiderUpsertBulk) SetPlanAt(v time.Time) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetPlanAt(v)
+	})
+}
+
+// UpdatePlanAt sets the "plan_at" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdatePlanAt() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdatePlanAt()
 	})
 }
 

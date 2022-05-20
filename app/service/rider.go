@@ -373,3 +373,7 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
         },
     )
 }
+
+func (s *riderService) ModifyUserPlanDays() {
+
+}
