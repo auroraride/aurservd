@@ -10,6 +10,8 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
@@ -34,9 +36,12 @@ type Rider struct {
 	// PersonID holds the value of the "person_id" field.
 	// 实人
 	PersonID *uint64 `json:"person_id,omitempty"`
-	// GroupID holds the value of the "group_id" field.
-	// 团队
-	GroupID *uint64 `json:"group_id,omitempty"`
+	// CityID holds the value of the "city_id" field.
+	// 注册城市
+	CityID *uint64 `json:"city_id,omitempty"`
+	// EnterpriseID holds the value of the "enterprise_id" field.
+	// 所属企业
+	EnterpriseID *uint64 `json:"enterprise_id,omitempty"`
 	// Phone holds the value of the "phone" field.
 	// 手机号
 	Phone string `json:"phone,omitempty"`
@@ -73,13 +78,17 @@ type Rider struct {
 type RiderEdges struct {
 	// Person holds the value of the person edge.
 	Person *Person `json:"person,omitempty"`
+	// City holds the value of the city edge.
+	City *City `json:"city,omitempty"`
+	// Enterprise holds the value of the enterprise edge.
+	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// Contract holds the value of the contract edge.
 	Contract []*Contract `json:"contract,omitempty"`
 	// Faults holds the value of the faults edge.
 	Faults []*CabinetFault `json:"faults,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [5]bool
 }
 
 // PersonOrErr returns the Person value or an error if the edge
@@ -96,10 +105,38 @@ func (e RiderEdges) PersonOrErr() (*Person, error) {
 	return nil, &NotLoadedError{edge: "person"}
 }
 
+// CityOrErr returns the City value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e RiderEdges) CityOrErr() (*City, error) {
+	if e.loadedTypes[1] {
+		if e.City == nil {
+			// The edge city was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: city.Label}
+		}
+		return e.City, nil
+	}
+	return nil, &NotLoadedError{edge: "city"}
+}
+
+// EnterpriseOrErr returns the Enterprise value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e RiderEdges) EnterpriseOrErr() (*Enterprise, error) {
+	if e.loadedTypes[2] {
+		if e.Enterprise == nil {
+			// The edge enterprise was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: enterprise.Label}
+		}
+		return e.Enterprise, nil
+	}
+	return nil, &NotLoadedError{edge: "enterprise"}
+}
+
 // ContractOrErr returns the Contract value or an error if the edge
 // was not loaded in eager-loading.
 func (e RiderEdges) ContractOrErr() ([]*Contract, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[3] {
 		return e.Contract, nil
 	}
 	return nil, &NotLoadedError{edge: "contract"}
@@ -108,7 +145,7 @@ func (e RiderEdges) ContractOrErr() ([]*Contract, error) {
 // FaultsOrErr returns the Faults value or an error if the edge
 // was not loaded in eager-loading.
 func (e RiderEdges) FaultsOrErr() ([]*CabinetFault, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[4] {
 		return e.Faults, nil
 	}
 	return nil, &NotLoadedError{edge: "faults"}
@@ -123,7 +160,7 @@ func (*Rider) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case rider.FieldIsNewDevice:
 			values[i] = new(sql.NullBool)
-		case rider.FieldID, rider.FieldPersonID, rider.FieldGroupID, rider.FieldDeviceType:
+		case rider.FieldID, rider.FieldPersonID, rider.FieldCityID, rider.FieldEnterpriseID, rider.FieldDeviceType:
 			values[i] = new(sql.NullInt64)
 		case rider.FieldRemark, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID, rider.FieldEsignAccountID:
 			values[i] = new(sql.NullString)
@@ -190,12 +227,19 @@ func (r *Rider) assignValues(columns []string, values []interface{}) error {
 				r.PersonID = new(uint64)
 				*r.PersonID = uint64(value.Int64)
 			}
-		case rider.FieldGroupID:
+		case rider.FieldCityID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field group_id", values[i])
+				return fmt.Errorf("unexpected type %T for field city_id", values[i])
 			} else if value.Valid {
-				r.GroupID = new(uint64)
-				*r.GroupID = uint64(value.Int64)
+				r.CityID = new(uint64)
+				*r.CityID = uint64(value.Int64)
+			}
+		case rider.FieldEnterpriseID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field enterprise_id", values[i])
+			} else if value.Valid {
+				r.EnterpriseID = new(uint64)
+				*r.EnterpriseID = uint64(value.Int64)
 			}
 		case rider.FieldPhone:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -265,6 +309,16 @@ func (r *Rider) QueryPerson() *PersonQuery {
 	return (&RiderClient{config: r.config}).QueryPerson(r)
 }
 
+// QueryCity queries the "city" edge of the Rider entity.
+func (r *Rider) QueryCity() *CityQuery {
+	return (&RiderClient{config: r.config}).QueryCity(r)
+}
+
+// QueryEnterprise queries the "enterprise" edge of the Rider entity.
+func (r *Rider) QueryEnterprise() *EnterpriseQuery {
+	return (&RiderClient{config: r.config}).QueryEnterprise(r)
+}
+
 // QueryContract queries the "contract" edge of the Rider entity.
 func (r *Rider) QueryContract() *ContractQuery {
 	return (&RiderClient{config: r.config}).QueryContract(r)
@@ -314,8 +368,12 @@ func (r *Rider) String() string {
 		builder.WriteString(", person_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
-	if v := r.GroupID; v != nil {
-		builder.WriteString(", group_id=")
+	if v := r.CityID; v != nil {
+		builder.WriteString(", city_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := r.EnterpriseID; v != nil {
+		builder.WriteString(", enterprise_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", phone=")

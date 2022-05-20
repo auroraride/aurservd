@@ -29,6 +29,8 @@ const (
 	FieldCode = "code"
 	// FieldParentID holds the string denoting the parent_id field in the database.
 	FieldParentID = "parent_id"
+	// EdgePlans holds the string denoting the plans edge name in mutations.
+	EdgePlans = "plans"
 	// EdgeParent holds the string denoting the parent edge name in mutations.
 	EdgeParent = "parent"
 	// EdgeChildren holds the string denoting the children edge name in mutations.
@@ -37,10 +39,15 @@ const (
 	EdgeBranches = "branches"
 	// EdgeFaults holds the string denoting the faults edge name in mutations.
 	EdgeFaults = "faults"
-	// EdgePlans holds the string denoting the plans edge name in mutations.
-	EdgePlans = "plans"
+	// EdgeRiders holds the string denoting the riders edge name in mutations.
+	EdgeRiders = "riders"
 	// Table holds the table name of the city in the database.
 	Table = "city"
+	// PlansTable is the table that holds the plans relation/edge. The primary key declared below.
+	PlansTable = "plan_cities"
+	// PlansInverseTable is the table name for the Plan entity.
+	// It exists in this package in order to avoid circular dependency with the "plan" package.
+	PlansInverseTable = "plan"
 	// ParentTable is the table that holds the parent relation/edge.
 	ParentTable = "city"
 	// ParentColumn is the table column denoting the parent relation/edge.
@@ -63,11 +70,13 @@ const (
 	FaultsInverseTable = "cabinet_fault"
 	// FaultsColumn is the table column denoting the faults relation/edge.
 	FaultsColumn = "city_id"
-	// PlansTable is the table that holds the plans relation/edge. The primary key declared below.
-	PlansTable = "plan_cities"
-	// PlansInverseTable is the table name for the Plan entity.
-	// It exists in this package in order to avoid circular dependency with the "plan" package.
-	PlansInverseTable = "plan"
+	// RidersTable is the table that holds the riders relation/edge.
+	RidersTable = "rider"
+	// RidersInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	RidersInverseTable = "rider"
+	// RidersColumn is the table column denoting the riders relation/edge.
+	RidersColumn = "city_id"
 )
 
 // Columns holds all SQL columns for city fields.

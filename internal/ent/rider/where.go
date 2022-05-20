@@ -128,10 +128,17 @@ func PersonID(v uint64) predicate.Rider {
 	})
 }
 
-// GroupID applies equality check predicate on the "group_id" field. It's identical to GroupIDEQ.
-func GroupID(v uint64) predicate.Rider {
+// CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
+func CityID(v uint64) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldGroupID), v))
+		s.Where(sql.EQ(s.C(FieldCityID), v))
+	})
+}
+
+// EnterpriseID applies equality check predicate on the "enterprise_id" field. It's identical to EnterpriseIDEQ.
+func EnterpriseID(v uint64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEnterpriseID), v))
 	})
 }
 
@@ -634,22 +641,22 @@ func PersonIDNotNil() predicate.Rider {
 	})
 }
 
-// GroupIDEQ applies the EQ predicate on the "group_id" field.
-func GroupIDEQ(v uint64) predicate.Rider {
+// CityIDEQ applies the EQ predicate on the "city_id" field.
+func CityIDEQ(v uint64) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldGroupID), v))
+		s.Where(sql.EQ(s.C(FieldCityID), v))
 	})
 }
 
-// GroupIDNEQ applies the NEQ predicate on the "group_id" field.
-func GroupIDNEQ(v uint64) predicate.Rider {
+// CityIDNEQ applies the NEQ predicate on the "city_id" field.
+func CityIDNEQ(v uint64) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldGroupID), v))
+		s.Where(sql.NEQ(s.C(FieldCityID), v))
 	})
 }
 
-// GroupIDIn applies the In predicate on the "group_id" field.
-func GroupIDIn(vs ...uint64) predicate.Rider {
+// CityIDIn applies the In predicate on the "city_id" field.
+func CityIDIn(vs ...uint64) predicate.Rider {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -661,12 +668,12 @@ func GroupIDIn(vs ...uint64) predicate.Rider {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldGroupID), v...))
+		s.Where(sql.In(s.C(FieldCityID), v...))
 	})
 }
 
-// GroupIDNotIn applies the NotIn predicate on the "group_id" field.
-func GroupIDNotIn(vs ...uint64) predicate.Rider {
+// CityIDNotIn applies the NotIn predicate on the "city_id" field.
+func CityIDNotIn(vs ...uint64) predicate.Rider {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -678,49 +685,83 @@ func GroupIDNotIn(vs ...uint64) predicate.Rider {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldGroupID), v...))
+		s.Where(sql.NotIn(s.C(FieldCityID), v...))
 	})
 }
 
-// GroupIDGT applies the GT predicate on the "group_id" field.
-func GroupIDGT(v uint64) predicate.Rider {
+// CityIDIsNil applies the IsNil predicate on the "city_id" field.
+func CityIDIsNil() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldGroupID), v))
+		s.Where(sql.IsNull(s.C(FieldCityID)))
 	})
 }
 
-// GroupIDGTE applies the GTE predicate on the "group_id" field.
-func GroupIDGTE(v uint64) predicate.Rider {
+// CityIDNotNil applies the NotNil predicate on the "city_id" field.
+func CityIDNotNil() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldGroupID), v))
+		s.Where(sql.NotNull(s.C(FieldCityID)))
 	})
 }
 
-// GroupIDLT applies the LT predicate on the "group_id" field.
-func GroupIDLT(v uint64) predicate.Rider {
+// EnterpriseIDEQ applies the EQ predicate on the "enterprise_id" field.
+func EnterpriseIDEQ(v uint64) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldGroupID), v))
+		s.Where(sql.EQ(s.C(FieldEnterpriseID), v))
 	})
 }
 
-// GroupIDLTE applies the LTE predicate on the "group_id" field.
-func GroupIDLTE(v uint64) predicate.Rider {
+// EnterpriseIDNEQ applies the NEQ predicate on the "enterprise_id" field.
+func EnterpriseIDNEQ(v uint64) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldGroupID), v))
+		s.Where(sql.NEQ(s.C(FieldEnterpriseID), v))
 	})
 }
 
-// GroupIDIsNil applies the IsNil predicate on the "group_id" field.
-func GroupIDIsNil() predicate.Rider {
+// EnterpriseIDIn applies the In predicate on the "enterprise_id" field.
+func EnterpriseIDIn(vs ...uint64) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldGroupID)))
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldEnterpriseID), v...))
 	})
 }
 
-// GroupIDNotNil applies the NotNil predicate on the "group_id" field.
-func GroupIDNotNil() predicate.Rider {
+// EnterpriseIDNotIn applies the NotIn predicate on the "enterprise_id" field.
+func EnterpriseIDNotIn(vs ...uint64) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
 	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldGroupID)))
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldEnterpriseID), v...))
+	})
+}
+
+// EnterpriseIDIsNil applies the IsNil predicate on the "enterprise_id" field.
+func EnterpriseIDIsNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEnterpriseID)))
+	})
+}
+
+// EnterpriseIDNotNil applies the NotNil predicate on the "enterprise_id" field.
+func EnterpriseIDNotNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEnterpriseID)))
 	})
 }
 
@@ -1534,6 +1575,62 @@ func HasPersonWith(preds ...predicate.Person) predicate.Rider {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(PersonInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, PersonTable, PersonColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCity applies the HasEdge predicate on the "city" edge.
+func HasCity() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CityTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CityTable, CityColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCityWith applies the HasEdge predicate on the "city" edge with a given conditions (other predicates).
+func HasCityWith(preds ...predicate.City) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CityInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CityTable, CityColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEnterprise applies the HasEdge predicate on the "enterprise" edge.
+func HasEnterprise() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EnterpriseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, EnterpriseTable, EnterpriseColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEnterpriseWith applies the HasEdge predicate on the "enterprise" edge with a given conditions (other predicates).
+func HasEnterpriseWith(preds ...predicate.Enterprise) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EnterpriseInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, EnterpriseTable, EnterpriseColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

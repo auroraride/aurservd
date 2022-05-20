@@ -19,22 +19,26 @@ import (
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
+    "github.com/golang-module/carbon/v2"
     "github.com/rs/xid"
+    "strconv"
     "time"
 )
 
 type riderService struct {
     cacheKeyPrefix string
+    ctx            context.Context
 }
 
 func NewRider() *riderService {
     return &riderService{
         cacheKeyPrefix: "RIDER_",
+        ctx:            context.Background(),
     }
 }
 
 // GetRiderById 根据ID获取骑手及其实名状态
-func (r *riderService) GetRiderById(id uint64) (u *ent.Rider, err error) {
+func (s *riderService) GetRiderById(id uint64) (u *ent.Rider, err error) {
     return ar.Ent.Rider.
         QueryNotDeleted().
         WithPerson().
@@ -43,23 +47,23 @@ func (r *riderService) GetRiderById(id uint64) (u *ent.Rider, err error) {
 }
 
 // IsAuthed 是否已认证
-func (r *riderService) IsAuthed(u *ent.Rider) bool {
+func (s *riderService) IsAuthed(u *ent.Rider) bool {
     return u.Edges.Person != nil && !model.PersonAuthStatus(u.Edges.Person.Status).RequireAuth()
 }
 
 // IsBlocked 骑手是否被封锁
-func (r *riderService) IsBlocked(u *ent.Rider) bool {
+func (s *riderService) IsBlocked(u *ent.Rider) bool {
     p := u.Edges.Person
     return p != nil && p.Block
 }
 
 // IsNewDevice 检查是否是新设备
-func (r *riderService) IsNewDevice(u *ent.Rider, device *app.Device) bool {
+func (s *riderService) IsNewDevice(u *ent.Rider, device *app.Device) bool {
     return u.LastDevice != device.Serial || u.IsNewDevice
 }
 
 // Signin 骑手登录
-func (r *riderService) Signin(phone string, device *app.Device) (res *model.RiderSigninRes, err error) {
+func (s *riderService) Signin(phone string, device *app.Device) (res *model.RiderSigninRes, err error) {
     ctx := context.Background()
     orm := ar.Ent.Rider
     var u *ent.Rider
@@ -77,13 +81,13 @@ func (r *riderService) Signin(phone string, device *app.Device) (res *model.Ride
     }
 
     // 判定用户是否被封禁
-    if r.IsBlocked(u) {
+    if s.IsBlocked(u) {
         snag.Panic(snag.StatusForbidden, ar.BlockedMessage)
     }
 
     token := xid.New().String() + utils.RandTokenString()
     cache := ar.Cache
-    key := fmt.Sprintf("%s%d", r.cacheKeyPrefix, u.ID)
+    key := fmt.Sprintf("%s%d", s.cacheKeyPrefix, u.ID)
 
     // 删除旧的token
     if old := cache.Get(ctx, key).Val(); old != "" {
@@ -93,37 +97,37 @@ func (r *riderService) Signin(phone string, device *app.Device) (res *model.Ride
 
     // 更新设备
     if u.LastDevice != device.Serial {
-        r.SetNewDevice(u, device)
+        s.SetNewDevice(u, device)
     }
 
     res = &model.RiderSigninRes{
         Id:              u.ID,
         Token:           token,
-        IsNewDevice:     r.IsNewDevice(u, device),
+        IsNewDevice:     s.IsNewDevice(u, device),
         IsContactFilled: u.Contact != nil,
-        IsAuthed:        r.IsAuthed(u),
+        IsAuthed:        s.IsAuthed(u),
         Contact:         u.Contact,
         Qrcode:          fmt.Sprintf("https://rider.auroraride.com/%d", u.ID),
     }
 
     // 设置登录token
-    r.ExtendTokenTime(u.ID, token)
+    s.ExtendTokenTime(u.ID, token)
 
     return
 }
 
 // Signout 强制登出
-func (r *riderService) Signout(u *ent.Rider) {
+func (s *riderService) Signout(u *ent.Rider) {
     cache := ar.Cache
     ctx := context.Background()
-    key := fmt.Sprintf("%s%d", r.cacheKeyPrefix, u.ID)
+    key := fmt.Sprintf("%s%d", s.cacheKeyPrefix, u.ID)
     token := cache.Get(ctx, key).Val()
     cache.Del(ctx, key)
     cache.Del(ctx, token)
 }
 
 // SetNewDevice 更新用户设备
-func (r *riderService) SetNewDevice(u *ent.Rider, device *app.Device) {
+func (s *riderService) SetNewDevice(u *ent.Rider, device *app.Device) {
     _, err := ar.Ent.Rider.
         UpdateOneID(u.ID).
         SetLastDevice(device.Serial).
@@ -137,23 +141,23 @@ func (r *riderService) SetNewDevice(u *ent.Rider, device *app.Device) {
 }
 
 // GetFaceAuthUrl 获取实名验证URL
-func (r *riderService) GetFaceAuthUrl(c *app.RiderContext) string {
+func (s *riderService) GetFaceAuthUrl(c *app.RiderContext) string {
     uri, token := baidu.New().GetAuthenticatorUrl()
-    ar.Cache.Set(context.Background(), token, r.GeneratePrivacy(c), 30*time.Minute)
+    ar.Cache.Set(context.Background(), token, s.GeneratePrivacy(c), 30*time.Minute)
     return uri
 }
 
 // GetFaceUrl 获取人脸校验URL
-func (r *riderService) GetFaceUrl(c *app.RiderContext) string {
+func (s *riderService) GetFaceUrl(c *app.RiderContext) string {
     p := c.Rider.Edges.Person
     uri, token := baidu.New().GetFaceUrl(p.Name, p.IDCardNumber)
-    ar.Cache.Set(context.Background(), token, r.GeneratePrivacy(c), 30*time.Minute)
+    ar.Cache.Set(context.Background(), token, s.GeneratePrivacy(c), 30*time.Minute)
     return uri
 }
 
 // FaceAuthResult 获取并更新人脸实名验证结果
-func (r *riderService) FaceAuthResult(c *app.RiderContext) (success bool, err error) {
-    if !r.ComparePrivacy(c) {
+func (s *riderService) FaceAuthResult(c *app.RiderContext) (success bool, err error) {
+    if !s.ComparePrivacy(c) {
         return false, errors.New("验证失败")
     }
     token := c.Param("token")
@@ -227,8 +231,8 @@ func (r *riderService) FaceAuthResult(c *app.RiderContext) (success bool, err er
 }
 
 // FaceResult 获取人脸比对结果
-func (r *riderService) FaceResult(c *app.RiderContext) (success bool, err error) {
-    if !r.ComparePrivacy(c) {
+func (s *riderService) FaceResult(c *app.RiderContext) (success bool, err error) {
+    if !s.ComparePrivacy(c) {
         return false, errors.New("验证失败")
     }
     token := c.Param("token")
@@ -257,7 +261,7 @@ func (r *riderService) FaceResult(c *app.RiderContext) (success bool, err error)
 }
 
 // UpdateContact 更新紧急联系人
-func (r *riderService) UpdateContact(u *ent.Rider, contact *model.RiderContact) {
+func (s *riderService) UpdateContact(u *ent.Rider, contact *model.RiderContact) {
     // 判断紧急联系人手机号是否和当前骑手手机号一样
     if u.Phone == contact.Phone {
         snag.Panic("紧急联系人手机号不能是当前手机号")
@@ -269,18 +273,18 @@ func (r *riderService) UpdateContact(u *ent.Rider, contact *model.RiderContact) 
 }
 
 // GeneratePrivacy 获取实名认证或人脸识别限制条件
-func (r *riderService) GeneratePrivacy(c *app.RiderContext) string {
+func (s *riderService) GeneratePrivacy(c *app.RiderContext) string {
     return fmt.Sprintf("%s-%d", c.Device.Serial, c.Rider.ID)
 }
 
 // ComparePrivacy 比对实名认证或人脸识别限制条件是否满足
-func (r *riderService) ComparePrivacy(c *app.RiderContext) bool {
-    return ar.Cache.Get(context.Background(), c.Param("token")).Val() == r.GeneratePrivacy(c)
+func (s *riderService) ComparePrivacy(c *app.RiderContext) bool {
+    return ar.Cache.Get(context.Background(), c.Param("token")).Val() == s.GeneratePrivacy(c)
 }
 
 // ExtendTokenTime 延长骑手登录有效期
-func (r *riderService) ExtendTokenTime(id uint64, token string) {
-    key := fmt.Sprintf("%s%d", r.cacheKeyPrefix, id)
+func (s *riderService) ExtendTokenTime(id uint64, token string) {
+    key := fmt.Sprintf("%s%d", s.cacheKeyPrefix, id)
     cache := ar.Cache
     ctx := context.Background()
     cache.Set(ctx, key, token, 7*24*time.Hour)
@@ -298,4 +302,74 @@ func (*riderService) GetRiderSampleInfo(rider *ent.Rider) model.RiderSampleInfo 
         Name:  rider.Edges.Person.Name,
         Phone: rider.Phone,
     }
+}
+
+// List 骑手列表
+func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
+    q := ar.Ent.Rider.Query().WithPerson().WithCity()
+    if req.Keyword != nil {
+        // 判定是否id字段
+        if id, err := strconv.ParseUint(*req.Keyword, 10, 64); err == nil && id > 0 {
+            q.Where(rider.ID(id))
+        } else {
+            q.Where(
+                rider.Or(
+                    rider.HasPersonWith(person.NameContainsFold(*req.Keyword)),
+                    rider.PushIDContainsFold(*req.Keyword),
+                ),
+            )
+        }
+    }
+    if req.Start != nil {
+        start, err := time.Parse(carbon.DateLayout, *req.Start)
+        if err != nil {
+            snag.Panic("日期格式错误")
+        }
+        q.Where(rider.CreatedAtGTE(start))
+    }
+    if req.End != nil {
+        end, err := time.Parse(carbon.DateLayout, *req.End)
+        if err != nil {
+            snag.Panic("日期格式错误")
+        }
+        end.AddDate(0, 0, 1)
+        q.Where(rider.CreatedAtLT(end))
+    }
+    if req.Modified != nil {
+        m := *req.Modified
+        if m {
+            q.Where(rider.LastModifierNotNil())
+        } else {
+            q.Where(rider.LastModifierIsNil())
+        }
+    }
+
+    return model.ParsePaginationResponse[model.RiderItem](
+        q.PaginationResult(req.PaginationReq),
+        func() []model.RiderItem {
+            items := q.Pagination(req.PaginationReq).AllX(s.ctx)
+            out := make([]model.RiderItem, len(items))
+            for i, item := range items {
+                p := item.Edges.Person
+                name := ""
+                idnum := ""
+                if p != nil {
+                    name = p.Name
+                    idnum = p.IDCardNumber
+                }
+                out[i] = model.RiderItem{
+                    ID:           item.ID,
+                    Enterprise:   nil,
+                    Name:         name,
+                    Phone:        item.Phone,
+                    Status:       0,
+                    IDCardNumber: idnum,
+                    UserPlan:     nil,
+                    Deposit:      0,
+                    City:         nil,
+                }
+            }
+            return out
+        },
+    )
 }

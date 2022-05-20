@@ -12,6 +12,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -193,6 +194,21 @@ func init() {
 			return nil
 		}
 	}()
+	enterpriseMixin := schema.Enterprise{}.Mixin()
+	enterpriseMixinFields0 := enterpriseMixin[0].Fields()
+	_ = enterpriseMixinFields0
+	enterpriseFields := schema.Enterprise{}.Fields()
+	_ = enterpriseFields
+	// enterpriseDescCreatedAt is the schema descriptor for created_at field.
+	enterpriseDescCreatedAt := enterpriseMixinFields0[0].Descriptor()
+	// enterprise.DefaultCreatedAt holds the default value on creation for the created_at field.
+	enterprise.DefaultCreatedAt = enterpriseDescCreatedAt.Default.(func() time.Time)
+	// enterpriseDescUpdatedAt is the schema descriptor for updated_at field.
+	enterpriseDescUpdatedAt := enterpriseMixinFields0[1].Descriptor()
+	// enterprise.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	enterprise.DefaultUpdatedAt = enterpriseDescUpdatedAt.Default.(func() time.Time)
+	// enterprise.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	enterprise.UpdateDefaultUpdatedAt = enterpriseDescUpdatedAt.UpdateDefault.(func() time.Time)
 	managerMixin := schema.Manager{}.Mixin()
 	managerMixinFields0 := managerMixin[0].Fields()
 	_ = managerMixinFields0
@@ -284,19 +300,19 @@ func init() {
 	// rider.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	rider.UpdateDefaultUpdatedAt = riderDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// riderDescPhone is the schema descriptor for phone field.
-	riderDescPhone := riderFields[2].Descriptor()
+	riderDescPhone := riderFields[3].Descriptor()
 	// rider.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
 	rider.PhoneValidator = riderDescPhone.Validators[0].(func(string) error)
 	// riderDescLastDevice is the schema descriptor for last_device field.
-	riderDescLastDevice := riderFields[5].Descriptor()
+	riderDescLastDevice := riderFields[6].Descriptor()
 	// rider.LastDeviceValidator is a validator for the "last_device" field. It is called by the builders before save.
 	rider.LastDeviceValidator = riderDescLastDevice.Validators[0].(func(string) error)
 	// riderDescIsNewDevice is the schema descriptor for is_new_device field.
-	riderDescIsNewDevice := riderFields[6].Descriptor()
+	riderDescIsNewDevice := riderFields[7].Descriptor()
 	// rider.DefaultIsNewDevice holds the default value on creation for the is_new_device field.
 	rider.DefaultIsNewDevice = riderDescIsNewDevice.Default.(bool)
 	// riderDescPushID is the schema descriptor for push_id field.
-	riderDescPushID := riderFields[8].Descriptor()
+	riderDescPushID := riderFields[9].Descriptor()
 	// rider.PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
 	rider.PushIDValidator = riderDescPushID.Validators[0].(func(string) error)
 	settingMixin := schema.Setting{}.Mixin()

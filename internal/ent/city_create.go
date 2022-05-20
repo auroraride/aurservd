@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/plan"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 )
 
 // CityCreate is the builder for creating a City entity.
@@ -134,6 +135,21 @@ func (cc *CityCreate) SetID(u uint64) *CityCreate {
 	return cc
 }
 
+// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
+func (cc *CityCreate) AddPlanIDs(ids ...uint64) *CityCreate {
+	cc.mutation.AddPlanIDs(ids...)
+	return cc
+}
+
+// AddPlans adds the "plans" edges to the Plan entity.
+func (cc *CityCreate) AddPlans(p ...*Plan) *CityCreate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return cc.AddPlanIDs(ids...)
+}
+
 // SetParent sets the "parent" edge to the City entity.
 func (cc *CityCreate) SetParent(c *City) *CityCreate {
 	return cc.SetParentID(c.ID)
@@ -184,19 +200,19 @@ func (cc *CityCreate) AddFaults(c ...*CabinetFault) *CityCreate {
 	return cc.AddFaultIDs(ids...)
 }
 
-// AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
-func (cc *CityCreate) AddPlanIDs(ids ...uint64) *CityCreate {
-	cc.mutation.AddPlanIDs(ids...)
+// AddRiderIDs adds the "riders" edge to the Rider entity by IDs.
+func (cc *CityCreate) AddRiderIDs(ids ...uint64) *CityCreate {
+	cc.mutation.AddRiderIDs(ids...)
 	return cc
 }
 
-// AddPlans adds the "plans" edges to the Plan entity.
-func (cc *CityCreate) AddPlans(p ...*Plan) *CityCreate {
-	ids := make([]uint64, len(p))
-	for i := range p {
-		ids[i] = p[i].ID
+// AddRiders adds the "riders" edges to the Rider entity.
+func (cc *CityCreate) AddRiders(r ...*Rider) *CityCreate {
+	ids := make([]uint64, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
 	}
-	return cc.AddPlanIDs(ids...)
+	return cc.AddRiderIDs(ids...)
 }
 
 // Mutation returns the CityMutation object of the builder.
@@ -402,6 +418,25 @@ func (cc *CityCreate) createSpec() (*City, *sqlgraph.CreateSpec) {
 		})
 		_node.Code = value
 	}
+	if nodes := cc.mutation.PlansIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   city.PlansTable,
+			Columns: city.PlansPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := cc.mutation.ParentIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -479,17 +514,17 @@ func (cc *CityCreate) createSpec() (*City, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := cc.mutation.PlansIDs(); len(nodes) > 0 {
+	if nodes := cc.mutation.RidersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2M,
-			Inverse: true,
-			Table:   city.PlansTable,
-			Columns: city.PlansPrimaryKey,
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   city.RidersTable,
+			Columns: []string{city.RidersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: plan.FieldID,
+					Column: rider.FieldID,
 				},
 			},
 		}

@@ -27,6 +27,9 @@ type City func(*sql.Selector)
 // Contract is the predicate function for contract builders.
 type Contract func(*sql.Selector)
 
+// Enterprise is the predicate function for enterprise builders.
+type Enterprise func(*sql.Selector)
+
 // Manager is the predicate function for manager builders.
 type Manager func(*sql.Selector)
 

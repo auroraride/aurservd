@@ -26,6 +26,8 @@ type Tx struct {
 	City *CityClient
 	// Contract is the client for interacting with the Contract builders.
 	Contract *ContractClient
+	// Enterprise is the client for interacting with the Enterprise builders.
+	Enterprise *EnterpriseClient
 	// Manager is the client for interacting with the Manager builders.
 	Manager *ManagerClient
 	// Person is the client for interacting with the Person builders.
@@ -178,6 +180,7 @@ func (tx *Tx) init() {
 	tx.CabinetFault = NewCabinetFaultClient(tx.config)
 	tx.City = NewCityClient(tx.config)
 	tx.Contract = NewContractClient(tx.config)
+	tx.Enterprise = NewEnterpriseClient(tx.config)
 	tx.Manager = NewManagerClient(tx.config)
 	tx.Person = NewPersonClient(tx.config)
 	tx.Plan = NewPlanClient(tx.config)

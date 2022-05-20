@@ -84,7 +84,6 @@ func (s *cabinetService) CreateCabinet(modifier *model.Modifier, req *model.Cabi
 
 // Query 查询电柜
 func (s *cabinetService) Query(req *model.CabinetQueryReq) (res *model.PaginationRes) {
-    res = new(model.PaginationRes)
     q := s.orm.QueryNotDeleted().WithBranch(
         func(bq *ent.BranchQuery) {
             bq.WithCity()
@@ -106,22 +105,21 @@ func (s *cabinetService) Query(req *model.CabinetQueryReq) (res *model.Paginatio
         q.Where(cabinet.Status(uint(*req.Status)))
     }
 
-    res.Pagination = q.PaginationResult(req.PaginationReq)
-
-    items := q.Pagination(req.PaginationReq).AllX(s.ctx)
-    out := make([]model.CabinetItem, len(items))
-    for i, item := range items {
-        _ = copier.Copy(&out[i], item)
-        if item.Edges.Branch != nil {
-            city := item.Edges.Branch.Edges.City
-            out[i].City = &model.City{
-                ID:   city.ID,
-                Name: city.Name,
+    return model.ParsePaginationResponse[model.CabinetItem](q.PaginationResult(req.PaginationReq), func() []model.CabinetItem {
+        items := q.Pagination(req.PaginationReq).AllX(s.ctx)
+        out := make([]model.CabinetItem, len(items))
+        for i, item := range items {
+            _ = copier.Copy(&out[i], item)
+            if item.Edges.Branch != nil {
+                city := item.Edges.Branch.Edges.City
+                out[i].City = &model.City{
+                    ID:   city.ID,
+                    Name: city.Name,
+                }
             }
         }
-    }
-    res.Items = out
-    return
+        return out
+    })
 }
 
 // Modify 修改电柜

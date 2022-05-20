@@ -127,6 +127,23 @@ func (cq *ContractQuery) PaginationResult(req model.PaginationReq) model.Paginat
 	}
 }
 
+// Pagination returns pagination query builder for EnterpriseQuery.
+func (eq *EnterpriseQuery) Pagination(req model.PaginationReq) *EnterpriseQuery {
+	eq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return eq
+}
+
+// PaginationResult returns pagination for EnterpriseQuery.
+func (eq *EnterpriseQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := eq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for ManagerQuery.
 func (mq *ManagerQuery) Pagination(req model.PaginationReq) *ManagerQuery {
 	mq.Offset(req.GetOffset()).Limit(req.GetLimit())

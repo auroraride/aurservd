@@ -381,6 +381,45 @@ var (
 			},
 		},
 	}
+	// EnterpriseColumns holds the columns for the "enterprise" table.
+	EnterpriseColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true},
+		{Name: "remark", Type: field.TypeString, Nullable: true},
+		{Name: "name", Type: field.TypeString},
+	}
+	// EnterpriseTable holds the schema information for the "enterprise" table.
+	EnterpriseTable = &schema.Table{
+		Name:       "enterprise",
+		Columns:    EnterpriseColumns,
+		PrimaryKey: []*schema.Column{EnterpriseColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "enterprise_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseColumns[1]},
+			},
+			{
+				Name:    "enterprise_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseColumns[3]},
+			},
+			{
+				Name:    "enterprise_name",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseColumns[7]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+		},
+	}
 	// ManagerColumns holds the columns for the "manager" table.
 	ManagerColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -457,6 +496,16 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{PersonColumns[6]},
 			},
+			{
+				Name:    "person_name",
+				Unique:  false,
+				Columns: []*schema.Column{PersonColumns[8]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
 		},
 	}
 	// PlanColumns holds the columns for the "plan" table.
@@ -522,7 +571,6 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true},
 		{Name: "remark", Type: field.TypeString, Nullable: true},
-		{Name: "group_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "phone", Type: field.TypeString, Unique: true, Size: 11},
 		{Name: "contact", Type: field.TypeJSON, Nullable: true},
 		{Name: "device_type", Type: field.TypeUint8},
@@ -532,6 +580,8 @@ var (
 		{Name: "push_id", Type: field.TypeString, Unique: true, Nullable: true, Size: 60},
 		{Name: "last_signin_at", Type: field.TypeTime, Nullable: true},
 		{Name: "esign_account_id", Type: field.TypeString, Nullable: true},
+		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "person_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// RiderTable holds the schema information for the "rider" table.
@@ -541,8 +591,20 @@ var (
 		PrimaryKey: []*schema.Column{RiderColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "rider_person_rider",
+				Symbol:     "rider_city_riders",
+				Columns:    []*schema.Column{RiderColumns[15]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "rider_enterprise_riders",
 				Columns:    []*schema.Column{RiderColumns[16]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "rider_person_rider",
+				Columns:    []*schema.Column{RiderColumns[17]},
 				RefColumns: []*schema.Column{PersonColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -561,7 +623,12 @@ var (
 			{
 				Name:    "rider_phone",
 				Unique:  false,
-				Columns: []*schema.Column{RiderColumns[7]},
+				Columns: []*schema.Column{RiderColumns[6]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
 			},
 		},
 	}
@@ -670,6 +737,7 @@ var (
 		CabinetFaultTable,
 		CityTable,
 		ContractTable,
+		EnterpriseTable,
 		ManagerTable,
 		PersonTable,
 		PlanTable,
@@ -712,6 +780,9 @@ func init() {
 	ContractTable.Annotation = &entsql.Annotation{
 		Table: "contract",
 	}
+	EnterpriseTable.Annotation = &entsql.Annotation{
+		Table: "enterprise",
+	}
 	ManagerTable.Annotation = &entsql.Annotation{
 		Table: "manager",
 	}
@@ -721,7 +792,9 @@ func init() {
 	PlanTable.Annotation = &entsql.Annotation{
 		Table: "plan",
 	}
-	RiderTable.ForeignKeys[0].RefTable = PersonTable
+	RiderTable.ForeignKeys[0].RefTable = CityTable
+	RiderTable.ForeignKeys[1].RefTable = EnterpriseTable
+	RiderTable.ForeignKeys[2].RefTable = PersonTable
 	RiderTable.Annotation = &entsql.Annotation{
 		Table: "rider",
 	}

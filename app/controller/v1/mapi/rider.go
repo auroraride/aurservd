@@ -7,6 +7,8 @@ package mapi
 
 import (
     "github.com/auroraride/aurservd/app"
+    "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/service"
     "github.com/labstack/echo/v4"
 )
 
@@ -14,7 +16,17 @@ type rider struct{}
 
 var Rider = new(rider)
 
+// List
+// @ID           RiderList
+// @Router       /manager/v1/rider [GET]
+// @Summary      M70001 列举骑手
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query  model.RiderListReq  true  "desc"
+// @Success      200  {object}  model.PaginationRes{items=[]model.RiderItem}  "请求成功"
 func (*rider) List(c echo.Context) (err error) {
-    ctx := app.Context(c)
-    return ctx.SendResponse()
+    ctx, req := app.ManagerContextAndBinding[model.RiderListReq](c)
+    return ctx.SendResponse(service.NewRider().List(req))
 }

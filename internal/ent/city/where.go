@@ -842,6 +842,34 @@ func ParentIDNotNil() predicate.City {
 	})
 }
 
+// HasPlans applies the HasEdge predicate on the "plans" edge.
+func HasPlans() predicate.City {
+	return predicate.City(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(PlansTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, PlansTable, PlansPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPlansWith applies the HasEdge predicate on the "plans" edge with a given conditions (other predicates).
+func HasPlansWith(preds ...predicate.Plan) predicate.City {
+	return predicate.City(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(PlansInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, PlansTable, PlansPrimaryKey...),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasParent applies the HasEdge predicate on the "parent" edge.
 func HasParent() predicate.City {
 	return predicate.City(func(s *sql.Selector) {
@@ -954,25 +982,25 @@ func HasFaultsWith(preds ...predicate.CabinetFault) predicate.City {
 	})
 }
 
-// HasPlans applies the HasEdge predicate on the "plans" edge.
-func HasPlans() predicate.City {
+// HasRiders applies the HasEdge predicate on the "riders" edge.
+func HasRiders() predicate.City {
 	return predicate.City(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PlansTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, PlansTable, PlansPrimaryKey...),
+			sqlgraph.To(RidersTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, RidersTable, RidersColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasPlansWith applies the HasEdge predicate on the "plans" edge with a given conditions (other predicates).
-func HasPlansWith(preds ...predicate.Plan) predicate.City {
+// HasRidersWith applies the HasEdge predicate on the "riders" edge with a given conditions (other predicates).
+func HasRidersWith(preds ...predicate.Rider) predicate.City {
 	return predicate.City(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PlansInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, PlansTable, PlansPrimaryKey...),
+			sqlgraph.To(RidersInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, RidersTable, RidersColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

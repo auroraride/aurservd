@@ -49,6 +49,8 @@ type City struct {
 
 // CityEdges holds the relations/edges for other nodes in the graph.
 type CityEdges struct {
+	// Plans holds the value of the plans edge.
+	Plans []*Plan `json:"plans,omitempty"`
 	// Parent holds the value of the parent edge.
 	Parent *City `json:"parent,omitempty"`
 	// Children holds the value of the children edge.
@@ -57,17 +59,26 @@ type CityEdges struct {
 	Branches []*Branch `json:"branches,omitempty"`
 	// Faults holds the value of the faults edge.
 	Faults []*CabinetFault `json:"faults,omitempty"`
-	// Plans holds the value of the plans edge.
-	Plans []*Plan `json:"plans,omitempty"`
+	// Riders holds the value of the riders edge.
+	Riders []*Rider `json:"riders,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
+}
+
+// PlansOrErr returns the Plans value or an error if the edge
+// was not loaded in eager-loading.
+func (e CityEdges) PlansOrErr() ([]*Plan, error) {
+	if e.loadedTypes[0] {
+		return e.Plans, nil
+	}
+	return nil, &NotLoadedError{edge: "plans"}
 }
 
 // ParentOrErr returns the Parent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CityEdges) ParentOrErr() (*City, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		if e.Parent == nil {
 			// The edge parent was loaded in eager-loading,
 			// but was not found.
@@ -81,7 +92,7 @@ func (e CityEdges) ParentOrErr() (*City, error) {
 // ChildrenOrErr returns the Children value or an error if the edge
 // was not loaded in eager-loading.
 func (e CityEdges) ChildrenOrErr() ([]*City, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.Children, nil
 	}
 	return nil, &NotLoadedError{edge: "children"}
@@ -90,7 +101,7 @@ func (e CityEdges) ChildrenOrErr() ([]*City, error) {
 // BranchesOrErr returns the Branches value or an error if the edge
 // was not loaded in eager-loading.
 func (e CityEdges) BranchesOrErr() ([]*Branch, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		return e.Branches, nil
 	}
 	return nil, &NotLoadedError{edge: "branches"}
@@ -99,19 +110,19 @@ func (e CityEdges) BranchesOrErr() ([]*Branch, error) {
 // FaultsOrErr returns the Faults value or an error if the edge
 // was not loaded in eager-loading.
 func (e CityEdges) FaultsOrErr() ([]*CabinetFault, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		return e.Faults, nil
 	}
 	return nil, &NotLoadedError{edge: "faults"}
 }
 
-// PlansOrErr returns the Plans value or an error if the edge
+// RidersOrErr returns the Riders value or an error if the edge
 // was not loaded in eager-loading.
-func (e CityEdges) PlansOrErr() ([]*Plan, error) {
-	if e.loadedTypes[4] {
-		return e.Plans, nil
+func (e CityEdges) RidersOrErr() ([]*Rider, error) {
+	if e.loadedTypes[5] {
+		return e.Riders, nil
 	}
-	return nil, &NotLoadedError{edge: "plans"}
+	return nil, &NotLoadedError{edge: "riders"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -214,6 +225,11 @@ func (c *City) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
+// QueryPlans queries the "plans" edge of the City entity.
+func (c *City) QueryPlans() *PlanQuery {
+	return (&CityClient{config: c.config}).QueryPlans(c)
+}
+
 // QueryParent queries the "parent" edge of the City entity.
 func (c *City) QueryParent() *CityQuery {
 	return (&CityClient{config: c.config}).QueryParent(c)
@@ -234,9 +250,9 @@ func (c *City) QueryFaults() *CabinetFaultQuery {
 	return (&CityClient{config: c.config}).QueryFaults(c)
 }
 
-// QueryPlans queries the "plans" edge of the City entity.
-func (c *City) QueryPlans() *PlanQuery {
-	return (&CityClient{config: c.config}).QueryPlans(c)
+// QueryRiders queries the "riders" edge of the City entity.
+func (c *City) QueryRiders() *RiderQuery {
+	return (&CityClient{config: c.config}).QueryRiders(c)
 }
 
 // Update returns a builder for updating this City.

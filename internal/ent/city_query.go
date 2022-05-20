@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 )
 
 // CityQuery is the builder for querying City entities.
@@ -28,11 +29,12 @@ type CityQuery struct {
 	fields     []string
 	predicates []predicate.City
 	// eager-loading edges.
+	withPlans    *PlanQuery
 	withParent   *CityQuery
 	withChildren *CityQuery
 	withBranches *BranchQuery
 	withFaults   *CabinetFaultQuery
-	withPlans    *PlanQuery
+	withRiders   *RiderQuery
 	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -68,6 +70,28 @@ func (cq *CityQuery) Unique(unique bool) *CityQuery {
 func (cq *CityQuery) Order(o ...OrderFunc) *CityQuery {
 	cq.order = append(cq.order, o...)
 	return cq
+}
+
+// QueryPlans chains the current query on the "plans" edge.
+func (cq *CityQuery) QueryPlans() *PlanQuery {
+	query := &PlanQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(city.Table, city.FieldID, selector),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, city.PlansTable, city.PlansPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryParent chains the current query on the "parent" edge.
@@ -158,9 +182,9 @@ func (cq *CityQuery) QueryFaults() *CabinetFaultQuery {
 	return query
 }
 
-// QueryPlans chains the current query on the "plans" edge.
-func (cq *CityQuery) QueryPlans() *PlanQuery {
-	query := &PlanQuery{config: cq.config}
+// QueryRiders chains the current query on the "riders" edge.
+func (cq *CityQuery) QueryRiders() *RiderQuery {
+	query := &RiderQuery{config: cq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -171,8 +195,8 @@ func (cq *CityQuery) QueryPlans() *PlanQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(city.Table, city.FieldID, selector),
-			sqlgraph.To(plan.Table, plan.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, true, city.PlansTable, city.PlansPrimaryKey...),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, city.RidersTable, city.RidersColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -361,16 +385,28 @@ func (cq *CityQuery) Clone() *CityQuery {
 		offset:       cq.offset,
 		order:        append([]OrderFunc{}, cq.order...),
 		predicates:   append([]predicate.City{}, cq.predicates...),
+		withPlans:    cq.withPlans.Clone(),
 		withParent:   cq.withParent.Clone(),
 		withChildren: cq.withChildren.Clone(),
 		withBranches: cq.withBranches.Clone(),
 		withFaults:   cq.withFaults.Clone(),
-		withPlans:    cq.withPlans.Clone(),
+		withRiders:   cq.withRiders.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
 		unique: cq.unique,
 	}
+}
+
+// WithPlans tells the query-builder to eager-load the nodes that are connected to
+// the "plans" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CityQuery) WithPlans(opts ...func(*PlanQuery)) *CityQuery {
+	query := &PlanQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withPlans = query
+	return cq
 }
 
 // WithParent tells the query-builder to eager-load the nodes that are connected to
@@ -417,14 +453,14 @@ func (cq *CityQuery) WithFaults(opts ...func(*CabinetFaultQuery)) *CityQuery {
 	return cq
 }
 
-// WithPlans tells the query-builder to eager-load the nodes that are connected to
-// the "plans" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *CityQuery) WithPlans(opts ...func(*PlanQuery)) *CityQuery {
-	query := &PlanQuery{config: cq.config}
+// WithRiders tells the query-builder to eager-load the nodes that are connected to
+// the "riders" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CityQuery) WithRiders(opts ...func(*RiderQuery)) *CityQuery {
+	query := &RiderQuery{config: cq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	cq.withPlans = query
+	cq.withRiders = query
 	return cq
 }
 
@@ -498,12 +534,13 @@ func (cq *CityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*City, e
 	var (
 		nodes       = []*City{}
 		_spec       = cq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
+			cq.withPlans != nil,
 			cq.withParent != nil,
 			cq.withChildren != nil,
 			cq.withBranches != nil,
 			cq.withFaults != nil,
-			cq.withPlans != nil,
+			cq.withRiders != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -526,6 +563,59 @@ func (cq *CityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*City, e
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+
+	if query := cq.withPlans; query != nil {
+		edgeids := make([]driver.Value, len(nodes))
+		byid := make(map[uint64]*City)
+		nids := make(map[uint64]map[*City]struct{})
+		for i, node := range nodes {
+			edgeids[i] = node.ID
+			byid[node.ID] = node
+			node.Edges.Plans = []*Plan{}
+		}
+		query.Where(func(s *sql.Selector) {
+			joinT := sql.Table(city.PlansTable)
+			s.Join(joinT).On(s.C(plan.FieldID), joinT.C(city.PlansPrimaryKey[0]))
+			s.Where(sql.InValues(joinT.C(city.PlansPrimaryKey[1]), edgeids...))
+			columns := s.SelectedColumns()
+			s.Select(joinT.C(city.PlansPrimaryKey[1]))
+			s.AppendSelect(columns...)
+			s.SetDistinct(false)
+		})
+		neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]interface{}, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]interface{}{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []interface{}) error {
+				outValue := uint64(values[0].(*sql.NullInt64).Int64)
+				inValue := uint64(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*City]struct{}{byid[outValue]: struct{}{}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byid[outValue]] = struct{}{}
+				return nil
+			}
+		})
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected "plans" node returned %v`, n.ID)
+			}
+			for kn := range nodes {
+				kn.Edges.Plans = append(kn.Edges.Plans, n)
+			}
+		}
 	}
 
 	if query := cq.withParent; query != nil {
@@ -635,56 +725,31 @@ func (cq *CityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*City, e
 		}
 	}
 
-	if query := cq.withPlans; query != nil {
-		edgeids := make([]driver.Value, len(nodes))
-		byid := make(map[uint64]*City)
-		nids := make(map[uint64]map[*City]struct{})
-		for i, node := range nodes {
-			edgeids[i] = node.ID
-			byid[node.ID] = node
-			node.Edges.Plans = []*Plan{}
+	if query := cq.withRiders; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*City)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Riders = []*Rider{}
 		}
-		query.Where(func(s *sql.Selector) {
-			joinT := sql.Table(city.PlansTable)
-			s.Join(joinT).On(s.C(plan.FieldID), joinT.C(city.PlansPrimaryKey[0]))
-			s.Where(sql.InValues(joinT.C(city.PlansPrimaryKey[1]), edgeids...))
-			columns := s.SelectedColumns()
-			s.Select(joinT.C(city.PlansPrimaryKey[1]))
-			s.AppendSelect(columns...)
-			s.SetDistinct(false)
-		})
-		neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
-			assign := spec.Assign
-			values := spec.ScanValues
-			spec.ScanValues = func(columns []string) ([]interface{}, error) {
-				values, err := values(columns[1:])
-				if err != nil {
-					return nil, err
-				}
-				return append([]interface{}{new(sql.NullInt64)}, values...), nil
-			}
-			spec.Assign = func(columns []string, values []interface{}) error {
-				outValue := uint64(values[0].(*sql.NullInt64).Int64)
-				inValue := uint64(values[1].(*sql.NullInt64).Int64)
-				if nids[inValue] == nil {
-					nids[inValue] = map[*City]struct{}{byid[outValue]: struct{}{}}
-					return assign(columns[1:], values[1:])
-				}
-				nids[inValue][byid[outValue]] = struct{}{}
-				return nil
-			}
-		})
+		query.Where(predicate.Rider(func(s *sql.Selector) {
+			s.Where(sql.InValues(city.RidersColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
 		}
 		for _, n := range neighbors {
-			nodes, ok := nids[n.ID]
+			fk := n.CityID
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "city_id" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected "plans" node returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "city_id" returned %v for node %v`, *fk, n.ID)
 			}
-			for kn := range nodes {
-				kn.Edges.Plans = append(kn.Edges.Plans, n)
-			}
+			node.Edges.Riders = append(node.Edges.Riders, n)
 		}
 	}
 

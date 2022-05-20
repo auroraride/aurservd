@@ -31,6 +31,7 @@ type hooks struct {
 	CabinetFault   []ent.Hook
 	City           []ent.Hook
 	Contract       []ent.Hook
+	Enterprise     []ent.Hook
 	Manager        []ent.Hook
 	Person         []ent.Hook
 	Plan           []ent.Hook

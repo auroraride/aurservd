@@ -42,19 +42,19 @@ func (s *contractService) generateSn() string {
 // Sign 签署合同
 func (s *contractService) Sign(u *ent.Rider) string {
     var (
-        sn         = s.generateSn()
-        cfg        = s.esign.Config
-        orm        = ar.Ent
-        person     = u.Edges.Person
-        accountId  = u.EsignAccountID
-        isGroup    = u.GroupID != nil
-        templateId = cfg.Person.TemplateId
-        req        = esign.CreateFlowReq{
+        sn           = s.generateSn()
+        cfg          = s.esign.Config
+        orm          = ar.Ent
+        person       = u.Edges.Person
+        accountId    = u.EsignAccountID
+        isEnterprise = u.EnterpriseID != nil
+        templateId   = cfg.Person.TemplateId
+        req          = esign.CreateFlowReq{
             Scene: cfg.Person.Scene,
         }
     )
 
-    if isGroup {
+    if isEnterprise {
         templateId = cfg.Group.TemplateId
     }
 

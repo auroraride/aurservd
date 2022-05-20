@@ -13,7 +13,9 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
@@ -102,16 +104,30 @@ func (rc *RiderCreate) SetNillablePersonID(u *uint64) *RiderCreate {
 	return rc
 }
 
-// SetGroupID sets the "group_id" field.
-func (rc *RiderCreate) SetGroupID(u uint64) *RiderCreate {
-	rc.mutation.SetGroupID(u)
+// SetCityID sets the "city_id" field.
+func (rc *RiderCreate) SetCityID(u uint64) *RiderCreate {
+	rc.mutation.SetCityID(u)
 	return rc
 }
 
-// SetNillableGroupID sets the "group_id" field if the given value is not nil.
-func (rc *RiderCreate) SetNillableGroupID(u *uint64) *RiderCreate {
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (rc *RiderCreate) SetNillableCityID(u *uint64) *RiderCreate {
 	if u != nil {
-		rc.SetGroupID(*u)
+		rc.SetCityID(*u)
+	}
+	return rc
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (rc *RiderCreate) SetEnterpriseID(u uint64) *RiderCreate {
+	rc.mutation.SetEnterpriseID(u)
+	return rc
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (rc *RiderCreate) SetNillableEnterpriseID(u *uint64) *RiderCreate {
+	if u != nil {
+		rc.SetEnterpriseID(*u)
 	}
 	return rc
 }
@@ -219,6 +235,16 @@ func (rc *RiderCreate) SetID(u uint64) *RiderCreate {
 // SetPerson sets the "person" edge to the Person entity.
 func (rc *RiderCreate) SetPerson(p *Person) *RiderCreate {
 	return rc.SetPersonID(p.ID)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (rc *RiderCreate) SetCity(c *City) *RiderCreate {
+	return rc.SetCityID(c.ID)
+}
+
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (rc *RiderCreate) SetEnterprise(e *Enterprise) *RiderCreate {
+	return rc.SetEnterpriseID(e.ID)
 }
 
 // AddContractIDs adds the "contract" edge to the Contract entity by IDs.
@@ -454,14 +480,6 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 		})
 		_node.Remark = value
 	}
-	if value, ok := rc.mutation.GroupID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
-			Value:  value,
-			Column: rider.FieldGroupID,
-		})
-		_node.GroupID = &value
-	}
 	if value, ok := rc.mutation.Phone(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -552,6 +570,46 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.PersonID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   rider.CityTable,
+			Columns: []string{rider.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CityID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   rider.EnterpriseTable,
+			Columns: []string{rider.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprise.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EnterpriseID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := rc.mutation.ContractIDs(); len(nodes) > 0 {
@@ -742,27 +800,39 @@ func (u *RiderUpsert) ClearPersonID() *RiderUpsert {
 	return u
 }
 
-// SetGroupID sets the "group_id" field.
-func (u *RiderUpsert) SetGroupID(v uint64) *RiderUpsert {
-	u.Set(rider.FieldGroupID, v)
+// SetCityID sets the "city_id" field.
+func (u *RiderUpsert) SetCityID(v uint64) *RiderUpsert {
+	u.Set(rider.FieldCityID, v)
 	return u
 }
 
-// UpdateGroupID sets the "group_id" field to the value that was provided on create.
-func (u *RiderUpsert) UpdateGroupID() *RiderUpsert {
-	u.SetExcluded(rider.FieldGroupID)
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateCityID() *RiderUpsert {
+	u.SetExcluded(rider.FieldCityID)
 	return u
 }
 
-// AddGroupID adds v to the "group_id" field.
-func (u *RiderUpsert) AddGroupID(v uint64) *RiderUpsert {
-	u.Add(rider.FieldGroupID, v)
+// ClearCityID clears the value of the "city_id" field.
+func (u *RiderUpsert) ClearCityID() *RiderUpsert {
+	u.SetNull(rider.FieldCityID)
 	return u
 }
 
-// ClearGroupID clears the value of the "group_id" field.
-func (u *RiderUpsert) ClearGroupID() *RiderUpsert {
-	u.SetNull(rider.FieldGroupID)
+// SetEnterpriseID sets the "enterprise_id" field.
+func (u *RiderUpsert) SetEnterpriseID(v uint64) *RiderUpsert {
+	u.Set(rider.FieldEnterpriseID, v)
+	return u
+}
+
+// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateEnterpriseID() *RiderUpsert {
+	u.SetExcluded(rider.FieldEnterpriseID)
+	return u
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (u *RiderUpsert) ClearEnterpriseID() *RiderUpsert {
+	u.SetNull(rider.FieldEnterpriseID)
 	return u
 }
 
@@ -1075,31 +1145,45 @@ func (u *RiderUpsertOne) ClearPersonID() *RiderUpsertOne {
 	})
 }
 
-// SetGroupID sets the "group_id" field.
-func (u *RiderUpsertOne) SetGroupID(v uint64) *RiderUpsertOne {
+// SetCityID sets the "city_id" field.
+func (u *RiderUpsertOne) SetCityID(v uint64) *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
-		s.SetGroupID(v)
+		s.SetCityID(v)
 	})
 }
 
-// AddGroupID adds v to the "group_id" field.
-func (u *RiderUpsertOne) AddGroupID(v uint64) *RiderUpsertOne {
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateCityID() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
-		s.AddGroupID(v)
+		s.UpdateCityID()
 	})
 }
 
-// UpdateGroupID sets the "group_id" field to the value that was provided on create.
-func (u *RiderUpsertOne) UpdateGroupID() *RiderUpsertOne {
+// ClearCityID clears the value of the "city_id" field.
+func (u *RiderUpsertOne) ClearCityID() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
-		s.UpdateGroupID()
+		s.ClearCityID()
 	})
 }
 
-// ClearGroupID clears the value of the "group_id" field.
-func (u *RiderUpsertOne) ClearGroupID() *RiderUpsertOne {
+// SetEnterpriseID sets the "enterprise_id" field.
+func (u *RiderUpsertOne) SetEnterpriseID(v uint64) *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
-		s.ClearGroupID()
+		s.SetEnterpriseID(v)
+	})
+}
+
+// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateEnterpriseID() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateEnterpriseID()
+	})
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (u *RiderUpsertOne) ClearEnterpriseID() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearEnterpriseID()
 	})
 }
 
@@ -1601,31 +1685,45 @@ func (u *RiderUpsertBulk) ClearPersonID() *RiderUpsertBulk {
 	})
 }
 
-// SetGroupID sets the "group_id" field.
-func (u *RiderUpsertBulk) SetGroupID(v uint64) *RiderUpsertBulk {
+// SetCityID sets the "city_id" field.
+func (u *RiderUpsertBulk) SetCityID(v uint64) *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
-		s.SetGroupID(v)
+		s.SetCityID(v)
 	})
 }
 
-// AddGroupID adds v to the "group_id" field.
-func (u *RiderUpsertBulk) AddGroupID(v uint64) *RiderUpsertBulk {
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateCityID() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
-		s.AddGroupID(v)
+		s.UpdateCityID()
 	})
 }
 
-// UpdateGroupID sets the "group_id" field to the value that was provided on create.
-func (u *RiderUpsertBulk) UpdateGroupID() *RiderUpsertBulk {
+// ClearCityID clears the value of the "city_id" field.
+func (u *RiderUpsertBulk) ClearCityID() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
-		s.UpdateGroupID()
+		s.ClearCityID()
 	})
 }
 
-// ClearGroupID clears the value of the "group_id" field.
-func (u *RiderUpsertBulk) ClearGroupID() *RiderUpsertBulk {
+// SetEnterpriseID sets the "enterprise_id" field.
+func (u *RiderUpsertBulk) SetEnterpriseID(v uint64) *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
-		s.ClearGroupID()
+		s.SetEnterpriseID(v)
+	})
+}
+
+// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateEnterpriseID() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateEnterpriseID()
+	})
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (u *RiderUpsertBulk) ClearEnterpriseID() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearEnterpriseID()
 	})
 }
 

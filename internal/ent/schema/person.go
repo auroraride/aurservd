@@ -2,6 +2,7 @@ package schema
 
 import (
     "entgo.io/ent"
+    "entgo.io/ent/dialect"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
@@ -57,5 +58,10 @@ func (Person) Mixin() []ent.Mixin {
 func (Person) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("status"),
+        index.Fields("name").Annotations(
+            entsql.IndexTypes(map[string]string{
+                dialect.Postgres: "GIN",
+            }),
+        ),
     }
 }
