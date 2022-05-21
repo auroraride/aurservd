@@ -76,3 +76,9 @@ type RiderItem struct {
     Enterprise   *EnterpriseItem `json:"enterprise,omitempty"` // 团签企业信息, 若无此字段则为个签用户
     UserPlan     *UserPlanItem   `json:"userPlan,omitempty"`   // 当前有效骑士卡, 若无此字段则代表当前无有效骑士卡
 }
+
+// RiderBlockReq 封禁或解封骑手账号
+type RiderBlockReq struct {
+    ID    uint64 `json:"id" `   // 骑手ID
+    Block bool   `json:"block"` // `true`封禁 `false`解封
+}

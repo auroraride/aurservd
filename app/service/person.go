@@ -35,20 +35,20 @@ func (s *personService) Query(id uint64) *ent.Person {
     return item.Edges.Person
 }
 
-// Block 封禁或取消封禁
-func (s *personService) Block(m *model.Modifier, req *model.PersonBlockReq) {
+// Ban 封禁或取消封禁
+func (s *personService) Ban(m *model.Modifier, req *model.PersonBanReq) {
     item := s.Query(req.ID)
-    if req.Block == item.Banned {
+    if req.Ban == item.Banned {
         snag.Panic("骑手已是封禁状态")
     }
-    _, err := s.orm.UpdateOne(item).SetBanned(req.Block).SetLastModifier(m).Save(s.ctx)
+    _, err := s.orm.UpdateOne(item).SetBanned(req.Ban).SetLastModifier(m).Save(s.ctx)
     if err != nil {
         snag.Panic(err)
     }
     nb := "未封禁"
     bd := "已封禁"
     ol := logging.CreateOperateLog().SetRef(item).SetModifier(m)
-    if req.Block {
+    if req.Ban {
         // 封禁
         ol.SetOperate(logging.OperatePersonBan).SetDiff(nb, bd)
     } else {

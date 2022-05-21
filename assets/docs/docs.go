@@ -1297,6 +1297,47 @@ const docTemplate = `{
                     "[M]管理接口"
                 ],
                 "summary": "M70002 封禁/解除封禁身份",
+                "operationId": "RiderBan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.PersonBanReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/rider/block": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M70003 封禁/解除封禁骑手账户",
                 "operationId": "RiderBlock",
                 "parameters": [
                     {
@@ -1312,7 +1353,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.PersonBlockReq"
+                            "$ref": "#/definitions/model.RiderBlockReq"
                         }
                     }
                 ],
@@ -2202,10 +2243,10 @@ const docTemplate = `{
                 }
             }
         },
-        "model.PersonBlockReq": {
+        "model.PersonBanReq": {
             "type": "object",
             "properties": {
-                "block": {
+                "ban": {
                     "description": "` + "`" + `true` + "`" + `封禁 ` + "`" + `false` + "`" + `解封",
                     "type": "boolean"
                 },
@@ -2280,6 +2321,19 @@ const docTemplate = `{
                 "start": {
                     "description": "开始日期 ",
                     "type": "string"
+                }
+            }
+        },
+        "model.RiderBlockReq": {
+            "type": "object",
+            "properties": {
+                "block": {
+                    "description": "` + "`" + `true` + "`" + `封禁 ` + "`" + `false` + "`" + `解封",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "骑手ID",
+                    "type": "integer"
                 }
             }
         },

@@ -20,8 +20,10 @@ import (
 type Operate uint
 
 const (
-    OperatePersonBan   = iota // 封禁用户
-    OperatePersonUnBan        // 解封用户
+    OperatePersonBan    = iota // 封禁身份
+    OperatePersonUnBan         // 解封身份
+    OperateRiderBLock          // 封禁账户
+    OperateRiderUnBLock        // 解封账户
 )
 
 func (o Operate) String() string {
@@ -30,6 +32,10 @@ func (o Operate) String() string {
         return "封禁用户"
     case OperatePersonUnBan:
         return "解封用户"
+    case OperateRiderBLock:
+        return "封禁账户"
+    case OperateRiderUnBLock:
+        return "解封账户"
     default:
         return "未知操作"
     }

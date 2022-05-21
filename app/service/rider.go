@@ -10,6 +10,7 @@ import (
     "errors"
     "fmt"
     "github.com/auroraride/aurservd/app"
+    "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
@@ -378,4 +379,34 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
 
 func (s *riderService) ModifyUserPlanDays() {
 
+}
+
+func (s *riderService) Query(id uint64) *ent.Rider {
+    item, err := ar.Ent.Rider.QueryNotDeleted().Where(rider.ID(id)).Only(s.ctx)
+    if err != nil || item == nil {
+        snag.Panic("未找到骑手")
+    }
+    return item
+}
+
+// Block 封锁/解封骑手账户
+func (s *riderService) Block(m *model.Modifier, req *model.RiderBlockReq) {
+    item := s.Query(req.ID)
+    if req.Block == item.Blocked {
+        snag.Panic("骑手已是封禁状态")
+    }
+    _, err := s.orm.UpdateOne(item).SetBlocked(req.Block).SetLastModifier(m).Save(s.ctx)
+    if err != nil {
+        snag.Panic(err)
+    }
+    nb := "未封禁"
+    bd := "已封禁"
+    ol := logging.CreateOperateLog().SetRef(item).SetModifier(m)
+    if req.Block {
+        // 封禁
+        ol.SetOperate(logging.OperateRiderBLock).SetDiff(nb, bd)
+    } else {
+        ol.SetOperate(logging.OperateRiderUnBLock).SetDiff(bd, nb)
+    }
+    ol.PutOperateLog()
 }

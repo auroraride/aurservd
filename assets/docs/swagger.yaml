@@ -525,9 +525,9 @@ definitions:
         $ref: '#/definitions/model.Pagination'
         description: 分页属性
     type: object
-  model.PersonBlockReq:
+  model.PersonBanReq:
     properties:
-      block:
+      ban:
         description: '`true`封禁 `false`解封'
         type: boolean
       id:
@@ -582,6 +582,15 @@ definitions:
     - name
     - price
     - start
+    type: object
+  model.RiderBlockReq:
+    properties:
+      block:
+        description: '`true`封禁 `false`解封'
+        type: boolean
+      id:
+        description: 骑手ID
+        type: integer
     type: object
   model.RiderContact:
     properties:
@@ -1618,6 +1627,33 @@ paths:
     post:
       consumes:
       - application/json
+      operationId: RiderBan
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.PersonBanReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M70002 封禁/解除封禁身份
+      tags:
+      - '[M]管理接口'
+  /manager/v1/rider/block:
+    post:
+      consumes:
+      - application/json
       operationId: RiderBlock
       parameters:
       - description: 管理员校验token
@@ -1630,7 +1666,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.PersonBlockReq'
+          $ref: '#/definitions/model.RiderBlockReq'
       produces:
       - application/json
       responses:
@@ -1638,7 +1674,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M70002 封禁/解除封禁身份
+      summary: M70003 封禁/解除封禁骑手账户
       tags:
       - '[M]管理接口'
   /manager/v1/user/signin:
