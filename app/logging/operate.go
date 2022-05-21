@@ -20,15 +20,15 @@ import (
 type Operate uint
 
 const (
-    OperatePersonBlock   = iota // 封禁用户
-    OperatePersonUnBlock        // 解封用户
+    OperatePersonBan   = iota // 封禁用户
+    OperatePersonUnBan        // 解封用户
 )
 
 func (o Operate) String() string {
     switch o {
-    case OperatePersonBlock:
+    case OperatePersonBan:
         return "封禁用户"
-    case OperatePersonUnBlock:
+    case OperatePersonUnBan:
         return "解封用户"
     default:
         return "未知操作"

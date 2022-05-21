@@ -225,6 +225,20 @@ func (rc *RiderCreate) SetNillablePlanAt(t *time.Time) *RiderCreate {
 	return rc
 }
 
+// SetBlocked sets the "blocked" field.
+func (rc *RiderCreate) SetBlocked(b bool) *RiderCreate {
+	rc.mutation.SetBlocked(b)
+	return rc
+}
+
+// SetNillableBlocked sets the "blocked" field if the given value is not nil.
+func (rc *RiderCreate) SetNillableBlocked(b *bool) *RiderCreate {
+	if b != nil {
+		rc.SetBlocked(*b)
+	}
+	return rc
+}
+
 // SetID sets the "id" field.
 func (rc *RiderCreate) SetID(u uint64) *RiderCreate {
 	rc.mutation.SetID(u)
@@ -362,6 +376,10 @@ func (rc *RiderCreate) defaults() error {
 		v := rider.DefaultIsNewDevice
 		rc.mutation.SetIsNewDevice(v)
 	}
+	if _, ok := rc.mutation.Blocked(); !ok {
+		v := rider.DefaultBlocked
+		rc.mutation.SetBlocked(v)
+	}
 	return nil
 }
 
@@ -399,6 +417,9 @@ func (rc *RiderCreate) check() error {
 		if err := rider.PushIDValidator(v); err != nil {
 			return &ValidationError{Name: "push_id", err: fmt.Errorf(`ent: validator failed for field "Rider.push_id": %w`, err)}
 		}
+	}
+	if _, ok := rc.mutation.Blocked(); !ok {
+		return &ValidationError{Name: "blocked", err: errors.New(`ent: missing required field "Rider.blocked"`)}
 	}
 	return nil
 }
@@ -553,6 +574,14 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			Column: rider.FieldPlanAt,
 		})
 		_node.PlanAt = value
+	}
+	if value, ok := rc.mutation.Blocked(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: rider.FieldBlocked,
+		})
+		_node.Blocked = value
 	}
 	if nodes := rc.mutation.PersonIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -962,6 +991,18 @@ func (u *RiderUpsert) ClearPlanAt() *RiderUpsert {
 	return u
 }
 
+// SetBlocked sets the "blocked" field.
+func (u *RiderUpsert) SetBlocked(v bool) *RiderUpsert {
+	u.Set(rider.FieldBlocked, v)
+	return u
+}
+
+// UpdateBlocked sets the "blocked" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateBlocked() *RiderUpsert {
+	u.SetExcluded(rider.FieldBlocked)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -1334,6 +1375,20 @@ func (u *RiderUpsertOne) UpdatePlanAt() *RiderUpsertOne {
 func (u *RiderUpsertOne) ClearPlanAt() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearPlanAt()
+	})
+}
+
+// SetBlocked sets the "blocked" field.
+func (u *RiderUpsertOne) SetBlocked(v bool) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetBlocked(v)
+	})
+}
+
+// UpdateBlocked sets the "blocked" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateBlocked() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateBlocked()
 	})
 }
 
@@ -1874,6 +1929,20 @@ func (u *RiderUpsertBulk) UpdatePlanAt() *RiderUpsertBulk {
 func (u *RiderUpsertBulk) ClearPlanAt() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearPlanAt()
+	})
+}
+
+// SetBlocked sets the "blocked" field.
+func (u *RiderUpsertBulk) SetBlocked(v bool) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetBlocked(v)
+	})
+}
+
+// UpdateBlocked sets the "blocked" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateBlocked() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateBlocked()
 	})
 }
 

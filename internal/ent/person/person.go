@@ -23,8 +23,8 @@ const (
 	FieldRemark = "remark"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
-	// FieldBlock holds the string denoting the block field in the database.
-	FieldBlock = "block"
+	// FieldBanned holds the string denoting the banned field in the database.
+	FieldBanned = "banned"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldIDCardNumber holds the string denoting the id_card_number field in the database.
@@ -63,7 +63,7 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldStatus,
-	FieldBlock,
+	FieldBanned,
 	FieldName,
 	FieldIDCardNumber,
 	FieldIDCardType,
@@ -93,8 +93,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus uint8
-	// DefaultBlock holds the default value on creation for the "block" field.
-	DefaultBlock bool
+	// DefaultBanned holds the default value on creation for the "banned" field.
+	DefaultBanned bool
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
 	// IDCardNumberValidator is a validator for the "id_card_number" field. It is called by the builders before save.

@@ -198,6 +198,13 @@ func PlanAt(v time.Time) predicate.Rider {
 	})
 }
 
+// Blocked applies equality check predicate on the "blocked" field. It's identical to BlockedEQ.
+func Blocked(v bool) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBlocked), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
@@ -1581,6 +1588,20 @@ func PlanAtIsNil() predicate.Rider {
 func PlanAtNotNil() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldPlanAt)))
+	})
+}
+
+// BlockedEQ applies the EQ predicate on the "blocked" field.
+func BlockedEQ(v bool) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBlocked), v))
+	})
+}
+
+// BlockedNEQ applies the NEQ predicate on the "blocked" field.
+func BlockedNEQ(v bool) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldBlocked), v))
 	})
 }
 

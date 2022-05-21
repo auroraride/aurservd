@@ -31,17 +31,17 @@ func (*rider) List(c echo.Context) (err error) {
     return ctx.SendResponse(service.NewRider().List(req))
 }
 
-// Block
+// Ban
 // @ID           RiderBlock
-// @Router       /manager/v1/rider/block [POST]
-// @Summary      M70002 封禁/解除封禁
+// @Router       /manager/v1/rider/ban [POST]
+// @Summary      M70002 封禁/解除封禁身份
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        body  body  model.PersonBlockReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
-func (*rider) Block(c echo.Context) (err error) {
+func (*rider) Ban(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.PersonBlockReq](c)
     service.NewPerson().Block(ctx.Modifier, req)
     return ctx.SendResponse()

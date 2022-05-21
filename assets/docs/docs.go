@@ -1213,12 +1213,6 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "注册城市",
-                        "name": "cityId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
                         "in": "query"
@@ -1291,7 +1285,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/manager/v1/rider/block": {
+        "/manager/v1/rider/ban": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -1302,7 +1296,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M70002 封禁/解除封禁",
+                "summary": "M70002 封禁/解除封禁身份",
                 "operationId": "RiderBlock",
                 "parameters": [
                     {
@@ -2314,10 +2308,6 @@ const docTemplate = `{
         "model.RiderItem": {
             "type": "object",
             "properties": {
-                "city": {
-                    "description": "注册城市",
-                    "$ref": "#/definitions/model.City"
-                },
                 "deposit": {
                     "description": "押金",
                     "type": "number"
@@ -2376,13 +2366,19 @@ const docTemplate = `{
                 "smsId"
             ],
             "properties": {
+                "cityId": {
+                    "type": "integer"
+                },
                 "phone": {
+                    "description": "电话 ",
                     "type": "string"
                 },
                 "smsCode": {
+                    "description": "短信验证码 ",
                     "type": "string"
                 },
                 "smsId": {
+                    "description": "短信ID ",
                     "type": "string"
                 }
             }

@@ -55,5 +55,5 @@ func loadManagerRoutes() {
 
     // 骑手
     g.GET("/rider", mapi.Rider.List)
-    g.POST("/rider/block", mapi.Rider.Block)
+    g.POST("/rider/ban", mapi.Rider.Ban)
 }

@@ -33,9 +33,9 @@ type Person struct {
 	// Status holds the value of the "status" field.
 	// 认证状态
 	Status uint8 `json:"status,omitempty"`
-	// Block holds the value of the "block" field.
-	// 封禁
-	Block bool `json:"block,omitempty"`
+	// Banned holds the value of the "banned" field.
+	// 是否封禁身份
+	Banned bool `json:"banned,omitempty"`
 	// Name holds the value of the "name" field.
 	// 真实姓名
 	Name string `json:"name,omitempty"`
@@ -90,7 +90,7 @@ func (*Person) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case person.FieldLastModifier, person.FieldAuthResult:
 			values[i] = new([]byte)
-		case person.FieldBlock:
+		case person.FieldBanned:
 			values[i] = new(sql.NullBool)
 		case person.FieldID, person.FieldStatus, person.FieldIDCardType:
 			values[i] = new(sql.NullInt64)
@@ -158,11 +158,11 @@ func (pe *Person) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				pe.Status = uint8(value.Int64)
 			}
-		case person.FieldBlock:
+		case person.FieldBanned:
 			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field block", values[i])
+				return fmt.Errorf("unexpected type %T for field banned", values[i])
 			} else if value.Valid {
-				pe.Block = value.Bool
+				pe.Banned = value.Bool
 			}
 		case person.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -262,8 +262,8 @@ func (pe *Person) String() string {
 	builder.WriteString(pe.Remark)
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", pe.Status))
-	builder.WriteString(", block=")
-	builder.WriteString(fmt.Sprintf("%v", pe.Block))
+	builder.WriteString(", banned=")
+	builder.WriteString(fmt.Sprintf("%v", pe.Banned))
 	builder.WriteString(", name=")
 	builder.WriteString(pe.Name)
 	builder.WriteString(", id_card_number=")

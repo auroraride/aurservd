@@ -269,7 +269,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			person.FieldLastModifier:   {Type: field.TypeJSON, Column: person.FieldLastModifier},
 			person.FieldRemark:         {Type: field.TypeString, Column: person.FieldRemark},
 			person.FieldStatus:         {Type: field.TypeUint8, Column: person.FieldStatus},
-			person.FieldBlock:          {Type: field.TypeBool, Column: person.FieldBlock},
+			person.FieldBanned:         {Type: field.TypeBool, Column: person.FieldBanned},
 			person.FieldName:           {Type: field.TypeString, Column: person.FieldName},
 			person.FieldIDCardNumber:   {Type: field.TypeString, Column: person.FieldIDCardNumber},
 			person.FieldIDCardType:     {Type: field.TypeUint8, Column: person.FieldIDCardType},
@@ -334,6 +334,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldLastSigninAt:   {Type: field.TypeTime, Column: rider.FieldLastSigninAt},
 			rider.FieldEsignAccountID: {Type: field.TypeString, Column: rider.FieldEsignAccountID},
 			rider.FieldPlanAt:         {Type: field.TypeTime, Column: rider.FieldPlanAt},
+			rider.FieldBlocked:        {Type: field.TypeBool, Column: rider.FieldBlocked},
 		},
 	}
 	graph.Nodes[12] = &sqlgraph.Node{
@@ -1962,9 +1963,9 @@ func (f *PersonFilter) WhereStatus(p entql.Uint8P) {
 	f.Where(p.Field(person.FieldStatus))
 }
 
-// WhereBlock applies the entql bool predicate on the block field.
-func (f *PersonFilter) WhereBlock(p entql.BoolP) {
-	f.Where(p.Field(person.FieldBlock))
+// WhereBanned applies the entql bool predicate on the banned field.
+func (f *PersonFilter) WhereBanned(p entql.BoolP) {
+	f.Where(p.Field(person.FieldBanned))
 }
 
 // WhereName applies the entql string predicate on the name field.
@@ -2277,6 +2278,11 @@ func (f *RiderFilter) WhereEsignAccountID(p entql.StringP) {
 // WherePlanAt applies the entql time.Time predicate on the plan_at field.
 func (f *RiderFilter) WherePlanAt(p entql.TimeP) {
 	f.Where(p.Field(rider.FieldPlanAt))
+}
+
+// WhereBlocked applies the entql bool predicate on the blocked field.
+func (f *RiderFilter) WhereBlocked(p entql.BoolP) {
+	f.Where(p.Field(rider.FieldBlocked))
 }
 
 // WhereHasPerson applies a predicate to check if query has an edge person.

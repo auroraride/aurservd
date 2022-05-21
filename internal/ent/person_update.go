@@ -109,16 +109,16 @@ func (pu *PersonUpdate) AddStatus(u int8) *PersonUpdate {
 	return pu
 }
 
-// SetBlock sets the "block" field.
-func (pu *PersonUpdate) SetBlock(b bool) *PersonUpdate {
-	pu.mutation.SetBlock(b)
+// SetBanned sets the "banned" field.
+func (pu *PersonUpdate) SetBanned(b bool) *PersonUpdate {
+	pu.mutation.SetBanned(b)
 	return pu
 }
 
-// SetNillableBlock sets the "block" field if the given value is not nil.
-func (pu *PersonUpdate) SetNillableBlock(b *bool) *PersonUpdate {
+// SetNillableBanned sets the "banned" field if the given value is not nil.
+func (pu *PersonUpdate) SetNillableBanned(b *bool) *PersonUpdate {
 	if b != nil {
-		pu.SetBlock(*b)
+		pu.SetBanned(*b)
 	}
 	return pu
 }
@@ -409,11 +409,11 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: person.FieldStatus,
 		})
 	}
-	if value, ok := pu.mutation.Block(); ok {
+	if value, ok := pu.mutation.Banned(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: person.FieldBlock,
+			Column: person.FieldBanned,
 		})
 	}
 	if value, ok := pu.mutation.Name(); ok {
@@ -643,16 +643,16 @@ func (puo *PersonUpdateOne) AddStatus(u int8) *PersonUpdateOne {
 	return puo
 }
 
-// SetBlock sets the "block" field.
-func (puo *PersonUpdateOne) SetBlock(b bool) *PersonUpdateOne {
-	puo.mutation.SetBlock(b)
+// SetBanned sets the "banned" field.
+func (puo *PersonUpdateOne) SetBanned(b bool) *PersonUpdateOne {
+	puo.mutation.SetBanned(b)
 	return puo
 }
 
-// SetNillableBlock sets the "block" field if the given value is not nil.
-func (puo *PersonUpdateOne) SetNillableBlock(b *bool) *PersonUpdateOne {
+// SetNillableBanned sets the "banned" field if the given value is not nil.
+func (puo *PersonUpdateOne) SetNillableBanned(b *bool) *PersonUpdateOne {
 	if b != nil {
-		puo.SetBlock(*b)
+		puo.SetBanned(*b)
 	}
 	return puo
 }
@@ -967,11 +967,11 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 			Column: person.FieldStatus,
 		})
 	}
-	if value, ok := puo.mutation.Block(); ok {
+	if value, ok := puo.mutation.Banned(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: person.FieldBlock,
+			Column: person.FieldBanned,
 		})
 	}
 	if value, ok := puo.mutation.Name(); ok {

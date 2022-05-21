@@ -128,10 +128,10 @@ func Status(v uint8) predicate.Person {
 	})
 }
 
-// Block applies equality check predicate on the "block" field. It's identical to BlockEQ.
-func Block(v bool) predicate.Person {
+// Banned applies equality check predicate on the "banned" field. It's identical to BannedEQ.
+func Banned(v bool) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBlock), v))
+		s.Where(sql.EQ(s.C(FieldBanned), v))
 	})
 }
 
@@ -641,17 +641,17 @@ func StatusLTE(v uint8) predicate.Person {
 	})
 }
 
-// BlockEQ applies the EQ predicate on the "block" field.
-func BlockEQ(v bool) predicate.Person {
+// BannedEQ applies the EQ predicate on the "banned" field.
+func BannedEQ(v bool) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBlock), v))
+		s.Where(sql.EQ(s.C(FieldBanned), v))
 	})
 }
 
-// BlockNEQ applies the NEQ predicate on the "block" field.
-func BlockNEQ(v bool) predicate.Person {
+// BannedNEQ applies the NEQ predicate on the "banned" field.
+func BannedNEQ(v bool) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBlock), v))
+		s.Where(sql.NEQ(s.C(FieldBanned), v))
 	})
 }
 

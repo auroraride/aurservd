@@ -251,10 +251,10 @@ func init() {
 	personDescStatus := personFields[0].Descriptor()
 	// person.DefaultStatus holds the default value on creation for the status field.
 	person.DefaultStatus = personDescStatus.Default.(uint8)
-	// personDescBlock is the schema descriptor for block field.
-	personDescBlock := personFields[1].Descriptor()
-	// person.DefaultBlock holds the default value on creation for the block field.
-	person.DefaultBlock = personDescBlock.Default.(bool)
+	// personDescBanned is the schema descriptor for banned field.
+	personDescBanned := personFields[1].Descriptor()
+	// person.DefaultBanned holds the default value on creation for the banned field.
+	person.DefaultBanned = personDescBanned.Default.(bool)
 	// personDescName is the schema descriptor for name field.
 	personDescName := personFields[2].Descriptor()
 	// person.NameValidator is a validator for the "name" field. It is called by the builders before save.
@@ -315,6 +315,10 @@ func init() {
 	riderDescPushID := riderFields[8].Descriptor()
 	// rider.PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
 	rider.PushIDValidator = riderDescPushID.Validators[0].(func(string) error)
+	// riderDescBlocked is the schema descriptor for blocked field.
+	riderDescBlocked := riderFields[12].Descriptor()
+	// rider.DefaultBlocked holds the default value on creation for the blocked field.
+	rider.DefaultBlocked = riderDescBlocked.Default.(bool)
 	settingMixin := schema.Setting{}.Mixin()
 	settingMixinFields0 := settingMixin[0].Fields()
 	_ = settingMixinFields0

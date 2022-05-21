@@ -47,6 +47,8 @@ const (
 	FieldEsignAccountID = "esign_account_id"
 	// FieldPlanAt holds the string denoting the plan_at field in the database.
 	FieldPlanAt = "plan_at"
+	// FieldBlocked holds the string denoting the blocked field in the database.
+	FieldBlocked = "blocked"
 	// EdgePerson holds the string denoting the person edge name in mutations.
 	EdgePerson = "person"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
@@ -107,6 +109,7 @@ var Columns = []string{
 	FieldLastSigninAt,
 	FieldEsignAccountID,
 	FieldPlanAt,
+	FieldBlocked,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -141,4 +144,6 @@ var (
 	DefaultIsNewDevice bool
 	// PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
 	PushIDValidator func(string) error
+	// DefaultBlocked holds the default value on creation for the "blocked" field.
+	DefaultBlocked bool
 )

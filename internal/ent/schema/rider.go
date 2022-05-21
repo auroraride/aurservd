@@ -27,7 +27,7 @@ func (Rider) Annotations() []schema.Annotation {
 // Fields of the Rider.
 func (Rider) Fields() []ent.Field {
     return []ent.Field{
-        field.Uint64("person_id").Optional().Nillable().Comment("实人"),
+        field.Uint64("person_id").Optional().Nillable().Comment("身份"),
         field.Uint64("enterprise_id").Optional().Nillable().Comment("所属企业"),
         field.String("phone").MaxLen(11).Unique().Comment("手机号"),
         field.JSON("contact", &model.RiderContact{}).Optional().Comment("紧急联系人"),
@@ -39,6 +39,7 @@ func (Rider) Fields() []ent.Field {
         field.Time("last_signin_at").Nillable().Optional().Comment("最后登录时间"),
         field.String("esign_account_id").Optional().Comment("E签宝账户ID"),
         field.Time("plan_at").SchemaType(map[string]string{dialect.Postgres: "date"}).Optional().Comment("骑行卡到期日期"),
+        field.Bool("blocked").Default(false).Comment("是否封禁骑手账号"),
     }
 }
 

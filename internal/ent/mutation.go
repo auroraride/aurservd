@@ -11035,7 +11035,7 @@ type PersonMutation struct {
 	remark           *string
 	status           *uint8
 	addstatus        *int8
-	block            *bool
+	banned           *bool
 	name             *string
 	id_card_number   *string
 	id_card_type     *uint8
@@ -11427,40 +11427,40 @@ func (m *PersonMutation) ResetStatus() {
 	m.addstatus = nil
 }
 
-// SetBlock sets the "block" field.
-func (m *PersonMutation) SetBlock(b bool) {
-	m.block = &b
+// SetBanned sets the "banned" field.
+func (m *PersonMutation) SetBanned(b bool) {
+	m.banned = &b
 }
 
-// Block returns the value of the "block" field in the mutation.
-func (m *PersonMutation) Block() (r bool, exists bool) {
-	v := m.block
+// Banned returns the value of the "banned" field in the mutation.
+func (m *PersonMutation) Banned() (r bool, exists bool) {
+	v := m.banned
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldBlock returns the old "block" field's value of the Person entity.
+// OldBanned returns the old "banned" field's value of the Person entity.
 // If the Person object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PersonMutation) OldBlock(ctx context.Context) (v bool, err error) {
+func (m *PersonMutation) OldBanned(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBlock is only allowed on UpdateOne operations")
+		return v, errors.New("OldBanned is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBlock requires an ID field in the mutation")
+		return v, errors.New("OldBanned requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBlock: %w", err)
+		return v, fmt.Errorf("querying old value for OldBanned: %w", err)
 	}
-	return oldValue.Block, nil
+	return oldValue.Banned, nil
 }
 
-// ResetBlock resets all changes to the "block" field.
-func (m *PersonMutation) ResetBlock() {
-	m.block = nil
+// ResetBanned resets all changes to the "banned" field.
+func (m *PersonMutation) ResetBanned() {
+	m.banned = nil
 }
 
 // SetName sets the "name" field.
@@ -11889,8 +11889,8 @@ func (m *PersonMutation) Fields() []string {
 	if m.status != nil {
 		fields = append(fields, person.FieldStatus)
 	}
-	if m.block != nil {
-		fields = append(fields, person.FieldBlock)
+	if m.banned != nil {
+		fields = append(fields, person.FieldBanned)
 	}
 	if m.name != nil {
 		fields = append(fields, person.FieldName)
@@ -11936,8 +11936,8 @@ func (m *PersonMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case person.FieldStatus:
 		return m.Status()
-	case person.FieldBlock:
-		return m.Block()
+	case person.FieldBanned:
+		return m.Banned()
 	case person.FieldName:
 		return m.Name()
 	case person.FieldIDCardNumber:
@@ -11975,8 +11975,8 @@ func (m *PersonMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldRemark(ctx)
 	case person.FieldStatus:
 		return m.OldStatus(ctx)
-	case person.FieldBlock:
-		return m.OldBlock(ctx)
+	case person.FieldBanned:
+		return m.OldBanned(ctx)
 	case person.FieldName:
 		return m.OldName(ctx)
 	case person.FieldIDCardNumber:
@@ -12044,12 +12044,12 @@ func (m *PersonMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetStatus(v)
 		return nil
-	case person.FieldBlock:
+	case person.FieldBanned:
 		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBlock(v)
+		m.SetBanned(v)
 		return nil
 	case person.FieldName:
 		v, ok := value.(string)
@@ -12234,8 +12234,8 @@ func (m *PersonMutation) ResetField(name string) error {
 	case person.FieldStatus:
 		m.ResetStatus()
 		return nil
-	case person.FieldBlock:
-		m.ResetBlock()
+	case person.FieldBanned:
+		m.ResetBanned()
 		return nil
 	case person.FieldName:
 		m.ResetName()
@@ -13687,6 +13687,7 @@ type RiderMutation struct {
 	last_signin_at    *time.Time
 	esign_account_id  *string
 	plan_at           *time.Time
+	blocked           *bool
 	clearedFields     map[string]struct{}
 	person            *uint64
 	clearedperson     bool
@@ -14582,6 +14583,42 @@ func (m *RiderMutation) ResetPlanAt() {
 	delete(m.clearedFields, rider.FieldPlanAt)
 }
 
+// SetBlocked sets the "blocked" field.
+func (m *RiderMutation) SetBlocked(b bool) {
+	m.blocked = &b
+}
+
+// Blocked returns the value of the "blocked" field in the mutation.
+func (m *RiderMutation) Blocked() (r bool, exists bool) {
+	v := m.blocked
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBlocked returns the old "blocked" field's value of the Rider entity.
+// If the Rider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderMutation) OldBlocked(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBlocked is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBlocked requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBlocked: %w", err)
+	}
+	return oldValue.Blocked, nil
+}
+
+// ResetBlocked resets all changes to the "blocked" field.
+func (m *RiderMutation) ResetBlocked() {
+	m.blocked = nil
+}
+
 // ClearPerson clears the "person" edge to the Person entity.
 func (m *RiderMutation) ClearPerson() {
 	m.clearedperson = true
@@ -14761,7 +14798,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -14813,6 +14850,9 @@ func (m *RiderMutation) Fields() []string {
 	if m.plan_at != nil {
 		fields = append(fields, rider.FieldPlanAt)
 	}
+	if m.blocked != nil {
+		fields = append(fields, rider.FieldBlocked)
+	}
 	return fields
 }
 
@@ -14855,6 +14895,8 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.EsignAccountID()
 	case rider.FieldPlanAt:
 		return m.PlanAt()
+	case rider.FieldBlocked:
+		return m.Blocked()
 	}
 	return nil, false
 }
@@ -14898,6 +14940,8 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldEsignAccountID(ctx)
 	case rider.FieldPlanAt:
 		return m.OldPlanAt(ctx)
+	case rider.FieldBlocked:
+		return m.OldBlocked(ctx)
 	}
 	return nil, fmt.Errorf("unknown Rider field %s", name)
 }
@@ -15025,6 +15069,13 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPlanAt(v)
+		return nil
+	case rider.FieldBlocked:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBlocked(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)
@@ -15209,6 +15260,9 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldPlanAt:
 		m.ResetPlanAt()
+		return nil
+	case rider.FieldBlocked:
+		m.ResetBlocked()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)

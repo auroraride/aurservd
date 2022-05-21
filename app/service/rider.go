@@ -53,10 +53,10 @@ func (s *riderService) IsAuthed(u *ent.Rider) bool {
     return u.Edges.Person != nil && !model.PersonAuthStatus(u.Edges.Person.Status).RequireAuth()
 }
 
-// IsBlocked 骑手是否被封锁
-func (s *riderService) IsBlocked(u *ent.Rider) bool {
+// IsBanned 骑手是否被封禁
+func (s *riderService) IsBanned(u *ent.Rider) bool {
     p := u.Edges.Person
-    return p != nil && p.Block
+    return p != nil && p.Banned
 }
 
 // IsNewDevice 检查是否是新设备
@@ -84,8 +84,8 @@ func (s *riderService) Signin(device *app.Device, req *model.RiderSignupReq) (re
     }
 
     // 判定用户是否被封禁
-    if s.IsBlocked(u) {
-        snag.Panic(snag.StatusForbidden, ar.BlockedMessage)
+    if s.IsBanned(u) {
+        snag.Panic(snag.StatusForbidden, ar.BannedMessage)
     }
 
     token := xid.New().String() + utils.RandTokenString()
@@ -191,9 +191,9 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext) (success bool, err er
         Spoofing:       res.VerifyResult.Spoofing,
     }
     // 判断用户是否被封禁
-    blocked, _ := ar.Ent.Person.QueryNotDeleted().Where(person.IDCardNumber(detail.IdCardNumber), person.Block(true)).Exist(context.Background())
-    if blocked {
-        panic(errors.New(""))
+    banned, _ := ar.Ent.Person.QueryNotDeleted().Where(person.IDCardNumber(detail.IdCardNumber), person.Banned(true)).Exist(context.Background())
+    if banned {
+        snag.Panic(snag.StatusForbidden, ar.BannedMessage)
     }
 
     // 上传图片到七牛云

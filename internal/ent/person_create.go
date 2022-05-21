@@ -100,16 +100,16 @@ func (pc *PersonCreate) SetNillableStatus(u *uint8) *PersonCreate {
 	return pc
 }
 
-// SetBlock sets the "block" field.
-func (pc *PersonCreate) SetBlock(b bool) *PersonCreate {
-	pc.mutation.SetBlock(b)
+// SetBanned sets the "banned" field.
+func (pc *PersonCreate) SetBanned(b bool) *PersonCreate {
+	pc.mutation.SetBanned(b)
 	return pc
 }
 
-// SetNillableBlock sets the "block" field if the given value is not nil.
-func (pc *PersonCreate) SetNillableBlock(b *bool) *PersonCreate {
+// SetNillableBanned sets the "banned" field if the given value is not nil.
+func (pc *PersonCreate) SetNillableBanned(b *bool) *PersonCreate {
 	if b != nil {
-		pc.SetBlock(*b)
+		pc.SetBanned(*b)
 	}
 	return pc
 }
@@ -276,9 +276,9 @@ func (pc *PersonCreate) defaults() {
 		v := person.DefaultStatus
 		pc.mutation.SetStatus(v)
 	}
-	if _, ok := pc.mutation.Block(); !ok {
-		v := person.DefaultBlock
-		pc.mutation.SetBlock(v)
+	if _, ok := pc.mutation.Banned(); !ok {
+		v := person.DefaultBanned
+		pc.mutation.SetBanned(v)
 	}
 	if _, ok := pc.mutation.IDCardType(); !ok {
 		v := person.DefaultIDCardType
@@ -297,8 +297,8 @@ func (pc *PersonCreate) check() error {
 	if _, ok := pc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Person.status"`)}
 	}
-	if _, ok := pc.mutation.Block(); !ok {
-		return &ValidationError{Name: "block", err: errors.New(`ent: missing required field "Person.block"`)}
+	if _, ok := pc.mutation.Banned(); !ok {
+		return &ValidationError{Name: "banned", err: errors.New(`ent: missing required field "Person.banned"`)}
 	}
 	if _, ok := pc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Person.name"`)}
@@ -404,13 +404,13 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 		})
 		_node.Status = value
 	}
-	if value, ok := pc.mutation.Block(); ok {
+	if value, ok := pc.mutation.Banned(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: person.FieldBlock,
+			Column: person.FieldBanned,
 		})
-		_node.Block = value
+		_node.Banned = value
 	}
 	if value, ok := pc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -645,15 +645,15 @@ func (u *PersonUpsert) AddStatus(v uint8) *PersonUpsert {
 	return u
 }
 
-// SetBlock sets the "block" field.
-func (u *PersonUpsert) SetBlock(v bool) *PersonUpsert {
-	u.Set(person.FieldBlock, v)
+// SetBanned sets the "banned" field.
+func (u *PersonUpsert) SetBanned(v bool) *PersonUpsert {
+	u.Set(person.FieldBanned, v)
 	return u
 }
 
-// UpdateBlock sets the "block" field to the value that was provided on create.
-func (u *PersonUpsert) UpdateBlock() *PersonUpsert {
-	u.SetExcluded(person.FieldBlock)
+// UpdateBanned sets the "banned" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateBanned() *PersonUpsert {
+	u.SetExcluded(person.FieldBanned)
 	return u
 }
 
@@ -930,17 +930,17 @@ func (u *PersonUpsertOne) UpdateStatus() *PersonUpsertOne {
 	})
 }
 
-// SetBlock sets the "block" field.
-func (u *PersonUpsertOne) SetBlock(v bool) *PersonUpsertOne {
+// SetBanned sets the "banned" field.
+func (u *PersonUpsertOne) SetBanned(v bool) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetBlock(v)
+		s.SetBanned(v)
 	})
 }
 
-// UpdateBlock sets the "block" field to the value that was provided on create.
-func (u *PersonUpsertOne) UpdateBlock() *PersonUpsertOne {
+// UpdateBanned sets the "banned" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateBanned() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateBlock()
+		s.UpdateBanned()
 	})
 }
 
@@ -1400,17 +1400,17 @@ func (u *PersonUpsertBulk) UpdateStatus() *PersonUpsertBulk {
 	})
 }
 
-// SetBlock sets the "block" field.
-func (u *PersonUpsertBulk) SetBlock(v bool) *PersonUpsertBulk {
+// SetBanned sets the "banned" field.
+func (u *PersonUpsertBulk) SetBanned(v bool) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.SetBlock(v)
+		s.SetBanned(v)
 	})
 }
 
-// UpdateBlock sets the "block" field to the value that was provided on create.
-func (u *PersonUpsertBulk) UpdateBlock() *PersonUpsertBulk {
+// UpdateBanned sets the "banned" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateBanned() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
-		s.UpdateBlock()
+		s.UpdateBanned()
 	})
 }
 

@@ -39,9 +39,9 @@ func RiderMiddleware() echo.MiddlewareFunc {
             }
 
             // 用户被封禁
-            if s.IsBlocked(u) {
+            if s.IsBanned(u) {
                 s.Signout(u)
-                snag.Panic(snag.StatusForbidden, ar.BlockedMessage)
+                snag.Panic(snag.StatusForbidden, ar.BannedMessage)
             }
 
             // 延长token有效期

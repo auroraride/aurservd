@@ -465,7 +465,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Nullable: true},
 		{Name: "remark", Type: field.TypeString, Nullable: true},
 		{Name: "status", Type: field.TypeUint8, Default: 0},
-		{Name: "block", Type: field.TypeBool, Default: false},
+		{Name: "banned", Type: field.TypeBool, Default: false},
 		{Name: "name", Type: field.TypeString, Size: 40},
 		{Name: "id_card_number", Type: field.TypeString, Unique: true, Size: 40},
 		{Name: "id_card_type", Type: field.TypeUint8, Default: 1},
@@ -581,6 +581,7 @@ var (
 		{Name: "last_signin_at", Type: field.TypeTime, Nullable: true},
 		{Name: "esign_account_id", Type: field.TypeString, Nullable: true},
 		{Name: "plan_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "blocked", Type: field.TypeBool, Default: false},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "person_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -592,13 +593,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "rider_enterprise_riders",
-				Columns:    []*schema.Column{RiderColumns[16]},
+				Columns:    []*schema.Column{RiderColumns[17]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_person_rider",
-				Columns:    []*schema.Column{RiderColumns[17]},
+				Columns:    []*schema.Column{RiderColumns[18]},
 				RefColumns: []*schema.Column{PersonColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

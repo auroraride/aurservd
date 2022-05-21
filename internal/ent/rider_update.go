@@ -282,6 +282,20 @@ func (ru *RiderUpdate) ClearPlanAt() *RiderUpdate {
 	return ru
 }
 
+// SetBlocked sets the "blocked" field.
+func (ru *RiderUpdate) SetBlocked(b bool) *RiderUpdate {
+	ru.mutation.SetBlocked(b)
+	return ru
+}
+
+// SetNillableBlocked sets the "blocked" field if the given value is not nil.
+func (ru *RiderUpdate) SetNillableBlocked(b *bool) *RiderUpdate {
+	if b != nil {
+		ru.SetBlocked(*b)
+	}
+	return ru
+}
+
 // SetPerson sets the "person" edge to the Person entity.
 func (ru *RiderUpdate) SetPerson(p *Person) *RiderUpdate {
 	return ru.SetPersonID(p.ID)
@@ -651,6 +665,13 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: rider.FieldPlanAt,
+		})
+	}
+	if value, ok := ru.mutation.Blocked(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: rider.FieldBlocked,
 		})
 	}
 	if ru.mutation.PersonCleared() {
@@ -1099,6 +1120,20 @@ func (ruo *RiderUpdateOne) ClearPlanAt() *RiderUpdateOne {
 	return ruo
 }
 
+// SetBlocked sets the "blocked" field.
+func (ruo *RiderUpdateOne) SetBlocked(b bool) *RiderUpdateOne {
+	ruo.mutation.SetBlocked(b)
+	return ruo
+}
+
+// SetNillableBlocked sets the "blocked" field if the given value is not nil.
+func (ruo *RiderUpdateOne) SetNillableBlocked(b *bool) *RiderUpdateOne {
+	if b != nil {
+		ruo.SetBlocked(*b)
+	}
+	return ruo
+}
+
 // SetPerson sets the "person" edge to the Person entity.
 func (ruo *RiderUpdateOne) SetPerson(p *Person) *RiderUpdateOne {
 	return ruo.SetPersonID(p.ID)
@@ -1492,6 +1527,13 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: rider.FieldPlanAt,
+		})
+	}
+	if value, ok := ruo.mutation.Blocked(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: rider.FieldBlocked,
 		})
 	}
 	if ruo.mutation.PersonCleared() {

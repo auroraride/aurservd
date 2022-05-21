@@ -33,7 +33,7 @@ type Rider struct {
 	// 备注
 	Remark string `json:"remark,omitempty"`
 	// PersonID holds the value of the "person_id" field.
-	// 实人
+	// 身份
 	PersonID *uint64 `json:"person_id,omitempty"`
 	// EnterpriseID holds the value of the "enterprise_id" field.
 	// 所属企业
@@ -68,6 +68,9 @@ type Rider struct {
 	// PlanAt holds the value of the "plan_at" field.
 	// 骑行卡到期日期
 	PlanAt time.Time `json:"plan_at,omitempty"`
+	// Blocked holds the value of the "blocked" field.
+	// 是否封禁骑手账号
+	Blocked bool `json:"blocked,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RiderQuery when eager-loading is set.
 	Edges RiderEdges `json:"edges"`
@@ -141,7 +144,7 @@ func (*Rider) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case rider.FieldLastModifier, rider.FieldContact:
 			values[i] = new([]byte)
-		case rider.FieldIsNewDevice:
+		case rider.FieldIsNewDevice, rider.FieldBlocked:
 			values[i] = new(sql.NullBool)
 		case rider.FieldID, rider.FieldPersonID, rider.FieldEnterpriseID, rider.FieldDeviceType:
 			values[i] = new(sql.NullInt64)
@@ -281,6 +284,12 @@ func (r *Rider) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				r.PlanAt = value.Time
 			}
+		case rider.FieldBlocked:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field blocked", values[i])
+			} else if value.Valid {
+				r.Blocked = value.Bool
+			}
 		}
 	}
 	return nil
@@ -373,6 +382,8 @@ func (r *Rider) String() string {
 	builder.WriteString(r.EsignAccountID)
 	builder.WriteString(", plan_at=")
 	builder.WriteString(r.PlanAt.Format(time.ANSIC))
+	builder.WriteString(", blocked=")
+	builder.WriteString(fmt.Sprintf("%v", r.Blocked))
 	builder.WriteByte(')')
 	return builder.String()
 }
