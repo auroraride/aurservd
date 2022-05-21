@@ -236,7 +236,7 @@ func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.Cabine
         lg := &sls.LogGroup{
             Logs: []*sls.Log{{
                 Time: tea.Uint32(uint32(now.Unix())),
-                Contents: logging.ParseLogContent(&logging.DoorOperateLog{
+                Contents: logging.GenerateLogContent(&logging.DoorOperateLog{
                     ID:        opId,
                     Brand:     brand.String(),
                     User:      modifier.Name,
@@ -251,7 +251,7 @@ func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.Cabine
                 }),
             }},
         }
-        err := ali.NewSls().PutLogs(slsCfg.Project, slsCfg.Door, lg)
+        err := ali.NewSls().PutLogs(slsCfg.Project, slsCfg.DoorLog, lg)
         if err != nil {
             log.Error(err)
             return
@@ -289,7 +289,7 @@ func (s *cabinetService) Reboot(modifier *model.Modifier, req *model.IDPostReq) 
         lg := &sls.LogGroup{
             Logs: []*sls.Log{{
                 Time: tea.Uint32(uint32(now.Unix())),
-                Contents: logging.ParseLogContent(&logging.DoorOperateLog{
+                Contents: logging.GenerateLogContent(&logging.DoorOperateLog{
                     ID:        opId,
                     Brand:     brand.String(),
                     User:      modifier.Name,
@@ -302,7 +302,7 @@ func (s *cabinetService) Reboot(modifier *model.Modifier, req *model.IDPostReq) 
                 }),
             }},
         }
-        err := ali.NewSls().PutLogs(slsCfg.Project, slsCfg.Door, lg)
+        err := ali.NewSls().PutLogs(slsCfg.Project, slsCfg.DoorLog, lg)
         if err != nil {
             log.Error(err)
             return

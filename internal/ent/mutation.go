@@ -29,7 +29,7 @@ import (
 )
 
 const (
-	// Operation types.
+	// OperateLog types.
 	OpCreate    = ent.OpCreate
 	OpDelete    = ent.OpDelete
 	OpDeleteOne = ent.OpDeleteOne
@@ -40,7 +40,7 @@ const (
 	TypeBatteryModel   = "BatteryModel"
 	TypeBranch         = "Branch"
 	TypeBranchContract = "BranchContract"
-	TypeCabinet        = "Cabinet"
+	TypeCabinet        = "CabinetLog"
 	TypeCabinetFault   = "CabinetFault"
 	TypeCity           = "City"
 	TypeContract       = "Contract"
@@ -5343,7 +5343,7 @@ func (m *CabinetMutation) OldField(ctx context.Context, name string) (ent.Value,
 	case cabinet.FieldBatteryFullNum:
 		return m.OldBatteryFullNum(ctx)
 	}
-	return nil, fmt.Errorf("unknown Cabinet field %s", name)
+	return nil, fmt.Errorf("unknown CabinetLog field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
@@ -5478,7 +5478,7 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 		m.SetBatteryFullNum(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Cabinet field %s", name)
+	return fmt.Errorf("unknown CabinetLog field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
@@ -5563,7 +5563,7 @@ func (m *CabinetMutation) AddField(name string, value ent.Value) error {
 		m.AddBatteryFullNum(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Cabinet numeric field %s", name)
+	return fmt.Errorf("unknown CabinetLog numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
@@ -5621,7 +5621,7 @@ func (m *CabinetMutation) ClearField(name string) error {
 		m.ClearBin()
 		return nil
 	}
-	return fmt.Errorf("unknown Cabinet nullable field %s", name)
+	return fmt.Errorf("unknown CabinetLog nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
@@ -5683,7 +5683,7 @@ func (m *CabinetMutation) ResetField(name string) error {
 		m.ResetBatteryFullNum()
 		return nil
 	}
-	return fmt.Errorf("unknown Cabinet field %s", name)
+	return fmt.Errorf("unknown CabinetLog field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
@@ -5794,7 +5794,7 @@ func (m *CabinetMutation) ClearEdge(name string) error {
 		m.ClearBranch()
 		return nil
 	}
-	return fmt.Errorf("unknown Cabinet unique edge %s", name)
+	return fmt.Errorf("unknown CabinetLog unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
@@ -5811,7 +5811,7 @@ func (m *CabinetMutation) ResetEdge(name string) error {
 		m.ResetFaults()
 		return nil
 	}
-	return fmt.Errorf("unknown Cabinet edge %s", name)
+	return fmt.Errorf("unknown CabinetLog edge %s", name)
 }
 
 // CabinetFaultMutation represents an operation that mutates the CabinetFault nodes in the graph.

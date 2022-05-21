@@ -76,7 +76,7 @@ func StartCabinetProvider(providers ...Provider) {
                             // 保存历史仓位信息(转换后的)
                             lg := GenerateSlsStatusLogGroup(ca)
                             if lg != nil {
-                                err = ali.NewSls().PutLogs(slsCfg.Project, slsCfg.Cabinet, lg)
+                                err = ali.NewSls().PutLogs(slsCfg.Project, slsCfg.CabinetLog, lg)
                                 if err != nil {
                                     log.Errorf("阿里云SLS提交失败: %#v", err)
                                 }

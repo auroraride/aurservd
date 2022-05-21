@@ -31,7 +31,7 @@ func GenerateSlsStatusLogGroup(cabinet *ent.Cabinet) (lg *sls.LogGroup) {
         c.Time = time.Now().Format(carbon.DateTimeLayout)
         logs[i] = &sls.Log{
             Time:     t,
-            Contents: logging.ParseLogContent(c),
+            Contents: logging.GenerateLogContent(c),
         }
     }
     lg.Logs = logs

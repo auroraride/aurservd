@@ -126,9 +126,9 @@ type config struct {
             AccessKeySecret string
             Endpoint        string
             Project         string
-            Cabinet         string // 电柜日志logstore
-            Door            string // 柜门操作日志logstore
-            Operation       string // 管理端操作日志logstore
+            CabinetLog      string // 电柜日志logstore
+            DoorLog         string // 柜门操作日志logstore
+            OperateLog      string // 管理端操作日志logstore
         }
     }
     Baidu struct {

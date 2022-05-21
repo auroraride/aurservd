@@ -11,19 +11,17 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     log "github.com/sirupsen/logrus"
     "reflect"
-    "strings"
 )
 
 var (
-    // , '";=()[]{}?@&<>/:\n\t\r
     indexToken = []string{`,`, ` `, `'`, `"`, `;`, `=`, `(`, `)`, `[`, `]`, `{`, `}`, `?`, `@`, `&`, `<`, `>`, `/`, `:`, `\n`, `\t`, `\r`}
 )
 
 func Boot() {
     cfg := ar.Config.Aliyun.Sls
-    bootLogStore(cfg.Project, cfg.Cabinet, CabinetLog{})
-    bootLogStore(cfg.Project, cfg.Door, DoorOperateLog{})
-    bootLogStore(cfg.Project, cfg.Operation, OperationLog{})
+    bootLogStore(cfg.Project, cfg.CabinetLog, CabinetLog{})
+    bootLogStore(cfg.Project, cfg.DoorLog, DoorOperateLog{})
+    bootLogStore(cfg.Project, cfg.OperateLog, OperateLog{})
 }
 
 // bootLogStore 自动创建logstore
@@ -49,36 +47,37 @@ func bootLogStore(project, logstore string, typ any) {
             t := reflect.TypeOf(typ)
             for i := 0; i < t.NumField(); i++ {
                 f := t.Field(i)
-                tag, ok := f.Tag.Lookup("sls")
+                idx, ok := f.Tag.Lookup("index")
                 if !ok {
                     continue
                 }
-                if strings.Contains(tag, ",index") {
-                    tag = strings.ReplaceAll(tag, ",index", "")
-                    var ik sls.IndexKey
-                    switch f.Type.Kind() {
-                    case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-                        reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
-                        reflect.Uintptr:
-                        ik = sls.IndexKey{
-                            Type: "long",
-                        }
-                        break
-                    case reflect.Float32, reflect.Float64:
-                        ik = sls.IndexKey{
-                            Type: "double",
-                        }
-                        break
-                    default:
-                        ik = sls.IndexKey{
-                            Token: indexToken,
-                            Type:  "text",
-                        }
-                        break
+                tag := f.Tag.Get("sls")
+                var ik sls.IndexKey
+                switch f.Type.Kind() {
+                case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+                    reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
+                    reflect.Uintptr:
+                    ik = sls.IndexKey{
+                        Type: "long",
                     }
-                    ik.Alias = f.Tag.Get("json")
-                    ikm[tag] = ik
+                    break
+                case reflect.Float32, reflect.Float64:
+                    ik = sls.IndexKey{
+                        Type: "double",
+                    }
+                    break
+                default:
+                    ik = sls.IndexKey{
+                        Token: indexToken,
+                        Type:  "text",
+                    }
+                    break
                 }
+                if idx == "doc" {
+                    ik.DocValue = true
+                }
+                ik.Alias = f.Tag.Get("json")
+                ikm[tag] = ik
             }
             err = slsc.CreateIndex(project, logstore, sls.Index{
                 Line: &sls.IndexLine{Token: indexToken},

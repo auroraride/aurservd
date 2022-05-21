@@ -12,8 +12,8 @@ import (
     "reflect"
 )
 
-// ParseLogContent 转换为sls日志
-func ParseLogContent(pointer any) (contents []*sls.LogContent) {
+// GenerateLogContent 转换为sls日志
+func GenerateLogContent(pointer any) (contents []*sls.LogContent) {
     t := reflect.TypeOf(pointer).Elem()
     n := t.NumField()
     value := reflect.ValueOf(pointer).Elem()

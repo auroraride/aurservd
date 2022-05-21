@@ -49,7 +49,7 @@ func (f BranchContractFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 }
 
 // The CabinetFunc type is an adapter to allow the use of ordinary
-// function as Cabinet mutator.
+// function as CabinetLog mutator.
 type CabinetFunc func(context.Context, *ent.CabinetMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).

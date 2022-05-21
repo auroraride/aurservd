@@ -53,3 +53,9 @@ func (s PersonAuthStatus) RequireAuth() bool {
     }
     return false
 }
+
+// PersonBlockReq 骑手封禁或解封
+type PersonBlockReq struct {
+    ID    uint64 `json:"id" `   // 骑手ID
+    Block bool   `json:"block"` // `true`封禁 `false`解封
+}

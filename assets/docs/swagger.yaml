@@ -525,6 +525,15 @@ definitions:
         $ref: '#/definitions/model.Pagination'
         description: 分页属性
     type: object
+  model.PersonBlockReq:
+    properties:
+      block:
+        description: '`true`封禁 `false`解封'
+        type: boolean
+      id:
+        description: 骑手ID
+        type: integer
+    type: object
   model.PlanEnableModifyReq:
     properties:
       enable:
@@ -1576,6 +1585,33 @@ paths:
                   type: array
               type: object
       summary: M70001 列举骑手
+      tags:
+      - '[M]管理接口'
+  /manager/v1/rider/block:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderBlock
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.PersonBlockReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M70002 封禁/解除封禁
       tags:
       - '[M]管理接口'
   /manager/v1/user/signin:

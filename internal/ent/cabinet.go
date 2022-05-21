@@ -134,7 +134,7 @@ func (*Cabinet) scanValues(columns []string) ([]interface{}, error) {
 		case cabinet.FieldCreatedAt, cabinet.FieldUpdatedAt, cabinet.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Cabinet", columns[i])
+			return nil, fmt.Errorf("unexpected column %q for type CabinetLog", columns[i])
 		}
 	}
 	return values, nil
@@ -303,7 +303,7 @@ func (c *Cabinet) Update() *CabinetUpdateOne {
 func (c *Cabinet) Unwrap() *Cabinet {
 	tx, ok := c.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Cabinet is not a transactional entity")
+		panic("ent: CabinetLog is not a transactional entity")
 	}
 	c.config.driver = tx.drv
 	return c
@@ -312,7 +312,7 @@ func (c *Cabinet) Unwrap() *Cabinet {
 // String implements the fmt.Stringer.
 func (c *Cabinet) String() string {
 	var builder strings.Builder
-	builder.WriteString("Cabinet(")
+	builder.WriteString("CabinetLog(")
 	builder.WriteString(fmt.Sprintf("id=%v", c.ID))
 	builder.WriteString(", created_at=")
 	builder.WriteString(c.CreatedAt.Format(time.ANSIC))

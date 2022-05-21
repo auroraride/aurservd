@@ -30,3 +30,19 @@ func (*rider) List(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.RiderListReq](c)
     return ctx.SendResponse(service.NewRider().List(req))
 }
+
+// Block
+// @ID           RiderBlock
+// @Router       /manager/v1/rider/block [POST]
+// @Summary      M70002 封禁/解除封禁
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body  model.PersonBlockReq  true  "desc"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*rider) Block(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.PersonBlockReq](c)
+    service.NewPerson().Block(ctx.Modifier, req)
+    return ctx.SendResponse()
+}

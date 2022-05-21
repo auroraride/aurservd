@@ -116,7 +116,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 				Column: cabinet.FieldID,
 			},
 		},
-		Type: "Cabinet",
+		Type: "CabinetLog",
 		Fields: map[string]*sqlgraph.FieldSpec{
 			cabinet.FieldCreatedAt:      {Type: field.TypeTime, Column: cabinet.FieldCreatedAt},
 			cabinet.FieldUpdatedAt:      {Type: field.TypeTime, Column: cabinet.FieldUpdatedAt},
@@ -364,7 +364,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"BatteryModel",
-		"Cabinet",
+		"CabinetLog",
 	)
 	graph.MustAddE(
 		"plans",
@@ -400,7 +400,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"Branch",
-		"Cabinet",
+		"CabinetLog",
 	)
 	graph.MustAddE(
 		"city",
@@ -447,7 +447,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: []string{cabinet.BranchColumn},
 			Bidi:    false,
 		},
-		"Cabinet",
+		"CabinetLog",
 		"Branch",
 	)
 	graph.MustAddE(
@@ -459,7 +459,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: cabinet.BmsPrimaryKey,
 			Bidi:    false,
 		},
-		"Cabinet",
+		"CabinetLog",
 		"BatteryModel",
 	)
 	graph.MustAddE(
@@ -471,7 +471,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: []string{cabinet.FaultsColumn},
 			Bidi:    false,
 		},
-		"Cabinet",
+		"CabinetLog",
 		"CabinetFault",
 	)
 	graph.MustAddE(
@@ -496,7 +496,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"CabinetFault",
-		"Cabinet",
+		"CabinetLog",
 	)
 	graph.MustAddE(
 		"rider",
