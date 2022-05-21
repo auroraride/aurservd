@@ -7,7 +7,6 @@ package service
 
 import (
     "context"
-    "errors"
     "fmt"
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/logging"
@@ -61,12 +60,12 @@ func (s *riderService) IsBanned(u *ent.Rider) bool {
 }
 
 // IsNewDevice 检查是否是新设备
-func (s *riderService) IsNewDevice(u *ent.Rider, device *app.Device) bool {
+func (s *riderService) IsNewDevice(u *ent.Rider, device *model.Device) bool {
     return u.LastDevice != device.Serial || u.IsNewDevice
 }
 
 // Signin 骑手登录
-func (s *riderService) Signin(device *app.Device, req *model.RiderSignupReq) (res *model.RiderSigninRes, err error) {
+func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (res *model.RiderSigninRes, err error) {
     ctx := context.Background()
     orm := ar.Ent.Rider
     var u *ent.Rider
@@ -131,7 +130,7 @@ func (s *riderService) Signout(u *ent.Rider) {
 }
 
 // SetNewDevice 更新用户设备
-func (s *riderService) SetNewDevice(u *ent.Rider, device *app.Device) {
+func (s *riderService) SetNewDevice(u *ent.Rider, device *model.Device) {
     _, err := ar.Ent.Rider.
         UpdateOneID(u.ID).
         SetLastDevice(device.Serial).
@@ -160,11 +159,10 @@ func (s *riderService) GetFaceUrl(c *app.RiderContext) string {
 }
 
 // FaceAuthResult 获取并更新人脸实名验证结果
-func (s *riderService) FaceAuthResult(c *app.RiderContext) (success bool, err error) {
+func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (success bool) {
     if !s.ComparePrivacy(c) {
-        return false, errors.New("验证失败")
+        snag.Panic("验证失败")
     }
-    token := c.Param("token")
     u := c.Rider
     data, err := baidu.New().AuthenticatorResult(token)
     if err != nil {
@@ -235,15 +233,14 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext) (success bool, err er
 }
 
 // FaceResult 获取人脸比对结果
-func (s *riderService) FaceResult(c *app.RiderContext) (success bool, err error) {
+func (s *riderService) FaceResult(c *app.RiderContext, token string) (success bool) {
     if !s.ComparePrivacy(c) {
-        return false, errors.New("验证失败")
+        snag.Panic("验证失败")
     }
-    token := c.Param("token")
     u := c.Rider
-    res, resErr := baidu.New().FaceResult(token)
-    err = resErr
+    res, err := baidu.New().FaceResult(token)
     if err != nil {
+        snag.Panic(err)
         return
     }
     success = res.Success

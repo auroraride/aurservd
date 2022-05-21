@@ -8,6 +8,7 @@ package middleware
 import (
     "errors"
     "github.com/auroraride/aurservd/app"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/labstack/echo/v4"
 )
 
@@ -21,7 +22,7 @@ func DeviceMiddleware() echo.MiddlewareFunc {
                 return errors.New("设备校验失败")
             }
             var err error
-            c.Device, err = app.NewDevice(sn, dt)
+            c.Device, err = model.NewDevice(sn, dt)
             if err != nil {
                 return err
             }

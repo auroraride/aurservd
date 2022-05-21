@@ -302,7 +302,6 @@ definitions:
     - id
     - index
     - operation
-    - remark
     type: object
   model.CabinetFaultCabinet:
     properties:
@@ -371,6 +370,28 @@ definitions:
       status:
         description: 故障状态 0未处理 1已处理
         type: integer
+    type: object
+  model.CabinetFaultReportReq:
+    properties:
+      attachments:
+        description: 附件
+        items:
+          type: string
+        maxItems: 3
+        type: array
+      cabinetId:
+        description: '电柜ID '
+        type: integer
+      description:
+        description: '故障描述 '
+        type: string
+      fault:
+        description: '故障 '
+        type: string
+    required:
+    - cabinetId
+    - description
+    - fault
     type: object
   model.CabinetItem:
     properties:
@@ -466,6 +487,12 @@ definitions:
         type: integer
       name:
         description: 企业名称
+        type: string
+    type: object
+  model.FaceAuthUrlResponse:
+    properties:
+      url:
+        description: 实名认证跳转链接
         type: string
     type: object
   model.IDPostReq:
@@ -1693,6 +1720,59 @@ paths:
       summary: M10001 用户登录
       tags:
       - '[M]管理接口'
+  /rider/v1/authenticator:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderAuthenticator
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderContact'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.FaceAuthUrlResponse'
+      summary: R10003 实名认证
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/authenticator/{token}:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderAuthResult
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 实名认证token
+        in: path
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R10004 实名认证结果
+      tags:
+      - '[R]骑手接口'
   /rider/v1/contact:
     post:
       consumes:
@@ -1718,6 +1798,59 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: R10002 添加紧急联系人
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/face/{token}:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderFaceResult
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 人脸校验token
+        in: path
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R10005 获取人脸校验结果
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/path:
+    get:
+      consumes:
+      - application/json
+      operationId: CabinetReport
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CabinetFaultReportReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R30001 电柜故障上报
       tags:
       - '[R]骑手接口'
   /rider/v1/signin:

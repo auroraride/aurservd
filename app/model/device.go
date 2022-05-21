@@ -1,9 +1,9 @@
-// Copyright (C) liasica. 2021-present.
+// Copyright (C) liasica. 2022-present.
 //
-// Created at 2021/12/12
+// Created at 2022-05-22
 // Based on aurservd by liasica, magicrolan@qq.com.
 
-package app
+package model
 
 import (
     "errors"

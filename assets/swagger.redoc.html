@@ -6,6 +6,9 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Mono&display=swap" rel="stylesheet">
 
     <!--
     Redoc doesn't change outer page styles
@@ -14,6 +17,7 @@
       body {
         margin: 0;
         padding: 0;
+        font-family: 'Fira Mono', monospace;
       }
 
       body table th {
@@ -29,7 +33,7 @@
 <div id="main"></div>
 <script src="https://cdn.auroraride.com/assets/redoc.standalone.js"></script>
 <script>
-    Redoc.init("/docs/swagger.json", {
+    Redoc.init("/docs/oai3.json", {
         disableSearch: true,
         sortOperationsAlphabetically: true,
         sortTagsAlphabetically: true,
@@ -39,6 +43,17 @@
         hideSingleRequestSampleTab: true,
         hideSchemaTitles: true,
         expandResponses: '200',
+        theme: {
+            typography: {
+                fontFamily: 'Fira Mono',
+                headings: {
+                    fontFamily: 'Fira Mono',
+                },
+                code: {
+                    fontFamily: 'Fira Mono',
+                },
+            },
+        },
     }, document.getElementById("main"))
 </script>
 </body>

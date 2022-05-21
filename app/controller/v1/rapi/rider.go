@@ -11,7 +11,6 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
-    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
 )
 
@@ -66,7 +65,16 @@ func (r *rider) Contact(c echo.Context) error {
     return ctx.SendResponse()
 }
 
-// Authenticator 实名认证
+// Authenticator
+// @ID           RiderAuthenticator
+// @Router       /rider/v1/authenticator [POST]
+// @Summary      R10003 实名认证
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        body  body  model.RiderContact  true  "desc"
+// @Success      200  {object}  model.FaceAuthUrlResponse  "请求成功"
 func (*rider) Authenticator(c echo.Context) error {
     ctx, req := app.RiderContextAndBinding[model.RiderContact](c)
     r := service.NewRider()
@@ -78,25 +86,35 @@ func (*rider) Authenticator(c echo.Context) error {
     })
 }
 
-// AuthResult 实名认证结果
+// AuthResult
 // TODO 测试认证失败逻辑
+// @ID           RiderAuthResult
+// @Router       /rider/v1/authenticator/{token} [GET]
+// @Summary      R10004 实名认证结果
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        token  path  string  true  "实名认证token"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
 func (r *rider) AuthResult(c echo.Context) error {
-    ctx := c.(*app.RiderContext)
-    success, err := service.NewRider().FaceAuthResult(ctx)
-    if err != nil {
-        snag.Panic(err)
-    }
-    return ctx.SendResponse(model.StatusResponse{Status: success})
+    ctx, req := app.RiderContextAndBinding[model.FaceResultReq](c)
+    return ctx.SendResponse(model.StatusResponse{Status: service.NewRider().FaceAuthResult(ctx, req.Token)})
 }
 
-// FaceResult 获取人脸校验结果
+// FaceResult
+// @ID           RiderFaceResult
+// @Router       /rider/v1/face/{token} [GET]
+// @Summary      R10005 获取人脸校验结果
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        token  path  string  true  "人脸校验token"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
 func (r *rider) FaceResult(c echo.Context) error {
-    ctx := c.(*app.RiderContext)
-    success, err := service.NewRider().FaceResult(ctx)
-    if err != nil {
-        snag.Panic(err)
-    }
-    return ctx.SendResponse(model.StatusResponse{Status: success})
+    ctx, req := app.RiderContextAndBinding[model.FaceResultReq](c)
+    return ctx.SendResponse(model.StatusResponse{Status: service.NewRider().FaceResult(ctx, req.Token)})
 }
 
 func (r *rider) Demo(c echo.Context) error {

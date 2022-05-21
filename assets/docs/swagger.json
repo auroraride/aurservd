@@ -1431,6 +1431,86 @@
                 }
             }
         },
+        "/rider/v1/authenticator": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R10003 实名认证",
+                "operationId": "RiderAuthenticator",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderContact"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.FaceAuthUrlResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/authenticator/{token}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R10004 实名认证结果",
+                "operationId": "RiderAuthResult",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "实名认证token",
+                        "name": "token",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/contact": {
             "post": {
                 "consumes": [
@@ -1459,6 +1539,86 @@
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/model.RiderContact"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/face/{token}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R10005 获取人脸校验结果",
+                "operationId": "RiderFaceResult",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "人脸校验token",
+                        "name": "token",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/path": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R30001 电柜故障上报",
+                "operationId": "CabinetReport",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CabinetFaultReportReq"
                         }
                     }
                 ],
@@ -1896,8 +2056,7 @@
             "required": [
                 "id",
                 "index",
-                "operation",
-                "remark"
+                "operation"
             ],
             "properties": {
                 "id": {
@@ -2013,6 +2172,36 @@
                 "status": {
                     "description": "故障状态 0未处理 1已处理",
                     "type": "integer"
+                }
+            }
+        },
+        "model.CabinetFaultReportReq": {
+            "type": "object",
+            "required": [
+                "cabinetId",
+                "description",
+                "fault"
+            ],
+            "properties": {
+                "attachments": {
+                    "description": "附件",
+                    "type": "array",
+                    "maxItems": 3,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "cabinetId": {
+                    "description": "电柜ID ",
+                    "type": "integer"
+                },
+                "description": {
+                    "description": "故障描述 ",
+                    "type": "string"
+                },
+                "fault": {
+                    "description": "故障 ",
+                    "type": "string"
                 }
             }
         },
@@ -2145,6 +2334,15 @@
                 },
                 "name": {
                     "description": "企业名称",
+                    "type": "string"
+                }
+            }
+        },
+        "model.FaceAuthUrlResponse": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "description": "实名认证跳转链接",
                     "type": "string"
                 }
             }

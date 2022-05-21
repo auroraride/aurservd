@@ -34,7 +34,7 @@ func loadRedocRoute() {
         return c.Blob(200, "text/plain", assets.SwaggerSpecYaml)
     })
 
-    g.GET("/oai3", func(c echo.Context) (err error) {
+    g.GET("/oai3.json", func(c echo.Context) (err error) {
         var doc2 openapi2.T
         if err = json.Unmarshal(assets.SwaggerSpec, &doc2); err != nil {
             return

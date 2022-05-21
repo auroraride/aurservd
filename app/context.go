@@ -6,6 +6,7 @@
 package app
 
 import (
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
 )
@@ -13,7 +14,7 @@ import (
 type BaseContext struct {
     echo.Context
 
-    Device *Device
+    Device *model.Device
 }
 
 // Context 获取上下文
