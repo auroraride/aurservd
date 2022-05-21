@@ -233,9 +233,15 @@ func (pc *PersonCreate) Save(ctx context.Context) (*Person, error) {
 			}
 			mut = pc.hooks[i](mut)
 		}
-		if _, err := mut.Mutate(ctx, pc.mutation); err != nil {
+		v, err := mut.Mutate(ctx, pc.mutation)
+		if err != nil {
 			return nil, err
 		}
+		nv, ok := v.(*Person)
+		if !ok {
+			return nil, fmt.Errorf("unexpected node type %T returned from PersonMutation", v)
+		}
+		node = nv
 	}
 	return node, err
 }

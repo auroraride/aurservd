@@ -517,9 +517,15 @@ func (euo *EnterpriseUpdateOne) Save(ctx context.Context) (*Enterprise, error) {
 			}
 			mut = euo.hooks[i](mut)
 		}
-		if _, err := mut.Mutate(ctx, euo.mutation); err != nil {
+		v, err := mut.Mutate(ctx, euo.mutation)
+		if err != nil {
 			return nil, err
 		}
+		nv, ok := v.(*Enterprise)
+		if !ok {
+			return nil, fmt.Errorf("unexpected node type %T returned from EnterpriseMutation", v)
+		}
+		node = nv
 	}
 	return node, err
 }

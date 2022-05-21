@@ -471,9 +471,15 @@ func (muo *ManagerUpdateOne) Save(ctx context.Context) (*Manager, error) {
 			}
 			mut = muo.hooks[i](mut)
 		}
-		if _, err := mut.Mutate(ctx, muo.mutation); err != nil {
+		v, err := mut.Mutate(ctx, muo.mutation)
+		if err != nil {
 			return nil, err
 		}
+		nv, ok := v.(*Manager)
+		if !ok {
+			return nil, fmt.Errorf("unexpected node type %T returned from ManagerMutation", v)
+		}
+		node = nv
 	}
 	return node, err
 }

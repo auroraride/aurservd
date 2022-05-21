@@ -157,9 +157,15 @@ func (mc *ManagerCreate) Save(ctx context.Context) (*Manager, error) {
 			}
 			mut = mc.hooks[i](mut)
 		}
-		if _, err := mut.Mutate(ctx, mc.mutation); err != nil {
+		v, err := mut.Mutate(ctx, mc.mutation)
+		if err != nil {
 			return nil, err
 		}
+		nv, ok := v.(*Manager)
+		if !ok {
+			return nil, fmt.Errorf("unexpected node type %T returned from ManagerMutation", v)
+		}
+		node = nv
 	}
 	return node, err
 }

@@ -3,7 +3,7 @@ module github.com/auroraride/aurservd
 go 1.18
 
 require (
-	ariga.io/atlas v0.4.0
+	ariga.io/atlas v0.4.1
 	entgo.io/ent v0.10.2-0.20220502113020-4ac82f5bb3f0
 	github.com/alibabacloud-go/darabonba-openapi v0.1.18
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.9
@@ -130,3 +130,5 @@ require (
 //replace github.com/swaggo/swag => /Users/liasica/Downloads/swag
 
 replace github.com/swaggo/swag => github.com/liasica/swag v1.8.2-0.20220513063800-632ccd8046a2
+
+replace entgo.io/ent => github.com/CharlesGe129/ent v0.10.2-0.20220520130033-5886b54e4875

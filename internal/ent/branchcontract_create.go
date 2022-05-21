@@ -227,9 +227,15 @@ func (bcc *BranchContractCreate) Save(ctx context.Context) (*BranchContract, err
 			}
 			mut = bcc.hooks[i](mut)
 		}
-		if _, err := mut.Mutate(ctx, bcc.mutation); err != nil {
+		v, err := mut.Mutate(ctx, bcc.mutation)
+		if err != nil {
 			return nil, err
 		}
+		nv, ok := v.(*BranchContract)
+		if !ok {
+			return nil, fmt.Errorf("unexpected node type %T returned from BranchContractMutation", v)
+		}
+		node = nv
 	}
 	return node, err
 }

@@ -227,9 +227,15 @@ func (cfc *CabinetFaultCreate) Save(ctx context.Context) (*CabinetFault, error) 
 			}
 			mut = cfc.hooks[i](mut)
 		}
-		if _, err := mut.Mutate(ctx, cfc.mutation); err != nil {
+		v, err := mut.Mutate(ctx, cfc.mutation)
+		if err != nil {
 			return nil, err
 		}
+		nv, ok := v.(*CabinetFault)
+		if !ok {
+			return nil, fmt.Errorf("unexpected node type %T returned from CabinetFaultMutation", v)
+		}
+		node = nv
 	}
 	return node, err
 }

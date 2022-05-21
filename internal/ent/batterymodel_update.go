@@ -663,9 +663,15 @@ func (bmuo *BatteryModelUpdateOne) Save(ctx context.Context) (*BatteryModel, err
 			}
 			mut = bmuo.hooks[i](mut)
 		}
-		if _, err := mut.Mutate(ctx, bmuo.mutation); err != nil {
+		v, err := mut.Mutate(ctx, bmuo.mutation)
+		if err != nil {
 			return nil, err
 		}
+		nv, ok := v.(*BatteryModel)
+		if !ok {
+			return nil, fmt.Errorf("unexpected node type %T returned from BatteryModelMutation", v)
+		}
+		node = nv
 	}
 	return node, err
 }

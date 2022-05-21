@@ -979,9 +979,15 @@ func (buo *BranchUpdateOne) Save(ctx context.Context) (*Branch, error) {
 			}
 			mut = buo.hooks[i](mut)
 		}
-		if _, err := mut.Mutate(ctx, buo.mutation); err != nil {
+		v, err := mut.Mutate(ctx, buo.mutation)
+		if err != nil {
 			return nil, err
 		}
+		nv, ok := v.(*Branch)
+		if !ok {
+			return nil, fmt.Errorf("unexpected node type %T returned from BranchMutation", v)
+		}
+		node = nv
 	}
 	return node, err
 }
