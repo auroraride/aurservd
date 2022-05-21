@@ -210,6 +210,13 @@ func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.Cabine
     if !ok {
         snag.Panic("操作方式错误")
     }
+    if *req.Operation == model.CabinetDoorOperateLock {
+        if req.Remark == "" {
+            snag.Panic("该操作必须携带操作原因")
+        } else {
+            req.Remark = ""
+        }
+    }
     var prov provider.Provider
     up := ar.Ent.Cabinet.UpdateOne(item).SetHealth(model.CabinetHealthStatusOnline)
     switch brand {
@@ -226,7 +233,7 @@ func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.Cabine
     if state {
         // 更新仓位备注
         bins := item.Bin
-        bins[*req.Index].Remark = *req.Remark
+        bins[*req.Index].Remark = req.Remark
         prov.UpdateStatus(up, item)
         up.SetBin(bins).SaveX(s.ctx)
     }
@@ -246,7 +253,7 @@ func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.Cabine
                     Name:      item.Bin[*req.Index].Name,
                     Operation: req.Operation.String(),
                     Success:   state,
-                    Remark:    *req.Remark,
+                    Remark:    req.Remark,
                     Time:      now.Format(carbon.DateTimeLayout),
                 }),
             }},

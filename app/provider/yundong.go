@@ -16,6 +16,7 @@ import (
     "github.com/go-resty/resty/v2"
     "github.com/golang-module/carbon/v2"
     log "github.com/sirupsen/logrus"
+    "net/url"
     "strconv"
     "time"
 )
@@ -262,7 +263,7 @@ func (p *yundong) DoorOperate(code, serial, operation string, door int) (state b
         }).
         Post(p.GetUrl(yundongControlUrl))
     if t, err := time.Parse(time.RFC1123, r.Header().Get("Date")); err == nil {
-        now = t
+        now = t.Add(8 * time.Hour)
     }
     log.Info(string(r.Body()))
     // token 请求失败, 重新请求token后重试
@@ -331,7 +332,7 @@ func (p *yundong) GetOperateState(opId, serial, start, end string) (state bool) 
     res := new(OperatorlogRes)
     r, err := p.RequestClient(false).
         SetResult(res).
-        Get(fmt.Sprintf("%s?cabinetSN=%s&starttime=%s&endtime=%s&pageNo=0&pageNum=50", p.GetUrl(yundongOperatorlog), serial, start, end))
+        Get(fmt.Sprintf("%s?cabinetSN=%s&starttime=%s&endtime=%s&pageNo=0&pageNum=50", p.GetUrl(yundongOperatorlog), url.QueryEscape(serial), url.QueryEscape(start), url.QueryEscape(end)))
     log.Info(string(r.Body()))
     // token 请求失败, 重新请求token后重试
     if res.Code == 1000 && p.retryTimes < 1 {
