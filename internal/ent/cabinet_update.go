@@ -1153,7 +1153,7 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 	}
 	id, ok := cuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "CabinetLog.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Cabinet.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := cuo.fields; len(fields) > 0 {

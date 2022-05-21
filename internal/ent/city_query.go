@@ -16,7 +16,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
-	"github.com/auroraride/aurservd/internal/ent/rider"
 )
 
 // CityQuery is the builder for querying City entities.
@@ -34,7 +33,6 @@ type CityQuery struct {
 	withChildren *CityQuery
 	withBranches *BranchQuery
 	withFaults   *CabinetFaultQuery
-	withRiders   *RiderQuery
 	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -175,28 +173,6 @@ func (cq *CityQuery) QueryFaults() *CabinetFaultQuery {
 			sqlgraph.From(city.Table, city.FieldID, selector),
 			sqlgraph.To(cabinetfault.Table, cabinetfault.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, city.FaultsTable, city.FaultsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryRiders chains the current query on the "riders" edge.
-func (cq *CityQuery) QueryRiders() *RiderQuery {
-	query := &RiderQuery{config: cq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := cq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := cq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(city.Table, city.FieldID, selector),
-			sqlgraph.To(rider.Table, rider.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, city.RidersTable, city.RidersColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -390,7 +366,6 @@ func (cq *CityQuery) Clone() *CityQuery {
 		withChildren: cq.withChildren.Clone(),
 		withBranches: cq.withBranches.Clone(),
 		withFaults:   cq.withFaults.Clone(),
-		withRiders:   cq.withRiders.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
@@ -450,17 +425,6 @@ func (cq *CityQuery) WithFaults(opts ...func(*CabinetFaultQuery)) *CityQuery {
 		opt(query)
 	}
 	cq.withFaults = query
-	return cq
-}
-
-// WithRiders tells the query-builder to eager-load the nodes that are connected to
-// the "riders" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *CityQuery) WithRiders(opts ...func(*RiderQuery)) *CityQuery {
-	query := &RiderQuery{config: cq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	cq.withRiders = query
 	return cq
 }
 
@@ -534,13 +498,12 @@ func (cq *CityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*City, e
 	var (
 		nodes       = []*City{}
 		_spec       = cq.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [5]bool{
 			cq.withPlans != nil,
 			cq.withParent != nil,
 			cq.withChildren != nil,
 			cq.withBranches != nil,
 			cq.withFaults != nil,
-			cq.withRiders != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -722,34 +685,6 @@ func (cq *CityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*City, e
 				return nil, fmt.Errorf(`unexpected foreign-key "city_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Faults = append(node.Edges.Faults, n)
-		}
-	}
-
-	if query := cq.withRiders; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[uint64]*City)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Riders = []*Rider{}
-		}
-		query.Where(predicate.Rider(func(s *sql.Selector) {
-			s.Where(sql.InValues(city.RidersColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			fk := n.CityID
-			if fk == nil {
-				return nil, fmt.Errorf(`foreign-key "city_id" is nil for node %v`, n.ID)
-			}
-			node, ok := nodeids[*fk]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "city_id" returned %v for node %v`, *fk, n.ID)
-			}
-			node.Edges.Riders = append(node.Edges.Riders, n)
 		}
 	}
 

@@ -29,7 +29,7 @@ import (
 )
 
 const (
-	// OperateLog types.
+	// Operation types.
 	OpCreate    = ent.OpCreate
 	OpDelete    = ent.OpDelete
 	OpDeleteOne = ent.OpDeleteOne
@@ -40,7 +40,7 @@ const (
 	TypeBatteryModel   = "BatteryModel"
 	TypeBranch         = "Branch"
 	TypeBranchContract = "BranchContract"
-	TypeCabinet        = "CabinetLog"
+	TypeCabinet        = "Cabinet"
 	TypeCabinetFault   = "CabinetFault"
 	TypeCity           = "City"
 	TypeContract       = "Contract"
@@ -5343,7 +5343,7 @@ func (m *CabinetMutation) OldField(ctx context.Context, name string) (ent.Value,
 	case cabinet.FieldBatteryFullNum:
 		return m.OldBatteryFullNum(ctx)
 	}
-	return nil, fmt.Errorf("unknown CabinetLog field %s", name)
+	return nil, fmt.Errorf("unknown Cabinet field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
@@ -5478,7 +5478,7 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 		m.SetBatteryFullNum(v)
 		return nil
 	}
-	return fmt.Errorf("unknown CabinetLog field %s", name)
+	return fmt.Errorf("unknown Cabinet field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
@@ -5563,7 +5563,7 @@ func (m *CabinetMutation) AddField(name string, value ent.Value) error {
 		m.AddBatteryFullNum(v)
 		return nil
 	}
-	return fmt.Errorf("unknown CabinetLog numeric field %s", name)
+	return fmt.Errorf("unknown Cabinet numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
@@ -5621,7 +5621,7 @@ func (m *CabinetMutation) ClearField(name string) error {
 		m.ClearBin()
 		return nil
 	}
-	return fmt.Errorf("unknown CabinetLog nullable field %s", name)
+	return fmt.Errorf("unknown Cabinet nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
@@ -5683,7 +5683,7 @@ func (m *CabinetMutation) ResetField(name string) error {
 		m.ResetBatteryFullNum()
 		return nil
 	}
-	return fmt.Errorf("unknown CabinetLog field %s", name)
+	return fmt.Errorf("unknown Cabinet field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
@@ -5794,7 +5794,7 @@ func (m *CabinetMutation) ClearEdge(name string) error {
 		m.ClearBranch()
 		return nil
 	}
-	return fmt.Errorf("unknown CabinetLog unique edge %s", name)
+	return fmt.Errorf("unknown Cabinet unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
@@ -5811,7 +5811,7 @@ func (m *CabinetMutation) ResetEdge(name string) error {
 		m.ResetFaults()
 		return nil
 	}
-	return fmt.Errorf("unknown CabinetLog edge %s", name)
+	return fmt.Errorf("unknown Cabinet edge %s", name)
 }
 
 // CabinetFaultMutation represents an operation that mutates the CabinetFault nodes in the graph.
@@ -7218,9 +7218,6 @@ type CityMutation struct {
 	faults          map[uint64]struct{}
 	removedfaults   map[uint64]struct{}
 	clearedfaults   bool
-	riders          map[uint64]struct{}
-	removedriders   map[uint64]struct{}
-	clearedriders   bool
 	done            bool
 	oldValue        func(context.Context) (*City, error)
 	predicates      []predicate.City
@@ -7961,60 +7958,6 @@ func (m *CityMutation) ResetFaults() {
 	m.removedfaults = nil
 }
 
-// AddRiderIDs adds the "riders" edge to the Rider entity by ids.
-func (m *CityMutation) AddRiderIDs(ids ...uint64) {
-	if m.riders == nil {
-		m.riders = make(map[uint64]struct{})
-	}
-	for i := range ids {
-		m.riders[ids[i]] = struct{}{}
-	}
-}
-
-// ClearRiders clears the "riders" edge to the Rider entity.
-func (m *CityMutation) ClearRiders() {
-	m.clearedriders = true
-}
-
-// RidersCleared reports if the "riders" edge to the Rider entity was cleared.
-func (m *CityMutation) RidersCleared() bool {
-	return m.clearedriders
-}
-
-// RemoveRiderIDs removes the "riders" edge to the Rider entity by IDs.
-func (m *CityMutation) RemoveRiderIDs(ids ...uint64) {
-	if m.removedriders == nil {
-		m.removedriders = make(map[uint64]struct{})
-	}
-	for i := range ids {
-		delete(m.riders, ids[i])
-		m.removedriders[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedRiders returns the removed IDs of the "riders" edge to the Rider entity.
-func (m *CityMutation) RemovedRidersIDs() (ids []uint64) {
-	for id := range m.removedriders {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// RidersIDs returns the "riders" edge IDs in the mutation.
-func (m *CityMutation) RidersIDs() (ids []uint64) {
-	for id := range m.riders {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetRiders resets all changes to the "riders" edge.
-func (m *CityMutation) ResetRiders() {
-	m.riders = nil
-	m.clearedriders = false
-	m.removedriders = nil
-}
-
 // Where appends a list predicates to the CityMutation builder.
 func (m *CityMutation) Where(ps ...predicate.City) {
 	m.predicates = append(m.predicates, ps...)
@@ -8305,7 +8248,7 @@ func (m *CityMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CityMutation) AddedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 5)
 	if m.plans != nil {
 		edges = append(edges, city.EdgePlans)
 	}
@@ -8320,9 +8263,6 @@ func (m *CityMutation) AddedEdges() []string {
 	}
 	if m.faults != nil {
 		edges = append(edges, city.EdgeFaults)
-	}
-	if m.riders != nil {
-		edges = append(edges, city.EdgeRiders)
 	}
 	return edges
 }
@@ -8359,19 +8299,13 @@ func (m *CityMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case city.EdgeRiders:
-		ids := make([]ent.Value, 0, len(m.riders))
-		for id := range m.riders {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CityMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 5)
 	if m.removedplans != nil {
 		edges = append(edges, city.EdgePlans)
 	}
@@ -8383,9 +8317,6 @@ func (m *CityMutation) RemovedEdges() []string {
 	}
 	if m.removedfaults != nil {
 		edges = append(edges, city.EdgeFaults)
-	}
-	if m.removedriders != nil {
-		edges = append(edges, city.EdgeRiders)
 	}
 	return edges
 }
@@ -8418,19 +8349,13 @@ func (m *CityMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case city.EdgeRiders:
-		ids := make([]ent.Value, 0, len(m.removedriders))
-		for id := range m.removedriders {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CityMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 5)
 	if m.clearedplans {
 		edges = append(edges, city.EdgePlans)
 	}
@@ -8445,9 +8370,6 @@ func (m *CityMutation) ClearedEdges() []string {
 	}
 	if m.clearedfaults {
 		edges = append(edges, city.EdgeFaults)
-	}
-	if m.clearedriders {
-		edges = append(edges, city.EdgeRiders)
 	}
 	return edges
 }
@@ -8466,8 +8388,6 @@ func (m *CityMutation) EdgeCleared(name string) bool {
 		return m.clearedbranches
 	case city.EdgeFaults:
 		return m.clearedfaults
-	case city.EdgeRiders:
-		return m.clearedriders
 	}
 	return false
 }
@@ -8501,9 +8421,6 @@ func (m *CityMutation) ResetEdge(name string) error {
 		return nil
 	case city.EdgeFaults:
 		m.ResetFaults()
-		return nil
-	case city.EdgeRiders:
-		m.ResetRiders()
 		return nil
 	}
 	return fmt.Errorf("unknown City edge %s", name)
@@ -13773,8 +13690,6 @@ type RiderMutation struct {
 	clearedFields     map[string]struct{}
 	person            *uint64
 	clearedperson     bool
-	city              *uint64
-	clearedcity       bool
 	enterprise        *uint64
 	clearedenterprise bool
 	contract          map[uint64]struct{}
@@ -14158,55 +14073,6 @@ func (m *RiderMutation) PersonIDCleared() bool {
 func (m *RiderMutation) ResetPersonID() {
 	m.person = nil
 	delete(m.clearedFields, rider.FieldPersonID)
-}
-
-// SetCityID sets the "city_id" field.
-func (m *RiderMutation) SetCityID(u uint64) {
-	m.city = &u
-}
-
-// CityID returns the value of the "city_id" field in the mutation.
-func (m *RiderMutation) CityID() (r uint64, exists bool) {
-	v := m.city
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCityID returns the old "city_id" field's value of the Rider entity.
-// If the Rider object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RiderMutation) OldCityID(ctx context.Context) (v *uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCityID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCityID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCityID: %w", err)
-	}
-	return oldValue.CityID, nil
-}
-
-// ClearCityID clears the value of the "city_id" field.
-func (m *RiderMutation) ClearCityID() {
-	m.city = nil
-	m.clearedFields[rider.FieldCityID] = struct{}{}
-}
-
-// CityIDCleared returns if the "city_id" field was cleared in this mutation.
-func (m *RiderMutation) CityIDCleared() bool {
-	_, ok := m.clearedFields[rider.FieldCityID]
-	return ok
-}
-
-// ResetCityID resets all changes to the "city_id" field.
-func (m *RiderMutation) ResetCityID() {
-	m.city = nil
-	delete(m.clearedFields, rider.FieldCityID)
 }
 
 // SetEnterpriseID sets the "enterprise_id" field.
@@ -14742,32 +14608,6 @@ func (m *RiderMutation) ResetPerson() {
 	m.clearedperson = false
 }
 
-// ClearCity clears the "city" edge to the City entity.
-func (m *RiderMutation) ClearCity() {
-	m.clearedcity = true
-}
-
-// CityCleared reports if the "city" edge to the City entity was cleared.
-func (m *RiderMutation) CityCleared() bool {
-	return m.CityIDCleared() || m.clearedcity
-}
-
-// CityIDs returns the "city" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// CityID instead. It exists only for internal usage by the builders.
-func (m *RiderMutation) CityIDs() (ids []uint64) {
-	if id := m.city; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetCity resets all changes to the "city" edge.
-func (m *RiderMutation) ResetCity() {
-	m.city = nil
-	m.clearedcity = false
-}
-
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *RiderMutation) ClearEnterprise() {
 	m.clearedenterprise = true
@@ -14921,7 +14761,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 17)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -14939,9 +14779,6 @@ func (m *RiderMutation) Fields() []string {
 	}
 	if m.person != nil {
 		fields = append(fields, rider.FieldPersonID)
-	}
-	if m.city != nil {
-		fields = append(fields, rider.FieldCityID)
 	}
 	if m.enterprise != nil {
 		fields = append(fields, rider.FieldEnterpriseID)
@@ -14996,8 +14833,6 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case rider.FieldPersonID:
 		return m.PersonID()
-	case rider.FieldCityID:
-		return m.CityID()
 	case rider.FieldEnterpriseID:
 		return m.EnterpriseID()
 	case rider.FieldPhone:
@@ -15041,8 +14876,6 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldRemark(ctx)
 	case rider.FieldPersonID:
 		return m.OldPersonID(ctx)
-	case rider.FieldCityID:
-		return m.OldCityID(ctx)
 	case rider.FieldEnterpriseID:
 		return m.OldEnterpriseID(ctx)
 	case rider.FieldPhone:
@@ -15115,13 +14948,6 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPersonID(v)
-		return nil
-	case rider.FieldCityID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCityID(v)
 		return nil
 	case rider.FieldEnterpriseID:
 		v, ok := value.(uint64)
@@ -15257,9 +15083,6 @@ func (m *RiderMutation) ClearedFields() []string {
 	if m.FieldCleared(rider.FieldPersonID) {
 		fields = append(fields, rider.FieldPersonID)
 	}
-	if m.FieldCleared(rider.FieldCityID) {
-		fields = append(fields, rider.FieldCityID)
-	}
 	if m.FieldCleared(rider.FieldEnterpriseID) {
 		fields = append(fields, rider.FieldEnterpriseID)
 	}
@@ -15306,9 +15129,6 @@ func (m *RiderMutation) ClearField(name string) error {
 		return nil
 	case rider.FieldPersonID:
 		m.ClearPersonID()
-		return nil
-	case rider.FieldCityID:
-		m.ClearCityID()
 		return nil
 	case rider.FieldEnterpriseID:
 		m.ClearEnterpriseID()
@@ -15357,9 +15177,6 @@ func (m *RiderMutation) ResetField(name string) error {
 	case rider.FieldPersonID:
 		m.ResetPersonID()
 		return nil
-	case rider.FieldCityID:
-		m.ResetCityID()
-		return nil
 	case rider.FieldEnterpriseID:
 		m.ResetEnterpriseID()
 		return nil
@@ -15399,12 +15216,9 @@ func (m *RiderMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *RiderMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 4)
 	if m.person != nil {
 		edges = append(edges, rider.EdgePerson)
-	}
-	if m.city != nil {
-		edges = append(edges, rider.EdgeCity)
 	}
 	if m.enterprise != nil {
 		edges = append(edges, rider.EdgeEnterprise)
@@ -15424,10 +15238,6 @@ func (m *RiderMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case rider.EdgePerson:
 		if id := m.person; id != nil {
-			return []ent.Value{*id}
-		}
-	case rider.EdgeCity:
-		if id := m.city; id != nil {
 			return []ent.Value{*id}
 		}
 	case rider.EdgeEnterprise:
@@ -15452,7 +15262,7 @@ func (m *RiderMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *RiderMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 4)
 	if m.removedcontract != nil {
 		edges = append(edges, rider.EdgeContract)
 	}
@@ -15484,12 +15294,9 @@ func (m *RiderMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *RiderMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 4)
 	if m.clearedperson {
 		edges = append(edges, rider.EdgePerson)
-	}
-	if m.clearedcity {
-		edges = append(edges, rider.EdgeCity)
 	}
 	if m.clearedenterprise {
 		edges = append(edges, rider.EdgeEnterprise)
@@ -15509,8 +15316,6 @@ func (m *RiderMutation) EdgeCleared(name string) bool {
 	switch name {
 	case rider.EdgePerson:
 		return m.clearedperson
-	case rider.EdgeCity:
-		return m.clearedcity
 	case rider.EdgeEnterprise:
 		return m.clearedenterprise
 	case rider.EdgeContract:
@@ -15528,9 +15333,6 @@ func (m *RiderMutation) ClearEdge(name string) error {
 	case rider.EdgePerson:
 		m.ClearPerson()
 		return nil
-	case rider.EdgeCity:
-		m.ClearCity()
-		return nil
 	case rider.EdgeEnterprise:
 		m.ClearEnterprise()
 		return nil
@@ -15544,9 +15346,6 @@ func (m *RiderMutation) ResetEdge(name string) error {
 	switch name {
 	case rider.EdgePerson:
 		m.ResetPerson()
-		return nil
-	case rider.EdgeCity:
-		m.ResetCity()
 		return nil
 	case rider.EdgeEnterprise:
 		m.ResetEnterprise()

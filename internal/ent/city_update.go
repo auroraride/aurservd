@@ -17,7 +17,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
-	"github.com/auroraride/aurservd/internal/ent/rider"
 )
 
 // CityUpdate is the builder for updating City entities.
@@ -208,21 +207,6 @@ func (cu *CityUpdate) AddFaults(c ...*CabinetFault) *CityUpdate {
 	return cu.AddFaultIDs(ids...)
 }
 
-// AddRiderIDs adds the "riders" edge to the Rider entity by IDs.
-func (cu *CityUpdate) AddRiderIDs(ids ...uint64) *CityUpdate {
-	cu.mutation.AddRiderIDs(ids...)
-	return cu
-}
-
-// AddRiders adds the "riders" edges to the Rider entity.
-func (cu *CityUpdate) AddRiders(r ...*Rider) *CityUpdate {
-	ids := make([]uint64, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
-	}
-	return cu.AddRiderIDs(ids...)
-}
-
 // Mutation returns the CityMutation object of the builder.
 func (cu *CityUpdate) Mutation() *CityMutation {
 	return cu.mutation
@@ -316,27 +300,6 @@ func (cu *CityUpdate) RemoveFaults(c ...*CabinetFault) *CityUpdate {
 		ids[i] = c[i].ID
 	}
 	return cu.RemoveFaultIDs(ids...)
-}
-
-// ClearRiders clears all "riders" edges to the Rider entity.
-func (cu *CityUpdate) ClearRiders() *CityUpdate {
-	cu.mutation.ClearRiders()
-	return cu
-}
-
-// RemoveRiderIDs removes the "riders" edge to Rider entities by IDs.
-func (cu *CityUpdate) RemoveRiderIDs(ids ...uint64) *CityUpdate {
-	cu.mutation.RemoveRiderIDs(ids...)
-	return cu
-}
-
-// RemoveRiders removes "riders" edges to Rider entities.
-func (cu *CityUpdate) RemoveRiders(r ...*Rider) *CityUpdate {
-	ids := make([]uint64, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
-	}
-	return cu.RemoveRiderIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -765,60 +728,6 @@ func (cu *CityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if cu.mutation.RidersCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   city.RidersTable,
-			Columns: []string{city.RidersColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cu.mutation.RemovedRidersIDs(); len(nodes) > 0 && !cu.mutation.RidersCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   city.RidersTable,
-			Columns: []string{city.RidersColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cu.mutation.RidersIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   city.RidersTable,
-			Columns: []string{city.RidersColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{city.Label}
@@ -1013,21 +922,6 @@ func (cuo *CityUpdateOne) AddFaults(c ...*CabinetFault) *CityUpdateOne {
 	return cuo.AddFaultIDs(ids...)
 }
 
-// AddRiderIDs adds the "riders" edge to the Rider entity by IDs.
-func (cuo *CityUpdateOne) AddRiderIDs(ids ...uint64) *CityUpdateOne {
-	cuo.mutation.AddRiderIDs(ids...)
-	return cuo
-}
-
-// AddRiders adds the "riders" edges to the Rider entity.
-func (cuo *CityUpdateOne) AddRiders(r ...*Rider) *CityUpdateOne {
-	ids := make([]uint64, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
-	}
-	return cuo.AddRiderIDs(ids...)
-}
-
 // Mutation returns the CityMutation object of the builder.
 func (cuo *CityUpdateOne) Mutation() *CityMutation {
 	return cuo.mutation
@@ -1121,27 +1015,6 @@ func (cuo *CityUpdateOne) RemoveFaults(c ...*CabinetFault) *CityUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return cuo.RemoveFaultIDs(ids...)
-}
-
-// ClearRiders clears all "riders" edges to the Rider entity.
-func (cuo *CityUpdateOne) ClearRiders() *CityUpdateOne {
-	cuo.mutation.ClearRiders()
-	return cuo
-}
-
-// RemoveRiderIDs removes the "riders" edge to Rider entities by IDs.
-func (cuo *CityUpdateOne) RemoveRiderIDs(ids ...uint64) *CityUpdateOne {
-	cuo.mutation.RemoveRiderIDs(ids...)
-	return cuo
-}
-
-// RemoveRiders removes "riders" edges to Rider entities.
-func (cuo *CityUpdateOne) RemoveRiders(r ...*Rider) *CityUpdateOne {
-	ids := make([]uint64, len(r))
-	for i := range r {
-		ids[i] = r[i].ID
-	}
-	return cuo.RemoveRiderIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1586,60 +1459,6 @@ func (cuo *CityUpdateOne) sqlSave(ctx context.Context) (_node *City, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: cabinetfault.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if cuo.mutation.RidersCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   city.RidersTable,
-			Columns: []string{city.RidersColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuo.mutation.RemovedRidersIDs(); len(nodes) > 0 && !cuo.mutation.RidersCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   city.RidersTable,
-			Columns: []string{city.RidersColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuo.mutation.RidersIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   city.RidersTable,
-			Columns: []string{city.RidersColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: rider.FieldID,
 				},
 			},
 		}

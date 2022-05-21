@@ -54,7 +54,7 @@ const (
 	ContractsColumn = "branch_id"
 	// CabinetsTable is the table that holds the cabinets relation/edge.
 	CabinetsTable = "cabinet"
-	// CabinetsInverseTable is the table name for the CabinetLog entity.
+	// CabinetsInverseTable is the table name for the Cabinet entity.
 	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
 	CabinetsInverseTable = "cabinet"
 	// CabinetsColumn is the table column denoting the cabinets relation/edge.

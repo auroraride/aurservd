@@ -583,6 +583,22 @@ definitions:
     - price
     - start
     type: object
+  model.RiderContact:
+    properties:
+      name:
+        description: '联系人姓名 '
+        type: string
+      phone:
+        description: '联系人电话 '
+        type: string
+      relation:
+        description: '关系 '
+        type: string
+    required:
+    - name
+    - phone
+    - relation
+    type: object
   model.RiderItem:
     properties:
       city:
@@ -624,6 +640,19 @@ definitions:
       phone:
         description: 骑手电话
         type: string
+    type: object
+  model.RiderSignupReq:
+    properties:
+      phone:
+        type: string
+      smsCode:
+        type: string
+      smsId:
+        type: string
+    required:
+    - phone
+    - smsCode
+    - smsId
     type: object
   model.ShiguangjuIVRItem:
     properties:
@@ -1630,17 +1659,45 @@ paths:
       summary: M10001 用户登录
       tags:
       - '[M]管理接口'
-  /rider/v1/signin:
+  /rider/v1/contact:
     post:
       consumes:
       - application/json
-      operationId: RiderSignin
+      operationId: RiderContact
       parameters:
       - description: 骑手校验token
         in: header
         name: X-Rider-Token
         required: true
         type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderContact'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R10002 添加紧急联系人
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/signin:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderSignin
+      parameters:
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderSignupReq'
       produces:
       - application/json
       responses:

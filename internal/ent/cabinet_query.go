@@ -368,7 +368,7 @@ func (cq *CabinetQuery) WithFaults(opts ...func(*CabinetFaultQuery)) *CabinetQue
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.CabinetLog.Query().
+//	client.Cabinet.Query().
 //		GroupBy(cabinet.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
@@ -396,7 +396,7 @@ func (cq *CabinetQuery) GroupBy(field string, fields ...string) *CabinetGroupBy 
 //		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
-//	client.CabinetLog.Query().
+//	client.Cabinet.Query().
 //		Select(cabinet.FieldCreatedAt).
 //		Scan(ctx, &v)
 //

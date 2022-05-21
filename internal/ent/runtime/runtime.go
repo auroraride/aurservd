@@ -300,19 +300,19 @@ func init() {
 	// rider.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	rider.UpdateDefaultUpdatedAt = riderDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// riderDescPhone is the schema descriptor for phone field.
-	riderDescPhone := riderFields[3].Descriptor()
+	riderDescPhone := riderFields[2].Descriptor()
 	// rider.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
 	rider.PhoneValidator = riderDescPhone.Validators[0].(func(string) error)
 	// riderDescLastDevice is the schema descriptor for last_device field.
-	riderDescLastDevice := riderFields[6].Descriptor()
+	riderDescLastDevice := riderFields[5].Descriptor()
 	// rider.LastDeviceValidator is a validator for the "last_device" field. It is called by the builders before save.
 	rider.LastDeviceValidator = riderDescLastDevice.Validators[0].(func(string) error)
 	// riderDescIsNewDevice is the schema descriptor for is_new_device field.
-	riderDescIsNewDevice := riderFields[7].Descriptor()
+	riderDescIsNewDevice := riderFields[6].Descriptor()
 	// rider.DefaultIsNewDevice holds the default value on creation for the is_new_device field.
 	rider.DefaultIsNewDevice = riderDescIsNewDevice.Default.(bool)
 	// riderDescPushID is the schema descriptor for push_id field.
-	riderDescPushID := riderFields[9].Descriptor()
+	riderDescPushID := riderFields[8].Descriptor()
 	// rider.PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
 	rider.PushIDValidator = riderDescPushID.Validators[0].(func(string) error)
 	settingMixin := schema.Setting{}.Mixin()

@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
-	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/person"
@@ -100,20 +99,6 @@ func (rc *RiderCreate) SetPersonID(u uint64) *RiderCreate {
 func (rc *RiderCreate) SetNillablePersonID(u *uint64) *RiderCreate {
 	if u != nil {
 		rc.SetPersonID(*u)
-	}
-	return rc
-}
-
-// SetCityID sets the "city_id" field.
-func (rc *RiderCreate) SetCityID(u uint64) *RiderCreate {
-	rc.mutation.SetCityID(u)
-	return rc
-}
-
-// SetNillableCityID sets the "city_id" field if the given value is not nil.
-func (rc *RiderCreate) SetNillableCityID(u *uint64) *RiderCreate {
-	if u != nil {
-		rc.SetCityID(*u)
 	}
 	return rc
 }
@@ -249,11 +234,6 @@ func (rc *RiderCreate) SetID(u uint64) *RiderCreate {
 // SetPerson sets the "person" edge to the Person entity.
 func (rc *RiderCreate) SetPerson(p *Person) *RiderCreate {
 	return rc.SetPersonID(p.ID)
-}
-
-// SetCity sets the "city" edge to the City entity.
-func (rc *RiderCreate) SetCity(c *City) *RiderCreate {
-	return rc.SetCityID(c.ID)
 }
 
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
@@ -594,26 +574,6 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 		_node.PersonID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := rc.mutation.CityIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   rider.CityTable,
-			Columns: []string{rider.CityColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.CityID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := rc.mutation.EnterpriseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -819,24 +779,6 @@ func (u *RiderUpsert) UpdatePersonID() *RiderUpsert {
 // ClearPersonID clears the value of the "person_id" field.
 func (u *RiderUpsert) ClearPersonID() *RiderUpsert {
 	u.SetNull(rider.FieldPersonID)
-	return u
-}
-
-// SetCityID sets the "city_id" field.
-func (u *RiderUpsert) SetCityID(v uint64) *RiderUpsert {
-	u.Set(rider.FieldCityID, v)
-	return u
-}
-
-// UpdateCityID sets the "city_id" field to the value that was provided on create.
-func (u *RiderUpsert) UpdateCityID() *RiderUpsert {
-	u.SetExcluded(rider.FieldCityID)
-	return u
-}
-
-// ClearCityID clears the value of the "city_id" field.
-func (u *RiderUpsert) ClearCityID() *RiderUpsert {
-	u.SetNull(rider.FieldCityID)
 	return u
 }
 
@@ -1182,27 +1124,6 @@ func (u *RiderUpsertOne) UpdatePersonID() *RiderUpsertOne {
 func (u *RiderUpsertOne) ClearPersonID() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearPersonID()
-	})
-}
-
-// SetCityID sets the "city_id" field.
-func (u *RiderUpsertOne) SetCityID(v uint64) *RiderUpsertOne {
-	return u.Update(func(s *RiderUpsert) {
-		s.SetCityID(v)
-	})
-}
-
-// UpdateCityID sets the "city_id" field to the value that was provided on create.
-func (u *RiderUpsertOne) UpdateCityID() *RiderUpsertOne {
-	return u.Update(func(s *RiderUpsert) {
-		s.UpdateCityID()
-	})
-}
-
-// ClearCityID clears the value of the "city_id" field.
-func (u *RiderUpsertOne) ClearCityID() *RiderUpsertOne {
-	return u.Update(func(s *RiderUpsert) {
-		s.ClearCityID()
 	})
 }
 
@@ -1743,27 +1664,6 @@ func (u *RiderUpsertBulk) UpdatePersonID() *RiderUpsertBulk {
 func (u *RiderUpsertBulk) ClearPersonID() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearPersonID()
-	})
-}
-
-// SetCityID sets the "city_id" field.
-func (u *RiderUpsertBulk) SetCityID(v uint64) *RiderUpsertBulk {
-	return u.Update(func(s *RiderUpsert) {
-		s.SetCityID(v)
-	})
-}
-
-// UpdateCityID sets the "city_id" field to the value that was provided on create.
-func (u *RiderUpsertBulk) UpdateCityID() *RiderUpsertBulk {
-	return u.Update(func(s *RiderUpsert) {
-		s.UpdateCityID()
-	})
-}
-
-// ClearCityID clears the value of the "city_id" field.
-func (u *RiderUpsertBulk) ClearCityID() *RiderUpsertBulk {
-	return u.Update(func(s *RiderUpsert) {
-		s.ClearCityID()
 	})
 }
 

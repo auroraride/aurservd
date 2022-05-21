@@ -39,8 +39,6 @@ const (
 	EdgeBranches = "branches"
 	// EdgeFaults holds the string denoting the faults edge name in mutations.
 	EdgeFaults = "faults"
-	// EdgeRiders holds the string denoting the riders edge name in mutations.
-	EdgeRiders = "riders"
 	// Table holds the table name of the city in the database.
 	Table = "city"
 	// PlansTable is the table that holds the plans relation/edge. The primary key declared below.
@@ -70,13 +68,6 @@ const (
 	FaultsInverseTable = "cabinet_fault"
 	// FaultsColumn is the table column denoting the faults relation/edge.
 	FaultsColumn = "city_id"
-	// RidersTable is the table that holds the riders relation/edge.
-	RidersTable = "rider"
-	// RidersInverseTable is the table name for the Rider entity.
-	// It exists in this package in order to avoid circular dependency with the "rider" package.
-	RidersInverseTable = "rider"
-	// RidersColumn is the table column denoting the riders relation/edge.
-	RidersColumn = "city_id"
 )
 
 // Columns holds all SQL columns for city fields.

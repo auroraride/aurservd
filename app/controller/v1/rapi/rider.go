@@ -22,7 +22,6 @@ var (
 type rider struct {
 }
 
-// Signin 骑手登录
 // Signin
 // @ID           RiderSignin
 // @Router       /rider/v1/signin [POST]
@@ -30,7 +29,7 @@ type rider struct {
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
-// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        body  body  model.RiderSignupReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*rider) Signin(c echo.Context) (err error) {
     ctx, req := app.ContextBinding[model.RiderSignupReq](c)
@@ -44,14 +43,23 @@ func (*rider) Signin(c echo.Context) (err error) {
     // 注册+登录
     var data *model.RiderSigninRes
     s := service.NewRider()
-    data, err = s.Signin(req.Phone, ctx.Device)
+    data, err = s.Signin(ctx.Device, req)
     if err != nil {
         return
     }
     return ctx.SendResponse(data)
 }
 
-// Contact 添加紧急联系人
+// Contact
+// @ID           RiderContact
+// @Router       /rider/v1/contact [POST]
+// @Summary      R10002 添加紧急联系人
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        body  body  model.RiderContact  true  "desc"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
 func (r *rider) Contact(c echo.Context) error {
     ctx, req := app.RiderContextAndBinding[model.RiderContact](c)
     service.NewRider().UpdateContact(ctx.Rider, req)

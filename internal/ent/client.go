@@ -1046,22 +1046,6 @@ func (c *CityClient) QueryFaults(ci *City) *CabinetFaultQuery {
 	return query
 }
 
-// QueryRiders queries the riders edge of a City.
-func (c *CityClient) QueryRiders(ci *City) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := ci.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(city.Table, city.FieldID, id),
-			sqlgraph.To(rider.Table, rider.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, city.RidersTable, city.RidersColumn),
-		)
-		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // Hooks returns the client hooks.
 func (c *CityClient) Hooks() []Hook {
 	return c.hooks.City
@@ -1691,22 +1675,6 @@ func (c *RiderClient) QueryPerson(r *Rider) *PersonQuery {
 			sqlgraph.From(rider.Table, rider.FieldID, id),
 			sqlgraph.To(person.Table, person.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, rider.PersonTable, rider.PersonColumn),
-		)
-		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryCity queries the city edge of a Rider.
-func (c *RiderClient) QueryCity(r *Rider) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := r.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(rider.Table, rider.FieldID, id),
-			sqlgraph.To(city.Table, city.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, rider.CityTable, rider.CityColumn),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil

@@ -59,11 +59,9 @@ type CityEdges struct {
 	Branches []*Branch `json:"branches,omitempty"`
 	// Faults holds the value of the faults edge.
 	Faults []*CabinetFault `json:"faults,omitempty"`
-	// Riders holds the value of the riders edge.
-	Riders []*Rider `json:"riders,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [5]bool
 }
 
 // PlansOrErr returns the Plans value or an error if the edge
@@ -114,15 +112,6 @@ func (e CityEdges) FaultsOrErr() ([]*CabinetFault, error) {
 		return e.Faults, nil
 	}
 	return nil, &NotLoadedError{edge: "faults"}
-}
-
-// RidersOrErr returns the Riders value or an error if the edge
-// was not loaded in eager-loading.
-func (e CityEdges) RidersOrErr() ([]*Rider, error) {
-	if e.loadedTypes[5] {
-		return e.Riders, nil
-	}
-	return nil, &NotLoadedError{edge: "riders"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -248,11 +237,6 @@ func (c *City) QueryBranches() *BranchQuery {
 // QueryFaults queries the "faults" edge of the City entity.
 func (c *City) QueryFaults() *CabinetFaultQuery {
 	return (&CityClient{config: c.config}).QueryFaults(c)
-}
-
-// QueryRiders queries the "riders" edge of the City entity.
-func (c *City) QueryRiders() *RiderQuery {
-	return (&CityClient{config: c.config}).QueryRiders(c)
 }
 
 // Update returns a builder for updating this City.

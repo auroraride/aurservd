@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
-	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/person"
@@ -109,26 +108,6 @@ func (ru *RiderUpdate) SetNillablePersonID(u *uint64) *RiderUpdate {
 // ClearPersonID clears the value of the "person_id" field.
 func (ru *RiderUpdate) ClearPersonID() *RiderUpdate {
 	ru.mutation.ClearPersonID()
-	return ru
-}
-
-// SetCityID sets the "city_id" field.
-func (ru *RiderUpdate) SetCityID(u uint64) *RiderUpdate {
-	ru.mutation.SetCityID(u)
-	return ru
-}
-
-// SetNillableCityID sets the "city_id" field if the given value is not nil.
-func (ru *RiderUpdate) SetNillableCityID(u *uint64) *RiderUpdate {
-	if u != nil {
-		ru.SetCityID(*u)
-	}
-	return ru
-}
-
-// ClearCityID clears the value of the "city_id" field.
-func (ru *RiderUpdate) ClearCityID() *RiderUpdate {
-	ru.mutation.ClearCityID()
 	return ru
 }
 
@@ -308,11 +287,6 @@ func (ru *RiderUpdate) SetPerson(p *Person) *RiderUpdate {
 	return ru.SetPersonID(p.ID)
 }
 
-// SetCity sets the "city" edge to the City entity.
-func (ru *RiderUpdate) SetCity(c *City) *RiderUpdate {
-	return ru.SetCityID(c.ID)
-}
-
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (ru *RiderUpdate) SetEnterprise(e *Enterprise) *RiderUpdate {
 	return ru.SetEnterpriseID(e.ID)
@@ -356,12 +330,6 @@ func (ru *RiderUpdate) Mutation() *RiderMutation {
 // ClearPerson clears the "person" edge to the Person entity.
 func (ru *RiderUpdate) ClearPerson() *RiderUpdate {
 	ru.mutation.ClearPerson()
-	return ru
-}
-
-// ClearCity clears the "city" edge to the City entity.
-func (ru *RiderUpdate) ClearCity() *RiderUpdate {
-	ru.mutation.ClearCity()
 	return ru
 }
 
@@ -720,41 +688,6 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ru.mutation.CityCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   rider.CityTable,
-			Columns: []string{rider.CityColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ru.mutation.CityIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   rider.CityTable,
-			Columns: []string{rider.CityColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if ru.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -995,26 +928,6 @@ func (ruo *RiderUpdateOne) ClearPersonID() *RiderUpdateOne {
 	return ruo
 }
 
-// SetCityID sets the "city_id" field.
-func (ruo *RiderUpdateOne) SetCityID(u uint64) *RiderUpdateOne {
-	ruo.mutation.SetCityID(u)
-	return ruo
-}
-
-// SetNillableCityID sets the "city_id" field if the given value is not nil.
-func (ruo *RiderUpdateOne) SetNillableCityID(u *uint64) *RiderUpdateOne {
-	if u != nil {
-		ruo.SetCityID(*u)
-	}
-	return ruo
-}
-
-// ClearCityID clears the value of the "city_id" field.
-func (ruo *RiderUpdateOne) ClearCityID() *RiderUpdateOne {
-	ruo.mutation.ClearCityID()
-	return ruo
-}
-
 // SetEnterpriseID sets the "enterprise_id" field.
 func (ruo *RiderUpdateOne) SetEnterpriseID(u uint64) *RiderUpdateOne {
 	ruo.mutation.SetEnterpriseID(u)
@@ -1191,11 +1104,6 @@ func (ruo *RiderUpdateOne) SetPerson(p *Person) *RiderUpdateOne {
 	return ruo.SetPersonID(p.ID)
 }
 
-// SetCity sets the "city" edge to the City entity.
-func (ruo *RiderUpdateOne) SetCity(c *City) *RiderUpdateOne {
-	return ruo.SetCityID(c.ID)
-}
-
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (ruo *RiderUpdateOne) SetEnterprise(e *Enterprise) *RiderUpdateOne {
 	return ruo.SetEnterpriseID(e.ID)
@@ -1239,12 +1147,6 @@ func (ruo *RiderUpdateOne) Mutation() *RiderMutation {
 // ClearPerson clears the "person" edge to the Person entity.
 func (ruo *RiderUpdateOne) ClearPerson() *RiderUpdateOne {
 	ruo.mutation.ClearPerson()
-	return ruo
-}
-
-// ClearCity clears the "city" edge to the City entity.
-func (ruo *RiderUpdateOne) ClearCity() *RiderUpdateOne {
-	ruo.mutation.ClearCity()
 	return ruo
 }
 
@@ -1619,41 +1521,6 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: person.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if ruo.mutation.CityCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   rider.CityTable,
-			Columns: []string{rider.CityColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ruo.mutation.CityIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   rider.CityTable,
-			Columns: []string{rider.CityColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
 				},
 			},
 		}

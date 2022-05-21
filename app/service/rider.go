@@ -28,12 +28,14 @@ import (
 type riderService struct {
     cacheKeyPrefix string
     ctx            context.Context
+    orm            *ent.RiderClient
 }
 
 func NewRider() *riderService {
     return &riderService{
         cacheKeyPrefix: "RIDER_",
         ctx:            context.Background(),
+        orm:            ar.Ent.Rider,
     }
 }
 
@@ -63,15 +65,16 @@ func (s *riderService) IsNewDevice(u *ent.Rider, device *app.Device) bool {
 }
 
 // Signin 骑手登录
-func (s *riderService) Signin(phone string, device *app.Device) (res *model.RiderSigninRes, err error) {
+func (s *riderService) Signin(device *app.Device, req *model.RiderSignupReq) (res *model.RiderSigninRes, err error) {
     ctx := context.Background()
     orm := ar.Ent.Rider
     var u *ent.Rider
-    u, err = orm.QueryNotDeleted().Where(rider.Phone(phone)).WithPerson().Only(ctx)
+
+    u, err = orm.QueryNotDeleted().Where(rider.Phone(req.Phone)).WithPerson().Only(ctx)
     if err != nil {
         // 创建骑手
         u, err = orm.Create().
-            SetPhone(phone).
+            SetPhone(req.Phone).
             SetLastDevice(device.Serial).
             SetDeviceType(device.Type.Raw()).
             Save(ctx)
@@ -306,7 +309,7 @@ func (*riderService) GetRiderSampleInfo(rider *ent.Rider) model.RiderSampleInfo 
 
 // List 骑手列表
 func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
-    q := ar.Ent.Rider.Query().WithPerson().WithCity()
+    q := ar.Ent.Rider.Query().WithPerson()
     if req.Keyword != nil {
         // 判定是否id字段
         if id, err := strconv.ParseUint(*req.Keyword, 10, 64); err == nil && id > 0 {
@@ -366,7 +369,6 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
                     IDCardNumber: idnum,
                     UserPlan:     nil,
                     Deposit:      0,
-                    City:         nil,
                 }
             }
             return out

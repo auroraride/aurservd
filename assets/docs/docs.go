@@ -1404,6 +1404,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/contact": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R10002 添加紧急联系人",
+                "operationId": "RiderContact",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderContact"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/signin": {
             "post": {
                 "consumes": [
@@ -1419,11 +1460,13 @@ const docTemplate = `{
                 "operationId": "RiderSignin",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderSignupReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -2246,6 +2289,28 @@ const docTemplate = `{
                 }
             }
         },
+        "model.RiderContact": {
+            "type": "object",
+            "required": [
+                "name",
+                "phone",
+                "relation"
+            ],
+            "properties": {
+                "name": {
+                    "description": "联系人姓名 ",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "联系人电话 ",
+                    "type": "string"
+                },
+                "relation": {
+                    "description": "关系 ",
+                    "type": "string"
+                }
+            }
+        },
         "model.RiderItem": {
             "type": "object",
             "properties": {
@@ -2299,6 +2364,25 @@ const docTemplate = `{
                 },
                 "phone": {
                     "description": "骑手电话",
+                    "type": "string"
+                }
+            }
+        },
+        "model.RiderSignupReq": {
+            "type": "object",
+            "required": [
+                "phone",
+                "smsCode",
+                "smsId"
+            ],
+            "properties": {
+                "phone": {
+                    "type": "string"
+                },
+                "smsCode": {
+                    "type": "string"
+                },
+                "smsId": {
                     "type": "string"
                 }
             }

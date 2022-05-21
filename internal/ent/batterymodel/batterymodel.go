@@ -35,7 +35,7 @@ const (
 	Table = "battery_model"
 	// CabinetsTable is the table that holds the cabinets relation/edge. The primary key declared below.
 	CabinetsTable = "cabinet_bms"
-	// CabinetsInverseTable is the table name for the CabinetLog entity.
+	// CabinetsInverseTable is the table name for the Cabinet entity.
 	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
 	CabinetsInverseTable = "cabinet"
 	// PlansTable is the table that holds the plans relation/edge. The primary key declared below.

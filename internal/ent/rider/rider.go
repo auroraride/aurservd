@@ -25,8 +25,6 @@ const (
 	FieldRemark = "remark"
 	// FieldPersonID holds the string denoting the person_id field in the database.
 	FieldPersonID = "person_id"
-	// FieldCityID holds the string denoting the city_id field in the database.
-	FieldCityID = "city_id"
 	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
 	FieldEnterpriseID = "enterprise_id"
 	// FieldPhone holds the string denoting the phone field in the database.
@@ -51,8 +49,6 @@ const (
 	FieldPlanAt = "plan_at"
 	// EdgePerson holds the string denoting the person edge name in mutations.
 	EdgePerson = "person"
-	// EdgeCity holds the string denoting the city edge name in mutations.
-	EdgeCity = "city"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
 	// EdgeContract holds the string denoting the contract edge name in mutations.
@@ -68,13 +64,6 @@ const (
 	PersonInverseTable = "person"
 	// PersonColumn is the table column denoting the person relation/edge.
 	PersonColumn = "person_id"
-	// CityTable is the table that holds the city relation/edge.
-	CityTable = "rider"
-	// CityInverseTable is the table name for the City entity.
-	// It exists in this package in order to avoid circular dependency with the "city" package.
-	CityInverseTable = "city"
-	// CityColumn is the table column denoting the city relation/edge.
-	CityColumn = "city_id"
 	// EnterpriseTable is the table that holds the enterprise relation/edge.
 	EnterpriseTable = "rider"
 	// EnterpriseInverseTable is the table name for the Enterprise entity.
@@ -107,7 +96,6 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldPersonID,
-	FieldCityID,
 	FieldEnterpriseID,
 	FieldPhone,
 	FieldContact,

@@ -28,7 +28,6 @@ func (Rider) Annotations() []schema.Annotation {
 func (Rider) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("person_id").Optional().Nillable().Comment("实人"),
-        field.Uint64("city_id").Optional().Nillable().Comment("注册城市"),
         field.Uint64("enterprise_id").Optional().Nillable().Comment("所属企业"),
         field.String("phone").MaxLen(11).Unique().Comment("手机号"),
         field.JSON("contact", &model.RiderContact{}).Optional().Comment("紧急联系人"),
@@ -47,7 +46,6 @@ func (Rider) Fields() []ent.Field {
 func (Rider) Edges() []ent.Edge {
     return []ent.Edge{
         edge.From("person", Person.Type).Ref("rider").Unique().Field("person_id"),
-        edge.From("city", City.Type).Ref("riders").Unique().Field("city_id"),
         edge.From("enterprise", Enterprise.Type).Ref("riders").Unique().Field("enterprise_id"),
         edge.To("contract", Contract.Type),
         edge.To("faults", CabinetFault.Type),

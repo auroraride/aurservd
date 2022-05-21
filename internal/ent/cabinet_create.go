@@ -329,40 +329,40 @@ func (cc *CabinetCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (cc *CabinetCreate) check() error {
 	if _, ok := cc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "CabinetLog.created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Cabinet.created_at"`)}
 	}
 	if _, ok := cc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "CabinetLog.updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Cabinet.updated_at"`)}
 	}
 	if _, ok := cc.mutation.Sn(); !ok {
-		return &ValidationError{Name: "sn", err: errors.New(`ent: missing required field "CabinetLog.sn"`)}
+		return &ValidationError{Name: "sn", err: errors.New(`ent: missing required field "Cabinet.sn"`)}
 	}
 	if _, ok := cc.mutation.Brand(); !ok {
-		return &ValidationError{Name: "brand", err: errors.New(`ent: missing required field "CabinetLog.brand"`)}
+		return &ValidationError{Name: "brand", err: errors.New(`ent: missing required field "Cabinet.brand"`)}
 	}
 	if _, ok := cc.mutation.Serial(); !ok {
-		return &ValidationError{Name: "serial", err: errors.New(`ent: missing required field "CabinetLog.serial"`)}
+		return &ValidationError{Name: "serial", err: errors.New(`ent: missing required field "Cabinet.serial"`)}
 	}
 	if _, ok := cc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "CabinetLog.name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Cabinet.name"`)}
 	}
 	if _, ok := cc.mutation.Doors(); !ok {
-		return &ValidationError{Name: "doors", err: errors.New(`ent: missing required field "CabinetLog.doors"`)}
+		return &ValidationError{Name: "doors", err: errors.New(`ent: missing required field "Cabinet.doors"`)}
 	}
 	if _, ok := cc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "CabinetLog.status"`)}
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Cabinet.status"`)}
 	}
 	if _, ok := cc.mutation.Models(); !ok {
-		return &ValidationError{Name: "models", err: errors.New(`ent: missing required field "CabinetLog.models"`)}
+		return &ValidationError{Name: "models", err: errors.New(`ent: missing required field "Cabinet.models"`)}
 	}
 	if _, ok := cc.mutation.Health(); !ok {
-		return &ValidationError{Name: "health", err: errors.New(`ent: missing required field "CabinetLog.health"`)}
+		return &ValidationError{Name: "health", err: errors.New(`ent: missing required field "Cabinet.health"`)}
 	}
 	if _, ok := cc.mutation.BatteryNum(); !ok {
-		return &ValidationError{Name: "battery_num", err: errors.New(`ent: missing required field "CabinetLog.battery_num"`)}
+		return &ValidationError{Name: "battery_num", err: errors.New(`ent: missing required field "Cabinet.battery_num"`)}
 	}
 	if _, ok := cc.mutation.BatteryFullNum(); !ok {
-		return &ValidationError{Name: "battery_full_num", err: errors.New(`ent: missing required field "CabinetLog.battery_full_num"`)}
+		return &ValidationError{Name: "battery_full_num", err: errors.New(`ent: missing required field "Cabinet.battery_full_num"`)}
 	}
 	return nil
 }
@@ -592,7 +592,7 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 // OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
 // of the `INSERT` statement. For example:
 //
-//	client.CabinetLog.Create().
+//	client.Cabinet.Create().
 //		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
@@ -616,7 +616,7 @@ func (cc *CabinetCreate) OnConflict(opts ...sql.ConflictOption) *CabinetUpsertOn
 // OnConflictColumns calls `OnConflict` and configures the columns
 // as conflict target. Using this option is equivalent to using:
 //
-//	client.CabinetLog.Create().
+//	client.Cabinet.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
 //
@@ -925,7 +925,7 @@ func (u *CabinetUpsert) AddBatteryFullNum(v uint) *CabinetUpsert {
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
-//	client.CabinetLog.Create().
+//	client.Cabinet.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
 //		).
@@ -944,7 +944,7 @@ func (u *CabinetUpsertOne) UpdateNewValues() *CabinetUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//  client.CabinetLog.Create().
+//  client.Cabinet.Create().
 //      OnConflict(sql.ResolveWithIgnore()).
 //      Exec(ctx)
 //
@@ -1420,7 +1420,7 @@ func (ccb *CabinetCreateBulk) ExecX(ctx context.Context) {
 // OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
 // of the `INSERT` statement. For example:
 //
-//	client.CabinetLog.CreateBulk(builders...).
+//	client.Cabinet.CreateBulk(builders...).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -1443,7 +1443,7 @@ func (ccb *CabinetCreateBulk) OnConflict(opts ...sql.ConflictOption) *CabinetUps
 // OnConflictColumns calls `OnConflict` and configures the columns
 // as conflict target. Using this option is equivalent to using:
 //
-//	client.CabinetLog.Create().
+//	client.Cabinet.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
 //
@@ -1463,7 +1463,7 @@ type CabinetUpsertBulk struct {
 // UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
-//	client.CabinetLog.Create().
+//	client.Cabinet.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
 //		).
@@ -1484,7 +1484,7 @@ func (u *CabinetUpsertBulk) UpdateNewValues() *CabinetUpsertBulk {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.CabinetLog.Create().
+//	client.Cabinet.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
 //

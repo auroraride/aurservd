@@ -581,7 +581,6 @@ var (
 		{Name: "last_signin_at", Type: field.TypeTime, Nullable: true},
 		{Name: "esign_account_id", Type: field.TypeString, Nullable: true},
 		{Name: "plan_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"postgres": "date"}},
-		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "person_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -592,20 +591,14 @@ var (
 		PrimaryKey: []*schema.Column{RiderColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "rider_city_riders",
-				Columns:    []*schema.Column{RiderColumns[16]},
-				RefColumns: []*schema.Column{CityColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "rider_enterprise_riders",
-				Columns:    []*schema.Column{RiderColumns[17]},
+				Columns:    []*schema.Column{RiderColumns[16]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_person_rider",
-				Columns:    []*schema.Column{RiderColumns[18]},
+				Columns:    []*schema.Column{RiderColumns[17]},
 				RefColumns: []*schema.Column{PersonColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -793,9 +786,8 @@ func init() {
 	PlanTable.Annotation = &entsql.Annotation{
 		Table: "plan",
 	}
-	RiderTable.ForeignKeys[0].RefTable = CityTable
-	RiderTable.ForeignKeys[1].RefTable = EnterpriseTable
-	RiderTable.ForeignKeys[2].RefTable = PersonTable
+	RiderTable.ForeignKeys[0].RefTable = EnterpriseTable
+	RiderTable.ForeignKeys[1].RefTable = PersonTable
 	RiderTable.Annotation = &entsql.Annotation{
 		Table: "rider",
 	}

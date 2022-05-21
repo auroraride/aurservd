@@ -20,9 +20,10 @@ type RiderContext struct {
 
 // RiderSignupReq 骑手登录请求数据
 type RiderSignupReq struct {
-    Phone   string `json:"phone" validate:"required"`
-    SmsId   string `json:"smsId" validate:"required"`
-    SmsCode string `json:"smsCode" validate:"required"`
+    Phone   string `json:"phone" validate:"required" trans:"电话"`
+    SmsId   string `json:"smsId" validate:"required" trans:"短信ID"`
+    SmsCode string `json:"smsCode" validate:"required" trans:"短信验证码"`
+    CityID  uint64 `json:"cityId"`
 }
 
 // RiderSigninRes 骑手登录数据返回
@@ -61,7 +62,6 @@ type RiderListReq struct {
     End      *string `json:"end"`      // 注册结束时间, 格式为: 2022-01-01
 
     Status *uint8  `json:"status"` // 用户状态 0:未使用 1:未开通 2:计费中 3:寄存中 4:已过期 5:暂停中 6:已退租 7:已欠费 8:未认证 9:未办理 10:即将到期 11:已禁用 12:黑名单
-    CityID *uint64 `json:"cityId"` // 注册城市
     PlanID *uint64 `json:"planId"` // 骑士卡
 }
 
@@ -73,7 +73,6 @@ type RiderItem struct {
     Status       uint8           `json:"status"`               // 用户状态 0:未使用 1:未开通 2:计费中 3:寄存中 4:已过期 5:暂停中 6:已退租 7:已欠费 8:未认证 9:未办理 10:即将到期 11:已禁用 12:黑名单
     IDCardNumber string          `json:"idCardNumber"`         // 身份证
     Deposit      float64         `json:"deposit"`              // 押金
-    City         *City           `json:"city,omitempty"`       // 注册城市
     Enterprise   *EnterpriseItem `json:"enterprise,omitempty"` // 团签企业信息, 若无此字段则为个签用户
     UserPlan     *UserPlanItem   `json:"userPlan,omitempty"`   // 当前有效骑士卡, 若无此字段则代表当前无有效骑士卡
 }

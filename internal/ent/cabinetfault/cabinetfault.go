@@ -58,7 +58,7 @@ const (
 	BranchColumn = "branch_id"
 	// CabinetTable is the table that holds the cabinet relation/edge.
 	CabinetTable = "cabinet_fault"
-	// CabinetInverseTable is the table name for the CabinetLog entity.
+	// CabinetInverseTable is the table name for the Cabinet entity.
 	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
 	CabinetInverseTable = "cabinet"
 	// CabinetColumn is the table column denoting the cabinet relation/edge.
