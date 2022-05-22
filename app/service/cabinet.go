@@ -83,8 +83,8 @@ func (s *cabinetService) CreateCabinet(modifier *model.Modifier, req *model.Cabi
     return
 }
 
-// Query 查询电柜
-func (s *cabinetService) Query(req *model.CabinetQueryReq) (res *model.PaginationRes) {
+// List 查询电柜
+func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.PaginationRes) {
     q := s.orm.QueryNotDeleted().WithBranch(
         func(bq *ent.BranchQuery) {
             bq.WithCity()

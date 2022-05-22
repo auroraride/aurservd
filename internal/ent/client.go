@@ -22,6 +22,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/setting"
+	"github.com/auroraride/aurservd/internal/ent/store"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -59,6 +60,8 @@ type Client struct {
 	Rider *RiderClient
 	// Setting is the client for interacting with the Setting builders.
 	Setting *SettingClient
+	// Store is the client for interacting with the Store builders.
+	Store *StoreClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -85,6 +88,7 @@ func (c *Client) init() {
 	c.Plan = NewPlanClient(c.config)
 	c.Rider = NewRiderClient(c.config)
 	c.Setting = NewSettingClient(c.config)
+	c.Store = NewStoreClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -131,6 +135,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Plan:           NewPlanClient(cfg),
 		Rider:          NewRiderClient(cfg),
 		Setting:        NewSettingClient(cfg),
+		Store:          NewStoreClient(cfg),
 	}, nil
 }
 
@@ -163,6 +168,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Plan:           NewPlanClient(cfg),
 		Rider:          NewRiderClient(cfg),
 		Setting:        NewSettingClient(cfg),
+		Store:          NewStoreClient(cfg),
 	}, nil
 }
 
@@ -205,6 +211,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Plan.Use(hooks...)
 	c.Rider.Use(hooks...)
 	c.Setting.Use(hooks...)
+	c.Store.Use(hooks...)
 }
 
 // BatteryModelClient is a client for the BatteryModel schema.
@@ -471,6 +478,22 @@ func (c *BranchClient) QueryFaults(b *Branch) *CabinetFaultQuery {
 			sqlgraph.From(branch.Table, branch.FieldID, id),
 			sqlgraph.To(cabinetfault.Table, cabinetfault.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, branch.FaultsTable, branch.FaultsColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStores queries the stores edge of a Branch.
+func (c *BranchClient) QueryStores(b *Branch) *StoreQuery {
+	query := &StoreQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(branch.Table, branch.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, branch.StoresTable, branch.StoresColumn),
 		)
 		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
 		return fromV, nil
@@ -1824,4 +1847,110 @@ func (c *SettingClient) GetX(ctx context.Context, id uint64) *Setting {
 // Hooks returns the client hooks.
 func (c *SettingClient) Hooks() []Hook {
 	return c.hooks.Setting
+}
+
+// StoreClient is a client for the Store schema.
+type StoreClient struct {
+	config
+}
+
+// NewStoreClient returns a client for the Store from the given config.
+func NewStoreClient(c config) *StoreClient {
+	return &StoreClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `store.Hooks(f(g(h())))`.
+func (c *StoreClient) Use(hooks ...Hook) {
+	c.hooks.Store = append(c.hooks.Store, hooks...)
+}
+
+// Create returns a create builder for Store.
+func (c *StoreClient) Create() *StoreCreate {
+	mutation := newStoreMutation(c.config, OpCreate)
+	return &StoreCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Store entities.
+func (c *StoreClient) CreateBulk(builders ...*StoreCreate) *StoreCreateBulk {
+	return &StoreCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Store.
+func (c *StoreClient) Update() *StoreUpdate {
+	mutation := newStoreMutation(c.config, OpUpdate)
+	return &StoreUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *StoreClient) UpdateOne(s *Store) *StoreUpdateOne {
+	mutation := newStoreMutation(c.config, OpUpdateOne, withStore(s))
+	return &StoreUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *StoreClient) UpdateOneID(id uint64) *StoreUpdateOne {
+	mutation := newStoreMutation(c.config, OpUpdateOne, withStoreID(id))
+	return &StoreUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Store.
+func (c *StoreClient) Delete() *StoreDelete {
+	mutation := newStoreMutation(c.config, OpDelete)
+	return &StoreDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *StoreClient) DeleteOne(s *Store) *StoreDeleteOne {
+	return c.DeleteOneID(s.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *StoreClient) DeleteOneID(id uint64) *StoreDeleteOne {
+	builder := c.Delete().Where(store.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &StoreDeleteOne{builder}
+}
+
+// Query returns a query builder for Store.
+func (c *StoreClient) Query() *StoreQuery {
+	return &StoreQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Store entity by its id.
+func (c *StoreClient) Get(ctx context.Context, id uint64) (*Store, error) {
+	return c.Query().Where(store.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *StoreClient) GetX(ctx context.Context, id uint64) *Store {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryBranch queries the branch edge of a Store.
+func (c *StoreClient) QueryBranch(s *Store) *BranchQuery {
+	query := &BranchQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, id),
+			sqlgraph.To(branch.Table, branch.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, store.BranchTable, store.BranchColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *StoreClient) Hooks() []Hook {
+	return c.hooks.Store
 }

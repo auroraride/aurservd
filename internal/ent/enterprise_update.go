@@ -56,18 +56,6 @@ func (eu *EnterpriseUpdate) ClearDeletedAt() *EnterpriseUpdate {
 	return eu
 }
 
-// SetCreator sets the "creator" field.
-func (eu *EnterpriseUpdate) SetCreator(m *model.Modifier) *EnterpriseUpdate {
-	eu.mutation.SetCreator(m)
-	return eu
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (eu *EnterpriseUpdate) ClearCreator() *EnterpriseUpdate {
-	eu.mutation.ClearCreator()
-	return eu
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (eu *EnterpriseUpdate) SetLastModifier(m *model.Modifier) *EnterpriseUpdate {
 	eu.mutation.SetLastModifier(m)
@@ -248,13 +236,6 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: enterprise.FieldDeletedAt,
 		})
 	}
-	if value, ok := eu.mutation.Creator(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: enterprise.FieldCreator,
-		})
-	}
 	if eu.mutation.CreatorCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -390,18 +371,6 @@ func (euo *EnterpriseUpdateOne) SetNillableDeletedAt(t *time.Time) *EnterpriseUp
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (euo *EnterpriseUpdateOne) ClearDeletedAt() *EnterpriseUpdateOne {
 	euo.mutation.ClearDeletedAt()
-	return euo
-}
-
-// SetCreator sets the "creator" field.
-func (euo *EnterpriseUpdateOne) SetCreator(m *model.Modifier) *EnterpriseUpdateOne {
-	euo.mutation.SetCreator(m)
-	return euo
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (euo *EnterpriseUpdateOne) ClearCreator() *EnterpriseUpdateOne {
-	euo.mutation.ClearCreator()
 	return euo
 }
 
@@ -613,13 +582,6 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: enterprise.FieldDeletedAt,
-		})
-	}
-	if value, ok := euo.mutation.Creator(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: enterprise.FieldCreator,
 		})
 	}
 	if euo.mutation.CreatorCleared() {

@@ -25,8 +25,8 @@ func (BatteryModel) Annotations() []schema.Annotation {
 // Fields of the BatteryModel.
 func (BatteryModel) Fields() []ent.Field {
     return []ent.Field{
-        field.String("voltage").Comment("电压"),
-        field.String("capacity").Comment("容量"),
+        field.Float("voltage").Comment("电压"),
+        field.Float("capacity").Comment("容量"),
     }
 }
 

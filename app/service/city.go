@@ -26,6 +26,14 @@ func NewCity() *cityService {
     }
 }
 
+func (s *cityService) Query(id uint64) *ent.City {
+    item, err := s.orm.QueryNotDeleted().Where(city.ID(id)).Only(s.ctx)
+    if err != nil {
+        snag.Panic("未找到城市")
+    }
+    return item
+}
+
 // List 获取城市列表
 func (s *cityService) List(req *model.CityListReq) (items []*model.CityItem) {
     fields := []string{

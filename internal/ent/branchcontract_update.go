@@ -56,18 +56,6 @@ func (bcu *BranchContractUpdate) ClearDeletedAt() *BranchContractUpdate {
 	return bcu
 }
 
-// SetCreator sets the "creator" field.
-func (bcu *BranchContractUpdate) SetCreator(m *model.Modifier) *BranchContractUpdate {
-	bcu.mutation.SetCreator(m)
-	return bcu
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (bcu *BranchContractUpdate) ClearCreator() *BranchContractUpdate {
-	bcu.mutation.ClearCreator()
-	return bcu
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (bcu *BranchContractUpdate) SetLastModifier(m *model.Modifier) *BranchContractUpdate {
 	bcu.mutation.SetLastModifier(m)
@@ -363,13 +351,6 @@ func (bcu *BranchContractUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: branchcontract.FieldDeletedAt,
 		})
 	}
-	if value, ok := bcu.mutation.Creator(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: branchcontract.FieldCreator,
-		})
-	}
 	if bcu.mutation.CreatorCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -619,18 +600,6 @@ func (bcuo *BranchContractUpdateOne) SetNillableDeletedAt(t *time.Time) *BranchC
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (bcuo *BranchContractUpdateOne) ClearDeletedAt() *BranchContractUpdateOne {
 	bcuo.mutation.ClearDeletedAt()
-	return bcuo
-}
-
-// SetCreator sets the "creator" field.
-func (bcuo *BranchContractUpdateOne) SetCreator(m *model.Modifier) *BranchContractUpdateOne {
-	bcuo.mutation.SetCreator(m)
-	return bcuo
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (bcuo *BranchContractUpdateOne) ClearCreator() *BranchContractUpdateOne {
-	bcuo.mutation.ClearCreator()
 	return bcuo
 }
 
@@ -957,13 +926,6 @@ func (bcuo *BranchContractUpdateOne) sqlSave(ctx context.Context) (_node *Branch
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: branchcontract.FieldDeletedAt,
-		})
-	}
-	if value, ok := bcuo.mutation.Creator(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: branchcontract.FieldCreator,
 		})
 	}
 	if bcuo.mutation.CreatorCleared() {

@@ -1367,6 +1367,207 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/store": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M30006 列举门店",
+                "operationId": "StoreList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "门店名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店状态",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.StoreItem"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M30007 创建门店",
+                "operationId": "StoreCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.StoreCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StoreItem"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/store/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M30008 修改门店",
+                "operationId": "StoreModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.StoreModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StoreItem"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M30009 删除门店",
+                "operationId": "StoreDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/user/signin": {
             "post": {
                 "description": "管理员登录",
@@ -1703,13 +1904,13 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "capacity": {
-                    "type": "string"
+                    "type": "number"
                 },
                 "id": {
                     "type": "integer"
                 },
                 "voltage": {
-                    "type": "string"
+                    "type": "number"
                 }
             }
         },
@@ -1722,11 +1923,11 @@ const docTemplate = `{
             "properties": {
                 "capacity": {
                     "description": "容量 ",
-                    "type": "string"
+                    "type": "number"
                 },
                 "voltage": {
                     "description": "电压 ",
-                    "type": "string"
+                    "type": "number"
                 }
             }
         },
@@ -2333,6 +2534,22 @@ const docTemplate = `{
                 }
             }
         },
+        "model.EmployeeItem": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "店员名称",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "店员电话",
+                    "type": "string"
+                }
+            }
+        },
         "model.EnterpriseItem": {
             "type": "object",
             "properties": {
@@ -2698,6 +2915,81 @@ const docTemplate = `{
             "properties": {
                 "status": {
                     "type": "boolean"
+                }
+            }
+        },
+        "model.StoreCreateReq": {
+            "type": "object",
+            "required": [
+                "branchId",
+                "name",
+                "status"
+            ],
+            "properties": {
+                "branchId": {
+                    "description": "网点 ",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "门店名称 ",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "门店状态 0维护 1营业 2休息 3隐藏",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                }
+            }
+        },
+        "model.StoreItem": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "$ref": "#/definitions/model.City"
+                },
+                "employee": {
+                    "description": "店员, 有可能不存在",
+                    "$ref": "#/definitions/model.EmployeeItem"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "门店名称",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.StoreModifyReq": {
+            "type": "object",
+            "properties": {
+                "branchId": {
+                    "description": "网点 ",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "门店名称 ",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "门店状态 0维护 1营业 2休息 3隐藏",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
                 }
             }
         },

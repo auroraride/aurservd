@@ -45,6 +45,8 @@ const (
 	EdgeCity = "city"
 	// EdgeFaults holds the string denoting the faults edge name in mutations.
 	EdgeFaults = "faults"
+	// EdgeStores holds the string denoting the stores edge name in mutations.
+	EdgeStores = "stores"
 	// Table holds the table name of the branch in the database.
 	Table = "branch"
 	// ContractsTable is the table that holds the contracts relation/edge.
@@ -75,6 +77,13 @@ const (
 	FaultsInverseTable = "cabinet_fault"
 	// FaultsColumn is the table column denoting the faults relation/edge.
 	FaultsColumn = "branch_id"
+	// StoresTable is the table that holds the stores relation/edge.
+	StoresTable = "store"
+	// StoresInverseTable is the table name for the Store entity.
+	// It exists in this package in order to avoid circular dependency with the "store" package.
+	StoresInverseTable = "store"
+	// StoresColumn is the table column denoting the stores relation/edge.
+	StoresColumn = "branch_id"
 )
 
 // Columns holds all SQL columns for branch fields.

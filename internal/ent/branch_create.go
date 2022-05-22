@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // BranchCreate is the builder for creating a Branch entity.
@@ -185,6 +186,21 @@ func (bc *BranchCreate) AddFaults(c ...*CabinetFault) *BranchCreate {
 		ids[i] = c[i].ID
 	}
 	return bc.AddFaultIDs(ids...)
+}
+
+// AddStoreIDs adds the "stores" edge to the Store entity by IDs.
+func (bc *BranchCreate) AddStoreIDs(ids ...uint64) *BranchCreate {
+	bc.mutation.AddStoreIDs(ids...)
+	return bc
+}
+
+// AddStores adds the "stores" edges to the Store entity.
+func (bc *BranchCreate) AddStores(s ...*Store) *BranchCreate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return bc.AddStoreIDs(ids...)
 }
 
 // Mutation returns the BranchMutation object of the builder.
@@ -507,6 +523,25 @@ func (bc *BranchCreate) createSpec() (*Branch, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := bc.mutation.StoresIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   branch.StoresTable,
+			Columns: []string{branch.StoresColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -767,6 +802,9 @@ func (u *BranchUpsertOne) UpdateNewValues() *BranchUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(branch.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.Creator(); exists {
+			s.SetIgnore(branch.FieldCreator)
 		}
 	}))
 	return u
@@ -1201,6 +1239,9 @@ func (u *BranchUpsertBulk) UpdateNewValues() *BranchUpsertBulk {
 		for _, b := range u.create.builders {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(branch.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.Creator(); exists {
+				s.SetIgnore(branch.FieldCreator)
 			}
 		}
 	}))

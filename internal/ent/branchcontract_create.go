@@ -919,6 +919,9 @@ func (u *BranchContractUpsertOne) UpdateNewValues() *BranchContractUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(branchcontract.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.Creator(); exists {
+			s.SetIgnore(branchcontract.FieldCreator)
+		}
 	}))
 	return u
 }
@@ -1492,6 +1495,9 @@ func (u *BranchContractUpsertBulk) UpdateNewValues() *BranchContractUpsertBulk {
 		for _, b := range u.create.builders {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(branchcontract.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.Creator(); exists {
+				s.SetIgnore(branchcontract.FieldCreator)
 			}
 		}
 	}))

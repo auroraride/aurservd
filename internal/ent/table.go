@@ -131,3 +131,13 @@ func (s *Setting) GetTableName() string {
 func (s *Setting) GetID() uint64 {
 	return s.ID
 }
+
+// GetTableName returns table name for Store.
+func (s *Store) GetTableName() string {
+	return "store"
+}
+
+// GetID returns id for Store.
+func (s *Store) GetID() uint64 {
+	return s.ID
+}

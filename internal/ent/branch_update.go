@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // BranchUpdate is the builder for updating Branch entities.
@@ -56,18 +57,6 @@ func (bu *BranchUpdate) SetNillableDeletedAt(t *time.Time) *BranchUpdate {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (bu *BranchUpdate) ClearDeletedAt() *BranchUpdate {
 	bu.mutation.ClearDeletedAt()
-	return bu
-}
-
-// SetCreator sets the "creator" field.
-func (bu *BranchUpdate) SetCreator(m *model.Modifier) *BranchUpdate {
-	bu.mutation.SetCreator(m)
-	return bu
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (bu *BranchUpdate) ClearCreator() *BranchUpdate {
-	bu.mutation.ClearCreator()
 	return bu
 }
 
@@ -209,6 +198,21 @@ func (bu *BranchUpdate) AddFaults(c ...*CabinetFault) *BranchUpdate {
 	return bu.AddFaultIDs(ids...)
 }
 
+// AddStoreIDs adds the "stores" edge to the Store entity by IDs.
+func (bu *BranchUpdate) AddStoreIDs(ids ...uint64) *BranchUpdate {
+	bu.mutation.AddStoreIDs(ids...)
+	return bu
+}
+
+// AddStores adds the "stores" edges to the Store entity.
+func (bu *BranchUpdate) AddStores(s ...*Store) *BranchUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return bu.AddStoreIDs(ids...)
+}
+
 // Mutation returns the BranchMutation object of the builder.
 func (bu *BranchUpdate) Mutation() *BranchMutation {
 	return bu.mutation
@@ -281,6 +285,27 @@ func (bu *BranchUpdate) RemoveFaults(c ...*CabinetFault) *BranchUpdate {
 		ids[i] = c[i].ID
 	}
 	return bu.RemoveFaultIDs(ids...)
+}
+
+// ClearStores clears all "stores" edges to the Store entity.
+func (bu *BranchUpdate) ClearStores() *BranchUpdate {
+	bu.mutation.ClearStores()
+	return bu
+}
+
+// RemoveStoreIDs removes the "stores" edge to Store entities by IDs.
+func (bu *BranchUpdate) RemoveStoreIDs(ids ...uint64) *BranchUpdate {
+	bu.mutation.RemoveStoreIDs(ids...)
+	return bu
+}
+
+// RemoveStores removes "stores" edges to Store entities.
+func (bu *BranchUpdate) RemoveStores(s ...*Store) *BranchUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return bu.RemoveStoreIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -396,13 +421,6 @@ func (bu *BranchUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: branch.FieldDeletedAt,
-		})
-	}
-	if value, ok := bu.mutation.Creator(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: branch.FieldCreator,
 		})
 	}
 	if bu.mutation.CreatorCleared() {
@@ -690,6 +708,60 @@ func (bu *BranchUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.StoresCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   branch.StoresTable,
+			Columns: []string{branch.StoresColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RemovedStoresIDs(); len(nodes) > 0 && !bu.mutation.StoresCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   branch.StoresTable,
+			Columns: []string{branch.StoresColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.StoresIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   branch.StoresTable,
+			Columns: []string{branch.StoresColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{branch.Label}
@@ -732,18 +804,6 @@ func (buo *BranchUpdateOne) SetNillableDeletedAt(t *time.Time) *BranchUpdateOne 
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (buo *BranchUpdateOne) ClearDeletedAt() *BranchUpdateOne {
 	buo.mutation.ClearDeletedAt()
-	return buo
-}
-
-// SetCreator sets the "creator" field.
-func (buo *BranchUpdateOne) SetCreator(m *model.Modifier) *BranchUpdateOne {
-	buo.mutation.SetCreator(m)
-	return buo
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (buo *BranchUpdateOne) ClearCreator() *BranchUpdateOne {
-	buo.mutation.ClearCreator()
 	return buo
 }
 
@@ -885,6 +945,21 @@ func (buo *BranchUpdateOne) AddFaults(c ...*CabinetFault) *BranchUpdateOne {
 	return buo.AddFaultIDs(ids...)
 }
 
+// AddStoreIDs adds the "stores" edge to the Store entity by IDs.
+func (buo *BranchUpdateOne) AddStoreIDs(ids ...uint64) *BranchUpdateOne {
+	buo.mutation.AddStoreIDs(ids...)
+	return buo
+}
+
+// AddStores adds the "stores" edges to the Store entity.
+func (buo *BranchUpdateOne) AddStores(s ...*Store) *BranchUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return buo.AddStoreIDs(ids...)
+}
+
 // Mutation returns the BranchMutation object of the builder.
 func (buo *BranchUpdateOne) Mutation() *BranchMutation {
 	return buo.mutation
@@ -957,6 +1032,27 @@ func (buo *BranchUpdateOne) RemoveFaults(c ...*CabinetFault) *BranchUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return buo.RemoveFaultIDs(ids...)
+}
+
+// ClearStores clears all "stores" edges to the Store entity.
+func (buo *BranchUpdateOne) ClearStores() *BranchUpdateOne {
+	buo.mutation.ClearStores()
+	return buo
+}
+
+// RemoveStoreIDs removes the "stores" edge to Store entities by IDs.
+func (buo *BranchUpdateOne) RemoveStoreIDs(ids ...uint64) *BranchUpdateOne {
+	buo.mutation.RemoveStoreIDs(ids...)
+	return buo
+}
+
+// RemoveStores removes "stores" edges to Store entities.
+func (buo *BranchUpdateOne) RemoveStores(s ...*Store) *BranchUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return buo.RemoveStoreIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1102,13 +1198,6 @@ func (buo *BranchUpdateOne) sqlSave(ctx context.Context) (_node *Branch, err err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: branch.FieldDeletedAt,
-		})
-	}
-	if value, ok := buo.mutation.Creator(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: branch.FieldCreator,
 		})
 	}
 	if buo.mutation.CreatorCleared() {
@@ -1388,6 +1477,60 @@ func (buo *BranchUpdateOne) sqlSave(ctx context.Context) (_node *Branch, err err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: cabinetfault.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.StoresCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   branch.StoresTable,
+			Columns: []string{branch.StoresColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RemovedStoresIDs(); len(nodes) > 0 && !buo.mutation.StoresCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   branch.StoresTable,
+			Columns: []string{branch.StoresColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.StoresIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   branch.StoresTable,
+			Columns: []string{branch.StoresColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
 				},
 			},
 		}

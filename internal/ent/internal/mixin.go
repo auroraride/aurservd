@@ -53,7 +53,7 @@ type Creator struct {
 
 func (Creator) Fields() []ent.Field {
     return []ent.Field{
-        field.JSON("creator", &model.Modifier{}).Optional().Comment("创建人"),
+        field.JSON("creator", &model.Modifier{}).Immutable().Optional().Comment("创建人"),
     }
 }
 

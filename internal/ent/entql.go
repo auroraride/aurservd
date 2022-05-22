@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/setting"
+	"github.com/auroraride/aurservd/internal/ent/store"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -26,7 +27,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 13)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 14)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   batterymodel.Table,
@@ -44,8 +45,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			batterymodel.FieldCreator:      {Type: field.TypeJSON, Column: batterymodel.FieldCreator},
 			batterymodel.FieldLastModifier: {Type: field.TypeJSON, Column: batterymodel.FieldLastModifier},
 			batterymodel.FieldRemark:       {Type: field.TypeString, Column: batterymodel.FieldRemark},
-			batterymodel.FieldVoltage:      {Type: field.TypeString, Column: batterymodel.FieldVoltage},
-			batterymodel.FieldCapacity:     {Type: field.TypeString, Column: batterymodel.FieldCapacity},
+			batterymodel.FieldVoltage:      {Type: field.TypeFloat64, Column: batterymodel.FieldVoltage},
+			batterymodel.FieldCapacity:     {Type: field.TypeFloat64, Column: batterymodel.FieldCapacity},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -355,6 +356,29 @@ var schemaGraph = func() *sqlgraph.Schema {
 			setting.FieldVal:       {Type: field.TypeJSON, Column: setting.FieldVal},
 		},
 	}
+	graph.Nodes[13] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   store.Table,
+			Columns: store.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: store.FieldID,
+			},
+		},
+		Type: "Store",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			store.FieldCreatedAt:    {Type: field.TypeTime, Column: store.FieldCreatedAt},
+			store.FieldUpdatedAt:    {Type: field.TypeTime, Column: store.FieldUpdatedAt},
+			store.FieldDeletedAt:    {Type: field.TypeTime, Column: store.FieldDeletedAt},
+			store.FieldCreator:      {Type: field.TypeJSON, Column: store.FieldCreator},
+			store.FieldLastModifier: {Type: field.TypeJSON, Column: store.FieldLastModifier},
+			store.FieldRemark:       {Type: field.TypeString, Column: store.FieldRemark},
+			store.FieldBranchID:     {Type: field.TypeUint64, Column: store.FieldBranchID},
+			store.FieldSn:           {Type: field.TypeString, Column: store.FieldSn},
+			store.FieldName:         {Type: field.TypeString, Column: store.FieldName},
+			store.FieldStatus:       {Type: field.TypeUint8, Column: store.FieldStatus},
+		},
+	}
 	graph.MustAddE(
 		"cabinets",
 		&sqlgraph.EdgeSpec{
@@ -426,6 +450,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Branch",
 		"CabinetFault",
+	)
+	graph.MustAddE(
+		"stores",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   branch.StoresTable,
+			Columns: []string{branch.StoresColumn},
+			Bidi:    false,
+		},
+		"Branch",
+		"Store",
 	)
 	graph.MustAddE(
 		"branch",
@@ -691,6 +727,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Rider",
 		"CabinetFault",
 	)
+	graph.MustAddE(
+		"branch",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   store.BranchTable,
+			Columns: []string{store.BranchColumn},
+			Bidi:    false,
+		},
+		"Store",
+		"Branch",
+	)
 	return graph
 }()
 
@@ -770,13 +818,13 @@ func (f *BatteryModelFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(batterymodel.FieldRemark))
 }
 
-// WhereVoltage applies the entql string predicate on the voltage field.
-func (f *BatteryModelFilter) WhereVoltage(p entql.StringP) {
+// WhereVoltage applies the entql float64 predicate on the voltage field.
+func (f *BatteryModelFilter) WhereVoltage(p entql.Float64P) {
 	f.Where(p.Field(batterymodel.FieldVoltage))
 }
 
-// WhereCapacity applies the entql string predicate on the capacity field.
-func (f *BatteryModelFilter) WhereCapacity(p entql.StringP) {
+// WhereCapacity applies the entql float64 predicate on the capacity field.
+func (f *BatteryModelFilter) WhereCapacity(p entql.Float64P) {
 	f.Where(p.Field(batterymodel.FieldCapacity))
 }
 
@@ -963,6 +1011,20 @@ func (f *BranchFilter) WhereHasFaults() {
 // WhereHasFaultsWith applies a predicate to check if query has an edge faults with a given conditions (other predicates).
 func (f *BranchFilter) WhereHasFaultsWith(preds ...predicate.CabinetFault) {
 	f.Where(entql.HasEdgeWith("faults", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasStores applies a predicate to check if query has an edge stores.
+func (f *BranchFilter) WhereHasStores() {
+	f.Where(entql.HasEdge("stores"))
+}
+
+// WhereHasStoresWith applies a predicate to check if query has an edge stores with a given conditions (other predicates).
+func (f *BranchFilter) WhereHasStoresWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("stores", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -2405,4 +2467,108 @@ func (f *SettingFilter) WhereKey(p entql.StringP) {
 // WhereVal applies the entql json.RawMessage predicate on the val field.
 func (f *SettingFilter) WhereVal(p entql.BytesP) {
 	f.Where(p.Field(setting.FieldVal))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (sq *StoreQuery) addPredicate(pred func(s *sql.Selector)) {
+	sq.predicates = append(sq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the StoreQuery builder.
+func (sq *StoreQuery) Filter() *StoreFilter {
+	return &StoreFilter{sq.config, sq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *StoreMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the StoreMutation builder.
+func (m *StoreMutation) Filter() *StoreFilter {
+	return &StoreFilter{m.config, m}
+}
+
+// StoreFilter provides a generic filtering capability at runtime for StoreQuery.
+type StoreFilter struct {
+	config
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *StoreFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[13].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *StoreFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(store.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *StoreFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(store.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *StoreFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(store.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *StoreFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(store.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *StoreFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(store.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *StoreFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(store.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *StoreFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(store.FieldRemark))
+}
+
+// WhereBranchID applies the entql uint64 predicate on the branch_id field.
+func (f *StoreFilter) WhereBranchID(p entql.Uint64P) {
+	f.Where(p.Field(store.FieldBranchID))
+}
+
+// WhereSn applies the entql string predicate on the sn field.
+func (f *StoreFilter) WhereSn(p entql.StringP) {
+	f.Where(p.Field(store.FieldSn))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *StoreFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(store.FieldName))
+}
+
+// WhereStatus applies the entql uint8 predicate on the status field.
+func (f *StoreFilter) WhereStatus(p entql.Uint8P) {
+	f.Where(p.Field(store.FieldStatus))
+}
+
+// WhereHasBranch applies a predicate to check if query has an edge branch.
+func (f *StoreFilter) WhereHasBranch() {
+	f.Where(entql.HasEdge("branch"))
+}
+
+// WhereHasBranchWith applies a predicate to check if query has an edge branch with a given conditions (other predicates).
+func (f *StoreFilter) WhereHasBranchWith(preds ...predicate.Branch) {
+	f.Where(entql.HasEdgeWith("branch", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }

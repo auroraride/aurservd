@@ -44,3 +44,6 @@ type Rider func(*sql.Selector)
 
 // Setting is the predicate function for setting builders.
 type Setting func(*sql.Selector)
+
+// Store is the predicate function for store builders.
+type Store func(*sql.Selector)

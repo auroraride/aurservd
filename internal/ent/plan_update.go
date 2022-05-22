@@ -57,18 +57,6 @@ func (pu *PlanUpdate) ClearDeletedAt() *PlanUpdate {
 	return pu
 }
 
-// SetCreator sets the "creator" field.
-func (pu *PlanUpdate) SetCreator(m *model.Modifier) *PlanUpdate {
-	pu.mutation.SetCreator(m)
-	return pu
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (pu *PlanUpdate) ClearCreator() *PlanUpdate {
-	pu.mutation.ClearCreator()
-	return pu
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (pu *PlanUpdate) SetLastModifier(m *model.Modifier) *PlanUpdate {
 	pu.mutation.SetLastModifier(m)
@@ -342,13 +330,6 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: plan.FieldDeletedAt,
 		})
 	}
-	if value, ok := pu.mutation.Creator(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: plan.FieldCreator,
-		})
-	}
 	if pu.mutation.CreatorCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -601,18 +582,6 @@ func (puo *PlanUpdateOne) SetNillableDeletedAt(t *time.Time) *PlanUpdateOne {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (puo *PlanUpdateOne) ClearDeletedAt() *PlanUpdateOne {
 	puo.mutation.ClearDeletedAt()
-	return puo
-}
-
-// SetCreator sets the "creator" field.
-func (puo *PlanUpdateOne) SetCreator(m *model.Modifier) *PlanUpdateOne {
-	puo.mutation.SetCreator(m)
-	return puo
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (puo *PlanUpdateOne) ClearCreator() *PlanUpdateOne {
-	puo.mutation.ClearCreator()
 	return puo
 }
 
@@ -917,13 +886,6 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: plan.FieldDeletedAt,
-		})
-	}
-	if value, ok := puo.mutation.Creator(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: plan.FieldCreator,
 		})
 	}
 	if puo.mutation.CreatorCleared() {

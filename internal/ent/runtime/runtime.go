@@ -19,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/schema"
 	"github.com/auroraride/aurservd/internal/ent/setting"
+	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -338,6 +339,25 @@ func init() {
 	settingDescKey := settingFields[0].Descriptor()
 	// setting.KeyValidator is a validator for the "key" field. It is called by the builders before save.
 	setting.KeyValidator = settingDescKey.Validators[0].(func(string) error)
+	storeMixin := schema.Store{}.Mixin()
+	storeMixinFields0 := storeMixin[0].Fields()
+	_ = storeMixinFields0
+	storeFields := schema.Store{}.Fields()
+	_ = storeFields
+	// storeDescCreatedAt is the schema descriptor for created_at field.
+	storeDescCreatedAt := storeMixinFields0[0].Descriptor()
+	// store.DefaultCreatedAt holds the default value on creation for the created_at field.
+	store.DefaultCreatedAt = storeDescCreatedAt.Default.(func() time.Time)
+	// storeDescUpdatedAt is the schema descriptor for updated_at field.
+	storeDescUpdatedAt := storeMixinFields0[1].Descriptor()
+	// store.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	store.DefaultUpdatedAt = storeDescUpdatedAt.Default.(func() time.Time)
+	// store.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	store.UpdateDefaultUpdatedAt = storeDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// storeDescStatus is the schema descriptor for status field.
+	storeDescStatus := storeFields[3].Descriptor()
+	// store.DefaultStatus holds the default value on creation for the status field.
+	store.DefaultStatus = storeDescStatus.Default.(uint8)
 }
 
 const (

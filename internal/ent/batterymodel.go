@@ -35,10 +35,10 @@ type BatteryModel struct {
 	Remark string `json:"remark,omitempty"`
 	// Voltage holds the value of the "voltage" field.
 	// 电压
-	Voltage string `json:"voltage,omitempty"`
+	Voltage float64 `json:"voltage,omitempty"`
 	// Capacity holds the value of the "capacity" field.
 	// 容量
-	Capacity string `json:"capacity,omitempty"`
+	Capacity float64 `json:"capacity,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BatteryModelQuery when eager-loading is set.
 	Edges BatteryModelEdges `json:"edges"`
@@ -80,9 +80,11 @@ func (*BatteryModel) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case batterymodel.FieldCreator, batterymodel.FieldLastModifier:
 			values[i] = new([]byte)
+		case batterymodel.FieldVoltage, batterymodel.FieldCapacity:
+			values[i] = new(sql.NullFloat64)
 		case batterymodel.FieldID:
 			values[i] = new(sql.NullInt64)
-		case batterymodel.FieldRemark, batterymodel.FieldVoltage, batterymodel.FieldCapacity:
+		case batterymodel.FieldRemark:
 			values[i] = new(sql.NullString)
 		case batterymodel.FieldCreatedAt, batterymodel.FieldUpdatedAt, batterymodel.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -149,16 +151,16 @@ func (bm *BatteryModel) assignValues(columns []string, values []interface{}) err
 				bm.Remark = value.String
 			}
 		case batterymodel.FieldVoltage:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field voltage", values[i])
 			} else if value.Valid {
-				bm.Voltage = value.String
+				bm.Voltage = value.Float64
 			}
 		case batterymodel.FieldCapacity:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field capacity", values[i])
 			} else if value.Valid {
-				bm.Capacity = value.String
+				bm.Capacity = value.Float64
 			}
 		}
 	}
@@ -213,9 +215,9 @@ func (bm *BatteryModel) String() string {
 	builder.WriteString(", remark=")
 	builder.WriteString(bm.Remark)
 	builder.WriteString(", voltage=")
-	builder.WriteString(bm.Voltage)
+	builder.WriteString(fmt.Sprintf("%v", bm.Voltage))
 	builder.WriteString(", capacity=")
-	builder.WriteString(bm.Capacity)
+	builder.WriteString(fmt.Sprintf("%v", bm.Capacity))
 	builder.WriteByte(')')
 	return builder.String()
 }

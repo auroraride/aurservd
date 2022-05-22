@@ -58,18 +58,6 @@ func (cu *CabinetUpdate) ClearDeletedAt() *CabinetUpdate {
 	return cu
 }
 
-// SetCreator sets the "creator" field.
-func (cu *CabinetUpdate) SetCreator(m *model.Modifier) *CabinetUpdate {
-	cu.mutation.SetCreator(m)
-	return cu
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (cu *CabinetUpdate) ClearCreator() *CabinetUpdate {
-	cu.mutation.ClearCreator()
-	return cu
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (cu *CabinetUpdate) SetLastModifier(m *model.Modifier) *CabinetUpdate {
 	cu.mutation.SetLastModifier(m)
@@ -442,13 +430,6 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: cabinet.FieldDeletedAt,
 		})
 	}
-	if value, ok := cu.mutation.Creator(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinet.FieldCreator,
-		})
-	}
 	if cu.mutation.CreatorCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -784,18 +765,6 @@ func (cuo *CabinetUpdateOne) SetNillableDeletedAt(t *time.Time) *CabinetUpdateOn
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (cuo *CabinetUpdateOne) ClearDeletedAt() *CabinetUpdateOne {
 	cuo.mutation.ClearDeletedAt()
-	return cuo
-}
-
-// SetCreator sets the "creator" field.
-func (cuo *CabinetUpdateOne) SetCreator(m *model.Modifier) *CabinetUpdateOne {
-	cuo.mutation.SetCreator(m)
-	return cuo
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (cuo *CabinetUpdateOne) ClearCreator() *CabinetUpdateOne {
-	cuo.mutation.ClearCreator()
 	return cuo
 }
 
@@ -1199,13 +1168,6 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: cabinet.FieldDeletedAt,
-		})
-	}
-	if value, ok := cuo.mutation.Creator(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinet.FieldCreator,
 		})
 	}
 	if cuo.mutation.CreatorCleared() {

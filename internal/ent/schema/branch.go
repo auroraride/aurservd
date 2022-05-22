@@ -46,6 +46,7 @@ func (Branch) Edges() []ent.Edge {
         edge.To("cabinets", Cabinet.Type),
         edge.From("city", City.Type).Ref("branches").Required().Unique().Field("city_id"),
         edge.To("faults", CabinetFault.Type),
+        edge.To("stores", Store.Type),
     }
 }
 

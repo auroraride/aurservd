@@ -13,6 +13,8 @@ import (
     "fmt"
 )
 
+// Geometry 坐标
+// https://github.com/go-pg/pg/issues/829#issuecomment-505882885
 type Geometry struct {
     Lng, Lat float64
 }

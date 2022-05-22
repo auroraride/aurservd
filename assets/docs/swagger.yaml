@@ -18,20 +18,20 @@ definitions:
   model.BatteryModel:
     properties:
       capacity:
-        type: string
+        type: number
       id:
         type: integer
       voltage:
-        type: string
+        type: number
     type: object
   model.BatteryModelCreateReq:
     properties:
       capacity:
         description: '容量 '
-        type: string
+        type: number
       voltage:
         description: '电压 '
-        type: string
+        type: number
     required:
     - capacity
     - voltage
@@ -480,6 +480,17 @@ definitions:
     required:
     - open
     type: object
+  model.EmployeeItem:
+    properties:
+      id:
+        type: integer
+      name:
+        description: 店员名称
+        type: string
+      phone:
+        description: 店员电话
+        type: string
+    type: object
   model.EnterpriseItem:
     properties:
       id:
@@ -736,6 +747,61 @@ definitions:
     properties:
       status:
         type: boolean
+    type: object
+  model.StoreCreateReq:
+    properties:
+      branchId:
+        description: '网点 '
+        type: integer
+      name:
+        description: '门店名称 '
+        type: string
+      status:
+        description: 门店状态 0维护 1营业 2休息 3隐藏
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        type: integer
+    required:
+    - branchId
+    - name
+    - status
+    type: object
+  model.StoreItem:
+    properties:
+      city:
+        $ref: '#/definitions/model.City'
+        description: 城市
+      employee:
+        $ref: '#/definitions/model.EmployeeItem'
+        description: 店员, 有可能不存在
+      id:
+        type: integer
+      name:
+        description: 门店名称
+        type: string
+      status:
+        description: 状态
+        type: integer
+    type: object
+  model.StoreModifyReq:
+    properties:
+      branchId:
+        description: '网点 '
+        type: integer
+      name:
+        description: '门店名称 '
+        type: string
+      status:
+        description: 门店状态 0维护 1营业 2休息 3隐藏
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        type: integer
     type: object
   model.UserPlanItem:
     properties:
@@ -1702,6 +1768,137 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M70003 封禁/解除封禁骑手账户
+      tags:
+      - '[M]管理接口'
+  /manager/v1/store:
+    get:
+      consumes:
+      - application/json
+      operationId: StoreList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 城市
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 门店名称
+        in: query
+        name: name
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 门店状态
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.StoreItem'
+                  type: array
+              type: object
+      summary: M30006 列举门店
+      tags:
+      - '[M]管理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: StoreCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.StoreCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StoreItem'
+      summary: M30007 创建门店
+      tags:
+      - '[M]管理接口'
+  /manager/v1/store/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: StoreDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 门店ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M30009 删除门店
+      tags:
+      - '[M]管理接口'
+    put:
+      consumes:
+      - application/json
+      operationId: StoreModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 门店ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.StoreModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StoreItem'
+      summary: M30008 修改门店
       tags:
       - '[M]管理接口'
   /manager/v1/user/signin:

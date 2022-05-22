@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // BranchQuery is the builder for querying Branch entities.
@@ -33,6 +34,7 @@ type BranchQuery struct {
 	withCabinets  *CabinetQuery
 	withCity      *CityQuery
 	withFaults    *CabinetFaultQuery
+	withStores    *StoreQuery
 	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -151,6 +153,28 @@ func (bq *BranchQuery) QueryFaults() *CabinetFaultQuery {
 			sqlgraph.From(branch.Table, branch.FieldID, selector),
 			sqlgraph.To(cabinetfault.Table, cabinetfault.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, branch.FaultsTable, branch.FaultsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStores chains the current query on the "stores" edge.
+func (bq *BranchQuery) QueryStores() *StoreQuery {
+	query := &StoreQuery{config: bq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(branch.Table, branch.FieldID, selector),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, branch.StoresTable, branch.StoresColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
 		return fromU, nil
@@ -343,6 +367,7 @@ func (bq *BranchQuery) Clone() *BranchQuery {
 		withCabinets:  bq.withCabinets.Clone(),
 		withCity:      bq.withCity.Clone(),
 		withFaults:    bq.withFaults.Clone(),
+		withStores:    bq.withStores.Clone(),
 		// clone intermediate query.
 		sql:    bq.sql.Clone(),
 		path:   bq.path,
@@ -391,6 +416,17 @@ func (bq *BranchQuery) WithFaults(opts ...func(*CabinetFaultQuery)) *BranchQuery
 		opt(query)
 	}
 	bq.withFaults = query
+	return bq
+}
+
+// WithStores tells the query-builder to eager-load the nodes that are connected to
+// the "stores" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BranchQuery) WithStores(opts ...func(*StoreQuery)) *BranchQuery {
+	query := &StoreQuery{config: bq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withStores = query
 	return bq
 }
 
@@ -464,11 +500,12 @@ func (bq *BranchQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Branc
 	var (
 		nodes       = []*Branch{}
 		_spec       = bq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			bq.withContracts != nil,
 			bq.withCabinets != nil,
 			bq.withCity != nil,
 			bq.withFaults != nil,
+			bq.withStores != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -591,6 +628,31 @@ func (bq *BranchQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Branc
 				return nil, fmt.Errorf(`unexpected foreign-key "branch_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Faults = append(node.Edges.Faults, n)
+		}
+	}
+
+	if query := bq.withStores; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Branch)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Stores = []*Store{}
+		}
+		query.Where(predicate.Store(func(s *sql.Selector) {
+			s.Where(sql.InValues(branch.StoresColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.BranchID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "branch_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Stores = append(node.Edges.Stores, n)
 		}
 	}
 

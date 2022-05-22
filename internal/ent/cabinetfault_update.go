@@ -59,18 +59,6 @@ func (cfu *CabinetFaultUpdate) ClearDeletedAt() *CabinetFaultUpdate {
 	return cfu
 }
 
-// SetCreator sets the "creator" field.
-func (cfu *CabinetFaultUpdate) SetCreator(m *model.Modifier) *CabinetFaultUpdate {
-	cfu.mutation.SetCreator(m)
-	return cfu
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (cfu *CabinetFaultUpdate) ClearCreator() *CabinetFaultUpdate {
-	cfu.mutation.ClearCreator()
-	return cfu
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (cfu *CabinetFaultUpdate) SetLastModifier(m *model.Modifier) *CabinetFaultUpdate {
 	cfu.mutation.SetLastModifier(m)
@@ -373,13 +361,6 @@ func (cfu *CabinetFaultUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: cabinetfault.FieldDeletedAt,
 		})
 	}
-	if value, ok := cfu.mutation.Creator(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinetfault.FieldCreator,
-		})
-	}
 	if cfu.mutation.CreatorCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -647,18 +628,6 @@ func (cfuo *CabinetFaultUpdateOne) SetNillableDeletedAt(t *time.Time) *CabinetFa
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (cfuo *CabinetFaultUpdateOne) ClearDeletedAt() *CabinetFaultUpdateOne {
 	cfuo.mutation.ClearDeletedAt()
-	return cfuo
-}
-
-// SetCreator sets the "creator" field.
-func (cfuo *CabinetFaultUpdateOne) SetCreator(m *model.Modifier) *CabinetFaultUpdateOne {
-	cfuo.mutation.SetCreator(m)
-	return cfuo
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (cfuo *CabinetFaultUpdateOne) ClearCreator() *CabinetFaultUpdateOne {
-	cfuo.mutation.ClearCreator()
 	return cfuo
 }
 
@@ -992,13 +961,6 @@ func (cfuo *CabinetFaultUpdateOne) sqlSave(ctx context.Context) (_node *CabinetF
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: cabinetfault.FieldDeletedAt,
-		})
-	}
-	if value, ok := cfuo.mutation.Creator(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinetfault.FieldCreator,
 		})
 	}
 	if cfuo.mutation.CreatorCleared() {

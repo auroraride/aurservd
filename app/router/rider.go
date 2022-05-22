@@ -41,6 +41,8 @@ func loadRideRoutes() {
     contract.GET("/:sn", rapi.Contract.SignResult)
 
     // 获取网点
+    branch := g.Group("/branch")
+    branch.GET("", rapi.Branch.List)
 
     // 电柜
     cabinet := g.Group("/cabinet")

@@ -57,18 +57,6 @@ func (bmu *BatteryModelUpdate) ClearDeletedAt() *BatteryModelUpdate {
 	return bmu
 }
 
-// SetCreator sets the "creator" field.
-func (bmu *BatteryModelUpdate) SetCreator(m *model.Modifier) *BatteryModelUpdate {
-	bmu.mutation.SetCreator(m)
-	return bmu
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (bmu *BatteryModelUpdate) ClearCreator() *BatteryModelUpdate {
-	bmu.mutation.ClearCreator()
-	return bmu
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (bmu *BatteryModelUpdate) SetLastModifier(m *model.Modifier) *BatteryModelUpdate {
 	bmu.mutation.SetLastModifier(m)
@@ -102,14 +90,28 @@ func (bmu *BatteryModelUpdate) ClearRemark() *BatteryModelUpdate {
 }
 
 // SetVoltage sets the "voltage" field.
-func (bmu *BatteryModelUpdate) SetVoltage(s string) *BatteryModelUpdate {
-	bmu.mutation.SetVoltage(s)
+func (bmu *BatteryModelUpdate) SetVoltage(f float64) *BatteryModelUpdate {
+	bmu.mutation.ResetVoltage()
+	bmu.mutation.SetVoltage(f)
+	return bmu
+}
+
+// AddVoltage adds f to the "voltage" field.
+func (bmu *BatteryModelUpdate) AddVoltage(f float64) *BatteryModelUpdate {
+	bmu.mutation.AddVoltage(f)
 	return bmu
 }
 
 // SetCapacity sets the "capacity" field.
-func (bmu *BatteryModelUpdate) SetCapacity(s string) *BatteryModelUpdate {
-	bmu.mutation.SetCapacity(s)
+func (bmu *BatteryModelUpdate) SetCapacity(f float64) *BatteryModelUpdate {
+	bmu.mutation.ResetCapacity()
+	bmu.mutation.SetCapacity(f)
+	return bmu
+}
+
+// AddCapacity adds f to the "capacity" field.
+func (bmu *BatteryModelUpdate) AddCapacity(f float64) *BatteryModelUpdate {
+	bmu.mutation.AddCapacity(f)
 	return bmu
 }
 
@@ -291,13 +293,6 @@ func (bmu *BatteryModelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: batterymodel.FieldDeletedAt,
 		})
 	}
-	if value, ok := bmu.mutation.Creator(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: batterymodel.FieldCreator,
-		})
-	}
 	if bmu.mutation.CreatorCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -332,14 +327,28 @@ func (bmu *BatteryModelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := bmu.mutation.Voltage(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: batterymodel.FieldVoltage,
+		})
+	}
+	if value, ok := bmu.mutation.AddedVoltage(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: batterymodel.FieldVoltage,
 		})
 	}
 	if value, ok := bmu.mutation.Capacity(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: batterymodel.FieldCapacity,
+		})
+	}
+	if value, ok := bmu.mutation.AddedCapacity(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: batterymodel.FieldCapacity,
 		})
@@ -497,18 +506,6 @@ func (bmuo *BatteryModelUpdateOne) ClearDeletedAt() *BatteryModelUpdateOne {
 	return bmuo
 }
 
-// SetCreator sets the "creator" field.
-func (bmuo *BatteryModelUpdateOne) SetCreator(m *model.Modifier) *BatteryModelUpdateOne {
-	bmuo.mutation.SetCreator(m)
-	return bmuo
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (bmuo *BatteryModelUpdateOne) ClearCreator() *BatteryModelUpdateOne {
-	bmuo.mutation.ClearCreator()
-	return bmuo
-}
-
 // SetLastModifier sets the "last_modifier" field.
 func (bmuo *BatteryModelUpdateOne) SetLastModifier(m *model.Modifier) *BatteryModelUpdateOne {
 	bmuo.mutation.SetLastModifier(m)
@@ -542,14 +539,28 @@ func (bmuo *BatteryModelUpdateOne) ClearRemark() *BatteryModelUpdateOne {
 }
 
 // SetVoltage sets the "voltage" field.
-func (bmuo *BatteryModelUpdateOne) SetVoltage(s string) *BatteryModelUpdateOne {
-	bmuo.mutation.SetVoltage(s)
+func (bmuo *BatteryModelUpdateOne) SetVoltage(f float64) *BatteryModelUpdateOne {
+	bmuo.mutation.ResetVoltage()
+	bmuo.mutation.SetVoltage(f)
+	return bmuo
+}
+
+// AddVoltage adds f to the "voltage" field.
+func (bmuo *BatteryModelUpdateOne) AddVoltage(f float64) *BatteryModelUpdateOne {
+	bmuo.mutation.AddVoltage(f)
 	return bmuo
 }
 
 // SetCapacity sets the "capacity" field.
-func (bmuo *BatteryModelUpdateOne) SetCapacity(s string) *BatteryModelUpdateOne {
-	bmuo.mutation.SetCapacity(s)
+func (bmuo *BatteryModelUpdateOne) SetCapacity(f float64) *BatteryModelUpdateOne {
+	bmuo.mutation.ResetCapacity()
+	bmuo.mutation.SetCapacity(f)
+	return bmuo
+}
+
+// AddCapacity adds f to the "capacity" field.
+func (bmuo *BatteryModelUpdateOne) AddCapacity(f float64) *BatteryModelUpdateOne {
+	bmuo.mutation.AddCapacity(f)
 	return bmuo
 }
 
@@ -761,13 +772,6 @@ func (bmuo *BatteryModelUpdateOne) sqlSave(ctx context.Context) (_node *BatteryM
 			Column: batterymodel.FieldDeletedAt,
 		})
 	}
-	if value, ok := bmuo.mutation.Creator(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: batterymodel.FieldCreator,
-		})
-	}
 	if bmuo.mutation.CreatorCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -802,14 +806,28 @@ func (bmuo *BatteryModelUpdateOne) sqlSave(ctx context.Context) (_node *BatteryM
 	}
 	if value, ok := bmuo.mutation.Voltage(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: batterymodel.FieldVoltage,
+		})
+	}
+	if value, ok := bmuo.mutation.AddedVoltage(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: batterymodel.FieldVoltage,
 		})
 	}
 	if value, ok := bmuo.mutation.Capacity(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: batterymodel.FieldCapacity,
+		})
+	}
+	if value, ok := bmuo.mutation.AddedCapacity(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: batterymodel.FieldCapacity,
 		})

@@ -53,3 +53,38 @@ type BranchContract struct {
     File              string   `json:"file" validate:"required" trans:"合同文件"`
     Sheets            []string `json:"sheets" validate:"required" trans:"底单"`
 }
+
+const (
+    BranchBranchFacilityTypeAll = iota // 全部
+    BranchBranchFacilityTypeStore
+    BranchBranchFacilityTypeV72
+    BranchBranchFacilityTypeV60
+)
+
+// BranchWithDistanceReq 根据距离获取网点请求
+type BranchWithDistanceReq struct {
+    Lng  *float64 `json:"lng" validate:"required" trans:"经度"`
+    Lat  *float64 `json:"lat" validate:"required" trans:"纬度"`
+    Type int      `json:"type"`
+}
+
+// BranchFacility 网点设施
+type BranchFacility struct {
+    ID    uint64 `json:"id"`
+    Type  string `json:"type"`
+    Name  string `json:"name"`
+    State int    `json:"state"`
+    Num   int    `json:"num"`
+}
+
+// BranchWithDistanceRes 根据距离获取网点结果
+type BranchWithDistanceRes struct {
+    ID       uint64           `json:"id"`
+    Distance float64          `json:"distance"`
+    Name     string           `json:"name"`
+    Lng      float64          `json:"lng"`
+    Lat      float64          `json:"lat"`
+    Image    string           `json:"image"`
+    Address  string           `json:"address"`
+    Facility []BranchFacility `json:"facility"`
+}

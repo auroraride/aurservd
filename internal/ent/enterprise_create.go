@@ -491,6 +491,9 @@ func (u *EnterpriseUpsertOne) UpdateNewValues() *EnterpriseUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(enterprise.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.Creator(); exists {
+			s.SetIgnore(enterprise.FieldCreator)
+		}
 	}))
 	return u
 }
@@ -826,6 +829,9 @@ func (u *EnterpriseUpsertBulk) UpdateNewValues() *EnterpriseUpsertBulk {
 		for _, b := range u.create.builders {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(enterprise.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.Creator(); exists {
+				s.SetIgnore(enterprise.FieldCreator)
 			}
 		}
 	}))

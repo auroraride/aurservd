@@ -122,14 +122,14 @@ func Remark(v string) predicate.BatteryModel {
 }
 
 // Voltage applies equality check predicate on the "voltage" field. It's identical to VoltageEQ.
-func Voltage(v string) predicate.BatteryModel {
+func Voltage(v float64) predicate.BatteryModel {
 	return predicate.BatteryModel(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldVoltage), v))
 	})
 }
 
 // Capacity applies equality check predicate on the "capacity" field. It's identical to CapacityEQ.
-func Capacity(v string) predicate.BatteryModel {
+func Capacity(v float64) predicate.BatteryModel {
 	return predicate.BatteryModel(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldCapacity), v))
 	})
@@ -531,21 +531,21 @@ func RemarkContainsFold(v string) predicate.BatteryModel {
 }
 
 // VoltageEQ applies the EQ predicate on the "voltage" field.
-func VoltageEQ(v string) predicate.BatteryModel {
+func VoltageEQ(v float64) predicate.BatteryModel {
 	return predicate.BatteryModel(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldVoltage), v))
 	})
 }
 
 // VoltageNEQ applies the NEQ predicate on the "voltage" field.
-func VoltageNEQ(v string) predicate.BatteryModel {
+func VoltageNEQ(v float64) predicate.BatteryModel {
 	return predicate.BatteryModel(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldVoltage), v))
 	})
 }
 
 // VoltageIn applies the In predicate on the "voltage" field.
-func VoltageIn(vs ...string) predicate.BatteryModel {
+func VoltageIn(vs ...float64) predicate.BatteryModel {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -562,7 +562,7 @@ func VoltageIn(vs ...string) predicate.BatteryModel {
 }
 
 // VoltageNotIn applies the NotIn predicate on the "voltage" field.
-func VoltageNotIn(vs ...string) predicate.BatteryModel {
+func VoltageNotIn(vs ...float64) predicate.BatteryModel {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -579,84 +579,49 @@ func VoltageNotIn(vs ...string) predicate.BatteryModel {
 }
 
 // VoltageGT applies the GT predicate on the "voltage" field.
-func VoltageGT(v string) predicate.BatteryModel {
+func VoltageGT(v float64) predicate.BatteryModel {
 	return predicate.BatteryModel(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldVoltage), v))
 	})
 }
 
 // VoltageGTE applies the GTE predicate on the "voltage" field.
-func VoltageGTE(v string) predicate.BatteryModel {
+func VoltageGTE(v float64) predicate.BatteryModel {
 	return predicate.BatteryModel(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldVoltage), v))
 	})
 }
 
 // VoltageLT applies the LT predicate on the "voltage" field.
-func VoltageLT(v string) predicate.BatteryModel {
+func VoltageLT(v float64) predicate.BatteryModel {
 	return predicate.BatteryModel(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldVoltage), v))
 	})
 }
 
 // VoltageLTE applies the LTE predicate on the "voltage" field.
-func VoltageLTE(v string) predicate.BatteryModel {
+func VoltageLTE(v float64) predicate.BatteryModel {
 	return predicate.BatteryModel(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldVoltage), v))
 	})
 }
 
-// VoltageContains applies the Contains predicate on the "voltage" field.
-func VoltageContains(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldVoltage), v))
-	})
-}
-
-// VoltageHasPrefix applies the HasPrefix predicate on the "voltage" field.
-func VoltageHasPrefix(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldVoltage), v))
-	})
-}
-
-// VoltageHasSuffix applies the HasSuffix predicate on the "voltage" field.
-func VoltageHasSuffix(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldVoltage), v))
-	})
-}
-
-// VoltageEqualFold applies the EqualFold predicate on the "voltage" field.
-func VoltageEqualFold(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldVoltage), v))
-	})
-}
-
-// VoltageContainsFold applies the ContainsFold predicate on the "voltage" field.
-func VoltageContainsFold(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldVoltage), v))
-	})
-}
-
 // CapacityEQ applies the EQ predicate on the "capacity" field.
-func CapacityEQ(v string) predicate.BatteryModel {
+func CapacityEQ(v float64) predicate.BatteryModel {
 	return predicate.BatteryModel(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldCapacity), v))
 	})
 }
 
 // CapacityNEQ applies the NEQ predicate on the "capacity" field.
-func CapacityNEQ(v string) predicate.BatteryModel {
+func CapacityNEQ(v float64) predicate.BatteryModel {
 	return predicate.BatteryModel(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldCapacity), v))
 	})
 }
 
 // CapacityIn applies the In predicate on the "capacity" field.
-func CapacityIn(vs ...string) predicate.BatteryModel {
+func CapacityIn(vs ...float64) predicate.BatteryModel {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -673,7 +638,7 @@ func CapacityIn(vs ...string) predicate.BatteryModel {
 }
 
 // CapacityNotIn applies the NotIn predicate on the "capacity" field.
-func CapacityNotIn(vs ...string) predicate.BatteryModel {
+func CapacityNotIn(vs ...float64) predicate.BatteryModel {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -690,65 +655,30 @@ func CapacityNotIn(vs ...string) predicate.BatteryModel {
 }
 
 // CapacityGT applies the GT predicate on the "capacity" field.
-func CapacityGT(v string) predicate.BatteryModel {
+func CapacityGT(v float64) predicate.BatteryModel {
 	return predicate.BatteryModel(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldCapacity), v))
 	})
 }
 
 // CapacityGTE applies the GTE predicate on the "capacity" field.
-func CapacityGTE(v string) predicate.BatteryModel {
+func CapacityGTE(v float64) predicate.BatteryModel {
 	return predicate.BatteryModel(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldCapacity), v))
 	})
 }
 
 // CapacityLT applies the LT predicate on the "capacity" field.
-func CapacityLT(v string) predicate.BatteryModel {
+func CapacityLT(v float64) predicate.BatteryModel {
 	return predicate.BatteryModel(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldCapacity), v))
 	})
 }
 
 // CapacityLTE applies the LTE predicate on the "capacity" field.
-func CapacityLTE(v string) predicate.BatteryModel {
+func CapacityLTE(v float64) predicate.BatteryModel {
 	return predicate.BatteryModel(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldCapacity), v))
-	})
-}
-
-// CapacityContains applies the Contains predicate on the "capacity" field.
-func CapacityContains(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldCapacity), v))
-	})
-}
-
-// CapacityHasPrefix applies the HasPrefix predicate on the "capacity" field.
-func CapacityHasPrefix(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldCapacity), v))
-	})
-}
-
-// CapacityHasSuffix applies the HasSuffix predicate on the "capacity" field.
-func CapacityHasSuffix(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldCapacity), v))
-	})
-}
-
-// CapacityEqualFold applies the EqualFold predicate on the "capacity" field.
-func CapacityEqualFold(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldCapacity), v))
-	})
-}
-
-// CapacityContainsFold applies the ContainsFold predicate on the "capacity" field.
-func CapacityContainsFold(v string) predicate.BatteryModel {
-	return predicate.BatteryModel(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldCapacity), v))
 	})
 }
 

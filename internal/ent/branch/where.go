@@ -1169,6 +1169,34 @@ func HasFaultsWith(preds ...predicate.CabinetFault) predicate.Branch {
 	})
 }
 
+// HasStores applies the HasEdge predicate on the "stores" edge.
+func HasStores() predicate.Branch {
+	return predicate.Branch(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StoresTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, StoresTable, StoresColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStoresWith applies the HasEdge predicate on the "stores" edge with a given conditions (other predicates).
+func HasStoresWith(preds ...predicate.Store) predicate.Branch {
+	return predicate.Branch(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StoresInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, StoresTable, StoresColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Branch) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {

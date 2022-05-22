@@ -23,6 +23,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/setting"
+	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -56,6 +57,7 @@ func columnChecker(table string) func(string) error {
 		plan.Table:           plan.ValidColumn,
 		rider.Table:          rider.ValidColumn,
 		setting.Table:        setting.ValidColumn,
+		store.Table:          store.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

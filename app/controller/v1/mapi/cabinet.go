@@ -46,7 +46,7 @@ func (*cabinet) Create(c echo.Context) (err error) {
 // @Success      200  {object}  model.PaginationRes{items=[]model.CabinetItem}  "请求成功"
 func (*cabinet) Query(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetQueryReq](c)
-    return ctx.SendResponse(service.NewCabinet().Query(req))
+    return ctx.SendResponse(service.NewCabinet().List(req))
 }
 
 // Modify

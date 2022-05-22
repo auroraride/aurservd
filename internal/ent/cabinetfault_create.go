@@ -786,6 +786,9 @@ func (u *CabinetFaultUpsertOne) UpdateNewValues() *CabinetFaultUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(cabinetfault.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.Creator(); exists {
+			s.SetIgnore(cabinetfault.FieldCreator)
+		}
 	}))
 	return u
 }
@@ -1247,6 +1250,9 @@ func (u *CabinetFaultUpsertBulk) UpdateNewValues() *CabinetFaultUpsertBulk {
 		for _, b := range u.create.builders {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(cabinetfault.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.Creator(); exists {
+				s.SetIgnore(cabinetfault.FieldCreator)
 			}
 		}
 	}))

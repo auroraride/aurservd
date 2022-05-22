@@ -18,8 +18,8 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "备注", Nullable: true},
-		{Name: "voltage", Type: field.TypeString, Comment: "电压"},
-		{Name: "capacity", Type: field.TypeString, Comment: "容量"},
+		{Name: "voltage", Type: field.TypeFloat64, Comment: "电压"},
+		{Name: "capacity", Type: field.TypeFloat64, Comment: "容量"},
 	}
 	// BatteryModelTable holds the schema information for the "battery_model" table.
 	BatteryModelTable = &schema.Table{
@@ -659,6 +659,61 @@ var (
 			},
 		},
 	}
+	// StoreColumns holds the columns for the "store" table.
+	StoreColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "备注", Nullable: true},
+		{Name: "sn", Type: field.TypeString, Comment: "门店编号"},
+		{Name: "name", Type: field.TypeString, Comment: "门店名称"},
+		{Name: "status", Type: field.TypeUint8, Comment: "门店状态 0维护 1营业 2休息 3隐藏", Default: 0},
+		{Name: "branch_id", Type: field.TypeUint64},
+	}
+	// StoreTable holds the schema information for the "store" table.
+	StoreTable = &schema.Table{
+		Name:       "store",
+		Columns:    StoreColumns,
+		PrimaryKey: []*schema.Column{StoreColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "store_branch_stores",
+				Columns:    []*schema.Column{StoreColumns[10]},
+				RefColumns: []*schema.Column{BranchColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "store_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{StoreColumns[1]},
+			},
+			{
+				Name:    "store_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{StoreColumns[3]},
+			},
+			{
+				Name:    "store_status",
+				Unique:  false,
+				Columns: []*schema.Column{StoreColumns[9]},
+			},
+			{
+				Name:    "store_name",
+				Unique:  false,
+				Columns: []*schema.Column{StoreColumns[8]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+		},
+	}
 	// CabinetBmsColumns holds the columns for the "cabinet_bms" table.
 	CabinetBmsColumns = []*schema.Column{
 		{Name: "cabinet_id", Type: field.TypeInt},
@@ -749,6 +804,7 @@ var (
 		PlanTable,
 		RiderTable,
 		SettingTable,
+		StoreTable,
 		CabinetBmsTable,
 		PlanPmsTable,
 		PlanCitiesTable,
@@ -805,6 +861,10 @@ func init() {
 	}
 	SettingTable.Annotation = &entsql.Annotation{
 		Table: "setting",
+	}
+	StoreTable.ForeignKeys[0].RefTable = BranchTable
+	StoreTable.Annotation = &entsql.Annotation{
+		Table: "store",
 	}
 	CabinetBmsTable.ForeignKeys[0].RefTable = CabinetTable
 	CabinetBmsTable.ForeignKeys[1].RefTable = BatteryModelTable

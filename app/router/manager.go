@@ -25,9 +25,15 @@ func loadManagerRoutes() {
     // 网点
     g.GET("/branch", mapi.Branch.List)                      // 网点列表
     g.GET("/branch/selector", mapi.Branch.Selector)         // 网点简单列表
-    g.POST("/branch", mapi.Branch.Create)                      // 新增网点
+    g.POST("/branch", mapi.Branch.Create)                   // 新增网点
     g.PUT("/branch/:id", mapi.Branch.Modify)                // 编辑网点
     g.POST("/branch/:id/contract", mapi.Branch.AddContract) // 添加合同
+
+    // 门店
+    g.GET("/store", mapi.Store.List)
+    g.POST("/store", mapi.Store.Create)
+    g.PUT("/store/:id", mapi.Store.Modify)
+    g.DELETE("/store/:id", mapi.Store.Delete)
 
     // 客服工具
     g.POST("/csc/irv", mapi.Csc.IvrShiguangju) // 逾期催费
