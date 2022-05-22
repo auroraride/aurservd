@@ -58,6 +58,7 @@ var (
 		{Name: "lat", Type: field.TypeFloat64, Comment: "纬度"},
 		{Name: "address", Type: field.TypeString, Comment: "详细地址"},
 		{Name: "photos", Type: field.TypeJSON, Comment: "网点照片"},
+		{Name: "geom", Type: field.TypeOther, Unique: true, Comment: "坐标", SchemaType: map[string]string{"postgres": "geometry"}},
 		{Name: "city_id", Type: field.TypeUint64},
 	}
 	// BranchTable holds the schema information for the "branch" table.
@@ -68,7 +69,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "branch_city_branches",
-				Columns:    []*schema.Column{BranchColumns[12]},
+				Columns:    []*schema.Column{BranchColumns[13]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -87,12 +88,22 @@ var (
 			{
 				Name:    "branch_city_id",
 				Unique:  false,
-				Columns: []*schema.Column{BranchColumns[12]},
+				Columns: []*schema.Column{BranchColumns[13]},
 			},
 			{
 				Name:    "branch_lng_lat",
 				Unique:  false,
 				Columns: []*schema.Column{BranchColumns[8], BranchColumns[9]},
+			},
+			{
+				Name:    "branch_geom",
+				Unique:  false,
+				Columns: []*schema.Column{BranchColumns[12]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIST",
+					},
+				},
 			},
 		},
 	}

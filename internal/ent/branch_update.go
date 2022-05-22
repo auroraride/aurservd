@@ -153,6 +153,12 @@ func (bu *BranchUpdate) SetPhotos(s []string) *BranchUpdate {
 	return bu
 }
 
+// SetGeom sets the "geom" field.
+func (bu *BranchUpdate) SetGeom(m *model.Geometry) *BranchUpdate {
+	bu.mutation.SetGeom(m)
+	return bu
+}
+
 // AddContractIDs adds the "contracts" edge to the BranchContract entity by IDs.
 func (bu *BranchUpdate) AddContractIDs(ids ...uint64) *BranchUpdate {
 	bu.mutation.AddContractIDs(ids...)
@@ -478,6 +484,13 @@ func (bu *BranchUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeJSON,
 			Value:  value,
 			Column: branch.FieldPhotos,
+		})
+	}
+	if value, ok := bu.mutation.Geom(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeOther,
+			Value:  value,
+			Column: branch.FieldGeom,
 		})
 	}
 	if bu.mutation.ContractsCleared() {
@@ -813,6 +826,12 @@ func (buo *BranchUpdateOne) SetAddress(s string) *BranchUpdateOne {
 // SetPhotos sets the "photos" field.
 func (buo *BranchUpdateOne) SetPhotos(s []string) *BranchUpdateOne {
 	buo.mutation.SetPhotos(s)
+	return buo
+}
+
+// SetGeom sets the "geom" field.
+func (buo *BranchUpdateOne) SetGeom(m *model.Geometry) *BranchUpdateOne {
+	buo.mutation.SetGeom(m)
 	return buo
 }
 
@@ -1171,6 +1190,13 @@ func (buo *BranchUpdateOne) sqlSave(ctx context.Context) (_node *Branch, err err
 			Type:   field.TypeJSON,
 			Value:  value,
 			Column: branch.FieldPhotos,
+		})
+	}
+	if value, ok := buo.mutation.Geom(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeOther,
+			Value:  value,
+			Column: branch.FieldGeom,
 		})
 	}
 	if buo.mutation.ContractsCleared() {

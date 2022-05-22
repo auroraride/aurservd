@@ -45,8 +45,8 @@ func (*branch) Selector(c echo.Context) (err error) {
     return ctx.SendResponse(service.NewBranch().Selector())
 }
 
-// Add
-// @ID           BranchAdd
+// Create
+// @ID           BranchCreate
 // @Router       /manager/v1/branch [POST]
 // @Summary      M30002 新增网点
 // @Tags         [M]管理接口
@@ -55,9 +55,9 @@ func (*branch) Selector(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        body  body  model.Branch  true  "网点数据"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
-func (*branch) Add(c echo.Context) (err error) {
+func (*branch) Create(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.Branch](c)
-    service.NewBranch().Add(req, ctx.Modifier)
+    service.NewBranch().Create(req, ctx.Modifier)
     return ctx.SendResponse()
 }
 

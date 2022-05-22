@@ -1015,6 +1015,7 @@ type BranchMutation struct {
 	addlat           *float64
 	address          *string
 	photos           *[]string
+	geom             **model.Geometry
 	clearedFields    map[string]struct{}
 	contracts        map[uint64]struct{}
 	removedcontracts map[uint64]struct{}
@@ -1654,6 +1655,42 @@ func (m *BranchMutation) ResetPhotos() {
 	m.photos = nil
 }
 
+// SetGeom sets the "geom" field.
+func (m *BranchMutation) SetGeom(value *model.Geometry) {
+	m.geom = &value
+}
+
+// Geom returns the value of the "geom" field in the mutation.
+func (m *BranchMutation) Geom() (r *model.Geometry, exists bool) {
+	v := m.geom
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGeom returns the old "geom" field's value of the Branch entity.
+// If the Branch object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BranchMutation) OldGeom(ctx context.Context) (v *model.Geometry, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGeom is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGeom requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGeom: %w", err)
+	}
+	return oldValue.Geom, nil
+}
+
+// ResetGeom resets all changes to the "geom" field.
+func (m *BranchMutation) ResetGeom() {
+	m.geom = nil
+}
+
 // AddContractIDs adds the "contracts" edge to the BranchContract entity by ids.
 func (m *BranchMutation) AddContractIDs(ids ...uint64) {
 	if m.contracts == nil {
@@ -1861,7 +1898,7 @@ func (m *BranchMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BranchMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, branch.FieldCreatedAt)
 	}
@@ -1898,6 +1935,9 @@ func (m *BranchMutation) Fields() []string {
 	if m.photos != nil {
 		fields = append(fields, branch.FieldPhotos)
 	}
+	if m.geom != nil {
+		fields = append(fields, branch.FieldGeom)
+	}
 	return fields
 }
 
@@ -1930,6 +1970,8 @@ func (m *BranchMutation) Field(name string) (ent.Value, bool) {
 		return m.Address()
 	case branch.FieldPhotos:
 		return m.Photos()
+	case branch.FieldGeom:
+		return m.Geom()
 	}
 	return nil, false
 }
@@ -1963,6 +2005,8 @@ func (m *BranchMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldAddress(ctx)
 	case branch.FieldPhotos:
 		return m.OldPhotos(ctx)
+	case branch.FieldGeom:
+		return m.OldGeom(ctx)
 	}
 	return nil, fmt.Errorf("unknown Branch field %s", name)
 }
@@ -2055,6 +2099,13 @@ func (m *BranchMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPhotos(v)
+		return nil
+	case branch.FieldGeom:
+		v, ok := value.(*model.Geometry)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGeom(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Branch field %s", name)
@@ -2194,6 +2245,9 @@ func (m *BranchMutation) ResetField(name string) error {
 		return nil
 	case branch.FieldPhotos:
 		m.ResetPhotos()
+		return nil
+	case branch.FieldGeom:
+		m.ResetGeom()
 		return nil
 	}
 	return fmt.Errorf("unknown Branch field %s", name)

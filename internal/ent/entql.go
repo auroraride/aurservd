@@ -71,6 +71,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			branch.FieldLat:          {Type: field.TypeFloat64, Column: branch.FieldLat},
 			branch.FieldAddress:      {Type: field.TypeString, Column: branch.FieldAddress},
 			branch.FieldPhotos:       {Type: field.TypeJSON, Column: branch.FieldPhotos},
+			branch.FieldGeom:         {Type: field.TypeOther, Column: branch.FieldGeom},
 		},
 	}
 	graph.Nodes[2] = &sqlgraph.Node{
@@ -905,6 +906,11 @@ func (f *BranchFilter) WhereAddress(p entql.StringP) {
 // WherePhotos applies the entql json.RawMessage predicate on the photos field.
 func (f *BranchFilter) WherePhotos(p entql.BytesP) {
 	f.Where(p.Field(branch.FieldPhotos))
+}
+
+// WhereGeom applies the entql other predicate on the geom field.
+func (f *BranchFilter) WhereGeom(p entql.OtherP) {
+	f.Where(p.Field(branch.FieldGeom))
 }
 
 // WhereHasContracts applies a predicate to check if query has an edge contracts.

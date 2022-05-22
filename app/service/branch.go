@@ -28,9 +28,9 @@ func NewBranch() *branchService {
     }
 }
 
-// Add 新增网点
+// Create 新增网点
 // TODO 从结构体新增
-func (s *branchService) Add(req *model.Branch, mod *model.Modifier) {
+func (s *branchService) Create(req *model.Branch, mod *model.Modifier) {
     tx, _ := ar.Ent.Tx(s.ctx)
 
     // TODO: 校验城市是否启用
@@ -40,6 +40,10 @@ func (s *branchService) Add(req *model.Branch, mod *model.Modifier) {
         SetCityID(*req.CityID).
         SetLng(*req.Lng).
         SetLat(*req.Lat).
+        SetGeom(&model.Geometry{
+            Lng: *req.Lng,
+            Lat: *req.Lat,
+        }).
         SetPhotos(req.Photos).
         SetLastModifier(mod).
         SetCreator(mod).
@@ -140,6 +144,10 @@ func (s *branchService) Modify(req *model.Branch, mod *model.Modifier) {
         SetCityID(*req.CityID).
         SetLng(*req.Lng).
         SetLat(*req.Lat).
+        SetGeom(&model.Geometry{
+            Lng: *req.Lng,
+            Lat: *req.Lat,
+        }).
         SetPhotos(req.Photos).
         SetLastModifier(mod).
         SaveX(s.ctx)

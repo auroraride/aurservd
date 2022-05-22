@@ -52,6 +52,9 @@ type Branch struct {
 	// Photos holds the value of the "photos" field.
 	// 网点照片
 	Photos []string `json:"photos,omitempty"`
+	// Geom holds the value of the "geom" field.
+	// 坐标
+	Geom *model.Geometry `json:"geom,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BranchQuery when eager-loading is set.
 	Edges BranchEdges `json:"edges"`
@@ -120,6 +123,8 @@ func (*Branch) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case branch.FieldCreator, branch.FieldLastModifier, branch.FieldPhotos:
 			values[i] = new([]byte)
+		case branch.FieldGeom:
+			values[i] = new(model.Geometry)
 		case branch.FieldLng, branch.FieldLat:
 			values[i] = new(sql.NullFloat64)
 		case branch.FieldID, branch.FieldCityID:
@@ -228,6 +233,12 @@ func (b *Branch) assignValues(columns []string, values []interface{}) error {
 					return fmt.Errorf("unmarshal field photos: %w", err)
 				}
 			}
+		case branch.FieldGeom:
+			if value, ok := values[i].(*model.Geometry); !ok {
+				return fmt.Errorf("unexpected type %T for field geom", values[i])
+			} else if value != nil {
+				b.Geom = value
+			}
 		}
 	}
 	return nil
@@ -302,6 +313,8 @@ func (b *Branch) String() string {
 	builder.WriteString(b.Address)
 	builder.WriteString(", photos=")
 	builder.WriteString(fmt.Sprintf("%v", b.Photos))
+	builder.WriteString(", geom=")
+	builder.WriteString(fmt.Sprintf("%v", b.Geom))
 	builder.WriteByte(')')
 	return builder.String()
 }

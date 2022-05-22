@@ -267,7 +267,7 @@ const docTemplate = `{
                     "[M]管理接口"
                 ],
                 "summary": "M30002 新增网点",
-                "operationId": "BranchAdd",
+                "operationId": "BranchCreate",
                 "parameters": [
                     {
                         "type": "string",

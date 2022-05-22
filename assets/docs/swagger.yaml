@@ -989,7 +989,7 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: BranchAdd
+      operationId: BranchCreate
       parameters:
       - description: 管理员校验token
         in: header

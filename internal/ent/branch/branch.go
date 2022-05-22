@@ -35,6 +35,8 @@ const (
 	FieldAddress = "address"
 	// FieldPhotos holds the string denoting the photos field in the database.
 	FieldPhotos = "photos"
+	// FieldGeom holds the string denoting the geom field in the database.
+	FieldGeom = "geom"
 	// EdgeContracts holds the string denoting the contracts edge name in mutations.
 	EdgeContracts = "contracts"
 	// EdgeCabinets holds the string denoting the cabinets edge name in mutations.
@@ -90,6 +92,7 @@ var Columns = []string{
 	FieldLat,
 	FieldAddress,
 	FieldPhotos,
+	FieldGeom,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

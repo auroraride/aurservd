@@ -131,6 +131,12 @@ func (bc *BranchCreate) SetPhotos(s []string) *BranchCreate {
 	return bc
 }
 
+// SetGeom sets the "geom" field.
+func (bc *BranchCreate) SetGeom(m *model.Geometry) *BranchCreate {
+	bc.mutation.SetGeom(m)
+	return bc
+}
+
 // AddContractIDs adds the "contracts" edge to the BranchContract entity by IDs.
 func (bc *BranchCreate) AddContractIDs(ids ...uint64) *BranchCreate {
 	bc.mutation.AddContractIDs(ids...)
@@ -294,6 +300,9 @@ func (bc *BranchCreate) check() error {
 	if _, ok := bc.mutation.Photos(); !ok {
 		return &ValidationError{Name: "photos", err: errors.New(`ent: missing required field "Branch.photos"`)}
 	}
+	if _, ok := bc.mutation.Geom(); !ok {
+		return &ValidationError{Name: "geom", err: errors.New(`ent: missing required field "Branch.geom"`)}
+	}
 	if _, ok := bc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Branch.city"`)}
 	}
@@ -412,6 +421,14 @@ func (bc *BranchCreate) createSpec() (*Branch, *sqlgraph.CreateSpec) {
 			Column: branch.FieldPhotos,
 		})
 		_node.Photos = value
+	}
+	if value, ok := bc.mutation.Geom(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeOther,
+			Value:  value,
+			Column: branch.FieldGeom,
+		})
+		_node.Geom = value
 	}
 	if nodes := bc.mutation.ContractsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -724,6 +741,18 @@ func (u *BranchUpsert) UpdatePhotos() *BranchUpsert {
 	return u
 }
 
+// SetGeom sets the "geom" field.
+func (u *BranchUpsert) SetGeom(v *model.Geometry) *BranchUpsert {
+	u.Set(branch.FieldGeom, v)
+	return u
+}
+
+// UpdateGeom sets the "geom" field to the value that was provided on create.
+func (u *BranchUpsert) UpdateGeom() *BranchUpsert {
+	u.SetExcluded(branch.FieldGeom)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -978,6 +1007,20 @@ func (u *BranchUpsertOne) SetPhotos(v []string) *BranchUpsertOne {
 func (u *BranchUpsertOne) UpdatePhotos() *BranchUpsertOne {
 	return u.Update(func(s *BranchUpsert) {
 		s.UpdatePhotos()
+	})
+}
+
+// SetGeom sets the "geom" field.
+func (u *BranchUpsertOne) SetGeom(v *model.Geometry) *BranchUpsertOne {
+	return u.Update(func(s *BranchUpsert) {
+		s.SetGeom(v)
+	})
+}
+
+// UpdateGeom sets the "geom" field to the value that was provided on create.
+func (u *BranchUpsertOne) UpdateGeom() *BranchUpsertOne {
+	return u.Update(func(s *BranchUpsert) {
+		s.UpdateGeom()
 	})
 }
 
@@ -1399,6 +1442,20 @@ func (u *BranchUpsertBulk) SetPhotos(v []string) *BranchUpsertBulk {
 func (u *BranchUpsertBulk) UpdatePhotos() *BranchUpsertBulk {
 	return u.Update(func(s *BranchUpsert) {
 		s.UpdatePhotos()
+	})
+}
+
+// SetGeom sets the "geom" field.
+func (u *BranchUpsertBulk) SetGeom(v *model.Geometry) *BranchUpsertBulk {
+	return u.Update(func(s *BranchUpsert) {
+		s.SetGeom(v)
+	})
+}
+
+// UpdateGeom sets the "geom" field to the value that was provided on create.
+func (u *BranchUpsertBulk) UpdateGeom() *BranchUpsertBulk {
+	return u.Update(func(s *BranchUpsert) {
+		s.UpdateGeom()
 	})
 }
 

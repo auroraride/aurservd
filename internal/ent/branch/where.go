@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -153,6 +154,13 @@ func Lat(v float64) predicate.Branch {
 func Address(v string) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldAddress), v))
+	})
+}
+
+// Geom applies equality check predicate on the "geom" field. It's identical to GeomEQ.
+func Geom(v *model.Geometry) predicate.Branch {
+	return predicate.Branch(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldGeom), v))
 	})
 }
 
@@ -970,6 +978,82 @@ func AddressEqualFold(v string) predicate.Branch {
 func AddressContainsFold(v string) predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldAddress), v))
+	})
+}
+
+// GeomEQ applies the EQ predicate on the "geom" field.
+func GeomEQ(v *model.Geometry) predicate.Branch {
+	return predicate.Branch(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldGeom), v))
+	})
+}
+
+// GeomNEQ applies the NEQ predicate on the "geom" field.
+func GeomNEQ(v *model.Geometry) predicate.Branch {
+	return predicate.Branch(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldGeom), v))
+	})
+}
+
+// GeomIn applies the In predicate on the "geom" field.
+func GeomIn(vs ...*model.Geometry) predicate.Branch {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Branch(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldGeom), v...))
+	})
+}
+
+// GeomNotIn applies the NotIn predicate on the "geom" field.
+func GeomNotIn(vs ...*model.Geometry) predicate.Branch {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Branch(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldGeom), v...))
+	})
+}
+
+// GeomGT applies the GT predicate on the "geom" field.
+func GeomGT(v *model.Geometry) predicate.Branch {
+	return predicate.Branch(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldGeom), v))
+	})
+}
+
+// GeomGTE applies the GTE predicate on the "geom" field.
+func GeomGTE(v *model.Geometry) predicate.Branch {
+	return predicate.Branch(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldGeom), v))
+	})
+}
+
+// GeomLT applies the LT predicate on the "geom" field.
+func GeomLT(v *model.Geometry) predicate.Branch {
+	return predicate.Branch(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldGeom), v))
+	})
+}
+
+// GeomLTE applies the LTE predicate on the "geom" field.
+func GeomLTE(v *model.Geometry) predicate.Branch {
+	return predicate.Branch(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldGeom), v))
 	})
 }
 
