@@ -55,17 +55,15 @@ type BranchContract struct {
 }
 
 const (
-    BranchBranchFacilityTypeAll = iota // 全部
-    BranchBranchFacilityTypeStore
-    BranchBranchFacilityTypeV72
-    BranchBranchFacilityTypeV60
+    BranchBranchFacilityTypeStore = "store"
+    BranchBranchFacilityTypeV72   = "V72"
+    BranchBranchFacilityTypeV60   = "V60"
 )
 
 // BranchWithDistanceReq 根据距离获取网点请求
 type BranchWithDistanceReq struct {
-    Lng  *float64 `json:"lng" validate:"required" trans:"经度"`
-    Lat  *float64 `json:"lat" validate:"required" trans:"纬度"`
-    Type int      `json:"type"`
+    Lng *float64 `json:"lng" validate:"required" trans:"经度"`
+    Lat *float64 `json:"lat" validate:"required" trans:"纬度"`
 }
 
 // BranchFacility 网点设施

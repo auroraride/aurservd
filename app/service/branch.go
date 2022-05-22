@@ -174,29 +174,24 @@ func (s *branchService) Selector() *model.ItemListRes {
     return res
 }
 
+// ListByDistance 根据距离列出所有网点和电柜
 func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (res []model.BranchWithDistanceRes) {
     // rows, err := s.orm.QueryContext(s.ctx, fmt.Sprintf(`SELECT id, name, ST_Distance(%s, ST_GeogFromText('POINT(108.949969 34.333489)')) AS distance FROM %s WHERE ST_DWithin(%s, ST_GeogFromText('POINT(108.949969 34.333489)'), 10000000) ORDER BY distance;`, branch.Table, branch.FieldGeom, branch.FieldGeom))
     var items []model.BranchWithDistanceRes
-    q := s.orm.QueryNotDeleted()
-    if req.Type > 0 {
-        switch req.Type {
-        case model.BranchBranchFacilityTypeStore:
-            // q.Where(branch.HasCabinetsWith(cabinet.HasBmsWith(batterymodel.Voltage())))
-        }
-    }
-    _ = q.
+    _ = s.orm.QueryNotDeleted().
         WithCabinets().
         WithStores().
         Modify(func(sel *sql.Selector) {
             sel.Select(branch.FieldID, branch.FieldName).
                 AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(%s, ST_GeogFromText('POINT(%f %f)'))`, branch.FieldGeom, *req.Lng, *req.Lat)), "distance").
                 Where(sql.P(func(b *sql.Builder) {
-                    b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), 1000000000)`, branch.FieldGeom, *req.Lng, *req.Lat))
+                    b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), 500000)`, branch.FieldGeom, *req.Lng, *req.Lat))
                 })).
                 OrderBy(sql.Asc("distance"))
         }).
         Scan(s.ctx, &items)
     res = make([]model.BranchWithDistanceRes, len(items))
+    // TODO 计算可用电池数量
     // for i, item := range items {
     //     res[i]
     // }
