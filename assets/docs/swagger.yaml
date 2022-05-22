@@ -1901,6 +1901,27 @@ paths:
       summary: M30008 修改门店
       tags:
       - '[M]管理接口'
+  /manager/v1/user:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M10002 新增管理员
+      tags:
+      - '[M]管理接口'
   /manager/v1/user/signin:
     post:
       consumes:

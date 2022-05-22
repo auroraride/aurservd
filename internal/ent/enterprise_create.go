@@ -124,7 +124,9 @@ func (ec *EnterpriseCreate) Save(ctx context.Context) (*Enterprise, error) {
 		err  error
 		node *Enterprise
 	)
-	ec.defaults()
+	if err := ec.defaults(); err != nil {
+		return nil, err
+	}
 	if len(ec.hooks) == 0 {
 		if err = ec.check(); err != nil {
 			return nil, err
@@ -189,15 +191,22 @@ func (ec *EnterpriseCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (ec *EnterpriseCreate) defaults() {
+func (ec *EnterpriseCreate) defaults() error {
 	if _, ok := ec.mutation.CreatedAt(); !ok {
+		if enterprise.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized enterprise.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := enterprise.DefaultCreatedAt()
 		ec.mutation.SetCreatedAt(v)
 	}
 	if _, ok := ec.mutation.UpdatedAt(); !ok {
+		if enterprise.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized enterprise.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := enterprise.DefaultUpdatedAt()
 		ec.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

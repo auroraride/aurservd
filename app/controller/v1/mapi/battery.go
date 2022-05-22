@@ -42,5 +42,5 @@ func (*battery) ListModels(c echo.Context) (err error) {
 // @Success      200  {object}  model.ItemRes{item=model.BatteryModel}  "请求成功"
 func (*battery) CreateModel(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.BatteryModelCreateReq](c)
-    return ctx.SendResponse(model.ItemRes{Item: service.NewBattery().CreateModel(ctx.Modifier, req)})
+    return ctx.SendResponse(model.ItemRes{Item: service.NewBatteryWithModifier(ctx.Modifier).CreateModel(req)})
 }

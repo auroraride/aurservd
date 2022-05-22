@@ -198,7 +198,9 @@ func (bmu *BatteryModelUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
-	bmu.defaults()
+	if err := bmu.defaults(); err != nil {
+		return 0, err
+	}
 	if len(bmu.hooks) == 0 {
 		affected, err = bmu.sqlSave(ctx)
 	} else {
@@ -248,11 +250,15 @@ func (bmu *BatteryModelUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (bmu *BatteryModelUpdate) defaults() {
+func (bmu *BatteryModelUpdate) defaults() error {
 	if _, ok := bmu.mutation.UpdatedAt(); !ok {
+		if batterymodel.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized batterymodel.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := batterymodel.UpdateDefaultUpdatedAt()
 		bmu.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 func (bmu *BatteryModelUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -654,7 +660,9 @@ func (bmuo *BatteryModelUpdateOne) Save(ctx context.Context) (*BatteryModel, err
 		err  error
 		node *BatteryModel
 	)
-	bmuo.defaults()
+	if err := bmuo.defaults(); err != nil {
+		return nil, err
+	}
 	if len(bmuo.hooks) == 0 {
 		node, err = bmuo.sqlSave(ctx)
 	} else {
@@ -710,11 +718,15 @@ func (bmuo *BatteryModelUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (bmuo *BatteryModelUpdateOne) defaults() {
+func (bmuo *BatteryModelUpdateOne) defaults() error {
 	if _, ok := bmuo.mutation.UpdatedAt(); !ok {
+		if batterymodel.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized batterymodel.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := batterymodel.UpdateDefaultUpdatedAt()
 		bmuo.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 func (bmuo *BatteryModelUpdateOne) sqlSave(ctx context.Context) (_node *BatteryModel, err error) {

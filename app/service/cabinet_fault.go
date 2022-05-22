@@ -19,8 +19,9 @@ import (
 )
 
 type cabinetFaultService struct {
-    ctx context.Context
-    orm *ent.CabinetFaultClient
+    ctx      context.Context
+    orm      *ent.CabinetFaultClient
+    modifier *model.Modifier
 }
 
 func NewCabinetFault() *cabinetFaultService {
@@ -28,6 +29,13 @@ func NewCabinetFault() *cabinetFaultService {
         ctx: context.Background(),
         orm: ar.Ent.CabinetFault,
     }
+}
+
+func NewCabinetFaultWithModifier(m *model.Modifier) *cabinetFaultService {
+    s := NewCabinetFault()
+    s.ctx = context.WithValue(s.ctx, "modifier", m)
+    s.modifier = m
+    return s
 }
 
 // Query 查找故障
@@ -130,10 +138,9 @@ func (s *cabinetFaultService) List(req *model.CabinetFaultListReq) (res *model.P
 }
 
 // Deal 处理故障
-func (s *cabinetFaultService) Deal(m *model.Modifier, req *model.CabinetFaultDealReq) {
+func (s *cabinetFaultService) Deal(req *model.CabinetFaultDealReq) {
     s.orm.UpdateOne(s.Query(*req.ID)).
         SetRemark(*req.Remark).
         SetStatus(*req.Status).
-        SetLastModifier(m).
         SaveX(s.ctx)
 }

@@ -27,12 +27,12 @@ func managerAddCmd() *cobra.Command {
         Use:   "add",
         Short: "添加管理员",
         Run: func(cmd *cobra.Command, args []string) {
-            req := &model.ManagerAddReq{
+            req := &model.ManagerCreateReq{
                 Name: name,
             }
             req.Phone = phone
             req.Password = password
-            err := service.NewManager().Add(req)
+            err := service.NewManager().Create(req)
             if err != nil {
                 log.Errorf("添加管理员: %s %s 失败: %v", name, phone, err)
                 return

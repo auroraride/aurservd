@@ -19,8 +19,8 @@ type ManagerSigninRes struct {
     Phone string `json:"phone,omitempty"`
 }
 
-// ManagerAddReq 管理员新增
-type ManagerAddReq struct {
+// ManagerCreateReq 管理员新增
+type ManagerCreateReq struct {
     ManagerSigninReq
     Name string `json:"name" validate:"required" trans:"姓名"`
 }

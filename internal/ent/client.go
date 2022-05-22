@@ -333,7 +333,8 @@ func (c *BatteryModelClient) QueryPlans(bm *BatteryModel) *PlanQuery {
 
 // Hooks returns the client hooks.
 func (c *BatteryModelClient) Hooks() []Hook {
-	return c.hooks.BatteryModel
+	hooks := c.hooks.BatteryModel
+	return append(hooks[:len(hooks):len(hooks)], batterymodel.Hooks[:]...)
 }
 
 // BranchClient is a client for the Branch schema.
@@ -503,7 +504,8 @@ func (c *BranchClient) QueryStores(b *Branch) *StoreQuery {
 
 // Hooks returns the client hooks.
 func (c *BranchClient) Hooks() []Hook {
-	return c.hooks.Branch
+	hooks := c.hooks.Branch
+	return append(hooks[:len(hooks):len(hooks)], branch.Hooks[:]...)
 }
 
 // BranchContractClient is a client for the BranchContract schema.
@@ -609,7 +611,8 @@ func (c *BranchContractClient) QueryBranch(bc *BranchContract) *BranchQuery {
 
 // Hooks returns the client hooks.
 func (c *BranchContractClient) Hooks() []Hook {
-	return c.hooks.BranchContract
+	hooks := c.hooks.BranchContract
+	return append(hooks[:len(hooks):len(hooks)], branchcontract.Hooks[:]...)
 }
 
 // CabinetClient is a client for the Cabinet schema.
@@ -747,7 +750,8 @@ func (c *CabinetClient) QueryFaults(ca *Cabinet) *CabinetFaultQuery {
 
 // Hooks returns the client hooks.
 func (c *CabinetClient) Hooks() []Hook {
-	return c.hooks.Cabinet
+	hooks := c.hooks.Cabinet
+	return append(hooks[:len(hooks):len(hooks)], cabinet.Hooks[:]...)
 }
 
 // CabinetFaultClient is a client for the CabinetFault schema.
@@ -901,7 +905,8 @@ func (c *CabinetFaultClient) QueryCity(cf *CabinetFault) *CityQuery {
 
 // Hooks returns the client hooks.
 func (c *CabinetFaultClient) Hooks() []Hook {
-	return c.hooks.CabinetFault
+	hooks := c.hooks.CabinetFault
+	return append(hooks[:len(hooks):len(hooks)], cabinetfault.Hooks[:]...)
 }
 
 // CityClient is a client for the City schema.
@@ -1071,7 +1076,8 @@ func (c *CityClient) QueryFaults(ci *City) *CabinetFaultQuery {
 
 // Hooks returns the client hooks.
 func (c *CityClient) Hooks() []Hook {
-	return c.hooks.City
+	hooks := c.hooks.City
+	return append(hooks[:len(hooks):len(hooks)], city.Hooks[:]...)
 }
 
 // ContractClient is a client for the Contract schema.
@@ -1177,7 +1183,8 @@ func (c *ContractClient) QueryRider(co *Contract) *RiderQuery {
 
 // Hooks returns the client hooks.
 func (c *ContractClient) Hooks() []Hook {
-	return c.hooks.Contract
+	hooks := c.hooks.Contract
+	return append(hooks[:len(hooks):len(hooks)], contract.Hooks[:]...)
 }
 
 // EnterpriseClient is a client for the Enterprise schema.
@@ -1283,7 +1290,8 @@ func (c *EnterpriseClient) QueryRiders(e *Enterprise) *RiderQuery {
 
 // Hooks returns the client hooks.
 func (c *EnterpriseClient) Hooks() []Hook {
-	return c.hooks.Enterprise
+	hooks := c.hooks.Enterprise
+	return append(hooks[:len(hooks):len(hooks)], enterprise.Hooks[:]...)
 }
 
 // ManagerClient is a client for the Manager schema.
@@ -1373,7 +1381,8 @@ func (c *ManagerClient) GetX(ctx context.Context, id uint64) *Manager {
 
 // Hooks returns the client hooks.
 func (c *ManagerClient) Hooks() []Hook {
-	return c.hooks.Manager
+	hooks := c.hooks.Manager
+	return append(hooks[:len(hooks):len(hooks)], manager.Hooks[:]...)
 }
 
 // PersonClient is a client for the Person schema.
@@ -1479,7 +1488,8 @@ func (c *PersonClient) QueryRider(pe *Person) *RiderQuery {
 
 // Hooks returns the client hooks.
 func (c *PersonClient) Hooks() []Hook {
-	return c.hooks.Person
+	hooks := c.hooks.Person
+	return append(hooks[:len(hooks):len(hooks)], person.Hooks[:]...)
 }
 
 // PlanClient is a client for the Plan schema.
@@ -1601,7 +1611,8 @@ func (c *PlanClient) QueryCities(pl *Plan) *CityQuery {
 
 // Hooks returns the client hooks.
 func (c *PlanClient) Hooks() []Hook {
-	return c.hooks.Plan
+	hooks := c.hooks.Plan
+	return append(hooks[:len(hooks):len(hooks)], plan.Hooks[:]...)
 }
 
 // RiderClient is a client for the Rider schema.
@@ -1952,5 +1963,6 @@ func (c *StoreClient) QueryBranch(s *Store) *BranchQuery {
 
 // Hooks returns the client hooks.
 func (c *StoreClient) Hooks() []Hook {
-	return c.hooks.Store
+	hooks := c.hooks.Store
+	return append(hooks[:len(hooks):len(hooks)], store.Hooks[:]...)
 }

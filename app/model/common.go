@@ -12,13 +12,6 @@ type StatusResponse struct {
     Status bool `json:"status"`
 }
 
-// Modifier 修改人
-type Modifier struct {
-    ID    uint64 `json:"id,omitempty"`
-    Name  string `json:"name,omitempty"`
-    Phone string `json:"phone,omitempty"`
-}
-
 // SmsReq 短信请求
 type SmsReq struct {
     Phone       string `json:"phone" validate:"required"`       // 手机号

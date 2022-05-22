@@ -12,7 +12,6 @@ import (
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
     "fmt"
-    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/hook"
     "github.com/sony/sonyflake"
 )
@@ -31,29 +30,6 @@ func (DeleteMixin) Fields() []ent.Field {
 func (DeleteMixin) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("deleted_at"),
-    }
-}
-
-// LastModifier 上次修改人
-type LastModifier struct {
-    mixin.Schema
-}
-
-func (LastModifier) Fields() []ent.Field {
-    return []ent.Field{
-        field.JSON("last_modifier", &model.Modifier{}).Optional().Comment("最后修改人"),
-        field.String("remark").Optional().Comment("备注"),
-    }
-}
-
-// Creator 创建人
-type Creator struct {
-    mixin.Schema
-}
-
-func (Creator) Fields() []ent.Field {
-    return []ent.Field{
-        field.JSON("creator", &model.Modifier{}).Immutable().Optional().Comment("创建人"),
     }
 }
 

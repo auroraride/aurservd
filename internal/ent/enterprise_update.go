@@ -141,7 +141,9 @@ func (eu *EnterpriseUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
-	eu.defaults()
+	if err := eu.defaults(); err != nil {
+		return 0, err
+	}
 	if len(eu.hooks) == 0 {
 		affected, err = eu.sqlSave(ctx)
 	} else {
@@ -191,11 +193,15 @@ func (eu *EnterpriseUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (eu *EnterpriseUpdate) defaults() {
+func (eu *EnterpriseUpdate) defaults() error {
 	if _, ok := eu.mutation.UpdatedAt(); !ok {
+		if enterprise.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized enterprise.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := enterprise.UpdateDefaultUpdatedAt()
 		eu.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -466,7 +472,9 @@ func (euo *EnterpriseUpdateOne) Save(ctx context.Context) (*Enterprise, error) {
 		err  error
 		node *Enterprise
 	)
-	euo.defaults()
+	if err := euo.defaults(); err != nil {
+		return nil, err
+	}
 	if len(euo.hooks) == 0 {
 		node, err = euo.sqlSave(ctx)
 	} else {
@@ -522,11 +530,15 @@ func (euo *EnterpriseUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (euo *EnterpriseUpdateOne) defaults() {
+func (euo *EnterpriseUpdateOne) defaults() error {
 	if _, ok := euo.mutation.UpdatedAt(); !ok {
+		if enterprise.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized enterprise.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := enterprise.UpdateDefaultUpdatedAt()
 		euo.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise, err error) {

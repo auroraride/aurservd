@@ -68,6 +68,12 @@ func (cc *CityCreate) SetNillableDeletedAt(t *time.Time) *CityCreate {
 	return cc
 }
 
+// SetCreator sets the "creator" field.
+func (cc *CityCreate) SetCreator(m *model.Modifier) *CityCreate {
+	cc.mutation.SetCreator(m)
+	return cc
+}
+
 // SetLastModifier sets the "last_modifier" field.
 func (cc *CityCreate) SetLastModifier(m *model.Modifier) *CityCreate {
 	cc.mutation.SetLastModifier(m)
@@ -210,7 +216,9 @@ func (cc *CityCreate) Save(ctx context.Context) (*City, error) {
 		err  error
 		node *City
 	)
-	cc.defaults()
+	if err := cc.defaults(); err != nil {
+		return nil, err
+	}
 	if len(cc.hooks) == 0 {
 		if err = cc.check(); err != nil {
 			return nil, err
@@ -275,15 +283,22 @@ func (cc *CityCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (cc *CityCreate) defaults() {
+func (cc *CityCreate) defaults() error {
 	if _, ok := cc.mutation.CreatedAt(); !ok {
+		if city.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized city.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := city.DefaultCreatedAt()
 		cc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := cc.mutation.UpdatedAt(); !ok {
+		if city.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized city.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := city.DefaultUpdatedAt()
 		cc.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -367,6 +382,14 @@ func (cc *CityCreate) createSpec() (*City, *sqlgraph.CreateSpec) {
 			Column: city.FieldDeletedAt,
 		})
 		_node.DeletedAt = &value
+	}
+	if value, ok := cc.mutation.Creator(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: city.FieldCreator,
+		})
+		_node.Creator = value
 	}
 	if value, ok := cc.mutation.LastModifier(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -600,6 +623,24 @@ func (u *CityUpsert) ClearDeletedAt() *CityUpsert {
 	return u
 }
 
+// SetCreator sets the "creator" field.
+func (u *CityUpsert) SetCreator(v *model.Modifier) *CityUpsert {
+	u.Set(city.FieldCreator, v)
+	return u
+}
+
+// UpdateCreator sets the "creator" field to the value that was provided on create.
+func (u *CityUpsert) UpdateCreator() *CityUpsert {
+	u.SetExcluded(city.FieldCreator)
+	return u
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (u *CityUpsert) ClearCreator() *CityUpsert {
+	u.SetNull(city.FieldCreator)
+	return u
+}
+
 // SetLastModifier sets the "last_modifier" field.
 func (u *CityUpsert) SetLastModifier(v *model.Modifier) *CityUpsert {
 	u.Set(city.FieldLastModifier, v)
@@ -717,6 +758,9 @@ func (u *CityUpsertOne) UpdateNewValues() *CityUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(city.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.Creator(); exists {
+			s.SetIgnore(city.FieldCreator)
+		}
 	}))
 	return u
 }
@@ -795,6 +839,27 @@ func (u *CityUpsertOne) UpdateDeletedAt() *CityUpsertOne {
 func (u *CityUpsertOne) ClearDeletedAt() *CityUpsertOne {
 	return u.Update(func(s *CityUpsert) {
 		s.ClearDeletedAt()
+	})
+}
+
+// SetCreator sets the "creator" field.
+func (u *CityUpsertOne) SetCreator(v *model.Modifier) *CityUpsertOne {
+	return u.Update(func(s *CityUpsert) {
+		s.SetCreator(v)
+	})
+}
+
+// UpdateCreator sets the "creator" field to the value that was provided on create.
+func (u *CityUpsertOne) UpdateCreator() *CityUpsertOne {
+	return u.Update(func(s *CityUpsert) {
+		s.UpdateCreator()
+	})
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (u *CityUpsertOne) ClearCreator() *CityUpsertOne {
+	return u.Update(func(s *CityUpsert) {
+		s.ClearCreator()
 	})
 }
 
@@ -1095,6 +1160,9 @@ func (u *CityUpsertBulk) UpdateNewValues() *CityUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(city.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.Creator(); exists {
+				s.SetIgnore(city.FieldCreator)
+			}
 		}
 	}))
 	return u
@@ -1174,6 +1242,27 @@ func (u *CityUpsertBulk) UpdateDeletedAt() *CityUpsertBulk {
 func (u *CityUpsertBulk) ClearDeletedAt() *CityUpsertBulk {
 	return u.Update(func(s *CityUpsert) {
 		s.ClearDeletedAt()
+	})
+}
+
+// SetCreator sets the "creator" field.
+func (u *CityUpsertBulk) SetCreator(v *model.Modifier) *CityUpsertBulk {
+	return u.Update(func(s *CityUpsert) {
+		s.SetCreator(v)
+	})
+}
+
+// UpdateCreator sets the "creator" field to the value that was provided on create.
+func (u *CityUpsertBulk) UpdateCreator() *CityUpsertBulk {
+	return u.Update(func(s *CityUpsert) {
+		s.UpdateCreator()
+	})
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (u *CityUpsertBulk) ClearCreator() *CityUpsertBulk {
+	return u.Update(func(s *CityUpsert) {
+		s.ClearCreator()
 	})
 }
 

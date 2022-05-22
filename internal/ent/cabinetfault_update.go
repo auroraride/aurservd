@@ -243,7 +243,9 @@ func (cfu *CabinetFaultUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
-	cfu.defaults()
+	if err := cfu.defaults(); err != nil {
+		return 0, err
+	}
 	if len(cfu.hooks) == 0 {
 		if err = cfu.check(); err != nil {
 			return 0, err
@@ -299,11 +301,15 @@ func (cfu *CabinetFaultUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (cfu *CabinetFaultUpdate) defaults() {
+func (cfu *CabinetFaultUpdate) defaults() error {
 	if _, ok := cfu.mutation.UpdatedAt(); !ok {
+		if cabinetfault.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cabinetfault.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := cabinetfault.UpdateDefaultUpdatedAt()
 		cfu.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -822,7 +828,9 @@ func (cfuo *CabinetFaultUpdateOne) Save(ctx context.Context) (*CabinetFault, err
 		err  error
 		node *CabinetFault
 	)
-	cfuo.defaults()
+	if err := cfuo.defaults(); err != nil {
+		return nil, err
+	}
 	if len(cfuo.hooks) == 0 {
 		if err = cfuo.check(); err != nil {
 			return nil, err
@@ -884,11 +892,15 @@ func (cfuo *CabinetFaultUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (cfuo *CabinetFaultUpdateOne) defaults() {
+func (cfuo *CabinetFaultUpdateOne) defaults() error {
 	if _, ok := cfuo.mutation.UpdatedAt(); !ok {
+		if cabinetfault.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cabinetfault.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := cabinetfault.UpdateDefaultUpdatedAt()
 		cfuo.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

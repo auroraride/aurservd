@@ -27,8 +27,10 @@ import (
 
 type riderService struct {
     cacheKeyPrefix string
-    ctx            context.Context
-    orm            *ent.RiderClient
+
+    ctx      context.Context
+    orm      *ent.RiderClient
+    modifier *model.Modifier
 }
 
 func NewRider() *riderService {
@@ -37,6 +39,13 @@ func NewRider() *riderService {
         ctx:            context.Background(),
         orm:            ar.Ent.Rider,
     }
+}
+
+func NewRiderWithModifier(m *model.Modifier) *riderService {
+    s := NewRider()
+    s.ctx = context.WithValue(s.ctx, "modifier", m)
+    s.modifier = m
+    return s
 }
 
 // GetRiderById 根据ID获取骑手及其实名状态
@@ -387,18 +396,18 @@ func (s *riderService) Query(id uint64) *ent.Rider {
 }
 
 // Block 封锁/解封骑手账户
-func (s *riderService) Block(m *model.Modifier, req *model.RiderBlockReq) {
+func (s *riderService) Block(req *model.RiderBlockReq) {
     item := s.Query(req.ID)
     if req.Block == item.Blocked {
         snag.Panic("骑手已是封禁状态")
     }
-    _, err := s.orm.UpdateOne(item).SetBlocked(req.Block).SetLastModifier(m).Save(s.ctx)
+    _, err := s.orm.UpdateOne(item).SetBlocked(req.Block).Save(s.ctx)
     if err != nil {
         snag.Panic(err)
     }
     nb := "未封禁"
     bd := "已封禁"
-    ol := logging.CreateOperateLog().SetRef(item).SetModifier(m)
+    ol := logging.CreateOperateLog().SetRef(item).SetModifier(s.modifier)
     if req.Block {
         // 封禁
         ol.SetOperate(logging.OperateRiderBLock).SetDiff(nb, bd)

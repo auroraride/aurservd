@@ -66,6 +66,12 @@ func (cc *ContractCreate) SetNillableDeletedAt(t *time.Time) *ContractCreate {
 	return cc
 }
 
+// SetCreator sets the "creator" field.
+func (cc *ContractCreate) SetCreator(m *model.Modifier) *ContractCreate {
+	cc.mutation.SetCreator(m)
+	return cc
+}
+
 // SetLastModifier sets the "last_modifier" field.
 func (cc *ContractCreate) SetLastModifier(m *model.Modifier) *ContractCreate {
 	cc.mutation.SetLastModifier(m)
@@ -140,7 +146,9 @@ func (cc *ContractCreate) Save(ctx context.Context) (*Contract, error) {
 		err  error
 		node *Contract
 	)
-	cc.defaults()
+	if err := cc.defaults(); err != nil {
+		return nil, err
+	}
 	if len(cc.hooks) == 0 {
 		if err = cc.check(); err != nil {
 			return nil, err
@@ -205,12 +213,18 @@ func (cc *ContractCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (cc *ContractCreate) defaults() {
+func (cc *ContractCreate) defaults() error {
 	if _, ok := cc.mutation.CreatedAt(); !ok {
+		if contract.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized contract.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := contract.DefaultCreatedAt()
 		cc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := cc.mutation.UpdatedAt(); !ok {
+		if contract.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized contract.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := contract.DefaultUpdatedAt()
 		cc.mutation.SetUpdatedAt(v)
 	}
@@ -218,6 +232,7 @@ func (cc *ContractCreate) defaults() {
 		v := contract.DefaultStatus
 		cc.mutation.SetStatus(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -304,6 +319,14 @@ func (cc *ContractCreate) createSpec() (*Contract, *sqlgraph.CreateSpec) {
 			Column: contract.FieldDeletedAt,
 		})
 		_node.DeletedAt = &value
+	}
+	if value, ok := cc.mutation.Creator(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: contract.FieldCreator,
+		})
+		_node.Creator = value
 	}
 	if value, ok := cc.mutation.LastModifier(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -469,6 +492,24 @@ func (u *ContractUpsert) ClearDeletedAt() *ContractUpsert {
 	return u
 }
 
+// SetCreator sets the "creator" field.
+func (u *ContractUpsert) SetCreator(v *model.Modifier) *ContractUpsert {
+	u.Set(contract.FieldCreator, v)
+	return u
+}
+
+// UpdateCreator sets the "creator" field to the value that was provided on create.
+func (u *ContractUpsert) UpdateCreator() *ContractUpsert {
+	u.SetExcluded(contract.FieldCreator)
+	return u
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (u *ContractUpsert) ClearCreator() *ContractUpsert {
+	u.SetNull(contract.FieldCreator)
+	return u
+}
+
 // SetLastModifier sets the "last_modifier" field.
 func (u *ContractUpsert) SetLastModifier(v *model.Modifier) *ContractUpsert {
 	u.Set(contract.FieldLastModifier, v)
@@ -592,6 +633,9 @@ func (u *ContractUpsertOne) UpdateNewValues() *ContractUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(contract.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.Creator(); exists {
+			s.SetIgnore(contract.FieldCreator)
+		}
 	}))
 	return u
 }
@@ -670,6 +714,27 @@ func (u *ContractUpsertOne) UpdateDeletedAt() *ContractUpsertOne {
 func (u *ContractUpsertOne) ClearDeletedAt() *ContractUpsertOne {
 	return u.Update(func(s *ContractUpsert) {
 		s.ClearDeletedAt()
+	})
+}
+
+// SetCreator sets the "creator" field.
+func (u *ContractUpsertOne) SetCreator(v *model.Modifier) *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetCreator(v)
+	})
+}
+
+// UpdateCreator sets the "creator" field to the value that was provided on create.
+func (u *ContractUpsertOne) UpdateCreator() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateCreator()
+	})
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (u *ContractUpsertOne) ClearCreator() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearCreator()
 	})
 }
 
@@ -977,6 +1042,9 @@ func (u *ContractUpsertBulk) UpdateNewValues() *ContractUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(contract.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.Creator(); exists {
+				s.SetIgnore(contract.FieldCreator)
+			}
 		}
 	}))
 	return u
@@ -1056,6 +1124,27 @@ func (u *ContractUpsertBulk) UpdateDeletedAt() *ContractUpsertBulk {
 func (u *ContractUpsertBulk) ClearDeletedAt() *ContractUpsertBulk {
 	return u.Update(func(s *ContractUpsert) {
 		s.ClearDeletedAt()
+	})
+}
+
+// SetCreator sets the "creator" field.
+func (u *ContractUpsertBulk) SetCreator(v *model.Modifier) *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetCreator(v)
+	})
+}
+
+// UpdateCreator sets the "creator" field to the value that was provided on create.
+func (u *ContractUpsertBulk) UpdateCreator() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateCreator()
+	})
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (u *ContractUpsertBulk) ClearCreator() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.ClearCreator()
 	})
 }
 

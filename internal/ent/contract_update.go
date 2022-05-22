@@ -161,7 +161,9 @@ func (cu *ContractUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
-	cu.defaults()
+	if err := cu.defaults(); err != nil {
+		return 0, err
+	}
 	if len(cu.hooks) == 0 {
 		if err = cu.check(); err != nil {
 			return 0, err
@@ -217,11 +219,15 @@ func (cu *ContractUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (cu *ContractUpdate) defaults() {
+func (cu *ContractUpdate) defaults() error {
 	if _, ok := cu.mutation.UpdatedAt(); !ok {
+		if contract.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized contract.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := contract.UpdateDefaultUpdatedAt()
 		cu.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -278,6 +284,12 @@ func (cu *ContractUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: contract.FieldDeletedAt,
+		})
+	}
+	if cu.mutation.CreatorCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: contract.FieldCreator,
 		})
 	}
 	if value, ok := cu.mutation.LastModifier(); ok {
@@ -539,7 +551,9 @@ func (cuo *ContractUpdateOne) Save(ctx context.Context) (*Contract, error) {
 		err  error
 		node *Contract
 	)
-	cuo.defaults()
+	if err := cuo.defaults(); err != nil {
+		return nil, err
+	}
 	if len(cuo.hooks) == 0 {
 		if err = cuo.check(); err != nil {
 			return nil, err
@@ -601,11 +615,15 @@ func (cuo *ContractUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (cuo *ContractUpdateOne) defaults() {
+func (cuo *ContractUpdateOne) defaults() error {
 	if _, ok := cuo.mutation.UpdatedAt(); !ok {
+		if contract.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized contract.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := contract.UpdateDefaultUpdatedAt()
 		cuo.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -679,6 +697,12 @@ func (cuo *ContractUpdateOne) sqlSave(ctx context.Context) (_node *Contract, err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: contract.FieldDeletedAt,
+		})
+	}
+	if cuo.mutation.CreatorCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: contract.FieldCreator,
 		})
 	}
 	if value, ok := cuo.mutation.LastModifier(); ok {

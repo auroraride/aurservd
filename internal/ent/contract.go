@@ -25,6 +25,9 @@ type Contract struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	// Creator holds the value of the "creator" field.
+	// 创建人
+	Creator *model.Modifier `json:"creator,omitempty"`
 	// LastModifier holds the value of the "last_modifier" field.
 	// 最后修改人
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
@@ -79,7 +82,7 @@ func (*Contract) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case contract.FieldLastModifier, contract.FieldFiles:
+		case contract.FieldCreator, contract.FieldLastModifier, contract.FieldFiles:
 			values[i] = new([]byte)
 		case contract.FieldID, contract.FieldStatus, contract.FieldRiderID:
 			values[i] = new(sql.NullInt64)
@@ -126,6 +129,14 @@ func (c *Contract) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				c.DeletedAt = new(time.Time)
 				*c.DeletedAt = value.Time
+			}
+		case contract.FieldCreator:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field creator", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &c.Creator); err != nil {
+					return fmt.Errorf("unmarshal field creator: %w", err)
+				}
 			}
 		case contract.FieldLastModifier:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -214,6 +225,8 @@ func (c *Contract) String() string {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", creator=")
+	builder.WriteString(fmt.Sprintf("%v", c.Creator))
 	builder.WriteString(", last_modifier=")
 	builder.WriteString(fmt.Sprintf("%v", c.LastModifier))
 	builder.WriteString(", remark=")

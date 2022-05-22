@@ -26,6 +26,12 @@ func NewBattery() *batteryService {
     }
 }
 
+func NewBatteryWithModifier(m *model.Modifier) *batteryService {
+    s := NewBattery()
+    s.ctx = context.WithValue(s.ctx, "modifier", m)
+    return s
+}
+
 // ListModels 列举电池型号
 func (s *batteryService) ListModels() (res *model.ItemListRes) {
     res = new(model.ItemListRes)
@@ -40,7 +46,7 @@ func (s *batteryService) ListModels() (res *model.ItemListRes) {
 }
 
 // CreateModel 创建电池型号
-func (s *batteryService) CreateModel(modifier *model.Modifier, req *model.BatteryModelCreateReq) model.BatteryModel {
+func (s *batteryService) CreateModel(req *model.BatteryModelCreateReq) model.BatteryModel {
     // 查找同型号电池是否存在
     if s.orm.QueryNotDeleted().
         Where(batterymodel.Capacity(req.Capacity)).
@@ -53,8 +59,6 @@ func (s *batteryService) CreateModel(modifier *model.Modifier, req *model.Batter
     item := s.orm.Create().
         SetVoltage(req.Voltage).
         SetCapacity(req.Capacity).
-        SetLastModifier(modifier).
-        SetCreator(modifier).
         SaveX(s.ctx)
     return model.BatteryModel{
         ID:       item.ID,

@@ -30,6 +30,12 @@ func NewBranch() *branchService {
     }
 }
 
+func NewBranchWithModifier(m *model.Modifier) *branchService {
+    s := NewBranch()
+    s.ctx = context.WithValue(s.ctx, "modifier", m)
+    return s
+}
+
 // Query 根据ID查询网点
 func (s *branchService) Query(id uint64) *ent.Branch {
     item, err := s.orm.QueryNotDeleted().Where(branch.ID(id)).Only(s.ctx)
@@ -41,7 +47,7 @@ func (s *branchService) Query(id uint64) *ent.Branch {
 
 // Create 新增网点
 // TODO 从结构体新增
-func (s *branchService) Create(req *model.Branch, mod *model.Modifier) {
+func (s *branchService) Create(req *model.Branch) {
     tx, _ := ar.Ent.Tx(s.ctx)
 
     // TODO: 校验城市是否启用
@@ -56,8 +62,6 @@ func (s *branchService) Create(req *model.Branch, mod *model.Modifier) {
             Lat: *req.Lat,
         }).
         SetPhotos(req.Photos).
-        SetLastModifier(mod).
-        SetCreator(mod).
         Save(s.ctx)
     if err != nil {
         _ = tx.Rollback()
@@ -66,7 +70,7 @@ func (s *branchService) Create(req *model.Branch, mod *model.Modifier) {
 
     if len(req.Contracts) > 0 {
         for _, contract := range req.Contracts {
-            s.AddContract(b.ID, contract, mod)
+            s.AddContract(b.ID, contract)
         }
     }
 
@@ -75,7 +79,7 @@ func (s *branchService) Create(req *model.Branch, mod *model.Modifier) {
 
 // AddContract 新增合同
 // TODO 从结构体新增
-func (s *branchService) AddContract(id uint64, req *model.BranchContract, mod *model.Modifier) *ent.BranchContract {
+func (s *branchService) AddContract(id uint64, req *model.BranchContract) *ent.BranchContract {
     return ar.Ent.BranchContract.Create().
         SetBranchID(id).
         SetLandlordName(req.LandlordName).
@@ -92,8 +96,6 @@ func (s *branchService) AddContract(id uint64, req *model.BranchContract, mod *m
         SetEndTime(req.EndTime).
         SetFile(req.File).
         SetSheets(req.Sheets).
-        SetLastModifier(mod).
-        SetCreator(mod).
         SaveX(s.ctx)
 }
 
@@ -143,7 +145,7 @@ func (s *branchService) List(req *model.BranchListReq) (res model.PaginationRes)
 
 // Modify 修改网点
 // TODO 从结构体更新
-func (s *branchService) Modify(req *model.Branch, mod *model.Modifier) {
+func (s *branchService) Modify(req *model.Branch) {
     b := s.orm.QueryNotDeleted().Where(branch.ID(req.ID)).OnlyX(s.ctx)
     if b == nil {
         snag.Panic("网点不存在")
@@ -160,7 +162,6 @@ func (s *branchService) Modify(req *model.Branch, mod *model.Modifier) {
             Lat: *req.Lat,
         }).
         SetPhotos(req.Photos).
-        SetLastModifier(mod).
         SaveX(s.ctx)
 }
 

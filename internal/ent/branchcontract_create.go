@@ -198,7 +198,9 @@ func (bcc *BranchContractCreate) Save(ctx context.Context) (*BranchContract, err
 		err  error
 		node *BranchContract
 	)
-	bcc.defaults()
+	if err := bcc.defaults(); err != nil {
+		return nil, err
+	}
 	if len(bcc.hooks) == 0 {
 		if err = bcc.check(); err != nil {
 			return nil, err
@@ -263,15 +265,22 @@ func (bcc *BranchContractCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (bcc *BranchContractCreate) defaults() {
+func (bcc *BranchContractCreate) defaults() error {
 	if _, ok := bcc.mutation.CreatedAt(); !ok {
+		if branchcontract.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized branchcontract.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := branchcontract.DefaultCreatedAt()
 		bcc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := bcc.mutation.UpdatedAt(); !ok {
+		if branchcontract.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized branchcontract.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := branchcontract.DefaultUpdatedAt()
 		bcc.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

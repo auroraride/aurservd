@@ -26,8 +26,9 @@ import (
 )
 
 type cabinetService struct {
-    ctx context.Context
-    orm *ent.CabinetClient
+    ctx      context.Context
+    orm      *ent.CabinetClient
+    modifier *model.Modifier
 }
 
 func NewCabinet() *cabinetService {
@@ -35,6 +36,13 @@ func NewCabinet() *cabinetService {
         ctx: context.Background(),
         orm: ar.Ent.Cabinet,
     }
+}
+
+func NewCabinetWithModifier(m *model.Modifier) *cabinetService {
+    s := NewCabinet()
+    s.ctx = context.WithValue(s.ctx, "modifier", m)
+    s.modifier = m
+    return s
 }
 
 // QueryOne 查询单个电柜
@@ -47,15 +55,13 @@ func (s *cabinetService) QueryOne(id uint64) *ent.Cabinet {
 }
 
 // CreateCabinet 创建电柜
-func (s *cabinetService) CreateCabinet(modifier *model.Modifier, req *model.CabinetCreateReq) (res *model.CabinetItem) {
+func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.CabinetItem) {
     q := s.orm.Create().
         SetName(req.Name).
         SetSerial(req.Serial).
         SetSn(shortuuid.New()).
         SetStatus(uint(req.Status)).
         SetDoors(req.Doors).
-        SetLastModifier(modifier).
-        SetCreator(modifier).
         SetNillableRemark(req.Remark).
         SetBrand(req.Brand.Value()).
         SetHealth(model.CabinetHealthStatusOffline)
@@ -164,8 +170,8 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
 }
 
 // Delete 删除电柜
-func (s *cabinetService) Delete(modifier *model.Modifier, req *model.CabinetDeleteReq) {
-    s.orm.SoftDeleteOneID(req.ID).SetLastModifier(modifier).SaveX(s.ctx)
+func (s *cabinetService) Delete(req *model.CabinetDeleteReq) {
+    s.orm.SoftDeleteOneID(req.ID).SaveX(s.ctx)
 }
 
 // UpdateStatus 立即更新电柜状态
@@ -196,7 +202,7 @@ func (s *cabinetService) Detail(id uint64) *model.CabinetDetailRes {
 }
 
 // DoorOperate 操作柜门
-func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.CabinetDoorOperateReq) (state bool) {
+func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq) (state bool) {
     opId := shortuuid.New()
     now := time.Now()
     // 查找柜子和仓位
@@ -228,7 +234,7 @@ func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.Cabine
         break
     }
     prov.PrepareRequest()
-    state = prov.DoorOperate(modifier.Name+"-"+opId, item.Serial, op, *req.Index)
+    state = prov.DoorOperate(s.modifier.Name+"-"+opId, item.Serial, op, *req.Index)
     // 如果成功, 重新获取状态更新数据
     if state {
         // 更新仓位备注
@@ -246,9 +252,9 @@ func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.Cabine
                 Contents: logging.GenerateLogContent(&logging.DoorOperateLog{
                     ID:        opId,
                     Brand:     brand.String(),
-                    User:      modifier.Name,
-                    UserID:    modifier.ID,
-                    Phone:     modifier.Phone,
+                    User:      s.modifier.Name,
+                    UserID:    s.modifier.ID,
+                    Phone:     s.modifier.Phone,
                     Serial:    item.Serial,
                     Name:      item.Bin[*req.Index].Name,
                     Operation: req.Operation.String(),
@@ -268,7 +274,7 @@ func (s *cabinetService) DoorOperate(modifier *model.Modifier, req *model.Cabine
 }
 
 // Reboot 重启电柜
-func (s *cabinetService) Reboot(modifier *model.Modifier, req *model.IDPostReq) bool {
+func (s *cabinetService) Reboot(req *model.IDPostReq) bool {
     now := time.Now()
     opId := shortuuid.New()
 
@@ -279,7 +285,7 @@ func (s *cabinetService) Reboot(modifier *model.Modifier, req *model.IDPostReq) 
     var prov provider.Provider
     var state bool
     prov = provider.NewYundong()
-    state = prov.Reboot(modifier.Name+"-"+opId, item.Serial)
+    state = prov.Reboot(s.modifier.Name+"-"+opId, item.Serial)
 
     // 如果成功, 重新获取状态更新数据
     up := ar.Ent.Cabinet.UpdateOne(item).SetHealth(model.CabinetHealthStatusOnline)
@@ -299,9 +305,9 @@ func (s *cabinetService) Reboot(modifier *model.Modifier, req *model.IDPostReq) 
                 Contents: logging.GenerateLogContent(&logging.DoorOperateLog{
                     ID:        opId,
                     Brand:     brand.String(),
-                    User:      modifier.Name,
-                    UserID:    modifier.ID,
-                    Phone:     modifier.Phone,
+                    User:      s.modifier.Name,
+                    UserID:    s.modifier.ID,
+                    Phone:     s.modifier.Phone,
                     Serial:    item.Serial,
                     Operation: "重启",
                     Success:   state,

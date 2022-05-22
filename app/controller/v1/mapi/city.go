@@ -48,6 +48,6 @@ func (*city) Modify(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CityModifyReq](c)
 
     return ctx.SendResponse(
-        model.CityModifyRes{Open: service.NewCity().Modify(req, ctx.Modifier)},
+        model.CityModifyRes{Open: service.NewCityWithModifier(ctx.Modifier).Modify(req)},
     )
 }

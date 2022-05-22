@@ -22,8 +22,9 @@ import (
 type managerService struct {
     cacheKeyPrefix string
 
-    orm *ent.ManagerClient
-    ctx context.Context
+    orm      *ent.ManagerClient
+    ctx      context.Context
+    modifier *model.Modifier
 }
 
 func NewManager() *managerService {
@@ -34,8 +35,15 @@ func NewManager() *managerService {
     }
 }
 
-// Add 新增管理员
-func (s *managerService) Add(req *model.ManagerAddReq) error {
+func NewManagerWithModifier(m *model.Modifier) *managerService {
+    s := NewManager()
+    s.ctx = context.WithValue(s.ctx, "modifier", m)
+    s.modifier = m
+    return s
+}
+
+// Create 新增管理员
+func (s *managerService) Create(req *model.ManagerCreateReq) error {
     if s.orm.QueryNotDeleted().Where(manager.Phone(req.Phone)).ExistX(s.ctx) {
         return errors.New("用户已存在")
     }

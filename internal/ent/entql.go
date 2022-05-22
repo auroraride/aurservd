@@ -181,6 +181,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			city.FieldCreatedAt:    {Type: field.TypeTime, Column: city.FieldCreatedAt},
 			city.FieldUpdatedAt:    {Type: field.TypeTime, Column: city.FieldUpdatedAt},
 			city.FieldDeletedAt:    {Type: field.TypeTime, Column: city.FieldDeletedAt},
+			city.FieldCreator:      {Type: field.TypeJSON, Column: city.FieldCreator},
 			city.FieldLastModifier: {Type: field.TypeJSON, Column: city.FieldLastModifier},
 			city.FieldRemark:       {Type: field.TypeString, Column: city.FieldRemark},
 			city.FieldOpen:         {Type: field.TypeBool, Column: city.FieldOpen},
@@ -203,6 +204,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			contract.FieldCreatedAt:    {Type: field.TypeTime, Column: contract.FieldCreatedAt},
 			contract.FieldUpdatedAt:    {Type: field.TypeTime, Column: contract.FieldUpdatedAt},
 			contract.FieldDeletedAt:    {Type: field.TypeTime, Column: contract.FieldDeletedAt},
+			contract.FieldCreator:      {Type: field.TypeJSON, Column: contract.FieldCreator},
 			contract.FieldLastModifier: {Type: field.TypeJSON, Column: contract.FieldLastModifier},
 			contract.FieldRemark:       {Type: field.TypeString, Column: contract.FieldRemark},
 			contract.FieldStatus:       {Type: field.TypeUint8, Column: contract.FieldStatus},
@@ -246,6 +248,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			manager.FieldCreatedAt:    {Type: field.TypeTime, Column: manager.FieldCreatedAt},
 			manager.FieldUpdatedAt:    {Type: field.TypeTime, Column: manager.FieldUpdatedAt},
 			manager.FieldDeletedAt:    {Type: field.TypeTime, Column: manager.FieldDeletedAt},
+			manager.FieldCreator:      {Type: field.TypeJSON, Column: manager.FieldCreator},
 			manager.FieldLastModifier: {Type: field.TypeJSON, Column: manager.FieldLastModifier},
 			manager.FieldRemark:       {Type: field.TypeString, Column: manager.FieldRemark},
 			manager.FieldPhone:        {Type: field.TypeString, Column: manager.FieldPhone},
@@ -268,6 +271,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			person.FieldCreatedAt:      {Type: field.TypeTime, Column: person.FieldCreatedAt},
 			person.FieldUpdatedAt:      {Type: field.TypeTime, Column: person.FieldUpdatedAt},
 			person.FieldDeletedAt:      {Type: field.TypeTime, Column: person.FieldDeletedAt},
+			person.FieldCreator:        {Type: field.TypeJSON, Column: person.FieldCreator},
 			person.FieldLastModifier:   {Type: field.TypeJSON, Column: person.FieldLastModifier},
 			person.FieldRemark:         {Type: field.TypeString, Column: person.FieldRemark},
 			person.FieldStatus:         {Type: field.TypeUint8, Column: person.FieldStatus},
@@ -322,6 +326,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldCreatedAt:      {Type: field.TypeTime, Column: rider.FieldCreatedAt},
 			rider.FieldUpdatedAt:      {Type: field.TypeTime, Column: rider.FieldUpdatedAt},
 			rider.FieldDeletedAt:      {Type: field.TypeTime, Column: rider.FieldDeletedAt},
+			rider.FieldCreator:        {Type: field.TypeJSON, Column: rider.FieldCreator},
 			rider.FieldLastModifier:   {Type: field.TypeJSON, Column: rider.FieldLastModifier},
 			rider.FieldRemark:         {Type: field.TypeString, Column: rider.FieldRemark},
 			rider.FieldPersonID:       {Type: field.TypeUint64, Column: rider.FieldPersonID},
@@ -1583,6 +1588,11 @@ func (f *CityFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(city.FieldDeletedAt))
 }
 
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *CityFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(city.FieldCreator))
+}
+
 // WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
 func (f *CityFilter) WhereLastModifier(p entql.BytesP) {
 	f.Where(p.Field(city.FieldLastModifier))
@@ -1736,6 +1746,11 @@ func (f *ContractFilter) WhereUpdatedAt(p entql.TimeP) {
 // WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
 func (f *ContractFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(contract.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *ContractFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(contract.FieldCreator))
 }
 
 // WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
@@ -1931,6 +1946,11 @@ func (f *ManagerFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(manager.FieldDeletedAt))
 }
 
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *ManagerFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(manager.FieldCreator))
+}
+
 // WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
 func (f *ManagerFilter) WhereLastModifier(p entql.BytesP) {
 	f.Where(p.Field(manager.FieldLastModifier))
@@ -2014,6 +2034,11 @@ func (f *PersonFilter) WhereUpdatedAt(p entql.TimeP) {
 // WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
 func (f *PersonFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(person.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *PersonFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(person.FieldCreator))
 }
 
 // WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
@@ -2276,6 +2301,11 @@ func (f *RiderFilter) WhereUpdatedAt(p entql.TimeP) {
 // WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
 func (f *RiderFilter) WhereDeletedAt(p entql.TimeP) {
 	f.Where(p.Field(rider.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *RiderFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(rider.FieldCreator))
 }
 
 // WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.

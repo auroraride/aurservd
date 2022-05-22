@@ -136,7 +136,9 @@ func (mu *ManagerUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
-	mu.defaults()
+	if err := mu.defaults(); err != nil {
+		return 0, err
+	}
 	if len(mu.hooks) == 0 {
 		if err = mu.check(); err != nil {
 			return 0, err
@@ -192,11 +194,15 @@ func (mu *ManagerUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (mu *ManagerUpdate) defaults() {
+func (mu *ManagerUpdate) defaults() error {
 	if _, ok := mu.mutation.UpdatedAt(); !ok {
+		if manager.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized manager.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := manager.UpdateDefaultUpdatedAt()
 		mu.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -250,6 +256,12 @@ func (mu *ManagerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: manager.FieldDeletedAt,
+		})
+	}
+	if mu.mutation.CreatorCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: manager.FieldCreator,
 		})
 	}
 	if value, ok := mu.mutation.LastModifier(); ok {
@@ -445,7 +457,9 @@ func (muo *ManagerUpdateOne) Save(ctx context.Context) (*Manager, error) {
 		err  error
 		node *Manager
 	)
-	muo.defaults()
+	if err := muo.defaults(); err != nil {
+		return nil, err
+	}
 	if len(muo.hooks) == 0 {
 		if err = muo.check(); err != nil {
 			return nil, err
@@ -507,11 +521,15 @@ func (muo *ManagerUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (muo *ManagerUpdateOne) defaults() {
+func (muo *ManagerUpdateOne) defaults() error {
 	if _, ok := muo.mutation.UpdatedAt(); !ok {
+		if manager.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized manager.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := manager.UpdateDefaultUpdatedAt()
 		muo.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -582,6 +600,12 @@ func (muo *ManagerUpdateOne) sqlSave(ctx context.Context) (_node *Manager, err e
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: manager.FieldDeletedAt,
+		})
+	}
+	if muo.mutation.CreatorCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: manager.FieldCreator,
 		})
 	}
 	if value, ok := muo.mutation.LastModifier(); ok {

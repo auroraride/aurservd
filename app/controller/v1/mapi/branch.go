@@ -57,7 +57,7 @@ func (*branch) Selector(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*branch) Create(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.Branch](c)
-    service.NewBranch().Create(req, ctx.Modifier)
+    service.NewBranchWithModifier(ctx.Modifier).Create(req)
     return ctx.SendResponse()
 }
 
@@ -74,7 +74,7 @@ func (*branch) Create(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*branch) Modify(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.Branch](c)
-    service.NewBranch().Modify(req, ctx.Modifier)
+    service.NewBranchWithModifier(ctx.Modifier).Modify(req)
     return ctx.SendResponse()
 }
 
@@ -91,6 +91,6 @@ func (*branch) Modify(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*branch) AddContract(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.BranchContract](c)
-    service.NewBranch().AddContract(req.BranchID, req, ctx.Modifier)
+    service.NewBranchWithModifier(ctx.Modifier).AddContract(req.BranchID, req)
     return ctx.SendResponse()
 }

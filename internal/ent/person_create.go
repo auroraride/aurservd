@@ -66,6 +66,12 @@ func (pc *PersonCreate) SetNillableDeletedAt(t *time.Time) *PersonCreate {
 	return pc
 }
 
+// SetCreator sets the "creator" field.
+func (pc *PersonCreate) SetCreator(m *model.Modifier) *PersonCreate {
+	pc.mutation.SetCreator(m)
+	return pc
+}
+
 // SetLastModifier sets the "last_modifier" field.
 func (pc *PersonCreate) SetLastModifier(m *model.Modifier) *PersonCreate {
 	pc.mutation.SetLastModifier(m)
@@ -204,7 +210,9 @@ func (pc *PersonCreate) Save(ctx context.Context) (*Person, error) {
 		err  error
 		node *Person
 	)
-	pc.defaults()
+	if err := pc.defaults(); err != nil {
+		return nil, err
+	}
 	if len(pc.hooks) == 0 {
 		if err = pc.check(); err != nil {
 			return nil, err
@@ -269,12 +277,18 @@ func (pc *PersonCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (pc *PersonCreate) defaults() {
+func (pc *PersonCreate) defaults() error {
 	if _, ok := pc.mutation.CreatedAt(); !ok {
+		if person.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized person.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := person.DefaultCreatedAt()
 		pc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := pc.mutation.UpdatedAt(); !ok {
+		if person.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized person.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := person.DefaultUpdatedAt()
 		pc.mutation.SetUpdatedAt(v)
 	}
@@ -290,6 +304,7 @@ func (pc *PersonCreate) defaults() {
 		v := person.DefaultIDCardType
 		pc.mutation.SetIDCardType(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -385,6 +400,14 @@ func (pc *PersonCreate) createSpec() (*Person, *sqlgraph.CreateSpec) {
 			Column: person.FieldDeletedAt,
 		})
 		_node.DeletedAt = &value
+	}
+	if value, ok := pc.mutation.Creator(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: person.FieldCreator,
+		})
+		_node.Creator = value
 	}
 	if value, ok := pc.mutation.LastModifier(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -597,6 +620,24 @@ func (u *PersonUpsert) ClearDeletedAt() *PersonUpsert {
 	return u
 }
 
+// SetCreator sets the "creator" field.
+func (u *PersonUpsert) SetCreator(v *model.Modifier) *PersonUpsert {
+	u.Set(person.FieldCreator, v)
+	return u
+}
+
+// UpdateCreator sets the "creator" field to the value that was provided on create.
+func (u *PersonUpsert) UpdateCreator() *PersonUpsert {
+	u.SetExcluded(person.FieldCreator)
+	return u
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (u *PersonUpsert) ClearCreator() *PersonUpsert {
+	u.SetNull(person.FieldCreator)
+	return u
+}
+
 // SetLastModifier sets the "last_modifier" field.
 func (u *PersonUpsert) SetLastModifier(v *model.Modifier) *PersonUpsert {
 	u.Set(person.FieldLastModifier, v)
@@ -792,6 +833,9 @@ func (u *PersonUpsertOne) UpdateNewValues() *PersonUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(person.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.Creator(); exists {
+			s.SetIgnore(person.FieldCreator)
+		}
 	}))
 	return u
 }
@@ -870,6 +914,27 @@ func (u *PersonUpsertOne) UpdateDeletedAt() *PersonUpsertOne {
 func (u *PersonUpsertOne) ClearDeletedAt() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
 		s.ClearDeletedAt()
+	})
+}
+
+// SetCreator sets the "creator" field.
+func (u *PersonUpsertOne) SetCreator(v *model.Modifier) *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetCreator(v)
+	})
+}
+
+// UpdateCreator sets the "creator" field to the value that was provided on create.
+func (u *PersonUpsertOne) UpdateCreator() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateCreator()
+	})
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (u *PersonUpsertOne) ClearCreator() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearCreator()
 	})
 }
 
@@ -1261,6 +1326,9 @@ func (u *PersonUpsertBulk) UpdateNewValues() *PersonUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(person.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.Creator(); exists {
+				s.SetIgnore(person.FieldCreator)
+			}
 		}
 	}))
 	return u
@@ -1340,6 +1408,27 @@ func (u *PersonUpsertBulk) UpdateDeletedAt() *PersonUpsertBulk {
 func (u *PersonUpsertBulk) ClearDeletedAt() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
 		s.ClearDeletedAt()
+	})
+}
+
+// SetCreator sets the "creator" field.
+func (u *PersonUpsertBulk) SetCreator(v *model.Modifier) *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.SetCreator(v)
+	})
+}
+
+// UpdateCreator sets the "creator" field to the value that was provided on create.
+func (u *PersonUpsertBulk) UpdateCreator() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.UpdateCreator()
+	})
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (u *PersonUpsertBulk) ClearCreator() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearCreator()
 	})
 }
 

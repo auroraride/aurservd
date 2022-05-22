@@ -140,7 +140,9 @@ func (sc *StoreCreate) Save(ctx context.Context) (*Store, error) {
 		err  error
 		node *Store
 	)
-	sc.defaults()
+	if err := sc.defaults(); err != nil {
+		return nil, err
+	}
 	if len(sc.hooks) == 0 {
 		if err = sc.check(); err != nil {
 			return nil, err
@@ -205,12 +207,18 @@ func (sc *StoreCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (sc *StoreCreate) defaults() {
+func (sc *StoreCreate) defaults() error {
 	if _, ok := sc.mutation.CreatedAt(); !ok {
+		if store.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized store.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := store.DefaultCreatedAt()
 		sc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := sc.mutation.UpdatedAt(); !ok {
+		if store.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized store.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := store.DefaultUpdatedAt()
 		sc.mutation.SetUpdatedAt(v)
 	}
@@ -218,6 +226,7 @@ func (sc *StoreCreate) defaults() {
 		v := store.DefaultStatus
 		sc.mutation.SetStatus(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

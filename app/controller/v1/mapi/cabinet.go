@@ -30,7 +30,7 @@ func (*cabinet) Create(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetCreateReq](c)
 
     return ctx.SendResponse(
-        model.ItemRes{Item: service.NewCabinet().CreateCabinet(ctx.Modifier, req)},
+        model.ItemRes{Item: service.NewCabinetWithModifier(ctx.Modifier).CreateCabinet(req)},
     )
 }
 
@@ -62,7 +62,7 @@ func (*cabinet) Query(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Modify(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetModifyReq](c)
-    service.NewCabinet().Modify(req)
+    service.NewCabinetWithModifier(ctx.Modifier).Modify(req)
     return ctx.SendResponse()
 }
 
@@ -78,7 +78,7 @@ func (*cabinet) Modify(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Delete(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetDeleteReq](c)
-    service.NewCabinet().Delete(ctx.Modifier, req)
+    service.NewCabinetWithModifier(ctx.Modifier).Delete(req)
 
     return ctx.SendResponse()
 }
@@ -111,7 +111,7 @@ func (*cabinet) Detail(c echo.Context) (err error) {
 func (*cabinet) DoorOperate(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetDoorOperateReq](c)
     return ctx.SendResponse(
-        model.StatusResponse{Status: service.NewCabinet().DoorOperate(ctx.Modifier, req)},
+        model.StatusResponse{Status: service.NewCabinetWithModifier(ctx.Modifier).DoorOperate(req)},
     )
 }
 
@@ -128,7 +128,7 @@ func (*cabinet) DoorOperate(c echo.Context) (err error) {
 func (*cabinet) Reboot(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.IDPostReq](c)
     return ctx.SendResponse(
-        model.StatusResponse{Status: service.NewCabinet().Reboot(ctx.Modifier, req)},
+        model.StatusResponse{Status: service.NewCabinetWithModifier(ctx.Modifier).Reboot(req)},
     )
 }
 
@@ -162,6 +162,6 @@ func (*cabinet) Fault(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) FaultDeal(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetFaultDealReq](c)
-    service.NewCabinetFault().Deal(ctx.Modifier, req)
+    service.NewCabinetFaultWithModifier(ctx.Modifier).Deal(req)
     return ctx.SendResponse()
 }

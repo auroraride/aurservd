@@ -19,8 +19,9 @@ import (
 )
 
 type planService struct {
-    ctx context.Context
-    orm *ent.PlanClient
+    ctx      context.Context
+    orm      *ent.PlanClient
+    modifier *model.Modifier
 }
 
 func NewPlan() *planService {
@@ -28,6 +29,13 @@ func NewPlan() *planService {
         ctx: context.Background(),
         orm: ar.Ent.Plan,
     }
+}
+
+func NewPlanWithModifier(m *model.Modifier) *planService {
+    s := NewPlan()
+    s.ctx = context.WithValue(s.ctx, "modifier", m)
+    s.modifier = m
+    return s
 }
 
 // Query 查找骑士卡
@@ -40,7 +48,7 @@ func (s *planService) Query(id uint64) *ent.Plan {
 }
 
 // CreatePlan 创建骑士卡
-func (s *planService) CreatePlan(m *model.Modifier, req *model.PlanCreateReq) {
+func (s *planService) CreatePlan(req *model.PlanCreateReq) {
     start, _ := time.Parse(carbon.DateLayout, req.Start)
     end, _ := time.Parse(carbon.DateLayout, req.End)
     s.orm.Create().
@@ -53,20 +61,18 @@ func (s *planService) CreatePlan(m *model.Modifier, req *model.PlanCreateReq) {
         SetName(req.Name).
         SetPrice(req.Price).
         SetCommission(req.Commission).
-        SetLastModifier(m).
         SaveX(s.ctx)
 }
 
 // UpdateEnable 修改骑士卡状态
-func (s *planService) UpdateEnable(m *model.Modifier, req *model.PlanEnableModifyReq) {
+func (s *planService) UpdateEnable(req *model.PlanEnableModifyReq) {
     item := s.Query(req.ID)
-    s.orm.UpdateOne(item).SetEnable(*req.Enable).SetLastModifier(m).SaveX(s.ctx)
+    s.orm.UpdateOne(item).SetEnable(*req.Enable).SaveX(s.ctx)
 }
 
 // Delete 软删除骑士卡
-func (s *planService) Delete(m *model.Modifier, req *model.IDParamReq) {
-    item := s.Query(req.ID)
-    s.orm.UpdateOne(item).SetDeletedAt(time.Now()).SetLastModifier(m).SaveX(s.ctx)
+func (s *planService) Delete(req *model.IDParamReq) {
+    s.orm.SoftDeleteOne(s.Query(req.ID)).SaveX(s.ctx)
 }
 
 // List 列举骑士卡

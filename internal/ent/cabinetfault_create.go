@@ -198,7 +198,9 @@ func (cfc *CabinetFaultCreate) Save(ctx context.Context) (*CabinetFault, error) 
 		err  error
 		node *CabinetFault
 	)
-	cfc.defaults()
+	if err := cfc.defaults(); err != nil {
+		return nil, err
+	}
 	if len(cfc.hooks) == 0 {
 		if err = cfc.check(); err != nil {
 			return nil, err
@@ -263,12 +265,18 @@ func (cfc *CabinetFaultCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (cfc *CabinetFaultCreate) defaults() {
+func (cfc *CabinetFaultCreate) defaults() error {
 	if _, ok := cfc.mutation.CreatedAt(); !ok {
+		if cabinetfault.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cabinetfault.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := cabinetfault.DefaultCreatedAt()
 		cfc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := cfc.mutation.UpdatedAt(); !ok {
+		if cabinetfault.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cabinetfault.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := cabinetfault.DefaultUpdatedAt()
 		cfc.mutation.SetUpdatedAt(v)
 	}
@@ -276,6 +284,7 @@ func (cfc *CabinetFaultCreate) defaults() {
 		v := cabinetfault.DefaultStatus
 		cfc.mutation.SetStatus(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

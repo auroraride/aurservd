@@ -146,7 +146,9 @@ func (bmc *BatteryModelCreate) Save(ctx context.Context) (*BatteryModel, error) 
 		err  error
 		node *BatteryModel
 	)
-	bmc.defaults()
+	if err := bmc.defaults(); err != nil {
+		return nil, err
+	}
 	if len(bmc.hooks) == 0 {
 		if err = bmc.check(); err != nil {
 			return nil, err
@@ -211,15 +213,22 @@ func (bmc *BatteryModelCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (bmc *BatteryModelCreate) defaults() {
+func (bmc *BatteryModelCreate) defaults() error {
 	if _, ok := bmc.mutation.CreatedAt(); !ok {
+		if batterymodel.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized batterymodel.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := batterymodel.DefaultCreatedAt()
 		bmc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := bmc.mutation.UpdatedAt(); !ok {
+		if batterymodel.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized batterymodel.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := batterymodel.DefaultUpdatedAt()
 		bmc.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

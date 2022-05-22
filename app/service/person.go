@@ -16,8 +16,9 @@ import (
 )
 
 type personService struct {
-    ctx context.Context
-    orm *ent.PersonClient
+    ctx      context.Context
+    orm      *ent.PersonClient
+    modifier *model.Modifier
 }
 
 func NewPerson() *personService {
@@ -25,6 +26,13 @@ func NewPerson() *personService {
         ctx: context.Background(),
         orm: ar.Ent.Person,
     }
+}
+
+func NewPersonWithModifier(m *model.Modifier) *personService {
+    s := NewPerson()
+    s.ctx = context.WithValue(s.ctx, "modifier", m)
+    s.modifier = m
+    return s
 }
 
 func (s *personService) Query(id uint64) *ent.Person {
@@ -36,18 +44,18 @@ func (s *personService) Query(id uint64) *ent.Person {
 }
 
 // Ban 封禁或取消封禁
-func (s *personService) Ban(m *model.Modifier, req *model.PersonBanReq) {
+func (s *personService) Ban(req *model.PersonBanReq) {
     item := s.Query(req.ID)
     if req.Ban == item.Banned {
         snag.Panic("骑手已是封禁状态")
     }
-    _, err := s.orm.UpdateOne(item).SetBanned(req.Ban).SetLastModifier(m).Save(s.ctx)
+    _, err := s.orm.UpdateOne(item).SetBanned(req.Ban).Save(s.ctx)
     if err != nil {
         snag.Panic(err)
     }
     nb := "未封禁"
     bd := "已封禁"
-    ol := logging.CreateOperateLog().SetRef(item).SetModifier(m)
+    ol := logging.CreateOperateLog().SetRef(item).SetModifier(s.modifier)
     if req.Ban {
         // 封禁
         ol.SetOperate(logging.OperatePersonBan).SetDiff(nb, bd)

@@ -7406,6 +7406,7 @@ type CityMutation struct {
 	created_at      *time.Time
 	updated_at      *time.Time
 	deleted_at      *time.Time
+	creator         **model.Modifier
 	last_modifier   **model.Modifier
 	remark          *string
 	open            *bool
@@ -7654,6 +7655,55 @@ func (m *CityMutation) DeletedAtCleared() bool {
 func (m *CityMutation) ResetDeletedAt() {
 	m.deleted_at = nil
 	delete(m.clearedFields, city.FieldDeletedAt)
+}
+
+// SetCreator sets the "creator" field.
+func (m *CityMutation) SetCreator(value *model.Modifier) {
+	m.creator = &value
+}
+
+// Creator returns the value of the "creator" field in the mutation.
+func (m *CityMutation) Creator() (r *model.Modifier, exists bool) {
+	v := m.creator
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreator returns the old "creator" field's value of the City entity.
+// If the City object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CityMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreator requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
+	}
+	return oldValue.Creator, nil
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (m *CityMutation) ClearCreator() {
+	m.creator = nil
+	m.clearedFields[city.FieldCreator] = struct{}{}
+}
+
+// CreatorCleared returns if the "creator" field was cleared in this mutation.
+func (m *CityMutation) CreatorCleared() bool {
+	_, ok := m.clearedFields[city.FieldCreator]
+	return ok
+}
+
+// ResetCreator resets all changes to the "creator" field.
+func (m *CityMutation) ResetCreator() {
+	m.creator = nil
+	delete(m.clearedFields, city.FieldCreator)
 }
 
 // SetLastModifier sets the "last_modifier" field.
@@ -8185,7 +8235,7 @@ func (m *CityMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CityMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, city.FieldCreatedAt)
 	}
@@ -8194,6 +8244,9 @@ func (m *CityMutation) Fields() []string {
 	}
 	if m.deleted_at != nil {
 		fields = append(fields, city.FieldDeletedAt)
+	}
+	if m.creator != nil {
+		fields = append(fields, city.FieldCreator)
 	}
 	if m.last_modifier != nil {
 		fields = append(fields, city.FieldLastModifier)
@@ -8227,6 +8280,8 @@ func (m *CityMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case city.FieldDeletedAt:
 		return m.DeletedAt()
+	case city.FieldCreator:
+		return m.Creator()
 	case city.FieldLastModifier:
 		return m.LastModifier()
 	case city.FieldRemark:
@@ -8254,6 +8309,8 @@ func (m *CityMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldUpdatedAt(ctx)
 	case city.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
+	case city.FieldCreator:
+		return m.OldCreator(ctx)
 	case city.FieldLastModifier:
 		return m.OldLastModifier(ctx)
 	case city.FieldRemark:
@@ -8295,6 +8352,13 @@ func (m *CityMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
+		return nil
+	case city.FieldCreator:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreator(v)
 		return nil
 	case city.FieldLastModifier:
 		v, ok := value.(*model.Modifier)
@@ -8374,6 +8438,9 @@ func (m *CityMutation) ClearedFields() []string {
 	if m.FieldCleared(city.FieldDeletedAt) {
 		fields = append(fields, city.FieldDeletedAt)
 	}
+	if m.FieldCleared(city.FieldCreator) {
+		fields = append(fields, city.FieldCreator)
+	}
 	if m.FieldCleared(city.FieldLastModifier) {
 		fields = append(fields, city.FieldLastModifier)
 	}
@@ -8403,6 +8470,9 @@ func (m *CityMutation) ClearField(name string) error {
 	case city.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
+	case city.FieldCreator:
+		m.ClearCreator()
+		return nil
 	case city.FieldLastModifier:
 		m.ClearLastModifier()
 		return nil
@@ -8431,6 +8501,9 @@ func (m *CityMutation) ResetField(name string) error {
 		return nil
 	case city.FieldDeletedAt:
 		m.ResetDeletedAt()
+		return nil
+	case city.FieldCreator:
+		m.ResetCreator()
 		return nil
 	case city.FieldLastModifier:
 		m.ResetLastModifier()
@@ -8643,6 +8716,7 @@ type ContractMutation struct {
 	created_at    *time.Time
 	updated_at    *time.Time
 	deleted_at    *time.Time
+	creator       **model.Modifier
 	last_modifier **model.Modifier
 	remark        *string
 	status        *uint8
@@ -8875,6 +8949,55 @@ func (m *ContractMutation) DeletedAtCleared() bool {
 func (m *ContractMutation) ResetDeletedAt() {
 	m.deleted_at = nil
 	delete(m.clearedFields, contract.FieldDeletedAt)
+}
+
+// SetCreator sets the "creator" field.
+func (m *ContractMutation) SetCreator(value *model.Modifier) {
+	m.creator = &value
+}
+
+// Creator returns the value of the "creator" field in the mutation.
+func (m *ContractMutation) Creator() (r *model.Modifier, exists bool) {
+	v := m.creator
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreator returns the old "creator" field's value of the Contract entity.
+// If the Contract object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ContractMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreator requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
+	}
+	return oldValue.Creator, nil
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (m *ContractMutation) ClearCreator() {
+	m.creator = nil
+	m.clearedFields[contract.FieldCreator] = struct{}{}
+}
+
+// CreatorCleared returns if the "creator" field was cleared in this mutation.
+func (m *ContractMutation) CreatorCleared() bool {
+	_, ok := m.clearedFields[contract.FieldCreator]
+	return ok
+}
+
+// ResetCreator resets all changes to the "creator" field.
+func (m *ContractMutation) ResetCreator() {
+	m.creator = nil
+	delete(m.clearedFields, contract.FieldCreator)
 }
 
 // SetLastModifier sets the "last_modifier" field.
@@ -9233,7 +9356,7 @@ func (m *ContractMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ContractMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, contract.FieldCreatedAt)
 	}
@@ -9242,6 +9365,9 @@ func (m *ContractMutation) Fields() []string {
 	}
 	if m.deleted_at != nil {
 		fields = append(fields, contract.FieldDeletedAt)
+	}
+	if m.creator != nil {
+		fields = append(fields, contract.FieldCreator)
 	}
 	if m.last_modifier != nil {
 		fields = append(fields, contract.FieldLastModifier)
@@ -9278,6 +9404,8 @@ func (m *ContractMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case contract.FieldDeletedAt:
 		return m.DeletedAt()
+	case contract.FieldCreator:
+		return m.Creator()
 	case contract.FieldLastModifier:
 		return m.LastModifier()
 	case contract.FieldRemark:
@@ -9307,6 +9435,8 @@ func (m *ContractMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldUpdatedAt(ctx)
 	case contract.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
+	case contract.FieldCreator:
+		return m.OldCreator(ctx)
 	case contract.FieldLastModifier:
 		return m.OldLastModifier(ctx)
 	case contract.FieldRemark:
@@ -9350,6 +9480,13 @@ func (m *ContractMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
+		return nil
+	case contract.FieldCreator:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreator(v)
 		return nil
 	case contract.FieldLastModifier:
 		v, ok := value.(*model.Modifier)
@@ -9448,6 +9585,9 @@ func (m *ContractMutation) ClearedFields() []string {
 	if m.FieldCleared(contract.FieldDeletedAt) {
 		fields = append(fields, contract.FieldDeletedAt)
 	}
+	if m.FieldCleared(contract.FieldCreator) {
+		fields = append(fields, contract.FieldCreator)
+	}
 	if m.FieldCleared(contract.FieldLastModifier) {
 		fields = append(fields, contract.FieldLastModifier)
 	}
@@ -9474,6 +9614,9 @@ func (m *ContractMutation) ClearField(name string) error {
 	case contract.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
+	case contract.FieldCreator:
+		m.ClearCreator()
+		return nil
 	case contract.FieldLastModifier:
 		m.ClearLastModifier()
 		return nil
@@ -9499,6 +9642,9 @@ func (m *ContractMutation) ResetField(name string) error {
 		return nil
 	case contract.FieldDeletedAt:
 		m.ResetDeletedAt()
+		return nil
+	case contract.FieldCreator:
+		m.ResetCreator()
 		return nil
 	case contract.FieldLastModifier:
 		m.ResetLastModifier()
@@ -10417,6 +10563,7 @@ type ManagerMutation struct {
 	created_at     *time.Time
 	updated_at     *time.Time
 	deleted_at     *time.Time
+	creator        **model.Modifier
 	last_modifier  **model.Modifier
 	remark         *string
 	phone          *string
@@ -10646,6 +10793,55 @@ func (m *ManagerMutation) DeletedAtCleared() bool {
 func (m *ManagerMutation) ResetDeletedAt() {
 	m.deleted_at = nil
 	delete(m.clearedFields, manager.FieldDeletedAt)
+}
+
+// SetCreator sets the "creator" field.
+func (m *ManagerMutation) SetCreator(value *model.Modifier) {
+	m.creator = &value
+}
+
+// Creator returns the value of the "creator" field in the mutation.
+func (m *ManagerMutation) Creator() (r *model.Modifier, exists bool) {
+	v := m.creator
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreator returns the old "creator" field's value of the Manager entity.
+// If the Manager object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ManagerMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreator requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
+	}
+	return oldValue.Creator, nil
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (m *ManagerMutation) ClearCreator() {
+	m.creator = nil
+	m.clearedFields[manager.FieldCreator] = struct{}{}
+}
+
+// CreatorCleared returns if the "creator" field was cleared in this mutation.
+func (m *ManagerMutation) CreatorCleared() bool {
+	_, ok := m.clearedFields[manager.FieldCreator]
+	return ok
+}
+
+// ResetCreator resets all changes to the "creator" field.
+func (m *ManagerMutation) ResetCreator() {
+	m.creator = nil
+	delete(m.clearedFields, manager.FieldCreator)
 }
 
 // SetLastModifier sets the "last_modifier" field.
@@ -10922,7 +11118,7 @@ func (m *ManagerMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ManagerMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, manager.FieldCreatedAt)
 	}
@@ -10931,6 +11127,9 @@ func (m *ManagerMutation) Fields() []string {
 	}
 	if m.deleted_at != nil {
 		fields = append(fields, manager.FieldDeletedAt)
+	}
+	if m.creator != nil {
+		fields = append(fields, manager.FieldCreator)
 	}
 	if m.last_modifier != nil {
 		fields = append(fields, manager.FieldLastModifier)
@@ -10964,6 +11163,8 @@ func (m *ManagerMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case manager.FieldDeletedAt:
 		return m.DeletedAt()
+	case manager.FieldCreator:
+		return m.Creator()
 	case manager.FieldLastModifier:
 		return m.LastModifier()
 	case manager.FieldRemark:
@@ -10991,6 +11192,8 @@ func (m *ManagerMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldUpdatedAt(ctx)
 	case manager.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
+	case manager.FieldCreator:
+		return m.OldCreator(ctx)
 	case manager.FieldLastModifier:
 		return m.OldLastModifier(ctx)
 	case manager.FieldRemark:
@@ -11032,6 +11235,13 @@ func (m *ManagerMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
+		return nil
+	case manager.FieldCreator:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreator(v)
 		return nil
 	case manager.FieldLastModifier:
 		v, ok := value.(*model.Modifier)
@@ -11108,6 +11318,9 @@ func (m *ManagerMutation) ClearedFields() []string {
 	if m.FieldCleared(manager.FieldDeletedAt) {
 		fields = append(fields, manager.FieldDeletedAt)
 	}
+	if m.FieldCleared(manager.FieldCreator) {
+		fields = append(fields, manager.FieldCreator)
+	}
 	if m.FieldCleared(manager.FieldLastModifier) {
 		fields = append(fields, manager.FieldLastModifier)
 	}
@@ -11134,6 +11347,9 @@ func (m *ManagerMutation) ClearField(name string) error {
 	case manager.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
+	case manager.FieldCreator:
+		m.ClearCreator()
+		return nil
 	case manager.FieldLastModifier:
 		m.ClearLastModifier()
 		return nil
@@ -11159,6 +11375,9 @@ func (m *ManagerMutation) ResetField(name string) error {
 		return nil
 	case manager.FieldDeletedAt:
 		m.ResetDeletedAt()
+		return nil
+	case manager.FieldCreator:
+		m.ResetCreator()
 		return nil
 	case manager.FieldLastModifier:
 		m.ResetLastModifier()
@@ -11239,6 +11458,7 @@ type PersonMutation struct {
 	created_at       *time.Time
 	updated_at       *time.Time
 	deleted_at       *time.Time
+	creator          **model.Modifier
 	last_modifier    **model.Modifier
 	remark           *string
 	status           *uint8
@@ -11479,6 +11699,55 @@ func (m *PersonMutation) DeletedAtCleared() bool {
 func (m *PersonMutation) ResetDeletedAt() {
 	m.deleted_at = nil
 	delete(m.clearedFields, person.FieldDeletedAt)
+}
+
+// SetCreator sets the "creator" field.
+func (m *PersonMutation) SetCreator(value *model.Modifier) {
+	m.creator = &value
+}
+
+// Creator returns the value of the "creator" field in the mutation.
+func (m *PersonMutation) Creator() (r *model.Modifier, exists bool) {
+	v := m.creator
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreator returns the old "creator" field's value of the Person entity.
+// If the Person object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PersonMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreator requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
+	}
+	return oldValue.Creator, nil
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (m *PersonMutation) ClearCreator() {
+	m.creator = nil
+	m.clearedFields[person.FieldCreator] = struct{}{}
+}
+
+// CreatorCleared returns if the "creator" field was cleared in this mutation.
+func (m *PersonMutation) CreatorCleared() bool {
+	_, ok := m.clearedFields[person.FieldCreator]
+	return ok
+}
+
+// ResetCreator resets all changes to the "creator" field.
+func (m *PersonMutation) ResetCreator() {
+	m.creator = nil
+	delete(m.clearedFields, person.FieldCreator)
 }
 
 // SetLastModifier sets the "last_modifier" field.
@@ -12078,7 +12347,7 @@ func (m *PersonMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PersonMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 16)
 	if m.created_at != nil {
 		fields = append(fields, person.FieldCreatedAt)
 	}
@@ -12087,6 +12356,9 @@ func (m *PersonMutation) Fields() []string {
 	}
 	if m.deleted_at != nil {
 		fields = append(fields, person.FieldDeletedAt)
+	}
+	if m.creator != nil {
+		fields = append(fields, person.FieldCreator)
 	}
 	if m.last_modifier != nil {
 		fields = append(fields, person.FieldLastModifier)
@@ -12138,6 +12410,8 @@ func (m *PersonMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case person.FieldDeletedAt:
 		return m.DeletedAt()
+	case person.FieldCreator:
+		return m.Creator()
 	case person.FieldLastModifier:
 		return m.LastModifier()
 	case person.FieldRemark:
@@ -12177,6 +12451,8 @@ func (m *PersonMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldUpdatedAt(ctx)
 	case person.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
+	case person.FieldCreator:
+		return m.OldCreator(ctx)
 	case person.FieldLastModifier:
 		return m.OldLastModifier(ctx)
 	case person.FieldRemark:
@@ -12230,6 +12506,13 @@ func (m *PersonMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
+		return nil
+	case person.FieldCreator:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreator(v)
 		return nil
 	case person.FieldLastModifier:
 		v, ok := value.(*model.Modifier)
@@ -12375,6 +12658,9 @@ func (m *PersonMutation) ClearedFields() []string {
 	if m.FieldCleared(person.FieldDeletedAt) {
 		fields = append(fields, person.FieldDeletedAt)
 	}
+	if m.FieldCleared(person.FieldCreator) {
+		fields = append(fields, person.FieldCreator)
+	}
 	if m.FieldCleared(person.FieldLastModifier) {
 		fields = append(fields, person.FieldLastModifier)
 	}
@@ -12404,6 +12690,9 @@ func (m *PersonMutation) ClearField(name string) error {
 	case person.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
+	case person.FieldCreator:
+		m.ClearCreator()
+		return nil
 	case person.FieldLastModifier:
 		m.ClearLastModifier()
 		return nil
@@ -12432,6 +12721,9 @@ func (m *PersonMutation) ResetField(name string) error {
 		return nil
 	case person.FieldDeletedAt:
 		m.ResetDeletedAt()
+		return nil
+	case person.FieldCreator:
+		m.ResetCreator()
 		return nil
 	case person.FieldLastModifier:
 		m.ResetLastModifier()
@@ -13882,6 +14174,7 @@ type RiderMutation struct {
 	created_at        *time.Time
 	updated_at        *time.Time
 	deleted_at        *time.Time
+	creator           **model.Modifier
 	last_modifier     **model.Modifier
 	remark            *string
 	phone             *string
@@ -14135,6 +14428,55 @@ func (m *RiderMutation) DeletedAtCleared() bool {
 func (m *RiderMutation) ResetDeletedAt() {
 	m.deleted_at = nil
 	delete(m.clearedFields, rider.FieldDeletedAt)
+}
+
+// SetCreator sets the "creator" field.
+func (m *RiderMutation) SetCreator(value *model.Modifier) {
+	m.creator = &value
+}
+
+// Creator returns the value of the "creator" field in the mutation.
+func (m *RiderMutation) Creator() (r *model.Modifier, exists bool) {
+	v := m.creator
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreator returns the old "creator" field's value of the Rider entity.
+// If the Rider object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RiderMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreator requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
+	}
+	return oldValue.Creator, nil
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (m *RiderMutation) ClearCreator() {
+	m.creator = nil
+	m.clearedFields[rider.FieldCreator] = struct{}{}
+}
+
+// CreatorCleared returns if the "creator" field was cleared in this mutation.
+func (m *RiderMutation) CreatorCleared() bool {
+	_, ok := m.clearedFields[rider.FieldCreator]
+	return ok
+}
+
+// ResetCreator resets all changes to the "creator" field.
+func (m *RiderMutation) ResetCreator() {
+	m.creator = nil
+	delete(m.clearedFields, rider.FieldCreator)
 }
 
 // SetLastModifier sets the "last_modifier" field.
@@ -15006,7 +15348,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -15015,6 +15357,9 @@ func (m *RiderMutation) Fields() []string {
 	}
 	if m.deleted_at != nil {
 		fields = append(fields, rider.FieldDeletedAt)
+	}
+	if m.creator != nil {
+		fields = append(fields, rider.FieldCreator)
 	}
 	if m.last_modifier != nil {
 		fields = append(fields, rider.FieldLastModifier)
@@ -15075,6 +15420,8 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case rider.FieldDeletedAt:
 		return m.DeletedAt()
+	case rider.FieldCreator:
+		return m.Creator()
 	case rider.FieldLastModifier:
 		return m.LastModifier()
 	case rider.FieldRemark:
@@ -15120,6 +15467,8 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldUpdatedAt(ctx)
 	case rider.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
+	case rider.FieldCreator:
+		return m.OldCreator(ctx)
 	case rider.FieldLastModifier:
 		return m.OldLastModifier(ctx)
 	case rider.FieldRemark:
@@ -15179,6 +15528,13 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
+		return nil
+	case rider.FieldCreator:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreator(v)
 		return nil
 	case rider.FieldLastModifier:
 		v, ok := value.(*model.Modifier)
@@ -15333,6 +15689,9 @@ func (m *RiderMutation) ClearedFields() []string {
 	if m.FieldCleared(rider.FieldDeletedAt) {
 		fields = append(fields, rider.FieldDeletedAt)
 	}
+	if m.FieldCleared(rider.FieldCreator) {
+		fields = append(fields, rider.FieldCreator)
+	}
 	if m.FieldCleared(rider.FieldLastModifier) {
 		fields = append(fields, rider.FieldLastModifier)
 	}
@@ -15380,6 +15739,9 @@ func (m *RiderMutation) ClearField(name string) error {
 	case rider.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
+	case rider.FieldCreator:
+		m.ClearCreator()
+		return nil
 	case rider.FieldLastModifier:
 		m.ClearLastModifier()
 		return nil
@@ -15426,6 +15788,9 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldDeletedAt:
 		m.ResetDeletedAt()
+		return nil
+	case rider.FieldCreator:
+		m.ResetCreator()
 		return nil
 	case rider.FieldLastModifier:
 		m.ResetLastModifier()

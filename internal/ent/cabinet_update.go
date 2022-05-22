@@ -335,7 +335,9 @@ func (cu *CabinetUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
-	cu.defaults()
+	if err := cu.defaults(); err != nil {
+		return 0, err
+	}
 	if len(cu.hooks) == 0 {
 		affected, err = cu.sqlSave(ctx)
 	} else {
@@ -385,11 +387,15 @@ func (cu *CabinetUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (cu *CabinetUpdate) defaults() {
+func (cu *CabinetUpdate) defaults() error {
 	if _, ok := cu.mutation.UpdatedAt(); !ok {
+		if cabinet.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cabinet.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := cabinet.UpdateDefaultUpdatedAt()
 		cu.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -1052,7 +1058,9 @@ func (cuo *CabinetUpdateOne) Save(ctx context.Context) (*Cabinet, error) {
 		err  error
 		node *Cabinet
 	)
-	cuo.defaults()
+	if err := cuo.defaults(); err != nil {
+		return nil, err
+	}
 	if len(cuo.hooks) == 0 {
 		node, err = cuo.sqlSave(ctx)
 	} else {
@@ -1108,11 +1116,15 @@ func (cuo *CabinetUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (cuo *CabinetUpdateOne) defaults() {
+func (cuo *CabinetUpdateOne) defaults() error {
 	if _, ok := cuo.mutation.UpdatedAt(); !ok {
+		if cabinet.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cabinet.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := cabinet.UpdateDefaultUpdatedAt()
 		cuo.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err error) {

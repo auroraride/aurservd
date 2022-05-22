@@ -16,7 +16,7 @@ func loadManagerRoutes() {
     g.POST("/user/signin", mapi.Manager.Signin) // 登录
 
     g.Use(middleware.ManagerMiddleware())
-    g.POST("/user/add", mapi.Manager.Add) // 新增管理员
+    g.POST("/user", mapi.Manager.Create) // 新增管理员
 
     // 城市
     g.GET("/city", mapi.City.List)       // 城市列表

@@ -15,8 +15,9 @@ import (
 )
 
 type cityService struct {
-    orm *ent.CityClient
-    ctx context.Context
+    orm      *ent.CityClient
+    ctx      context.Context
+    modifier *model.Modifier
 }
 
 func NewCity() *cityService {
@@ -24,6 +25,13 @@ func NewCity() *cityService {
         orm: ar.Ent.City,
         ctx: context.Background(),
     }
+}
+
+func NewCityWithModifier(m *model.Modifier) *cityService {
+    s := NewCity()
+    s.ctx = context.WithValue(s.ctx, "modifier", m)
+    s.modifier = m
+    return s
 }
 
 func (s *cityService) Query(id uint64) *ent.City {
@@ -72,10 +80,10 @@ func (s *cityService) List(req *model.CityListReq) (items []*model.CityItem) {
 }
 
 // Modify 修改城市
-func (s *cityService) Modify(req *model.CityModifyReq, mod *model.Modifier) *bool {
+func (s *cityService) Modify(req *model.CityModifyReq) *bool {
     if !s.orm.QueryNotDeleted().Where(city.ID(req.ID), city.ParentIDNotNil()).ExistX(context.Background()) {
         snag.Panic("城市ID错误")
     }
-    c := s.orm.UpdateOneID(req.ID).SetOpen(*req.Open).SetLastModifier(mod).SaveX(s.ctx)
+    c := s.orm.UpdateOneID(req.ID).SetOpen(*req.Open).SaveX(s.ctx)
     return c.Open
 }

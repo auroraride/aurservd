@@ -214,7 +214,9 @@ func (bc *BranchCreate) Save(ctx context.Context) (*Branch, error) {
 		err  error
 		node *Branch
 	)
-	bc.defaults()
+	if err := bc.defaults(); err != nil {
+		return nil, err
+	}
 	if len(bc.hooks) == 0 {
 		if err = bc.check(); err != nil {
 			return nil, err
@@ -279,15 +281,22 @@ func (bc *BranchCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (bc *BranchCreate) defaults() {
+func (bc *BranchCreate) defaults() error {
 	if _, ok := bc.mutation.CreatedAt(); !ok {
+		if branch.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized branch.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := branch.DefaultCreatedAt()
 		bc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := bc.mutation.UpdatedAt(); !ok {
+		if branch.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized branch.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := branch.DefaultUpdatedAt()
 		bc.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

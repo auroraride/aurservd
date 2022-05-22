@@ -308,7 +308,9 @@ func (cu *CityUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
-	cu.defaults()
+	if err := cu.defaults(); err != nil {
+		return 0, err
+	}
 	if len(cu.hooks) == 0 {
 		if err = cu.check(); err != nil {
 			return 0, err
@@ -364,11 +366,15 @@ func (cu *CityUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (cu *CityUpdate) defaults() {
+func (cu *CityUpdate) defaults() error {
 	if _, ok := cu.mutation.UpdatedAt(); !ok {
+		if city.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized city.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := city.UpdateDefaultUpdatedAt()
 		cu.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -422,6 +428,12 @@ func (cu *CityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: city.FieldDeletedAt,
+		})
+	}
+	if cu.mutation.CreatorCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: city.FieldCreator,
 		})
 	}
 	if value, ok := cu.mutation.LastModifier(); ok {
@@ -1030,7 +1042,9 @@ func (cuo *CityUpdateOne) Save(ctx context.Context) (*City, error) {
 		err  error
 		node *City
 	)
-	cuo.defaults()
+	if err := cuo.defaults(); err != nil {
+		return nil, err
+	}
 	if len(cuo.hooks) == 0 {
 		if err = cuo.check(); err != nil {
 			return nil, err
@@ -1092,11 +1106,15 @@ func (cuo *CityUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (cuo *CityUpdateOne) defaults() {
+func (cuo *CityUpdateOne) defaults() error {
 	if _, ok := cuo.mutation.UpdatedAt(); !ok {
+		if city.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized city.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := city.UpdateDefaultUpdatedAt()
 		cuo.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -1167,6 +1185,12 @@ func (cuo *CityUpdateOne) sqlSave(ctx context.Context) (_node *City, err error) 
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: city.FieldDeletedAt,
+		})
+	}
+	if cuo.mutation.CreatorCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: city.FieldCreator,
 		})
 	}
 	if value, ok := cuo.mutation.LastModifier(); ok {

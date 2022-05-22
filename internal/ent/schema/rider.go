@@ -58,7 +58,7 @@ func (Rider) Mixin() []ent.Mixin {
         internal.SonyflakeIDMixin{},
         internal.TimeMixin{},
         internal.DeleteMixin{},
-        internal.LastModifier{},
+        internal.Modifier{},
     }
 }
 

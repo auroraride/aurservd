@@ -253,7 +253,9 @@ func (pu *PersonUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
-	pu.defaults()
+	if err := pu.defaults(); err != nil {
+		return 0, err
+	}
 	if len(pu.hooks) == 0 {
 		if err = pu.check(); err != nil {
 			return 0, err
@@ -309,11 +311,15 @@ func (pu *PersonUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (pu *PersonUpdate) defaults() {
+func (pu *PersonUpdate) defaults() error {
 	if _, ok := pu.mutation.UpdatedAt(); !ok {
+		if person.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized person.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := person.UpdateDefaultUpdatedAt()
 		pu.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -367,6 +373,12 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: person.FieldDeletedAt,
+		})
+	}
+	if pu.mutation.CreatorCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: person.FieldCreator,
 		})
 	}
 	if value, ok := pu.mutation.LastModifier(); ok {
@@ -794,7 +806,9 @@ func (puo *PersonUpdateOne) Save(ctx context.Context) (*Person, error) {
 		err  error
 		node *Person
 	)
-	puo.defaults()
+	if err := puo.defaults(); err != nil {
+		return nil, err
+	}
 	if len(puo.hooks) == 0 {
 		if err = puo.check(); err != nil {
 			return nil, err
@@ -856,11 +870,15 @@ func (puo *PersonUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (puo *PersonUpdateOne) defaults() {
+func (puo *PersonUpdateOne) defaults() error {
 	if _, ok := puo.mutation.UpdatedAt(); !ok {
+		if person.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized person.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := person.UpdateDefaultUpdatedAt()
 		puo.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -931,6 +949,12 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: person.FieldDeletedAt,
+		})
+	}
+	if puo.mutation.CreatorCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: person.FieldCreator,
 		})
 	}
 	if value, ok := puo.mutation.LastModifier(); ok {

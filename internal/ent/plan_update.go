@@ -235,7 +235,9 @@ func (pu *PlanUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
-	pu.defaults()
+	if err := pu.defaults(); err != nil {
+		return 0, err
+	}
 	if len(pu.hooks) == 0 {
 		affected, err = pu.sqlSave(ctx)
 	} else {
@@ -285,11 +287,15 @@ func (pu *PlanUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (pu *PlanUpdate) defaults() {
+func (pu *PlanUpdate) defaults() error {
 	if _, ok := pu.mutation.UpdatedAt(); !ok {
+		if plan.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized plan.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := plan.UpdateDefaultUpdatedAt()
 		pu.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -770,7 +776,9 @@ func (puo *PlanUpdateOne) Save(ctx context.Context) (*Plan, error) {
 		err  error
 		node *Plan
 	)
-	puo.defaults()
+	if err := puo.defaults(); err != nil {
+		return nil, err
+	}
 	if len(puo.hooks) == 0 {
 		node, err = puo.sqlSave(ctx)
 	} else {
@@ -826,11 +834,15 @@ func (puo *PlanUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (puo *PlanUpdateOne) defaults() {
+func (puo *PlanUpdateOne) defaults() error {
 	if _, ok := puo.mutation.UpdatedAt(); !ok {
+		if plan.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized plan.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := plan.UpdateDefaultUpdatedAt()
 		puo.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) {

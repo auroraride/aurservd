@@ -30,6 +30,12 @@ func NewStore() *storeService {
     }
 }
 
+func NewStoreWithModifier(m *model.Modifier) *storeService {
+    s := NewStore()
+    s.ctx = context.WithValue(s.ctx, "modifier", m)
+    return s
+}
+
 func (s *storeService) Query(id uint64) *ent.Store {
     item, err := s.orm.QueryNotDeleted().Where(store.ID(id)).Only(s.ctx)
     if err != nil {
@@ -39,10 +45,9 @@ func (s *storeService) Query(id uint64) *ent.Store {
 }
 
 // Create 创建门店
-func (s *storeService) Create(m *model.Modifier, req *model.StoreCreateReq) model.StoreItem {
+func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
     b := NewBranch().Query(*req.BranchID)
     item := s.orm.Create().
-        SetLastModifier(m).
         SetName(*req.Name).
         SetStatus(req.Status).
         SetBranch(b).
@@ -52,7 +57,7 @@ func (s *storeService) Create(m *model.Modifier, req *model.StoreCreateReq) mode
 }
 
 // Modify 修改门店
-func (s *storeService) Modify(m *model.Modifier, req *model.StoreModifyReq) model.StoreItem {
+func (s *storeService) Modify(req *model.StoreModifyReq) model.StoreItem {
     item := s.Query(req.ID)
     q := s.orm.UpdateOne(item)
     if req.Status != nil {
@@ -64,7 +69,7 @@ func (s *storeService) Modify(m *model.Modifier, req *model.StoreModifyReq) mode
     if req.BranchID != nil {
         q.SetBranchID(*req.BranchID)
     }
-    q.SetLastModifier(m).SaveX(s.ctx)
+    q.SaveX(s.ctx)
     return s.Detail(item.ID)
 }
 
@@ -93,9 +98,9 @@ func (s *storeService) Detail(id uint64) model.StoreItem {
 }
 
 // Delete 删除门店
-func (s *storeService) Delete(m *model.Modifier, req *model.IDParamReq) {
+func (s *storeService) Delete(req *model.IDParamReq) {
     item := s.Query(req.ID)
-    s.orm.UpdateOne(item).SetDeletedAt(time.Now()).SetLastModifier(m).SaveX(s.ctx)
+    s.orm.UpdateOne(item).SetDeletedAt(time.Now()).SaveX(s.ctx)
 }
 
 // List 列举门店

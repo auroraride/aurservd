@@ -69,6 +69,12 @@ func (rc *RiderCreate) SetNillableDeletedAt(t *time.Time) *RiderCreate {
 	return rc
 }
 
+// SetCreator sets the "creator" field.
+func (rc *RiderCreate) SetCreator(m *model.Modifier) *RiderCreate {
+	rc.mutation.SetCreator(m)
+	return rc
+}
+
 // SetLastModifier sets the "last_modifier" field.
 func (rc *RiderCreate) SetLastModifier(m *model.Modifier) *RiderCreate {
 	rc.mutation.SetLastModifier(m)
@@ -485,6 +491,14 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 		})
 		_node.DeletedAt = &value
 	}
+	if value, ok := rc.mutation.Creator(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: rider.FieldCreator,
+		})
+		_node.Creator = value
+	}
 	if value, ok := rc.mutation.LastModifier(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -763,6 +777,24 @@ func (u *RiderUpsert) ClearDeletedAt() *RiderUpsert {
 	return u
 }
 
+// SetCreator sets the "creator" field.
+func (u *RiderUpsert) SetCreator(v *model.Modifier) *RiderUpsert {
+	u.Set(rider.FieldCreator, v)
+	return u
+}
+
+// UpdateCreator sets the "creator" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateCreator() *RiderUpsert {
+	u.SetExcluded(rider.FieldCreator)
+	return u
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (u *RiderUpsert) ClearCreator() *RiderUpsert {
+	u.SetNull(rider.FieldCreator)
+	return u
+}
+
 // SetLastModifier sets the "last_modifier" field.
 func (u *RiderUpsert) SetLastModifier(v *model.Modifier) *RiderUpsert {
 	u.Set(rider.FieldLastModifier, v)
@@ -1030,6 +1062,9 @@ func (u *RiderUpsertOne) UpdateNewValues() *RiderUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(rider.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.Creator(); exists {
+			s.SetIgnore(rider.FieldCreator)
+		}
 	}))
 	return u
 }
@@ -1108,6 +1143,27 @@ func (u *RiderUpsertOne) UpdateDeletedAt() *RiderUpsertOne {
 func (u *RiderUpsertOne) ClearDeletedAt() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearDeletedAt()
+	})
+}
+
+// SetCreator sets the "creator" field.
+func (u *RiderUpsertOne) SetCreator(v *model.Modifier) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetCreator(v)
+	})
+}
+
+// UpdateCreator sets the "creator" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateCreator() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateCreator()
+	})
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (u *RiderUpsertOne) ClearCreator() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearCreator()
 	})
 }
 
@@ -1583,6 +1639,9 @@ func (u *RiderUpsertBulk) UpdateNewValues() *RiderUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(rider.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.Creator(); exists {
+				s.SetIgnore(rider.FieldCreator)
+			}
 		}
 	}))
 	return u
@@ -1662,6 +1721,27 @@ func (u *RiderUpsertBulk) UpdateDeletedAt() *RiderUpsertBulk {
 func (u *RiderUpsertBulk) ClearDeletedAt() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearDeletedAt()
+	})
+}
+
+// SetCreator sets the "creator" field.
+func (u *RiderUpsertBulk) SetCreator(v *model.Modifier) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetCreator(v)
+	})
+}
+
+// UpdateCreator sets the "creator" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateCreator() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateCreator()
+	})
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (u *RiderUpsertBulk) ClearCreator() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearCreator()
 	})
 }
 

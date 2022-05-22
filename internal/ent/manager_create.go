@@ -65,6 +65,12 @@ func (mc *ManagerCreate) SetNillableDeletedAt(t *time.Time) *ManagerCreate {
 	return mc
 }
 
+// SetCreator sets the "creator" field.
+func (mc *ManagerCreate) SetCreator(m *model.Modifier) *ManagerCreate {
+	mc.mutation.SetCreator(m)
+	return mc
+}
+
 // SetLastModifier sets the "last_modifier" field.
 func (mc *ManagerCreate) SetLastModifier(m *model.Modifier) *ManagerCreate {
 	mc.mutation.SetLastModifier(m)
@@ -128,7 +134,9 @@ func (mc *ManagerCreate) Save(ctx context.Context) (*Manager, error) {
 		err  error
 		node *Manager
 	)
-	mc.defaults()
+	if err := mc.defaults(); err != nil {
+		return nil, err
+	}
 	if len(mc.hooks) == 0 {
 		if err = mc.check(); err != nil {
 			return nil, err
@@ -193,15 +201,22 @@ func (mc *ManagerCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (mc *ManagerCreate) defaults() {
+func (mc *ManagerCreate) defaults() error {
 	if _, ok := mc.mutation.CreatedAt(); !ok {
+		if manager.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized manager.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := manager.DefaultCreatedAt()
 		mc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := mc.mutation.UpdatedAt(); !ok {
+		if manager.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized manager.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := manager.DefaultUpdatedAt()
 		mc.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -282,6 +297,14 @@ func (mc *ManagerCreate) createSpec() (*Manager, *sqlgraph.CreateSpec) {
 			Column: manager.FieldDeletedAt,
 		})
 		_node.DeletedAt = &value
+	}
+	if value, ok := mc.mutation.Creator(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: manager.FieldCreator,
+		})
+		_node.Creator = value
 	}
 	if value, ok := mc.mutation.LastModifier(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -427,6 +450,24 @@ func (u *ManagerUpsert) ClearDeletedAt() *ManagerUpsert {
 	return u
 }
 
+// SetCreator sets the "creator" field.
+func (u *ManagerUpsert) SetCreator(v *model.Modifier) *ManagerUpsert {
+	u.Set(manager.FieldCreator, v)
+	return u
+}
+
+// UpdateCreator sets the "creator" field to the value that was provided on create.
+func (u *ManagerUpsert) UpdateCreator() *ManagerUpsert {
+	u.SetExcluded(manager.FieldCreator)
+	return u
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (u *ManagerUpsert) ClearCreator() *ManagerUpsert {
+	u.SetNull(manager.FieldCreator)
+	return u
+}
+
 // SetLastModifier sets the "last_modifier" field.
 func (u *ManagerUpsert) SetLastModifier(v *model.Modifier) *ManagerUpsert {
 	u.Set(manager.FieldLastModifier, v)
@@ -532,6 +573,9 @@ func (u *ManagerUpsertOne) UpdateNewValues() *ManagerUpsertOne {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(manager.FieldCreatedAt)
 		}
+		if _, exists := u.create.mutation.Creator(); exists {
+			s.SetIgnore(manager.FieldCreator)
+		}
 	}))
 	return u
 }
@@ -610,6 +654,27 @@ func (u *ManagerUpsertOne) UpdateDeletedAt() *ManagerUpsertOne {
 func (u *ManagerUpsertOne) ClearDeletedAt() *ManagerUpsertOne {
 	return u.Update(func(s *ManagerUpsert) {
 		s.ClearDeletedAt()
+	})
+}
+
+// SetCreator sets the "creator" field.
+func (u *ManagerUpsertOne) SetCreator(v *model.Modifier) *ManagerUpsertOne {
+	return u.Update(func(s *ManagerUpsert) {
+		s.SetCreator(v)
+	})
+}
+
+// UpdateCreator sets the "creator" field to the value that was provided on create.
+func (u *ManagerUpsertOne) UpdateCreator() *ManagerUpsertOne {
+	return u.Update(func(s *ManagerUpsert) {
+		s.UpdateCreator()
+	})
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (u *ManagerUpsertOne) ClearCreator() *ManagerUpsertOne {
+	return u.Update(func(s *ManagerUpsert) {
+		s.ClearCreator()
 	})
 }
 
@@ -896,6 +961,9 @@ func (u *ManagerUpsertBulk) UpdateNewValues() *ManagerUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(manager.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.Creator(); exists {
+				s.SetIgnore(manager.FieldCreator)
+			}
 		}
 	}))
 	return u
@@ -975,6 +1043,27 @@ func (u *ManagerUpsertBulk) UpdateDeletedAt() *ManagerUpsertBulk {
 func (u *ManagerUpsertBulk) ClearDeletedAt() *ManagerUpsertBulk {
 	return u.Update(func(s *ManagerUpsert) {
 		s.ClearDeletedAt()
+	})
+}
+
+// SetCreator sets the "creator" field.
+func (u *ManagerUpsertBulk) SetCreator(v *model.Modifier) *ManagerUpsertBulk {
+	return u.Update(func(s *ManagerUpsert) {
+		s.SetCreator(v)
+	})
+}
+
+// UpdateCreator sets the "creator" field to the value that was provided on create.
+func (u *ManagerUpsertBulk) UpdateCreator() *ManagerUpsertBulk {
+	return u.Update(func(s *ManagerUpsert) {
+		s.UpdateCreator()
+	})
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (u *ManagerUpsertBulk) ClearCreator() *ManagerUpsertBulk {
+	return u.Update(func(s *ManagerUpsert) {
+		s.ClearCreator()
 	})
 }
 

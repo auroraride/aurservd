@@ -528,6 +528,12 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: rider.FieldDeletedAt,
 		})
 	}
+	if ru.mutation.CreatorCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: rider.FieldCreator,
+		})
+	}
 	if value, ok := ru.mutation.LastModifier(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -1394,6 +1400,12 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: rider.FieldDeletedAt,
+		})
+	}
+	if ruo.mutation.CreatorCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: rider.FieldCreator,
 		})
 	}
 	if value, ok := ruo.mutation.LastModifier(); ok {

@@ -27,7 +27,7 @@ var Plan = new(plan)
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*plan) Create(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.PlanCreateReq](c)
-    service.NewPlan().CreatePlan(ctx.Modifier, req)
+    service.NewPlanWithModifier(ctx.Modifier).CreatePlan(req)
     return ctx.SendResponse()
 }
 
@@ -44,7 +44,7 @@ func (*plan) Create(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*plan) UpdateEnable(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.PlanEnableModifyReq](c)
-    service.NewPlan().UpdateEnable(ctx.Modifier, req)
+    service.NewPlanWithModifier(ctx.Modifier).UpdateEnable(req)
     return ctx.SendResponse()
 }
 
@@ -60,7 +60,7 @@ func (*plan) UpdateEnable(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*plan) Delete(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-    service.NewPlan().Delete(ctx.Modifier, req)
+    service.NewPlanWithModifier(ctx.Modifier).Delete(req)
     return ctx.SendResponse()
 }
 

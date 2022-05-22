@@ -19,6 +19,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
+	// FieldCreator holds the string denoting the creator field in the database.
+	FieldCreator = "creator"
 	// FieldLastModifier holds the string denoting the last_modifier field in the database.
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
@@ -95,6 +97,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
+	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
 	FieldPersonID,
@@ -129,7 +132,7 @@ func ValidColumn(column string) bool {
 //	import _ "github.com/auroraride/aurservd/internal/ent/runtime"
 //
 var (
-	Hooks [1]ent.Hook
+	Hooks [2]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

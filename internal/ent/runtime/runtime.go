@@ -27,6 +27,8 @@ import (
 // to their package variables.
 func init() {
 	batterymodelMixin := schema.BatteryModel{}.Mixin()
+	batterymodelMixinHooks2 := batterymodelMixin[2].Hooks()
+	batterymodel.Hooks[0] = batterymodelMixinHooks2[0]
 	batterymodelMixinFields0 := batterymodelMixin[0].Fields()
 	_ = batterymodelMixinFields0
 	batterymodelFields := schema.BatteryModel{}.Fields()
@@ -42,6 +44,8 @@ func init() {
 	// batterymodel.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	batterymodel.UpdateDefaultUpdatedAt = batterymodelDescUpdatedAt.UpdateDefault.(func() time.Time)
 	branchMixin := schema.Branch{}.Mixin()
+	branchMixinHooks2 := branchMixin[2].Hooks()
+	branch.Hooks[0] = branchMixinHooks2[0]
 	branchMixinFields0 := branchMixin[0].Fields()
 	_ = branchMixinFields0
 	branchFields := schema.Branch{}.Fields()
@@ -57,6 +61,8 @@ func init() {
 	// branch.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	branch.UpdateDefaultUpdatedAt = branchDescUpdatedAt.UpdateDefault.(func() time.Time)
 	branchcontractMixin := schema.BranchContract{}.Mixin()
+	branchcontractMixinHooks2 := branchcontractMixin[2].Hooks()
+	branchcontract.Hooks[0] = branchcontractMixinHooks2[0]
 	branchcontractMixinFields0 := branchcontractMixin[0].Fields()
 	_ = branchcontractMixinFields0
 	branchcontractFields := schema.BranchContract{}.Fields()
@@ -72,6 +78,8 @@ func init() {
 	// branchcontract.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	branchcontract.UpdateDefaultUpdatedAt = branchcontractDescUpdatedAt.UpdateDefault.(func() time.Time)
 	cabinetMixin := schema.Cabinet{}.Mixin()
+	cabinetMixinHooks2 := cabinetMixin[2].Hooks()
+	cabinet.Hooks[0] = cabinetMixinHooks2[0]
 	cabinetMixinFields0 := cabinetMixin[0].Fields()
 	_ = cabinetMixinFields0
 	cabinetFields := schema.Cabinet{}.Fields()
@@ -99,6 +107,8 @@ func init() {
 	// cabinet.DefaultBatteryFullNum holds the default value on creation for the battery_full_num field.
 	cabinet.DefaultBatteryFullNum = cabinetDescBatteryFullNum.Default.(uint)
 	cabinetfaultMixin := schema.CabinetFault{}.Mixin()
+	cabinetfaultMixinHooks2 := cabinetfaultMixin[2].Hooks()
+	cabinetfault.Hooks[0] = cabinetfaultMixinHooks2[0]
 	cabinetfaultMixinFields0 := cabinetfaultMixin[0].Fields()
 	_ = cabinetfaultMixinFields0
 	cabinetfaultFields := schema.CabinetFault{}.Fields()
@@ -118,6 +128,8 @@ func init() {
 	// cabinetfault.DefaultStatus holds the default value on creation for the status field.
 	cabinetfault.DefaultStatus = cabinetfaultDescStatus.Default.(uint8)
 	cityMixin := schema.City{}.Mixin()
+	cityMixinHooks2 := cityMixin[2].Hooks()
+	city.Hooks[0] = cityMixinHooks2[0]
 	cityMixinFields0 := cityMixin[0].Fields()
 	_ = cityMixinFields0
 	cityFields := schema.City{}.Fields()
@@ -141,6 +153,8 @@ func init() {
 	// city.CodeValidator is a validator for the "code" field. It is called by the builders before save.
 	city.CodeValidator = cityDescCode.Validators[0].(func(string) error)
 	contractMixin := schema.Contract{}.Mixin()
+	contractMixinHooks2 := contractMixin[2].Hooks()
+	contract.Hooks[0] = contractMixinHooks2[0]
 	contractMixinFields0 := contractMixin[0].Fields()
 	_ = contractMixinFields0
 	contractFields := schema.Contract{}.Fields()
@@ -196,6 +210,8 @@ func init() {
 		}
 	}()
 	enterpriseMixin := schema.Enterprise{}.Mixin()
+	enterpriseMixinHooks2 := enterpriseMixin[2].Hooks()
+	enterprise.Hooks[0] = enterpriseMixinHooks2[0]
 	enterpriseMixinFields0 := enterpriseMixin[0].Fields()
 	_ = enterpriseMixinFields0
 	enterpriseFields := schema.Enterprise{}.Fields()
@@ -211,6 +227,8 @@ func init() {
 	// enterprise.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	enterprise.UpdateDefaultUpdatedAt = enterpriseDescUpdatedAt.UpdateDefault.(func() time.Time)
 	managerMixin := schema.Manager{}.Mixin()
+	managerMixinHooks2 := managerMixin[2].Hooks()
+	manager.Hooks[0] = managerMixinHooks2[0]
 	managerMixinFields0 := managerMixin[0].Fields()
 	_ = managerMixinFields0
 	managerFields := schema.Manager{}.Fields()
@@ -234,6 +252,8 @@ func init() {
 	// manager.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	manager.NameValidator = managerDescName.Validators[0].(func(string) error)
 	personMixin := schema.Person{}.Mixin()
+	personMixinHooks2 := personMixin[2].Hooks()
+	person.Hooks[0] = personMixinHooks2[0]
 	personMixinFields0 := personMixin[0].Fields()
 	_ = personMixinFields0
 	personFields := schema.Person{}.Fields()
@@ -269,6 +289,8 @@ func init() {
 	// person.DefaultIDCardType holds the default value on creation for the id_card_type field.
 	person.DefaultIDCardType = personDescIDCardType.Default.(uint8)
 	planMixin := schema.Plan{}.Mixin()
+	planMixinHooks2 := planMixin[2].Hooks()
+	plan.Hooks[0] = planMixinHooks2[0]
 	planMixinFields0 := planMixin[0].Fields()
 	_ = planMixinFields0
 	planFields := schema.Plan{}.Fields()
@@ -285,7 +307,9 @@ func init() {
 	plan.UpdateDefaultUpdatedAt = planDescUpdatedAt.UpdateDefault.(func() time.Time)
 	riderMixin := schema.Rider{}.Mixin()
 	riderMixinHooks0 := riderMixin[0].Hooks()
+	riderMixinHooks3 := riderMixin[3].Hooks()
 	rider.Hooks[0] = riderMixinHooks0[0]
+	rider.Hooks[1] = riderMixinHooks3[0]
 	riderMixinFields1 := riderMixin[1].Fields()
 	_ = riderMixinFields1
 	riderFields := schema.Rider{}.Fields()
@@ -340,6 +364,8 @@ func init() {
 	// setting.KeyValidator is a validator for the "key" field. It is called by the builders before save.
 	setting.KeyValidator = settingDescKey.Validators[0].(func(string) error)
 	storeMixin := schema.Store{}.Mixin()
+	storeMixinHooks2 := storeMixin[2].Hooks()
+	store.Hooks[0] = storeMixinHooks2[0]
 	storeMixinFields0 := storeMixin[0].Fields()
 	_ = storeMixinFields0
 	storeFields := schema.Store{}.Fields()

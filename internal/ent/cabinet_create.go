@@ -244,7 +244,9 @@ func (cc *CabinetCreate) Save(ctx context.Context) (*Cabinet, error) {
 		err  error
 		node *Cabinet
 	)
-	cc.defaults()
+	if err := cc.defaults(); err != nil {
+		return nil, err
+	}
 	if len(cc.hooks) == 0 {
 		if err = cc.check(); err != nil {
 			return nil, err
@@ -309,12 +311,18 @@ func (cc *CabinetCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (cc *CabinetCreate) defaults() {
+func (cc *CabinetCreate) defaults() error {
 	if _, ok := cc.mutation.CreatedAt(); !ok {
+		if cabinet.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cabinet.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := cabinet.DefaultCreatedAt()
 		cc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := cc.mutation.UpdatedAt(); !ok {
+		if cabinet.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized cabinet.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := cabinet.DefaultUpdatedAt()
 		cc.mutation.SetUpdatedAt(v)
 	}
@@ -330,6 +338,7 @@ func (cc *CabinetCreate) defaults() {
 		v := cabinet.DefaultBatteryFullNum
 		cc.mutation.SetBatteryFullNum(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

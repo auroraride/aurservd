@@ -242,7 +242,9 @@ func (bcu *BranchContractUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
-	bcu.defaults()
+	if err := bcu.defaults(); err != nil {
+		return 0, err
+	}
 	if len(bcu.hooks) == 0 {
 		if err = bcu.check(); err != nil {
 			return 0, err
@@ -298,11 +300,15 @@ func (bcu *BranchContractUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (bcu *BranchContractUpdate) defaults() {
+func (bcu *BranchContractUpdate) defaults() error {
 	if _, ok := bcu.mutation.UpdatedAt(); !ok {
+		if branchcontract.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized branchcontract.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := branchcontract.UpdateDefaultUpdatedAt()
 		bcu.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -796,7 +802,9 @@ func (bcuo *BranchContractUpdateOne) Save(ctx context.Context) (*BranchContract,
 		err  error
 		node *BranchContract
 	)
-	bcuo.defaults()
+	if err := bcuo.defaults(); err != nil {
+		return nil, err
+	}
 	if len(bcuo.hooks) == 0 {
 		if err = bcuo.check(); err != nil {
 			return nil, err
@@ -858,11 +866,15 @@ func (bcuo *BranchContractUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (bcuo *BranchContractUpdateOne) defaults() {
+func (bcuo *BranchContractUpdateOne) defaults() error {
 	if _, ok := bcuo.mutation.UpdatedAt(); !ok {
+		if branchcontract.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized branchcontract.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := branchcontract.UpdateDefaultUpdatedAt()
 		bcuo.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

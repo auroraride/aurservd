@@ -309,6 +309,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "备注", Nullable: true},
 		{Name: "open", Type: field.TypeBool, Comment: "启用", Nullable: true},
@@ -324,7 +325,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "city_city_children",
-				Columns:    []*schema.Column{CityColumns[9]},
+				Columns:    []*schema.Column{CityColumns[10]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -343,12 +344,12 @@ var (
 			{
 				Name:    "city_open",
 				Unique:  false,
-				Columns: []*schema.Column{CityColumns[6]},
+				Columns: []*schema.Column{CityColumns[7]},
 			},
 			{
 				Name:    "city_parent_id",
 				Unique:  false,
-				Columns: []*schema.Column{CityColumns[9]},
+				Columns: []*schema.Column{CityColumns[10]},
 			},
 		},
 	}
@@ -358,6 +359,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "备注", Nullable: true},
 		{Name: "status", Type: field.TypeUint8, Comment: "状态", Default: 0},
@@ -374,7 +376,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "contract_rider_contract",
-				Columns:    []*schema.Column{ContractColumns[10]},
+				Columns:    []*schema.Column{ContractColumns[11]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -437,6 +439,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "备注", Nullable: true},
 		{Name: "phone", Type: field.TypeString, Unique: true, Comment: "账户/手机号", Size: 30},
@@ -463,7 +466,7 @@ var (
 			{
 				Name:    "manager_phone",
 				Unique:  false,
-				Columns: []*schema.Column{ManagerColumns[6]},
+				Columns: []*schema.Column{ManagerColumns[7]},
 			},
 		},
 	}
@@ -473,6 +476,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "备注", Nullable: true},
 		{Name: "status", Type: field.TypeUint8, Comment: "认证状态", Default: 0},
@@ -505,12 +509,12 @@ var (
 			{
 				Name:    "person_status",
 				Unique:  false,
-				Columns: []*schema.Column{PersonColumns[6]},
+				Columns: []*schema.Column{PersonColumns[7]},
 			},
 			{
 				Name:    "person_name",
 				Unique:  false,
-				Columns: []*schema.Column{PersonColumns[8]},
+				Columns: []*schema.Column{PersonColumns[9]},
 				Annotation: &entsql.IndexAnnotation{
 					Types: map[string]string{
 						"postgres": "GIN",
@@ -580,6 +584,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "备注", Nullable: true},
 		{Name: "phone", Type: field.TypeString, Unique: true, Comment: "手机号", Size: 11},
@@ -604,13 +609,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "rider_enterprise_riders",
-				Columns:    []*schema.Column{RiderColumns[17]},
+				Columns:    []*schema.Column{RiderColumns[18]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_person_rider",
-				Columns:    []*schema.Column{RiderColumns[18]},
+				Columns:    []*schema.Column{RiderColumns[19]},
 				RefColumns: []*schema.Column{PersonColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -629,7 +634,7 @@ var (
 			{
 				Name:    "rider_phone",
 				Unique:  false,
-				Columns: []*schema.Column{RiderColumns[6]},
+				Columns: []*schema.Column{RiderColumns[7]},
 				Annotation: &entsql.IndexAnnotation{
 					Types: map[string]string{
 						"postgres": "GIN",

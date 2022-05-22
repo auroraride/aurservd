@@ -314,7 +314,9 @@ func (bu *BranchUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
-	bu.defaults()
+	if err := bu.defaults(); err != nil {
+		return 0, err
+	}
 	if len(bu.hooks) == 0 {
 		if err = bu.check(); err != nil {
 			return 0, err
@@ -370,11 +372,15 @@ func (bu *BranchUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (bu *BranchUpdate) defaults() {
+func (bu *BranchUpdate) defaults() error {
 	if _, ok := bu.mutation.UpdatedAt(); !ok {
+		if branch.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized branch.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := branch.UpdateDefaultUpdatedAt()
 		bu.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -1068,7 +1074,9 @@ func (buo *BranchUpdateOne) Save(ctx context.Context) (*Branch, error) {
 		err  error
 		node *Branch
 	)
-	buo.defaults()
+	if err := buo.defaults(); err != nil {
+		return nil, err
+	}
 	if len(buo.hooks) == 0 {
 		if err = buo.check(); err != nil {
 			return nil, err
@@ -1130,11 +1138,15 @@ func (buo *BranchUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (buo *BranchUpdateOne) defaults() {
+func (buo *BranchUpdateOne) defaults() error {
 	if _, ok := buo.mutation.UpdatedAt(); !ok {
+		if branch.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized branch.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := branch.UpdateDefaultUpdatedAt()
 		buo.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

@@ -43,7 +43,7 @@ func (*rider) List(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*rider) Ban(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.PersonBanReq](c)
-    service.NewPerson().Ban(ctx.Modifier, req)
+    service.NewPersonWithModifier(ctx.Modifier).Ban(req)
     return ctx.SendResponse()
 }
 
@@ -59,6 +59,6 @@ func (*rider) Ban(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*rider) Block(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.RiderBlockReq](c)
-    service.NewRider().Block(ctx.Modifier, req)
+    service.NewRiderWithModifier(ctx.Modifier).Block(req)
     return ctx.SendResponse()
 }

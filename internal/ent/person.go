@@ -24,6 +24,9 @@ type Person struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	// Creator holds the value of the "creator" field.
+	// 创建人
+	Creator *model.Modifier `json:"creator,omitempty"`
 	// LastModifier holds the value of the "last_modifier" field.
 	// 最后修改人
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
@@ -88,7 +91,7 @@ func (*Person) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case person.FieldLastModifier, person.FieldAuthResult:
+		case person.FieldCreator, person.FieldLastModifier, person.FieldAuthResult:
 			values[i] = new([]byte)
 		case person.FieldBanned:
 			values[i] = new(sql.NullBool)
@@ -137,6 +140,14 @@ func (pe *Person) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				pe.DeletedAt = new(time.Time)
 				*pe.DeletedAt = value.Time
+			}
+		case person.FieldCreator:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field creator", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pe.Creator); err != nil {
+					return fmt.Errorf("unmarshal field creator: %w", err)
+				}
 			}
 		case person.FieldLastModifier:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -256,6 +267,8 @@ func (pe *Person) String() string {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", creator=")
+	builder.WriteString(fmt.Sprintf("%v", pe.Creator))
 	builder.WriteString(", last_modifier=")
 	builder.WriteString(fmt.Sprintf("%v", pe.LastModifier))
 	builder.WriteString(", remark=")

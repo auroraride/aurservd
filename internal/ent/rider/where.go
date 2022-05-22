@@ -447,6 +447,20 @@ func DeletedAtNotNil() predicate.Rider {
 	})
 }
 
+// CreatorIsNil applies the IsNil predicate on the "creator" field.
+func CreatorIsNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldCreator)))
+	})
+}
+
+// CreatorNotNil applies the NotNil predicate on the "creator" field.
+func CreatorNotNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldCreator)))
+	})
+}
+
 // LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
 func LastModifierIsNil() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {

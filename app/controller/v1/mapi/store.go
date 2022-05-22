@@ -43,7 +43,7 @@ func (*store) List(c echo.Context) (err error) {
 // @Success      200  {object}  model.StoreItem  "请求成功"
 func (*store) Create(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.StoreCreateReq](c)
-    return ctx.SendResponse(service.NewStore().Create(ctx.Modifier, req))
+    return ctx.SendResponse(service.NewStoreWithModifier(ctx.Modifier).Create(req))
 }
 
 // Modify
@@ -59,7 +59,7 @@ func (*store) Create(c echo.Context) (err error) {
 // @Success      200  {object}  model.StoreItem  "请求成功"
 func (*store) Modify(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.StoreModifyReq](c)
-    return ctx.SendResponse(service.NewStore().Modify(ctx.Modifier, req))
+    return ctx.SendResponse(service.NewStoreWithModifier(ctx.Modifier).Modify(req))
 }
 
 // Delete
@@ -74,6 +74,6 @@ func (*store) Modify(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*store) Delete(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
-    service.NewStore().Delete(ctx.Modifier, req)
+    service.NewStoreWithModifier(ctx.Modifier).Delete(req)
     return ctx.SendResponse()
 }
