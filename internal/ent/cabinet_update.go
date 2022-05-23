@@ -148,14 +148,14 @@ func (cu *CabinetUpdate) AddDoors(u int) *CabinetUpdate {
 }
 
 // SetStatus sets the "status" field.
-func (cu *CabinetUpdate) SetStatus(u uint) *CabinetUpdate {
+func (cu *CabinetUpdate) SetStatus(u uint8) *CabinetUpdate {
 	cu.mutation.ResetStatus()
 	cu.mutation.SetStatus(u)
 	return cu
 }
 
 // AddStatus adds u to the "status" field.
-func (cu *CabinetUpdate) AddStatus(u int) *CabinetUpdate {
+func (cu *CabinetUpdate) AddStatus(u int8) *CabinetUpdate {
 	cu.mutation.AddStatus(u)
 	return cu
 }
@@ -167,14 +167,14 @@ func (cu *CabinetUpdate) SetModels(mm []model.BatteryModel) *CabinetUpdate {
 }
 
 // SetHealth sets the "health" field.
-func (cu *CabinetUpdate) SetHealth(u uint) *CabinetUpdate {
+func (cu *CabinetUpdate) SetHealth(u uint8) *CabinetUpdate {
 	cu.mutation.ResetHealth()
 	cu.mutation.SetHealth(u)
 	return cu
 }
 
 // SetNillableHealth sets the "health" field if the given value is not nil.
-func (cu *CabinetUpdate) SetNillableHealth(u *uint) *CabinetUpdate {
+func (cu *CabinetUpdate) SetNillableHealth(u *uint8) *CabinetUpdate {
 	if u != nil {
 		cu.SetHealth(*u)
 	}
@@ -182,7 +182,7 @@ func (cu *CabinetUpdate) SetNillableHealth(u *uint) *CabinetUpdate {
 }
 
 // AddHealth adds u to the "health" field.
-func (cu *CabinetUpdate) AddHealth(u int) *CabinetUpdate {
+func (cu *CabinetUpdate) AddHealth(u int8) *CabinetUpdate {
 	cu.mutation.AddHealth(u)
 	return cu
 }
@@ -512,14 +512,14 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := cu.mutation.Status(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeUint8,
 			Value:  value,
 			Column: cabinet.FieldStatus,
 		})
 	}
 	if value, ok := cu.mutation.AddedStatus(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeUint8,
 			Value:  value,
 			Column: cabinet.FieldStatus,
 		})
@@ -533,14 +533,14 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := cu.mutation.Health(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeUint8,
 			Value:  value,
 			Column: cabinet.FieldHealth,
 		})
 	}
 	if value, ok := cu.mutation.AddedHealth(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeUint8,
 			Value:  value,
 			Column: cabinet.FieldHealth,
 		})
@@ -864,14 +864,14 @@ func (cuo *CabinetUpdateOne) AddDoors(u int) *CabinetUpdateOne {
 }
 
 // SetStatus sets the "status" field.
-func (cuo *CabinetUpdateOne) SetStatus(u uint) *CabinetUpdateOne {
+func (cuo *CabinetUpdateOne) SetStatus(u uint8) *CabinetUpdateOne {
 	cuo.mutation.ResetStatus()
 	cuo.mutation.SetStatus(u)
 	return cuo
 }
 
 // AddStatus adds u to the "status" field.
-func (cuo *CabinetUpdateOne) AddStatus(u int) *CabinetUpdateOne {
+func (cuo *CabinetUpdateOne) AddStatus(u int8) *CabinetUpdateOne {
 	cuo.mutation.AddStatus(u)
 	return cuo
 }
@@ -883,14 +883,14 @@ func (cuo *CabinetUpdateOne) SetModels(mm []model.BatteryModel) *CabinetUpdateOn
 }
 
 // SetHealth sets the "health" field.
-func (cuo *CabinetUpdateOne) SetHealth(u uint) *CabinetUpdateOne {
+func (cuo *CabinetUpdateOne) SetHealth(u uint8) *CabinetUpdateOne {
 	cuo.mutation.ResetHealth()
 	cuo.mutation.SetHealth(u)
 	return cuo
 }
 
 // SetNillableHealth sets the "health" field if the given value is not nil.
-func (cuo *CabinetUpdateOne) SetNillableHealth(u *uint) *CabinetUpdateOne {
+func (cuo *CabinetUpdateOne) SetNillableHealth(u *uint8) *CabinetUpdateOne {
 	if u != nil {
 		cuo.SetHealth(*u)
 	}
@@ -898,7 +898,7 @@ func (cuo *CabinetUpdateOne) SetNillableHealth(u *uint) *CabinetUpdateOne {
 }
 
 // AddHealth adds u to the "health" field.
-func (cuo *CabinetUpdateOne) AddHealth(u int) *CabinetUpdateOne {
+func (cuo *CabinetUpdateOne) AddHealth(u int8) *CabinetUpdateOne {
 	cuo.mutation.AddHealth(u)
 	return cuo
 }
@@ -1258,14 +1258,14 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 	}
 	if value, ok := cuo.mutation.Status(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeUint8,
 			Value:  value,
 			Column: cabinet.FieldStatus,
 		})
 	}
 	if value, ok := cuo.mutation.AddedStatus(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeUint8,
 			Value:  value,
 			Column: cabinet.FieldStatus,
 		})
@@ -1279,14 +1279,14 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 	}
 	if value, ok := cuo.mutation.Health(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeUint8,
 			Value:  value,
 			Column: cabinet.FieldHealth,
 		})
 	}
 	if value, ok := cuo.mutation.AddedHealth(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeUint8,
 			Value:  value,
 			Column: cabinet.FieldHealth,
 		})

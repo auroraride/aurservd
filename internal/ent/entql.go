@@ -132,9 +132,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			cabinet.FieldSerial:         {Type: field.TypeString, Column: cabinet.FieldSerial},
 			cabinet.FieldName:           {Type: field.TypeString, Column: cabinet.FieldName},
 			cabinet.FieldDoors:          {Type: field.TypeUint, Column: cabinet.FieldDoors},
-			cabinet.FieldStatus:         {Type: field.TypeUint, Column: cabinet.FieldStatus},
+			cabinet.FieldStatus:         {Type: field.TypeUint8, Column: cabinet.FieldStatus},
 			cabinet.FieldModels:         {Type: field.TypeJSON, Column: cabinet.FieldModels},
-			cabinet.FieldHealth:         {Type: field.TypeUint, Column: cabinet.FieldHealth},
+			cabinet.FieldHealth:         {Type: field.TypeUint8, Column: cabinet.FieldHealth},
 			cabinet.FieldBin:            {Type: field.TypeJSON, Column: cabinet.FieldBin},
 			cabinet.FieldBatteryNum:     {Type: field.TypeUint, Column: cabinet.FieldBatteryNum},
 			cabinet.FieldBatteryFullNum: {Type: field.TypeUint, Column: cabinet.FieldBatteryFullNum},
@@ -1295,8 +1295,8 @@ func (f *CabinetFilter) WhereDoors(p entql.UintP) {
 	f.Where(p.Field(cabinet.FieldDoors))
 }
 
-// WhereStatus applies the entql uint predicate on the status field.
-func (f *CabinetFilter) WhereStatus(p entql.UintP) {
+// WhereStatus applies the entql uint8 predicate on the status field.
+func (f *CabinetFilter) WhereStatus(p entql.Uint8P) {
 	f.Where(p.Field(cabinet.FieldStatus))
 }
 
@@ -1305,8 +1305,8 @@ func (f *CabinetFilter) WhereModels(p entql.BytesP) {
 	f.Where(p.Field(cabinet.FieldModels))
 }
 
-// WhereHealth applies the entql uint predicate on the health field.
-func (f *CabinetFilter) WhereHealth(p entql.UintP) {
+// WhereHealth applies the entql uint8 predicate on the health field.
+func (f *CabinetFilter) WhereHealth(p entql.Uint8P) {
 	f.Where(p.Field(cabinet.FieldHealth))
 }
 

@@ -54,13 +54,13 @@ type Cabinet struct {
 	Doors uint `json:"doors,omitempty"`
 	// Status holds the value of the "status" field.
 	// 投放状态
-	Status uint `json:"status,omitempty"`
+	Status uint8 `json:"status,omitempty"`
 	// Models holds the value of the "models" field.
 	// 电池型号
 	Models []model.BatteryModel `json:"models,omitempty"`
 	// Health holds the value of the "health" field.
 	// 健康状态 0未知 1正常 2离线 3故障
-	Health uint `json:"health,omitempty"`
+	Health uint8 `json:"health,omitempty"`
 	// Bin holds the value of the "bin" field.
 	// 仓位信息
 	Bin []model.CabinetBin `json:"bin,omitempty"`
@@ -235,7 +235,7 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				c.Status = uint(value.Int64)
+				c.Status = uint8(value.Int64)
 			}
 		case cabinet.FieldModels:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -249,7 +249,7 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field health", values[i])
 			} else if value.Valid {
-				c.Health = uint(value.Int64)
+				c.Health = uint8(value.Int64)
 			}
 		case cabinet.FieldBin:
 			if value, ok := values[i].(*[]byte); !ok {

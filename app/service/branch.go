@@ -14,8 +14,11 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/branchcontract"
+    "github.com/auroraride/aurservd/internal/ent/cabinet"
+    "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/jinzhu/copier"
+    "time"
 )
 
 type branchService struct {
@@ -175,25 +178,103 @@ func (s *branchService) Selector() *model.ItemListRes {
 }
 
 // ListByDistance 根据距离列出所有网点和电柜
-func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (res []model.BranchWithDistanceRes) {
+func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items []*model.BranchWithDistanceRes) {
+    var temps []struct {
+        ID       uint64  `json:"id"`
+        Distance float64 `json:"distance"`
+        Name     string  `json:"name"`
+        Lng      float64 `json:"lng"`
+        Lat      float64 `json:"lat"`
+        Image    string  `json:"image"`
+        Address  string  `json:"address"`
+    }
     // rows, err := s.orm.QueryContext(s.ctx, fmt.Sprintf(`SELECT id, name, ST_Distance(%s, ST_GeogFromText('POINT(108.949969 34.333489)')) AS distance FROM %s WHERE ST_DWithin(%s, ST_GeogFromText('POINT(108.949969 34.333489)'), 10000000) ORDER BY distance;`, branch.Table, branch.FieldGeom, branch.FieldGeom))
-    var items []model.BranchWithDistanceRes
-    _ = s.orm.QueryNotDeleted().
-        WithCabinets().
+    err := s.orm.QueryNotDeleted().
+        WithCabinets(func(cq *ent.CabinetQuery) {
+            cq.WithBms()
+        }).
         WithStores().
         Modify(func(sel *sql.Selector) {
-            sel.Select(branch.FieldID, branch.FieldName).
+            // sq := sql.Select("*").From()
+            bt := sql.Table(branch.Table)
+            sel.Select(bt.C(branch.FieldID), bt.C(branch.FieldName), bt.C(branch.FieldAddress), bt.C(branch.FieldLat), bt.C(branch.FieldLng)).
                 AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(%s, ST_GeogFromText('POINT(%f %f)'))`, branch.FieldGeom, *req.Lng, *req.Lat)), "distance").
+                // AppendSelectExprAs(sql.Raw(fmt.Sprintf(`TRIM('"' FROM %s[0]::TEXT)`, branch.FieldPhotos)), "image").
                 Where(sql.P(func(b *sql.Builder) {
                     b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), 500000)`, branch.FieldGeom, *req.Lng, *req.Lat))
                 })).
+                GroupBy(bt.C(branch.FieldID)).
                 OrderBy(sql.Asc("distance"))
         }).
-        Scan(s.ctx, &items)
-    res = make([]model.BranchWithDistanceRes, len(items))
-    // TODO 计算可用电池数量
-    // for i, item := range items {
-    //     res[i]
-    // }
+        Scan(s.ctx, &temps)
+    items = make([]*model.BranchWithDistanceRes, 0)
+    itemsMap := make(map[uint64]*model.BranchWithDistanceRes, len(temps))
+    if err != nil || len(temps) == 0 {
+        return
+    }
+    ids := make([]uint64, len(temps))
+    for i, temp := range temps {
+        ids[i] = temp.ID
+        itemsMap[temp.ID] = &model.BranchWithDistanceRes{
+            ID:       temp.ID,
+            Distance: temp.Distance,
+            Name:     temp.Name,
+            Lng:      temp.Lng,
+            Lat:      temp.Lat,
+            Image:    temp.Image,
+            Address:  temp.Address,
+            Facility: make([]model.BranchFacility, 0),
+        }
+    }
+
+    // 进行关联查询
+    // 门店
+    stores := ar.Ent.Store.QueryNotDeleted().Where(store.BranchIDIn(ids...)).AllX(s.ctx)
+    for _, es := range stores {
+        if es.Status == model.StoreStatusNormal {
+            itemsMap[es.BranchID].Facility = append(itemsMap[es.BranchID].Facility, model.BranchFacility{
+                ID:    es.ID,
+                Type:  model.BranchFacilityTypeStore,
+                Name:  es.Name,
+                State: model.BranchFacilityStateOnline,
+                Num:   0,
+            })
+        }
+    }
+
+    // 电柜
+    cabinets := ar.Ent.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).AllX(s.ctx)
+    for _, c := range cabinets {
+        if c.Status == model.CabinetStatusNormal {
+            fa := model.BranchFacility{
+                ID:    c.ID,
+                Name:  c.Name,
+                State: model.BranchFacilityStateOffline,
+                Type:  model.BranchFacilityTypeV72,
+            }
+            // 获取健康状态
+            // TODO 状态更新多久算离线 现在是5分钟
+            if c.Health == model.CabinetHealthStatusOnline && time.Now().Sub(c.UpdatedAt).Minutes() < 5 {
+                fa.State = model.BranchFacilityStateOnline
+            }
+            // 计算可用电池数量
+            for _, bin := range c.Bin {
+                fa.Total += 1
+                if bin.Electricity.IsBatteryFull() {
+                    fa.Num += 1
+                }
+            }
+            // 判定电池型号
+            // TODO 如果有多个电压怎么办
+            if c.Models[0].Voltage == 60 {
+                fa.Type = model.BranchFacilityTypeV60
+            }
+            itemsMap[c.BranchID].Facility = append(itemsMap[c.BranchID].Facility, fa)
+        }
+    }
+
+    for _, m := range itemsMap {
+        items = append(items, m)
+    }
     return
 }

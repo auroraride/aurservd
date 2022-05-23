@@ -438,7 +438,6 @@
                     },
                     {
                         "type": "integer",
-                        "description": "电柜状态 0未投放 1运营中 2维护中",
                         "name": "status",
                         "in": "query"
                     }
@@ -1744,6 +1743,55 @@
                 }
             }
         },
+        "/rider/v1/branch": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R20001 列举网点",
+                "operationId": "BranchList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "纬度 ",
+                        "name": "lat",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "经度 ",
+                        "name": "lng",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.BranchWithDistanceRes"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/contact": {
             "post": {
                 "consumes": [
@@ -2087,11 +2135,71 @@
                 }
             }
         },
+        "model.BranchFacility": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "num": {
+                    "description": "满电数量",
+                    "type": "integer"
+                },
+                "state": {
+                    "description": "状态 0不可用 1可用",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "总电池",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "类别",
+                    "type": "string"
+                }
+            }
+        },
         "model.BranchSampleItem": {
             "type": "object",
             "properties": {
                 "id": {
                     "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.BranchWithDistanceRes": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "distance": {
+                    "type": "number"
+                },
+                "facility": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BranchFacility"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "lng": {
+                    "type": "number"
                 },
                 "name": {
                     "type": "string"

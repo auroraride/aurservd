@@ -5,6 +5,13 @@
 
 package model
 
+const (
+    StoreStatusMaintain uint8 = iota // 维护中
+    StoreStatusNormal                // 营业中
+    StoreStatusRest                  // 休息中
+    StoreStatusHidden                // 隐藏
+)
+
 // StoreCreateReq 门店创建请求
 type StoreCreateReq struct {
     BranchID *uint64 `json:"branchId" validate:"required" trans:"网点"`

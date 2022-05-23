@@ -139,7 +139,7 @@ func (cc *CabinetCreate) SetDoors(u uint) *CabinetCreate {
 }
 
 // SetStatus sets the "status" field.
-func (cc *CabinetCreate) SetStatus(u uint) *CabinetCreate {
+func (cc *CabinetCreate) SetStatus(u uint8) *CabinetCreate {
 	cc.mutation.SetStatus(u)
 	return cc
 }
@@ -151,13 +151,13 @@ func (cc *CabinetCreate) SetModels(mm []model.BatteryModel) *CabinetCreate {
 }
 
 // SetHealth sets the "health" field.
-func (cc *CabinetCreate) SetHealth(u uint) *CabinetCreate {
+func (cc *CabinetCreate) SetHealth(u uint8) *CabinetCreate {
 	cc.mutation.SetHealth(u)
 	return cc
 }
 
 // SetNillableHealth sets the "health" field if the given value is not nil.
-func (cc *CabinetCreate) SetNillableHealth(u *uint) *CabinetCreate {
+func (cc *CabinetCreate) SetNillableHealth(u *uint8) *CabinetCreate {
 	if u != nil {
 		cc.SetHealth(*u)
 	}
@@ -497,7 +497,7 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := cc.mutation.Status(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeUint8,
 			Value:  value,
 			Column: cabinet.FieldStatus,
 		})
@@ -513,7 +513,7 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := cc.mutation.Health(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeUint8,
 			Value:  value,
 			Column: cabinet.FieldHealth,
 		})
@@ -836,7 +836,7 @@ func (u *CabinetUpsert) AddDoors(v uint) *CabinetUpsert {
 }
 
 // SetStatus sets the "status" field.
-func (u *CabinetUpsert) SetStatus(v uint) *CabinetUpsert {
+func (u *CabinetUpsert) SetStatus(v uint8) *CabinetUpsert {
 	u.Set(cabinet.FieldStatus, v)
 	return u
 }
@@ -848,7 +848,7 @@ func (u *CabinetUpsert) UpdateStatus() *CabinetUpsert {
 }
 
 // AddStatus adds v to the "status" field.
-func (u *CabinetUpsert) AddStatus(v uint) *CabinetUpsert {
+func (u *CabinetUpsert) AddStatus(v uint8) *CabinetUpsert {
 	u.Add(cabinet.FieldStatus, v)
 	return u
 }
@@ -866,7 +866,7 @@ func (u *CabinetUpsert) UpdateModels() *CabinetUpsert {
 }
 
 // SetHealth sets the "health" field.
-func (u *CabinetUpsert) SetHealth(v uint) *CabinetUpsert {
+func (u *CabinetUpsert) SetHealth(v uint8) *CabinetUpsert {
 	u.Set(cabinet.FieldHealth, v)
 	return u
 }
@@ -878,7 +878,7 @@ func (u *CabinetUpsert) UpdateHealth() *CabinetUpsert {
 }
 
 // AddHealth adds v to the "health" field.
-func (u *CabinetUpsert) AddHealth(v uint) *CabinetUpsert {
+func (u *CabinetUpsert) AddHealth(v uint8) *CabinetUpsert {
 	u.Add(cabinet.FieldHealth, v)
 	return u
 }
@@ -1198,14 +1198,14 @@ func (u *CabinetUpsertOne) UpdateDoors() *CabinetUpsertOne {
 }
 
 // SetStatus sets the "status" field.
-func (u *CabinetUpsertOne) SetStatus(v uint) *CabinetUpsertOne {
+func (u *CabinetUpsertOne) SetStatus(v uint8) *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.SetStatus(v)
 	})
 }
 
 // AddStatus adds v to the "status" field.
-func (u *CabinetUpsertOne) AddStatus(v uint) *CabinetUpsertOne {
+func (u *CabinetUpsertOne) AddStatus(v uint8) *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.AddStatus(v)
 	})
@@ -1233,14 +1233,14 @@ func (u *CabinetUpsertOne) UpdateModels() *CabinetUpsertOne {
 }
 
 // SetHealth sets the "health" field.
-func (u *CabinetUpsertOne) SetHealth(v uint) *CabinetUpsertOne {
+func (u *CabinetUpsertOne) SetHealth(v uint8) *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.SetHealth(v)
 	})
 }
 
 // AddHealth adds v to the "health" field.
-func (u *CabinetUpsertOne) AddHealth(v uint) *CabinetUpsertOne {
+func (u *CabinetUpsertOne) AddHealth(v uint8) *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.AddHealth(v)
 	})
@@ -1741,14 +1741,14 @@ func (u *CabinetUpsertBulk) UpdateDoors() *CabinetUpsertBulk {
 }
 
 // SetStatus sets the "status" field.
-func (u *CabinetUpsertBulk) SetStatus(v uint) *CabinetUpsertBulk {
+func (u *CabinetUpsertBulk) SetStatus(v uint8) *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.SetStatus(v)
 	})
 }
 
 // AddStatus adds v to the "status" field.
-func (u *CabinetUpsertBulk) AddStatus(v uint) *CabinetUpsertBulk {
+func (u *CabinetUpsertBulk) AddStatus(v uint8) *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.AddStatus(v)
 	})
@@ -1776,14 +1776,14 @@ func (u *CabinetUpsertBulk) UpdateModels() *CabinetUpsertBulk {
 }
 
 // SetHealth sets the "health" field.
-func (u *CabinetUpsertBulk) SetHealth(v uint) *CabinetUpsertBulk {
+func (u *CabinetUpsertBulk) SetHealth(v uint8) *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.SetHealth(v)
 	})
 }
 
 // AddHealth adds v to the "health" field.
-func (u *CabinetUpsertBulk) AddHealth(v uint) *CabinetUpsertBulk {
+func (u *CabinetUpsertBulk) AddHealth(v uint8) *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.AddHealth(v)
 	})

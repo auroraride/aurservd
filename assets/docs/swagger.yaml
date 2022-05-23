@@ -136,10 +136,51 @@ definitions:
     - sheets
     - startTime
     type: object
+  model.BranchFacility:
+    properties:
+      id:
+        type: integer
+      name:
+        description: 名称
+        type: string
+      num:
+        description: 满电数量
+        type: integer
+      state:
+        description: 状态 0不可用 1可用
+        type: integer
+      total:
+        description: 总电池
+        type: integer
+      type:
+        description: 类别
+        type: string
+    type: object
   model.BranchSampleItem:
     properties:
       id:
         type: integer
+      name:
+        type: string
+    type: object
+  model.BranchWithDistanceRes:
+    properties:
+      address:
+        type: string
+      distance:
+        type: number
+      facility:
+        items:
+          $ref: '#/definitions/model.BranchFacility'
+        type: array
+      id:
+        type: integer
+      image:
+        type: string
+      lat:
+        type: number
+      lng:
+        type: number
       name:
         type: string
     type: object
@@ -1169,8 +1210,7 @@ paths:
       - in: query
         name: serial
         type: string
-      - description: 电柜状态 0未投放 1运营中 2维护中
-        in: query
+      - in: query
         name: status
         type: integer
       produces:
@@ -1989,6 +2029,39 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: R10004 实名认证结果
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/branch:
+    get:
+      consumes:
+      - application/json
+      operationId: BranchList
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: '纬度 '
+        in: query
+        name: lat
+        required: true
+        type: number
+      - description: '经度 '
+        in: query
+        name: lng
+        required: true
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.BranchWithDistanceRes'
+            type: array
+      summary: R20001 列举网点
       tags:
       - '[R]骑手接口'
   /rider/v1/contact:

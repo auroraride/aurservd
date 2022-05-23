@@ -97,7 +97,7 @@ func init() {
 	// cabinetDescHealth is the schema descriptor for health field.
 	cabinetDescHealth := cabinetFields[8].Descriptor()
 	// cabinet.DefaultHealth holds the default value on creation for the health field.
-	cabinet.DefaultHealth = cabinetDescHealth.Default.(uint)
+	cabinet.DefaultHealth = cabinetDescHealth.Default.(uint8)
 	// cabinetDescBatteryNum is the schema descriptor for battery_num field.
 	cabinetDescBatteryNum := cabinetFields[10].Descriptor()
 	// cabinet.DefaultBatteryNum holds the default value on creation for the battery_num field.

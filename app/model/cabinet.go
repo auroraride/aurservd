@@ -36,30 +36,28 @@ func (cb CabinetBrand) String() string {
 }
 
 // CabinetStatus 设备状态
-type CabinetStatus uint
-
 const (
-    CabinetStatusPending     CabinetStatus = iota // 未投放
-    CabinetStatusOK                               // 运营中
-    CabinetStatusMaintenance                      // 维护中
+    CabinetStatusPending     uint8 = iota // 未投放
+    CabinetStatusNormal                   // 运营中
+    CabinetStatusMaintenance              // 维护中
 )
 
 // 设备健康状态
 const (
-    CabinetHealthStatusOffline uint = iota // 离线
-    CabinetHealthStatusOnline              // 在线
-    CabinetHealthStatusFault               // 故障
+    CabinetHealthStatusOffline uint8 = iota // 离线
+    CabinetHealthStatusOnline               // 在线
+    CabinetHealthStatusFault                // 故障
 )
 
 // Cabinet 电柜基础属性
 type Cabinet struct {
-    BranchID *uint64       `json:"branchId"`                                                      // 网点
-    Status   CabinetStatus `json:"status" enums:"0,1,2"`                                          // 电柜状态 0未投放 1运营中 2维护中
-    Brand    CabinetBrand  `json:"brand" validate:"required" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
-    Serial   string        `json:"serial" validate:"required" trans:"电柜原始编码"`
-    Name     string        `json:"name" validate:"required" trans:"电柜名称"`
-    Doors    uint          `json:"doors" validate:"required" trans:"柜门数量"`
-    Remark   *string       `json:"remark" trans:"备注"`
+    BranchID *uint64      `json:"branchId"`                                                      // 网点
+    Status   uint8        `json:"status" enums:"0,1,2"`                                          // 电柜状态 0未投放 1运营中 2维护中
+    Brand    CabinetBrand `json:"brand" validate:"required" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
+    Serial   string       `json:"serial" validate:"required" trans:"电柜原始编码"`
+    Name     string       `json:"name" validate:"required" trans:"电柜名称"`
+    Doors    uint         `json:"doors" validate:"required" trans:"柜门数量"`
+    Remark   *string      `json:"remark" trans:"备注"`
 }
 
 // CabinetCreateReq 电柜创建请求
@@ -82,24 +80,24 @@ type CabinetItem struct {
 type CabinetQueryReq struct {
     PaginationReq
 
-    Serial *string        `json:"serial" query:"serial"`
-    Name   *string        `json:"name" query:"name"`
-    CityId *uint64        `json:"cityId" query:"cityId"`
-    Brand  *string        `json:"brand" query:"brand"`
-    Status *CabinetStatus `json:"status" query:"status"`
+    Serial *string `json:"serial" query:"serial"`
+    Name   *string `json:"name" query:"name"`
+    CityId *uint64 `json:"cityId" query:"cityId"`
+    Brand  *string `json:"brand" query:"brand"`
+    Status *uint8  `json:"status" query:"status"`
 }
 
 // CabinetModifyReq 电柜修改请求
 type CabinetModifyReq struct {
-    ID       uint64         `json:"id" param:"id"`
-    BranchID *uint64        `json:"branchId"`                                  // 网点
-    Status   *CabinetStatus `json:"status" enums:"0,1,2"`                      // 电柜状态 0未投放 1运营中 2维护中
-    Brand    *CabinetBrand  `json:"brand" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
-    Serial   *string        `json:"serial" trans:"电柜原始编码"`
-    Name     *string        `json:"name" trans:"电柜名称"`
-    Doors    *uint          `json:"doors" trans:"柜门数量"`
-    Remark   *string        `json:"remark" trans:"备注"`
-    Models   *[]uint64      `json:"models" trans:"电池型号" validate:"required"`
+    ID       uint64        `json:"id" param:"id"`
+    BranchID *uint64       `json:"branchId"`                                  // 网点
+    Status   *uint8        `json:"status" enums:"0,1,2"`                      // 电柜状态 0未投放 1运营中 2维护中
+    Brand    *CabinetBrand `json:"brand" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
+    Serial   *string       `json:"serial" trans:"电柜原始编码"`
+    Name     *string       `json:"name" trans:"电柜名称"`
+    Doors    *uint         `json:"doors" trans:"柜门数量"`
+    Remark   *string       `json:"remark" trans:"备注"`
+    Models   *[]uint64     `json:"models" trans:"电池型号" validate:"required"`
 }
 
 // CabinetDeleteReq 电柜删除请求

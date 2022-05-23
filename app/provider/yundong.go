@@ -231,7 +231,7 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
         up.SetBin(bins).
             SetBatteryNum(num).
             SetBatteryFullNum(full).
-            SetHealth(uint(res.Data.Isonline)).
+            SetHealth(uint8(res.Data.Isonline)).
             SetDoors(uint(len(doors)))
     }
     return res

@@ -164,14 +164,14 @@ func Doors(v uint) predicate.Cabinet {
 }
 
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
-func Status(v uint) predicate.Cabinet {
+func Status(v uint8) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldStatus), v))
 	})
 }
 
 // Health applies equality check predicate on the "health" field. It's identical to HealthEQ.
-func Health(v uint) predicate.Cabinet {
+func Health(v uint8) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldHealth), v))
 	})
@@ -1169,21 +1169,21 @@ func DoorsLTE(v uint) predicate.Cabinet {
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
-func StatusEQ(v uint) predicate.Cabinet {
+func StatusEQ(v uint8) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldStatus), v))
 	})
 }
 
 // StatusNEQ applies the NEQ predicate on the "status" field.
-func StatusNEQ(v uint) predicate.Cabinet {
+func StatusNEQ(v uint8) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldStatus), v))
 	})
 }
 
 // StatusIn applies the In predicate on the "status" field.
-func StatusIn(vs ...uint) predicate.Cabinet {
+func StatusIn(vs ...uint8) predicate.Cabinet {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1200,7 +1200,7 @@ func StatusIn(vs ...uint) predicate.Cabinet {
 }
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
-func StatusNotIn(vs ...uint) predicate.Cabinet {
+func StatusNotIn(vs ...uint8) predicate.Cabinet {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1217,49 +1217,49 @@ func StatusNotIn(vs ...uint) predicate.Cabinet {
 }
 
 // StatusGT applies the GT predicate on the "status" field.
-func StatusGT(v uint) predicate.Cabinet {
+func StatusGT(v uint8) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldStatus), v))
 	})
 }
 
 // StatusGTE applies the GTE predicate on the "status" field.
-func StatusGTE(v uint) predicate.Cabinet {
+func StatusGTE(v uint8) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldStatus), v))
 	})
 }
 
 // StatusLT applies the LT predicate on the "status" field.
-func StatusLT(v uint) predicate.Cabinet {
+func StatusLT(v uint8) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldStatus), v))
 	})
 }
 
 // StatusLTE applies the LTE predicate on the "status" field.
-func StatusLTE(v uint) predicate.Cabinet {
+func StatusLTE(v uint8) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldStatus), v))
 	})
 }
 
 // HealthEQ applies the EQ predicate on the "health" field.
-func HealthEQ(v uint) predicate.Cabinet {
+func HealthEQ(v uint8) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldHealth), v))
 	})
 }
 
 // HealthNEQ applies the NEQ predicate on the "health" field.
-func HealthNEQ(v uint) predicate.Cabinet {
+func HealthNEQ(v uint8) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldHealth), v))
 	})
 }
 
 // HealthIn applies the In predicate on the "health" field.
-func HealthIn(vs ...uint) predicate.Cabinet {
+func HealthIn(vs ...uint8) predicate.Cabinet {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1276,7 +1276,7 @@ func HealthIn(vs ...uint) predicate.Cabinet {
 }
 
 // HealthNotIn applies the NotIn predicate on the "health" field.
-func HealthNotIn(vs ...uint) predicate.Cabinet {
+func HealthNotIn(vs ...uint8) predicate.Cabinet {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1293,28 +1293,28 @@ func HealthNotIn(vs ...uint) predicate.Cabinet {
 }
 
 // HealthGT applies the GT predicate on the "health" field.
-func HealthGT(v uint) predicate.Cabinet {
+func HealthGT(v uint8) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldHealth), v))
 	})
 }
 
 // HealthGTE applies the GTE predicate on the "health" field.
-func HealthGTE(v uint) predicate.Cabinet {
+func HealthGTE(v uint8) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldHealth), v))
 	})
 }
 
 // HealthLT applies the LT predicate on the "health" field.
-func HealthLT(v uint) predicate.Cabinet {
+func HealthLT(v uint8) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldHealth), v))
 	})
 }
 
 // HealthLTE applies the LTE predicate on the "health" field.
-func HealthLTE(v uint) predicate.Cabinet {
+func HealthLTE(v uint8) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldHealth), v))
 	})

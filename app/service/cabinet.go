@@ -60,7 +60,7 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
         SetName(req.Name).
         SetSerial(req.Serial).
         SetSn(shortuuid.New()).
-        SetStatus(uint(req.Status)).
+        SetStatus(req.Status).
         SetDoors(req.Doors).
         SetNillableRemark(req.Remark).
         SetBrand(req.Brand.Value()).
@@ -109,7 +109,7 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
         q.Where(cabinet.Brand(*req.Brand))
     }
     if req.Status != nil {
-        q.Where(cabinet.Status(uint(*req.Status)))
+        q.Where(cabinet.Status(*req.Status))
     }
 
     return model.ParsePaginationResponse[model.CabinetItem](q.PaginationResult(req.PaginationReq), func() []model.CabinetItem {
@@ -152,7 +152,7 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
         q.SetBranchID(*req.BranchID)
     }
     if req.Status != nil {
-        q.SetStatus(uint(*req.Status))
+        q.SetStatus(*req.Status)
     }
     if req.Brand != nil {
         q.SetBrand(req.Brand.Value())

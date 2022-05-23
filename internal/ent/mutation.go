@@ -4305,11 +4305,11 @@ type CabinetMutation struct {
 	name                *string
 	doors               *uint
 	adddoors            *int
-	status              *uint
-	addstatus           *int
+	status              *uint8
+	addstatus           *int8
 	models              *[]model.BatteryModel
-	health              *uint
-	addhealth           *int
+	health              *uint8
+	addhealth           *int8
 	bin                 *[]model.CabinetBin
 	battery_num         *uint
 	addbattery_num      *int
@@ -4945,13 +4945,13 @@ func (m *CabinetMutation) ResetDoors() {
 }
 
 // SetStatus sets the "status" field.
-func (m *CabinetMutation) SetStatus(u uint) {
+func (m *CabinetMutation) SetStatus(u uint8) {
 	m.status = &u
 	m.addstatus = nil
 }
 
 // Status returns the value of the "status" field in the mutation.
-func (m *CabinetMutation) Status() (r uint, exists bool) {
+func (m *CabinetMutation) Status() (r uint8, exists bool) {
 	v := m.status
 	if v == nil {
 		return
@@ -4962,7 +4962,7 @@ func (m *CabinetMutation) Status() (r uint, exists bool) {
 // OldStatus returns the old "status" field's value of the Cabinet entity.
 // If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetMutation) OldStatus(ctx context.Context) (v uint, err error) {
+func (m *CabinetMutation) OldStatus(ctx context.Context) (v uint8, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
 	}
@@ -4977,7 +4977,7 @@ func (m *CabinetMutation) OldStatus(ctx context.Context) (v uint, err error) {
 }
 
 // AddStatus adds u to the "status" field.
-func (m *CabinetMutation) AddStatus(u int) {
+func (m *CabinetMutation) AddStatus(u int8) {
 	if m.addstatus != nil {
 		*m.addstatus += u
 	} else {
@@ -4986,7 +4986,7 @@ func (m *CabinetMutation) AddStatus(u int) {
 }
 
 // AddedStatus returns the value that was added to the "status" field in this mutation.
-func (m *CabinetMutation) AddedStatus() (r int, exists bool) {
+func (m *CabinetMutation) AddedStatus() (r int8, exists bool) {
 	v := m.addstatus
 	if v == nil {
 		return
@@ -5037,13 +5037,13 @@ func (m *CabinetMutation) ResetModels() {
 }
 
 // SetHealth sets the "health" field.
-func (m *CabinetMutation) SetHealth(u uint) {
+func (m *CabinetMutation) SetHealth(u uint8) {
 	m.health = &u
 	m.addhealth = nil
 }
 
 // Health returns the value of the "health" field in the mutation.
-func (m *CabinetMutation) Health() (r uint, exists bool) {
+func (m *CabinetMutation) Health() (r uint8, exists bool) {
 	v := m.health
 	if v == nil {
 		return
@@ -5054,7 +5054,7 @@ func (m *CabinetMutation) Health() (r uint, exists bool) {
 // OldHealth returns the old "health" field's value of the Cabinet entity.
 // If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetMutation) OldHealth(ctx context.Context) (v uint, err error) {
+func (m *CabinetMutation) OldHealth(ctx context.Context) (v uint8, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldHealth is only allowed on UpdateOne operations")
 	}
@@ -5069,7 +5069,7 @@ func (m *CabinetMutation) OldHealth(ctx context.Context) (v uint, err error) {
 }
 
 // AddHealth adds u to the "health" field.
-func (m *CabinetMutation) AddHealth(u int) {
+func (m *CabinetMutation) AddHealth(u int8) {
 	if m.addhealth != nil {
 		*m.addhealth += u
 	} else {
@@ -5078,7 +5078,7 @@ func (m *CabinetMutation) AddHealth(u int) {
 }
 
 // AddedHealth returns the value that was added to the "health" field in this mutation.
-func (m *CabinetMutation) AddedHealth() (r int, exists bool) {
+func (m *CabinetMutation) AddedHealth() (r int8, exists bool) {
 	v := m.addhealth
 	if v == nil {
 		return
@@ -5644,7 +5644,7 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 		m.SetDoors(v)
 		return nil
 	case cabinet.FieldStatus:
-		v, ok := value.(uint)
+		v, ok := value.(uint8)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -5658,7 +5658,7 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 		m.SetModels(v)
 		return nil
 	case cabinet.FieldHealth:
-		v, ok := value.(uint)
+		v, ok := value.(uint8)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -5743,14 +5743,14 @@ func (m *CabinetMutation) AddField(name string, value ent.Value) error {
 		m.AddDoors(v)
 		return nil
 	case cabinet.FieldStatus:
-		v, ok := value.(int)
+		v, ok := value.(int8)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddStatus(v)
 		return nil
 	case cabinet.FieldHealth:
-		v, ok := value.(int)
+		v, ok := value.(int8)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

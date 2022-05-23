@@ -55,24 +55,30 @@ type BranchContract struct {
 }
 
 const (
-    BranchBranchFacilityTypeStore = "store"
-    BranchBranchFacilityTypeV72   = "V72"
-    BranchBranchFacilityTypeV60   = "V60"
+    BranchFacilityTypeStore = "store"
+    BranchFacilityTypeV72   = "V72"
+    BranchFacilityTypeV60   = "V60"
+)
+
+const (
+    BranchFacilityStateOffline uint = iota // 不在线
+    BranchFacilityStateOnline              // 在线
 )
 
 // BranchWithDistanceReq 根据距离获取网点请求
 type BranchWithDistanceReq struct {
-    Lng *float64 `json:"lng" validate:"required" trans:"经度"`
-    Lat *float64 `json:"lat" validate:"required" trans:"纬度"`
+    Lng *float64 `json:"lng" query:"lng" validate:"required" trans:"经度"`
+    Lat *float64 `json:"lat" query:"lat" validate:"required" trans:"纬度"`
 }
 
 // BranchFacility 网点设施
 type BranchFacility struct {
     ID    uint64 `json:"id"`
-    Type  string `json:"type"`
-    Name  string `json:"name"`
-    State int    `json:"state"`
-    Num   int    `json:"num"`
+    Type  string `json:"type"`  // 类别
+    Name  string `json:"name"`  // 名称
+    State uint   `json:"state"` // 状态 0不可用 1可用
+    Num   int    `json:"num"`   // 满电数量
+    Total int    `json:"total"` // 总电池
 }
 
 // BranchWithDistanceRes 根据距离获取网点结果
