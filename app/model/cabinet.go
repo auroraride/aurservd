@@ -97,7 +97,7 @@ type CabinetModifyReq struct {
     Name     *string       `json:"name" trans:"电柜名称"`
     Doors    *uint         `json:"doors" trans:"柜门数量"`
     Remark   *string       `json:"remark" trans:"备注"`
-    Models   *[]uint64     `json:"models" trans:"电池型号" validate:"required"`
+    Models   *[]uint64     `json:"models" trans:"电池型号"`
 }
 
 // CabinetDeleteReq 电柜删除请求

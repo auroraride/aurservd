@@ -82,8 +82,9 @@ const (
 
 // BranchWithDistanceReq 根据距离获取网点请求
 type BranchWithDistanceReq struct {
-    Lng *float64 `json:"lng" query:"lng" validate:"required" trans:"经度"`
-    Lat *float64 `json:"lat" query:"lat" validate:"required" trans:"纬度"`
+    Lng      *float64 `json:"lng" query:"lng" validate:"required" trans:"经度"`
+    Lat      *float64 `json:"lat" query:"lat" validate:"required" trans:"纬度"`
+    Distance *float64 `json:"distance" query:"distance" validate:"required" trans:"距离"`
 }
 
 // BranchFacility 网点设施
