@@ -100,6 +100,9 @@ definitions:
     type: object
   model.BranchFacility:
     properties:
+      fid:
+        description: 设施标识
+        type: string
       id:
         type: integer
       name:
@@ -2081,6 +2084,11 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
+      - description: '距离 '
+        in: query
+        name: distance
+        required: true
+        type: number
       - description: '纬度 '
         in: query
         name: lat

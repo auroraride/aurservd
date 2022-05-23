@@ -1774,6 +1774,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "number",
+                        "description": "距离 ",
+                        "name": "distance",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
                         "description": "纬度 ",
                         "name": "lat",
                         "in": "query",
@@ -2094,6 +2101,10 @@ const docTemplate = `{
         "model.BranchFacility": {
             "type": "object",
             "properties": {
+                "fid": {
+                    "description": "设施标识",
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },

@@ -71,8 +71,8 @@ type BranchContract struct {
 
 const (
     BranchFacilityTypeStore = "store"
-    BranchFacilityTypeV72   = "V72"
-    BranchFacilityTypeV60   = "V60"
+    BranchFacilityTypeV72   = "v72"
+    BranchFacilityTypeV60   = "v60"
 )
 
 const (
@@ -95,6 +95,7 @@ type BranchFacility struct {
     State uint   `json:"state"` // 状态 0不可用 1可用
     Num   int    `json:"num"`   // 满电数量
     Total int    `json:"total"` // 总电池
+    Fid   string `json:"fid"`   // 设施标识
 }
 
 // BranchWithDistanceRes 根据距离获取网点结果

@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/labstack/echo/v4"
+    "github.com/lithammer/shortuuid/v4"
 )
 
 // SendSmsCode
@@ -35,10 +36,14 @@ func SendSmsCode(c echo.Context) error {
         if !debugPhones[req.Phone] && !service.NewCaptcha().Verify(id, req.CaptchaCode, false) {
             return errors.New("图形验证码校验失败")
         }
-        // 发送短信
-        smsId, err = service.NewSms().SendCode(req.Phone)
-        if err != nil {
-            return err
+        if debugPhones[req.Phone] {
+            smsId = shortuuid.New()
+        } else {
+            // 发送短信
+            smsId, err = service.NewSms().SendCode(req.Phone)
+            if err != nil {
+                return err
+            }
         }
     } else {
         smsId = req.Phone

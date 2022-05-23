@@ -18,6 +18,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/jinzhu/copier"
+    "github.com/lithammer/shortuuid/v4"
     "time"
 )
 
@@ -209,7 +210,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
                 AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(%s, ST_GeogFromText('POINT(%f %f)'))`, branch.FieldGeom, *req.Lng, *req.Lat)), "distance").
                 AppendSelectExprAs(sql.Raw(fmt.Sprintf(`TRIM('"' FROM %s[0]::TEXT)`, branch.FieldPhotos)), "image").
                 Where(sql.P(func(b *sql.Builder) {
-                    b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), 500000)`, branch.FieldGeom, *req.Lng, *req.Lat))
+                    b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), %f)`, branch.FieldGeom, *req.Lng, *req.Lat, *req.Distance))
                 })).
                 GroupBy(bt.C(branch.FieldID)).
                 OrderBy(sql.Asc("distance"))
@@ -246,6 +247,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
                 Name:  es.Name,
                 State: model.BranchFacilityStateOnline,
                 Num:   0,
+                Fid:   shortuuid.New(),
             })
         }
     }
@@ -259,6 +261,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
                 Name:  c.Name,
                 State: model.BranchFacilityStateOffline,
                 Type:  model.BranchFacilityTypeV72,
+                Fid:   shortuuid.New(),
             }
             // 获取健康状态
             // TODO 状态更新多久算离线 现在是5分钟
