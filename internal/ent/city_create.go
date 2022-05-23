@@ -134,6 +134,34 @@ func (cc *CityCreate) SetNillableParentID(u *uint64) *CityCreate {
 	return cc
 }
 
+// SetLng sets the "lng" field.
+func (cc *CityCreate) SetLng(f float64) *CityCreate {
+	cc.mutation.SetLng(f)
+	return cc
+}
+
+// SetNillableLng sets the "lng" field if the given value is not nil.
+func (cc *CityCreate) SetNillableLng(f *float64) *CityCreate {
+	if f != nil {
+		cc.SetLng(*f)
+	}
+	return cc
+}
+
+// SetLat sets the "lat" field.
+func (cc *CityCreate) SetLat(f float64) *CityCreate {
+	cc.mutation.SetLat(f)
+	return cc
+}
+
+// SetNillableLat sets the "lat" field if the given value is not nil.
+func (cc *CityCreate) SetNillableLat(f *float64) *CityCreate {
+	if f != nil {
+		cc.SetLat(*f)
+	}
+	return cc
+}
+
 // SetID sets the "id" field.
 func (cc *CityCreate) SetID(u uint64) *CityCreate {
 	cc.mutation.SetID(u)
@@ -430,6 +458,22 @@ func (cc *CityCreate) createSpec() (*City, *sqlgraph.CreateSpec) {
 			Column: city.FieldCode,
 		})
 		_node.Code = value
+	}
+	if value, ok := cc.mutation.Lng(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: city.FieldLng,
+		})
+		_node.Lng = value
+	}
+	if value, ok := cc.mutation.Lat(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: city.FieldLat,
+		})
+		_node.Lat = value
 	}
 	if nodes := cc.mutation.PlansIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -737,6 +781,54 @@ func (u *CityUpsert) ClearParentID() *CityUpsert {
 	return u
 }
 
+// SetLng sets the "lng" field.
+func (u *CityUpsert) SetLng(v float64) *CityUpsert {
+	u.Set(city.FieldLng, v)
+	return u
+}
+
+// UpdateLng sets the "lng" field to the value that was provided on create.
+func (u *CityUpsert) UpdateLng() *CityUpsert {
+	u.SetExcluded(city.FieldLng)
+	return u
+}
+
+// AddLng adds v to the "lng" field.
+func (u *CityUpsert) AddLng(v float64) *CityUpsert {
+	u.Add(city.FieldLng, v)
+	return u
+}
+
+// ClearLng clears the value of the "lng" field.
+func (u *CityUpsert) ClearLng() *CityUpsert {
+	u.SetNull(city.FieldLng)
+	return u
+}
+
+// SetLat sets the "lat" field.
+func (u *CityUpsert) SetLat(v float64) *CityUpsert {
+	u.Set(city.FieldLat, v)
+	return u
+}
+
+// UpdateLat sets the "lat" field to the value that was provided on create.
+func (u *CityUpsert) UpdateLat() *CityUpsert {
+	u.SetExcluded(city.FieldLat)
+	return u
+}
+
+// AddLat adds v to the "lat" field.
+func (u *CityUpsert) AddLat(v float64) *CityUpsert {
+	u.Add(city.FieldLat, v)
+	return u
+}
+
+// ClearLat clears the value of the "lat" field.
+func (u *CityUpsert) ClearLat() *CityUpsert {
+	u.SetNull(city.FieldLat)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -972,6 +1064,62 @@ func (u *CityUpsertOne) UpdateParentID() *CityUpsertOne {
 func (u *CityUpsertOne) ClearParentID() *CityUpsertOne {
 	return u.Update(func(s *CityUpsert) {
 		s.ClearParentID()
+	})
+}
+
+// SetLng sets the "lng" field.
+func (u *CityUpsertOne) SetLng(v float64) *CityUpsertOne {
+	return u.Update(func(s *CityUpsert) {
+		s.SetLng(v)
+	})
+}
+
+// AddLng adds v to the "lng" field.
+func (u *CityUpsertOne) AddLng(v float64) *CityUpsertOne {
+	return u.Update(func(s *CityUpsert) {
+		s.AddLng(v)
+	})
+}
+
+// UpdateLng sets the "lng" field to the value that was provided on create.
+func (u *CityUpsertOne) UpdateLng() *CityUpsertOne {
+	return u.Update(func(s *CityUpsert) {
+		s.UpdateLng()
+	})
+}
+
+// ClearLng clears the value of the "lng" field.
+func (u *CityUpsertOne) ClearLng() *CityUpsertOne {
+	return u.Update(func(s *CityUpsert) {
+		s.ClearLng()
+	})
+}
+
+// SetLat sets the "lat" field.
+func (u *CityUpsertOne) SetLat(v float64) *CityUpsertOne {
+	return u.Update(func(s *CityUpsert) {
+		s.SetLat(v)
+	})
+}
+
+// AddLat adds v to the "lat" field.
+func (u *CityUpsertOne) AddLat(v float64) *CityUpsertOne {
+	return u.Update(func(s *CityUpsert) {
+		s.AddLat(v)
+	})
+}
+
+// UpdateLat sets the "lat" field to the value that was provided on create.
+func (u *CityUpsertOne) UpdateLat() *CityUpsertOne {
+	return u.Update(func(s *CityUpsert) {
+		s.UpdateLat()
+	})
+}
+
+// ClearLat clears the value of the "lat" field.
+func (u *CityUpsertOne) ClearLat() *CityUpsertOne {
+	return u.Update(func(s *CityUpsert) {
+		s.ClearLat()
 	})
 }
 
@@ -1375,6 +1523,62 @@ func (u *CityUpsertBulk) UpdateParentID() *CityUpsertBulk {
 func (u *CityUpsertBulk) ClearParentID() *CityUpsertBulk {
 	return u.Update(func(s *CityUpsert) {
 		s.ClearParentID()
+	})
+}
+
+// SetLng sets the "lng" field.
+func (u *CityUpsertBulk) SetLng(v float64) *CityUpsertBulk {
+	return u.Update(func(s *CityUpsert) {
+		s.SetLng(v)
+	})
+}
+
+// AddLng adds v to the "lng" field.
+func (u *CityUpsertBulk) AddLng(v float64) *CityUpsertBulk {
+	return u.Update(func(s *CityUpsert) {
+		s.AddLng(v)
+	})
+}
+
+// UpdateLng sets the "lng" field to the value that was provided on create.
+func (u *CityUpsertBulk) UpdateLng() *CityUpsertBulk {
+	return u.Update(func(s *CityUpsert) {
+		s.UpdateLng()
+	})
+}
+
+// ClearLng clears the value of the "lng" field.
+func (u *CityUpsertBulk) ClearLng() *CityUpsertBulk {
+	return u.Update(func(s *CityUpsert) {
+		s.ClearLng()
+	})
+}
+
+// SetLat sets the "lat" field.
+func (u *CityUpsertBulk) SetLat(v float64) *CityUpsertBulk {
+	return u.Update(func(s *CityUpsert) {
+		s.SetLat(v)
+	})
+}
+
+// AddLat adds v to the "lat" field.
+func (u *CityUpsertBulk) AddLat(v float64) *CityUpsertBulk {
+	return u.Update(func(s *CityUpsert) {
+		s.AddLat(v)
+	})
+}
+
+// UpdateLat sets the "lat" field to the value that was provided on create.
+func (u *CityUpsertBulk) UpdateLat() *CityUpsertBulk {
+	return u.Update(func(s *CityUpsert) {
+		s.UpdateLat()
+	})
+}
+
+// ClearLat clears the value of the "lat" field.
+func (u *CityUpsertBulk) ClearLat() *CityUpsertBulk {
+	return u.Update(func(s *CityUpsert) {
+		s.ClearLat()
 	})
 }
 

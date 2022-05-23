@@ -16,12 +16,19 @@ import (
     "github.com/labstack/echo/v4"
 )
 
+var (
+    riderAuthSkipper = map[string]bool{
+        "/rider/v1/signin": true,
+        // "/rider/v1/city":   true,
+    }
+)
+
 // RiderMiddleware 骑手中间件
 func RiderMiddleware() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
             url := c.Request().RequestURI
-            if url == "/rider/v1/signin" {
+            if riderAuthSkipper[url] {
                 return next(c)
             }
 
@@ -63,10 +70,15 @@ func RiderMiddleware() echo.MiddlewareFunc {
 func RiderRequireAuthAndContact() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
+            url := c.Request().RequestURI
+            // if riderAuthSkipper[url] {
+            //     return next(c)
+            // }
+
             ctx := c.(*app.RiderContext)
-            uri := c.Request().RequestURI
+
             p := ctx.Rider.Edges.Person
-            if ctx.Rider.Contact == nil && uri != "/rider/contact" {
+            if ctx.Rider.Contact == nil && url != "/rider/contact" {
                 snag.Panic(snag.StatusRequireContact)
             }
             if p == nil || model.PersonAuthStatus(p.Status).RequireAuth() {
@@ -81,6 +93,11 @@ func RiderRequireAuthAndContact() echo.MiddlewareFunc {
 func RiderFaceMiddleware() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
+            // url := c.Request().RequestURI
+            // if riderAuthSkipper[url] {
+            //     return next(c)
+            // }
+
             ctx := c.(*app.RiderContext)
             u := ctx.Rider
             s := service.NewRider()

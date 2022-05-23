@@ -45,6 +45,12 @@ type City struct {
 	// ParentID holds the value of the "parent_id" field.
 	// 父级
 	ParentID *uint64 `json:"parent_id,omitempty"`
+	// Lng holds the value of the "lng" field.
+	// 经度
+	Lng float64 `json:"lng,omitempty"`
+	// Lat holds the value of the "lat" field.
+	// 纬度
+	Lat float64 `json:"lat,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CityQuery when eager-loading is set.
 	Edges CityEdges `json:"edges"`
@@ -126,6 +132,8 @@ func (*City) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case city.FieldOpen:
 			values[i] = new(sql.NullBool)
+		case city.FieldLng, city.FieldLat:
+			values[i] = new(sql.NullFloat64)
 		case city.FieldID, city.FieldParentID:
 			values[i] = new(sql.NullInt64)
 		case city.FieldRemark, city.FieldName, city.FieldCode:
@@ -220,6 +228,18 @@ func (c *City) assignValues(columns []string, values []interface{}) error {
 				c.ParentID = new(uint64)
 				*c.ParentID = uint64(value.Int64)
 			}
+		case city.FieldLng:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field lng", values[i])
+			} else if value.Valid {
+				c.Lng = value.Float64
+			}
+		case city.FieldLat:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field lat", values[i])
+			} else if value.Valid {
+				c.Lat = value.Float64
+			}
 		}
 	}
 	return nil
@@ -299,6 +319,10 @@ func (c *City) String() string {
 		builder.WriteString(", parent_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
+	builder.WriteString(", lng=")
+	builder.WriteString(fmt.Sprintf("%v", c.Lng))
+	builder.WriteString(", lat=")
+	builder.WriteString(fmt.Sprintf("%v", c.Lat))
 	builder.WriteByte(')')
 	return builder.String()
 }

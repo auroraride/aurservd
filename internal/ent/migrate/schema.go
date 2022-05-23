@@ -315,6 +315,8 @@ var (
 		{Name: "open", Type: field.TypeBool, Comment: "启用", Nullable: true},
 		{Name: "name", Type: field.TypeString, Comment: "城市", Size: 100},
 		{Name: "code", Type: field.TypeString, Comment: "城市编号", Size: 10},
+		{Name: "lng", Type: field.TypeFloat64, Comment: "经度", Nullable: true},
+		{Name: "lat", Type: field.TypeFloat64, Comment: "纬度", Nullable: true},
 		{Name: "parent_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// CityTable holds the schema information for the "city" table.
@@ -325,7 +327,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "city_city_children",
-				Columns:    []*schema.Column{CityColumns[10]},
+				Columns:    []*schema.Column{CityColumns[12]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -349,7 +351,7 @@ var (
 			{
 				Name:    "city_parent_id",
 				Unique:  false,
-				Columns: []*schema.Column{CityColumns[10]},
+				Columns: []*schema.Column{CityColumns[12]},
 			},
 		},
 	}

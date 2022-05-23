@@ -30,6 +30,8 @@ func (City) Fields() []ent.Field {
         field.String("name").MaxLen(100).Comment("城市"),
         field.String("code").MaxLen(10).Comment("城市编号"),
         field.Uint64("parent_id").Optional().Nillable().Comment("父级"),
+        field.Float("lng").Optional().Comment("经度"),
+        field.Float("lat").Optional().Comment("纬度"),
     }
 }
 

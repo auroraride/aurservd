@@ -36,12 +36,14 @@ func (Modifier) Hooks() []ent.Hook {
                     return nil, fmt.Errorf("unexpected audit-log call from mutation type %T", m)
                 }
                 mod := model.GetModifierFromContext(ctx)
-                switch op := m.Op(); {
-                case op.Is(ent.OpCreate):
-                    ml.SetCreator(mod)
-                    ml.SetLastModifier(mod)
-                case op.Is(ent.OpUpdateOne | ent.OpUpdate):
-                    ml.SetLastModifier(mod)
+                if mod != nil {
+                    switch op := m.Op(); {
+                    case op.Is(ent.OpCreate):
+                        ml.SetCreator(mod)
+                        ml.SetLastModifier(mod)
+                    case op.Is(ent.OpUpdateOne | ent.OpUpdate):
+                        ml.SetLastModifier(mod)
+                    }
                 }
                 return next.Mutate(ctx, m)
             })

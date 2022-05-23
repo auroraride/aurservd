@@ -44,5 +44,5 @@ func (*branch) List(c echo.Context) (err error) {
 // @Success      200  {object}  model.BranchRidingRes  "请求成功"
 func (*branch) Riding(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.BranchRidingReq](c)
-    return ctx.SendResponse(model.BranchRidingRes{Minutes: amap.NewAmap().DirectionRidingMinutes(req.Origin, req.Destination)})
+    return ctx.SendResponse(model.BranchRidingRes{Minutes: amap.New().DirectionRidingMinutes(req.Origin, req.Destination)})
 }

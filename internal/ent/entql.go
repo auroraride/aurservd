@@ -188,6 +188,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			city.FieldName:         {Type: field.TypeString, Column: city.FieldName},
 			city.FieldCode:         {Type: field.TypeString, Column: city.FieldCode},
 			city.FieldParentID:     {Type: field.TypeUint64, Column: city.FieldParentID},
+			city.FieldLng:          {Type: field.TypeFloat64, Column: city.FieldLng},
+			city.FieldLat:          {Type: field.TypeFloat64, Column: city.FieldLat},
 		},
 	}
 	graph.Nodes[6] = &sqlgraph.Node{
@@ -1621,6 +1623,16 @@ func (f *CityFilter) WhereCode(p entql.StringP) {
 // WhereParentID applies the entql uint64 predicate on the parent_id field.
 func (f *CityFilter) WhereParentID(p entql.Uint64P) {
 	f.Where(p.Field(city.FieldParentID))
+}
+
+// WhereLng applies the entql float64 predicate on the lng field.
+func (f *CityFilter) WhereLng(p entql.Float64P) {
+	f.Where(p.Field(city.FieldLng))
+}
+
+// WhereLat applies the entql float64 predicate on the lat field.
+func (f *CityFilter) WhereLat(p entql.Float64P) {
+	f.Where(p.Field(city.FieldLat))
 }
 
 // WhereHasPlans applies a predicate to check if query has an edge plans.

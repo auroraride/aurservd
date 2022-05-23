@@ -7412,6 +7412,10 @@ type CityMutation struct {
 	open            *bool
 	name            *string
 	code            *string
+	lng             *float64
+	addlng          *float64
+	lat             *float64
+	addlat          *float64
 	clearedFields   map[string]struct{}
 	plans           map[uint64]struct{}
 	removedplans    map[uint64]struct{}
@@ -7974,6 +7978,146 @@ func (m *CityMutation) ResetParentID() {
 	delete(m.clearedFields, city.FieldParentID)
 }
 
+// SetLng sets the "lng" field.
+func (m *CityMutation) SetLng(f float64) {
+	m.lng = &f
+	m.addlng = nil
+}
+
+// Lng returns the value of the "lng" field in the mutation.
+func (m *CityMutation) Lng() (r float64, exists bool) {
+	v := m.lng
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLng returns the old "lng" field's value of the City entity.
+// If the City object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CityMutation) OldLng(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLng is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLng requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLng: %w", err)
+	}
+	return oldValue.Lng, nil
+}
+
+// AddLng adds f to the "lng" field.
+func (m *CityMutation) AddLng(f float64) {
+	if m.addlng != nil {
+		*m.addlng += f
+	} else {
+		m.addlng = &f
+	}
+}
+
+// AddedLng returns the value that was added to the "lng" field in this mutation.
+func (m *CityMutation) AddedLng() (r float64, exists bool) {
+	v := m.addlng
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearLng clears the value of the "lng" field.
+func (m *CityMutation) ClearLng() {
+	m.lng = nil
+	m.addlng = nil
+	m.clearedFields[city.FieldLng] = struct{}{}
+}
+
+// LngCleared returns if the "lng" field was cleared in this mutation.
+func (m *CityMutation) LngCleared() bool {
+	_, ok := m.clearedFields[city.FieldLng]
+	return ok
+}
+
+// ResetLng resets all changes to the "lng" field.
+func (m *CityMutation) ResetLng() {
+	m.lng = nil
+	m.addlng = nil
+	delete(m.clearedFields, city.FieldLng)
+}
+
+// SetLat sets the "lat" field.
+func (m *CityMutation) SetLat(f float64) {
+	m.lat = &f
+	m.addlat = nil
+}
+
+// Lat returns the value of the "lat" field in the mutation.
+func (m *CityMutation) Lat() (r float64, exists bool) {
+	v := m.lat
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLat returns the old "lat" field's value of the City entity.
+// If the City object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CityMutation) OldLat(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLat is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLat requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLat: %w", err)
+	}
+	return oldValue.Lat, nil
+}
+
+// AddLat adds f to the "lat" field.
+func (m *CityMutation) AddLat(f float64) {
+	if m.addlat != nil {
+		*m.addlat += f
+	} else {
+		m.addlat = &f
+	}
+}
+
+// AddedLat returns the value that was added to the "lat" field in this mutation.
+func (m *CityMutation) AddedLat() (r float64, exists bool) {
+	v := m.addlat
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearLat clears the value of the "lat" field.
+func (m *CityMutation) ClearLat() {
+	m.lat = nil
+	m.addlat = nil
+	m.clearedFields[city.FieldLat] = struct{}{}
+}
+
+// LatCleared returns if the "lat" field was cleared in this mutation.
+func (m *CityMutation) LatCleared() bool {
+	_, ok := m.clearedFields[city.FieldLat]
+	return ok
+}
+
+// ResetLat resets all changes to the "lat" field.
+func (m *CityMutation) ResetLat() {
+	m.lat = nil
+	m.addlat = nil
+	delete(m.clearedFields, city.FieldLat)
+}
+
 // AddPlanIDs adds the "plans" edge to the Plan entity by ids.
 func (m *CityMutation) AddPlanIDs(ids ...uint64) {
 	if m.plans == nil {
@@ -8235,7 +8379,7 @@ func (m *CityMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CityMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 12)
 	if m.created_at != nil {
 		fields = append(fields, city.FieldCreatedAt)
 	}
@@ -8266,6 +8410,12 @@ func (m *CityMutation) Fields() []string {
 	if m.parent != nil {
 		fields = append(fields, city.FieldParentID)
 	}
+	if m.lng != nil {
+		fields = append(fields, city.FieldLng)
+	}
+	if m.lat != nil {
+		fields = append(fields, city.FieldLat)
+	}
 	return fields
 }
 
@@ -8294,6 +8444,10 @@ func (m *CityMutation) Field(name string) (ent.Value, bool) {
 		return m.Code()
 	case city.FieldParentID:
 		return m.ParentID()
+	case city.FieldLng:
+		return m.Lng()
+	case city.FieldLat:
+		return m.Lat()
 	}
 	return nil, false
 }
@@ -8323,6 +8477,10 @@ func (m *CityMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldCode(ctx)
 	case city.FieldParentID:
 		return m.OldParentID(ctx)
+	case city.FieldLng:
+		return m.OldLng(ctx)
+	case city.FieldLat:
+		return m.OldLat(ctx)
 	}
 	return nil, fmt.Errorf("unknown City field %s", name)
 }
@@ -8402,6 +8560,20 @@ func (m *CityMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetParentID(v)
 		return nil
+	case city.FieldLng:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLng(v)
+		return nil
+	case city.FieldLat:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLat(v)
+		return nil
 	}
 	return fmt.Errorf("unknown City field %s", name)
 }
@@ -8410,6 +8582,12 @@ func (m *CityMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *CityMutation) AddedFields() []string {
 	var fields []string
+	if m.addlng != nil {
+		fields = append(fields, city.FieldLng)
+	}
+	if m.addlat != nil {
+		fields = append(fields, city.FieldLat)
+	}
 	return fields
 }
 
@@ -8418,6 +8596,10 @@ func (m *CityMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *CityMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case city.FieldLng:
+		return m.AddedLng()
+	case city.FieldLat:
+		return m.AddedLat()
 	}
 	return nil, false
 }
@@ -8427,6 +8609,20 @@ func (m *CityMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *CityMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case city.FieldLng:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLng(v)
+		return nil
+	case city.FieldLat:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLat(v)
+		return nil
 	}
 	return fmt.Errorf("unknown City numeric field %s", name)
 }
@@ -8452,6 +8648,12 @@ func (m *CityMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(city.FieldParentID) {
 		fields = append(fields, city.FieldParentID)
+	}
+	if m.FieldCleared(city.FieldLng) {
+		fields = append(fields, city.FieldLng)
+	}
+	if m.FieldCleared(city.FieldLat) {
+		fields = append(fields, city.FieldLat)
 	}
 	return fields
 }
@@ -8484,6 +8686,12 @@ func (m *CityMutation) ClearField(name string) error {
 		return nil
 	case city.FieldParentID:
 		m.ClearParentID()
+		return nil
+	case city.FieldLng:
+		m.ClearLng()
+		return nil
+	case city.FieldLat:
+		m.ClearLat()
 		return nil
 	}
 	return fmt.Errorf("unknown City nullable field %s", name)
@@ -8522,6 +8730,12 @@ func (m *CityMutation) ResetField(name string) error {
 		return nil
 	case city.FieldParentID:
 		m.ResetParentID()
+		return nil
+	case city.FieldLng:
+		m.ResetLng()
+		return nil
+	case city.FieldLat:
+		m.ResetLat()
 		return nil
 	}
 	return fmt.Errorf("unknown City field %s", name)

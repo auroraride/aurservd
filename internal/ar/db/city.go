@@ -11,17 +11,16 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
-    "strconv"
 )
 
 func insertCity(client *ent.Client) {
     type R struct {
-        Adcode   string `json:"adcode,omitempty"`
-        Name     string `json:"name,omitempty"`
-        Code     string `json:"code,omitempty"`
-        ParentId uint64 `json:"parent_id,omitempty"`
-        Open     bool   `json:"open,omitempty"`
-        Children []R    `json:"children,omitempty"`
+        Adcode   uint64  `json:"adcode"`
+        Name     string  `json:"name"`
+        Code     string  `json:"code"`
+        Lng      float64 `json:"lng,omitempty"`
+        Lat      float64 `json:"lat,omitempty"`
+        Children []R     `json:"children,omitempty"`
     }
 
     ctx := context.Background()
@@ -32,20 +31,20 @@ func insertCity(client *ent.Client) {
     err := jsoniter.Unmarshal(assets.City, &items)
     if err == nil {
         for _, item := range items {
-            id, _ := strconv.Atoi(item.Adcode)
             parent := client.City.Create().
-                SetID(uint64(id)).
+                SetID(item.Adcode).
                 SetName(item.Name).
                 SetCode(item.Code).
                 SaveX(ctx)
             for _, child := range item.Children {
-                cid, _ := strconv.Atoi(child.Adcode)
                 client.City.Create().
-                    SetID(uint64(cid)).
+                    SetID(child.Adcode).
                     SetName(child.Name).
                     SetCode(child.Code).
                     SetOpen(false).
                     SetParent(parent).
+                    SetLat(child.Lat).
+                    SetLng(child.Lng).
                     SaveX(ctx)
             }
         }

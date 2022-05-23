@@ -33,6 +33,10 @@ const (
 	FieldCode = "code"
 	// FieldParentID holds the string denoting the parent_id field in the database.
 	FieldParentID = "parent_id"
+	// FieldLng holds the string denoting the lng field in the database.
+	FieldLng = "lng"
+	// FieldLat holds the string denoting the lat field in the database.
+	FieldLat = "lat"
 	// EdgePlans holds the string denoting the plans edge name in mutations.
 	EdgePlans = "plans"
 	// EdgeParent holds the string denoting the parent edge name in mutations.
@@ -87,6 +91,8 @@ var Columns = []string{
 	FieldName,
 	FieldCode,
 	FieldParentID,
+	FieldLng,
+	FieldLat,
 }
 
 var (

@@ -1851,6 +1851,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/city": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R20003 获取已开通城市",
+                "operationId": "RiderCityList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CityWithLocation"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/contact": {
             "post": {
                 "consumes": [
@@ -2821,6 +2856,27 @@ const docTemplate = `{
                 "open": {
                     "description": "状态 ",
                     "type": "boolean"
+                }
+            }
+        },
+        "model.CityWithLocation": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "name": {
+                    "description": "城市",
+                    "type": "string"
                 }
             }
         },

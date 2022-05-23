@@ -16,7 +16,7 @@ type LngLat struct {
     Lat float64 `json:"lat"`
 }
 
-func NewAmap() *amap {
+func New() *amap {
     cfg := ar.Config.Amap
     return &amap{Key: cfg.Key}
 }

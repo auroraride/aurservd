@@ -35,6 +35,8 @@ func loadRideRoutes() {
     g.GET("/demo", rapi.Rider.Demo) // 测试空白页面
     g.GET("/", rapi.Rider.Profile)  // 获取用户信息
 
+    g.GET("/city", rapi.City.List)
+
     // 合同
     contract := g.Group("/contract")
     contract.POST("/sign", rapi.Contract.Sign)

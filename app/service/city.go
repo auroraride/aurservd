@@ -87,3 +87,21 @@ func (s *cityService) Modify(req *model.CityModifyReq) *bool {
     c := s.orm.UpdateOneID(req.ID).SetOpen(*req.Open).SaveX(s.ctx)
     return c.Open
 }
+
+// OpenedCities 获取已开通城市列表
+func (s *cityService) OpenedCities() []model.CityWithLocation {
+    items := s.orm.QueryNotDeleted().
+        Where(city.Open(true)).
+        Where(city.ParentIDNotNil()).
+        AllX(s.ctx)
+    res := make([]model.CityWithLocation, len(items))
+    for i, item := range items {
+        res[i] = model.CityWithLocation{
+            ID:   item.ID,
+            Name: item.Name,
+            Lng:  item.Lng,
+            Lat:  item.Lat,
+        }
+    }
+    return res
+}

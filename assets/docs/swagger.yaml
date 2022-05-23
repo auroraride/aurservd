@@ -592,6 +592,21 @@ definitions:
     required:
     - open
     type: object
+  model.CityWithLocation:
+    properties:
+      id:
+        description: 城市ID
+        type: integer
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      name:
+        description: 城市
+        type: string
+    type: object
   model.EmployeeItem:
     properties:
       id:
@@ -2160,6 +2175,29 @@ paths:
           schema:
             $ref: '#/definitions/model.BranchRidingRes'
       summary: R20002 网点骑行规划时间
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/city:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderCityList
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CityWithLocation'
+            type: array
+      summary: R20003 获取已开通城市
       tags:
       - '[R]骑手接口'
   /rider/v1/contact:

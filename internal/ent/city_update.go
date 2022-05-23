@@ -142,6 +142,60 @@ func (cu *CityUpdate) ClearParentID() *CityUpdate {
 	return cu
 }
 
+// SetLng sets the "lng" field.
+func (cu *CityUpdate) SetLng(f float64) *CityUpdate {
+	cu.mutation.ResetLng()
+	cu.mutation.SetLng(f)
+	return cu
+}
+
+// SetNillableLng sets the "lng" field if the given value is not nil.
+func (cu *CityUpdate) SetNillableLng(f *float64) *CityUpdate {
+	if f != nil {
+		cu.SetLng(*f)
+	}
+	return cu
+}
+
+// AddLng adds f to the "lng" field.
+func (cu *CityUpdate) AddLng(f float64) *CityUpdate {
+	cu.mutation.AddLng(f)
+	return cu
+}
+
+// ClearLng clears the value of the "lng" field.
+func (cu *CityUpdate) ClearLng() *CityUpdate {
+	cu.mutation.ClearLng()
+	return cu
+}
+
+// SetLat sets the "lat" field.
+func (cu *CityUpdate) SetLat(f float64) *CityUpdate {
+	cu.mutation.ResetLat()
+	cu.mutation.SetLat(f)
+	return cu
+}
+
+// SetNillableLat sets the "lat" field if the given value is not nil.
+func (cu *CityUpdate) SetNillableLat(f *float64) *CityUpdate {
+	if f != nil {
+		cu.SetLat(*f)
+	}
+	return cu
+}
+
+// AddLat adds f to the "lat" field.
+func (cu *CityUpdate) AddLat(f float64) *CityUpdate {
+	cu.mutation.AddLat(f)
+	return cu
+}
+
+// ClearLat clears the value of the "lat" field.
+func (cu *CityUpdate) ClearLat() *CityUpdate {
+	cu.mutation.ClearLat()
+	return cu
+}
+
 // AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
 func (cu *CityUpdate) AddPlanIDs(ids ...uint64) *CityUpdate {
 	cu.mutation.AddPlanIDs(ids...)
@@ -487,6 +541,46 @@ func (cu *CityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: city.FieldCode,
+		})
+	}
+	if value, ok := cu.mutation.Lng(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: city.FieldLng,
+		})
+	}
+	if value, ok := cu.mutation.AddedLng(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: city.FieldLng,
+		})
+	}
+	if cu.mutation.LngCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: city.FieldLng,
+		})
+	}
+	if value, ok := cu.mutation.Lat(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: city.FieldLat,
+		})
+	}
+	if value, ok := cu.mutation.AddedLat(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: city.FieldLat,
+		})
+	}
+	if cu.mutation.LatCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: city.FieldLat,
 		})
 	}
 	if cu.mutation.PlansCleared() {
@@ -869,6 +963,60 @@ func (cuo *CityUpdateOne) ClearParentID() *CityUpdateOne {
 	return cuo
 }
 
+// SetLng sets the "lng" field.
+func (cuo *CityUpdateOne) SetLng(f float64) *CityUpdateOne {
+	cuo.mutation.ResetLng()
+	cuo.mutation.SetLng(f)
+	return cuo
+}
+
+// SetNillableLng sets the "lng" field if the given value is not nil.
+func (cuo *CityUpdateOne) SetNillableLng(f *float64) *CityUpdateOne {
+	if f != nil {
+		cuo.SetLng(*f)
+	}
+	return cuo
+}
+
+// AddLng adds f to the "lng" field.
+func (cuo *CityUpdateOne) AddLng(f float64) *CityUpdateOne {
+	cuo.mutation.AddLng(f)
+	return cuo
+}
+
+// ClearLng clears the value of the "lng" field.
+func (cuo *CityUpdateOne) ClearLng() *CityUpdateOne {
+	cuo.mutation.ClearLng()
+	return cuo
+}
+
+// SetLat sets the "lat" field.
+func (cuo *CityUpdateOne) SetLat(f float64) *CityUpdateOne {
+	cuo.mutation.ResetLat()
+	cuo.mutation.SetLat(f)
+	return cuo
+}
+
+// SetNillableLat sets the "lat" field if the given value is not nil.
+func (cuo *CityUpdateOne) SetNillableLat(f *float64) *CityUpdateOne {
+	if f != nil {
+		cuo.SetLat(*f)
+	}
+	return cuo
+}
+
+// AddLat adds f to the "lat" field.
+func (cuo *CityUpdateOne) AddLat(f float64) *CityUpdateOne {
+	cuo.mutation.AddLat(f)
+	return cuo
+}
+
+// ClearLat clears the value of the "lat" field.
+func (cuo *CityUpdateOne) ClearLat() *CityUpdateOne {
+	cuo.mutation.ClearLat()
+	return cuo
+}
+
 // AddPlanIDs adds the "plans" edge to the Plan entity by IDs.
 func (cuo *CityUpdateOne) AddPlanIDs(ids ...uint64) *CityUpdateOne {
 	cuo.mutation.AddPlanIDs(ids...)
@@ -1244,6 +1392,46 @@ func (cuo *CityUpdateOne) sqlSave(ctx context.Context) (_node *City, err error) 
 			Type:   field.TypeString,
 			Value:  value,
 			Column: city.FieldCode,
+		})
+	}
+	if value, ok := cuo.mutation.Lng(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: city.FieldLng,
+		})
+	}
+	if value, ok := cuo.mutation.AddedLng(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: city.FieldLng,
+		})
+	}
+	if cuo.mutation.LngCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: city.FieldLng,
+		})
+	}
+	if value, ok := cuo.mutation.Lat(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: city.FieldLat,
+		})
+	}
+	if value, ok := cuo.mutation.AddedLat(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: city.FieldLat,
+		})
+	}
+	if cuo.mutation.LatCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: city.FieldLat,
 		})
 	}
 	if cuo.mutation.PlansCleared() {

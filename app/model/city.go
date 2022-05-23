@@ -18,6 +18,14 @@ type City struct {
     Name string `json:"name"` // 城市
 }
 
+// CityWithLocation 城市
+type CityWithLocation struct {
+    ID   uint64  `json:"id"`   // 城市ID
+    Name string  `json:"name"` // 城市
+    Lng  float64 `json:"lng"`  // 经度
+    Lat  float64 `json:"lat"`  // 纬度
+}
+
 // CityItem 城市或省份
 type CityItem struct {
     ID       uint64     `json:"id"`                 // 城市或省份ID

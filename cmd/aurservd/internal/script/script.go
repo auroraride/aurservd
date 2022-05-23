@@ -13,6 +13,7 @@ func Execute() {
         Short: "极光出行管理端控制台",
     }
     rootCmd.AddCommand(
+        cityCmd,
         managerCmd,
         serverCommand(),
     )
