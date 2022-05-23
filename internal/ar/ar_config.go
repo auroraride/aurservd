@@ -61,6 +61,9 @@ type config struct {
     Nsq struct {
         Url string
     }
+    Amap struct {
+        Key string
+    }
     Database struct {
         Postgres struct {
             Dsn string

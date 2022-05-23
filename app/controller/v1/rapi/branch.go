@@ -30,3 +30,9 @@ func (*branch) List(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.BranchWithDistanceReq](c)
     return ctx.SendResponse(service.NewBranch().ListByDistance(req))
 }
+
+func (*branch) Riding(c echo.Context) (err error) {
+    ctx := app.Context(c)
+
+    return ctx.SendResponse()
+}
