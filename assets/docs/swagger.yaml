@@ -98,6 +98,40 @@ definitions:
     - sheets
     - startTime
     type: object
+  model.BranchCreateReq:
+    properties:
+      address:
+        description: '详细地址 '
+        type: string
+      cityId:
+        description: '城市 '
+        type: integer
+      contracts:
+        items:
+          $ref: '#/definitions/model.BranchContract'
+        type: array
+      lat:
+        description: '纬度 '
+        type: number
+      lng:
+        description: '经度 '
+        type: number
+      name:
+        description: '网点名称 '
+        type: string
+      photos:
+        description: '网点照片 '
+        items:
+          type: string
+        type: array
+    required:
+    - address
+    - cityId
+    - lat
+    - lng
+    - name
+    - photos
+    type: object
   model.BranchFacility:
     properties:
       fid:
@@ -160,7 +194,7 @@ definitions:
         description: V72电柜数量
         type: integer
     type: object
-  model.BranchReq:
+  model.BranchModifyReq:
     properties:
       address:
         description: '详细地址 '
@@ -172,10 +206,6 @@ definitions:
         items:
           $ref: '#/definitions/model.BranchContract'
         type: array
-      creator:
-        $ref: '#/definitions/model.Modifier'
-      lastModifier:
-        $ref: '#/definitions/model.Modifier'
       lat:
         description: '纬度 '
         type: number
@@ -190,13 +220,12 @@ definitions:
         items:
           type: string
         type: array
-    required:
-    - address
-    - cityId
-    - lat
-    - lng
-    - name
-    - photos
+    type: object
+  model.BranchRidingRes:
+    properties:
+      minutes:
+        description: 骑行规划时间(分钟)
+        type: integer
     type: object
   model.BranchSampleItem:
     properties:
@@ -615,15 +644,6 @@ definitions:
       phone:
         type: string
       token:
-        type: string
-    type: object
-  model.Modifier:
-    properties:
-      id:
-        type: integer
-      name:
-        type: string
-      phone:
         type: string
     type: object
   model.Pagination:
@@ -1150,7 +1170,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.BranchReq'
+          $ref: '#/definitions/model.BranchCreateReq'
       produces:
       - application/json
       responses:
@@ -1177,7 +1197,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.BranchReq'
+          $ref: '#/definitions/model.BranchModifyReq'
       - description: 网点ID
         in: path
         name: id
@@ -2109,6 +2129,35 @@ paths:
               $ref: '#/definitions/model.BranchWithDistanceRes'
             type: array
       summary: R20001 列举网点
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/branch/riding:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderBranchRiding
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: '结束坐标 '
+        in: query
+        name: destination
+        type: string
+      - description: '开始坐标 '
+        in: query
+        name: origin
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.BranchRidingRes'
+      summary: R20002 网点骑行规划时间
       tags:
       - '[R]骑手接口'
   /rider/v1/contact:

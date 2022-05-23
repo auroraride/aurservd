@@ -117,3 +117,14 @@ type BranchWithDistanceRes struct {
     Address  string           `json:"address"`
     Facility []BranchFacility `json:"facility"`
 }
+
+// BranchRidingReq 骑行规划时间请求
+type BranchRidingReq struct {
+    Origin      string `json:"origin" query:"origin" trans:"开始坐标"`
+    Destination string `json:"destination" query:"destination" trans:"结束坐标"`
+}
+
+// BranchRidingRes 骑行规划时间返回
+type BranchRidingRes struct {
+    Minutes int `json:"minutes"` // 骑行规划时间(分钟)
+}

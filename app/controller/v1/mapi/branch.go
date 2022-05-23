@@ -53,7 +53,7 @@ func (*branch) Selector(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body  model.BranchReq  true  "网点数据"
+// @Param        body  body  model.BranchCreateReq  true  "网点数据"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*branch) Create(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.BranchCreateReq](c)
@@ -69,7 +69,7 @@ func (*branch) Create(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body  model.BranchReq  true  "网点数据"
+// @Param        body  body  model.BranchModifyReq  true  "网点数据"
 // @Param        id  path  int  true  "网点ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*branch) Modify(c echo.Context) (err error) {

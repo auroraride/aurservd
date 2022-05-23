@@ -282,7 +282,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.BranchReq"
+                            "$ref": "#/definitions/model.BranchCreateReq"
                         }
                     }
                 ],
@@ -370,7 +370,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.BranchReq"
+                            "$ref": "#/definitions/model.BranchModifyReq"
                         }
                     },
                     {
@@ -1807,6 +1807,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/branch/riding": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R20002 网点骑行规划时间",
+                "operationId": "RiderBranchRiding",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束坐标 ",
+                        "name": "destination",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始坐标 ",
+                        "name": "origin",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.BranchRidingRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/contact": {
             "post": {
                 "consumes": [
@@ -2098,6 +2142,52 @@ const docTemplate = `{
                 }
             }
         },
+        "model.BranchCreateReq": {
+            "type": "object",
+            "required": [
+                "address",
+                "cityId",
+                "lat",
+                "lng",
+                "name",
+                "photos"
+            ],
+            "properties": {
+                "address": {
+                    "description": "详细地址 ",
+                    "type": "string"
+                },
+                "cityId": {
+                    "description": "城市 ",
+                    "type": "integer"
+                },
+                "contracts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BranchContract"
+                    }
+                },
+                "lat": {
+                    "description": "纬度 ",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度 ",
+                    "type": "number"
+                },
+                "name": {
+                    "description": "网点名称 ",
+                    "type": "string"
+                },
+                "photos": {
+                    "description": "网点照片 ",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "model.BranchFacility": {
             "type": "object",
             "properties": {
@@ -2184,16 +2274,8 @@ const docTemplate = `{
                 }
             }
         },
-        "model.BranchReq": {
+        "model.BranchModifyReq": {
             "type": "object",
-            "required": [
-                "address",
-                "cityId",
-                "lat",
-                "lng",
-                "name",
-                "photos"
-            ],
             "properties": {
                 "address": {
                     "description": "详细地址 ",
@@ -2208,12 +2290,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.BranchContract"
                     }
-                },
-                "creator": {
-                    "$ref": "#/definitions/model.Modifier"
-                },
-                "lastModifier": {
-                    "$ref": "#/definitions/model.Modifier"
                 },
                 "lat": {
                     "description": "纬度 ",
@@ -2233,6 +2309,15 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "model.BranchRidingRes": {
+            "type": "object",
+            "properties": {
+                "minutes": {
+                    "description": "骑行规划时间(分钟)",
+                    "type": "integer"
                 }
             }
         },
@@ -2816,20 +2901,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.Modifier": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "phone": {
                     "type": "string"
                 }
             }

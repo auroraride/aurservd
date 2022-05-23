@@ -43,6 +43,7 @@ func loadRideRoutes() {
     // 获取网点
     branch := g.Group("/branch")
     branch.GET("", rapi.Branch.List)
+    branch.GET("/riding", rapi.Branch.Riding)
 
     // 电柜
     cabinet := g.Group("/cabinet")

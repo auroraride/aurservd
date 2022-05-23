@@ -7,8 +7,9 @@ package amap
 
 import (
     "fmt"
+    "github.com/go-resty/resty/v2"
     log "github.com/sirupsen/logrus"
-    "gopkg.in/resty.v1"
+    "math"
     "strconv"
 )
 
@@ -36,14 +37,13 @@ type DirectionRidingRes struct {
     } `json:"route,omitempty"`
 }
 
-func (a *amap) DirectionRiding(origin, destination LngLat) (res *DirectionRidingRes) {
-    r, err := resty.R().SetBody(res).Get(fmt.Sprintf(
-        `https://restapi.amap.com/v5/direction/electrobike?key=%s&origin=%f,%f&destination=%f,%f&show_fields=cost`,
+func (a *amap) DirectionRiding(origin, destination string) (res *DirectionRidingRes) {
+    res = new(DirectionRidingRes)
+    r, err := resty.New().R().SetResult(res).Get(fmt.Sprintf(
+        `https://restapi.amap.com/v5/direction/electrobike?key=%s&origin=%s&destination=%s&show_fields=cost`,
         a.Key,
-        origin.Lng,
-        origin.Lat,
-        destination.Lng,
-        destination.Lat,
+        origin,
+        destination,
     ))
     if err != nil {
         log.Error(err)
@@ -53,9 +53,9 @@ func (a *amap) DirectionRiding(origin, destination LngLat) (res *DirectionRiding
 }
 
 // DirectionRidingMinutes 骑行规划
-func (a *amap) DirectionRidingMinutes(origin, destination LngLat) (total int) {
+func (a *amap) DirectionRidingMinutes(origin, destination string) (total int) {
     res := a.DirectionRiding(origin, destination)
-    if res == nil {
+    if res == nil || res.Status != "1" {
         return
     }
     for _, path := range res.Route.Paths {
@@ -64,5 +64,5 @@ func (a *amap) DirectionRidingMinutes(origin, destination LngLat) (total int) {
             total += cost
         }
     }
-    return
+    return int(math.Round(float64(total) / 60.0))
 }
