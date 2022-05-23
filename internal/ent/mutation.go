@@ -39,7 +39,7 @@ const (
 
 	// Node types.
 	TypeBatteryModel   = "BatteryModel"
-	TypeBranch         = "Branch"
+	TypeBranch         = "BranchReq"
 	TypeBranchContract = "BranchContract"
 	TypeCabinet        = "Cabinet"
 	TypeCabinetFault   = "CabinetFault"
@@ -2136,7 +2136,7 @@ func (m *BranchMutation) OldField(ctx context.Context, name string) (ent.Value, 
 	case branch.FieldGeom:
 		return m.OldGeom(ctx)
 	}
-	return nil, fmt.Errorf("unknown Branch field %s", name)
+	return nil, fmt.Errorf("unknown BranchReq field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
@@ -2236,7 +2236,7 @@ func (m *BranchMutation) SetField(name string, value ent.Value) error {
 		m.SetGeom(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Branch field %s", name)
+	return fmt.Errorf("unknown BranchReq field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
@@ -2285,7 +2285,7 @@ func (m *BranchMutation) AddField(name string, value ent.Value) error {
 		m.AddLat(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Branch numeric field %s", name)
+	return fmt.Errorf("unknown BranchReq numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
@@ -2331,7 +2331,7 @@ func (m *BranchMutation) ClearField(name string) error {
 		m.ClearRemark()
 		return nil
 	}
-	return fmt.Errorf("unknown Branch nullable field %s", name)
+	return fmt.Errorf("unknown BranchReq nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
@@ -2378,7 +2378,7 @@ func (m *BranchMutation) ResetField(name string) error {
 		m.ResetGeom()
 		return nil
 	}
-	return fmt.Errorf("unknown Branch field %s", name)
+	return fmt.Errorf("unknown BranchReq field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
@@ -2535,7 +2535,7 @@ func (m *BranchMutation) ClearEdge(name string) error {
 		m.ClearCity()
 		return nil
 	}
-	return fmt.Errorf("unknown Branch unique edge %s", name)
+	return fmt.Errorf("unknown BranchReq unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
@@ -2558,7 +2558,7 @@ func (m *BranchMutation) ResetEdge(name string) error {
 		m.ResetStores()
 		return nil
 	}
-	return fmt.Errorf("unknown Branch edge %s", name)
+	return fmt.Errorf("unknown BranchReq edge %s", name)
 }
 
 // BranchContractMutation represents an operation that mutates the BranchContract nodes in the graph.

@@ -246,7 +246,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.Branch"
+                                                "$ref": "#/definitions/model.BranchItem"
                                             }
                                         }
                                     }
@@ -282,7 +282,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Branch"
+                            "$ref": "#/definitions/model.BranchReq"
                         }
                     }
                 ],
@@ -370,7 +370,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Branch"
+                            "$ref": "#/definitions/model.BranchReq"
                         }
                     },
                     {
@@ -2011,58 +2011,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Branch": {
-            "type": "object",
-            "required": [
-                "address",
-                "cityId",
-                "lat",
-                "lng",
-                "name",
-                "photos"
-            ],
-            "properties": {
-                "address": {
-                    "description": "详细地址 ",
-                    "type": "string"
-                },
-                "cityId": {
-                    "description": "城市 ",
-                    "type": "integer"
-                },
-                "contracts": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.BranchContract"
-                    }
-                },
-                "creator": {
-                    "$ref": "#/definitions/model.Modifier"
-                },
-                "lastModifier": {
-                    "$ref": "#/definitions/model.Modifier"
-                },
-                "lat": {
-                    "description": "纬度 ",
-                    "type": "number"
-                },
-                "lng": {
-                    "description": "经度 ",
-                    "type": "number"
-                },
-                "name": {
-                    "description": "网点名称 ",
-                    "type": "string"
-                },
-                "photos": {
-                    "description": "网点照片 ",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            }
-        },
         "model.BranchContract": {
             "type": "object",
             "required": [
@@ -2168,6 +2116,112 @@ const docTemplate = `{
                 "type": {
                     "description": "类别",
                     "type": "string"
+                }
+            }
+        },
+        "model.BranchItem": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "地址",
+                    "type": "string"
+                },
+                "city": {
+                    "description": "城市",
+                    "$ref": "#/definitions/model.City"
+                },
+                "contracts": {
+                    "description": "合同",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BranchContract"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "photos": {
+                    "description": "照片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "storeTotal": {
+                    "description": "门店数量",
+                    "type": "integer"
+                },
+                "v60Total": {
+                    "description": "V60电柜数量",
+                    "type": "integer"
+                },
+                "v72Total": {
+                    "description": "V72电柜数量",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.BranchReq": {
+            "type": "object",
+            "required": [
+                "address",
+                "cityId",
+                "lat",
+                "lng",
+                "name",
+                "photos"
+            ],
+            "properties": {
+                "address": {
+                    "description": "详细地址 ",
+                    "type": "string"
+                },
+                "cityId": {
+                    "description": "城市 ",
+                    "type": "integer"
+                },
+                "contracts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BranchContract"
+                    }
+                },
+                "creator": {
+                    "$ref": "#/definitions/model.Modifier"
+                },
+                "lastModifier": {
+                    "$ref": "#/definitions/model.Modifier"
+                },
+                "lat": {
+                    "description": "纬度 ",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度 ",
+                    "type": "number"
+                },
+                "name": {
+                    "description": "网点名称 ",
+                    "type": "string"
+                },
+                "photos": {
+                    "description": "网点照片 ",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

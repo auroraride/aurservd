@@ -50,7 +50,7 @@ func (s *branchService) Query(id uint64) *ent.Branch {
 
 // Create 新增网点
 // TODO 从结构体新增
-func (s *branchService) Create(req *model.Branch) {
+func (s *branchService) Create(req *model.BranchReq) {
     tx, _ := ar.Ent.Tx(s.ctx)
 
     // TODO: 校验城市是否启用
@@ -103,7 +103,7 @@ func (s *branchService) AddContract(id uint64, req *model.BranchContract) *ent.B
 }
 
 // List 网点列表
-func (s *branchService) List(req *model.BranchListReq) (res model.PaginationRes) {
+func (s *branchService) List(req *model.BranchListReq) *model.PaginationRes {
     q := s.orm.QueryNotDeleted().
         Order(ent.Desc(branch.FieldID))
 
@@ -111,44 +111,52 @@ func (s *branchService) List(req *model.BranchListReq) (res model.PaginationRes)
         q.Where(branch.CityID(*req.CityID))
     }
 
-    res.Pagination = q.PaginationResult(req.PaginationReq)
+    return model.ParsePaginationResponse[model.BranchItem](q.PaginationResult(req.PaginationReq), func() []model.BranchItem {
+        items := q.WithCity().WithStores().WithCabinets().
+            WithContracts(func(query *ent.BranchContractQuery) {
+                query.Order(ent.Desc(branchcontract.FieldID))
+            }).
+            Pagination(req.PaginationReq).
+            AllX(s.ctx)
 
-    items := q.
-        WithContracts(func(query *ent.BranchContractQuery) {
-            query.Order(ent.Desc(branchcontract.FieldID))
-        }).
-        Pagination(req.PaginationReq).
-        AllX(s.ctx)
+        rs := make([]model.BranchItem, len(items))
 
-    rs := make([]*model.Branch, len(items))
+        for m, item := range items {
+            var r model.BranchItem
+            _ = copier.Copy(&r, item)
 
-    for m, item := range items {
-        r := new(model.Branch)
-        if err := copier.Copy(r, item); err != nil {
-            snag.Panic(err)
-        }
-
-        cs := make([]*model.BranchContract, len(item.Edges.Contracts))
-        for n, contract := range item.Edges.Contracts {
-            c := new(model.BranchContract)
-            if err := copier.Copy(c, contract); err != nil {
-                snag.Panic(err)
+            cs := make([]model.BranchContract, len(item.Edges.Contracts))
+            for n, contract := range item.Edges.Contracts {
+                var c model.BranchContract
+                _ = copier.Copy(&c, contract)
+                cs[n] = c
             }
-            cs[n] = c
+
+            r.Contracts = cs
+            city := item.Edges.City
+            r.City = model.City{
+                ID:   city.ID,
+                Name: city.Name,
+            }
+            r.StoreTotal = len(item.Edges.Stores)
+            for _, c := range item.Edges.Cabinets {
+                if c.Models[0].Voltage == 60 {
+                    r.V60Total += 1
+                } else {
+                    r.V72Total += 1
+                }
+            }
+
+            rs[m] = r
         }
 
-        r.Contracts = cs
-
-        rs[m] = r
-    }
-
-    res.Items = rs
-    return
+        return rs
+    })
 }
 
 // Modify 修改网点
 // TODO 从结构体更新
-func (s *branchService) Modify(req *model.Branch) {
+func (s *branchService) Modify(req *model.BranchReq) {
     b := s.orm.QueryNotDeleted().Where(branch.ID(req.ID)).OnlyX(s.ctx)
     if b == nil {
         snag.Panic("网点不存在")

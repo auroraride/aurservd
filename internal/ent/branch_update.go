@@ -386,7 +386,7 @@ func (bu *BranchUpdate) defaults() error {
 // check runs all checks and user-defined validators on the builder.
 func (bu *BranchUpdate) check() error {
 	if _, ok := bu.mutation.CityID(); bu.mutation.CityCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Branch.city"`)
+		return errors.New(`ent: clearing a required unique edge "BranchReq.city"`)
 	}
 	return nil
 }
@@ -1152,7 +1152,7 @@ func (buo *BranchUpdateOne) defaults() error {
 // check runs all checks and user-defined validators on the builder.
 func (buo *BranchUpdateOne) check() error {
 	if _, ok := buo.mutation.CityID(); buo.mutation.CityCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Branch.city"`)
+		return errors.New(`ent: clearing a required unique edge "BranchReq.city"`)
 	}
 	return nil
 }
@@ -1170,7 +1170,7 @@ func (buo *BranchUpdateOne) sqlSave(ctx context.Context) (_node *Branch, err err
 	}
 	id, ok := buo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Branch.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "BranchReq.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := buo.fields; len(fields) > 0 {

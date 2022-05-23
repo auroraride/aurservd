@@ -12,8 +12,8 @@ type BranchListReq struct {
     CityID *uint64 `json:"cityId" query:"cityId" trans:"城市"`
 }
 
-// Branch 网点请求体
-type Branch struct {
+// BranchReq 网点请求体
+type BranchReq struct {
     ID uint64 `json:"id,omitempty" param:"id" swaggerignore:"true"`
 
     CityID    *uint64           `json:"cityId" validate:"required" trans:"城市"`
@@ -26,6 +26,21 @@ type Branch struct {
 
     Creator      *Modifier `json:"creator,omitempty"`
     LastModifier *Modifier `json:"lastModifier,omitempty"`
+}
+
+// BranchItem 网点列表返回
+type BranchItem struct {
+    ID         uint64           `json:"id"`
+    Name       string           `json:"name"`           // 名称
+    Lng        float64          `json:"lng"`            // 经度
+    Lat        float64          `json:"lat"`            // 纬度
+    Address    string           `json:"address"`        // 地址
+    Photos     []string         `json:"photos"`         // 照片
+    City       City             `json:"city,omitempty"` // 城市
+    Contracts  []BranchContract `json:"contracts"`      // 合同
+    StoreTotal int              `json:"storeTotal"`     // 门店数量
+    V72Total   int              `json:"v72Total"`       // V72电柜数量
+    V60Total   int              `json:"v60Total"`       // V60电柜数量
 }
 
 type BranchSampleItem struct {
