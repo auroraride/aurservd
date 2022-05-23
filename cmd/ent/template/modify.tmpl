@@ -1,0 +1,76 @@
+{{/*
+Copyright (C) liasica. 2021-present.
+
+Created at 2022-05-15
+Based on ent by liasica, magicrolan@qq.com.
+*/}}
+
+{{/* gotype: entgo.io/ent/entc/gen.Graph */}}
+
+{{ define "modify" }}
+
+{{ template "header" $ }}
+
+import (
+    "fmt"
+    "reflect"
+)
+
+// CallModifyMethod call set field value for the given entity
+func CallModifyMethod[T, O any](up *T, old *O, data any) *T {
+    nd := reflect.TypeOf(data)
+    ptr := nd.Kind() == reflect.Pointer
+    if !ptr {
+        panic("data need pointer")
+    }
+
+    nd = nd.Elem()
+    ndv := reflect.ValueOf(data).Elem()
+
+    od := reflect.TypeOf(old).Elem()
+
+    uper := reflect.ValueOf(up)
+    for i := 0; i < ndv.NumField(); i++ {
+        nf := nd.Field(i)
+        nfp := nf.Type.Kind() == reflect.Pointer
+        if !nfp {
+            continue
+        }
+        fn := nf.Name
+        if fn == "ID" {
+            continue
+        }
+        of, ok := od.FieldByName(fn)
+        if !ok {
+            continue
+        }
+        ofp := of.Type.Kind() == reflect.Pointer
+
+        v := ndv.FieldByName(fn)
+        if !v.IsZero() {
+            method := uper.MethodByName(fmt.Sprintf("Set%s", fn))
+            if !ofp {
+                v = v.Elem()
+            }
+            if !method.IsZero() {
+                method.Call([]reflect.Value{v})
+            }
+        }
+    }
+    return up
+}
+
+{{ range $n := $.Nodes }}
+
+{{ $receiver := $n.Receiver }}
+{{ $client := print $n.Name "Client" }}
+
+// ModifyOne returns an update with pointer struct builder for {{ $n.Name }}.
+func (c *{{ $client }}) ModifyOne(old *{{ $n.Name }}, data any) *{{ $n.UpdateOneName }} {
+	mutation := new{{ $n.MutationName }}(c.config, OpUpdateOne, {{ print "with" $n.Name }}(old))
+    up := &{{ $n.UpdateOneName }}{config: c.config, hooks: c.Hooks(), mutation: mutation}
+    return CallModifyMethod[{{ $n.UpdateOneName }}, {{ $n.Name }}](up, old, data)
+}
+
+{{ end }}
+{{ end }}

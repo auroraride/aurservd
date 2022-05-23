@@ -51,7 +51,7 @@ func (s *branchService) Query(id uint64) *ent.Branch {
 
 // Create 新增网点
 // TODO 从结构体新增
-func (s *branchService) Create(req *model.BranchReq) {
+func (s *branchService) Create(req *model.BranchCreateReq) {
     tx, _ := ar.Ent.Tx(s.ctx)
 
     // TODO: 校验城市是否启用
@@ -156,25 +156,24 @@ func (s *branchService) List(req *model.BranchListReq) *model.PaginationRes {
 }
 
 // Modify 修改网点
-// TODO 从结构体更新
-func (s *branchService) Modify(req *model.BranchReq) {
+func (s *branchService) Modify(req *model.BranchModifyReq) {
     b := s.orm.QueryNotDeleted().Where(branch.ID(req.ID)).OnlyX(s.ctx)
     if b == nil {
         snag.Panic("网点不存在")
     }
 
-    s.orm.UpdateOne(b).
-        SetName(*req.Name).
-        SetAddress(*req.Address).
-        SetCityID(*req.CityID).
-        SetLng(*req.Lng).
-        SetLat(*req.Lat).
-        SetGeom(&model.Geometry{
-            Lng: *req.Lng,
-            Lat: *req.Lat,
-        }).
-        SetPhotos(req.Photos).
-        SaveX(s.ctx)
+    // 从结构体更新
+    q := s.orm.ModifyOne(b, req)
+
+    geom := b.Geom
+    if req.Lng != nil {
+        geom.Lng = *req.Lng
+    }
+    if req.Lat != nil {
+        geom.Lat = *req.Lat
+    }
+
+    q.SetGeom(geom).SaveX(s.ctx)
 }
 
 // Selector 网点选择列表

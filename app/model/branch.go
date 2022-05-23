@@ -12,10 +12,8 @@ type BranchListReq struct {
     CityID *uint64 `json:"cityId" query:"cityId" trans:"城市"`
 }
 
-// BranchReq 网点请求体
-type BranchReq struct {
-    ID uint64 `json:"id,omitempty" param:"id" swaggerignore:"true"`
-
+// BranchCreateReq 创建网点
+type BranchCreateReq struct {
     CityID    *uint64           `json:"cityId" validate:"required" trans:"城市"`
     Name      *string           `json:"name" validate:"required" trans:"网点名称"`
     Lng       *float64          `json:"lng" validate:"required" trans:"经度"`
@@ -23,9 +21,19 @@ type BranchReq struct {
     Address   *string           `json:"address" validate:"required" trans:"详细地址"`
     Photos    []string          `json:"photos" validate:"required" trans:"网点照片"`
     Contracts []*BranchContract `json:"contracts,omitempty"`
+}
 
-    Creator      *Modifier `json:"creator,omitempty"`
-    LastModifier *Modifier `json:"lastModifier,omitempty"`
+// BranchModifyReq 编辑网点请求
+type BranchModifyReq struct {
+    ID uint64 `json:"id,omitempty" param:"id"`
+
+    CityID    *uint64           `json:"cityId" trans:"城市"`
+    Name      *string           `json:"name" trans:"网点名称"`
+    Lng       *float64          `json:"lng" trans:"经度"`
+    Lat       *float64          `json:"lat" trans:"纬度"`
+    Address   *string           `json:"address" trans:"详细地址"`
+    Photos    *[]string         `json:"photos" trans:"网点照片"`
+    Contracts *[]BranchContract `json:"contracts,omitempty"`
 }
 
 // BranchItem 网点列表返回

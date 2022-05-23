@@ -145,7 +145,7 @@ func (*Branch) scanValues(columns []string) ([]interface{}, error) {
 		case branch.FieldCreatedAt, branch.FieldUpdatedAt, branch.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type BranchReq", columns[i])
+			return nil, fmt.Errorf("unexpected column %q for type Branch", columns[i])
 		}
 	}
 	return values, nil
@@ -292,7 +292,7 @@ func (b *Branch) Update() *BranchUpdateOne {
 func (b *Branch) Unwrap() *Branch {
 	tx, ok := b.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: BranchReq is not a transactional entity")
+		panic("ent: Branch is not a transactional entity")
 	}
 	b.config.driver = tx.drv
 	return b
@@ -301,7 +301,7 @@ func (b *Branch) Unwrap() *Branch {
 // String implements the fmt.Stringer.
 func (b *Branch) String() string {
 	var builder strings.Builder
-	builder.WriteString("BranchReq(")
+	builder.WriteString("Branch(")
 	builder.WriteString(fmt.Sprintf("id=%v", b.ID))
 	builder.WriteString(", created_at=")
 	builder.WriteString(b.CreatedAt.Format(time.ANSIC))

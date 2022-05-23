@@ -302,34 +302,34 @@ func (bc *BranchCreate) defaults() error {
 // check runs all checks and user-defined validators on the builder.
 func (bc *BranchCreate) check() error {
 	if _, ok := bc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "BranchReq.created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Branch.created_at"`)}
 	}
 	if _, ok := bc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "BranchReq.updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Branch.updated_at"`)}
 	}
 	if _, ok := bc.mutation.CityID(); !ok {
-		return &ValidationError{Name: "city_id", err: errors.New(`ent: missing required field "BranchReq.city_id"`)}
+		return &ValidationError{Name: "city_id", err: errors.New(`ent: missing required field "Branch.city_id"`)}
 	}
 	if _, ok := bc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "BranchReq.name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Branch.name"`)}
 	}
 	if _, ok := bc.mutation.Lng(); !ok {
-		return &ValidationError{Name: "lng", err: errors.New(`ent: missing required field "BranchReq.lng"`)}
+		return &ValidationError{Name: "lng", err: errors.New(`ent: missing required field "Branch.lng"`)}
 	}
 	if _, ok := bc.mutation.Lat(); !ok {
-		return &ValidationError{Name: "lat", err: errors.New(`ent: missing required field "BranchReq.lat"`)}
+		return &ValidationError{Name: "lat", err: errors.New(`ent: missing required field "Branch.lat"`)}
 	}
 	if _, ok := bc.mutation.Address(); !ok {
-		return &ValidationError{Name: "address", err: errors.New(`ent: missing required field "BranchReq.address"`)}
+		return &ValidationError{Name: "address", err: errors.New(`ent: missing required field "Branch.address"`)}
 	}
 	if _, ok := bc.mutation.Photos(); !ok {
-		return &ValidationError{Name: "photos", err: errors.New(`ent: missing required field "BranchReq.photos"`)}
+		return &ValidationError{Name: "photos", err: errors.New(`ent: missing required field "Branch.photos"`)}
 	}
 	if _, ok := bc.mutation.Geom(); !ok {
-		return &ValidationError{Name: "geom", err: errors.New(`ent: missing required field "BranchReq.geom"`)}
+		return &ValidationError{Name: "geom", err: errors.New(`ent: missing required field "Branch.geom"`)}
 	}
 	if _, ok := bc.mutation.CityID(); !ok {
-		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "BranchReq.city"`)}
+		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Branch.city"`)}
 	}
 	return nil
 }
@@ -557,7 +557,7 @@ func (bc *BranchCreate) createSpec() (*Branch, *sqlgraph.CreateSpec) {
 // OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
 // of the `INSERT` statement. For example:
 //
-//	client.BranchReq.Create().
+//	client.Branch.Create().
 //		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
@@ -581,7 +581,7 @@ func (bc *BranchCreate) OnConflict(opts ...sql.ConflictOption) *BranchUpsertOne 
 // OnConflictColumns calls `OnConflict` and configures the columns
 // as conflict target. Using this option is equivalent to using:
 //
-//	client.BranchReq.Create().
+//	client.Branch.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
 //
@@ -800,7 +800,7 @@ func (u *BranchUpsert) UpdateGeom() *BranchUpsert {
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
-//	client.BranchReq.Create().
+//	client.Branch.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
 //		).
@@ -822,7 +822,7 @@ func (u *BranchUpsertOne) UpdateNewValues() *BranchUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//  client.BranchReq.Create().
+//  client.Branch.Create().
 //      OnConflict(sql.ResolveWithIgnore()).
 //      Exec(ctx)
 //
@@ -1193,7 +1193,7 @@ func (bcb *BranchCreateBulk) ExecX(ctx context.Context) {
 // OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
 // of the `INSERT` statement. For example:
 //
-//	client.BranchReq.CreateBulk(builders...).
+//	client.Branch.CreateBulk(builders...).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -1216,7 +1216,7 @@ func (bcb *BranchCreateBulk) OnConflict(opts ...sql.ConflictOption) *BranchUpser
 // OnConflictColumns calls `OnConflict` and configures the columns
 // as conflict target. Using this option is equivalent to using:
 //
-//	client.BranchReq.Create().
+//	client.Branch.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
 //
@@ -1236,7 +1236,7 @@ type BranchUpsertBulk struct {
 // UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
-//	client.BranchReq.Create().
+//	client.Branch.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
 //		).
@@ -1260,7 +1260,7 @@ func (u *BranchUpsertBulk) UpdateNewValues() *BranchUpsertBulk {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.BranchReq.Create().
+//	client.Branch.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
 //
