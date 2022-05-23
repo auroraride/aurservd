@@ -17,7 +17,7 @@ type branch struct{}
 var Branch = new(branch)
 
 // List
-// @ID           BranchList
+// @ID           RiderBranchList
 // @Router       /rider/v1/branch [GET]
 // @Summary      R20001 列举网点
 // @Tags         [R]骑手接口

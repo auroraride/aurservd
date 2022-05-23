@@ -2035,7 +2035,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: BranchList
+      operationId: RiderBranchList
       parameters:
       - description: 骑手校验token
         in: header

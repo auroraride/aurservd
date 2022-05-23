@@ -1763,7 +1763,7 @@ const docTemplate = `{
                     "[R]骑手接口"
                 ],
                 "summary": "R20001 列举网点",
-                "operationId": "BranchList",
+                "operationId": "RiderBranchList",
                 "parameters": [
                     {
                         "type": "string",
