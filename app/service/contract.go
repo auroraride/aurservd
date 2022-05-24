@@ -40,7 +40,7 @@ func (s *contractService) generateSn() string {
 }
 
 // Sign 签署合同
-func (s *contractService) Sign(u *ent.Rider) string {
+func (s *contractService) Sign(u *ent.Rider) model.ContractSignRes {
     var (
         sn           = s.generateSn()
         cfg          = s.esign.Config
@@ -131,7 +131,10 @@ func (s *contractService) Sign(u *ent.Rider) string {
     if err != nil {
         snag.Panic(err)
     }
-    return link
+    return model.ContractSignRes{
+        Url: link,
+        Sn:  sn,
+    }
 }
 
 // Result 合同签署结果

@@ -607,6 +607,15 @@ definitions:
         description: 城市
         type: string
     type: object
+  model.ContractSignRes:
+    properties:
+      sn:
+        description: 签署识别码
+        type: string
+      url:
+        description: 签署URL
+        type: string
+    type: object
   model.EmployeeItem:
     properties:
       id:
@@ -2121,10 +2130,13 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
+      - description: '城市ID '
+        in: query
+        name: cityId
+        type: integer
       - description: '距离 '
         in: query
         name: distance
-        required: true
         type: number
       - description: '纬度 '
         in: query
@@ -2225,6 +2237,27 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: R10002 添加紧急联系人
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/contract/sign:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderContractSign
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.ContractSignRes'
+      summary: R30005 签署合同
       tags:
       - '[R]骑手接口'
   /rider/v1/face/{token}:

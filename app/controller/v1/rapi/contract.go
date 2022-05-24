@@ -9,7 +9,6 @@ import (
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/labstack/echo/v4"
 )
 
@@ -18,14 +17,22 @@ type contract struct {
 
 var Contract = new(contract)
 
-// Sign 签署合同
+// Sign
+// @ID           RiderContractSign
+// @Router       /rider/v1/contract/sign [POST]
+// @Summary      R30005 签署合同
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Success      200  {object}  model.ContractSignRes  "请求成功"
 func (*contract) Sign(c echo.Context) error {
     ctx := c.(*app.RiderContext)
-    return ctx.SendResponse(ar.Map{"url": service.NewContract().Sign(ctx.Rider)})
+    return ctx.SendResponse(service.NewContract().Sign(ctx.Rider))
 }
 
 // SignResult 获取合同签署结果
 func (*contract) SignResult(c echo.Context) error {
-    ctx, req := app.ContextBindingX[app.RiderContext, model.ContractSignResultReq](c)
+    ctx, req := app.RiderContextAndBinding[model.ContractSignResultReq](c)
     return ctx.SendResponse(service.NewContract().Result(ctx.Rider, req.Sn))
 }

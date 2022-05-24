@@ -196,8 +196,11 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
         Image    string  `json:"image"`
         Address  string  `json:"address"`
     }
+    if req.Distance == nil && req.CityID == nil {
+        snag.Panic("距离和城市不能同时为空")
+    }
     // rows, err := s.orm.QueryContext(s.ctx, fmt.Sprintf(`SELECT id, name, ST_Distance(%s, ST_GeogFromText('POINT(108.949969 34.333489)')) AS distance FROM %s WHERE ST_DWithin(%s, ST_GeogFromText('POINT(108.949969 34.333489)'), 10000000) ORDER BY distance;`, branch.Table, branch.FieldGeom, branch.FieldGeom))
-    err := s.orm.QueryNotDeleted().
+    q := s.orm.QueryNotDeleted().
         WithCabinets(func(cq *ent.CabinetQuery) {
             cq.WithBms()
         }).
@@ -208,13 +211,21 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
             sel.Select(bt.C(branch.FieldID), bt.C(branch.FieldName), bt.C(branch.FieldAddress), bt.C(branch.FieldLat), bt.C(branch.FieldLng)).
                 AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(%s, ST_GeogFromText('POINT(%f %f)'))`, branch.FieldGeom, *req.Lng, *req.Lat)), "distance").
                 AppendSelectExprAs(sql.Raw(fmt.Sprintf(`TRIM('"' FROM %s[0]::TEXT)`, branch.FieldPhotos)), "image").
-                Where(sql.P(func(b *sql.Builder) {
-                    b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), %f)`, branch.FieldGeom, *req.Lng, *req.Lat, *req.Distance))
-                })).
                 GroupBy(bt.C(branch.FieldID)).
                 OrderBy(sql.Asc("distance"))
-        }).
-        Scan(s.ctx, &temps)
+            if req.Distance != nil {
+                if *req.Distance > 100000 {
+                    snag.Panic("请求距离太远")
+                }
+                sel.Where(sql.P(func(b *sql.Builder) {
+                    b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), %f)`, branch.FieldGeom, *req.Lng, *req.Lat, *req.Distance))
+                }))
+            }
+        })
+    if req.CityID != nil {
+        q.Where(branch.CityID(*req.CityID))
+    }
+    err := q.Scan(s.ctx, &temps)
     items = make([]*model.BranchWithDistanceRes, 0)
     itemsMap := make(map[uint64]*model.BranchWithDistanceRes, len(temps))
     if err != nil || len(temps) == 0 {

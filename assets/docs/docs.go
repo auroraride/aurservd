@@ -1773,11 +1773,16 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "integer",
+                        "description": "城市ID ",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
                         "type": "number",
                         "description": "距离 ",
                         "name": "distance",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "number",
@@ -1922,6 +1927,38 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/contract/sign": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R30005 签署合同",
+                "operationId": "RiderContractSign",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ContractSignRes"
                         }
                     }
                 }
@@ -2876,6 +2913,19 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "城市",
+                    "type": "string"
+                }
+            }
+        },
+        "model.ContractSignRes": {
+            "type": "object",
+            "properties": {
+                "sn": {
+                    "description": "签署识别码",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "签署URL",
                     "type": "string"
                 }
             }
