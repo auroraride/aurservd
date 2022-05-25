@@ -14,8 +14,10 @@ import (
 func loadRideRoutes() {
     g := root.Group("rider/v1")
 
-    g.Any("/callback", rapi.Callback.RiderCallback, middleware.BodyDump())          // 骑手api回调中心
-    g.Any("/callback/esign", rapi.Callback.ESignCallback, middleware.BodyDumpRaw()) // esign回调中心
+    g.Any("/callback", rapi.Callback.RiderCallback, middleware.BodyDump())                  // 骑手api回调中心
+    g.Any("/callback/esign", rapi.Callback.ESignCallback, middleware.BodyDumpRaw())         // esign回调中心
+    g.Any("/callback/alipay", rapi.Callback.AlipayCallback, middleware.BodyDumpRaw())       // 骑手支付宝回调中心
+    g.Any("/callback/wechatpay", rapi.Callback.WechatpayCallback, middleware.BodyDumpRaw()) // 骑手微信支付回调中心
 
     // 引入骑手api需要的中间件
     g.Use(middleware.DeviceMiddleware(), middleware.RiderMiddleware())
@@ -46,6 +48,9 @@ func loadRideRoutes() {
     branch := g.Group("/branch")
     branch.GET("", rapi.Branch.List)
     branch.GET("/riding", rapi.Branch.Riding)
+
+    // 套餐或订单
+    g.POST("/order", rapi.Order.Create)
 
     // 电柜
     cabinet := g.Group("/cabinet")

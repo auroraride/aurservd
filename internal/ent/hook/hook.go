@@ -87,6 +87,19 @@ func (f CityFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	return f(ctx, mv)
 }
 
+// The CommissionFunc type is an adapter to allow the use of ordinary
+// function as Commission mutator.
+type CommissionFunc func(context.Context, *ent.CommissionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CommissionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.CommissionMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CommissionMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The ContractFunc type is an adapter to allow the use of ordinary
 // function as Contract mutator.
 type ContractFunc func(context.Context, *ent.ContractMutation) (ent.Value, error)
@@ -122,6 +135,19 @@ func (f ManagerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	mv, ok := m.(*ent.ManagerMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ManagerMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The OrderFunc type is an adapter to allow the use of ordinary
+// function as Order mutator.
+type OrderFunc func(context.Context, *ent.OrderMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OrderFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.OrderMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrderMutation", m)
 	}
 	return f(ctx, mv)
 }

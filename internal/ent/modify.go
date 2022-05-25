@@ -93,6 +93,13 @@ func (c *CityClient) ModifyOne(old *City, data any) *CityUpdateOne {
 	return CallModifyMethod[CityUpdateOne, City](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for Commission.
+func (c *CommissionClient) ModifyOne(old *Commission, data any) *CommissionUpdateOne {
+	mutation := newCommissionMutation(c.config, OpUpdateOne, withCommission(old))
+	up := &CommissionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return CallModifyMethod[CommissionUpdateOne, Commission](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Contract.
 func (c *ContractClient) ModifyOne(old *Contract, data any) *ContractUpdateOne {
 	mutation := newContractMutation(c.config, OpUpdateOne, withContract(old))
@@ -112,6 +119,13 @@ func (c *ManagerClient) ModifyOne(old *Manager, data any) *ManagerUpdateOne {
 	mutation := newManagerMutation(c.config, OpUpdateOne, withManager(old))
 	up := &ManagerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 	return CallModifyMethod[ManagerUpdateOne, Manager](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for Order.
+func (c *OrderClient) ModifyOne(old *Order, data any) *OrderUpdateOne {
+	mutation := newOrderMutation(c.config, OpUpdateOne, withOrder(old))
+	up := &OrderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return CallModifyMethod[OrderUpdateOne, Order](up, old, data)
 }
 
 // ModifyOne returns an update with pointer struct builder for Person.

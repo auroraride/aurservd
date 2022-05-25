@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -336,6 +337,21 @@ func (ru *RiderUpdate) AddFaults(c ...*CabinetFault) *RiderUpdate {
 	return ru.AddFaultIDs(ids...)
 }
 
+// AddOrderIDs adds the "orders" edge to the Order entity by IDs.
+func (ru *RiderUpdate) AddOrderIDs(ids ...uint64) *RiderUpdate {
+	ru.mutation.AddOrderIDs(ids...)
+	return ru
+}
+
+// AddOrders adds the "orders" edges to the Order entity.
+func (ru *RiderUpdate) AddOrders(o ...*Order) *RiderUpdate {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return ru.AddOrderIDs(ids...)
+}
+
 // Mutation returns the RiderMutation object of the builder.
 func (ru *RiderUpdate) Mutation() *RiderMutation {
 	return ru.mutation
@@ -393,6 +409,27 @@ func (ru *RiderUpdate) RemoveFaults(c ...*CabinetFault) *RiderUpdate {
 		ids[i] = c[i].ID
 	}
 	return ru.RemoveFaultIDs(ids...)
+}
+
+// ClearOrders clears all "orders" edges to the Order entity.
+func (ru *RiderUpdate) ClearOrders() *RiderUpdate {
+	ru.mutation.ClearOrders()
+	return ru
+}
+
+// RemoveOrderIDs removes the "orders" edge to Order entities by IDs.
+func (ru *RiderUpdate) RemoveOrderIDs(ids ...uint64) *RiderUpdate {
+	ru.mutation.RemoveOrderIDs(ids...)
+	return ru
+}
+
+// RemoveOrders removes "orders" edges to Order entities.
+func (ru *RiderUpdate) RemoveOrders(o ...*Order) *RiderUpdate {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return ru.RemoveOrderIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -858,6 +895,60 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ru.mutation.OrdersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.OrdersTable,
+			Columns: []string{rider.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.RemovedOrdersIDs(); len(nodes) > 0 && !ru.mutation.OrdersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.OrdersTable,
+			Columns: []string{rider.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.OrdersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.OrdersTable,
+			Columns: []string{rider.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{rider.Label}
@@ -1180,6 +1271,21 @@ func (ruo *RiderUpdateOne) AddFaults(c ...*CabinetFault) *RiderUpdateOne {
 	return ruo.AddFaultIDs(ids...)
 }
 
+// AddOrderIDs adds the "orders" edge to the Order entity by IDs.
+func (ruo *RiderUpdateOne) AddOrderIDs(ids ...uint64) *RiderUpdateOne {
+	ruo.mutation.AddOrderIDs(ids...)
+	return ruo
+}
+
+// AddOrders adds the "orders" edges to the Order entity.
+func (ruo *RiderUpdateOne) AddOrders(o ...*Order) *RiderUpdateOne {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return ruo.AddOrderIDs(ids...)
+}
+
 // Mutation returns the RiderMutation object of the builder.
 func (ruo *RiderUpdateOne) Mutation() *RiderMutation {
 	return ruo.mutation
@@ -1237,6 +1343,27 @@ func (ruo *RiderUpdateOne) RemoveFaults(c ...*CabinetFault) *RiderUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return ruo.RemoveFaultIDs(ids...)
+}
+
+// ClearOrders clears all "orders" edges to the Order entity.
+func (ruo *RiderUpdateOne) ClearOrders() *RiderUpdateOne {
+	ruo.mutation.ClearOrders()
+	return ruo
+}
+
+// RemoveOrderIDs removes the "orders" edge to Order entities by IDs.
+func (ruo *RiderUpdateOne) RemoveOrderIDs(ids ...uint64) *RiderUpdateOne {
+	ruo.mutation.RemoveOrderIDs(ids...)
+	return ruo
+}
+
+// RemoveOrders removes "orders" edges to Order entities.
+func (ruo *RiderUpdateOne) RemoveOrders(o ...*Order) *RiderUpdateOne {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return ruo.RemoveOrderIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1724,6 +1851,60 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: cabinetfault.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ruo.mutation.OrdersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.OrdersTable,
+			Columns: []string{rider.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.RemovedOrdersIDs(); len(nodes) > 0 && !ruo.mutation.OrdersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.OrdersTable,
+			Columns: []string{rider.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.OrdersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.OrdersTable,
+			Columns: []string{rider.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
 				},
 			},
 		}

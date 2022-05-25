@@ -355,6 +355,50 @@ var (
 			},
 		},
 	}
+	// CommissionColumns holds the columns for the "commission" table.
+	CommissionColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "备注", Nullable: true},
+		{Name: "amount", Type: field.TypeFloat64, Comment: "提成金额"},
+		{Name: "status", Type: field.TypeUint8, Comment: "提成状态 0未发放 1已发放", Default: 0},
+		{Name: "order_id", Type: field.TypeUint64, Unique: true},
+	}
+	// CommissionTable holds the schema information for the "commission" table.
+	CommissionTable = &schema.Table{
+		Name:       "commission",
+		Columns:    CommissionColumns,
+		PrimaryKey: []*schema.Column{CommissionColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "commission_order_commission",
+				Columns:    []*schema.Column{CommissionColumns[9]},
+				RefColumns: []*schema.Column{OrderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "commission_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{CommissionColumns[1]},
+			},
+			{
+				Name:    "commission_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{CommissionColumns[3]},
+			},
+			{
+				Name:    "commission_status",
+				Unique:  false,
+				Columns: []*schema.Column{CommissionColumns[8]},
+			},
+		},
+	}
 	// ContractColumns holds the columns for the "contract" table.
 	ContractColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -368,6 +412,7 @@ var (
 		{Name: "flow_id", Type: field.TypeString, Unique: true, Comment: "E签宝流程ID", Size: 40},
 		{Name: "sn", Type: field.TypeString, Unique: true, Comment: "合同编码", Size: 20},
 		{Name: "files", Type: field.TypeJSON, Comment: "合同链接", Nullable: true},
+		{Name: "effective", Type: field.TypeBool, Comment: "是否有效, 当用户退租之后触发合同失效, 需要重新签订", Default: true},
 		{Name: "rider_id", Type: field.TypeUint64},
 	}
 	// ContractTable holds the schema information for the "contract" table.
@@ -378,7 +423,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "contract_rider_contract",
-				Columns:    []*schema.Column{ContractColumns[11]},
+				Columns:    []*schema.Column{ContractColumns[12]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -393,6 +438,11 @@ var (
 				Name:    "contract_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{ContractColumns[3]},
+			},
+			{
+				Name:    "contract_status_effective",
+				Unique:  false,
+				Columns: []*schema.Column{ContractColumns[7], ContractColumns[11]},
 			},
 		},
 	}
@@ -469,6 +519,69 @@ var (
 				Name:    "manager_phone",
 				Unique:  false,
 				Columns: []*schema.Column{ManagerColumns[7]},
+			},
+		},
+	}
+	// OrderColumns holds the columns for the "order" table.
+	OrderColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "备注", Nullable: true},
+		{Name: "status", Type: field.TypeUint8, Comment: "订单状态 0未支付 1已支付 2申请退款 3已退款", Default: 1},
+		{Name: "payway", Type: field.TypeUint8, Comment: "支付方式 1支付宝 2微信"},
+		{Name: "type", Type: field.TypeUint, Comment: "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金"},
+		{Name: "out_trade_no", Type: field.TypeString, Unique: true, Comment: "交易订单号"},
+		{Name: "trade_no", Type: field.TypeString, Comment: "平台订单号"},
+		{Name: "amount", Type: field.TypeFloat64, Comment: "支付金额"},
+		{Name: "plan_detail", Type: field.TypeJSON, Comment: "骑士卡详情", Nullable: true},
+		{Name: "parent_id", Type: field.TypeUint64, Comment: "续签/更改电池接续从属订单ID(上个订单)", Nullable: true},
+		{Name: "subordinate", Type: field.TypeJSON, Comment: "接续订单属性", Nullable: true},
+		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "rider_id", Type: field.TypeUint64},
+	}
+	// OrderTable holds the schema information for the "order" table.
+	OrderTable = &schema.Table{
+		Name:       "order",
+		Columns:    OrderColumns,
+		PrimaryKey: []*schema.Column{OrderColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "order_plan_orders",
+				Columns:    []*schema.Column{OrderColumns[16]},
+				RefColumns: []*schema.Column{PlanColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "order_rider_orders",
+				Columns:    []*schema.Column{OrderColumns[17]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "order_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{OrderColumns[1]},
+			},
+			{
+				Name:    "order_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{OrderColumns[3]},
+			},
+			{
+				Name:    "order_trade_no",
+				Unique:  false,
+				Columns: []*schema.Column{OrderColumns[11]},
+			},
+			{
+				Name:    "order_status",
+				Unique:  false,
+				Columns: []*schema.Column{OrderColumns[7]},
 			},
 		},
 	}
@@ -809,9 +922,11 @@ var (
 		CabinetTable,
 		CabinetFaultTable,
 		CityTable,
+		CommissionTable,
 		ContractTable,
 		EnterpriseTable,
 		ManagerTable,
+		OrderTable,
 		PersonTable,
 		PlanTable,
 		RiderTable,
@@ -850,6 +965,10 @@ func init() {
 	CityTable.Annotation = &entsql.Annotation{
 		Table: "city",
 	}
+	CommissionTable.ForeignKeys[0].RefTable = OrderTable
+	CommissionTable.Annotation = &entsql.Annotation{
+		Table: "commission",
+	}
 	ContractTable.ForeignKeys[0].RefTable = RiderTable
 	ContractTable.Annotation = &entsql.Annotation{
 		Table: "contract",
@@ -859,6 +978,11 @@ func init() {
 	}
 	ManagerTable.Annotation = &entsql.Annotation{
 		Table: "manager",
+	}
+	OrderTable.ForeignKeys[0].RefTable = PlanTable
+	OrderTable.ForeignKeys[1].RefTable = RiderTable
+	OrderTable.Annotation = &entsql.Annotation{
+		Table: "order",
 	}
 	PersonTable.Annotation = &entsql.Annotation{
 		Table: "person",

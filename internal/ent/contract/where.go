@@ -149,6 +149,13 @@ func Sn(v string) predicate.Contract {
 	})
 }
 
+// Effective applies equality check predicate on the "effective" field. It's identical to EffectiveEQ.
+func Effective(v bool) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEffective), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
@@ -901,6 +908,20 @@ func FilesIsNil() predicate.Contract {
 func FilesNotNil() predicate.Contract {
 	return predicate.Contract(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldFiles)))
+	})
+}
+
+// EffectiveEQ applies the EQ predicate on the "effective" field.
+func EffectiveEQ(v bool) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEffective), v))
+	})
+}
+
+// EffectiveNEQ applies the NEQ predicate on the "effective" field.
+func EffectiveNEQ(v bool) predicate.Contract {
+	return predicate.Contract(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEffective), v))
 	})
 }
 

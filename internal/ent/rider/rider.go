@@ -59,6 +59,8 @@ const (
 	EdgeContract = "contract"
 	// EdgeFaults holds the string denoting the faults edge name in mutations.
 	EdgeFaults = "faults"
+	// EdgeOrders holds the string denoting the orders edge name in mutations.
+	EdgeOrders = "orders"
 	// Table holds the table name of the rider in the database.
 	Table = "rider"
 	// PersonTable is the table that holds the person relation/edge.
@@ -89,6 +91,13 @@ const (
 	FaultsInverseTable = "cabinet_fault"
 	// FaultsColumn is the table column denoting the faults relation/edge.
 	FaultsColumn = "rider_id"
+	// OrdersTable is the table that holds the orders relation/edge.
+	OrdersTable = "order"
+	// OrdersInverseTable is the table name for the Order entity.
+	// It exists in this package in order to avoid circular dependency with the "order" package.
+	OrdersInverseTable = "order"
+	// OrdersColumn is the table column denoting the orders relation/edge.
+	OrdersColumn = "rider_id"
 )
 
 // Columns holds all SQL columns for rider fields.

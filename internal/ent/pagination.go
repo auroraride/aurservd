@@ -110,6 +110,23 @@ func (cq *CityQuery) PaginationResult(req model.PaginationReq) model.Pagination 
 	}
 }
 
+// Pagination returns pagination query builder for CommissionQuery.
+func (cq *CommissionQuery) Pagination(req model.PaginationReq) *CommissionQuery {
+	cq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return cq
+}
+
+// PaginationResult returns pagination for CommissionQuery.
+func (cq *CommissionQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := cq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for ContractQuery.
 func (cq *ContractQuery) Pagination(req model.PaginationReq) *ContractQuery {
 	cq.Offset(req.GetOffset()).Limit(req.GetLimit())
@@ -153,6 +170,23 @@ func (mq *ManagerQuery) Pagination(req model.PaginationReq) *ManagerQuery {
 // PaginationResult returns pagination for ManagerQuery.
 func (mq *ManagerQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	ids := mq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for OrderQuery.
+func (oq *OrderQuery) Pagination(req model.PaginationReq) *OrderQuery {
+	oq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return oq
+}
+
+// PaginationResult returns pagination for OrderQuery.
+func (oq *OrderQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := oq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
 	total := len(ids)
 	return model.Pagination{
 		Current: req.GetCurrent(),

@@ -15,9 +15,11 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/manager"
+	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -46,12 +48,16 @@ type Client struct {
 	CabinetFault *CabinetFaultClient
 	// City is the client for interacting with the City builders.
 	City *CityClient
+	// Commission is the client for interacting with the Commission builders.
+	Commission *CommissionClient
 	// Contract is the client for interacting with the Contract builders.
 	Contract *ContractClient
 	// Enterprise is the client for interacting with the Enterprise builders.
 	Enterprise *EnterpriseClient
 	// Manager is the client for interacting with the Manager builders.
 	Manager *ManagerClient
+	// Order is the client for interacting with the Order builders.
+	Order *OrderClient
 	// Person is the client for interacting with the Person builders.
 	Person *PersonClient
 	// Plan is the client for interacting with the Plan builders.
@@ -81,9 +87,11 @@ func (c *Client) init() {
 	c.Cabinet = NewCabinetClient(c.config)
 	c.CabinetFault = NewCabinetFaultClient(c.config)
 	c.City = NewCityClient(c.config)
+	c.Commission = NewCommissionClient(c.config)
 	c.Contract = NewContractClient(c.config)
 	c.Enterprise = NewEnterpriseClient(c.config)
 	c.Manager = NewManagerClient(c.config)
+	c.Order = NewOrderClient(c.config)
 	c.Person = NewPersonClient(c.config)
 	c.Plan = NewPlanClient(c.config)
 	c.Rider = NewRiderClient(c.config)
@@ -128,9 +136,11 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Cabinet:        NewCabinetClient(cfg),
 		CabinetFault:   NewCabinetFaultClient(cfg),
 		City:           NewCityClient(cfg),
+		Commission:     NewCommissionClient(cfg),
 		Contract:       NewContractClient(cfg),
 		Enterprise:     NewEnterpriseClient(cfg),
 		Manager:        NewManagerClient(cfg),
+		Order:          NewOrderClient(cfg),
 		Person:         NewPersonClient(cfg),
 		Plan:           NewPlanClient(cfg),
 		Rider:          NewRiderClient(cfg),
@@ -161,9 +171,11 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Cabinet:        NewCabinetClient(cfg),
 		CabinetFault:   NewCabinetFaultClient(cfg),
 		City:           NewCityClient(cfg),
+		Commission:     NewCommissionClient(cfg),
 		Contract:       NewContractClient(cfg),
 		Enterprise:     NewEnterpriseClient(cfg),
 		Manager:        NewManagerClient(cfg),
+		Order:          NewOrderClient(cfg),
 		Person:         NewPersonClient(cfg),
 		Plan:           NewPlanClient(cfg),
 		Rider:          NewRiderClient(cfg),
@@ -204,9 +216,11 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Cabinet.Use(hooks...)
 	c.CabinetFault.Use(hooks...)
 	c.City.Use(hooks...)
+	c.Commission.Use(hooks...)
 	c.Contract.Use(hooks...)
 	c.Enterprise.Use(hooks...)
 	c.Manager.Use(hooks...)
+	c.Order.Use(hooks...)
 	c.Person.Use(hooks...)
 	c.Plan.Use(hooks...)
 	c.Rider.Use(hooks...)
@@ -1080,6 +1094,113 @@ func (c *CityClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], city.Hooks[:]...)
 }
 
+// CommissionClient is a client for the Commission schema.
+type CommissionClient struct {
+	config
+}
+
+// NewCommissionClient returns a client for the Commission from the given config.
+func NewCommissionClient(c config) *CommissionClient {
+	return &CommissionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `commission.Hooks(f(g(h())))`.
+func (c *CommissionClient) Use(hooks ...Hook) {
+	c.hooks.Commission = append(c.hooks.Commission, hooks...)
+}
+
+// Create returns a create builder for Commission.
+func (c *CommissionClient) Create() *CommissionCreate {
+	mutation := newCommissionMutation(c.config, OpCreate)
+	return &CommissionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Commission entities.
+func (c *CommissionClient) CreateBulk(builders ...*CommissionCreate) *CommissionCreateBulk {
+	return &CommissionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Commission.
+func (c *CommissionClient) Update() *CommissionUpdate {
+	mutation := newCommissionMutation(c.config, OpUpdate)
+	return &CommissionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CommissionClient) UpdateOne(co *Commission) *CommissionUpdateOne {
+	mutation := newCommissionMutation(c.config, OpUpdateOne, withCommission(co))
+	return &CommissionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CommissionClient) UpdateOneID(id uint64) *CommissionUpdateOne {
+	mutation := newCommissionMutation(c.config, OpUpdateOne, withCommissionID(id))
+	return &CommissionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Commission.
+func (c *CommissionClient) Delete() *CommissionDelete {
+	mutation := newCommissionMutation(c.config, OpDelete)
+	return &CommissionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *CommissionClient) DeleteOne(co *Commission) *CommissionDeleteOne {
+	return c.DeleteOneID(co.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *CommissionClient) DeleteOneID(id uint64) *CommissionDeleteOne {
+	builder := c.Delete().Where(commission.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CommissionDeleteOne{builder}
+}
+
+// Query returns a query builder for Commission.
+func (c *CommissionClient) Query() *CommissionQuery {
+	return &CommissionQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Commission entity by its id.
+func (c *CommissionClient) Get(ctx context.Context, id uint64) (*Commission, error) {
+	return c.Query().Where(commission.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CommissionClient) GetX(ctx context.Context, id uint64) *Commission {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryOrder queries the order edge of a Commission.
+func (c *CommissionClient) QueryOrder(co *Commission) *OrderQuery {
+	query := &OrderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(commission.Table, commission.FieldID, id),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, commission.OrderTable, commission.OrderColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CommissionClient) Hooks() []Hook {
+	hooks := c.hooks.Commission
+	return append(hooks[:len(hooks):len(hooks)], commission.Hooks[:]...)
+}
+
 // ContractClient is a client for the Contract schema.
 type ContractClient struct {
 	config
@@ -1385,6 +1506,145 @@ func (c *ManagerClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], manager.Hooks[:]...)
 }
 
+// OrderClient is a client for the Order schema.
+type OrderClient struct {
+	config
+}
+
+// NewOrderClient returns a client for the Order from the given config.
+func NewOrderClient(c config) *OrderClient {
+	return &OrderClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `order.Hooks(f(g(h())))`.
+func (c *OrderClient) Use(hooks ...Hook) {
+	c.hooks.Order = append(c.hooks.Order, hooks...)
+}
+
+// Create returns a create builder for Order.
+func (c *OrderClient) Create() *OrderCreate {
+	mutation := newOrderMutation(c.config, OpCreate)
+	return &OrderCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Order entities.
+func (c *OrderClient) CreateBulk(builders ...*OrderCreate) *OrderCreateBulk {
+	return &OrderCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Order.
+func (c *OrderClient) Update() *OrderUpdate {
+	mutation := newOrderMutation(c.config, OpUpdate)
+	return &OrderUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *OrderClient) UpdateOne(o *Order) *OrderUpdateOne {
+	mutation := newOrderMutation(c.config, OpUpdateOne, withOrder(o))
+	return &OrderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *OrderClient) UpdateOneID(id uint64) *OrderUpdateOne {
+	mutation := newOrderMutation(c.config, OpUpdateOne, withOrderID(id))
+	return &OrderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Order.
+func (c *OrderClient) Delete() *OrderDelete {
+	mutation := newOrderMutation(c.config, OpDelete)
+	return &OrderDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *OrderClient) DeleteOne(o *Order) *OrderDeleteOne {
+	return c.DeleteOneID(o.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *OrderClient) DeleteOneID(id uint64) *OrderDeleteOne {
+	builder := c.Delete().Where(order.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &OrderDeleteOne{builder}
+}
+
+// Query returns a query builder for Order.
+func (c *OrderClient) Query() *OrderQuery {
+	return &OrderQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Order entity by its id.
+func (c *OrderClient) Get(ctx context.Context, id uint64) (*Order, error) {
+	return c.Query().Where(order.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *OrderClient) GetX(ctx context.Context, id uint64) *Order {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryRider queries the rider edge of a Order.
+func (c *OrderClient) QueryRider(o *Order) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, order.RiderTable, order.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlan queries the plan edge of a Order.
+func (c *OrderClient) QueryPlan(o *Order) *PlanQuery {
+	query := &PlanQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, order.PlanTable, order.PlanColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCommission queries the commission edge of a Order.
+func (c *OrderClient) QueryCommission(o *Order) *CommissionQuery {
+	query := &CommissionQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, id),
+			sqlgraph.To(commission.Table, commission.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, order.CommissionTable, order.CommissionColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *OrderClient) Hooks() []Hook {
+	hooks := c.hooks.Order
+	return append(hooks[:len(hooks):len(hooks)], order.Hooks[:]...)
+}
+
 // PersonClient is a client for the Person schema.
 type PersonClient struct {
 	config
@@ -1609,6 +1869,22 @@ func (c *PlanClient) QueryCities(pl *Plan) *CityQuery {
 	return query
 }
 
+// QueryOrders queries the orders edge of a Plan.
+func (c *PlanClient) QueryOrders(pl *Plan) *OrderQuery {
+	query := &OrderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, id),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, plan.OrdersTable, plan.OrdersColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *PlanClient) Hooks() []Hook {
 	hooks := c.hooks.Plan
@@ -1757,6 +2033,22 @@ func (c *RiderClient) QueryFaults(r *Rider) *CabinetFaultQuery {
 			sqlgraph.From(rider.Table, rider.FieldID, id),
 			sqlgraph.To(cabinetfault.Table, cabinetfault.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, rider.FaultsTable, rider.FaultsColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOrders queries the orders edge of a Rider.
+func (c *RiderClient) QueryOrders(r *Rider) *OrderQuery {
+	query := &OrderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rider.Table, rider.FieldID, id),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.OrdersTable, rider.OrdersColumn),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil

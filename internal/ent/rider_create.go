@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
@@ -289,6 +290,21 @@ func (rc *RiderCreate) AddFaults(c ...*CabinetFault) *RiderCreate {
 		ids[i] = c[i].ID
 	}
 	return rc.AddFaultIDs(ids...)
+}
+
+// AddOrderIDs adds the "orders" edge to the Order entity by IDs.
+func (rc *RiderCreate) AddOrderIDs(ids ...uint64) *RiderCreate {
+	rc.mutation.AddOrderIDs(ids...)
+	return rc
+}
+
+// AddOrders adds the "orders" edges to the Order entity.
+func (rc *RiderCreate) AddOrders(o ...*Order) *RiderCreate {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return rc.AddOrderIDs(ids...)
 }
 
 // Mutation returns the RiderMutation object of the builder.
@@ -673,6 +689,25 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: cabinetfault.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.OrdersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.OrdersTable,
+			Columns: []string{rider.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
 				},
 			},
 		}

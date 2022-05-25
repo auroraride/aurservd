@@ -41,6 +41,7 @@ func (Plan) Edges() []ent.Edge {
     return []ent.Edge{
         edge.To("pms", BatteryModel.Type),
         edge.To("cities", City.Type),
+        edge.To("orders", Order.Type),
     }
 }
 

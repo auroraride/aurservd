@@ -155,7 +155,24 @@ type config struct {
             AppSecret string
         }
     }
-    Trans map[string]string
+    Trans   map[string]string
+    Payment struct {
+        Wechatpay struct {
+            PrivateKeyPath             string
+            MchID                      string
+            MchCertificateSerialNumber string
+            MchAPIv3Key                string
+            NotifyUrl                  string
+        }
+        Alipay struct {
+            Appid         string
+            PrivateKey    string
+            AppPublicCert string
+            RootCert      string
+            PublicCert    string
+            NotifyUrl     string
+        }
+    }
 }
 
 func readConfig() error {

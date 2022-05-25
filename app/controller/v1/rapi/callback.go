@@ -6,6 +6,9 @@
 package rapi
 
 import (
+    "github.com/auroraride/aurservd/app"
+    "github.com/auroraride/aurservd/app/service"
+    "github.com/auroraride/aurservd/internal/payment"
     "github.com/labstack/echo/v4"
     "net/http"
 )
@@ -29,4 +32,17 @@ func (*callback) RiderCallback(c echo.Context) error {
 // ESignCallback E签宝回调
 func (*callback) ESignCallback(c echo.Context) error {
     return c.JSON(http.StatusOK, map[string]int{"code": 200})
+}
+
+// AlipayCallback 支付宝回调
+func (*callback) AlipayCallback(c echo.Context) (err error) {
+    service.NewOrder().OrderPaid(payment.NewAlipay().Notification(c.Request(), c.Response()))
+    return nil
+}
+
+// WechatpayCallback 微信回调
+func (*callback) WechatpayCallback(c echo.Context) (err error) {
+    ctx := app.Context(c)
+
+    return ctx.SendResponse()
 }

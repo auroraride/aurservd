@@ -16,9 +16,11 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/manager"
+	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -50,9 +52,11 @@ func columnChecker(table string) func(string) error {
 		cabinet.Table:        cabinet.ValidColumn,
 		cabinetfault.Table:   cabinetfault.ValidColumn,
 		city.Table:           city.ValidColumn,
+		commission.Table:     commission.ValidColumn,
 		contract.Table:       contract.ValidColumn,
 		enterprise.Table:     enterprise.ValidColumn,
 		manager.Table:        manager.ValidColumn,
+		order.Table:          order.ValidColumn,
 		person.Table:         person.ValidColumn,
 		plan.Table:           plan.ValidColumn,
 		rider.Table:          rider.ValidColumn,

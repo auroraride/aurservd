@@ -62,6 +62,16 @@ func (c *City) GetID() uint64 {
 	return c.ID
 }
 
+// GetTableName returns table name for Commission.
+func (c *Commission) GetTableName() string {
+	return "commission"
+}
+
+// GetID returns id for Commission.
+func (c *Commission) GetID() uint64 {
+	return c.ID
+}
+
 // GetTableName returns table name for Contract.
 func (c *Contract) GetTableName() string {
 	return "contract"
@@ -90,6 +100,16 @@ func (m *Manager) GetTableName() string {
 // GetID returns id for Manager.
 func (m *Manager) GetID() uint64 {
 	return m.ID
+}
+
+// GetTableName returns table name for Order.
+func (o *Order) GetTableName() string {
+	return "order"
+}
+
+// GetID returns id for Order.
+func (o *Order) GetID() uint64 {
+	return o.ID
 }
 
 // GetTableName returns table name for Person.

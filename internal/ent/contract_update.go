@@ -139,6 +139,20 @@ func (cu *ContractUpdate) ClearFiles() *ContractUpdate {
 	return cu
 }
 
+// SetEffective sets the "effective" field.
+func (cu *ContractUpdate) SetEffective(b bool) *ContractUpdate {
+	cu.mutation.SetEffective(b)
+	return cu
+}
+
+// SetNillableEffective sets the "effective" field if the given value is not nil.
+func (cu *ContractUpdate) SetNillableEffective(b *bool) *ContractUpdate {
+	if b != nil {
+		cu.SetEffective(*b)
+	}
+	return cu
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (cu *ContractUpdate) SetRider(r *Rider) *ContractUpdate {
 	return cu.SetRiderID(r.ID)
@@ -359,6 +373,13 @@ func (cu *ContractUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: contract.FieldFiles,
 		})
 	}
+	if value, ok := cu.mutation.Effective(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: contract.FieldEffective,
+		})
+	}
 	if cu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -519,6 +540,20 @@ func (cuo *ContractUpdateOne) SetFiles(s []string) *ContractUpdateOne {
 // ClearFiles clears the value of the "files" field.
 func (cuo *ContractUpdateOne) ClearFiles() *ContractUpdateOne {
 	cuo.mutation.ClearFiles()
+	return cuo
+}
+
+// SetEffective sets the "effective" field.
+func (cuo *ContractUpdateOne) SetEffective(b bool) *ContractUpdateOne {
+	cuo.mutation.SetEffective(b)
+	return cuo
+}
+
+// SetNillableEffective sets the "effective" field if the given value is not nil.
+func (cuo *ContractUpdateOne) SetNillableEffective(b *bool) *ContractUpdateOne {
+	if b != nil {
+		cuo.SetEffective(*b)
+	}
 	return cuo
 }
 
@@ -770,6 +805,13 @@ func (cuo *ContractUpdateOne) sqlSave(ctx context.Context) (_node *Contract, err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: contract.FieldFiles,
+		})
+	}
+	if value, ok := cuo.mutation.Effective(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: contract.FieldEffective,
 		})
 	}
 	if cuo.mutation.RiderCleared() {

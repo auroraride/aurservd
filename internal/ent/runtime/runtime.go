@@ -11,9 +11,11 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/manager"
+	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -152,6 +154,27 @@ func init() {
 	cityDescCode := cityFields[3].Descriptor()
 	// city.CodeValidator is a validator for the "code" field. It is called by the builders before save.
 	city.CodeValidator = cityDescCode.Validators[0].(func(string) error)
+	commissionMixin := schema.Commission{}.Mixin()
+	commissionMixinHooks2 := commissionMixin[2].Hooks()
+	commission.Hooks[0] = commissionMixinHooks2[0]
+	commissionMixinFields0 := commissionMixin[0].Fields()
+	_ = commissionMixinFields0
+	commissionFields := schema.Commission{}.Fields()
+	_ = commissionFields
+	// commissionDescCreatedAt is the schema descriptor for created_at field.
+	commissionDescCreatedAt := commissionMixinFields0[0].Descriptor()
+	// commission.DefaultCreatedAt holds the default value on creation for the created_at field.
+	commission.DefaultCreatedAt = commissionDescCreatedAt.Default.(func() time.Time)
+	// commissionDescUpdatedAt is the schema descriptor for updated_at field.
+	commissionDescUpdatedAt := commissionMixinFields0[1].Descriptor()
+	// commission.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	commission.DefaultUpdatedAt = commissionDescUpdatedAt.Default.(func() time.Time)
+	// commission.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	commission.UpdateDefaultUpdatedAt = commissionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// commissionDescStatus is the schema descriptor for status field.
+	commissionDescStatus := commissionFields[2].Descriptor()
+	// commission.DefaultStatus holds the default value on creation for the status field.
+	commission.DefaultStatus = commissionDescStatus.Default.(uint8)
 	contractMixin := schema.Contract{}.Mixin()
 	contractMixinHooks2 := contractMixin[2].Hooks()
 	contract.Hooks[0] = contractMixinHooks2[0]
@@ -209,6 +232,10 @@ func init() {
 			return nil
 		}
 	}()
+	// contractDescEffective is the schema descriptor for effective field.
+	contractDescEffective := contractFields[5].Descriptor()
+	// contract.DefaultEffective holds the default value on creation for the effective field.
+	contract.DefaultEffective = contractDescEffective.Default.(bool)
 	enterpriseMixin := schema.Enterprise{}.Mixin()
 	enterpriseMixinHooks2 := enterpriseMixin[2].Hooks()
 	enterprise.Hooks[0] = enterpriseMixinHooks2[0]
@@ -251,6 +278,27 @@ func init() {
 	managerDescName := managerFields[1].Descriptor()
 	// manager.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	manager.NameValidator = managerDescName.Validators[0].(func(string) error)
+	orderMixin := schema.Order{}.Mixin()
+	orderMixinHooks2 := orderMixin[2].Hooks()
+	order.Hooks[0] = orderMixinHooks2[0]
+	orderMixinFields0 := orderMixin[0].Fields()
+	_ = orderMixinFields0
+	orderFields := schema.Order{}.Fields()
+	_ = orderFields
+	// orderDescCreatedAt is the schema descriptor for created_at field.
+	orderDescCreatedAt := orderMixinFields0[0].Descriptor()
+	// order.DefaultCreatedAt holds the default value on creation for the created_at field.
+	order.DefaultCreatedAt = orderDescCreatedAt.Default.(func() time.Time)
+	// orderDescUpdatedAt is the schema descriptor for updated_at field.
+	orderDescUpdatedAt := orderMixinFields0[1].Descriptor()
+	// order.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	order.DefaultUpdatedAt = orderDescUpdatedAt.Default.(func() time.Time)
+	// order.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	order.UpdateDefaultUpdatedAt = orderDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// orderDescStatus is the schema descriptor for status field.
+	orderDescStatus := orderFields[2].Descriptor()
+	// order.DefaultStatus holds the default value on creation for the status field.
+	order.DefaultStatus = orderDescStatus.Default.(uint8)
 	personMixin := schema.Person{}.Mixin()
 	personMixinHooks2 := personMixin[2].Hooks()
 	person.Hooks[0] = personMixinHooks2[0]

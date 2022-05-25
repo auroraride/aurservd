@@ -2004,6 +2004,47 @@
                 }
             }
         },
+        "/rider/v1/order": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R30006 支付请求",
+                "operationId": "RiderOrderCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.OrderCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.OrderCreateRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/path": {
             "get": {
                 "consumes": [
@@ -2015,7 +2056,7 @@
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R30001 电柜故障上报",
+                "summary": "R40001 电柜故障上报",
                 "operationId": "CabinetReport",
                 "parameters": [
                     {
@@ -2929,6 +2970,10 @@
         "model.ContractSignRes": {
             "type": "object",
             "properties": {
+                "effective": {
+                    "description": "是否存在生效中的合同",
+                    "type": "boolean"
+                },
                 "sn": {
                     "description": "签署识别码",
                     "type": "string"
@@ -3016,6 +3061,49 @@
                     "type": "string"
                 },
                 "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.OrderCreateReq": {
+            "type": "object",
+            "required": [
+                "orderType",
+                "payway",
+                "planId"
+            ],
+            "properties": {
+                "orderType": {
+                    "description": "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6
+                    ]
+                },
+                "payway": {
+                    "description": "支付方式 1支付宝 2微信",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "planId": {
+                    "description": "套餐ID ",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.OrderCreateRes": {
+            "type": "object",
+            "properties": {
+                "prepay": {
+                    "description": "预支付字符串",
                     "type": "string"
                 }
             }

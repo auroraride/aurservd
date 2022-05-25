@@ -26,12 +26,26 @@ const (
 
 type contractService struct {
     esign *esign.Esign
+    ctx   context.Context
+    orm   *ent.ContractClient
 }
 
 func NewContract() *contractService {
     return &contractService{
         esign: esign.New(),
+        orm:   ar.Ent.Contract,
+        ctx:   context.Background(),
     }
+}
+
+// Effective 查询骑手是否存在生效中的合同
+// 当用户退租之后触发合同失效, 需要重新签订 // TODO 需要实现逻辑
+func (s *contractService) Effective(u *ent.Rider) bool {
+    return s.orm.QueryNotDeleted().Where(
+        contract.RiderID(u.ID),
+        contract.Status(model.ContractStatusSuccess.Raw()),
+        contract.Effective(true),
+    ).ExistX(s.ctx)
 }
 
 // generateSn 生成合同编号
@@ -41,6 +55,9 @@ func (s *contractService) generateSn() string {
 
 // Sign 签署合同
 func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) model.ContractSignRes {
+    if s.Effective(u) {
+        return model.ContractSignRes{Effective: true}
+    }
     var (
         sn           = s.generateSn()
         cfg          = s.esign.Config

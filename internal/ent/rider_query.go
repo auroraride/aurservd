@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -33,6 +34,7 @@ type RiderQuery struct {
 	withEnterprise *EnterpriseQuery
 	withContract   *ContractQuery
 	withFaults     *CabinetFaultQuery
+	withOrders     *OrderQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -151,6 +153,28 @@ func (rq *RiderQuery) QueryFaults() *CabinetFaultQuery {
 			sqlgraph.From(rider.Table, rider.FieldID, selector),
 			sqlgraph.To(cabinetfault.Table, cabinetfault.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, rider.FaultsTable, rider.FaultsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryOrders chains the current query on the "orders" edge.
+func (rq *RiderQuery) QueryOrders() *OrderQuery {
+	query := &OrderQuery{config: rq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rider.Table, rider.FieldID, selector),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.OrdersTable, rider.OrdersColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -343,6 +367,7 @@ func (rq *RiderQuery) Clone() *RiderQuery {
 		withEnterprise: rq.withEnterprise.Clone(),
 		withContract:   rq.withContract.Clone(),
 		withFaults:     rq.withFaults.Clone(),
+		withOrders:     rq.withOrders.Clone(),
 		// clone intermediate query.
 		sql:    rq.sql.Clone(),
 		path:   rq.path,
@@ -391,6 +416,17 @@ func (rq *RiderQuery) WithFaults(opts ...func(*CabinetFaultQuery)) *RiderQuery {
 		opt(query)
 	}
 	rq.withFaults = query
+	return rq
+}
+
+// WithOrders tells the query-builder to eager-load the nodes that are connected to
+// the "orders" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RiderQuery) WithOrders(opts ...func(*OrderQuery)) *RiderQuery {
+	query := &OrderQuery{config: rq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withOrders = query
 	return rq
 }
 
@@ -464,11 +500,12 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 	var (
 		nodes       = []*Rider{}
 		_spec       = rq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			rq.withPerson != nil,
 			rq.withEnterprise != nil,
 			rq.withContract != nil,
 			rq.withFaults != nil,
+			rq.withOrders != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -598,6 +635,31 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 				return nil, fmt.Errorf(`unexpected foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Faults = append(node.Edges.Faults, n)
+		}
+	}
+
+	if query := rq.withOrders; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Rider)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Orders = []*Order{}
+		}
+		query.Where(predicate.Order(func(s *sql.Selector) {
+			s.Where(sql.InValues(rider.OrdersColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.RiderID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Orders = append(node.Edges.Orders, n)
 		}
 	}
 

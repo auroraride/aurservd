@@ -6,6 +6,7 @@ import (
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
+    "entgo.io/ent/schema/index"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -24,11 +25,12 @@ func (Contract) Annotations() []schema.Annotation {
 // Fields of the Contract.
 func (Contract) Fields() []ent.Field {
     return []ent.Field{
-        field.Uint8("status").Default(0).Comment("状态"), // 0-草稿 1-签署中 2-完成 3-撤销 5-过期（签署截至日期到期后触发） 7-拒签
+        field.Uint8("status").Default(0).Comment("状态"), // 0草稿 1签署中 2完成 3撤销 4过期(签署截至日期到期后触发) 5拒签
         field.Uint64("rider_id").Comment("骑手"),
         field.String("flow_id").MaxLen(40).Unique().NotEmpty().Comment("E签宝流程ID"),
         field.String("sn").MaxLen(20).Unique().NotEmpty().Comment("合同编码"),
         field.JSON("files", []string{}).Optional().Comment("合同链接"),
+        field.Bool("effective").Default(true).Comment("是否有效, 当用户退租之后触发合同失效, 需要重新签订"), // TODO 需要实现逻辑
         // TODO 其他诸如电池型号、ID、团签ID之类的信息字段
     }
 }
@@ -49,5 +51,7 @@ func (Contract) Mixin() []ent.Mixin {
 }
 
 func (Contract) Indexes() []ent.Index {
-    return nil
+    return []ent.Index{
+        index.Fields("status", "effective"),
+    }
 }

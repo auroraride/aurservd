@@ -24,6 +24,9 @@ type CabinetFault func(*sql.Selector)
 // City is the predicate function for city builders.
 type City func(*sql.Selector)
 
+// Commission is the predicate function for commission builders.
+type Commission func(*sql.Selector)
+
 // Contract is the predicate function for contract builders.
 type Contract func(*sql.Selector)
 
@@ -32,6 +35,9 @@ type Enterprise func(*sql.Selector)
 
 // Manager is the predicate function for manager builders.
 type Manager func(*sql.Selector)
+
+// Order is the predicate function for order builders.
+type Order func(*sql.Selector)
 
 // Person is the predicate function for person builders.
 type Person func(*sql.Selector)

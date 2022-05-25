@@ -20,5 +20,7 @@ func loadCommonRoutes() {
 
     g.GET("/oss/token", common.Oss.Token)
 
+    g.GET("/basic", common.Basic.Get)
+
     g.Static("/demo", "public")
 }

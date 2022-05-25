@@ -35,6 +35,8 @@ const (
 	FieldSn = "sn"
 	// FieldFiles holds the string denoting the files field in the database.
 	FieldFiles = "files"
+	// FieldEffective holds the string denoting the effective field in the database.
+	FieldEffective = "effective"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// Table holds the table name of the contract in the database.
@@ -62,6 +64,7 @@ var Columns = []string{
 	FieldFlowID,
 	FieldSn,
 	FieldFiles,
+	FieldEffective,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -94,4 +97,6 @@ var (
 	FlowIDValidator func(string) error
 	// SnValidator is a validator for the "sn" field. It is called by the builders before save.
 	SnValidator func(string) error
+	// DefaultEffective holds the default value on creation for the "effective" field.
+	DefaultEffective bool
 )

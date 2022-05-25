@@ -65,9 +65,11 @@ type PlanEdges struct {
 	Pms []*BatteryModel `json:"pms,omitempty"`
 	// Cities holds the value of the cities edge.
 	Cities []*City `json:"cities,omitempty"`
+	// Orders holds the value of the orders edge.
+	Orders []*Order `json:"orders,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // PmsOrErr returns the Pms value or an error if the edge
@@ -86,6 +88,15 @@ func (e PlanEdges) CitiesOrErr() ([]*City, error) {
 		return e.Cities, nil
 	}
 	return nil, &NotLoadedError{edge: "cities"}
+}
+
+// OrdersOrErr returns the Orders value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlanEdges) OrdersOrErr() ([]*Order, error) {
+	if e.loadedTypes[2] {
+		return e.Orders, nil
+	}
+	return nil, &NotLoadedError{edge: "orders"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -222,6 +233,11 @@ func (pl *Plan) QueryPms() *BatteryModelQuery {
 // QueryCities queries the "cities" edge of the Plan entity.
 func (pl *Plan) QueryCities() *CityQuery {
 	return (&PlanClient{config: pl.config}).QueryCities(pl)
+}
+
+// QueryOrders queries the "orders" edge of the Plan entity.
+func (pl *Plan) QueryOrders() *OrderQuery {
+	return (&PlanClient{config: pl.config}).QueryOrders(pl)
 }
 
 // Update returns a builder for updating this Plan.

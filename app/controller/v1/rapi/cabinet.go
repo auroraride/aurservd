@@ -19,7 +19,7 @@ var Cabinet = new(cabinet)
 // Report
 // @ID           CabinetReport
 // @Router       /rider/v1/path [GET]
-// @Summary      R30001 电柜故障上报
+// @Summary      R40001 电柜故障上报
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json

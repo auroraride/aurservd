@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 )
 
@@ -163,6 +164,21 @@ func (pc *PlanCreate) AddCities(c ...*City) *PlanCreate {
 		ids[i] = c[i].ID
 	}
 	return pc.AddCityIDs(ids...)
+}
+
+// AddOrderIDs adds the "orders" edge to the Order entity by IDs.
+func (pc *PlanCreate) AddOrderIDs(ids ...uint64) *PlanCreate {
+	pc.mutation.AddOrderIDs(ids...)
+	return pc
+}
+
+// AddOrders adds the "orders" edges to the Order entity.
+func (pc *PlanCreate) AddOrders(o ...*Order) *PlanCreate {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return pc.AddOrderIDs(ids...)
 }
 
 // Mutation returns the PlanMutation object of the builder.
@@ -452,6 +468,25 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.OrdersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.OrdersTable,
+			Columns: []string{plan.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
 				},
 			},
 		}

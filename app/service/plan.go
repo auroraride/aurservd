@@ -10,6 +10,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/batterymodel"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/plan"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -47,10 +48,52 @@ func (s *planService) Query(id uint64) *ent.Plan {
     return item
 }
 
+// QueryEffective 获取有效期内的骑行卡
+func (s *planService) QueryEffective(id uint64) *ent.Plan {
+    now := time.Now()
+    item, err := s.orm.QueryNotDeleted().
+        Where(
+            plan.Enable(true),
+            plan.ID(id),
+            plan.StartLTE(now),
+            plan.EndGTE(now),
+        ).
+        Only(s.ctx)
+    if err != nil || item == nil {
+        snag.Panic("未找到有效的骑士卡")
+    }
+    return item
+}
+
+// Duplicated 查询骑士卡是否冲突
+func (s *planService) Duplicated(cities, models []uint64, start, end time.Time) bool {
+    for _, cityID := range cities {
+        for _, modelID := range models {
+            if s.orm.QueryNotDeleted().
+                Where(
+                    plan.Enable(true),
+                    plan.HasCitiesWith(city.ID(cityID)),
+                    plan.HasPmsWith(batterymodel.ID(modelID)),
+                    plan.Or(
+                        plan.StartLTE(start),
+                        plan.EndGTE(end),
+                    ),
+                ).ExistX(s.ctx) {
+                snag.Panic("骑士卡冲突")
+            }
+        }
+    }
+    return false
+}
+
 // CreatePlan 创建骑士卡
 func (s *planService) CreatePlan(req *model.PlanCreateReq) {
     start, _ := time.Parse(carbon.DateLayout, req.Start)
     end, _ := time.Parse(carbon.DateLayout, req.End)
+    // 查询是否重复
+    if s.Duplicated(req.Cities, req.Models, start, end) {
+        snag.Panic("骑士卡冲突")
+    }
     s.orm.Create().
         AddCityIDs(req.Cities...).
         AddPmIDs(req.Models...).

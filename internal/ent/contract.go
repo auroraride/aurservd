@@ -49,6 +49,9 @@ type Contract struct {
 	// Files holds the value of the "files" field.
 	// 合同链接
 	Files []string `json:"files,omitempty"`
+	// Effective holds the value of the "effective" field.
+	// 是否有效, 当用户退租之后触发合同失效, 需要重新签订
+	Effective bool `json:"effective,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ContractQuery when eager-loading is set.
 	Edges ContractEdges `json:"edges"`
@@ -84,6 +87,8 @@ func (*Contract) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case contract.FieldCreator, contract.FieldLastModifier, contract.FieldFiles:
 			values[i] = new([]byte)
+		case contract.FieldEffective:
+			values[i] = new(sql.NullBool)
 		case contract.FieldID, contract.FieldStatus, contract.FieldRiderID:
 			values[i] = new(sql.NullInt64)
 		case contract.FieldRemark, contract.FieldFlowID, contract.FieldSn:
@@ -184,6 +189,12 @@ func (c *Contract) assignValues(columns []string, values []interface{}) error {
 					return fmt.Errorf("unmarshal field files: %w", err)
 				}
 			}
+		case contract.FieldEffective:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field effective", values[i])
+			} else if value.Valid {
+				c.Effective = value.Bool
+			}
 		}
 	}
 	return nil
@@ -241,6 +252,8 @@ func (c *Contract) String() string {
 	builder.WriteString(c.Sn)
 	builder.WriteString(", files=")
 	builder.WriteString(fmt.Sprintf("%v", c.Files))
+	builder.WriteString(", effective=")
+	builder.WriteString(fmt.Sprintf("%v", c.Effective))
 	builder.WriteByte(')')
 	return builder.String()
 }

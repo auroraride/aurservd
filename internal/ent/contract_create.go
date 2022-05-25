@@ -130,6 +130,20 @@ func (cc *ContractCreate) SetFiles(s []string) *ContractCreate {
 	return cc
 }
 
+// SetEffective sets the "effective" field.
+func (cc *ContractCreate) SetEffective(b bool) *ContractCreate {
+	cc.mutation.SetEffective(b)
+	return cc
+}
+
+// SetNillableEffective sets the "effective" field if the given value is not nil.
+func (cc *ContractCreate) SetNillableEffective(b *bool) *ContractCreate {
+	if b != nil {
+		cc.SetEffective(*b)
+	}
+	return cc
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (cc *ContractCreate) SetRider(r *Rider) *ContractCreate {
 	return cc.SetRiderID(r.ID)
@@ -232,6 +246,10 @@ func (cc *ContractCreate) defaults() error {
 		v := contract.DefaultStatus
 		cc.mutation.SetStatus(v)
 	}
+	if _, ok := cc.mutation.Effective(); !ok {
+		v := contract.DefaultEffective
+		cc.mutation.SetEffective(v)
+	}
 	return nil
 }
 
@@ -264,6 +282,9 @@ func (cc *ContractCreate) check() error {
 		if err := contract.SnValidator(v); err != nil {
 			return &ValidationError{Name: "sn", err: fmt.Errorf(`ent: validator failed for field "Contract.sn": %w`, err)}
 		}
+	}
+	if _, ok := cc.mutation.Effective(); !ok {
+		return &ValidationError{Name: "effective", err: errors.New(`ent: missing required field "Contract.effective"`)}
 	}
 	if _, ok := cc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Contract.rider"`)}
@@ -375,6 +396,14 @@ func (cc *ContractCreate) createSpec() (*Contract, *sqlgraph.CreateSpec) {
 			Column: contract.FieldFiles,
 		})
 		_node.Files = value
+	}
+	if value, ok := cc.mutation.Effective(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: contract.FieldEffective,
+		})
+		_node.Effective = value
 	}
 	if nodes := cc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -615,6 +644,18 @@ func (u *ContractUpsert) UpdateFiles() *ContractUpsert {
 // ClearFiles clears the value of the "files" field.
 func (u *ContractUpsert) ClearFiles() *ContractUpsert {
 	u.SetNull(contract.FieldFiles)
+	return u
+}
+
+// SetEffective sets the "effective" field.
+func (u *ContractUpsert) SetEffective(v bool) *ContractUpsert {
+	u.Set(contract.FieldEffective, v)
+	return u
+}
+
+// UpdateEffective sets the "effective" field to the value that was provided on create.
+func (u *ContractUpsert) UpdateEffective() *ContractUpsert {
+	u.SetExcluded(contract.FieldEffective)
 	return u
 }
 
@@ -861,6 +902,20 @@ func (u *ContractUpsertOne) UpdateFiles() *ContractUpsertOne {
 func (u *ContractUpsertOne) ClearFiles() *ContractUpsertOne {
 	return u.Update(func(s *ContractUpsert) {
 		s.ClearFiles()
+	})
+}
+
+// SetEffective sets the "effective" field.
+func (u *ContractUpsertOne) SetEffective(v bool) *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetEffective(v)
+	})
+}
+
+// UpdateEffective sets the "effective" field to the value that was provided on create.
+func (u *ContractUpsertOne) UpdateEffective() *ContractUpsertOne {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateEffective()
 	})
 }
 
@@ -1271,6 +1326,20 @@ func (u *ContractUpsertBulk) UpdateFiles() *ContractUpsertBulk {
 func (u *ContractUpsertBulk) ClearFiles() *ContractUpsertBulk {
 	return u.Update(func(s *ContractUpsert) {
 		s.ClearFiles()
+	})
+}
+
+// SetEffective sets the "effective" field.
+func (u *ContractUpsertBulk) SetEffective(v bool) *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.SetEffective(v)
+	})
+}
+
+// UpdateEffective sets the "effective" field to the value that was provided on create.
+func (u *ContractUpsertBulk) UpdateEffective() *ContractUpsertBulk {
+	return u.Update(func(s *ContractUpsert) {
+		s.UpdateEffective()
 	})
 }
 

@@ -614,6 +614,9 @@ definitions:
     type: object
   model.ContractSignRes:
     properties:
+      effective:
+        description: 是否存在生效中的合同
+        type: boolean
       sn:
         description: 签署识别码
         type: string
@@ -673,6 +676,38 @@ definitions:
       phone:
         type: string
       token:
+        type: string
+    type: object
+  model.OrderCreateReq:
+    properties:
+      orderType:
+        description: 订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金
+        enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        type: integer
+      payway:
+        description: 支付方式 1支付宝 2微信
+        enum:
+        - 1
+        - 2
+        type: integer
+      planId:
+        description: '套餐ID '
+        type: integer
+    required:
+    - orderType
+    - payway
+    - planId
+    type: object
+  model.OrderCreateRes:
+    properties:
+      prepay:
+        description: 预支付字符串
         type: string
     type: object
   model.Pagination:
@@ -2300,6 +2335,33 @@ paths:
       summary: R10005 获取人脸校验结果
       tags:
       - '[R]骑手接口'
+  /rider/v1/order:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderOrderCreate
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.OrderCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.OrderCreateRes'
+      summary: R30006 支付请求
+      tags:
+      - '[R]骑手接口'
   /rider/v1/path:
     get:
       consumes:
@@ -2324,7 +2386,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R30001 电柜故障上报
+      summary: R40001 电柜故障上报
       tags:
       - '[R]骑手接口'
   /rider/v1/signin:
