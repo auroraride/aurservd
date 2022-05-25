@@ -1,6 +1,7 @@
 FROM alpine:latest
 
-RUN mkdir /app \
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories \
+    && mkdir /app \
     && apk add --no-cache bash tzdata \
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone \
