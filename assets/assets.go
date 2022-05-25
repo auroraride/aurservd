@@ -21,4 +21,7 @@ var (
 
     //go:embed docs/swagger.yaml
     SwaggerSpecYaml []byte
+
+    //go:embed api.paw
+    Paw []byte
 )

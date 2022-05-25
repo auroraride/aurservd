@@ -5,6 +5,9 @@
 <br>
 图片/附件前缀 `https://cdn.auroraride.com/`
 
+### 调试工具
+- [paw](/docs/api.paw)
+
 ### 认证
 项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`
 |  header   |  类型  |  接口  |

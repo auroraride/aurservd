@@ -43,4 +43,8 @@ func loadRedocRoute() {
         b, _ := jsoniter.Marshal(doc)
         return c.Blob(200, "application/json", b)
     })
+
+    g.GET("/api.paw", func(c echo.Context) error {
+        return c.Blob(200, "application/octet-stream", assets.Paw)
+    })
 }
