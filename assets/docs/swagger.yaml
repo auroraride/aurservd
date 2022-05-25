@@ -607,6 +607,11 @@ definitions:
         description: 城市
         type: string
     type: object
+  model.ContractSignReq:
+    properties:
+      planId:
+        type: integer
+    type: object
   model.ContractSignRes:
     properties:
       sn:
@@ -2253,6 +2258,12 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ContractSignReq'
       produces:
       - application/json
       responses:

@@ -592,7 +592,7 @@ var (
 		{Name: "phone", Type: field.TypeString, Unique: true, Comment: "手机号", Size: 11},
 		{Name: "contact", Type: field.TypeJSON, Comment: "紧急联系人", Nullable: true},
 		{Name: "device_type", Type: field.TypeUint8, Comment: "登录设备类型: 1iOS 2Android"},
-		{Name: "last_device", Type: field.TypeString, Unique: true, Comment: "上次登录设备ID", Size: 60},
+		{Name: "last_device", Type: field.TypeString, Comment: "上次登录设备ID", Size: 60},
 		{Name: "is_new_device", Type: field.TypeBool, Comment: "是否新设备", Default: false},
 		{Name: "last_face", Type: field.TypeString, Comment: "上次登录人脸", Nullable: true},
 		{Name: "push_id", Type: field.TypeString, Unique: true, Comment: "推送ID", Nullable: true, Size: 60},
@@ -642,6 +642,11 @@ var (
 						"postgres": "GIN",
 					},
 				},
+			},
+			{
+				Name:    "rider_last_device",
+				Unique:  false,
+				Columns: []*schema.Column{RiderColumns[10]},
 			},
 		},
 	}

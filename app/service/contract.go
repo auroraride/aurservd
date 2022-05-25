@@ -40,7 +40,7 @@ func (s *contractService) generateSn() string {
 }
 
 // Sign 签署合同
-func (s *contractService) Sign(u *ent.Rider) model.ContractSignRes {
+func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) model.ContractSignRes {
     var (
         sn           = s.generateSn()
         cfg          = s.esign.Config

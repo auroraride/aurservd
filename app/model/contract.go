@@ -38,6 +38,11 @@ func (s ContractStatus) String() string {
     return "未知"
 }
 
+// ContractSignReq 签约请求
+type ContractSignReq struct {
+    PlanID uint64 `json:"planId"`
+}
+
 type ContractSignRes struct {
     Url string `json:"url"` // 签署URL
     Sn  string `json:"sn"`  // 签署识别码

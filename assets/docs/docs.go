@@ -1952,6 +1952,15 @@ const docTemplate = `{
                         "name": "X-Rider-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ContractSignReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -2914,6 +2923,14 @@ const docTemplate = `{
                 "name": {
                     "description": "城市",
                     "type": "string"
+                }
+            }
+        },
+        "model.ContractSignReq": {
+            "type": "object",
+            "properties": {
+                "planId": {
+                    "type": "integer"
                 }
             }
         },
