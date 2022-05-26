@@ -17,22 +17,43 @@ import (
     "net/http"
 )
 
+var _alipay *alipayClient
+
 type alipayClient struct {
     *alipay.Client
+    notifyClient *alipay.Client
 }
 
-func NewAlipay() *alipayClient {
+func newAlipayClient() *alipay.Client {
     cfg := ar.Config.Payment.Alipay
     client, err := alipay.New(cfg.Appid, cfg.PrivateKey, true)
-    _ = client.LoadAppPublicCertFromFile(cfg.AppPublicCert) // 加载应用公钥证书
-    _ = client.LoadAliPayRootCertFromFile(cfg.RootCert)     // 加载支付宝根证书
-    _ = client.LoadAliPayPublicCertFromFile(cfg.PublicCert) // 加载支付宝公钥证书
     if err != nil {
         snag.Panic(err)
     }
-    return &alipayClient{
-        client,
+    return client
+}
+
+func newNotifyClient() *alipay.Client {
+    cfg := ar.Config.Payment.Alipay
+    client := newAlipayClient()
+    var err error
+    err = client.LoadAppPublicCertFromFile(cfg.AppPublicCert) // 加载应用公钥证书
+    if err != nil {
+        snag.Panic(err)
     }
+    err = client.LoadAliPayRootCertFromFile(cfg.RootCert) // 加载支付宝根证书
+    if err != nil {
+        snag.Panic(err)
+    }
+    err = client.LoadAliPayPublicCertFromFile(cfg.PublicCert) // 加载支付宝公钥证书
+    if err != nil {
+        snag.Panic(err)
+    }
+    return client
+}
+
+func NewAlipay() *alipayClient {
+    return _alipay
 }
 
 // AppPay app支付
@@ -52,7 +73,7 @@ func (c *alipayClient) AppPay(prepay *model.OrderCache) (string, error) {
 
 // Notification 支付宝回调
 func (c *alipayClient) Notification(req *http.Request, rep http.ResponseWriter) *model.OrderCache {
-    result, err := c.GetTradeNotification(req)
+    result, err := c.notifyClient.GetTradeNotification(req)
     if err == nil {
         // 从缓存中获取订单数据
         out := result.OutTradeNo

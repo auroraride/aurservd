@@ -32,10 +32,12 @@ require (
 	github.com/mojocn/base64Captcha v1.3.5
 	github.com/rs/xid v1.4.0
 	github.com/sirupsen/logrus v1.8.1
+	github.com/smartwalle/alipay/v3 v3.1.7
 	github.com/sony/sonyflake v1.0.0
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.11.0
 	github.com/swaggo/swag v1.8.1
+	github.com/wechatpay-apiv3/wechatpay-go v0.2.13
 	github.com/xuri/excelize/v2 v2.6.0
 	golang.org/x/crypto v0.0.0-20220511200225-c6db032c6c88
 	golang.org/x/time v0.0.0-20220411224347-583f2d630306
@@ -103,7 +105,6 @@ require (
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
-	github.com/smartwalle/alipay/v3 v3.1.7 // indirect
 	github.com/smartwalle/crypto4go v1.0.2 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
@@ -113,7 +114,6 @@ require (
 	github.com/tjfoc/gmsm v1.4.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.1 // indirect
-	github.com/wechatpay-apiv3/wechatpay-go v0.2.13 // indirect
 	github.com/xuri/efp v0.0.0-20220407160117-ad0f7a785be8 // indirect
 	github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22 // indirect
 	github.com/zclconf/go-cty v1.10.0 // indirect

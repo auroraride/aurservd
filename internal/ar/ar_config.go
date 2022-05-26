@@ -157,9 +157,10 @@ type config struct {
     }
     Trans   map[string]string
     Payment struct {
-        Wechatpay struct {
+        Wechat struct {
             PrivateKeyPath             string
             MchID                      string
+            AppID                      string
             MchCertificateSerialNumber string
             MchAPIv3Key                string
             NotifyUrl                  string

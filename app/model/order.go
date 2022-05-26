@@ -11,12 +11,12 @@ import (
 )
 
 const (
-    OrderTypeNew           uint8 = iota + 1 // 骑士卡
-    OrderTypeRenewal                        // 续签
-    OrderTypeReUse                          // 重签
-    OrderTypeChangeBattery                  // 更换电池
-    OrderTypeRescue                         // 救援
-    OrderTypeFee                            // 滞纳金
+    OrderTypeNew           uint = iota + 1 // 骑士卡
+    OrderTypeRenewal                       // 续签
+    OrderTypeReUse                         // 重签
+    OrderTypeChangeBattery                 // 更换电池
+    OrderTypeRescue                        // 救援
+    OrderTypeFee                           // 滞纳金
 )
 
 const (
@@ -35,7 +35,7 @@ const (
 type OrderCreateReq struct {
     PlanID    uint64 `json:"planId" validate:"required" trans:"套餐ID"`
     Payway    uint8  `json:"payway" validate:"required" trans:"支付方式" enums:"1,2"`            // 1支付宝 2微信
-    OrderType uint8  `json:"orderType" validate:"required" trans:"订单类型" enums:"1,2,3,4,5,6"` // 1新签 2续签 3重签 4更改电池 5救援 6滞纳金
+    OrderType uint   `json:"orderType" validate:"required" trans:"订单类型" enums:"1,2,3,4,5,6"` // 1新签 2续签 3重签 4更改电池 5救援 6滞纳金
 }
 
 // OrderCreateRes 订单创建返回
@@ -45,7 +45,7 @@ type OrderCreateRes struct {
 
 // OrderCache 订单缓存
 type OrderCache struct {
-    OrderType  uint8     `json:"orderType"` // 订单类型
+    OrderType  uint      `json:"orderType"` // 订单类型
     OutTradeNo string    `json:"outTradeNo"`
     RiderID    uint64    `json:"riderId"`
     Name       string    `json:"name"`

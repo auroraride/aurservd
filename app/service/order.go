@@ -78,28 +78,31 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
         log.Error(err)
         snag.Panic("订单创建失败")
     }
+    var str string
     switch req.Payway {
     case model.OrderPaywayAlipay:
-        result.Prepay = s.Alipay(prepay)
+        // 使用支付宝支付
+        str, err = payment.NewAlipay().AppPay(prepay)
+        if err != nil {
+            log.Error(err)
+            snag.Panic("支付宝支付请求失败")
+        }
+        result.Prepay = str
         break
     case model.OrderPaywayWechat:
-        // TODO 使用微信支付
+        // 使用微信支付
+        str, err = payment.NewWechat().AppPay(prepay)
+        if err != nil {
+            log.Error(err)
+            snag.Panic("微信支付请求失败")
+        }
+        result.Prepay = str
         break
     default:
         snag.Panic("支付方式错误")
         break
     }
     return
-}
-
-// Alipay 使用支付宝支付
-func (s *orderService) Alipay(prepay *model.OrderCache) string {
-    result, err := payment.NewAlipay().AppPay(prepay)
-    if err != nil {
-        log.Error(err)
-        snag.Panic("支付宝支付请求失败")
-    }
-    return result
 }
 
 // OrderPaid 订单成功支付
@@ -115,6 +118,7 @@ func (s *orderService) OrderPaid(trade *model.OrderCache) {
         SetTradeNo(trade.TradeNo).
         SetStatus(model.OrderStatusPaid).
         SetNillablePlanDetail(trade.Plan).
+        SetType(trade.OrderType).
         Save(s.ctx)
     if err != nil {
         log.Errorf("[ORDER PAID ERROR]: %s, Trade: %#v", err.Error(), trade)
@@ -122,11 +126,13 @@ func (s *orderService) OrderPaid(trade *model.OrderCache) {
     }
     // 当新签和重签的时候有提成
     if trade.OrderType == model.OrderTypeNew || trade.OrderType == model.OrderTypeReUse {
-        // q.SetCommission(trade.Plan.Commission)
         // 创建提成
         _, err = ar.Ent.Commission.Create().SetOrder(o).SetAmount(trade.Plan.Commission).SetStatus(model.CommissionStatusPending).Save(s.ctx)
         if err != nil {
-            log.Error(err)
+            log.Errorf("订单提成创建失败: %d: %s", o.ID, err.Error())
         }
     }
+
+    // 删除缓存
+    ar.Cache.Del(context.Background(), "ORDER_"+trade.OutTradeNo)
 }

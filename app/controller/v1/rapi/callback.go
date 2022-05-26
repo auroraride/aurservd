@@ -6,7 +6,6 @@
 package rapi
 
 import (
-    "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/payment"
     "github.com/labstack/echo/v4"
@@ -42,7 +41,7 @@ func (*callback) AlipayCallback(c echo.Context) (err error) {
 
 // WechatpayCallback 微信回调
 func (*callback) WechatpayCallback(c echo.Context) (err error) {
-    ctx := app.Context(c)
-
-    return ctx.SendResponse()
+    res, trade := payment.NewWechat().Notification(c.Request())
+    go service.NewOrder().OrderPaid(trade)
+    return c.JSON(http.StatusOK, res)
 }

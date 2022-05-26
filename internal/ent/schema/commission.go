@@ -28,6 +28,7 @@ func (Commission) Fields() []ent.Field {
         field.Uint64("order_id").Comment("订单ID"),
         field.Float("amount").Immutable().Comment("提成金额"),
         field.Uint8("status").Default(0).Comment("提成状态 0未发放 1已发放"),
+        field.Uint64("employee_id").Optional().Comment("员工ID"),
     }
 }
 

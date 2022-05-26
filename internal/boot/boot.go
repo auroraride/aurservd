@@ -9,6 +9,7 @@ import (
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/internal/payment"
     "github.com/auroraride/aurservd/pkg/logger"
     "os"
     "time"
@@ -43,4 +44,7 @@ func Bootstrap() {
 
     // 初始化日志
     logging.Boot()
+
+    // 初始化支付
+    payment.Boot()
 }
