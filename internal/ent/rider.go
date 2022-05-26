@@ -74,9 +74,6 @@ type Rider struct {
 	// Blocked holds the value of the "blocked" field.
 	// 是否封禁骑手账号
 	Blocked bool `json:"blocked,omitempty"`
-	// Deposit holds the value of the "deposit" field.
-	// 用户已缴纳押金, 退押金需要减去
-	Deposit float64 `json:"deposit,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the RiderQuery when eager-loading is set.
 	Edges RiderEdges `json:"edges"`
@@ -163,8 +160,6 @@ func (*Rider) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case rider.FieldIsNewDevice, rider.FieldBlocked:
 			values[i] = new(sql.NullBool)
-		case rider.FieldDeposit:
-			values[i] = new(sql.NullFloat64)
 		case rider.FieldID, rider.FieldPersonID, rider.FieldEnterpriseID, rider.FieldDeviceType:
 			values[i] = new(sql.NullInt64)
 		case rider.FieldRemark, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID, rider.FieldEsignAccountID:
@@ -317,12 +312,6 @@ func (r *Rider) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				r.Blocked = value.Bool
 			}
-		case rider.FieldDeposit:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field deposit", values[i])
-			} else if value.Valid {
-				r.Deposit = value.Float64
-			}
 		}
 	}
 	return nil
@@ -424,8 +413,6 @@ func (r *Rider) String() string {
 	builder.WriteString(r.PlanAt.Format(time.ANSIC))
 	builder.WriteString(", blocked=")
 	builder.WriteString(fmt.Sprintf("%v", r.Blocked))
-	builder.WriteString(", deposit=")
-	builder.WriteString(fmt.Sprintf("%v", r.Deposit))
 	builder.WriteByte(')')
 	return builder.String()
 }

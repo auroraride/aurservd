@@ -392,10 +392,6 @@ func init() {
 	riderDescBlocked := riderFields[12].Descriptor()
 	// rider.DefaultBlocked holds the default value on creation for the blocked field.
 	rider.DefaultBlocked = riderDescBlocked.Default.(bool)
-	// riderDescDeposit is the schema descriptor for deposit field.
-	riderDescDeposit := riderFields[13].Descriptor()
-	// rider.DefaultDeposit holds the default value on creation for the deposit field.
-	rider.DefaultDeposit = riderDescDeposit.Default.(float64)
 	settingMixin := schema.Setting{}.Mixin()
 	settingMixinHooks1 := settingMixin[1].Hooks()
 	setting.Hooks[0] = settingMixinHooks1[0]

@@ -884,6 +884,29 @@ definitions:
         description: 骑手电话
         type: string
     type: object
+  model.RiderSigninRes:
+    properties:
+      contact:
+        $ref: '#/definitions/model.RiderContact'
+        description: 联系人
+      id:
+        type: integer
+      isAuthed:
+        description: 是否已认证
+        type: boolean
+      isContactFilled:
+        description: 联系人是否添加
+        type: boolean
+      isNewDevice:
+        description: 是否新设备
+        type: boolean
+      qrcode:
+        description: 二维码
+        type: string
+      token:
+        description: 认证token
+        type: string
+    type: object
   model.RiderSignupReq:
     properties:
       cityId:
@@ -2528,6 +2551,27 @@ paths:
               $ref: '#/definitions/model.RiderPlanItem'
             type: array
       summary: R30002 获取骑士卡
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/profile:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderRiderProfile
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderSigninRes'
+      summary: R10006 获取个人信息
       tags:
       - '[R]骑手接口'
   /rider/v1/signin:

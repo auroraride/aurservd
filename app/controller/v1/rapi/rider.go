@@ -122,8 +122,16 @@ func (r *rider) Demo(c echo.Context) error {
     return ctx.SendResponse(model.StatusResponse{Status: true})
 }
 
-// Profile 用户信息
+// Profile
+// @ID           RiderRiderProfile
+// @Router       /rider/v1/profile [GET]
+// @Summary      R10006 获取个人信息
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Success      200  {object}  model.RiderSigninRes  "请求成功"
 func (r *rider) Profile(c echo.Context) error {
     ctx := c.(*app.RiderContext)
-    return ctx.SendResponse(model.StatusResponse{Status: true})
+    return ctx.SendResponse(service.NewRider().Profile(ctx.Rider, ctx.Device))
 }

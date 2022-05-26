@@ -40,7 +40,6 @@ func (Rider) Fields() []ent.Field {
         field.String("esign_account_id").Optional().Comment("E签宝账户ID"),
         field.Time("plan_at").SchemaType(map[string]string{dialect.Postgres: "date"}).Optional().Comment("骑行卡到期日期"),
         field.Bool("blocked").Default(false).Comment("是否封禁骑手账号"),
-        field.Float("deposit").Default(0).Comment("用户已缴纳押金, 退押金需要减去"),
     }
 }
 

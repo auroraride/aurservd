@@ -2239,6 +2239,38 @@
                 }
             }
         },
+        "/rider/v1/profile": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R10006 获取个人信息",
+                "operationId": "RiderRiderProfile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderSigninRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/signin": {
             "post": {
                 "consumes": [
@@ -3499,6 +3531,38 @@
                 },
                 "phone": {
                     "description": "骑手电话",
+                    "type": "string"
+                }
+            }
+        },
+        "model.RiderSigninRes": {
+            "type": "object",
+            "properties": {
+                "contact": {
+                    "description": "联系人",
+                    "$ref": "#/definitions/model.RiderContact"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isAuthed": {
+                    "description": "是否已认证",
+                    "type": "boolean"
+                },
+                "isContactFilled": {
+                    "description": "联系人是否添加",
+                    "type": "boolean"
+                },
+                "isNewDevice": {
+                    "description": "是否新设备",
+                    "type": "boolean"
+                },
+                "qrcode": {
+                    "description": "二维码",
+                    "type": "string"
+                },
+                "token": {
+                    "description": "认证token",
                     "type": "string"
                 }
             }

@@ -30,7 +30,7 @@ func (Order) Fields() []ent.Field {
         field.Uint64("plan_id").Optional().Comment("骑士卡ID"),
         field.Uint8("status").Default(1).Comment("订单状态 0未支付 1已支付 2申请退款 3已退款"),
         field.Uint8("payway").Immutable().Comment("支付方式 1支付宝 2微信"),
-        field.Uint("type").Immutable().Comment("订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金"),
+        field.Uint("type").Immutable().Comment("订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金"),
         field.String("out_trade_no").Unique().Immutable().Comment("交易订单号"),
         field.String("trade_no").Immutable().Comment("平台订单号"),
         field.Float("amount").Immutable().Comment("支付金额"),

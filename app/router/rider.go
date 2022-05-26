@@ -34,8 +34,8 @@ func loadRideRoutes() {
     // 检测是否需要人脸识别
     g.Use(middleware.RiderFaceMiddleware())
 
-    g.GET("/demo", rapi.Rider.Demo) // 测试空白页面
-    g.GET("/", rapi.Rider.Profile)  // 获取用户信息
+    g.GET("/demo", rapi.Rider.Demo)       // 测试空白页面
+    g.GET("/profile", rapi.Rider.Profile) // 获取用户信息
 
     // 已开通城市
     g.GET("/city", rapi.City.List)

@@ -15,6 +15,7 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/baidu"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/pkg/cache"
@@ -32,6 +33,7 @@ type riderService struct {
     ctx      context.Context
     orm      *ent.RiderClient
     modifier *model.Modifier
+    rider    *ent.Rider
 }
 
 func NewRider() *riderService {
@@ -46,6 +48,13 @@ func NewRiderWithModifier(m *model.Modifier) *riderService {
     s := NewRider()
     s.ctx = context.WithValue(s.ctx, "modifier", m)
     s.modifier = m
+    return s
+}
+
+func NewRiderWithRider(u *ent.Rider) *riderService {
+    s := NewRider()
+    s.ctx = context.WithValue(s.ctx, "rider", u)
+    s.rider = u
     return s
 }
 
@@ -112,15 +121,8 @@ func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (
         s.SetNewDevice(u, device)
     }
 
-    res = &model.RiderSigninRes{
-        ID:              u.ID,
-        Token:           token,
-        IsNewDevice:     s.IsNewDevice(u, device),
-        IsContactFilled: u.Contact != nil,
-        IsAuthed:        s.IsAuthed(u),
-        Contact:         u.Contact,
-        Qrcode:          fmt.Sprintf("https://rider.auroraride.com/%d", u.ID),
-    }
+    res = s.Profile(u, device)
+    res.Token = token
 
     // 设置登录token
     s.ExtendTokenTime(u.ID, token)
@@ -413,4 +415,31 @@ func (s *riderService) Block(req *model.RiderBlockReq) {
         ol.SetOperate(logging.OperateRiderUnBLock).SetDiff(bd, nb)
     }
     ol.PutOperateLog()
+}
+
+// Deposit 获取用户应交押金
+func (s *riderService) Deposit(u *ent.Rider) float64 {
+    exist, _ := ar.Ent.Order.QueryNotDeleted().Where(
+        order.RiderID(u.ID),
+        order.Status(model.OrderStatusPaid),
+        order.Type(model.OrderTypeDeposit),
+    ).Exist(s.ctx)
+    if exist {
+        return 0
+    }
+    f, _ := cache.Get(s.ctx, model.SettingDeposit).Float64()
+    return f
+}
+
+// Profile 获取用户资料
+func (s *riderService) Profile(u *ent.Rider, device *model.Device) *model.RiderSigninRes {
+    return &model.RiderSigninRes{
+        ID:              u.ID,
+        IsNewDevice:     s.IsNewDevice(u, device),
+        IsContactFilled: u.Contact != nil,
+        IsAuthed:        s.IsAuthed(u),
+        Contact:         u.Contact,
+        Qrcode:          fmt.Sprintf("https://rider.auroraride.com/%d", u.ID),
+        Deposit:         s.Deposit(u),
+    }
 }

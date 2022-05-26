@@ -17435,8 +17435,6 @@ type RiderMutation struct {
 	esign_account_id  *string
 	plan_at           *time.Time
 	blocked           *bool
-	deposit           *float64
-	adddeposit        *float64
 	clearedFields     map[string]struct{}
 	person            *uint64
 	clearedperson     bool
@@ -18420,62 +18418,6 @@ func (m *RiderMutation) ResetBlocked() {
 	m.blocked = nil
 }
 
-// SetDeposit sets the "deposit" field.
-func (m *RiderMutation) SetDeposit(f float64) {
-	m.deposit = &f
-	m.adddeposit = nil
-}
-
-// Deposit returns the value of the "deposit" field in the mutation.
-func (m *RiderMutation) Deposit() (r float64, exists bool) {
-	v := m.deposit
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeposit returns the old "deposit" field's value of the Rider entity.
-// If the Rider object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RiderMutation) OldDeposit(ctx context.Context) (v float64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeposit is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeposit requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeposit: %w", err)
-	}
-	return oldValue.Deposit, nil
-}
-
-// AddDeposit adds f to the "deposit" field.
-func (m *RiderMutation) AddDeposit(f float64) {
-	if m.adddeposit != nil {
-		*m.adddeposit += f
-	} else {
-		m.adddeposit = &f
-	}
-}
-
-// AddedDeposit returns the value that was added to the "deposit" field in this mutation.
-func (m *RiderMutation) AddedDeposit() (r float64, exists bool) {
-	v := m.adddeposit
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetDeposit resets all changes to the "deposit" field.
-func (m *RiderMutation) ResetDeposit() {
-	m.deposit = nil
-	m.adddeposit = nil
-}
-
 // ClearPerson clears the "person" edge to the Person entity.
 func (m *RiderMutation) ClearPerson() {
 	m.clearedperson = true
@@ -18709,7 +18651,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 20)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -18767,9 +18709,6 @@ func (m *RiderMutation) Fields() []string {
 	if m.blocked != nil {
 		fields = append(fields, rider.FieldBlocked)
 	}
-	if m.deposit != nil {
-		fields = append(fields, rider.FieldDeposit)
-	}
 	return fields
 }
 
@@ -18816,8 +18755,6 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.PlanAt()
 	case rider.FieldBlocked:
 		return m.Blocked()
-	case rider.FieldDeposit:
-		return m.Deposit()
 	}
 	return nil, false
 }
@@ -18865,8 +18802,6 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldPlanAt(ctx)
 	case rider.FieldBlocked:
 		return m.OldBlocked(ctx)
-	case rider.FieldDeposit:
-		return m.OldDeposit(ctx)
 	}
 	return nil, fmt.Errorf("unknown Rider field %s", name)
 }
@@ -19009,13 +18944,6 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetBlocked(v)
 		return nil
-	case rider.FieldDeposit:
-		v, ok := value.(float64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDeposit(v)
-		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)
 }
@@ -19027,9 +18955,6 @@ func (m *RiderMutation) AddedFields() []string {
 	if m.adddevice_type != nil {
 		fields = append(fields, rider.FieldDeviceType)
 	}
-	if m.adddeposit != nil {
-		fields = append(fields, rider.FieldDeposit)
-	}
 	return fields
 }
 
@@ -19040,8 +18965,6 @@ func (m *RiderMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case rider.FieldDeviceType:
 		return m.AddedDeviceType()
-	case rider.FieldDeposit:
-		return m.AddedDeposit()
 	}
 	return nil, false
 }
@@ -19057,13 +18980,6 @@ func (m *RiderMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddDeviceType(v)
-		return nil
-	case rider.FieldDeposit:
-		v, ok := value.(float64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddDeposit(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Rider numeric field %s", name)
@@ -19223,9 +19139,6 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldBlocked:
 		m.ResetBlocked()
-		return nil
-	case rider.FieldDeposit:
-		m.ResetDeposit()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider field %s", name)
