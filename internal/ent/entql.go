@@ -402,6 +402,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldEsignAccountID: {Type: field.TypeString, Column: rider.FieldEsignAccountID},
 			rider.FieldPlanAt:         {Type: field.TypeTime, Column: rider.FieldPlanAt},
 			rider.FieldBlocked:        {Type: field.TypeBool, Column: rider.FieldBlocked},
+			rider.FieldDeposit:        {Type: field.TypeFloat64, Column: rider.FieldDeposit},
 		},
 	}
 	graph.Nodes[14] = &sqlgraph.Node{
@@ -2827,6 +2828,11 @@ func (f *RiderFilter) WherePlanAt(p entql.TimeP) {
 // WhereBlocked applies the entql bool predicate on the blocked field.
 func (f *RiderFilter) WhereBlocked(p entql.BoolP) {
 	f.Where(p.Field(rider.FieldBlocked))
+}
+
+// WhereDeposit applies the entql float64 predicate on the deposit field.
+func (f *RiderFilter) WhereDeposit(p entql.Float64P) {
+	f.Where(p.Field(rider.FieldDeposit))
 }
 
 // WhereHasPerson applies a predicate to check if query has an edge person.

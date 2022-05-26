@@ -205,6 +205,13 @@ func Blocked(v bool) predicate.Rider {
 	})
 }
 
+// Deposit applies equality check predicate on the "deposit" field. It's identical to DepositEQ.
+func Deposit(v float64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeposit), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
@@ -1616,6 +1623,82 @@ func BlockedEQ(v bool) predicate.Rider {
 func BlockedNEQ(v bool) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldBlocked), v))
+	})
+}
+
+// DepositEQ applies the EQ predicate on the "deposit" field.
+func DepositEQ(v float64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDeposit), v))
+	})
+}
+
+// DepositNEQ applies the NEQ predicate on the "deposit" field.
+func DepositNEQ(v float64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDeposit), v))
+	})
+}
+
+// DepositIn applies the In predicate on the "deposit" field.
+func DepositIn(vs ...float64) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDeposit), v...))
+	})
+}
+
+// DepositNotIn applies the NotIn predicate on the "deposit" field.
+func DepositNotIn(vs ...float64) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDeposit), v...))
+	})
+}
+
+// DepositGT applies the GT predicate on the "deposit" field.
+func DepositGT(v float64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDeposit), v))
+	})
+}
+
+// DepositGTE applies the GTE predicate on the "deposit" field.
+func DepositGTE(v float64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDeposit), v))
+	})
+}
+
+// DepositLT applies the LT predicate on the "deposit" field.
+func DepositLT(v float64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDeposit), v))
+	})
+}
+
+// DepositLTE applies the LTE predicate on the "deposit" field.
+func DepositLTE(v float64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDeposit), v))
 	})
 }
 

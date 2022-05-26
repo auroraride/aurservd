@@ -12,8 +12,10 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/setting"
+    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     log "github.com/sirupsen/logrus"
+    "strconv"
     "strings"
 )
 
@@ -49,14 +51,27 @@ func (s *settingService) ParseKey(key string) string {
     return strings.ToUpper(key)
 }
 
+// CacheSettings 缓存设置
+func (s *settingService) CacheSettings(sm *ent.Setting) {
+    switch sm.Key {
+    case model.SettingBatteryFull, model.SettingDeposit:
+        f, err := strconv.ParseFloat(strings.ReplaceAll(sm.Content, `"`, ""), 10)
+        if err == nil {
+            cache.Set(s.ctx, sm.Key, f, 0)
+        }
+        break
+    }
+}
+
 // Initialize 初始化
 func (s *settingService) Initialize() {
     for k, set := range model.Settings {
-        exist, err := s.orm.Query().Where(setting.Key(s.ParseKey(k))).Exist(s.ctx)
-        if err == nil && !exist {
+        sm, _ := s.orm.Query().Where(setting.Key(s.ParseKey(k))).Only(s.ctx)
+        if sm == nil {
             // 创建
+            var err error
             b, _ := json.Marshal(set.Default)
-            _, err = s.orm.Create().SetKey(k).
+            sm, err = s.orm.Create().SetKey(k).
                 SetDesc(set.Desc).
                 SetContent(string(b)).
                 Save(s.ctx)
@@ -64,6 +79,7 @@ func (s *settingService) Initialize() {
                 log.Fatal(err)
             }
         }
+        s.CacheSettings(sm)
     }
 }
 
@@ -76,12 +92,13 @@ func (s *settingService) List() (items []model.SettingReq) {
 // Modify 修改设置
 func (s *settingService) Modify(req *model.SettingReq) {
     k := s.ParseKey(*req.Key)
-    _, ok := model.Settings[k]
-    if !ok {
+    sm := s.orm.Query().Where(setting.Key(k)).OnlyX(s.ctx)
+    if sm == nil {
         snag.Panic("未找到设置项")
     }
-    s.orm.Update().
-        Where(setting.Key(k)).
+    sm = s.orm.UpdateOne(sm).
         SetContent(*req.Content).
         SaveX(s.ctx)
+
+    s.CacheSettings(sm)
 }

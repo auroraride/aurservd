@@ -5,18 +5,11 @@
 
 package model
 
-type BatteryElectricity float64
-
-var (
-    // BatteryElectricityFull 满电设置
-    BatteryElectricityFull BatteryElectricity = 80
+import (
+    "github.com/auroraride/aurservd/pkg/cache"
 )
 
-// BatteryElectricityBootstrap 从数据库中加载满电配置
-// TODO 当满电设置更新的时候自动更新该配置
-func BatteryElectricityBootstrap() {
-    BatteryElectricityFull = 80
-}
+type BatteryElectricity float64
 
 func NewBatteryElectricity(pos float64) BatteryElectricity {
     if pos < 0 {
@@ -27,5 +20,5 @@ func NewBatteryElectricity(pos float64) BatteryElectricity {
 
 // IsBatteryFull 电池是否满电
 func (be BatteryElectricity) IsBatteryFull() bool {
-    return be >= BatteryElectricityFull
+    return be >= BatteryElectricity(cache.BatteryFull(SettingBatteryFull))
 }

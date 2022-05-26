@@ -246,6 +246,20 @@ func (rc *RiderCreate) SetNillableBlocked(b *bool) *RiderCreate {
 	return rc
 }
 
+// SetDeposit sets the "deposit" field.
+func (rc *RiderCreate) SetDeposit(f float64) *RiderCreate {
+	rc.mutation.SetDeposit(f)
+	return rc
+}
+
+// SetNillableDeposit sets the "deposit" field if the given value is not nil.
+func (rc *RiderCreate) SetNillableDeposit(f *float64) *RiderCreate {
+	if f != nil {
+		rc.SetDeposit(*f)
+	}
+	return rc
+}
+
 // SetID sets the "id" field.
 func (rc *RiderCreate) SetID(u uint64) *RiderCreate {
 	rc.mutation.SetID(u)
@@ -408,6 +422,10 @@ func (rc *RiderCreate) defaults() error {
 		v := rider.DefaultBlocked
 		rc.mutation.SetBlocked(v)
 	}
+	if _, ok := rc.mutation.Deposit(); !ok {
+		v := rider.DefaultDeposit
+		rc.mutation.SetDeposit(v)
+	}
 	return nil
 }
 
@@ -448,6 +466,9 @@ func (rc *RiderCreate) check() error {
 	}
 	if _, ok := rc.mutation.Blocked(); !ok {
 		return &ValidationError{Name: "blocked", err: errors.New(`ent: missing required field "Rider.blocked"`)}
+	}
+	if _, ok := rc.mutation.Deposit(); !ok {
+		return &ValidationError{Name: "deposit", err: errors.New(`ent: missing required field "Rider.deposit"`)}
 	}
 	return nil
 }
@@ -618,6 +639,14 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			Column: rider.FieldBlocked,
 		})
 		_node.Blocked = value
+	}
+	if value, ok := rc.mutation.Deposit(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: rider.FieldDeposit,
+		})
+		_node.Deposit = value
 	}
 	if nodes := rc.mutation.PersonIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1076,6 +1105,24 @@ func (u *RiderUpsert) UpdateBlocked() *RiderUpsert {
 	return u
 }
 
+// SetDeposit sets the "deposit" field.
+func (u *RiderUpsert) SetDeposit(v float64) *RiderUpsert {
+	u.Set(rider.FieldDeposit, v)
+	return u
+}
+
+// UpdateDeposit sets the "deposit" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateDeposit() *RiderUpsert {
+	u.SetExcluded(rider.FieldDeposit)
+	return u
+}
+
+// AddDeposit adds v to the "deposit" field.
+func (u *RiderUpsert) AddDeposit(v float64) *RiderUpsert {
+	u.Add(rider.FieldDeposit, v)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -1486,6 +1533,27 @@ func (u *RiderUpsertOne) SetBlocked(v bool) *RiderUpsertOne {
 func (u *RiderUpsertOne) UpdateBlocked() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.UpdateBlocked()
+	})
+}
+
+// SetDeposit sets the "deposit" field.
+func (u *RiderUpsertOne) SetDeposit(v float64) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetDeposit(v)
+	})
+}
+
+// AddDeposit adds v to the "deposit" field.
+func (u *RiderUpsertOne) AddDeposit(v float64) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.AddDeposit(v)
+	})
+}
+
+// UpdateDeposit sets the "deposit" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateDeposit() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateDeposit()
 	})
 }
 
@@ -2064,6 +2132,27 @@ func (u *RiderUpsertBulk) SetBlocked(v bool) *RiderUpsertBulk {
 func (u *RiderUpsertBulk) UpdateBlocked() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.UpdateBlocked()
+	})
+}
+
+// SetDeposit sets the "deposit" field.
+func (u *RiderUpsertBulk) SetDeposit(v float64) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetDeposit(v)
+	})
+}
+
+// AddDeposit adds v to the "deposit" field.
+func (u *RiderUpsertBulk) AddDeposit(v float64) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.AddDeposit(v)
+	})
+}
+
+// UpdateDeposit sets the "deposit" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateDeposit() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateDeposit()
 	})
 }
 

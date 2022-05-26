@@ -11,6 +11,7 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/payment"
+    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
     "github.com/jinzhu/copier"
@@ -87,7 +88,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
         Expire:     time.Now().Add(10 * time.Minute),
     }
     // 订单缓存
-    err := ar.Cache.Set(s.ctx, "ORDER_"+no, prepay, 20*time.Minute).Err()
+    err := cache.Set(s.ctx, "ORDER_"+no, prepay, 20*time.Minute).Err()
     if err != nil {
         log.Error(err)
         snag.Panic("订单创建失败")
@@ -148,5 +149,5 @@ func (s *orderService) OrderPaid(trade *model.OrderCache) {
     }
 
     // 删除缓存
-    ar.Cache.Del(context.Background(), "ORDER_"+trade.OutTradeNo)
+    cache.Del(context.Background(), "ORDER_"+trade.OutTradeNo)
 }

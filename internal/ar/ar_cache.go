@@ -5,20 +5,18 @@
 
 package ar
 
-import "github.com/go-redis/redis/v8"
-
-var Cache *cache
-
-type cache struct {
-    *redis.Client
-}
-
-func NewCache() {
-    cfg := Config.Database.Redis
-    rdb := redis.NewClient(&redis.Options{
-        Addr:     cfg.Addr,
-        Password: cfg.Password,
-        DB:       cfg.DB,
-    })
-    Cache = &cache{rdb}
-}
+// var Cache *cache
+//
+// type cache struct {
+//     *redis.Client
+// }
+//
+// func NewCache() {
+//     cfg := Config.Database.Redis
+//     rdb := redis.NewClient(&redis.Options{
+//         Addr:     cfg.Addr,
+//         Password: cfg.Password,
+//         DB:       cfg.DB,
+//     })
+//     Cache = &cache{rdb}
+// }

@@ -7,7 +7,7 @@ package service
 
 import (
     "context"
-    "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/pkg/cache"
     bc "github.com/mojocn/base64Captcha"
     "math/rand"
     "time"
@@ -29,12 +29,12 @@ func NewCaptcha() *captcha {
 
 // Set 存储验证码 10分钟有效期
 func (c *captcha) Set(id string, value string) error {
-    return ar.Cache.Set(c.ctx, id, value, 600*time.Second).Err()
+    return cache.Set(c.ctx, id, value, 600*time.Second).Err()
 }
 
 // Get 从Redis中获取验证码
 func (c *captcha) Get(id string) (code string) {
-    code = ar.Cache.Get(c.ctx, id).Val()
+    code = cache.Get(c.ctx, id).Val()
     return
 }
 
@@ -43,7 +43,7 @@ func (c *captcha) Get(id string) (code string) {
 func (c *captcha) Verify(id, answer string, clear bool) (ok bool) {
     ok = c.Get(id) == answer
     if ok && clear {
-        ar.Cache.Del(c.ctx, id)
+        cache.Del(c.ctx, id)
     }
     return
 }

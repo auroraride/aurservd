@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
 )
@@ -34,7 +35,7 @@ func RiderMiddleware() echo.MiddlewareFunc {
 
             // 获取骑手, 判定是否需要登录
             token := c.Request().Header.Get(app.HeaderRiderToken)
-            id, err := ar.Cache.Get(context.Background(), token).Uint64()
+            id, err := cache.Get(context.Background(), token).Uint64()
             if err != nil {
                 snag.Panic(snag.StatusUnauthorized)
             }

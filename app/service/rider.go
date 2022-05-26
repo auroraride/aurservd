@@ -17,6 +17,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
+    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/golang-module/carbon/v2"
@@ -98,7 +99,6 @@ func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (
     }
 
     token := xid.New().String() + utils.RandTokenString()
-    cache := ar.Cache
     key := fmt.Sprintf("%s%d", s.cacheKeyPrefix, u.ID)
 
     // 删除旧的token
@@ -113,7 +113,7 @@ func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (
     }
 
     res = &model.RiderSigninRes{
-        Id:              u.ID,
+        ID:              u.ID,
         Token:           token,
         IsNewDevice:     s.IsNewDevice(u, device),
         IsContactFilled: u.Contact != nil,
@@ -130,7 +130,6 @@ func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (
 
 // Signout 强制登出
 func (s *riderService) Signout(u *ent.Rider) {
-    cache := ar.Cache
     ctx := context.Background()
     key := fmt.Sprintf("%s%d", s.cacheKeyPrefix, u.ID)
     token := cache.Get(ctx, key).Val()
@@ -155,7 +154,7 @@ func (s *riderService) SetNewDevice(u *ent.Rider, device *model.Device) {
 // GetFaceAuthUrl 获取实名验证URL
 func (s *riderService) GetFaceAuthUrl(c *app.RiderContext) string {
     uri, token := baidu.New().GetAuthenticatorUrl()
-    ar.Cache.Set(context.Background(), token, s.GeneratePrivacy(c), 30*time.Minute)
+    cache.Set(context.Background(), token, s.GeneratePrivacy(c), 30*time.Minute)
     return uri
 }
 
@@ -163,7 +162,7 @@ func (s *riderService) GetFaceAuthUrl(c *app.RiderContext) string {
 func (s *riderService) GetFaceUrl(c *app.RiderContext) string {
     p := c.Rider.Edges.Person
     uri, token := baidu.New().GetFaceUrl(p.Name, p.IDCardNumber)
-    ar.Cache.Set(context.Background(), token, s.GeneratePrivacy(c), 30*time.Minute)
+    cache.Set(context.Background(), token, s.GeneratePrivacy(c), 30*time.Minute)
     return uri
 }
 
@@ -289,13 +288,12 @@ func (s *riderService) GeneratePrivacy(c *app.RiderContext) string {
 
 // ComparePrivacy 比对实名认证或人脸识别限制条件是否满足
 func (s *riderService) ComparePrivacy(c *app.RiderContext) bool {
-    return ar.Cache.Get(context.Background(), c.Param("token")).Val() == s.GeneratePrivacy(c)
+    return cache.Get(context.Background(), c.Param("token")).Val() == s.GeneratePrivacy(c)
 }
 
 // ExtendTokenTime 延长骑手登录有效期
 func (s *riderService) ExtendTokenTime(id uint64, token string) {
     key := fmt.Sprintf("%s%d", s.cacheKeyPrefix, id)
-    cache := ar.Cache
     ctx := context.Background()
     cache.Set(ctx, key, token, 7*24*time.Hour)
     cache.Set(ctx, token, id, 7*24*time.Hour)

@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
+    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
     "github.com/golang-module/carbon/v2"
@@ -91,9 +92,9 @@ func (p *yundong) FetchToken(tokenRequest bool) (token string) {
     }
     // 如果需要刷新token则删除缓存token
     if p.retryTimes > 0 {
-        ar.Cache.Del(context.Background(), yundongTokenKey)
+        cache.Del(context.Background(), yundongTokenKey)
     }
-    token = ar.Cache.Get(context.Background(), yundongTokenKey).Val()
+    token = cache.Get(context.Background(), yundongTokenKey).Val()
     if token == "" {
         client := p.RequestClient(true)
         res := new(YDTokenRes)
@@ -107,7 +108,7 @@ func (p *yundong) FetchToken(tokenRequest bool) (token string) {
             }
         } else {
             token = res.Token
-            ar.Cache.Set(context.Background(), yundongTokenKey, token, time.Duration(int64(res.Expirets)-time.Now().Unix())*time.Second)
+            cache.Set(context.Background(), yundongTokenKey, token, time.Duration(int64(res.Expirets)-time.Now().Unix())*time.Second)
         }
     }
     return

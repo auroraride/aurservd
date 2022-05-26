@@ -51,6 +51,8 @@ const (
 	FieldPlanAt = "plan_at"
 	// FieldBlocked holds the string denoting the blocked field in the database.
 	FieldBlocked = "blocked"
+	// FieldDeposit holds the string denoting the deposit field in the database.
+	FieldDeposit = "deposit"
 	// EdgePerson holds the string denoting the person edge name in mutations.
 	EdgePerson = "person"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
@@ -122,6 +124,7 @@ var Columns = []string{
 	FieldEsignAccountID,
 	FieldPlanAt,
 	FieldBlocked,
+	FieldDeposit,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -158,4 +161,6 @@ var (
 	PushIDValidator func(string) error
 	// DefaultBlocked holds the default value on creation for the "blocked" field.
 	DefaultBlocked bool
+	// DefaultDeposit holds the default value on creation for the "deposit" field.
+	DefaultDeposit float64
 )

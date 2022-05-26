@@ -10,6 +10,7 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
     log "github.com/sirupsen/logrus"
@@ -78,7 +79,7 @@ func (c *alipayClient) Notification(req *http.Request, rep http.ResponseWriter) 
         // 从缓存中获取订单数据
         out := result.OutTradeNo
         trade := new(model.OrderCache)
-        err = ar.Cache.Get(context.Background(), "ORDER_"+out).Scan(trade)
+        err = cache.Get(context.Background(), "ORDER_"+out).Scan(trade)
         if err != nil {
             log.Error(err)
         }

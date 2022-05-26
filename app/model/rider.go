@@ -28,13 +28,13 @@ type RiderSignupReq struct {
 
 // RiderSigninRes 骑手登录数据返回
 type RiderSigninRes struct {
-    Id              uint64        `json:"id"`
-    Token           string        `json:"token"`
-    IsNewDevice     bool          `json:"isNewDevice"`
-    IsAuthed        bool          `json:"isAuthed"`        // 是否已认证
-    IsContactFilled bool          `json:"isContactFilled"` // 联系人是否添加
-    Contact         *RiderContact `json:"contact,omitempty"`
-    Qrcode          string        `json:"qrcode"`
+    ID              uint64        `json:"id"`
+    Token           string        `json:"token"`             // 认证token
+    IsNewDevice     bool          `json:"isNewDevice"`       // 是否新设备
+    IsAuthed        bool          `json:"isAuthed"`          // 是否已认证
+    IsContactFilled bool          `json:"isContactFilled"`   // 联系人是否添加
+    Contact         *RiderContact `json:"contact,omitempty"` // 联系人
+    Qrcode          string        `json:"qrcode"`            // 二维码
 }
 
 // RiderContact 紧急联系人

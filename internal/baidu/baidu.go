@@ -9,6 +9,7 @@ import (
     "context"
     "fmt"
     "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/go-resty/resty/v2"
     "time"
@@ -44,8 +45,8 @@ type accessTokenResp struct {
 func New() *baiduClient {
     cfg := ar.Config.Baidu.Face
     b := &baiduClient{
-        apiKey:      cfg.ApiKey,
-        secretKey:   cfg.SecretKey,
+        apiKey:    cfg.ApiKey,
+        secretKey: cfg.SecretKey,
     }
     b.accessToken = b.getAccessToken()
     return b
@@ -65,13 +66,13 @@ func (b *baiduClient) requestAccessToken() string {
     if res.Error != "" {
         snag.Panic(res.ErrorDescription)
     }
-    ar.Cache.Set(context.Background(), accessTokenKey, res.AccessToken, time.Second*time.Duration(res.ExpiresIn-120))
+    cache.Set(context.Background(), accessTokenKey, res.AccessToken, time.Second*time.Duration(res.ExpiresIn-120))
     return res.AccessToken
 }
 
 // getAccessToken 获取 access_token
 func (b *baiduClient) getAccessToken() string {
-    t := ar.Cache.Get(context.Background(), accessTokenKey).Val()
+    t := cache.Get(context.Background(), accessTokenKey).Val()
     if t == "" {
         t = b.requestAccessToken()
     }

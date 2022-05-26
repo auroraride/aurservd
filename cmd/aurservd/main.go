@@ -9,11 +9,16 @@ import (
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/cmd/aurservd/internal"
     "github.com/auroraride/aurservd/cmd/aurservd/internal/script"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/boot"
+    "github.com/auroraride/aurservd/pkg/cache"
 )
 
 func main() {
     boot.Bootstrap()
+
+    // 初始化缓存
+    createCache()
 
     // 初始化系统设置
     service.NewSetting().Initialize()
@@ -21,4 +26,9 @@ func main() {
     internal.Demo()
     // 启动脚本
     script.Execute()
+}
+
+func createCache() {
+    cfg := ar.Config.Database.Redis
+    cache.CreateClient(cfg.Addr, cfg.Password, cfg.DB)
 }

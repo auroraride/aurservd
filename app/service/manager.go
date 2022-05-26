@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/manager"
+    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/rs/xid"
     log "github.com/sirupsen/logrus"
@@ -66,7 +67,6 @@ func (s *managerService) Signin(req *model.ManagerSigninReq) (res *model.Manager
     }
 
     token := xid.New().String() + utils.RandTokenString()
-    cache := ar.Cache
     key := fmt.Sprintf("%s%d", s.cacheKeyPrefix, u.ID)
 
     // 删除旧的token
@@ -97,7 +97,6 @@ func (s *managerService) GetManagerById(id uint64) (u *ent.Manager, err error) {
 // ExtendTokenTime 延长管理员登录有效期「24小时」
 func (s *managerService) ExtendTokenTime(id uint64, token string) {
     key := fmt.Sprintf("%s%d", s.cacheKeyPrefix, id)
-    cache := ar.Cache
     ctx := context.Background()
     cache.Set(ctx, key, token, 24*time.Hour)
     cache.Set(ctx, token, id, 24*time.Hour)

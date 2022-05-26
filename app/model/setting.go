@@ -12,13 +12,16 @@ const (
     SettingRescueReason = "RESCUE_REASON" // 救援原因
     SettingRescueFee    = "RESCUE_FEE"    // 救援费用
     SettingOverdue      = "OVERDUE"       // 逾期通知
+    SettingBatteryFull  = "BATTERY_FULL"  // 满电电量
 )
 
-type SettingValue struct {
-    Desc  string `json:"desc"`  // 描述
-    Value string `json:"value"` // 值
+type SettingValueConvert func(content string) any
 
-    Default any `json:"-"`
+type SettingItem struct {
+    Desc  string // 描述
+    Value string // 值
+
+    Default any // 默认值
 }
 
 type SettingOverdueNotice struct {
@@ -38,7 +41,7 @@ type SettingRes struct {
     Desc    string `json:"desc"`    // 描述
 }
 
-var Settings = map[string]SettingValue{
+var Settings = map[string]SettingItem{
     SettingDeposit: {
         Desc:    "平台押金",
         Default: "99",
@@ -66,5 +69,9 @@ var Settings = map[string]SettingValue{
             Sms:  "1",
             Call: "0",
         },
+    },
+    SettingBatteryFull: {
+        Desc:    "满电电量百分比",
+        Default: "80",
     },
 }

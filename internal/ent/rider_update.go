@@ -297,6 +297,27 @@ func (ru *RiderUpdate) SetNillableBlocked(b *bool) *RiderUpdate {
 	return ru
 }
 
+// SetDeposit sets the "deposit" field.
+func (ru *RiderUpdate) SetDeposit(f float64) *RiderUpdate {
+	ru.mutation.ResetDeposit()
+	ru.mutation.SetDeposit(f)
+	return ru
+}
+
+// SetNillableDeposit sets the "deposit" field if the given value is not nil.
+func (ru *RiderUpdate) SetNillableDeposit(f *float64) *RiderUpdate {
+	if f != nil {
+		ru.SetDeposit(*f)
+	}
+	return ru
+}
+
+// AddDeposit adds f to the "deposit" field.
+func (ru *RiderUpdate) AddDeposit(f float64) *RiderUpdate {
+	ru.mutation.AddDeposit(f)
+	return ru
+}
+
 // SetPerson sets the "person" edge to the Person entity.
 func (ru *RiderUpdate) SetPerson(p *Person) *RiderUpdate {
 	return ru.SetPersonID(p.ID)
@@ -715,6 +736,20 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: rider.FieldBlocked,
+		})
+	}
+	if value, ok := ru.mutation.Deposit(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: rider.FieldDeposit,
+		})
+	}
+	if value, ok := ru.mutation.AddedDeposit(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: rider.FieldDeposit,
 		})
 	}
 	if ru.mutation.PersonCleared() {
@@ -1231,6 +1266,27 @@ func (ruo *RiderUpdateOne) SetNillableBlocked(b *bool) *RiderUpdateOne {
 	return ruo
 }
 
+// SetDeposit sets the "deposit" field.
+func (ruo *RiderUpdateOne) SetDeposit(f float64) *RiderUpdateOne {
+	ruo.mutation.ResetDeposit()
+	ruo.mutation.SetDeposit(f)
+	return ruo
+}
+
+// SetNillableDeposit sets the "deposit" field if the given value is not nil.
+func (ruo *RiderUpdateOne) SetNillableDeposit(f *float64) *RiderUpdateOne {
+	if f != nil {
+		ruo.SetDeposit(*f)
+	}
+	return ruo
+}
+
+// AddDeposit adds f to the "deposit" field.
+func (ruo *RiderUpdateOne) AddDeposit(f float64) *RiderUpdateOne {
+	ruo.mutation.AddDeposit(f)
+	return ruo
+}
+
 // SetPerson sets the "person" edge to the Person entity.
 func (ruo *RiderUpdateOne) SetPerson(p *Person) *RiderUpdateOne {
 	return ruo.SetPersonID(p.ID)
@@ -1679,6 +1735,20 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: rider.FieldBlocked,
+		})
+	}
+	if value, ok := ruo.mutation.Deposit(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: rider.FieldDeposit,
+		})
+	}
+	if value, ok := ruo.mutation.AddedDeposit(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: rider.FieldDeposit,
 		})
 	}
 	if ruo.mutation.PersonCleared() {

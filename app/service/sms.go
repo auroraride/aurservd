@@ -11,6 +11,7 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/utils"
     "time"
 )
@@ -29,7 +30,6 @@ func NewSms() *sms {
 
 // SendCode 发送验证码
 func (s *sms) SendCode(phone string) (string, error) {
-    cache := ar.Cache
     t, _ := cache.Get(context.Background(), phone).Int64()
     if t-time.Now().Unix() > 0 {
         return "", errors.New("请勿频繁请求")
@@ -56,9 +56,9 @@ func (s *sms) SendCode(phone string) (string, error) {
 // VerifyCode 校验短信验证码
 func (s *sms) VerifyCode(id, code string) bool {
     ctx := context.Background()
-    isValid := ar.Cache.Get(ctx, id).Val() == code
+    isValid := cache.Get(ctx, id).Val() == code
     if isValid {
-        ar.Cache.Del(ctx, id)
+        cache.Del(ctx, id)
     }
     return isValid
 }

@@ -10,8 +10,8 @@ import (
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
 )
@@ -27,7 +27,7 @@ func ManagerMiddleware() echo.MiddlewareFunc {
 
             // 判定登录
             token := c.Request().Header.Get(app.HeaderManagerToken)
-            id, err := ar.Cache.Get(context.Background(), token).Uint64()
+            id, err := cache.Get(context.Background(), token).Uint64()
             if err != nil {
                 snag.Panic(snag.StatusUnauthorized)
             }

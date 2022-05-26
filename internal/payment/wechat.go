@@ -9,6 +9,7 @@ import (
     "context"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/pkg/cache"
     jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "github.com/wechatpay-apiv3/wechatpay-go/core"
@@ -125,7 +126,7 @@ func (c *wechatClient) Notification(req *http.Request) (*WechatPayResponse, *mod
     // 从缓存中获取订单数据
     out := transaction.OutTradeNo
     trade := new(model.OrderCache)
-    err = ar.Cache.Get(context.Background(), "ORDER_"+*out).Scan(trade)
+    err = cache.Get(context.Background(), "ORDER_"+*out).Scan(trade)
     if err != nil {
         log.Error(err)
     }
