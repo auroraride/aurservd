@@ -81,7 +81,7 @@ func (s *cityService) List(req *model.CityListReq) (items []*model.CityItem) {
 
 // Modify 修改城市
 func (s *cityService) Modify(req *model.CityModifyReq) *bool {
-    if !s.orm.QueryNotDeleted().Where(city.ID(req.ID), city.ParentIDNotNil()).ExistX(context.Background()) {
+    if exists, _ := s.orm.QueryNotDeleted().Where(city.ID(req.ID), city.ParentIDNotNil()).Exist(context.Background()); !exists {
         snag.Panic("城市ID错误")
     }
     c := s.orm.UpdateOneID(req.ID).SetOpen(*req.Open).SaveX(s.ctx)

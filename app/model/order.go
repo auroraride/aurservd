@@ -56,6 +56,7 @@ type OrderCache struct {
     Expire     time.Time `json:"expire"`            // 过期时间
     TradeNo    string    `json:"tradeNo,omitempty"` // 平台单号
     Plan       *PlanItem `json:"plan,omitempty"`    // 骑士卡
+    Deposit    float64   `json:"deposit"`           // 附带押金
 }
 
 func (oc *OrderCache) MarshalBinary() ([]byte, error) {

@@ -16,6 +16,7 @@ import (
     "github.com/golang-module/carbon/v2"
     "github.com/jinzhu/copier"
     "github.com/lithammer/shortuuid/v4"
+    "github.com/shopspring/decimal"
     log "github.com/sirupsen/logrus"
     "time"
 )
@@ -68,6 +69,8 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
             },
         },
     }})
+    // 判定用户是否需要缴纳押金
+    deposit := NewRider().Deposit(s.rider)
     no := shortuuid.New()
     result.OutTradeNo = no
     // 生成订单字段
@@ -75,15 +78,18 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
     // DEBUG 模式支付一分钱
     mode := ar.Config.App.Mode
     if mode == "debug" {
+        deposit = 0.01
         price = 0.01
     }
+    total, _ := decimal.NewFromFloat(price).Add(decimal.NewFromFloat(deposit)).Float64()
     prepay := &model.OrderCache{
         OrderType:  req.OrderType,
         OutTradeNo: no,
         RiderID:    s.rider.ID,
         Plan:       cp,
         Name:       "购买" + plan.Name,
-        Amount:     price,
+        Amount:     total,
+        Deposit:    deposit,
         Payway:     req.Payway,
         Expire:     time.Now().Add(10 * time.Minute),
     }
@@ -128,13 +134,25 @@ func (s *orderService) OrderPaid(trade *model.OrderCache) {
         SetPayway(trade.Payway).
         SetPlanID(trade.Plan.ID).
         SetRiderID(trade.RiderID).
-        SetAmount(trade.Amount).
+        SetAmount(decimal.NewFromFloat(trade.Amount).Sub(decimal.NewFromFloat(trade.Deposit)).InexactFloat64()).
         SetOutTradeNo(trade.OutTradeNo).
         SetTradeNo(trade.TradeNo).
         SetStatus(model.OrderStatusPaid).
         SetNillablePlanDetail(trade.Plan).
         SetType(trade.OrderType).
         Save(s.ctx)
+    // 如果有押金, 创建押金订单
+    if trade.Deposit > 0 {
+        _, _ = ar.Ent.Order.Create().
+            SetPayway(trade.Payway).
+            SetRiderID(trade.RiderID).
+            SetAmount(trade.Deposit).
+            SetOutTradeNo(model.SettingDeposit + "-" + trade.OutTradeNo).
+            SetTradeNo(model.SettingDeposit + "-" + trade.TradeNo).
+            SetStatus(model.OrderStatusPaid).
+            SetType(model.OrderTypeDeposit).
+            Save(s.ctx)
+    }
     if err != nil {
         log.Errorf("[ORDER PAID ERROR]: %s, Trade: %#v", err.Error(), trade)
         return

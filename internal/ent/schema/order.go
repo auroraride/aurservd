@@ -35,7 +35,7 @@ func (Order) Fields() []ent.Field {
         field.String("trade_no").Immutable().Comment("平台订单号"),
         field.Float("amount").Immutable().Comment("支付金额"),
         field.JSON("plan_detail", model.PlanItem{}).Optional().Comment("骑士卡详情"),
-        field.Uint64("parent_id").Optional().Comment("续签/更改电池接续从属订单ID(上个订单)"),
+        field.Uint64("parent_id").Optional().Comment("续签/更改电池/押金所属订单ID"),
         field.JSON("subordinate", model.OrderSubordinate{}).Optional().Comment("接续订单属性"),
     }
 }
@@ -46,6 +46,7 @@ func (Order) Edges() []ent.Edge {
         edge.From("rider", Rider.Type).Ref("orders").Required().Unique().Field("rider_id"),
         edge.From("plan", Plan.Type).Ref("orders").Unique().Field("plan_id"),
         edge.To("commission", Commission.Type).Unique(),
+        edge.To("children", Order.Type).From("parent").Field("parent_id").Unique(),
     }
 }
 

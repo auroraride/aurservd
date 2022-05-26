@@ -77,7 +77,7 @@ func (s *planService) QueryEffective(id uint64) *ent.Plan {
 func (s *planService) Duplicated(cities, models []uint64, start, end time.Time, days uint) bool {
     for _, cityID := range cities {
         for _, modelID := range models {
-            if s.orm.QueryNotDeleted().
+            if exists, _ := s.orm.QueryNotDeleted().
                 Where(
                     plan.Enable(true),
                     plan.Days(days),
@@ -87,7 +87,7 @@ func (s *planService) Duplicated(cities, models []uint64, start, end time.Time, 
                         plan.StartLTE(start),
                         plan.EndGTE(end),
                     ),
-                ).ExistX(s.ctx) {
+                ).Exist(s.ctx); exists {
                 snag.Panic("骑士卡冲突")
             }
         }

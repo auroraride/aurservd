@@ -45,7 +45,7 @@ func NewManagerWithModifier(m *model.Modifier) *managerService {
 
 // Create 新增管理员
 func (s *managerService) Create(req *model.ManagerCreateReq) error {
-    if s.orm.QueryNotDeleted().Where(manager.Phone(req.Phone)).ExistX(s.ctx) {
+    if exists, _ := s.orm.QueryNotDeleted().Where(manager.Phone(req.Phone)).Exist(s.ctx); exists {
         return errors.New("用户已存在")
     }
     password, _ := utils.PasswordGenerate(req.Password)

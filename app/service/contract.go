@@ -41,11 +41,12 @@ func NewContract() *contractService {
 // Effective 查询骑手是否存在生效中的合同
 // 当用户退租之后触发合同失效, 需要重新签订 // TODO 需要实现逻辑
 func (s *contractService) Effective(u *ent.Rider) bool {
-    return s.orm.QueryNotDeleted().Where(
+    exists, _ := s.orm.QueryNotDeleted().Where(
         contract.RiderID(u.ID),
         contract.Status(model.ContractStatusSuccess.Raw()),
         contract.Effective(true),
-    ).ExistX(s.ctx)
+    ).Exist(s.ctx)
+    return exists
 }
 
 // generateSn 生成合同编号
