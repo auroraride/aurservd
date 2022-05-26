@@ -415,10 +415,14 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Setting",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			setting.FieldCreatedAt: {Type: field.TypeTime, Column: setting.FieldCreatedAt},
-			setting.FieldUpdatedAt: {Type: field.TypeTime, Column: setting.FieldUpdatedAt},
-			setting.FieldKey:       {Type: field.TypeString, Column: setting.FieldKey},
-			setting.FieldVal:       {Type: field.TypeJSON, Column: setting.FieldVal},
+			setting.FieldCreatedAt:    {Type: field.TypeTime, Column: setting.FieldCreatedAt},
+			setting.FieldUpdatedAt:    {Type: field.TypeTime, Column: setting.FieldUpdatedAt},
+			setting.FieldCreator:      {Type: field.TypeJSON, Column: setting.FieldCreator},
+			setting.FieldLastModifier: {Type: field.TypeJSON, Column: setting.FieldLastModifier},
+			setting.FieldRemark:       {Type: field.TypeString, Column: setting.FieldRemark},
+			setting.FieldKey:          {Type: field.TypeString, Column: setting.FieldKey},
+			setting.FieldDesc:         {Type: field.TypeString, Column: setting.FieldDesc},
+			setting.FieldContent:      {Type: field.TypeString, Column: setting.FieldContent},
 		},
 	}
 	graph.Nodes[15] = &sqlgraph.Node{
@@ -2945,14 +2949,34 @@ func (f *SettingFilter) WhereUpdatedAt(p entql.TimeP) {
 	f.Where(p.Field(setting.FieldUpdatedAt))
 }
 
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *SettingFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(setting.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *SettingFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(setting.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *SettingFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(setting.FieldRemark))
+}
+
 // WhereKey applies the entql string predicate on the key field.
 func (f *SettingFilter) WhereKey(p entql.StringP) {
 	f.Where(p.Field(setting.FieldKey))
 }
 
-// WhereVal applies the entql json.RawMessage predicate on the val field.
-func (f *SettingFilter) WhereVal(p entql.BytesP) {
-	f.Where(p.Field(setting.FieldVal))
+// WhereDesc applies the entql string predicate on the desc field.
+func (f *SettingFilter) WhereDesc(p entql.StringP) {
+	f.Where(p.Field(setting.FieldDesc))
+}
+
+// WhereContent applies the entql string predicate on the content field.
+func (f *SettingFilter) WhereContent(p entql.StringP) {
+	f.Where(p.Field(setting.FieldContent))
 }
 
 // addPredicate implements the predicateAdder interface.

@@ -2149,7 +2149,8 @@ func (c *SettingClient) GetX(ctx context.Context, id uint64) *Setting {
 
 // Hooks returns the client hooks.
 func (c *SettingClient) Hooks() []Hook {
-	return c.hooks.Setting
+	hooks := c.hooks.Setting
+	return append(hooks[:len(hooks):len(hooks)], setting.Hooks[:]...)
 }
 
 // StoreClient is a client for the Store schema.

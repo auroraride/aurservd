@@ -4,6 +4,8 @@ package setting
 
 import (
 	"time"
+
+	"entgo.io/ent"
 )
 
 const (
@@ -15,10 +17,18 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldCreator holds the string denoting the creator field in the database.
+	FieldCreator = "creator"
+	// FieldLastModifier holds the string denoting the last_modifier field in the database.
+	FieldLastModifier = "last_modifier"
+	// FieldRemark holds the string denoting the remark field in the database.
+	FieldRemark = "remark"
 	// FieldKey holds the string denoting the key field in the database.
 	FieldKey = "key"
-	// FieldVal holds the string denoting the val field in the database.
-	FieldVal = "val"
+	// FieldDesc holds the string denoting the desc field in the database.
+	FieldDesc = "desc"
+	// FieldContent holds the string denoting the content field in the database.
+	FieldContent = "content"
 	// Table holds the table name of the setting in the database.
 	Table = "setting"
 )
@@ -28,8 +38,12 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldCreator,
+	FieldLastModifier,
+	FieldRemark,
 	FieldKey,
-	FieldVal,
+	FieldDesc,
+	FieldContent,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -42,7 +56,14 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "github.com/auroraride/aurservd/internal/ent/runtime"
+//
 var (
+	Hooks [1]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

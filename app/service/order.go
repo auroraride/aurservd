@@ -139,7 +139,7 @@ func (s *orderService) OrderPaid(trade *model.OrderCache) {
         return
     }
     // 当新签和重签的时候有提成
-    if trade.OrderType == model.OrderTypeNew || trade.OrderType == model.OrderTypeReUse {
+    if trade.OrderType == model.OrderTypeNewPlan || trade.OrderType == model.OrderTypeRenewal {
         // 创建提成
         _, err = ar.Ent.Commission.Create().SetOrder(o).SetAmount(trade.Plan.Commission).SetStatus(model.CommissionStatusPending).Save(s.ctx)
         if err != nil {

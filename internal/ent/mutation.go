@@ -19324,8 +19324,12 @@ type SettingMutation struct {
 	id            *uint64
 	created_at    *time.Time
 	updated_at    *time.Time
+	creator       **model.Modifier
+	last_modifier **model.Modifier
+	remark        *string
 	key           *string
-	val           *model.Setting
+	desc          *string
+	content       *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Setting, error)
@@ -19502,6 +19506,153 @@ func (m *SettingMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
+// SetCreator sets the "creator" field.
+func (m *SettingMutation) SetCreator(value *model.Modifier) {
+	m.creator = &value
+}
+
+// Creator returns the value of the "creator" field in the mutation.
+func (m *SettingMutation) Creator() (r *model.Modifier, exists bool) {
+	v := m.creator
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreator returns the old "creator" field's value of the Setting entity.
+// If the Setting object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SettingMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreator requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
+	}
+	return oldValue.Creator, nil
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (m *SettingMutation) ClearCreator() {
+	m.creator = nil
+	m.clearedFields[setting.FieldCreator] = struct{}{}
+}
+
+// CreatorCleared returns if the "creator" field was cleared in this mutation.
+func (m *SettingMutation) CreatorCleared() bool {
+	_, ok := m.clearedFields[setting.FieldCreator]
+	return ok
+}
+
+// ResetCreator resets all changes to the "creator" field.
+func (m *SettingMutation) ResetCreator() {
+	m.creator = nil
+	delete(m.clearedFields, setting.FieldCreator)
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (m *SettingMutation) SetLastModifier(value *model.Modifier) {
+	m.last_modifier = &value
+}
+
+// LastModifier returns the value of the "last_modifier" field in the mutation.
+func (m *SettingMutation) LastModifier() (r *model.Modifier, exists bool) {
+	v := m.last_modifier
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastModifier returns the old "last_modifier" field's value of the Setting entity.
+// If the Setting object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SettingMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastModifier requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
+	}
+	return oldValue.LastModifier, nil
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (m *SettingMutation) ClearLastModifier() {
+	m.last_modifier = nil
+	m.clearedFields[setting.FieldLastModifier] = struct{}{}
+}
+
+// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
+func (m *SettingMutation) LastModifierCleared() bool {
+	_, ok := m.clearedFields[setting.FieldLastModifier]
+	return ok
+}
+
+// ResetLastModifier resets all changes to the "last_modifier" field.
+func (m *SettingMutation) ResetLastModifier() {
+	m.last_modifier = nil
+	delete(m.clearedFields, setting.FieldLastModifier)
+}
+
+// SetRemark sets the "remark" field.
+func (m *SettingMutation) SetRemark(s string) {
+	m.remark = &s
+}
+
+// Remark returns the value of the "remark" field in the mutation.
+func (m *SettingMutation) Remark() (r string, exists bool) {
+	v := m.remark
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemark returns the old "remark" field's value of the Setting entity.
+// If the Setting object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SettingMutation) OldRemark(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemark requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
+	}
+	return oldValue.Remark, nil
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (m *SettingMutation) ClearRemark() {
+	m.remark = nil
+	m.clearedFields[setting.FieldRemark] = struct{}{}
+}
+
+// RemarkCleared returns if the "remark" field was cleared in this mutation.
+func (m *SettingMutation) RemarkCleared() bool {
+	_, ok := m.clearedFields[setting.FieldRemark]
+	return ok
+}
+
+// ResetRemark resets all changes to the "remark" field.
+func (m *SettingMutation) ResetRemark() {
+	m.remark = nil
+	delete(m.clearedFields, setting.FieldRemark)
+}
+
 // SetKey sets the "key" field.
 func (m *SettingMutation) SetKey(s string) {
 	m.key = &s
@@ -19538,40 +19689,76 @@ func (m *SettingMutation) ResetKey() {
 	m.key = nil
 }
 
-// SetVal sets the "val" field.
-func (m *SettingMutation) SetVal(value model.Setting) {
-	m.val = &value
+// SetDesc sets the "desc" field.
+func (m *SettingMutation) SetDesc(s string) {
+	m.desc = &s
 }
 
-// Val returns the value of the "val" field in the mutation.
-func (m *SettingMutation) Val() (r model.Setting, exists bool) {
-	v := m.val
+// Desc returns the value of the "desc" field in the mutation.
+func (m *SettingMutation) Desc() (r string, exists bool) {
+	v := m.desc
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldVal returns the old "val" field's value of the Setting entity.
+// OldDesc returns the old "desc" field's value of the Setting entity.
 // If the Setting object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SettingMutation) OldVal(ctx context.Context) (v model.Setting, err error) {
+func (m *SettingMutation) OldDesc(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldVal is only allowed on UpdateOne operations")
+		return v, errors.New("OldDesc is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldVal requires an ID field in the mutation")
+		return v, errors.New("OldDesc requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldVal: %w", err)
+		return v, fmt.Errorf("querying old value for OldDesc: %w", err)
 	}
-	return oldValue.Val, nil
+	return oldValue.Desc, nil
 }
 
-// ResetVal resets all changes to the "val" field.
-func (m *SettingMutation) ResetVal() {
-	m.val = nil
+// ResetDesc resets all changes to the "desc" field.
+func (m *SettingMutation) ResetDesc() {
+	m.desc = nil
+}
+
+// SetContent sets the "content" field.
+func (m *SettingMutation) SetContent(s string) {
+	m.content = &s
+}
+
+// Content returns the value of the "content" field in the mutation.
+func (m *SettingMutation) Content() (r string, exists bool) {
+	v := m.content
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldContent returns the old "content" field's value of the Setting entity.
+// If the Setting object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SettingMutation) OldContent(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldContent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldContent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldContent: %w", err)
+	}
+	return oldValue.Content, nil
+}
+
+// ResetContent resets all changes to the "content" field.
+func (m *SettingMutation) ResetContent() {
+	m.content = nil
 }
 
 // Where appends a list predicates to the SettingMutation builder.
@@ -19593,18 +19780,30 @@ func (m *SettingMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SettingMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, setting.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, setting.FieldUpdatedAt)
 	}
+	if m.creator != nil {
+		fields = append(fields, setting.FieldCreator)
+	}
+	if m.last_modifier != nil {
+		fields = append(fields, setting.FieldLastModifier)
+	}
+	if m.remark != nil {
+		fields = append(fields, setting.FieldRemark)
+	}
 	if m.key != nil {
 		fields = append(fields, setting.FieldKey)
 	}
-	if m.val != nil {
-		fields = append(fields, setting.FieldVal)
+	if m.desc != nil {
+		fields = append(fields, setting.FieldDesc)
+	}
+	if m.content != nil {
+		fields = append(fields, setting.FieldContent)
 	}
 	return fields
 }
@@ -19618,10 +19817,18 @@ func (m *SettingMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case setting.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case setting.FieldCreator:
+		return m.Creator()
+	case setting.FieldLastModifier:
+		return m.LastModifier()
+	case setting.FieldRemark:
+		return m.Remark()
 	case setting.FieldKey:
 		return m.Key()
-	case setting.FieldVal:
-		return m.Val()
+	case setting.FieldDesc:
+		return m.Desc()
+	case setting.FieldContent:
+		return m.Content()
 	}
 	return nil, false
 }
@@ -19635,10 +19842,18 @@ func (m *SettingMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldCreatedAt(ctx)
 	case setting.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case setting.FieldCreator:
+		return m.OldCreator(ctx)
+	case setting.FieldLastModifier:
+		return m.OldLastModifier(ctx)
+	case setting.FieldRemark:
+		return m.OldRemark(ctx)
 	case setting.FieldKey:
 		return m.OldKey(ctx)
-	case setting.FieldVal:
-		return m.OldVal(ctx)
+	case setting.FieldDesc:
+		return m.OldDesc(ctx)
+	case setting.FieldContent:
+		return m.OldContent(ctx)
 	}
 	return nil, fmt.Errorf("unknown Setting field %s", name)
 }
@@ -19662,6 +19877,27 @@ func (m *SettingMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
+	case setting.FieldCreator:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreator(v)
+		return nil
+	case setting.FieldLastModifier:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastModifier(v)
+		return nil
+	case setting.FieldRemark:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemark(v)
+		return nil
 	case setting.FieldKey:
 		v, ok := value.(string)
 		if !ok {
@@ -19669,12 +19905,19 @@ func (m *SettingMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetKey(v)
 		return nil
-	case setting.FieldVal:
-		v, ok := value.(model.Setting)
+	case setting.FieldDesc:
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetVal(v)
+		m.SetDesc(v)
+		return nil
+	case setting.FieldContent:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetContent(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Setting field %s", name)
@@ -19705,7 +19948,17 @@ func (m *SettingMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *SettingMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(setting.FieldCreator) {
+		fields = append(fields, setting.FieldCreator)
+	}
+	if m.FieldCleared(setting.FieldLastModifier) {
+		fields = append(fields, setting.FieldLastModifier)
+	}
+	if m.FieldCleared(setting.FieldRemark) {
+		fields = append(fields, setting.FieldRemark)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -19718,6 +19971,17 @@ func (m *SettingMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *SettingMutation) ClearField(name string) error {
+	switch name {
+	case setting.FieldCreator:
+		m.ClearCreator()
+		return nil
+	case setting.FieldLastModifier:
+		m.ClearLastModifier()
+		return nil
+	case setting.FieldRemark:
+		m.ClearRemark()
+		return nil
+	}
 	return fmt.Errorf("unknown Setting nullable field %s", name)
 }
 
@@ -19731,11 +19995,23 @@ func (m *SettingMutation) ResetField(name string) error {
 	case setting.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
+	case setting.FieldCreator:
+		m.ResetCreator()
+		return nil
+	case setting.FieldLastModifier:
+		m.ResetLastModifier()
+		return nil
+	case setting.FieldRemark:
+		m.ResetRemark()
+		return nil
 	case setting.FieldKey:
 		m.ResetKey()
 		return nil
-	case setting.FieldVal:
-		m.ResetVal()
+	case setting.FieldDesc:
+		m.ResetDesc()
+		return nil
+	case setting.FieldContent:
+		m.ResetContent()
 		return nil
 	}
 	return fmt.Errorf("unknown Setting field %s", name)

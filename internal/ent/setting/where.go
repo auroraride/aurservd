@@ -106,10 +106,31 @@ func UpdatedAt(v time.Time) predicate.Setting {
 	})
 }
 
+// Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
+func Remark(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRemark), v))
+	})
+}
+
 // Key applies equality check predicate on the "key" field. It's identical to KeyEQ.
 func Key(v string) predicate.Setting {
 	return predicate.Setting(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldKey), v))
+	})
+}
+
+// Desc applies equality check predicate on the "desc" field. It's identical to DescEQ.
+func Desc(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDesc), v))
+	})
+}
+
+// Content applies equality check predicate on the "content" field. It's identical to ContentEQ.
+func Content(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldContent), v))
 	})
 }
 
@@ -265,6 +286,159 @@ func UpdatedAtLTE(v time.Time) predicate.Setting {
 	})
 }
 
+// CreatorIsNil applies the IsNil predicate on the "creator" field.
+func CreatorIsNil() predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldCreator)))
+	})
+}
+
+// CreatorNotNil applies the NotNil predicate on the "creator" field.
+func CreatorNotNil() predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldCreator)))
+	})
+}
+
+// LastModifierIsNil applies the IsNil predicate on the "last_modifier" field.
+func LastModifierIsNil() predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldLastModifier)))
+	})
+}
+
+// LastModifierNotNil applies the NotNil predicate on the "last_modifier" field.
+func LastModifierNotNil() predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldLastModifier)))
+	})
+}
+
+// RemarkEQ applies the EQ predicate on the "remark" field.
+func RemarkEQ(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkNEQ applies the NEQ predicate on the "remark" field.
+func RemarkNEQ(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkIn applies the In predicate on the "remark" field.
+func RemarkIn(vs ...string) predicate.Setting {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Setting(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldRemark), v...))
+	})
+}
+
+// RemarkNotIn applies the NotIn predicate on the "remark" field.
+func RemarkNotIn(vs ...string) predicate.Setting {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Setting(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldRemark), v...))
+	})
+}
+
+// RemarkGT applies the GT predicate on the "remark" field.
+func RemarkGT(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkGTE applies the GTE predicate on the "remark" field.
+func RemarkGTE(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkLT applies the LT predicate on the "remark" field.
+func RemarkLT(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkLTE applies the LTE predicate on the "remark" field.
+func RemarkLTE(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkContains applies the Contains predicate on the "remark" field.
+func RemarkContains(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
+func RemarkHasPrefix(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
+func RemarkHasSuffix(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkIsNil applies the IsNil predicate on the "remark" field.
+func RemarkIsNil() predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldRemark)))
+	})
+}
+
+// RemarkNotNil applies the NotNil predicate on the "remark" field.
+func RemarkNotNil() predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldRemark)))
+	})
+}
+
+// RemarkEqualFold applies the EqualFold predicate on the "remark" field.
+func RemarkEqualFold(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldRemark), v))
+	})
+}
+
+// RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
+func RemarkContainsFold(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
+	})
+}
+
 // KeyEQ applies the EQ predicate on the "key" field.
 func KeyEQ(v string) predicate.Setting {
 	return predicate.Setting(func(s *sql.Selector) {
@@ -373,6 +547,228 @@ func KeyEqualFold(v string) predicate.Setting {
 func KeyContainsFold(v string) predicate.Setting {
 	return predicate.Setting(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldKey), v))
+	})
+}
+
+// DescEQ applies the EQ predicate on the "desc" field.
+func DescEQ(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDesc), v))
+	})
+}
+
+// DescNEQ applies the NEQ predicate on the "desc" field.
+func DescNEQ(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDesc), v))
+	})
+}
+
+// DescIn applies the In predicate on the "desc" field.
+func DescIn(vs ...string) predicate.Setting {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Setting(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDesc), v...))
+	})
+}
+
+// DescNotIn applies the NotIn predicate on the "desc" field.
+func DescNotIn(vs ...string) predicate.Setting {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Setting(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDesc), v...))
+	})
+}
+
+// DescGT applies the GT predicate on the "desc" field.
+func DescGT(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDesc), v))
+	})
+}
+
+// DescGTE applies the GTE predicate on the "desc" field.
+func DescGTE(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDesc), v))
+	})
+}
+
+// DescLT applies the LT predicate on the "desc" field.
+func DescLT(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDesc), v))
+	})
+}
+
+// DescLTE applies the LTE predicate on the "desc" field.
+func DescLTE(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDesc), v))
+	})
+}
+
+// DescContains applies the Contains predicate on the "desc" field.
+func DescContains(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldDesc), v))
+	})
+}
+
+// DescHasPrefix applies the HasPrefix predicate on the "desc" field.
+func DescHasPrefix(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldDesc), v))
+	})
+}
+
+// DescHasSuffix applies the HasSuffix predicate on the "desc" field.
+func DescHasSuffix(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldDesc), v))
+	})
+}
+
+// DescEqualFold applies the EqualFold predicate on the "desc" field.
+func DescEqualFold(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldDesc), v))
+	})
+}
+
+// DescContainsFold applies the ContainsFold predicate on the "desc" field.
+func DescContainsFold(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldDesc), v))
+	})
+}
+
+// ContentEQ applies the EQ predicate on the "content" field.
+func ContentEQ(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldContent), v))
+	})
+}
+
+// ContentNEQ applies the NEQ predicate on the "content" field.
+func ContentNEQ(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldContent), v))
+	})
+}
+
+// ContentIn applies the In predicate on the "content" field.
+func ContentIn(vs ...string) predicate.Setting {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Setting(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldContent), v...))
+	})
+}
+
+// ContentNotIn applies the NotIn predicate on the "content" field.
+func ContentNotIn(vs ...string) predicate.Setting {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Setting(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldContent), v...))
+	})
+}
+
+// ContentGT applies the GT predicate on the "content" field.
+func ContentGT(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldContent), v))
+	})
+}
+
+// ContentGTE applies the GTE predicate on the "content" field.
+func ContentGTE(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldContent), v))
+	})
+}
+
+// ContentLT applies the LT predicate on the "content" field.
+func ContentLT(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldContent), v))
+	})
+}
+
+// ContentLTE applies the LTE predicate on the "content" field.
+func ContentLTE(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldContent), v))
+	})
+}
+
+// ContentContains applies the Contains predicate on the "content" field.
+func ContentContains(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldContent), v))
+	})
+}
+
+// ContentHasPrefix applies the HasPrefix predicate on the "content" field.
+func ContentHasPrefix(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldContent), v))
+	})
+}
+
+// ContentHasSuffix applies the HasSuffix predicate on the "content" field.
+func ContentHasSuffix(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldContent), v))
+	})
+}
+
+// ContentEqualFold applies the EqualFold predicate on the "content" field.
+func ContentEqualFold(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldContent), v))
+	})
+}
+
+// ContentContainsFold applies the ContainsFold predicate on the "content" field.
+func ContentContainsFold(v string) predicate.Setting {
+	return predicate.Setting(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldContent), v))
 	})
 }
 

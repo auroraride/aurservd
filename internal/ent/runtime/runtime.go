@@ -393,6 +393,8 @@ func init() {
 	// rider.DefaultBlocked holds the default value on creation for the blocked field.
 	rider.DefaultBlocked = riderDescBlocked.Default.(bool)
 	settingMixin := schema.Setting{}.Mixin()
+	settingMixinHooks1 := settingMixin[1].Hooks()
+	setting.Hooks[0] = settingMixinHooks1[0]
 	settingMixinFields0 := settingMixin[0].Fields()
 	_ = settingMixinFields0
 	settingFields := schema.Setting{}.Fields()

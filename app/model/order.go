@@ -11,12 +11,13 @@ import (
 )
 
 const (
-    OrderTypeNew           uint = iota + 1 // 骑士卡
-    OrderTypeRenewal                       // 续签
-    OrderTypeReUse                         // 重签
+    OrderTypeNewPlan       uint = iota + 1 // 骑士卡
+    OrderTypeRePlan                        // 续签
+    OrderTypeRenewal                       // 重签
     OrderTypeChangeBattery                 // 更换电池
     OrderTypeRescue                        // 救援
     OrderTypeFee                           // 滞纳金
+    OrderTypeDeposit                       // 押金
 )
 
 const (

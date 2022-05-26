@@ -5,7 +5,6 @@ import (
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/field"
-    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -24,8 +23,9 @@ func (Setting) Annotations() []schema.Annotation {
 // Fields of the Setting.
 func (Setting) Fields() []ent.Field {
     return []ent.Field{
-        field.String("key").MaxLen(40).Unique().Comment("设置名"),
-        field.JSON("val", model.Setting{}).Comment("设置值"),
+        field.String("key").MaxLen(40).Unique().Comment("设置项"),
+        field.String("desc").Comment("描述"),
+        field.String("content").Comment("值"),
     }
 }
 
@@ -37,6 +37,7 @@ func (Setting) Edges() []ent.Edge {
 func (Setting) Mixin() []ent.Mixin {
     return []ent.Mixin{
         internal.TimeMixin{},
+        internal.Modifier{},
     }
 }
 

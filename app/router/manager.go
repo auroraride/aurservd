@@ -18,6 +18,10 @@ func loadManagerRoutes() {
     g.Use(middleware.ManagerMiddleware())
     g.POST("/user", mapi.Manager.Create) // 新增管理员
 
+    // 设置
+    g.GET("/setting", mapi.Setting.List)
+    g.POST("/setting", mapi.Setting.Modify)
+
     // 城市
     g.GET("/city", mapi.City.List)       // 城市列表
     g.PUT("/city/:id", mapi.City.Modify) // 启用或关闭城市

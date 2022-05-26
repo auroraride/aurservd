@@ -22,12 +22,24 @@ type Setting struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// Creator holds the value of the "creator" field.
+	// 创建人
+	Creator *model.Modifier `json:"creator,omitempty"`
+	// LastModifier holds the value of the "last_modifier" field.
+	// 最后修改人
+	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
+	// Remark holds the value of the "remark" field.
+	// 备注
+	Remark string `json:"remark,omitempty"`
 	// Key holds the value of the "key" field.
-	// 设置名
+	// 设置项
 	Key string `json:"key,omitempty"`
-	// Val holds the value of the "val" field.
-	// 设置值
-	Val model.Setting `json:"val,omitempty"`
+	// Desc holds the value of the "desc" field.
+	// 描述
+	Desc string `json:"desc,omitempty"`
+	// Content holds the value of the "content" field.
+	// 值
+	Content string `json:"content,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -35,11 +47,11 @@ func (*Setting) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case setting.FieldVal:
+		case setting.FieldCreator, setting.FieldLastModifier:
 			values[i] = new([]byte)
 		case setting.FieldID:
 			values[i] = new(sql.NullInt64)
-		case setting.FieldKey:
+		case setting.FieldRemark, setting.FieldKey, setting.FieldDesc, setting.FieldContent:
 			values[i] = new(sql.NullString)
 		case setting.FieldCreatedAt, setting.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -76,19 +88,45 @@ func (s *Setting) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.UpdatedAt = value.Time
 			}
+		case setting.FieldCreator:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field creator", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &s.Creator); err != nil {
+					return fmt.Errorf("unmarshal field creator: %w", err)
+				}
+			}
+		case setting.FieldLastModifier:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field last_modifier", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &s.LastModifier); err != nil {
+					return fmt.Errorf("unmarshal field last_modifier: %w", err)
+				}
+			}
+		case setting.FieldRemark:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field remark", values[i])
+			} else if value.Valid {
+				s.Remark = value.String
+			}
 		case setting.FieldKey:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field key", values[i])
 			} else if value.Valid {
 				s.Key = value.String
 			}
-		case setting.FieldVal:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field val", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &s.Val); err != nil {
-					return fmt.Errorf("unmarshal field val: %w", err)
-				}
+		case setting.FieldDesc:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field desc", values[i])
+			} else if value.Valid {
+				s.Desc = value.String
+			}
+		case setting.FieldContent:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field content", values[i])
+			} else if value.Valid {
+				s.Content = value.String
 			}
 		}
 	}
@@ -122,10 +160,18 @@ func (s *Setting) String() string {
 	builder.WriteString(s.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
 	builder.WriteString(s.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", creator=")
+	builder.WriteString(fmt.Sprintf("%v", s.Creator))
+	builder.WriteString(", last_modifier=")
+	builder.WriteString(fmt.Sprintf("%v", s.LastModifier))
+	builder.WriteString(", remark=")
+	builder.WriteString(s.Remark)
 	builder.WriteString(", key=")
 	builder.WriteString(s.Key)
-	builder.WriteString(", val=")
-	builder.WriteString(fmt.Sprintf("%v", s.Val))
+	builder.WriteString(", desc=")
+	builder.WriteString(s.Desc)
+	builder.WriteString(", content=")
+	builder.WriteString(s.Content)
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -902,6 +902,14 @@ definitions:
     - smsCode
     - smsId
     type: object
+  model.SettingReq:
+    properties:
+      content:
+        description: '值 '
+        type: string
+    required:
+    - content
+    type: object
   model.ShiguangjuIVRItem:
     properties:
       name:
@@ -1971,6 +1979,61 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M70003 封禁/解除封禁骑手账户
+      tags:
+      - '[M]管理接口'
+  /manager/v1/setting:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSettingList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SettingReq'
+            type: array
+      summary: M10003 列举设置
+      tags:
+      - '[M]管理接口'
+  /manager/v1/setting/{key}:
+    put:
+      consumes:
+      - application/json
+      operationId: ManagerSettingModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 设置项
+        in: path
+        name: key
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.SettingReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M10004 调整设置
       tags:
       - '[M]管理接口'
   /manager/v1/store:

@@ -51,15 +51,47 @@ func (sc *SettingCreate) SetNillableUpdatedAt(t *time.Time) *SettingCreate {
 	return sc
 }
 
+// SetCreator sets the "creator" field.
+func (sc *SettingCreate) SetCreator(m *model.Modifier) *SettingCreate {
+	sc.mutation.SetCreator(m)
+	return sc
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (sc *SettingCreate) SetLastModifier(m *model.Modifier) *SettingCreate {
+	sc.mutation.SetLastModifier(m)
+	return sc
+}
+
+// SetRemark sets the "remark" field.
+func (sc *SettingCreate) SetRemark(s string) *SettingCreate {
+	sc.mutation.SetRemark(s)
+	return sc
+}
+
+// SetNillableRemark sets the "remark" field if the given value is not nil.
+func (sc *SettingCreate) SetNillableRemark(s *string) *SettingCreate {
+	if s != nil {
+		sc.SetRemark(*s)
+	}
+	return sc
+}
+
 // SetKey sets the "key" field.
 func (sc *SettingCreate) SetKey(s string) *SettingCreate {
 	sc.mutation.SetKey(s)
 	return sc
 }
 
-// SetVal sets the "val" field.
-func (sc *SettingCreate) SetVal(m model.Setting) *SettingCreate {
-	sc.mutation.SetVal(m)
+// SetDesc sets the "desc" field.
+func (sc *SettingCreate) SetDesc(s string) *SettingCreate {
+	sc.mutation.SetDesc(s)
+	return sc
+}
+
+// SetContent sets the "content" field.
+func (sc *SettingCreate) SetContent(s string) *SettingCreate {
+	sc.mutation.SetContent(s)
 	return sc
 }
 
@@ -74,7 +106,9 @@ func (sc *SettingCreate) Save(ctx context.Context) (*Setting, error) {
 		err  error
 		node *Setting
 	)
-	sc.defaults()
+	if err := sc.defaults(); err != nil {
+		return nil, err
+	}
 	if len(sc.hooks) == 0 {
 		if err = sc.check(); err != nil {
 			return nil, err
@@ -139,15 +173,22 @@ func (sc *SettingCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (sc *SettingCreate) defaults() {
+func (sc *SettingCreate) defaults() error {
 	if _, ok := sc.mutation.CreatedAt(); !ok {
+		if setting.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized setting.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := setting.DefaultCreatedAt()
 		sc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := sc.mutation.UpdatedAt(); !ok {
+		if setting.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized setting.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := setting.DefaultUpdatedAt()
 		sc.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -166,8 +207,11 @@ func (sc *SettingCreate) check() error {
 			return &ValidationError{Name: "key", err: fmt.Errorf(`ent: validator failed for field "Setting.key": %w`, err)}
 		}
 	}
-	if _, ok := sc.mutation.Val(); !ok {
-		return &ValidationError{Name: "val", err: errors.New(`ent: missing required field "Setting.val"`)}
+	if _, ok := sc.mutation.Desc(); !ok {
+		return &ValidationError{Name: "desc", err: errors.New(`ent: missing required field "Setting.desc"`)}
+	}
+	if _, ok := sc.mutation.Content(); !ok {
+		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Setting.content"`)}
 	}
 	return nil
 }
@@ -213,6 +257,30 @@ func (sc *SettingCreate) createSpec() (*Setting, *sqlgraph.CreateSpec) {
 		})
 		_node.UpdatedAt = value
 	}
+	if value, ok := sc.mutation.Creator(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: setting.FieldCreator,
+		})
+		_node.Creator = value
+	}
+	if value, ok := sc.mutation.LastModifier(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: setting.FieldLastModifier,
+		})
+		_node.LastModifier = value
+	}
+	if value, ok := sc.mutation.Remark(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: setting.FieldRemark,
+		})
+		_node.Remark = value
+	}
 	if value, ok := sc.mutation.Key(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -221,13 +289,21 @@ func (sc *SettingCreate) createSpec() (*Setting, *sqlgraph.CreateSpec) {
 		})
 		_node.Key = value
 	}
-	if value, ok := sc.mutation.Val(); ok {
+	if value, ok := sc.mutation.Desc(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: setting.FieldVal,
+			Column: setting.FieldDesc,
 		})
-		_node.Val = value
+		_node.Desc = value
+	}
+	if value, ok := sc.mutation.Content(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: setting.FieldContent,
+		})
+		_node.Content = value
 	}
 	return _node, _spec
 }
@@ -307,6 +383,60 @@ func (u *SettingUpsert) UpdateUpdatedAt() *SettingUpsert {
 	return u
 }
 
+// SetCreator sets the "creator" field.
+func (u *SettingUpsert) SetCreator(v *model.Modifier) *SettingUpsert {
+	u.Set(setting.FieldCreator, v)
+	return u
+}
+
+// UpdateCreator sets the "creator" field to the value that was provided on create.
+func (u *SettingUpsert) UpdateCreator() *SettingUpsert {
+	u.SetExcluded(setting.FieldCreator)
+	return u
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (u *SettingUpsert) ClearCreator() *SettingUpsert {
+	u.SetNull(setting.FieldCreator)
+	return u
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (u *SettingUpsert) SetLastModifier(v *model.Modifier) *SettingUpsert {
+	u.Set(setting.FieldLastModifier, v)
+	return u
+}
+
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *SettingUpsert) UpdateLastModifier() *SettingUpsert {
+	u.SetExcluded(setting.FieldLastModifier)
+	return u
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *SettingUpsert) ClearLastModifier() *SettingUpsert {
+	u.SetNull(setting.FieldLastModifier)
+	return u
+}
+
+// SetRemark sets the "remark" field.
+func (u *SettingUpsert) SetRemark(v string) *SettingUpsert {
+	u.Set(setting.FieldRemark, v)
+	return u
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *SettingUpsert) UpdateRemark() *SettingUpsert {
+	u.SetExcluded(setting.FieldRemark)
+	return u
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *SettingUpsert) ClearRemark() *SettingUpsert {
+	u.SetNull(setting.FieldRemark)
+	return u
+}
+
 // SetKey sets the "key" field.
 func (u *SettingUpsert) SetKey(v string) *SettingUpsert {
 	u.Set(setting.FieldKey, v)
@@ -319,15 +449,27 @@ func (u *SettingUpsert) UpdateKey() *SettingUpsert {
 	return u
 }
 
-// SetVal sets the "val" field.
-func (u *SettingUpsert) SetVal(v model.Setting) *SettingUpsert {
-	u.Set(setting.FieldVal, v)
+// SetDesc sets the "desc" field.
+func (u *SettingUpsert) SetDesc(v string) *SettingUpsert {
+	u.Set(setting.FieldDesc, v)
 	return u
 }
 
-// UpdateVal sets the "val" field to the value that was provided on create.
-func (u *SettingUpsert) UpdateVal() *SettingUpsert {
-	u.SetExcluded(setting.FieldVal)
+// UpdateDesc sets the "desc" field to the value that was provided on create.
+func (u *SettingUpsert) UpdateDesc() *SettingUpsert {
+	u.SetExcluded(setting.FieldDesc)
+	return u
+}
+
+// SetContent sets the "content" field.
+func (u *SettingUpsert) SetContent(v string) *SettingUpsert {
+	u.Set(setting.FieldContent, v)
+	return u
+}
+
+// UpdateContent sets the "content" field to the value that was provided on create.
+func (u *SettingUpsert) UpdateContent() *SettingUpsert {
+	u.SetExcluded(setting.FieldContent)
 	return u
 }
 
@@ -345,6 +487,9 @@ func (u *SettingUpsertOne) UpdateNewValues() *SettingUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(setting.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.Creator(); exists {
+			s.SetIgnore(setting.FieldCreator)
 		}
 	}))
 	return u
@@ -406,6 +551,69 @@ func (u *SettingUpsertOne) UpdateUpdatedAt() *SettingUpsertOne {
 	})
 }
 
+// SetCreator sets the "creator" field.
+func (u *SettingUpsertOne) SetCreator(v *model.Modifier) *SettingUpsertOne {
+	return u.Update(func(s *SettingUpsert) {
+		s.SetCreator(v)
+	})
+}
+
+// UpdateCreator sets the "creator" field to the value that was provided on create.
+func (u *SettingUpsertOne) UpdateCreator() *SettingUpsertOne {
+	return u.Update(func(s *SettingUpsert) {
+		s.UpdateCreator()
+	})
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (u *SettingUpsertOne) ClearCreator() *SettingUpsertOne {
+	return u.Update(func(s *SettingUpsert) {
+		s.ClearCreator()
+	})
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (u *SettingUpsertOne) SetLastModifier(v *model.Modifier) *SettingUpsertOne {
+	return u.Update(func(s *SettingUpsert) {
+		s.SetLastModifier(v)
+	})
+}
+
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *SettingUpsertOne) UpdateLastModifier() *SettingUpsertOne {
+	return u.Update(func(s *SettingUpsert) {
+		s.UpdateLastModifier()
+	})
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *SettingUpsertOne) ClearLastModifier() *SettingUpsertOne {
+	return u.Update(func(s *SettingUpsert) {
+		s.ClearLastModifier()
+	})
+}
+
+// SetRemark sets the "remark" field.
+func (u *SettingUpsertOne) SetRemark(v string) *SettingUpsertOne {
+	return u.Update(func(s *SettingUpsert) {
+		s.SetRemark(v)
+	})
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *SettingUpsertOne) UpdateRemark() *SettingUpsertOne {
+	return u.Update(func(s *SettingUpsert) {
+		s.UpdateRemark()
+	})
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *SettingUpsertOne) ClearRemark() *SettingUpsertOne {
+	return u.Update(func(s *SettingUpsert) {
+		s.ClearRemark()
+	})
+}
+
 // SetKey sets the "key" field.
 func (u *SettingUpsertOne) SetKey(v string) *SettingUpsertOne {
 	return u.Update(func(s *SettingUpsert) {
@@ -420,17 +628,31 @@ func (u *SettingUpsertOne) UpdateKey() *SettingUpsertOne {
 	})
 }
 
-// SetVal sets the "val" field.
-func (u *SettingUpsertOne) SetVal(v model.Setting) *SettingUpsertOne {
+// SetDesc sets the "desc" field.
+func (u *SettingUpsertOne) SetDesc(v string) *SettingUpsertOne {
 	return u.Update(func(s *SettingUpsert) {
-		s.SetVal(v)
+		s.SetDesc(v)
 	})
 }
 
-// UpdateVal sets the "val" field to the value that was provided on create.
-func (u *SettingUpsertOne) UpdateVal() *SettingUpsertOne {
+// UpdateDesc sets the "desc" field to the value that was provided on create.
+func (u *SettingUpsertOne) UpdateDesc() *SettingUpsertOne {
 	return u.Update(func(s *SettingUpsert) {
-		s.UpdateVal()
+		s.UpdateDesc()
+	})
+}
+
+// SetContent sets the "content" field.
+func (u *SettingUpsertOne) SetContent(v string) *SettingUpsertOne {
+	return u.Update(func(s *SettingUpsert) {
+		s.SetContent(v)
+	})
+}
+
+// UpdateContent sets the "content" field to the value that was provided on create.
+func (u *SettingUpsertOne) UpdateContent() *SettingUpsertOne {
+	return u.Update(func(s *SettingUpsert) {
+		s.UpdateContent()
 	})
 }
 
@@ -612,6 +834,9 @@ func (u *SettingUpsertBulk) UpdateNewValues() *SettingUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(setting.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.Creator(); exists {
+				s.SetIgnore(setting.FieldCreator)
+			}
 		}
 	}))
 	return u
@@ -673,6 +898,69 @@ func (u *SettingUpsertBulk) UpdateUpdatedAt() *SettingUpsertBulk {
 	})
 }
 
+// SetCreator sets the "creator" field.
+func (u *SettingUpsertBulk) SetCreator(v *model.Modifier) *SettingUpsertBulk {
+	return u.Update(func(s *SettingUpsert) {
+		s.SetCreator(v)
+	})
+}
+
+// UpdateCreator sets the "creator" field to the value that was provided on create.
+func (u *SettingUpsertBulk) UpdateCreator() *SettingUpsertBulk {
+	return u.Update(func(s *SettingUpsert) {
+		s.UpdateCreator()
+	})
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (u *SettingUpsertBulk) ClearCreator() *SettingUpsertBulk {
+	return u.Update(func(s *SettingUpsert) {
+		s.ClearCreator()
+	})
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (u *SettingUpsertBulk) SetLastModifier(v *model.Modifier) *SettingUpsertBulk {
+	return u.Update(func(s *SettingUpsert) {
+		s.SetLastModifier(v)
+	})
+}
+
+// UpdateLastModifier sets the "last_modifier" field to the value that was provided on create.
+func (u *SettingUpsertBulk) UpdateLastModifier() *SettingUpsertBulk {
+	return u.Update(func(s *SettingUpsert) {
+		s.UpdateLastModifier()
+	})
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (u *SettingUpsertBulk) ClearLastModifier() *SettingUpsertBulk {
+	return u.Update(func(s *SettingUpsert) {
+		s.ClearLastModifier()
+	})
+}
+
+// SetRemark sets the "remark" field.
+func (u *SettingUpsertBulk) SetRemark(v string) *SettingUpsertBulk {
+	return u.Update(func(s *SettingUpsert) {
+		s.SetRemark(v)
+	})
+}
+
+// UpdateRemark sets the "remark" field to the value that was provided on create.
+func (u *SettingUpsertBulk) UpdateRemark() *SettingUpsertBulk {
+	return u.Update(func(s *SettingUpsert) {
+		s.UpdateRemark()
+	})
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (u *SettingUpsertBulk) ClearRemark() *SettingUpsertBulk {
+	return u.Update(func(s *SettingUpsert) {
+		s.ClearRemark()
+	})
+}
+
 // SetKey sets the "key" field.
 func (u *SettingUpsertBulk) SetKey(v string) *SettingUpsertBulk {
 	return u.Update(func(s *SettingUpsert) {
@@ -687,17 +975,31 @@ func (u *SettingUpsertBulk) UpdateKey() *SettingUpsertBulk {
 	})
 }
 
-// SetVal sets the "val" field.
-func (u *SettingUpsertBulk) SetVal(v model.Setting) *SettingUpsertBulk {
+// SetDesc sets the "desc" field.
+func (u *SettingUpsertBulk) SetDesc(v string) *SettingUpsertBulk {
 	return u.Update(func(s *SettingUpsert) {
-		s.SetVal(v)
+		s.SetDesc(v)
 	})
 }
 
-// UpdateVal sets the "val" field to the value that was provided on create.
-func (u *SettingUpsertBulk) UpdateVal() *SettingUpsertBulk {
+// UpdateDesc sets the "desc" field to the value that was provided on create.
+func (u *SettingUpsertBulk) UpdateDesc() *SettingUpsertBulk {
 	return u.Update(func(s *SettingUpsert) {
-		s.UpdateVal()
+		s.UpdateDesc()
+	})
+}
+
+// SetContent sets the "content" field.
+func (u *SettingUpsertBulk) SetContent(v string) *SettingUpsertBulk {
+	return u.Update(func(s *SettingUpsert) {
+		s.SetContent(v)
+	})
+}
+
+// UpdateContent sets the "content" field to the value that was provided on create.
+func (u *SettingUpsertBulk) UpdateContent() *SettingUpsertBulk {
+	return u.Update(func(s *SettingUpsert) {
+		s.UpdateContent()
 	})
 }
 

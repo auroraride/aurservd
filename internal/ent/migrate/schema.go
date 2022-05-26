@@ -776,8 +776,12 @@ var (
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "key", Type: field.TypeString, Unique: true, Comment: "设置名", Size: 40},
-		{Name: "val", Type: field.TypeJSON, Comment: "设置值"},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "备注", Nullable: true},
+		{Name: "key", Type: field.TypeString, Unique: true, Comment: "设置项", Size: 40},
+		{Name: "desc", Type: field.TypeString, Comment: "描述"},
+		{Name: "content", Type: field.TypeString, Comment: "值"},
 	}
 	// SettingTable holds the schema information for the "setting" table.
 	SettingTable = &schema.Table{

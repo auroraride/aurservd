@@ -35,15 +35,53 @@ func (su *SettingUpdate) SetUpdatedAt(t time.Time) *SettingUpdate {
 	return su
 }
 
+// SetLastModifier sets the "last_modifier" field.
+func (su *SettingUpdate) SetLastModifier(m *model.Modifier) *SettingUpdate {
+	su.mutation.SetLastModifier(m)
+	return su
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (su *SettingUpdate) ClearLastModifier() *SettingUpdate {
+	su.mutation.ClearLastModifier()
+	return su
+}
+
+// SetRemark sets the "remark" field.
+func (su *SettingUpdate) SetRemark(s string) *SettingUpdate {
+	su.mutation.SetRemark(s)
+	return su
+}
+
+// SetNillableRemark sets the "remark" field if the given value is not nil.
+func (su *SettingUpdate) SetNillableRemark(s *string) *SettingUpdate {
+	if s != nil {
+		su.SetRemark(*s)
+	}
+	return su
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (su *SettingUpdate) ClearRemark() *SettingUpdate {
+	su.mutation.ClearRemark()
+	return su
+}
+
 // SetKey sets the "key" field.
 func (su *SettingUpdate) SetKey(s string) *SettingUpdate {
 	su.mutation.SetKey(s)
 	return su
 }
 
-// SetVal sets the "val" field.
-func (su *SettingUpdate) SetVal(m model.Setting) *SettingUpdate {
-	su.mutation.SetVal(m)
+// SetDesc sets the "desc" field.
+func (su *SettingUpdate) SetDesc(s string) *SettingUpdate {
+	su.mutation.SetDesc(s)
+	return su
+}
+
+// SetContent sets the "content" field.
+func (su *SettingUpdate) SetContent(s string) *SettingUpdate {
+	su.mutation.SetContent(s)
 	return su
 }
 
@@ -58,7 +96,9 @@ func (su *SettingUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
-	su.defaults()
+	if err := su.defaults(); err != nil {
+		return 0, err
+	}
 	if len(su.hooks) == 0 {
 		if err = su.check(); err != nil {
 			return 0, err
@@ -114,11 +154,15 @@ func (su *SettingUpdate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (su *SettingUpdate) defaults() {
+func (su *SettingUpdate) defaults() error {
 	if _, ok := su.mutation.UpdatedAt(); !ok {
+		if setting.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized setting.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := setting.UpdateDefaultUpdatedAt()
 		su.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -156,6 +200,38 @@ func (su *SettingUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: setting.FieldUpdatedAt,
 		})
 	}
+	if su.mutation.CreatorCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: setting.FieldCreator,
+		})
+	}
+	if value, ok := su.mutation.LastModifier(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: setting.FieldLastModifier,
+		})
+	}
+	if su.mutation.LastModifierCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: setting.FieldLastModifier,
+		})
+	}
+	if value, ok := su.mutation.Remark(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: setting.FieldRemark,
+		})
+	}
+	if su.mutation.RemarkCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: setting.FieldRemark,
+		})
+	}
 	if value, ok := su.mutation.Key(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -163,11 +239,18 @@ func (su *SettingUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: setting.FieldKey,
 		})
 	}
-	if value, ok := su.mutation.Val(); ok {
+	if value, ok := su.mutation.Desc(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: setting.FieldVal,
+			Column: setting.FieldDesc,
+		})
+	}
+	if value, ok := su.mutation.Content(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: setting.FieldContent,
 		})
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
@@ -195,15 +278,53 @@ func (suo *SettingUpdateOne) SetUpdatedAt(t time.Time) *SettingUpdateOne {
 	return suo
 }
 
+// SetLastModifier sets the "last_modifier" field.
+func (suo *SettingUpdateOne) SetLastModifier(m *model.Modifier) *SettingUpdateOne {
+	suo.mutation.SetLastModifier(m)
+	return suo
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (suo *SettingUpdateOne) ClearLastModifier() *SettingUpdateOne {
+	suo.mutation.ClearLastModifier()
+	return suo
+}
+
+// SetRemark sets the "remark" field.
+func (suo *SettingUpdateOne) SetRemark(s string) *SettingUpdateOne {
+	suo.mutation.SetRemark(s)
+	return suo
+}
+
+// SetNillableRemark sets the "remark" field if the given value is not nil.
+func (suo *SettingUpdateOne) SetNillableRemark(s *string) *SettingUpdateOne {
+	if s != nil {
+		suo.SetRemark(*s)
+	}
+	return suo
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (suo *SettingUpdateOne) ClearRemark() *SettingUpdateOne {
+	suo.mutation.ClearRemark()
+	return suo
+}
+
 // SetKey sets the "key" field.
 func (suo *SettingUpdateOne) SetKey(s string) *SettingUpdateOne {
 	suo.mutation.SetKey(s)
 	return suo
 }
 
-// SetVal sets the "val" field.
-func (suo *SettingUpdateOne) SetVal(m model.Setting) *SettingUpdateOne {
-	suo.mutation.SetVal(m)
+// SetDesc sets the "desc" field.
+func (suo *SettingUpdateOne) SetDesc(s string) *SettingUpdateOne {
+	suo.mutation.SetDesc(s)
+	return suo
+}
+
+// SetContent sets the "content" field.
+func (suo *SettingUpdateOne) SetContent(s string) *SettingUpdateOne {
+	suo.mutation.SetContent(s)
 	return suo
 }
 
@@ -225,7 +346,9 @@ func (suo *SettingUpdateOne) Save(ctx context.Context) (*Setting, error) {
 		err  error
 		node *Setting
 	)
-	suo.defaults()
+	if err := suo.defaults(); err != nil {
+		return nil, err
+	}
 	if len(suo.hooks) == 0 {
 		if err = suo.check(); err != nil {
 			return nil, err
@@ -287,11 +410,15 @@ func (suo *SettingUpdateOne) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (suo *SettingUpdateOne) defaults() {
+func (suo *SettingUpdateOne) defaults() error {
 	if _, ok := suo.mutation.UpdatedAt(); !ok {
+		if setting.UpdateDefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized setting.UpdateDefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := setting.UpdateDefaultUpdatedAt()
 		suo.mutation.SetUpdatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -346,6 +473,38 @@ func (suo *SettingUpdateOne) sqlSave(ctx context.Context) (_node *Setting, err e
 			Column: setting.FieldUpdatedAt,
 		})
 	}
+	if suo.mutation.CreatorCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: setting.FieldCreator,
+		})
+	}
+	if value, ok := suo.mutation.LastModifier(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: setting.FieldLastModifier,
+		})
+	}
+	if suo.mutation.LastModifierCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: setting.FieldLastModifier,
+		})
+	}
+	if value, ok := suo.mutation.Remark(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: setting.FieldRemark,
+		})
+	}
+	if suo.mutation.RemarkCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: setting.FieldRemark,
+		})
+	}
 	if value, ok := suo.mutation.Key(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -353,11 +512,18 @@ func (suo *SettingUpdateOne) sqlSave(ctx context.Context) (_node *Setting, err e
 			Column: setting.FieldKey,
 		})
 	}
-	if value, ok := suo.mutation.Val(); ok {
+	if value, ok := suo.mutation.Desc(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: setting.FieldVal,
+			Column: setting.FieldDesc,
+		})
+	}
+	if value, ok := suo.mutation.Content(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: setting.FieldContent,
 		})
 	}
 	_node = &Setting{config: suo.config}
