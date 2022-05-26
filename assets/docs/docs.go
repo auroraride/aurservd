@@ -2232,6 +2232,20 @@ const docTemplate = `{
                         "name": "X-Rider-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID ",
+                        "name": "cityId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "电压型号 ",
+                        "name": "voltage",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {

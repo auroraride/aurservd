@@ -2544,6 +2544,16 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
+      - description: '城市ID '
+        in: query
+        name: cityId
+        required: true
+        type: integer
+      - description: '电压型号 '
+        in: query
+        name: voltage
+        required: true
+        type: number
       produces:
       - application/json
       responses:
