@@ -14,8 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/contract"
     "github.com/auroraride/aurservd/internal/esign"
     "github.com/auroraride/aurservd/pkg/snag"
-    "github.com/auroraride/aurservd/pkg/utils"
-    "github.com/golang-module/carbon/v2"
+    "github.com/sony/sonyflake"
 )
 
 const (
@@ -49,18 +48,15 @@ func (s *contractService) Effective(u *ent.Rider) bool {
     return exists
 }
 
-// generateSn 生成合同编号
-func (s *contractService) generateSn() string {
-    return fmt.Sprintf("%s%06d", carbon.Now().ToShortDateTimeString(), utils.RandomIntMaxMin(1000, 999999))
-}
-
 // Sign 签署合同
 func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) model.ContractSignRes {
     if s.Effective(u) {
         return model.ContractSignRes{Effective: true}
     }
+
+    sid, _ := sonyflake.NewSonyflake(sonyflake.Settings{}).NextID()
     var (
-        sn           = s.generateSn()
+        sn           = fmt.Sprintf("%d", sid)
         cfg          = s.esign.Config
         orm          = ar.Ent
         person       = u.Edges.Person
