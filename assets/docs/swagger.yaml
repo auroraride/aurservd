@@ -889,6 +889,9 @@ definitions:
       contact:
         $ref: '#/definitions/model.RiderContact'
         description: 联系人
+      deposit:
+        description: 需缴押金
+        type: number
       id:
         type: integer
       isAuthed:

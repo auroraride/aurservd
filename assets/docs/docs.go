@@ -3550,6 +3550,10 @@ const docTemplate = `{
                     "description": "联系人",
                     "$ref": "#/definitions/model.RiderContact"
                 },
+                "deposit": {
+                    "description": "需缴押金",
+                    "type": "number"
+                },
                 "id": {
                     "type": "integer"
                 },
