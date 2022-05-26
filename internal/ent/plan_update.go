@@ -153,6 +153,53 @@ func (pu *PlanUpdate) AddCommission(f float64) *PlanUpdate {
 	return pu
 }
 
+// SetOriginal sets the "original" field.
+func (pu *PlanUpdate) SetOriginal(f float64) *PlanUpdate {
+	pu.mutation.ResetOriginal()
+	pu.mutation.SetOriginal(f)
+	return pu
+}
+
+// SetNillableOriginal sets the "original" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableOriginal(f *float64) *PlanUpdate {
+	if f != nil {
+		pu.SetOriginal(*f)
+	}
+	return pu
+}
+
+// AddOriginal adds f to the "original" field.
+func (pu *PlanUpdate) AddOriginal(f float64) *PlanUpdate {
+	pu.mutation.AddOriginal(f)
+	return pu
+}
+
+// ClearOriginal clears the value of the "original" field.
+func (pu *PlanUpdate) ClearOriginal() *PlanUpdate {
+	pu.mutation.ClearOriginal()
+	return pu
+}
+
+// SetDesc sets the "desc" field.
+func (pu *PlanUpdate) SetDesc(s string) *PlanUpdate {
+	pu.mutation.SetDesc(s)
+	return pu
+}
+
+// SetNillableDesc sets the "desc" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableDesc(s *string) *PlanUpdate {
+	if s != nil {
+		pu.SetDesc(*s)
+	}
+	return pu
+}
+
+// ClearDesc clears the value of the "desc" field.
+func (pu *PlanUpdate) ClearDesc() *PlanUpdate {
+	pu.mutation.ClearDesc()
+	return pu
+}
+
 // AddPmIDs adds the "pms" edge to the BatteryModel entity by IDs.
 func (pu *PlanUpdate) AddPmIDs(ids ...uint64) *PlanUpdate {
 	pu.mutation.AddPmIDs(ids...)
@@ -475,6 +522,39 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: plan.FieldCommission,
 		})
 	}
+	if value, ok := pu.mutation.Original(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: plan.FieldOriginal,
+		})
+	}
+	if value, ok := pu.mutation.AddedOriginal(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: plan.FieldOriginal,
+		})
+	}
+	if pu.mutation.OriginalCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: plan.FieldOriginal,
+		})
+	}
+	if value, ok := pu.mutation.Desc(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: plan.FieldDesc,
+		})
+	}
+	if pu.mutation.DescCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: plan.FieldDesc,
+		})
+	}
 	if pu.mutation.PmsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
@@ -774,6 +854,53 @@ func (puo *PlanUpdateOne) SetCommission(f float64) *PlanUpdateOne {
 // AddCommission adds f to the "commission" field.
 func (puo *PlanUpdateOne) AddCommission(f float64) *PlanUpdateOne {
 	puo.mutation.AddCommission(f)
+	return puo
+}
+
+// SetOriginal sets the "original" field.
+func (puo *PlanUpdateOne) SetOriginal(f float64) *PlanUpdateOne {
+	puo.mutation.ResetOriginal()
+	puo.mutation.SetOriginal(f)
+	return puo
+}
+
+// SetNillableOriginal sets the "original" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableOriginal(f *float64) *PlanUpdateOne {
+	if f != nil {
+		puo.SetOriginal(*f)
+	}
+	return puo
+}
+
+// AddOriginal adds f to the "original" field.
+func (puo *PlanUpdateOne) AddOriginal(f float64) *PlanUpdateOne {
+	puo.mutation.AddOriginal(f)
+	return puo
+}
+
+// ClearOriginal clears the value of the "original" field.
+func (puo *PlanUpdateOne) ClearOriginal() *PlanUpdateOne {
+	puo.mutation.ClearOriginal()
+	return puo
+}
+
+// SetDesc sets the "desc" field.
+func (puo *PlanUpdateOne) SetDesc(s string) *PlanUpdateOne {
+	puo.mutation.SetDesc(s)
+	return puo
+}
+
+// SetNillableDesc sets the "desc" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableDesc(s *string) *PlanUpdateOne {
+	if s != nil {
+		puo.SetDesc(*s)
+	}
+	return puo
+}
+
+// ClearDesc clears the value of the "desc" field.
+func (puo *PlanUpdateOne) ClearDesc() *PlanUpdateOne {
+	puo.mutation.ClearDesc()
 	return puo
 }
 
@@ -1127,6 +1254,39 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: plan.FieldCommission,
+		})
+	}
+	if value, ok := puo.mutation.Original(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: plan.FieldOriginal,
+		})
+	}
+	if value, ok := puo.mutation.AddedOriginal(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: plan.FieldOriginal,
+		})
+	}
+	if puo.mutation.OriginalCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: plan.FieldOriginal,
+		})
+	}
+	if value, ok := puo.mutation.Desc(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: plan.FieldDesc,
+		})
+	}
+	if puo.mutation.DescCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: plan.FieldDesc,
 		})
 	}
 	if puo.mutation.PmsCleared() {

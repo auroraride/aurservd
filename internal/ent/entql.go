@@ -214,6 +214,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			commission.FieldOrderID:      {Type: field.TypeUint64, Column: commission.FieldOrderID},
 			commission.FieldAmount:       {Type: field.TypeFloat64, Column: commission.FieldAmount},
 			commission.FieldStatus:       {Type: field.TypeUint8, Column: commission.FieldStatus},
+			commission.FieldEmployeeID:   {Type: field.TypeUint64, Column: commission.FieldEmployeeID},
 		},
 	}
 	graph.Nodes[7] = &sqlgraph.Node{
@@ -367,6 +368,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			plan.FieldPrice:        {Type: field.TypeFloat64, Column: plan.FieldPrice},
 			plan.FieldDays:         {Type: field.TypeUint, Column: plan.FieldDays},
 			plan.FieldCommission:   {Type: field.TypeFloat64, Column: plan.FieldCommission},
+			plan.FieldOriginal:     {Type: field.TypeFloat64, Column: plan.FieldOriginal},
+			plan.FieldDesc:         {Type: field.TypeString, Column: plan.FieldDesc},
 		},
 	}
 	graph.Nodes[13] = &sqlgraph.Node{
@@ -1917,6 +1920,11 @@ func (f *CommissionFilter) WhereStatus(p entql.Uint8P) {
 	f.Where(p.Field(commission.FieldStatus))
 }
 
+// WhereEmployeeID applies the entql uint64 predicate on the employee_id field.
+func (f *CommissionFilter) WhereEmployeeID(p entql.Uint64P) {
+	f.Where(p.Field(commission.FieldEmployeeID))
+}
+
 // WhereHasOrder applies a predicate to check if query has an edge order.
 func (f *CommissionFilter) WhereHasOrder() {
 	f.Where(entql.HasEdge("order"))
@@ -2628,6 +2636,16 @@ func (f *PlanFilter) WhereDays(p entql.UintP) {
 // WhereCommission applies the entql float64 predicate on the commission field.
 func (f *PlanFilter) WhereCommission(p entql.Float64P) {
 	f.Where(p.Field(plan.FieldCommission))
+}
+
+// WhereOriginal applies the entql float64 predicate on the original field.
+func (f *PlanFilter) WhereOriginal(p entql.Float64P) {
+	f.Where(p.Field(plan.FieldOriginal))
+}
+
+// WhereDesc applies the entql string predicate on the desc field.
+func (f *PlanFilter) WhereDesc(p entql.StringP) {
+	f.Where(p.Field(plan.FieldDesc))
 }
 
 // WhereHasPms applies a predicate to check if query has an edge pms.

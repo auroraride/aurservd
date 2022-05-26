@@ -170,6 +170,20 @@ func Commission(v float64) predicate.Plan {
 	})
 }
 
+// Original applies equality check predicate on the "original" field. It's identical to OriginalEQ.
+func Original(v float64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldOriginal), v))
+	})
+}
+
+// Desc applies equality check predicate on the "desc" field. It's identical to DescEQ.
+func Desc(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDesc), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
@@ -1067,6 +1081,221 @@ func CommissionLT(v float64) predicate.Plan {
 func CommissionLTE(v float64) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldCommission), v))
+	})
+}
+
+// OriginalEQ applies the EQ predicate on the "original" field.
+func OriginalEQ(v float64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldOriginal), v))
+	})
+}
+
+// OriginalNEQ applies the NEQ predicate on the "original" field.
+func OriginalNEQ(v float64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldOriginal), v))
+	})
+}
+
+// OriginalIn applies the In predicate on the "original" field.
+func OriginalIn(vs ...float64) predicate.Plan {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Plan(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldOriginal), v...))
+	})
+}
+
+// OriginalNotIn applies the NotIn predicate on the "original" field.
+func OriginalNotIn(vs ...float64) predicate.Plan {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Plan(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldOriginal), v...))
+	})
+}
+
+// OriginalGT applies the GT predicate on the "original" field.
+func OriginalGT(v float64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldOriginal), v))
+	})
+}
+
+// OriginalGTE applies the GTE predicate on the "original" field.
+func OriginalGTE(v float64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldOriginal), v))
+	})
+}
+
+// OriginalLT applies the LT predicate on the "original" field.
+func OriginalLT(v float64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldOriginal), v))
+	})
+}
+
+// OriginalLTE applies the LTE predicate on the "original" field.
+func OriginalLTE(v float64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldOriginal), v))
+	})
+}
+
+// OriginalIsNil applies the IsNil predicate on the "original" field.
+func OriginalIsNil() predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldOriginal)))
+	})
+}
+
+// OriginalNotNil applies the NotNil predicate on the "original" field.
+func OriginalNotNil() predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldOriginal)))
+	})
+}
+
+// DescEQ applies the EQ predicate on the "desc" field.
+func DescEQ(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDesc), v))
+	})
+}
+
+// DescNEQ applies the NEQ predicate on the "desc" field.
+func DescNEQ(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDesc), v))
+	})
+}
+
+// DescIn applies the In predicate on the "desc" field.
+func DescIn(vs ...string) predicate.Plan {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Plan(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDesc), v...))
+	})
+}
+
+// DescNotIn applies the NotIn predicate on the "desc" field.
+func DescNotIn(vs ...string) predicate.Plan {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Plan(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDesc), v...))
+	})
+}
+
+// DescGT applies the GT predicate on the "desc" field.
+func DescGT(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDesc), v))
+	})
+}
+
+// DescGTE applies the GTE predicate on the "desc" field.
+func DescGTE(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDesc), v))
+	})
+}
+
+// DescLT applies the LT predicate on the "desc" field.
+func DescLT(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDesc), v))
+	})
+}
+
+// DescLTE applies the LTE predicate on the "desc" field.
+func DescLTE(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDesc), v))
+	})
+}
+
+// DescContains applies the Contains predicate on the "desc" field.
+func DescContains(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldDesc), v))
+	})
+}
+
+// DescHasPrefix applies the HasPrefix predicate on the "desc" field.
+func DescHasPrefix(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldDesc), v))
+	})
+}
+
+// DescHasSuffix applies the HasSuffix predicate on the "desc" field.
+func DescHasSuffix(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldDesc), v))
+	})
+}
+
+// DescIsNil applies the IsNil predicate on the "desc" field.
+func DescIsNil() predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldDesc)))
+	})
+}
+
+// DescNotNil applies the NotNil predicate on the "desc" field.
+func DescNotNil() predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldDesc)))
+	})
+}
+
+// DescEqualFold applies the EqualFold predicate on the "desc" field.
+func DescEqualFold(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldDesc), v))
+	})
+}
+
+// DescContainsFold applies the ContainsFold predicate on the "desc" field.
+func DescContainsFold(v string) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldDesc), v))
 	})
 }
 

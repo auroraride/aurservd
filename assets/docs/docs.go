@@ -1751,6 +1751,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/battery/voltage": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R30001 电压型号",
+                "operationId": "RiderBatteryListVoltage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/branch": {
             "get": {
                 "consumes": [
@@ -2094,6 +2129,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/plan": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R30002 获取骑士卡",
+                "operationId": "RiderPlanList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.RiderPlanItem"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/signin": {
             "post": {
                 "consumes": [
@@ -2327,6 +2397,10 @@ const docTemplate = `{
                 "num": {
                     "description": "满电数量",
                     "type": "integer"
+                },
+                "phone": {
+                    "description": "联系电话",
+                    "type": "string"
                 },
                 "state": {
                     "description": "状态 0不可用 1可用",
@@ -3199,6 +3273,10 @@ const docTemplate = `{
                     "type": "integer",
                     "minimum": 1
                 },
+                "desc": {
+                    "description": "优惠信息",
+                    "type": "string"
+                },
                 "enable": {
                     "description": "是否启用",
                     "type": "boolean"
@@ -3219,6 +3297,10 @@ const docTemplate = `{
                 "name": {
                     "description": "骑士卡名称 ",
                     "type": "string"
+                },
+                "original": {
+                    "description": "原价",
+                    "type": "number"
                 },
                 "price": {
                     "description": "价格 ",
@@ -3298,6 +3380,34 @@ const docTemplate = `{
                 "userPlan": {
                     "description": "当前有效骑士卡, 若无此字段则代表当前无有效骑士卡",
                     "$ref": "#/definitions/model.UserPlanItem"
+                }
+            }
+        },
+        "model.RiderPlanItem": {
+            "type": "object",
+            "properties": {
+                "days": {
+                    "description": "天数",
+                    "type": "integer"
+                },
+                "desc": {
+                    "description": "优惠信息",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "骑士卡名称",
+                    "type": "string"
+                },
+                "original": {
+                    "description": "原价",
+                    "type": "number"
+                },
+                "price": {
+                    "description": "价格",
+                    "type": "number"
                 }
             }
         },

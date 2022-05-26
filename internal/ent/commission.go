@@ -43,6 +43,9 @@ type Commission struct {
 	// Status holds the value of the "status" field.
 	// 提成状态 0未发放 1已发放
 	Status uint8 `json:"status,omitempty"`
+	// EmployeeID holds the value of the "employee_id" field.
+	// 员工ID
+	EmployeeID uint64 `json:"employee_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CommissionQuery when eager-loading is set.
 	Edges CommissionEdges `json:"edges"`
@@ -80,7 +83,7 @@ func (*Commission) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case commission.FieldAmount:
 			values[i] = new(sql.NullFloat64)
-		case commission.FieldID, commission.FieldOrderID, commission.FieldStatus:
+		case commission.FieldID, commission.FieldOrderID, commission.FieldStatus, commission.FieldEmployeeID:
 			values[i] = new(sql.NullInt64)
 		case commission.FieldRemark:
 			values[i] = new(sql.NullString)
@@ -166,6 +169,12 @@ func (c *Commission) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				c.Status = uint8(value.Int64)
 			}
+		case commission.FieldEmployeeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field employee_id", values[i])
+			} else if value.Valid {
+				c.EmployeeID = uint64(value.Int64)
+			}
 		}
 	}
 	return nil
@@ -219,6 +228,8 @@ func (c *Commission) String() string {
 	builder.WriteString(fmt.Sprintf("%v", c.Amount))
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", c.Status))
+	builder.WriteString(", employee_id=")
+	builder.WriteString(fmt.Sprintf("%v", c.EmployeeID))
 	builder.WriteByte(')')
 	return builder.String()
 }

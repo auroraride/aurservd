@@ -71,3 +71,13 @@ func (s *batteryService) CreateModel(req *model.BatteryModelCreateReq) model.Bat
 func (s *batteryService) QueryIDs(ids []uint64) []*ent.BatteryModel {
     return s.orm.QueryNotDeleted().Where(batterymodel.IDIn(ids...)).AllX(s.ctx)
 }
+
+// ListVoltages 列出所有型号电压
+func (s *batteryService) ListVoltages() []int {
+    var items []int
+    s.orm.QueryNotDeleted().
+        Select(batterymodel.FieldVoltage).
+        GroupBy(batterymodel.FieldVoltage).
+        ScanX(s.ctx, &items)
+    return items
+}

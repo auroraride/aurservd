@@ -37,6 +37,7 @@ func loadRideRoutes() {
     g.GET("/demo", rapi.Rider.Demo) // 测试空白页面
     g.GET("/", rapi.Rider.Profile)  // 获取用户信息
 
+    // 已开通城市
     g.GET("/city", rapi.City.List)
 
     // 合同
@@ -49,7 +50,9 @@ func loadRideRoutes() {
     branch.GET("", rapi.Branch.List)
     branch.GET("/riding", rapi.Branch.Riding)
 
-    // 套餐或订单
+    // 业务
+    g.GET("/battery/voltage", rapi.Battery.ListVoltage)
+    g.GET("/plan", rapi.Plan.List)
     g.POST("/order", rapi.Order.Create)
 
     // 电柜

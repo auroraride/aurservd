@@ -54,6 +54,12 @@ type Plan struct {
 	// Commission holds the value of the "commission" field.
 	// 提成
 	Commission float64 `json:"commission,omitempty"`
+	// Original holds the value of the "original" field.
+	// 原价
+	Original float64 `json:"original,omitempty"`
+	// Desc holds the value of the "desc" field.
+	// 优惠信息
+	Desc string `json:"desc,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlanQuery when eager-loading is set.
 	Edges PlanEdges `json:"edges"`
@@ -108,11 +114,11 @@ func (*Plan) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case plan.FieldEnable:
 			values[i] = new(sql.NullBool)
-		case plan.FieldPrice, plan.FieldCommission:
+		case plan.FieldPrice, plan.FieldCommission, plan.FieldOriginal:
 			values[i] = new(sql.NullFloat64)
 		case plan.FieldID, plan.FieldDays:
 			values[i] = new(sql.NullInt64)
-		case plan.FieldRemark, plan.FieldName:
+		case plan.FieldRemark, plan.FieldName, plan.FieldDesc:
 			values[i] = new(sql.NullString)
 		case plan.FieldCreatedAt, plan.FieldUpdatedAt, plan.FieldDeletedAt, plan.FieldStart, plan.FieldEnd:
 			values[i] = new(sql.NullTime)
@@ -220,6 +226,18 @@ func (pl *Plan) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				pl.Commission = value.Float64
 			}
+		case plan.FieldOriginal:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field original", values[i])
+			} else if value.Valid {
+				pl.Original = value.Float64
+			}
+		case plan.FieldDesc:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field desc", values[i])
+			} else if value.Valid {
+				pl.Desc = value.String
+			}
 		}
 	}
 	return nil
@@ -291,6 +309,10 @@ func (pl *Plan) String() string {
 	builder.WriteString(fmt.Sprintf("%v", pl.Days))
 	builder.WriteString(", commission=")
 	builder.WriteString(fmt.Sprintf("%v", pl.Commission))
+	builder.WriteString(", original=")
+	builder.WriteString(fmt.Sprintf("%v", pl.Original))
+	builder.WriteString(", desc=")
+	builder.WriteString(pl.Desc)
 	builder.WriteByte(')')
 	return builder.String()
 }

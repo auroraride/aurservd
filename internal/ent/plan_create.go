@@ -136,6 +136,34 @@ func (pc *PlanCreate) SetCommission(f float64) *PlanCreate {
 	return pc
 }
 
+// SetOriginal sets the "original" field.
+func (pc *PlanCreate) SetOriginal(f float64) *PlanCreate {
+	pc.mutation.SetOriginal(f)
+	return pc
+}
+
+// SetNillableOriginal sets the "original" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableOriginal(f *float64) *PlanCreate {
+	if f != nil {
+		pc.SetOriginal(*f)
+	}
+	return pc
+}
+
+// SetDesc sets the "desc" field.
+func (pc *PlanCreate) SetDesc(s string) *PlanCreate {
+	pc.mutation.SetDesc(s)
+	return pc
+}
+
+// SetNillableDesc sets the "desc" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableDesc(s *string) *PlanCreate {
+	if s != nil {
+		pc.SetDesc(*s)
+	}
+	return pc
+}
+
 // AddPmIDs adds the "pms" edge to the BatteryModel entity by IDs.
 func (pc *PlanCreate) AddPmIDs(ids ...uint64) *PlanCreate {
 	pc.mutation.AddPmIDs(ids...)
@@ -437,6 +465,22 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 			Column: plan.FieldCommission,
 		})
 		_node.Commission = value
+	}
+	if value, ok := pc.mutation.Original(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: plan.FieldOriginal,
+		})
+		_node.Original = value
+	}
+	if value, ok := pc.mutation.Desc(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: plan.FieldDesc,
+		})
+		_node.Desc = value
 	}
 	if nodes := pc.mutation.PmsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -747,6 +791,48 @@ func (u *PlanUpsert) AddCommission(v float64) *PlanUpsert {
 	return u
 }
 
+// SetOriginal sets the "original" field.
+func (u *PlanUpsert) SetOriginal(v float64) *PlanUpsert {
+	u.Set(plan.FieldOriginal, v)
+	return u
+}
+
+// UpdateOriginal sets the "original" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateOriginal() *PlanUpsert {
+	u.SetExcluded(plan.FieldOriginal)
+	return u
+}
+
+// AddOriginal adds v to the "original" field.
+func (u *PlanUpsert) AddOriginal(v float64) *PlanUpsert {
+	u.Add(plan.FieldOriginal, v)
+	return u
+}
+
+// ClearOriginal clears the value of the "original" field.
+func (u *PlanUpsert) ClearOriginal() *PlanUpsert {
+	u.SetNull(plan.FieldOriginal)
+	return u
+}
+
+// SetDesc sets the "desc" field.
+func (u *PlanUpsert) SetDesc(v string) *PlanUpsert {
+	u.Set(plan.FieldDesc, v)
+	return u
+}
+
+// UpdateDesc sets the "desc" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateDesc() *PlanUpsert {
+	u.SetExcluded(plan.FieldDesc)
+	return u
+}
+
+// ClearDesc clears the value of the "desc" field.
+func (u *PlanUpsert) ClearDesc() *PlanUpsert {
+	u.SetNull(plan.FieldDesc)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1025,6 +1111,55 @@ func (u *PlanUpsertOne) AddCommission(v float64) *PlanUpsertOne {
 func (u *PlanUpsertOne) UpdateCommission() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.UpdateCommission()
+	})
+}
+
+// SetOriginal sets the "original" field.
+func (u *PlanUpsertOne) SetOriginal(v float64) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetOriginal(v)
+	})
+}
+
+// AddOriginal adds v to the "original" field.
+func (u *PlanUpsertOne) AddOriginal(v float64) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.AddOriginal(v)
+	})
+}
+
+// UpdateOriginal sets the "original" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateOriginal() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateOriginal()
+	})
+}
+
+// ClearOriginal clears the value of the "original" field.
+func (u *PlanUpsertOne) ClearOriginal() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearOriginal()
+	})
+}
+
+// SetDesc sets the "desc" field.
+func (u *PlanUpsertOne) SetDesc(v string) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDesc(v)
+	})
+}
+
+// UpdateDesc sets the "desc" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateDesc() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDesc()
+	})
+}
+
+// ClearDesc clears the value of the "desc" field.
+func (u *PlanUpsertOne) ClearDesc() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearDesc()
 	})
 }
 
@@ -1470,6 +1605,55 @@ func (u *PlanUpsertBulk) AddCommission(v float64) *PlanUpsertBulk {
 func (u *PlanUpsertBulk) UpdateCommission() *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.UpdateCommission()
+	})
+}
+
+// SetOriginal sets the "original" field.
+func (u *PlanUpsertBulk) SetOriginal(v float64) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetOriginal(v)
+	})
+}
+
+// AddOriginal adds v to the "original" field.
+func (u *PlanUpsertBulk) AddOriginal(v float64) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.AddOriginal(v)
+	})
+}
+
+// UpdateOriginal sets the "original" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateOriginal() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateOriginal()
+	})
+}
+
+// ClearOriginal clears the value of the "original" field.
+func (u *PlanUpsertBulk) ClearOriginal() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearOriginal()
+	})
+}
+
+// SetDesc sets the "desc" field.
+func (u *PlanUpsertBulk) SetDesc(v string) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetDesc(v)
+	})
+}
+
+// UpdateDesc sets the "desc" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateDesc() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateDesc()
+	})
+}
+
+// ClearDesc clears the value of the "desc" field.
+func (u *PlanUpsertBulk) ClearDesc() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearDesc()
 	})
 }
 

@@ -142,6 +142,13 @@ func Status(v uint8) predicate.Commission {
 	})
 }
 
+// EmployeeID applies equality check predicate on the "employee_id" field. It's identical to EmployeeIDEQ.
+func EmployeeID(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Commission {
 	return predicate.Commission(func(s *sql.Selector) {
@@ -734,6 +741,96 @@ func StatusLT(v uint8) predicate.Commission {
 func StatusLTE(v uint8) predicate.Commission {
 	return predicate.Commission(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldStatus), v))
+	})
+}
+
+// EmployeeIDEQ applies the EQ predicate on the "employee_id" field.
+func EmployeeIDEQ(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
+	})
+}
+
+// EmployeeIDNEQ applies the NEQ predicate on the "employee_id" field.
+func EmployeeIDNEQ(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEmployeeID), v))
+	})
+}
+
+// EmployeeIDIn applies the In predicate on the "employee_id" field.
+func EmployeeIDIn(vs ...uint64) predicate.Commission {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Commission(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldEmployeeID), v...))
+	})
+}
+
+// EmployeeIDNotIn applies the NotIn predicate on the "employee_id" field.
+func EmployeeIDNotIn(vs ...uint64) predicate.Commission {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Commission(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldEmployeeID), v...))
+	})
+}
+
+// EmployeeIDGT applies the GT predicate on the "employee_id" field.
+func EmployeeIDGT(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldEmployeeID), v))
+	})
+}
+
+// EmployeeIDGTE applies the GTE predicate on the "employee_id" field.
+func EmployeeIDGTE(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldEmployeeID), v))
+	})
+}
+
+// EmployeeIDLT applies the LT predicate on the "employee_id" field.
+func EmployeeIDLT(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldEmployeeID), v))
+	})
+}
+
+// EmployeeIDLTE applies the LTE predicate on the "employee_id" field.
+func EmployeeIDLTE(v uint64) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldEmployeeID), v))
+	})
+}
+
+// EmployeeIDIsNil applies the IsNil predicate on the "employee_id" field.
+func EmployeeIDIsNil() predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEmployeeID)))
+	})
+}
+
+// EmployeeIDNotNil applies the NotNil predicate on the "employee_id" field.
+func EmployeeIDNotNil() predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEmployeeID)))
 	})
 }
 

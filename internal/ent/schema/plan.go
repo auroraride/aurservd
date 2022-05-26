@@ -33,6 +33,8 @@ func (Plan) Fields() []ent.Field {
         field.Float("price").Comment("骑士卡价格"),
         field.Uint("days").Comment("骑士卡天数"),
         field.Float("commission").Comment("提成"),
+        field.Float("original").Optional().Comment("原价"),
+        field.String("desc").Optional().Comment("优惠信息"),
     }
 }
 
@@ -55,6 +57,7 @@ func (Plan) Mixin() []ent.Mixin {
 
 func (Plan) Indexes() []ent.Index {
     return []ent.Index{
+        index.Fields("days"),
         index.Fields("enable"),
         index.Fields("start", "end"),
         index.Fields("name").Annotations(

@@ -8928,25 +8928,27 @@ func (m *CityMutation) ResetEdge(name string) error {
 // CommissionMutation represents an operation that mutates the Commission nodes in the graph.
 type CommissionMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint64
-	created_at    *time.Time
-	updated_at    *time.Time
-	deleted_at    *time.Time
-	creator       **model.Modifier
-	last_modifier **model.Modifier
-	remark        *string
-	amount        *float64
-	addamount     *float64
-	status        *uint8
-	addstatus     *int8
-	clearedFields map[string]struct{}
-	_order        *uint64
-	cleared_order bool
-	done          bool
-	oldValue      func(context.Context) (*Commission, error)
-	predicates    []predicate.Commission
+	op             Op
+	typ            string
+	id             *uint64
+	created_at     *time.Time
+	updated_at     *time.Time
+	deleted_at     *time.Time
+	creator        **model.Modifier
+	last_modifier  **model.Modifier
+	remark         *string
+	amount         *float64
+	addamount      *float64
+	status         *uint8
+	addstatus      *int8
+	employee_id    *uint64
+	addemployee_id *int64
+	clearedFields  map[string]struct{}
+	_order         *uint64
+	cleared_order  bool
+	done           bool
+	oldValue       func(context.Context) (*Commission, error)
+	predicates     []predicate.Commission
 }
 
 var _ ent.Mutation = (*CommissionMutation)(nil)
@@ -9463,6 +9465,76 @@ func (m *CommissionMutation) ResetStatus() {
 	m.addstatus = nil
 }
 
+// SetEmployeeID sets the "employee_id" field.
+func (m *CommissionMutation) SetEmployeeID(u uint64) {
+	m.employee_id = &u
+	m.addemployee_id = nil
+}
+
+// EmployeeID returns the value of the "employee_id" field in the mutation.
+func (m *CommissionMutation) EmployeeID() (r uint64, exists bool) {
+	v := m.employee_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmployeeID returns the old "employee_id" field's value of the Commission entity.
+// If the Commission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CommissionMutation) OldEmployeeID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmployeeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmployeeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmployeeID: %w", err)
+	}
+	return oldValue.EmployeeID, nil
+}
+
+// AddEmployeeID adds u to the "employee_id" field.
+func (m *CommissionMutation) AddEmployeeID(u int64) {
+	if m.addemployee_id != nil {
+		*m.addemployee_id += u
+	} else {
+		m.addemployee_id = &u
+	}
+}
+
+// AddedEmployeeID returns the value that was added to the "employee_id" field in this mutation.
+func (m *CommissionMutation) AddedEmployeeID() (r int64, exists bool) {
+	v := m.addemployee_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (m *CommissionMutation) ClearEmployeeID() {
+	m.employee_id = nil
+	m.addemployee_id = nil
+	m.clearedFields[commission.FieldEmployeeID] = struct{}{}
+}
+
+// EmployeeIDCleared returns if the "employee_id" field was cleared in this mutation.
+func (m *CommissionMutation) EmployeeIDCleared() bool {
+	_, ok := m.clearedFields[commission.FieldEmployeeID]
+	return ok
+}
+
+// ResetEmployeeID resets all changes to the "employee_id" field.
+func (m *CommissionMutation) ResetEmployeeID() {
+	m.employee_id = nil
+	m.addemployee_id = nil
+	delete(m.clearedFields, commission.FieldEmployeeID)
+}
+
 // ClearOrder clears the "order" edge to the Order entity.
 func (m *CommissionMutation) ClearOrder() {
 	m.cleared_order = true
@@ -9508,7 +9580,7 @@ func (m *CommissionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CommissionMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, commission.FieldCreatedAt)
 	}
@@ -9536,6 +9608,9 @@ func (m *CommissionMutation) Fields() []string {
 	if m.status != nil {
 		fields = append(fields, commission.FieldStatus)
 	}
+	if m.employee_id != nil {
+		fields = append(fields, commission.FieldEmployeeID)
+	}
 	return fields
 }
 
@@ -9562,6 +9637,8 @@ func (m *CommissionMutation) Field(name string) (ent.Value, bool) {
 		return m.Amount()
 	case commission.FieldStatus:
 		return m.Status()
+	case commission.FieldEmployeeID:
+		return m.EmployeeID()
 	}
 	return nil, false
 }
@@ -9589,6 +9666,8 @@ func (m *CommissionMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldAmount(ctx)
 	case commission.FieldStatus:
 		return m.OldStatus(ctx)
+	case commission.FieldEmployeeID:
+		return m.OldEmployeeID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Commission field %s", name)
 }
@@ -9661,6 +9740,13 @@ func (m *CommissionMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetStatus(v)
 		return nil
+	case commission.FieldEmployeeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmployeeID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Commission field %s", name)
 }
@@ -9675,6 +9761,9 @@ func (m *CommissionMutation) AddedFields() []string {
 	if m.addstatus != nil {
 		fields = append(fields, commission.FieldStatus)
 	}
+	if m.addemployee_id != nil {
+		fields = append(fields, commission.FieldEmployeeID)
+	}
 	return fields
 }
 
@@ -9687,6 +9776,8 @@ func (m *CommissionMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedAmount()
 	case commission.FieldStatus:
 		return m.AddedStatus()
+	case commission.FieldEmployeeID:
+		return m.AddedEmployeeID()
 	}
 	return nil, false
 }
@@ -9710,6 +9801,13 @@ func (m *CommissionMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddStatus(v)
 		return nil
+	case commission.FieldEmployeeID:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddEmployeeID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Commission numeric field %s", name)
 }
@@ -9729,6 +9827,9 @@ func (m *CommissionMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(commission.FieldRemark) {
 		fields = append(fields, commission.FieldRemark)
+	}
+	if m.FieldCleared(commission.FieldEmployeeID) {
+		fields = append(fields, commission.FieldEmployeeID)
 	}
 	return fields
 }
@@ -9755,6 +9856,9 @@ func (m *CommissionMutation) ClearField(name string) error {
 		return nil
 	case commission.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case commission.FieldEmployeeID:
+		m.ClearEmployeeID()
 		return nil
 	}
 	return fmt.Errorf("unknown Commission nullable field %s", name)
@@ -9790,6 +9894,9 @@ func (m *CommissionMutation) ResetField(name string) error {
 		return nil
 	case commission.FieldStatus:
 		m.ResetStatus()
+		return nil
+	case commission.FieldEmployeeID:
+		m.ResetEmployeeID()
 		return nil
 	}
 	return fmt.Errorf("unknown Commission field %s", name)
@@ -15747,6 +15854,9 @@ type PlanMutation struct {
 	adddays       *int
 	commission    *float64
 	addcommission *float64
+	original      *float64
+	addoriginal   *float64
+	desc          *string
 	clearedFields map[string]struct{}
 	pms           map[uint64]struct{}
 	removedpms    map[uint64]struct{}
@@ -16440,6 +16550,125 @@ func (m *PlanMutation) ResetCommission() {
 	m.addcommission = nil
 }
 
+// SetOriginal sets the "original" field.
+func (m *PlanMutation) SetOriginal(f float64) {
+	m.original = &f
+	m.addoriginal = nil
+}
+
+// Original returns the value of the "original" field in the mutation.
+func (m *PlanMutation) Original() (r float64, exists bool) {
+	v := m.original
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOriginal returns the old "original" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldOriginal(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOriginal is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOriginal requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOriginal: %w", err)
+	}
+	return oldValue.Original, nil
+}
+
+// AddOriginal adds f to the "original" field.
+func (m *PlanMutation) AddOriginal(f float64) {
+	if m.addoriginal != nil {
+		*m.addoriginal += f
+	} else {
+		m.addoriginal = &f
+	}
+}
+
+// AddedOriginal returns the value that was added to the "original" field in this mutation.
+func (m *PlanMutation) AddedOriginal() (r float64, exists bool) {
+	v := m.addoriginal
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearOriginal clears the value of the "original" field.
+func (m *PlanMutation) ClearOriginal() {
+	m.original = nil
+	m.addoriginal = nil
+	m.clearedFields[plan.FieldOriginal] = struct{}{}
+}
+
+// OriginalCleared returns if the "original" field was cleared in this mutation.
+func (m *PlanMutation) OriginalCleared() bool {
+	_, ok := m.clearedFields[plan.FieldOriginal]
+	return ok
+}
+
+// ResetOriginal resets all changes to the "original" field.
+func (m *PlanMutation) ResetOriginal() {
+	m.original = nil
+	m.addoriginal = nil
+	delete(m.clearedFields, plan.FieldOriginal)
+}
+
+// SetDesc sets the "desc" field.
+func (m *PlanMutation) SetDesc(s string) {
+	m.desc = &s
+}
+
+// Desc returns the value of the "desc" field in the mutation.
+func (m *PlanMutation) Desc() (r string, exists bool) {
+	v := m.desc
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDesc returns the old "desc" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldDesc(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDesc is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDesc requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDesc: %w", err)
+	}
+	return oldValue.Desc, nil
+}
+
+// ClearDesc clears the value of the "desc" field.
+func (m *PlanMutation) ClearDesc() {
+	m.desc = nil
+	m.clearedFields[plan.FieldDesc] = struct{}{}
+}
+
+// DescCleared returns if the "desc" field was cleared in this mutation.
+func (m *PlanMutation) DescCleared() bool {
+	_, ok := m.clearedFields[plan.FieldDesc]
+	return ok
+}
+
+// ResetDesc resets all changes to the "desc" field.
+func (m *PlanMutation) ResetDesc() {
+	m.desc = nil
+	delete(m.clearedFields, plan.FieldDesc)
+}
+
 // AddPmIDs adds the "pms" edge to the BatteryModel entity by ids.
 func (m *PlanMutation) AddPmIDs(ids ...uint64) {
 	if m.pms == nil {
@@ -16621,7 +16850,7 @@ func (m *PlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlanMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 15)
 	if m.created_at != nil {
 		fields = append(fields, plan.FieldCreatedAt)
 	}
@@ -16661,6 +16890,12 @@ func (m *PlanMutation) Fields() []string {
 	if m.commission != nil {
 		fields = append(fields, plan.FieldCommission)
 	}
+	if m.original != nil {
+		fields = append(fields, plan.FieldOriginal)
+	}
+	if m.desc != nil {
+		fields = append(fields, plan.FieldDesc)
+	}
 	return fields
 }
 
@@ -16695,6 +16930,10 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.Days()
 	case plan.FieldCommission:
 		return m.Commission()
+	case plan.FieldOriginal:
+		return m.Original()
+	case plan.FieldDesc:
+		return m.Desc()
 	}
 	return nil, false
 }
@@ -16730,6 +16969,10 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldDays(ctx)
 	case plan.FieldCommission:
 		return m.OldCommission(ctx)
+	case plan.FieldOriginal:
+		return m.OldOriginal(ctx)
+	case plan.FieldDesc:
+		return m.OldDesc(ctx)
 	}
 	return nil, fmt.Errorf("unknown Plan field %s", name)
 }
@@ -16830,6 +17073,20 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCommission(v)
 		return nil
+	case plan.FieldOriginal:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOriginal(v)
+		return nil
+	case plan.FieldDesc:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDesc(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)
 }
@@ -16847,6 +17104,9 @@ func (m *PlanMutation) AddedFields() []string {
 	if m.addcommission != nil {
 		fields = append(fields, plan.FieldCommission)
 	}
+	if m.addoriginal != nil {
+		fields = append(fields, plan.FieldOriginal)
+	}
 	return fields
 }
 
@@ -16861,6 +17121,8 @@ func (m *PlanMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedDays()
 	case plan.FieldCommission:
 		return m.AddedCommission()
+	case plan.FieldOriginal:
+		return m.AddedOriginal()
 	}
 	return nil, false
 }
@@ -16891,6 +17153,13 @@ func (m *PlanMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddCommission(v)
 		return nil
+	case plan.FieldOriginal:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddOriginal(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Plan numeric field %s", name)
 }
@@ -16910,6 +17179,12 @@ func (m *PlanMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(plan.FieldRemark) {
 		fields = append(fields, plan.FieldRemark)
+	}
+	if m.FieldCleared(plan.FieldOriginal) {
+		fields = append(fields, plan.FieldOriginal)
+	}
+	if m.FieldCleared(plan.FieldDesc) {
+		fields = append(fields, plan.FieldDesc)
 	}
 	return fields
 }
@@ -16936,6 +17211,12 @@ func (m *PlanMutation) ClearField(name string) error {
 		return nil
 	case plan.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case plan.FieldOriginal:
+		m.ClearOriginal()
+		return nil
+	case plan.FieldDesc:
+		m.ClearDesc()
 		return nil
 	}
 	return fmt.Errorf("unknown Plan nullable field %s", name)
@@ -16983,6 +17264,12 @@ func (m *PlanMutation) ResetField(name string) error {
 		return nil
 	case plan.FieldCommission:
 		m.ResetCommission()
+		return nil
+	case plan.FieldOriginal:
+		m.ResetOriginal()
+		return nil
+	case plan.FieldDesc:
+		m.ResetDesc()
 		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)

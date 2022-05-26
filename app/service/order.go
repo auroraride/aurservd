@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/payment"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/golang-module/carbon/v2"
     "github.com/jinzhu/copier"
     "github.com/lithammer/shortuuid/v4"
     log "github.com/sirupsen/logrus"
@@ -53,7 +54,19 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
     // 查询套餐是否存在
     plan := NewPlan().QueryEffective(req.PlanID)
     cp := new(model.PlanItem)
-    _ = copier.Copy(cp, plan)
+    _ = copier.CopyWithOption(cp, plan, copier.Option{Converters: []copier.TypeConverter{
+        {
+            SrcType: time.Time{},
+            DstType: copier.String,
+            Fn: func(src interface{}) (interface{}, error) {
+                t, ok := src.(time.Time)
+                if !ok {
+                    return "", nil
+                }
+                return t.Format(carbon.DateLayout), nil
+            },
+        },
+    }})
     no := shortuuid.New()
     result.OutTradeNo = no
     // 生成订单字段

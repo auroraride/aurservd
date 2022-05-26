@@ -118,6 +118,20 @@ func (cc *CommissionCreate) SetNillableStatus(u *uint8) *CommissionCreate {
 	return cc
 }
 
+// SetEmployeeID sets the "employee_id" field.
+func (cc *CommissionCreate) SetEmployeeID(u uint64) *CommissionCreate {
+	cc.mutation.SetEmployeeID(u)
+	return cc
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (cc *CommissionCreate) SetNillableEmployeeID(u *uint64) *CommissionCreate {
+	if u != nil {
+		cc.SetEmployeeID(*u)
+	}
+	return cc
+}
+
 // SetOrder sets the "order" edge to the Order entity.
 func (cc *CommissionCreate) SetOrder(o *Order) *CommissionCreate {
 	return cc.SetOrderID(o.ID)
@@ -335,6 +349,14 @@ func (cc *CommissionCreate) createSpec() (*Commission, *sqlgraph.CreateSpec) {
 		})
 		_node.Status = value
 	}
+	if value, ok := cc.mutation.EmployeeID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Value:  value,
+			Column: commission.FieldEmployeeID,
+		})
+		_node.EmployeeID = value
+	}
 	if nodes := cc.mutation.OrderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -550,6 +572,30 @@ func (u *CommissionUpsert) UpdateStatus() *CommissionUpsert {
 // AddStatus adds v to the "status" field.
 func (u *CommissionUpsert) AddStatus(v uint8) *CommissionUpsert {
 	u.Add(commission.FieldStatus, v)
+	return u
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (u *CommissionUpsert) SetEmployeeID(v uint64) *CommissionUpsert {
+	u.Set(commission.FieldEmployeeID, v)
+	return u
+}
+
+// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
+func (u *CommissionUpsert) UpdateEmployeeID() *CommissionUpsert {
+	u.SetExcluded(commission.FieldEmployeeID)
+	return u
+}
+
+// AddEmployeeID adds v to the "employee_id" field.
+func (u *CommissionUpsert) AddEmployeeID(v uint64) *CommissionUpsert {
+	u.Add(commission.FieldEmployeeID, v)
+	return u
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (u *CommissionUpsert) ClearEmployeeID() *CommissionUpsert {
+	u.SetNull(commission.FieldEmployeeID)
 	return u
 }
 
@@ -771,6 +817,34 @@ func (u *CommissionUpsertOne) AddStatus(v uint8) *CommissionUpsertOne {
 func (u *CommissionUpsertOne) UpdateStatus() *CommissionUpsertOne {
 	return u.Update(func(s *CommissionUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (u *CommissionUpsertOne) SetEmployeeID(v uint64) *CommissionUpsertOne {
+	return u.Update(func(s *CommissionUpsert) {
+		s.SetEmployeeID(v)
+	})
+}
+
+// AddEmployeeID adds v to the "employee_id" field.
+func (u *CommissionUpsertOne) AddEmployeeID(v uint64) *CommissionUpsertOne {
+	return u.Update(func(s *CommissionUpsert) {
+		s.AddEmployeeID(v)
+	})
+}
+
+// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
+func (u *CommissionUpsertOne) UpdateEmployeeID() *CommissionUpsertOne {
+	return u.Update(func(s *CommissionUpsert) {
+		s.UpdateEmployeeID()
+	})
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (u *CommissionUpsertOne) ClearEmployeeID() *CommissionUpsertOne {
+	return u.Update(func(s *CommissionUpsert) {
+		s.ClearEmployeeID()
 	})
 }
 
@@ -1156,6 +1230,34 @@ func (u *CommissionUpsertBulk) AddStatus(v uint8) *CommissionUpsertBulk {
 func (u *CommissionUpsertBulk) UpdateStatus() *CommissionUpsertBulk {
 	return u.Update(func(s *CommissionUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (u *CommissionUpsertBulk) SetEmployeeID(v uint64) *CommissionUpsertBulk {
+	return u.Update(func(s *CommissionUpsert) {
+		s.SetEmployeeID(v)
+	})
+}
+
+// AddEmployeeID adds v to the "employee_id" field.
+func (u *CommissionUpsertBulk) AddEmployeeID(v uint64) *CommissionUpsertBulk {
+	return u.Update(func(s *CommissionUpsert) {
+		s.AddEmployeeID(v)
+	})
+}
+
+// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
+func (u *CommissionUpsertBulk) UpdateEmployeeID() *CommissionUpsertBulk {
+	return u.Update(func(s *CommissionUpsert) {
+		s.UpdateEmployeeID()
+	})
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (u *CommissionUpsertBulk) ClearEmployeeID() *CommissionUpsertBulk {
+	return u.Update(func(s *CommissionUpsert) {
+		s.ClearEmployeeID()
 	})
 }
 

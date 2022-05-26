@@ -145,6 +145,9 @@ definitions:
       num:
         description: 满电数量
         type: integer
+      phone:
+        description: 联系电话
+        type: string
       state:
         description: 状态 0不可用 1可用
         type: integer
@@ -763,6 +766,9 @@ definitions:
         description: '有效天数 '
         minimum: 1
         type: integer
+      desc:
+        description: 优惠信息
+        type: string
       enable:
         description: 是否启用
         type: boolean
@@ -778,6 +784,9 @@ definitions:
       name:
         description: '骑士卡名称 '
         type: string
+      original:
+        description: 原价
+        type: number
       price:
         description: '价格 '
         type: number
@@ -842,6 +851,26 @@ definitions:
       userPlan:
         $ref: '#/definitions/model.UserPlanItem'
         description: 当前有效骑士卡, 若无此字段则代表当前无有效骑士卡
+    type: object
+  model.RiderPlanItem:
+    properties:
+      days:
+        description: 天数
+        type: integer
+      desc:
+        description: 优惠信息
+        type: string
+      id:
+        type: integer
+      name:
+        description: 骑士卡名称
+        type: string
+      original:
+        description: 原价
+        type: number
+      price:
+        description: 价格
+        type: number
     type: object
   model.RiderSampleInfo:
     properties:
@@ -2165,6 +2194,29 @@ paths:
       summary: R10004 实名认证结果
       tags:
       - '[R]骑手接口'
+  /rider/v1/battery/voltage:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderBatteryListVoltage
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              type: integer
+            type: array
+      summary: R30001 电压型号
+      tags:
+      - '[R]骑手接口'
   /rider/v1/branch:
     get:
       consumes:
@@ -2390,6 +2442,29 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: R40001 电柜故障上报
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/plan:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderPlanList
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.RiderPlanItem'
+            type: array
+      summary: R30002 获取骑士卡
       tags:
       - '[R]骑手接口'
   /rider/v1/signin:

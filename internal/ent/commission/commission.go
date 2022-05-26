@@ -31,6 +31,8 @@ const (
 	FieldAmount = "amount"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldEmployeeID holds the string denoting the employee_id field in the database.
+	FieldEmployeeID = "employee_id"
 	// EdgeOrder holds the string denoting the order edge name in mutations.
 	EdgeOrder = "order"
 	// Table holds the table name of the commission in the database.
@@ -56,6 +58,7 @@ var Columns = []string{
 	FieldOrderID,
 	FieldAmount,
 	FieldStatus,
+	FieldEmployeeID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

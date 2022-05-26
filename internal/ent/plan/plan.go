@@ -39,6 +39,10 @@ const (
 	FieldDays = "days"
 	// FieldCommission holds the string denoting the commission field in the database.
 	FieldCommission = "commission"
+	// FieldOriginal holds the string denoting the original field in the database.
+	FieldOriginal = "original"
+	// FieldDesc holds the string denoting the desc field in the database.
+	FieldDesc = "desc"
 	// EdgePms holds the string denoting the pms edge name in mutations.
 	EdgePms = "pms"
 	// EdgeCities holds the string denoting the cities edge name in mutations.
@@ -82,6 +86,8 @@ var Columns = []string{
 	FieldPrice,
 	FieldDays,
 	FieldCommission,
+	FieldOriginal,
+	FieldDesc,
 }
 
 var (

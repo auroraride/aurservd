@@ -115,6 +115,33 @@ func (cu *CommissionUpdate) AddStatus(u int8) *CommissionUpdate {
 	return cu
 }
 
+// SetEmployeeID sets the "employee_id" field.
+func (cu *CommissionUpdate) SetEmployeeID(u uint64) *CommissionUpdate {
+	cu.mutation.ResetEmployeeID()
+	cu.mutation.SetEmployeeID(u)
+	return cu
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (cu *CommissionUpdate) SetNillableEmployeeID(u *uint64) *CommissionUpdate {
+	if u != nil {
+		cu.SetEmployeeID(*u)
+	}
+	return cu
+}
+
+// AddEmployeeID adds u to the "employee_id" field.
+func (cu *CommissionUpdate) AddEmployeeID(u int64) *CommissionUpdate {
+	cu.mutation.AddEmployeeID(u)
+	return cu
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (cu *CommissionUpdate) ClearEmployeeID() *CommissionUpdate {
+	cu.mutation.ClearEmployeeID()
+	return cu
+}
+
 // SetOrder sets the "order" edge to the Order entity.
 func (cu *CommissionUpdate) SetOrder(o *Order) *CommissionUpdate {
 	return cu.SetOrderID(o.ID)
@@ -298,6 +325,26 @@ func (cu *CommissionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: commission.FieldStatus,
 		})
 	}
+	if value, ok := cu.mutation.EmployeeID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Value:  value,
+			Column: commission.FieldEmployeeID,
+		})
+	}
+	if value, ok := cu.mutation.AddedEmployeeID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Value:  value,
+			Column: commission.FieldEmployeeID,
+		})
+	}
+	if cu.mutation.EmployeeIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Column: commission.FieldEmployeeID,
+		})
+	}
 	if cu.mutation.OrderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -434,6 +481,33 @@ func (cuo *CommissionUpdateOne) SetNillableStatus(u *uint8) *CommissionUpdateOne
 // AddStatus adds u to the "status" field.
 func (cuo *CommissionUpdateOne) AddStatus(u int8) *CommissionUpdateOne {
 	cuo.mutation.AddStatus(u)
+	return cuo
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (cuo *CommissionUpdateOne) SetEmployeeID(u uint64) *CommissionUpdateOne {
+	cuo.mutation.ResetEmployeeID()
+	cuo.mutation.SetEmployeeID(u)
+	return cuo
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (cuo *CommissionUpdateOne) SetNillableEmployeeID(u *uint64) *CommissionUpdateOne {
+	if u != nil {
+		cuo.SetEmployeeID(*u)
+	}
+	return cuo
+}
+
+// AddEmployeeID adds u to the "employee_id" field.
+func (cuo *CommissionUpdateOne) AddEmployeeID(u int64) *CommissionUpdateOne {
+	cuo.mutation.AddEmployeeID(u)
+	return cuo
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (cuo *CommissionUpdateOne) ClearEmployeeID() *CommissionUpdateOne {
+	cuo.mutation.ClearEmployeeID()
 	return cuo
 }
 
@@ -648,6 +722,26 @@ func (cuo *CommissionUpdateOne) sqlSave(ctx context.Context) (_node *Commission,
 			Type:   field.TypeUint8,
 			Value:  value,
 			Column: commission.FieldStatus,
+		})
+	}
+	if value, ok := cuo.mutation.EmployeeID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Value:  value,
+			Column: commission.FieldEmployeeID,
+		})
+	}
+	if value, ok := cuo.mutation.AddedEmployeeID(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Value:  value,
+			Column: commission.FieldEmployeeID,
+		})
+	}
+	if cuo.mutation.EmployeeIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint64,
+			Column: commission.FieldEmployeeID,
 		})
 	}
 	if cuo.mutation.OrderCleared() {

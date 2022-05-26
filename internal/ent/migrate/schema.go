@@ -366,6 +366,7 @@ var (
 		{Name: "remark", Type: field.TypeString, Comment: "备注", Nullable: true},
 		{Name: "amount", Type: field.TypeFloat64, Comment: "提成金额"},
 		{Name: "status", Type: field.TypeUint8, Comment: "提成状态 0未发放 1已发放", Default: 0},
+		{Name: "employee_id", Type: field.TypeUint64, Comment: "员工ID", Nullable: true},
 		{Name: "order_id", Type: field.TypeUint64, Unique: true},
 	}
 	// CommissionTable holds the schema information for the "commission" table.
@@ -376,7 +377,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "commission_order_commission",
-				Columns:    []*schema.Column{CommissionColumns[9]},
+				Columns:    []*schema.Column{CommissionColumns[10]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -654,6 +655,8 @@ var (
 		{Name: "price", Type: field.TypeFloat64, Comment: "骑士卡价格"},
 		{Name: "days", Type: field.TypeUint, Comment: "骑士卡天数"},
 		{Name: "commission", Type: field.TypeFloat64, Comment: "提成"},
+		{Name: "original", Type: field.TypeFloat64, Comment: "原价", Nullable: true},
+		{Name: "desc", Type: field.TypeString, Comment: "优惠信息", Nullable: true},
 	}
 	// PlanTable holds the schema information for the "plan" table.
 	PlanTable = &schema.Table{
@@ -670,6 +673,11 @@ var (
 				Name:    "plan_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{PlanColumns[3]},
+			},
+			{
+				Name:    "plan_days",
+				Unique:  false,
+				Columns: []*schema.Column{PlanColumns[12]},
 			},
 			{
 				Name:    "plan_enable",

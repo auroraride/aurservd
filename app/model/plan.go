@@ -34,6 +34,8 @@ type PlanItem struct {
     End        string  `json:"end" validate:"required,datetime=2006-01-02" trans:"结束日期"`
     Price      float64 `json:"price" validate:"required" trans:"价格"`
     Days       uint    `json:"days" validate:"required,min=1" trans:"有效天数"`
+    Original   float64 `json:"original"`   // 原价
+    Desc       string  `json:"desc"`       // 优惠信息
     Commission float64 `json:"commission"` // 提成
 }
 
@@ -41,4 +43,20 @@ type PlanItemRes struct {
     PlanItem
     Cities []City         `json:"cities"`
     Models []BatteryModel `json:"models"`
+}
+
+// PlanListRiderReq 骑士套餐列表请求
+type PlanListRiderReq struct {
+    CityID  uint64   `json:"cityId" query:"cityId" validate:"required" trans:"城市ID"`
+    Voltage *float64 `json:"voltage" query:"voltage" validate:"required" trans:"电压型号"`
+}
+
+// RiderPlanItem 骑士返回数据
+type RiderPlanItem struct {
+    ID       uint64  `json:"id"`
+    Name     string  `json:"name"`     // 骑士卡名称
+    Price    float64 `json:"price"`    // 价格
+    Days     uint    `json:"days"`     // 天数
+    Original float64 `json:"original"` // 原价
+    Desc     string  `json:"desc"`     // 优惠信息
 }
