@@ -55,6 +55,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
     cp := new(model.PlanItem)
     _ = copier.Copy(cp, plan)
     no := shortuuid.New()
+    result.OutTradeNo = no
     // 生成订单字段
     price := plan.Price
     // DEBUG 模式支付一分钱

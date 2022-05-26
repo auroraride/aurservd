@@ -40,7 +40,8 @@ type OrderCreateReq struct {
 
 // OrderCreateRes 订单创建返回
 type OrderCreateRes struct {
-    Prepay string `json:"prepay"` // 预支付字符串
+    Prepay     string `json:"prepay"`     // 预支付字符串
+    OutTradeNo string `json:"outTradeNo"` // 交易编码
 }
 
 // OrderCache 订单缓存

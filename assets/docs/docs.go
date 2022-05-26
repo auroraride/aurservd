@@ -3110,6 +3110,10 @@ const docTemplate = `{
         "model.OrderCreateRes": {
             "type": "object",
             "properties": {
+                "outTradeNo": {
+                    "description": "交易编码",
+                    "type": "string"
+                },
                 "prepay": {
                     "description": "预支付字符串",
                     "type": "string"
