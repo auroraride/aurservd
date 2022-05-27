@@ -441,5 +441,6 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device) *model.RiderS
         Contact:         u.Contact,
         Qrcode:          fmt.Sprintf("https://rider.auroraride.com/%d", u.ID),
         Deposit:         s.Deposit(u),
+        OrderNotActived: NewOrder().RiderNotActivedExists(u.ID),
     }
 }

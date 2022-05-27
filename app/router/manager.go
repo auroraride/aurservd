@@ -20,7 +20,7 @@ func loadManagerRoutes() {
 
     // 设置
     g.GET("/setting", mapi.Setting.List)
-    g.POST("/setting", mapi.Setting.Modify)
+    g.POST("/setting/:key", mapi.Setting.Modify)
 
     // 城市
     g.GET("/city", mapi.City.List)       // 城市列表

@@ -3723,9 +3723,9 @@ const docTemplate = `{
                     "description": "是否新设备",
                     "type": "boolean"
                 },
-                "planNotActivedId": {
-                    "description": "未激活订单ID",
-                    "type": "integer"
+                "orderNotActived": {
+                    "description": "存在未激活订单",
+                    "type": "boolean"
                 },
                 "qrcode": {
                     "description": "二维码",

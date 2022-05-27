@@ -6,6 +6,10 @@
   - https://entgo.io/docs/templates/#examples
 
 ## 常用命令
+- 服务端debug: https://juejin.cn/post/7035910722382987271
+  - `GO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -gcflags "all=-N -l" -o build/release/aurservd cmd/aurservd/main.go`
+  - `./dlv --listen=:3333 --headless=true --api-version=2 --continue --accept-multiclient exec ./aurservd server`
+  - `./dlv --listen=:3333 --headless=true --api-version=2 --accept-multiclient exec ./aurservd server`
 
 ## swag
 > 新增了trans作为备注
