@@ -2594,7 +2594,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderOrderNotActive
+      operationId: RiderOrderNotActived
       parameters:
       - description: 骑手校验token
         in: header

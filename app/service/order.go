@@ -57,7 +57,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
         snag.Panic("请先签约")
     }
     // 查询是否存在未使用的骑士卡
-    if s.RiderNotActivedExists(s.rider.ID) {
+    if s.FindRiderNotActived(s.rider.ID) != nil {
         snag.Panic("当前有未使用的骑士卡")
     }
     // 查询套餐是否存在
@@ -179,15 +179,15 @@ func (s *orderService) OrderPaid(trade *model.OrderCache) {
     cache.Del(context.Background(), "ORDER_"+trade.OutTradeNo)
 }
 
-// RiderNotActivedExists 查找用户未激活的新订单
+// FindRiderNotActived 查找用户未激活的新订单
 // 已支付 && 开始时间为空 && 新签 && 重签
-func (s *orderService) RiderNotActivedExists(riderID uint64) bool {
+func (s *orderService) FindRiderNotActived(riderID uint64) *ent.Order {
     o, _ := s.orm.QueryNotDeleted().Where(
         order.RiderID(riderID),
         order.Status(model.OrderStatusPaid),
         order.TypeIn(model.OrderTypeNewPlan, model.OrderTypeRenewal),
         order.StartIsNil(),
-    ).Exist(s.ctx)
+    ).Only(s.ctx)
     return o
 }
 

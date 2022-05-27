@@ -37,6 +37,7 @@ type RiderSigninRes struct {
     Qrcode          string        `json:"qrcode"`                    // 二维码
     Deposit         float64       `json:"deposit"`                   // 需缴押金
     OrderNotActived bool          `json:"orderNotActived,omitempty"` // 存在未激活订单
+
 }
 
 // RiderContact 紧急联系人

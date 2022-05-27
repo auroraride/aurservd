@@ -433,7 +433,7 @@ func (s *riderService) Deposit(u *ent.Rider) float64 {
 
 // Profile 获取用户资料
 func (s *riderService) Profile(u *ent.Rider, device *model.Device) *model.RiderSigninRes {
-    return &model.RiderSigninRes{
+    profile := &model.RiderSigninRes{
         ID:              u.ID,
         IsNewDevice:     s.IsNewDevice(u, device),
         IsContactFilled: u.Contact != nil,
@@ -441,6 +441,11 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device) *model.RiderS
         Contact:         u.Contact,
         Qrcode:          fmt.Sprintf("https://rider.auroraride.com/%d", u.ID),
         Deposit:         s.Deposit(u),
-        OrderNotActived: NewOrder().RiderNotActivedExists(u.ID),
+        OrderNotActived: NewOrder().FindRiderNotActived(u.ID) != nil,
     }
+    o := NewOrder().FindRiderNotActived(u.ID)
+    if o != nil {
+        profile.OrderNotActived = true
+    }
+    return profile
 }

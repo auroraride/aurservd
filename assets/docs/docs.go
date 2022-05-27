@@ -2183,7 +2183,7 @@ const docTemplate = `{
                     "[R]骑手接口"
                 ],
                 "summary": "R30007 未激活骑士卡信息",
-                "operationId": "RiderOrderNotActive",
+                "operationId": "RiderOrderNotActived",
                 "parameters": [
                     {
                         "type": "string",
