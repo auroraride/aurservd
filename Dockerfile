@@ -5,11 +5,13 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/re
     && apk add --no-cache bash tzdata \
     && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone \
-    && apk del tzdata \
     && rm -rf /var/cache/apk/* \
     && rm -rf /var/lib/apt/lists/*
 COPY ./build/release/aurservd /app/
+#COPY ./build/dlv /app/
+COPY ./docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
+RUN chmod +x /usr/bin/docker-entrypoint.sh
 
 WORKDIR /app
 
-ENTRYPOINT ["/app/aurservd", "server"]
+ENTRYPOINT ["/usr/bin/docker-entrypoint.sh"]

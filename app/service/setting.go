@@ -84,8 +84,8 @@ func (s *settingService) Initialize() {
 }
 
 // List 列举设置
-func (s *settingService) List() (items []model.SettingReq) {
-    s.orm.Query().Select(setting.FieldKey, setting.FieldContent).ScanX(s.ctx, &items)
+func (s *settingService) List() (items []model.SettingRes) {
+    s.orm.Query().Select(setting.FieldKey, setting.FieldContent, setting.FieldDesc).ScanX(s.ctx, &items)
     return
 }
 
