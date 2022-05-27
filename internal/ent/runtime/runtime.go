@@ -279,24 +279,26 @@ func init() {
 	// manager.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	manager.NameValidator = managerDescName.Validators[0].(func(string) error)
 	orderMixin := schema.Order{}.Mixin()
-	orderMixinHooks2 := orderMixin[2].Hooks()
-	order.Hooks[0] = orderMixinHooks2[0]
-	orderMixinFields0 := orderMixin[0].Fields()
-	_ = orderMixinFields0
+	orderMixinHooks0 := orderMixin[0].Hooks()
+	orderMixinHooks3 := orderMixin[3].Hooks()
+	order.Hooks[0] = orderMixinHooks0[0]
+	order.Hooks[1] = orderMixinHooks3[0]
+	orderMixinFields1 := orderMixin[1].Fields()
+	_ = orderMixinFields1
 	orderFields := schema.Order{}.Fields()
 	_ = orderFields
 	// orderDescCreatedAt is the schema descriptor for created_at field.
-	orderDescCreatedAt := orderMixinFields0[0].Descriptor()
+	orderDescCreatedAt := orderMixinFields1[0].Descriptor()
 	// order.DefaultCreatedAt holds the default value on creation for the created_at field.
 	order.DefaultCreatedAt = orderDescCreatedAt.Default.(func() time.Time)
 	// orderDescUpdatedAt is the schema descriptor for updated_at field.
-	orderDescUpdatedAt := orderMixinFields0[1].Descriptor()
+	orderDescUpdatedAt := orderMixinFields1[1].Descriptor()
 	// order.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	order.DefaultUpdatedAt = orderDescUpdatedAt.Default.(func() time.Time)
 	// order.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	order.UpdateDefaultUpdatedAt = orderDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// orderDescStatus is the schema descriptor for status field.
-	orderDescStatus := orderFields[2].Descriptor()
+	orderDescStatus := orderFields[3].Descriptor()
 	// order.DefaultStatus holds the default value on creation for the status field.
 	order.DefaultStatus = orderDescStatus.Default.(uint8)
 	personMixin := schema.Person{}.Mixin()

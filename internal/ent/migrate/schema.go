@@ -534,13 +534,20 @@ var (
 		{Name: "remark", Type: field.TypeString, Comment: "备注", Nullable: true},
 		{Name: "status", Type: field.TypeUint8, Comment: "订单状态 0未支付 1已支付 2申请退款 3已退款", Default: 1},
 		{Name: "payway", Type: field.TypeUint8, Comment: "支付方式 1支付宝 2微信"},
-		{Name: "type", Type: field.TypeUint, Comment: "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金"},
+		{Name: "type", Type: field.TypeUint, Comment: "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金"},
 		{Name: "out_trade_no", Type: field.TypeString, Unique: true, Comment: "交易订单号"},
 		{Name: "trade_no", Type: field.TypeString, Comment: "平台订单号"},
 		{Name: "amount", Type: field.TypeFloat64, Comment: "支付金额"},
+		{Name: "refund", Type: field.TypeFloat64, Comment: "退款金额", Nullable: true},
+		{Name: "refund_at", Type: field.TypeTime, Comment: "退款时间", Nullable: true},
+		{Name: "refund_out_trade_no", Type: field.TypeTime, Comment: "退款订单号", Nullable: true},
+		{Name: "refund_trade_no", Type: field.TypeTime, Comment: "退款平台订单号", Nullable: true},
 		{Name: "plan_detail", Type: field.TypeJSON, Comment: "骑士卡详情", Nullable: true},
-		{Name: "parent_id", Type: field.TypeUint64, Comment: "续签/更改电池接续从属订单ID(上个订单)", Nullable: true},
 		{Name: "subordinate", Type: field.TypeJSON, Comment: "接续订单属性", Nullable: true},
+		{Name: "start", Type: field.TypeTime, Comment: "有效期开始日期", Nullable: true, SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "end", Type: field.TypeTime, Comment: "有效期结束日期", Nullable: true, SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "city_id", Type: field.TypeUint64},
+		{Name: "parent_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64},
 	}
@@ -551,14 +558,26 @@ var (
 		PrimaryKey: []*schema.Column{OrderColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
+				Symbol:     "order_city_orders",
+				Columns:    []*schema.Column{OrderColumns[21]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "order_order_children",
+				Columns:    []*schema.Column{OrderColumns[22]},
+				RefColumns: []*schema.Column{OrderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
 				Symbol:     "order_plan_orders",
-				Columns:    []*schema.Column{OrderColumns[16]},
+				Columns:    []*schema.Column{OrderColumns[23]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "order_rider_orders",
-				Columns:    []*schema.Column{OrderColumns[17]},
+				Columns:    []*schema.Column{OrderColumns[24]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -575,14 +594,29 @@ var (
 				Columns: []*schema.Column{OrderColumns[3]},
 			},
 			{
-				Name:    "order_trade_no",
+				Name:    "order_trade_no_out_trade_no",
 				Unique:  false,
-				Columns: []*schema.Column{OrderColumns[11]},
+				Columns: []*schema.Column{OrderColumns[11], OrderColumns[10]},
+			},
+			{
+				Name:    "order_refund_trade_no_refund_out_trade_no",
+				Unique:  false,
+				Columns: []*schema.Column{OrderColumns[16], OrderColumns[15]},
+			},
+			{
+				Name:    "order_refund_at",
+				Unique:  false,
+				Columns: []*schema.Column{OrderColumns[14]},
 			},
 			{
 				Name:    "order_status",
 				Unique:  false,
 				Columns: []*schema.Column{OrderColumns[7]},
+			},
+			{
+				Name:    "order_start_end",
+				Unique:  false,
+				Columns: []*schema.Column{OrderColumns[19], OrderColumns[20]},
 			},
 		},
 	}
@@ -991,8 +1025,10 @@ func init() {
 	ManagerTable.Annotation = &entsql.Annotation{
 		Table: "manager",
 	}
-	OrderTable.ForeignKeys[0].RefTable = PlanTable
-	OrderTable.ForeignKeys[1].RefTable = RiderTable
+	OrderTable.ForeignKeys[0].RefTable = CityTable
+	OrderTable.ForeignKeys[1].RefTable = OrderTable
+	OrderTable.ForeignKeys[2].RefTable = PlanTable
+	OrderTable.ForeignKeys[3].RefTable = RiderTable
 	OrderTable.Annotation = &entsql.Annotation{
 		Table: "order",
 	}

@@ -7435,6 +7435,9 @@ type CityMutation struct {
 	faults          map[uint64]struct{}
 	removedfaults   map[uint64]struct{}
 	clearedfaults   bool
+	orders          map[uint64]struct{}
+	removedorders   map[uint64]struct{}
+	clearedorders   bool
 	done            bool
 	oldValue        func(context.Context) (*City, error)
 	predicates      []predicate.City
@@ -8364,6 +8367,60 @@ func (m *CityMutation) ResetFaults() {
 	m.removedfaults = nil
 }
 
+// AddOrderIDs adds the "orders" edge to the Order entity by ids.
+func (m *CityMutation) AddOrderIDs(ids ...uint64) {
+	if m.orders == nil {
+		m.orders = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.orders[ids[i]] = struct{}{}
+	}
+}
+
+// ClearOrders clears the "orders" edge to the Order entity.
+func (m *CityMutation) ClearOrders() {
+	m.clearedorders = true
+}
+
+// OrdersCleared reports if the "orders" edge to the Order entity was cleared.
+func (m *CityMutation) OrdersCleared() bool {
+	return m.clearedorders
+}
+
+// RemoveOrderIDs removes the "orders" edge to the Order entity by IDs.
+func (m *CityMutation) RemoveOrderIDs(ids ...uint64) {
+	if m.removedorders == nil {
+		m.removedorders = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.orders, ids[i])
+		m.removedorders[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedOrders returns the removed IDs of the "orders" edge to the Order entity.
+func (m *CityMutation) RemovedOrdersIDs() (ids []uint64) {
+	for id := range m.removedorders {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// OrdersIDs returns the "orders" edge IDs in the mutation.
+func (m *CityMutation) OrdersIDs() (ids []uint64) {
+	for id := range m.orders {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetOrders resets all changes to the "orders" edge.
+func (m *CityMutation) ResetOrders() {
+	m.orders = nil
+	m.clearedorders = false
+	m.removedorders = nil
+}
+
 // Where appends a list predicates to the CityMutation builder.
 func (m *CityMutation) Where(ps ...predicate.City) {
 	m.predicates = append(m.predicates, ps...)
@@ -8747,7 +8804,7 @@ func (m *CityMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CityMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.plans != nil {
 		edges = append(edges, city.EdgePlans)
 	}
@@ -8762,6 +8819,9 @@ func (m *CityMutation) AddedEdges() []string {
 	}
 	if m.faults != nil {
 		edges = append(edges, city.EdgeFaults)
+	}
+	if m.orders != nil {
+		edges = append(edges, city.EdgeOrders)
 	}
 	return edges
 }
@@ -8798,13 +8858,19 @@ func (m *CityMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case city.EdgeOrders:
+		ids := make([]ent.Value, 0, len(m.orders))
+		for id := range m.orders {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CityMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.removedplans != nil {
 		edges = append(edges, city.EdgePlans)
 	}
@@ -8816,6 +8882,9 @@ func (m *CityMutation) RemovedEdges() []string {
 	}
 	if m.removedfaults != nil {
 		edges = append(edges, city.EdgeFaults)
+	}
+	if m.removedorders != nil {
+		edges = append(edges, city.EdgeOrders)
 	}
 	return edges
 }
@@ -8848,13 +8917,19 @@ func (m *CityMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case city.EdgeOrders:
+		ids := make([]ent.Value, 0, len(m.removedorders))
+		for id := range m.removedorders {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CityMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.clearedplans {
 		edges = append(edges, city.EdgePlans)
 	}
@@ -8869,6 +8944,9 @@ func (m *CityMutation) ClearedEdges() []string {
 	}
 	if m.clearedfaults {
 		edges = append(edges, city.EdgeFaults)
+	}
+	if m.clearedorders {
+		edges = append(edges, city.EdgeOrders)
 	}
 	return edges
 }
@@ -8887,6 +8965,8 @@ func (m *CityMutation) EdgeCleared(name string) bool {
 		return m.clearedbranches
 	case city.EdgeFaults:
 		return m.clearedfaults
+	case city.EdgeOrders:
+		return m.clearedorders
 	}
 	return false
 }
@@ -8920,6 +9000,9 @@ func (m *CityMutation) ResetEdge(name string) error {
 		return nil
 	case city.EdgeFaults:
 		m.ResetFaults()
+		return nil
+	case city.EdgeOrders:
+		m.ResetOrders()
 		return nil
 	}
 	return fmt.Errorf("unknown City edge %s", name)
@@ -12777,39 +12860,51 @@ func (m *ManagerMutation) ResetEdge(name string) error {
 // OrderMutation represents an operation that mutates the Order nodes in the graph.
 type OrderMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *uint64
-	created_at        *time.Time
-	updated_at        *time.Time
-	deleted_at        *time.Time
-	creator           **model.Modifier
-	last_modifier     **model.Modifier
-	remark            *string
-	status            *uint8
-	addstatus         *int8
-	payway            *uint8
-	addpayway         *int8
-	_type             *uint
-	add_type          *int
-	out_trade_no      *string
-	trade_no          *string
-	amount            *float64
-	addamount         *float64
-	plan_detail       *model.PlanItem
-	parent_id         *uint64
-	addparent_id      *int64
-	subordinate       *model.OrderSubordinate
-	clearedFields     map[string]struct{}
-	rider             *uint64
-	clearedrider      bool
-	plan              *uint64
-	clearedplan       bool
-	commission        *uint64
-	clearedcommission bool
-	done              bool
-	oldValue          func(context.Context) (*Order, error)
-	predicates        []predicate.Order
+	op                  Op
+	typ                 string
+	id                  *uint64
+	created_at          *time.Time
+	updated_at          *time.Time
+	deleted_at          *time.Time
+	creator             **model.Modifier
+	last_modifier       **model.Modifier
+	remark              *string
+	status              *uint8
+	addstatus           *int8
+	payway              *uint8
+	addpayway           *int8
+	_type               *uint
+	add_type            *int
+	out_trade_no        *string
+	trade_no            *string
+	amount              *float64
+	addamount           *float64
+	refund              *float64
+	addrefund           *float64
+	refund_at           *time.Time
+	refund_out_trade_no *time.Time
+	refund_trade_no     *time.Time
+	plan_detail         *model.PlanItem
+	subordinate         *model.OrderSubordinate
+	start               *time.Time
+	end                 *time.Time
+	clearedFields       map[string]struct{}
+	rider               *uint64
+	clearedrider        bool
+	plan                *uint64
+	clearedplan         bool
+	commission          *uint64
+	clearedcommission   bool
+	parent              *uint64
+	clearedparent       bool
+	children            map[uint64]struct{}
+	removedchildren     map[uint64]struct{}
+	clearedchildren     bool
+	city                *uint64
+	clearedcity         bool
+	done                bool
+	oldValue            func(context.Context) (*Order, error)
+	predicates          []predicate.Order
 }
 
 var _ ent.Mutation = (*OrderMutation)(nil)
@@ -12880,6 +12975,12 @@ func (m OrderMutation) Tx() (*Tx, error) {
 	tx := &Tx{config: m.config}
 	tx.init()
 	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Order entities.
+func (m *OrderMutation) SetID(id uint64) {
+	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
@@ -13263,6 +13364,42 @@ func (m *OrderMutation) ResetPlanID() {
 	delete(m.clearedFields, order.FieldPlanID)
 }
 
+// SetCityID sets the "city_id" field.
+func (m *OrderMutation) SetCityID(u uint64) {
+	m.city = &u
+}
+
+// CityID returns the value of the "city_id" field in the mutation.
+func (m *OrderMutation) CityID() (r uint64, exists bool) {
+	v := m.city
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCityID returns the old "city_id" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldCityID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCityID: %w", err)
+	}
+	return oldValue.CityID, nil
+}
+
+// ResetCityID resets all changes to the "city_id" field.
+func (m *OrderMutation) ResetCityID() {
+	m.city = nil
+}
+
 // SetStatus sets the "status" field.
 func (m *OrderMutation) SetStatus(u uint8) {
 	m.status = &u
@@ -13559,6 +13696,223 @@ func (m *OrderMutation) ResetAmount() {
 	m.addamount = nil
 }
 
+// SetRefund sets the "refund" field.
+func (m *OrderMutation) SetRefund(f float64) {
+	m.refund = &f
+	m.addrefund = nil
+}
+
+// Refund returns the value of the "refund" field in the mutation.
+func (m *OrderMutation) Refund() (r float64, exists bool) {
+	v := m.refund
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRefund returns the old "refund" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldRefund(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRefund is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRefund requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRefund: %w", err)
+	}
+	return oldValue.Refund, nil
+}
+
+// AddRefund adds f to the "refund" field.
+func (m *OrderMutation) AddRefund(f float64) {
+	if m.addrefund != nil {
+		*m.addrefund += f
+	} else {
+		m.addrefund = &f
+	}
+}
+
+// AddedRefund returns the value that was added to the "refund" field in this mutation.
+func (m *OrderMutation) AddedRefund() (r float64, exists bool) {
+	v := m.addrefund
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearRefund clears the value of the "refund" field.
+func (m *OrderMutation) ClearRefund() {
+	m.refund = nil
+	m.addrefund = nil
+	m.clearedFields[order.FieldRefund] = struct{}{}
+}
+
+// RefundCleared returns if the "refund" field was cleared in this mutation.
+func (m *OrderMutation) RefundCleared() bool {
+	_, ok := m.clearedFields[order.FieldRefund]
+	return ok
+}
+
+// ResetRefund resets all changes to the "refund" field.
+func (m *OrderMutation) ResetRefund() {
+	m.refund = nil
+	m.addrefund = nil
+	delete(m.clearedFields, order.FieldRefund)
+}
+
+// SetRefundAt sets the "refund_at" field.
+func (m *OrderMutation) SetRefundAt(t time.Time) {
+	m.refund_at = &t
+}
+
+// RefundAt returns the value of the "refund_at" field in the mutation.
+func (m *OrderMutation) RefundAt() (r time.Time, exists bool) {
+	v := m.refund_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRefundAt returns the old "refund_at" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldRefundAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRefundAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRefundAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRefundAt: %w", err)
+	}
+	return oldValue.RefundAt, nil
+}
+
+// ClearRefundAt clears the value of the "refund_at" field.
+func (m *OrderMutation) ClearRefundAt() {
+	m.refund_at = nil
+	m.clearedFields[order.FieldRefundAt] = struct{}{}
+}
+
+// RefundAtCleared returns if the "refund_at" field was cleared in this mutation.
+func (m *OrderMutation) RefundAtCleared() bool {
+	_, ok := m.clearedFields[order.FieldRefundAt]
+	return ok
+}
+
+// ResetRefundAt resets all changes to the "refund_at" field.
+func (m *OrderMutation) ResetRefundAt() {
+	m.refund_at = nil
+	delete(m.clearedFields, order.FieldRefundAt)
+}
+
+// SetRefundOutTradeNo sets the "refund_out_trade_no" field.
+func (m *OrderMutation) SetRefundOutTradeNo(t time.Time) {
+	m.refund_out_trade_no = &t
+}
+
+// RefundOutTradeNo returns the value of the "refund_out_trade_no" field in the mutation.
+func (m *OrderMutation) RefundOutTradeNo() (r time.Time, exists bool) {
+	v := m.refund_out_trade_no
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRefundOutTradeNo returns the old "refund_out_trade_no" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldRefundOutTradeNo(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRefundOutTradeNo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRefundOutTradeNo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRefundOutTradeNo: %w", err)
+	}
+	return oldValue.RefundOutTradeNo, nil
+}
+
+// ClearRefundOutTradeNo clears the value of the "refund_out_trade_no" field.
+func (m *OrderMutation) ClearRefundOutTradeNo() {
+	m.refund_out_trade_no = nil
+	m.clearedFields[order.FieldRefundOutTradeNo] = struct{}{}
+}
+
+// RefundOutTradeNoCleared returns if the "refund_out_trade_no" field was cleared in this mutation.
+func (m *OrderMutation) RefundOutTradeNoCleared() bool {
+	_, ok := m.clearedFields[order.FieldRefundOutTradeNo]
+	return ok
+}
+
+// ResetRefundOutTradeNo resets all changes to the "refund_out_trade_no" field.
+func (m *OrderMutation) ResetRefundOutTradeNo() {
+	m.refund_out_trade_no = nil
+	delete(m.clearedFields, order.FieldRefundOutTradeNo)
+}
+
+// SetRefundTradeNo sets the "refund_trade_no" field.
+func (m *OrderMutation) SetRefundTradeNo(t time.Time) {
+	m.refund_trade_no = &t
+}
+
+// RefundTradeNo returns the value of the "refund_trade_no" field in the mutation.
+func (m *OrderMutation) RefundTradeNo() (r time.Time, exists bool) {
+	v := m.refund_trade_no
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRefundTradeNo returns the old "refund_trade_no" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldRefundTradeNo(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRefundTradeNo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRefundTradeNo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRefundTradeNo: %w", err)
+	}
+	return oldValue.RefundTradeNo, nil
+}
+
+// ClearRefundTradeNo clears the value of the "refund_trade_no" field.
+func (m *OrderMutation) ClearRefundTradeNo() {
+	m.refund_trade_no = nil
+	m.clearedFields[order.FieldRefundTradeNo] = struct{}{}
+}
+
+// RefundTradeNoCleared returns if the "refund_trade_no" field was cleared in this mutation.
+func (m *OrderMutation) RefundTradeNoCleared() bool {
+	_, ok := m.clearedFields[order.FieldRefundTradeNo]
+	return ok
+}
+
+// ResetRefundTradeNo resets all changes to the "refund_trade_no" field.
+func (m *OrderMutation) ResetRefundTradeNo() {
+	m.refund_trade_no = nil
+	delete(m.clearedFields, order.FieldRefundTradeNo)
+}
+
 // SetPlanDetail sets the "plan_detail" field.
 func (m *OrderMutation) SetPlanDetail(mi model.PlanItem) {
 	m.plan_detail = &mi
@@ -13610,13 +13964,12 @@ func (m *OrderMutation) ResetPlanDetail() {
 
 // SetParentID sets the "parent_id" field.
 func (m *OrderMutation) SetParentID(u uint64) {
-	m.parent_id = &u
-	m.addparent_id = nil
+	m.parent = &u
 }
 
 // ParentID returns the value of the "parent_id" field in the mutation.
 func (m *OrderMutation) ParentID() (r uint64, exists bool) {
-	v := m.parent_id
+	v := m.parent
 	if v == nil {
 		return
 	}
@@ -13640,28 +13993,9 @@ func (m *OrderMutation) OldParentID(ctx context.Context) (v uint64, err error) {
 	return oldValue.ParentID, nil
 }
 
-// AddParentID adds u to the "parent_id" field.
-func (m *OrderMutation) AddParentID(u int64) {
-	if m.addparent_id != nil {
-		*m.addparent_id += u
-	} else {
-		m.addparent_id = &u
-	}
-}
-
-// AddedParentID returns the value that was added to the "parent_id" field in this mutation.
-func (m *OrderMutation) AddedParentID() (r int64, exists bool) {
-	v := m.addparent_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
 // ClearParentID clears the value of the "parent_id" field.
 func (m *OrderMutation) ClearParentID() {
-	m.parent_id = nil
-	m.addparent_id = nil
+	m.parent = nil
 	m.clearedFields[order.FieldParentID] = struct{}{}
 }
 
@@ -13673,8 +14007,7 @@ func (m *OrderMutation) ParentIDCleared() bool {
 
 // ResetParentID resets all changes to the "parent_id" field.
 func (m *OrderMutation) ResetParentID() {
-	m.parent_id = nil
-	m.addparent_id = nil
+	m.parent = nil
 	delete(m.clearedFields, order.FieldParentID)
 }
 
@@ -13725,6 +14058,104 @@ func (m *OrderMutation) SubordinateCleared() bool {
 func (m *OrderMutation) ResetSubordinate() {
 	m.subordinate = nil
 	delete(m.clearedFields, order.FieldSubordinate)
+}
+
+// SetStart sets the "start" field.
+func (m *OrderMutation) SetStart(t time.Time) {
+	m.start = &t
+}
+
+// Start returns the value of the "start" field in the mutation.
+func (m *OrderMutation) Start() (r time.Time, exists bool) {
+	v := m.start
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStart returns the old "start" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldStart(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStart is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStart requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStart: %w", err)
+	}
+	return oldValue.Start, nil
+}
+
+// ClearStart clears the value of the "start" field.
+func (m *OrderMutation) ClearStart() {
+	m.start = nil
+	m.clearedFields[order.FieldStart] = struct{}{}
+}
+
+// StartCleared returns if the "start" field was cleared in this mutation.
+func (m *OrderMutation) StartCleared() bool {
+	_, ok := m.clearedFields[order.FieldStart]
+	return ok
+}
+
+// ResetStart resets all changes to the "start" field.
+func (m *OrderMutation) ResetStart() {
+	m.start = nil
+	delete(m.clearedFields, order.FieldStart)
+}
+
+// SetEnd sets the "end" field.
+func (m *OrderMutation) SetEnd(t time.Time) {
+	m.end = &t
+}
+
+// End returns the value of the "end" field in the mutation.
+func (m *OrderMutation) End() (r time.Time, exists bool) {
+	v := m.end
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEnd returns the old "end" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldEnd(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEnd is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEnd requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEnd: %w", err)
+	}
+	return oldValue.End, nil
+}
+
+// ClearEnd clears the value of the "end" field.
+func (m *OrderMutation) ClearEnd() {
+	m.end = nil
+	m.clearedFields[order.FieldEnd] = struct{}{}
+}
+
+// EndCleared returns if the "end" field was cleared in this mutation.
+func (m *OrderMutation) EndCleared() bool {
+	_, ok := m.clearedFields[order.FieldEnd]
+	return ok
+}
+
+// ResetEnd resets all changes to the "end" field.
+func (m *OrderMutation) ResetEnd() {
+	m.end = nil
+	delete(m.clearedFields, order.FieldEnd)
 }
 
 // ClearRider clears the "rider" edge to the Rider entity.
@@ -13818,6 +14249,112 @@ func (m *OrderMutation) ResetCommission() {
 	m.clearedcommission = false
 }
 
+// ClearParent clears the "parent" edge to the Order entity.
+func (m *OrderMutation) ClearParent() {
+	m.clearedparent = true
+}
+
+// ParentCleared reports if the "parent" edge to the Order entity was cleared.
+func (m *OrderMutation) ParentCleared() bool {
+	return m.ParentIDCleared() || m.clearedparent
+}
+
+// ParentIDs returns the "parent" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ParentID instead. It exists only for internal usage by the builders.
+func (m *OrderMutation) ParentIDs() (ids []uint64) {
+	if id := m.parent; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetParent resets all changes to the "parent" edge.
+func (m *OrderMutation) ResetParent() {
+	m.parent = nil
+	m.clearedparent = false
+}
+
+// AddChildIDs adds the "children" edge to the Order entity by ids.
+func (m *OrderMutation) AddChildIDs(ids ...uint64) {
+	if m.children == nil {
+		m.children = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.children[ids[i]] = struct{}{}
+	}
+}
+
+// ClearChildren clears the "children" edge to the Order entity.
+func (m *OrderMutation) ClearChildren() {
+	m.clearedchildren = true
+}
+
+// ChildrenCleared reports if the "children" edge to the Order entity was cleared.
+func (m *OrderMutation) ChildrenCleared() bool {
+	return m.clearedchildren
+}
+
+// RemoveChildIDs removes the "children" edge to the Order entity by IDs.
+func (m *OrderMutation) RemoveChildIDs(ids ...uint64) {
+	if m.removedchildren == nil {
+		m.removedchildren = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.children, ids[i])
+		m.removedchildren[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedChildren returns the removed IDs of the "children" edge to the Order entity.
+func (m *OrderMutation) RemovedChildrenIDs() (ids []uint64) {
+	for id := range m.removedchildren {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ChildrenIDs returns the "children" edge IDs in the mutation.
+func (m *OrderMutation) ChildrenIDs() (ids []uint64) {
+	for id := range m.children {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetChildren resets all changes to the "children" edge.
+func (m *OrderMutation) ResetChildren() {
+	m.children = nil
+	m.clearedchildren = false
+	m.removedchildren = nil
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (m *OrderMutation) ClearCity() {
+	m.clearedcity = true
+}
+
+// CityCleared reports if the "city" edge to the City entity was cleared.
+func (m *OrderMutation) CityCleared() bool {
+	return m.clearedcity
+}
+
+// CityIDs returns the "city" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CityID instead. It exists only for internal usage by the builders.
+func (m *OrderMutation) CityIDs() (ids []uint64) {
+	if id := m.city; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCity resets all changes to the "city" edge.
+func (m *OrderMutation) ResetCity() {
+	m.city = nil
+	m.clearedcity = false
+}
+
 // Where appends a list predicates to the OrderMutation builder.
 func (m *OrderMutation) Where(ps ...predicate.Order) {
 	m.predicates = append(m.predicates, ps...)
@@ -13837,7 +14374,7 @@ func (m *OrderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *OrderMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 24)
 	if m.created_at != nil {
 		fields = append(fields, order.FieldCreatedAt)
 	}
@@ -13862,6 +14399,9 @@ func (m *OrderMutation) Fields() []string {
 	if m.plan != nil {
 		fields = append(fields, order.FieldPlanID)
 	}
+	if m.city != nil {
+		fields = append(fields, order.FieldCityID)
+	}
 	if m.status != nil {
 		fields = append(fields, order.FieldStatus)
 	}
@@ -13880,14 +14420,32 @@ func (m *OrderMutation) Fields() []string {
 	if m.amount != nil {
 		fields = append(fields, order.FieldAmount)
 	}
+	if m.refund != nil {
+		fields = append(fields, order.FieldRefund)
+	}
+	if m.refund_at != nil {
+		fields = append(fields, order.FieldRefundAt)
+	}
+	if m.refund_out_trade_no != nil {
+		fields = append(fields, order.FieldRefundOutTradeNo)
+	}
+	if m.refund_trade_no != nil {
+		fields = append(fields, order.FieldRefundTradeNo)
+	}
 	if m.plan_detail != nil {
 		fields = append(fields, order.FieldPlanDetail)
 	}
-	if m.parent_id != nil {
+	if m.parent != nil {
 		fields = append(fields, order.FieldParentID)
 	}
 	if m.subordinate != nil {
 		fields = append(fields, order.FieldSubordinate)
+	}
+	if m.start != nil {
+		fields = append(fields, order.FieldStart)
+	}
+	if m.end != nil {
+		fields = append(fields, order.FieldEnd)
 	}
 	return fields
 }
@@ -13913,6 +14471,8 @@ func (m *OrderMutation) Field(name string) (ent.Value, bool) {
 		return m.RiderID()
 	case order.FieldPlanID:
 		return m.PlanID()
+	case order.FieldCityID:
+		return m.CityID()
 	case order.FieldStatus:
 		return m.Status()
 	case order.FieldPayway:
@@ -13925,12 +14485,24 @@ func (m *OrderMutation) Field(name string) (ent.Value, bool) {
 		return m.TradeNo()
 	case order.FieldAmount:
 		return m.Amount()
+	case order.FieldRefund:
+		return m.Refund()
+	case order.FieldRefundAt:
+		return m.RefundAt()
+	case order.FieldRefundOutTradeNo:
+		return m.RefundOutTradeNo()
+	case order.FieldRefundTradeNo:
+		return m.RefundTradeNo()
 	case order.FieldPlanDetail:
 		return m.PlanDetail()
 	case order.FieldParentID:
 		return m.ParentID()
 	case order.FieldSubordinate:
 		return m.Subordinate()
+	case order.FieldStart:
+		return m.Start()
+	case order.FieldEnd:
+		return m.End()
 	}
 	return nil, false
 }
@@ -13956,6 +14528,8 @@ func (m *OrderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldRiderID(ctx)
 	case order.FieldPlanID:
 		return m.OldPlanID(ctx)
+	case order.FieldCityID:
+		return m.OldCityID(ctx)
 	case order.FieldStatus:
 		return m.OldStatus(ctx)
 	case order.FieldPayway:
@@ -13968,12 +14542,24 @@ func (m *OrderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldTradeNo(ctx)
 	case order.FieldAmount:
 		return m.OldAmount(ctx)
+	case order.FieldRefund:
+		return m.OldRefund(ctx)
+	case order.FieldRefundAt:
+		return m.OldRefundAt(ctx)
+	case order.FieldRefundOutTradeNo:
+		return m.OldRefundOutTradeNo(ctx)
+	case order.FieldRefundTradeNo:
+		return m.OldRefundTradeNo(ctx)
 	case order.FieldPlanDetail:
 		return m.OldPlanDetail(ctx)
 	case order.FieldParentID:
 		return m.OldParentID(ctx)
 	case order.FieldSubordinate:
 		return m.OldSubordinate(ctx)
+	case order.FieldStart:
+		return m.OldStart(ctx)
+	case order.FieldEnd:
+		return m.OldEnd(ctx)
 	}
 	return nil, fmt.Errorf("unknown Order field %s", name)
 }
@@ -14039,6 +14625,13 @@ func (m *OrderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPlanID(v)
 		return nil
+	case order.FieldCityID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCityID(v)
+		return nil
 	case order.FieldStatus:
 		v, ok := value.(uint8)
 		if !ok {
@@ -14081,6 +14674,34 @@ func (m *OrderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAmount(v)
 		return nil
+	case order.FieldRefund:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRefund(v)
+		return nil
+	case order.FieldRefundAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRefundAt(v)
+		return nil
+	case order.FieldRefundOutTradeNo:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRefundOutTradeNo(v)
+		return nil
+	case order.FieldRefundTradeNo:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRefundTradeNo(v)
+		return nil
 	case order.FieldPlanDetail:
 		v, ok := value.(model.PlanItem)
 		if !ok {
@@ -14102,6 +14723,20 @@ func (m *OrderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetSubordinate(v)
 		return nil
+	case order.FieldStart:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStart(v)
+		return nil
+	case order.FieldEnd:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEnd(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Order field %s", name)
 }
@@ -14122,8 +14757,8 @@ func (m *OrderMutation) AddedFields() []string {
 	if m.addamount != nil {
 		fields = append(fields, order.FieldAmount)
 	}
-	if m.addparent_id != nil {
-		fields = append(fields, order.FieldParentID)
+	if m.addrefund != nil {
+		fields = append(fields, order.FieldRefund)
 	}
 	return fields
 }
@@ -14141,8 +14776,8 @@ func (m *OrderMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedType()
 	case order.FieldAmount:
 		return m.AddedAmount()
-	case order.FieldParentID:
-		return m.AddedParentID()
+	case order.FieldRefund:
+		return m.AddedRefund()
 	}
 	return nil, false
 }
@@ -14180,12 +14815,12 @@ func (m *OrderMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddAmount(v)
 		return nil
-	case order.FieldParentID:
-		v, ok := value.(int64)
+	case order.FieldRefund:
+		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddParentID(v)
+		m.AddRefund(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Order numeric field %s", name)
@@ -14210,6 +14845,18 @@ func (m *OrderMutation) ClearedFields() []string {
 	if m.FieldCleared(order.FieldPlanID) {
 		fields = append(fields, order.FieldPlanID)
 	}
+	if m.FieldCleared(order.FieldRefund) {
+		fields = append(fields, order.FieldRefund)
+	}
+	if m.FieldCleared(order.FieldRefundAt) {
+		fields = append(fields, order.FieldRefundAt)
+	}
+	if m.FieldCleared(order.FieldRefundOutTradeNo) {
+		fields = append(fields, order.FieldRefundOutTradeNo)
+	}
+	if m.FieldCleared(order.FieldRefundTradeNo) {
+		fields = append(fields, order.FieldRefundTradeNo)
+	}
 	if m.FieldCleared(order.FieldPlanDetail) {
 		fields = append(fields, order.FieldPlanDetail)
 	}
@@ -14218,6 +14865,12 @@ func (m *OrderMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(order.FieldSubordinate) {
 		fields = append(fields, order.FieldSubordinate)
+	}
+	if m.FieldCleared(order.FieldStart) {
+		fields = append(fields, order.FieldStart)
+	}
+	if m.FieldCleared(order.FieldEnd) {
+		fields = append(fields, order.FieldEnd)
 	}
 	return fields
 }
@@ -14248,6 +14901,18 @@ func (m *OrderMutation) ClearField(name string) error {
 	case order.FieldPlanID:
 		m.ClearPlanID()
 		return nil
+	case order.FieldRefund:
+		m.ClearRefund()
+		return nil
+	case order.FieldRefundAt:
+		m.ClearRefundAt()
+		return nil
+	case order.FieldRefundOutTradeNo:
+		m.ClearRefundOutTradeNo()
+		return nil
+	case order.FieldRefundTradeNo:
+		m.ClearRefundTradeNo()
+		return nil
 	case order.FieldPlanDetail:
 		m.ClearPlanDetail()
 		return nil
@@ -14256,6 +14921,12 @@ func (m *OrderMutation) ClearField(name string) error {
 		return nil
 	case order.FieldSubordinate:
 		m.ClearSubordinate()
+		return nil
+	case order.FieldStart:
+		m.ClearStart()
+		return nil
+	case order.FieldEnd:
+		m.ClearEnd()
 		return nil
 	}
 	return fmt.Errorf("unknown Order nullable field %s", name)
@@ -14289,6 +14960,9 @@ func (m *OrderMutation) ResetField(name string) error {
 	case order.FieldPlanID:
 		m.ResetPlanID()
 		return nil
+	case order.FieldCityID:
+		m.ResetCityID()
+		return nil
 	case order.FieldStatus:
 		m.ResetStatus()
 		return nil
@@ -14307,6 +14981,18 @@ func (m *OrderMutation) ResetField(name string) error {
 	case order.FieldAmount:
 		m.ResetAmount()
 		return nil
+	case order.FieldRefund:
+		m.ResetRefund()
+		return nil
+	case order.FieldRefundAt:
+		m.ResetRefundAt()
+		return nil
+	case order.FieldRefundOutTradeNo:
+		m.ResetRefundOutTradeNo()
+		return nil
+	case order.FieldRefundTradeNo:
+		m.ResetRefundTradeNo()
+		return nil
 	case order.FieldPlanDetail:
 		m.ResetPlanDetail()
 		return nil
@@ -14316,13 +15002,19 @@ func (m *OrderMutation) ResetField(name string) error {
 	case order.FieldSubordinate:
 		m.ResetSubordinate()
 		return nil
+	case order.FieldStart:
+		m.ResetStart()
+		return nil
+	case order.FieldEnd:
+		m.ResetEnd()
+		return nil
 	}
 	return fmt.Errorf("unknown Order field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *OrderMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 6)
 	if m.rider != nil {
 		edges = append(edges, order.EdgeRider)
 	}
@@ -14331,6 +15023,15 @@ func (m *OrderMutation) AddedEdges() []string {
 	}
 	if m.commission != nil {
 		edges = append(edges, order.EdgeCommission)
+	}
+	if m.parent != nil {
+		edges = append(edges, order.EdgeParent)
+	}
+	if m.children != nil {
+		edges = append(edges, order.EdgeChildren)
+	}
+	if m.city != nil {
+		edges = append(edges, order.EdgeCity)
 	}
 	return edges
 }
@@ -14351,13 +15052,30 @@ func (m *OrderMutation) AddedIDs(name string) []ent.Value {
 		if id := m.commission; id != nil {
 			return []ent.Value{*id}
 		}
+	case order.EdgeParent:
+		if id := m.parent; id != nil {
+			return []ent.Value{*id}
+		}
+	case order.EdgeChildren:
+		ids := make([]ent.Value, 0, len(m.children))
+		for id := range m.children {
+			ids = append(ids, id)
+		}
+		return ids
+	case order.EdgeCity:
+		if id := m.city; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *OrderMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 6)
+	if m.removedchildren != nil {
+		edges = append(edges, order.EdgeChildren)
+	}
 	return edges
 }
 
@@ -14365,13 +15083,19 @@ func (m *OrderMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *OrderMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case order.EdgeChildren:
+		ids := make([]ent.Value, 0, len(m.removedchildren))
+		for id := range m.removedchildren {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *OrderMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 6)
 	if m.clearedrider {
 		edges = append(edges, order.EdgeRider)
 	}
@@ -14380,6 +15104,15 @@ func (m *OrderMutation) ClearedEdges() []string {
 	}
 	if m.clearedcommission {
 		edges = append(edges, order.EdgeCommission)
+	}
+	if m.clearedparent {
+		edges = append(edges, order.EdgeParent)
+	}
+	if m.clearedchildren {
+		edges = append(edges, order.EdgeChildren)
+	}
+	if m.clearedcity {
+		edges = append(edges, order.EdgeCity)
 	}
 	return edges
 }
@@ -14394,6 +15127,12 @@ func (m *OrderMutation) EdgeCleared(name string) bool {
 		return m.clearedplan
 	case order.EdgeCommission:
 		return m.clearedcommission
+	case order.EdgeParent:
+		return m.clearedparent
+	case order.EdgeChildren:
+		return m.clearedchildren
+	case order.EdgeCity:
+		return m.clearedcity
 	}
 	return false
 }
@@ -14411,6 +15150,12 @@ func (m *OrderMutation) ClearEdge(name string) error {
 	case order.EdgeCommission:
 		m.ClearCommission()
 		return nil
+	case order.EdgeParent:
+		m.ClearParent()
+		return nil
+	case order.EdgeCity:
+		m.ClearCity()
+		return nil
 	}
 	return fmt.Errorf("unknown Order unique edge %s", name)
 }
@@ -14427,6 +15172,15 @@ func (m *OrderMutation) ResetEdge(name string) error {
 		return nil
 	case order.EdgeCommission:
 		m.ResetCommission()
+		return nil
+	case order.EdgeParent:
+		m.ResetParent()
+		return nil
+	case order.EdgeChildren:
+		m.ResetChildren()
+		return nil
+	case order.EdgeCity:
+		m.ResetCity()
 		return nil
 	}
 	return fmt.Errorf("unknown Order edge %s", name)

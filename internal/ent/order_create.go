@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -114,6 +115,12 @@ func (oc *OrderCreate) SetNillablePlanID(u *uint64) *OrderCreate {
 	return oc
 }
 
+// SetCityID sets the "city_id" field.
+func (oc *OrderCreate) SetCityID(u uint64) *OrderCreate {
+	oc.mutation.SetCityID(u)
+	return oc
+}
+
 // SetStatus sets the "status" field.
 func (oc *OrderCreate) SetStatus(u uint8) *OrderCreate {
 	oc.mutation.SetStatus(u)
@@ -155,6 +162,62 @@ func (oc *OrderCreate) SetTradeNo(s string) *OrderCreate {
 // SetAmount sets the "amount" field.
 func (oc *OrderCreate) SetAmount(f float64) *OrderCreate {
 	oc.mutation.SetAmount(f)
+	return oc
+}
+
+// SetRefund sets the "refund" field.
+func (oc *OrderCreate) SetRefund(f float64) *OrderCreate {
+	oc.mutation.SetRefund(f)
+	return oc
+}
+
+// SetNillableRefund sets the "refund" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableRefund(f *float64) *OrderCreate {
+	if f != nil {
+		oc.SetRefund(*f)
+	}
+	return oc
+}
+
+// SetRefundAt sets the "refund_at" field.
+func (oc *OrderCreate) SetRefundAt(t time.Time) *OrderCreate {
+	oc.mutation.SetRefundAt(t)
+	return oc
+}
+
+// SetNillableRefundAt sets the "refund_at" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableRefundAt(t *time.Time) *OrderCreate {
+	if t != nil {
+		oc.SetRefundAt(*t)
+	}
+	return oc
+}
+
+// SetRefundOutTradeNo sets the "refund_out_trade_no" field.
+func (oc *OrderCreate) SetRefundOutTradeNo(t time.Time) *OrderCreate {
+	oc.mutation.SetRefundOutTradeNo(t)
+	return oc
+}
+
+// SetNillableRefundOutTradeNo sets the "refund_out_trade_no" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableRefundOutTradeNo(t *time.Time) *OrderCreate {
+	if t != nil {
+		oc.SetRefundOutTradeNo(*t)
+	}
+	return oc
+}
+
+// SetRefundTradeNo sets the "refund_trade_no" field.
+func (oc *OrderCreate) SetRefundTradeNo(t time.Time) *OrderCreate {
+	oc.mutation.SetRefundTradeNo(t)
+	return oc
+}
+
+// SetNillableRefundTradeNo sets the "refund_trade_no" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableRefundTradeNo(t *time.Time) *OrderCreate {
+	if t != nil {
+		oc.SetRefundTradeNo(*t)
+	}
 	return oc
 }
 
@@ -200,6 +263,40 @@ func (oc *OrderCreate) SetNillableSubordinate(ms *model.OrderSubordinate) *Order
 	return oc
 }
 
+// SetStart sets the "start" field.
+func (oc *OrderCreate) SetStart(t time.Time) *OrderCreate {
+	oc.mutation.SetStart(t)
+	return oc
+}
+
+// SetNillableStart sets the "start" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableStart(t *time.Time) *OrderCreate {
+	if t != nil {
+		oc.SetStart(*t)
+	}
+	return oc
+}
+
+// SetEnd sets the "end" field.
+func (oc *OrderCreate) SetEnd(t time.Time) *OrderCreate {
+	oc.mutation.SetEnd(t)
+	return oc
+}
+
+// SetNillableEnd sets the "end" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableEnd(t *time.Time) *OrderCreate {
+	if t != nil {
+		oc.SetEnd(*t)
+	}
+	return oc
+}
+
+// SetID sets the "id" field.
+func (oc *OrderCreate) SetID(u uint64) *OrderCreate {
+	oc.mutation.SetID(u)
+	return oc
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (oc *OrderCreate) SetRider(r *Rider) *OrderCreate {
 	return oc.SetRiderID(r.ID)
@@ -227,6 +324,31 @@ func (oc *OrderCreate) SetNillableCommissionID(id *uint64) *OrderCreate {
 // SetCommission sets the "commission" edge to the Commission entity.
 func (oc *OrderCreate) SetCommission(c *Commission) *OrderCreate {
 	return oc.SetCommissionID(c.ID)
+}
+
+// SetParent sets the "parent" edge to the Order entity.
+func (oc *OrderCreate) SetParent(o *Order) *OrderCreate {
+	return oc.SetParentID(o.ID)
+}
+
+// AddChildIDs adds the "children" edge to the Order entity by IDs.
+func (oc *OrderCreate) AddChildIDs(ids ...uint64) *OrderCreate {
+	oc.mutation.AddChildIDs(ids...)
+	return oc
+}
+
+// AddChildren adds the "children" edges to the Order entity.
+func (oc *OrderCreate) AddChildren(o ...*Order) *OrderCreate {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return oc.AddChildIDs(ids...)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (oc *OrderCreate) SetCity(c *City) *OrderCreate {
+	return oc.SetCityID(c.ID)
 }
 
 // Mutation returns the OrderMutation object of the builder.
@@ -340,6 +462,9 @@ func (oc *OrderCreate) check() error {
 	if _, ok := oc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "Order.rider_id"`)}
 	}
+	if _, ok := oc.mutation.CityID(); !ok {
+		return &ValidationError{Name: "city_id", err: errors.New(`ent: missing required field "Order.city_id"`)}
+	}
 	if _, ok := oc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Order.status"`)}
 	}
@@ -361,6 +486,9 @@ func (oc *OrderCreate) check() error {
 	if _, ok := oc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Order.rider"`)}
 	}
+	if _, ok := oc.mutation.CityID(); !ok {
+		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Order.city"`)}
+	}
 	return nil
 }
 
@@ -372,8 +500,10 @@ func (oc *OrderCreate) sqlSave(ctx context.Context) (*Order, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = uint64(id)
+	if _spec.ID.Value != _node.ID {
+		id := _spec.ID.Value.(int64)
+		_node.ID = uint64(id)
+	}
 	return _node, nil
 }
 
@@ -389,6 +519,10 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		}
 	)
 	_spec.OnConflict = oc.conflict
+	if id, ok := oc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := oc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -485,6 +619,38 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		})
 		_node.Amount = value
 	}
+	if value, ok := oc.mutation.Refund(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldRefund,
+		})
+		_node.Refund = value
+	}
+	if value, ok := oc.mutation.RefundAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: order.FieldRefundAt,
+		})
+		_node.RefundAt = value
+	}
+	if value, ok := oc.mutation.RefundOutTradeNo(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: order.FieldRefundOutTradeNo,
+		})
+		_node.RefundOutTradeNo = value
+	}
+	if value, ok := oc.mutation.RefundTradeNo(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: order.FieldRefundTradeNo,
+		})
+		_node.RefundTradeNo = value
+	}
 	if value, ok := oc.mutation.PlanDetail(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -493,14 +659,6 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		})
 		_node.PlanDetail = value
 	}
-	if value, ok := oc.mutation.ParentID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
-			Value:  value,
-			Column: order.FieldParentID,
-		})
-		_node.ParentID = value
-	}
 	if value, ok := oc.mutation.Subordinate(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -508,6 +666,22 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 			Column: order.FieldSubordinate,
 		})
 		_node.Subordinate = value
+	}
+	if value, ok := oc.mutation.Start(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: order.FieldStart,
+		})
+		_node.Start = value
+	}
+	if value, ok := oc.mutation.End(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: order.FieldEnd,
+		})
+		_node.End = value
 	}
 	if nodes := oc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -566,6 +740,65 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := oc.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   order.ParentTable,
+			Columns: []string{order.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.ParentID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := oc.mutation.ChildrenIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.ChildrenTable,
+			Columns: []string{order.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := oc.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   order.CityTable,
+			Columns: []string{order.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -748,6 +981,18 @@ func (u *OrderUpsert) ClearPlanID() *OrderUpsert {
 	return u
 }
 
+// SetCityID sets the "city_id" field.
+func (u *OrderUpsert) SetCityID(v uint64) *OrderUpsert {
+	u.Set(order.FieldCityID, v)
+	return u
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateCityID() *OrderUpsert {
+	u.SetExcluded(order.FieldCityID)
+	return u
+}
+
 // SetStatus sets the "status" field.
 func (u *OrderUpsert) SetStatus(v uint8) *OrderUpsert {
 	u.Set(order.FieldStatus, v)
@@ -844,6 +1089,84 @@ func (u *OrderUpsert) AddAmount(v float64) *OrderUpsert {
 	return u
 }
 
+// SetRefund sets the "refund" field.
+func (u *OrderUpsert) SetRefund(v float64) *OrderUpsert {
+	u.Set(order.FieldRefund, v)
+	return u
+}
+
+// UpdateRefund sets the "refund" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateRefund() *OrderUpsert {
+	u.SetExcluded(order.FieldRefund)
+	return u
+}
+
+// AddRefund adds v to the "refund" field.
+func (u *OrderUpsert) AddRefund(v float64) *OrderUpsert {
+	u.Add(order.FieldRefund, v)
+	return u
+}
+
+// ClearRefund clears the value of the "refund" field.
+func (u *OrderUpsert) ClearRefund() *OrderUpsert {
+	u.SetNull(order.FieldRefund)
+	return u
+}
+
+// SetRefundAt sets the "refund_at" field.
+func (u *OrderUpsert) SetRefundAt(v time.Time) *OrderUpsert {
+	u.Set(order.FieldRefundAt, v)
+	return u
+}
+
+// UpdateRefundAt sets the "refund_at" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateRefundAt() *OrderUpsert {
+	u.SetExcluded(order.FieldRefundAt)
+	return u
+}
+
+// ClearRefundAt clears the value of the "refund_at" field.
+func (u *OrderUpsert) ClearRefundAt() *OrderUpsert {
+	u.SetNull(order.FieldRefundAt)
+	return u
+}
+
+// SetRefundOutTradeNo sets the "refund_out_trade_no" field.
+func (u *OrderUpsert) SetRefundOutTradeNo(v time.Time) *OrderUpsert {
+	u.Set(order.FieldRefundOutTradeNo, v)
+	return u
+}
+
+// UpdateRefundOutTradeNo sets the "refund_out_trade_no" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateRefundOutTradeNo() *OrderUpsert {
+	u.SetExcluded(order.FieldRefundOutTradeNo)
+	return u
+}
+
+// ClearRefundOutTradeNo clears the value of the "refund_out_trade_no" field.
+func (u *OrderUpsert) ClearRefundOutTradeNo() *OrderUpsert {
+	u.SetNull(order.FieldRefundOutTradeNo)
+	return u
+}
+
+// SetRefundTradeNo sets the "refund_trade_no" field.
+func (u *OrderUpsert) SetRefundTradeNo(v time.Time) *OrderUpsert {
+	u.Set(order.FieldRefundTradeNo, v)
+	return u
+}
+
+// UpdateRefundTradeNo sets the "refund_trade_no" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateRefundTradeNo() *OrderUpsert {
+	u.SetExcluded(order.FieldRefundTradeNo)
+	return u
+}
+
+// ClearRefundTradeNo clears the value of the "refund_trade_no" field.
+func (u *OrderUpsert) ClearRefundTradeNo() *OrderUpsert {
+	u.SetNull(order.FieldRefundTradeNo)
+	return u
+}
+
 // SetPlanDetail sets the "plan_detail" field.
 func (u *OrderUpsert) SetPlanDetail(v model.PlanItem) *OrderUpsert {
 	u.Set(order.FieldPlanDetail, v)
@@ -874,12 +1197,6 @@ func (u *OrderUpsert) UpdateParentID() *OrderUpsert {
 	return u
 }
 
-// AddParentID adds v to the "parent_id" field.
-func (u *OrderUpsert) AddParentID(v uint64) *OrderUpsert {
-	u.Add(order.FieldParentID, v)
-	return u
-}
-
 // ClearParentID clears the value of the "parent_id" field.
 func (u *OrderUpsert) ClearParentID() *OrderUpsert {
 	u.SetNull(order.FieldParentID)
@@ -904,18 +1221,60 @@ func (u *OrderUpsert) ClearSubordinate() *OrderUpsert {
 	return u
 }
 
-// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// SetStart sets the "start" field.
+func (u *OrderUpsert) SetStart(v time.Time) *OrderUpsert {
+	u.Set(order.FieldStart, v)
+	return u
+}
+
+// UpdateStart sets the "start" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateStart() *OrderUpsert {
+	u.SetExcluded(order.FieldStart)
+	return u
+}
+
+// ClearStart clears the value of the "start" field.
+func (u *OrderUpsert) ClearStart() *OrderUpsert {
+	u.SetNull(order.FieldStart)
+	return u
+}
+
+// SetEnd sets the "end" field.
+func (u *OrderUpsert) SetEnd(v time.Time) *OrderUpsert {
+	u.Set(order.FieldEnd, v)
+	return u
+}
+
+// UpdateEnd sets the "end" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateEnd() *OrderUpsert {
+	u.SetExcluded(order.FieldEnd)
+	return u
+}
+
+// ClearEnd clears the value of the "end" field.
+func (u *OrderUpsert) ClearEnd() *OrderUpsert {
+	u.SetNull(order.FieldEnd)
+	return u
+}
+
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.Order.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(order.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 //
 func (u *OrderUpsertOne) UpdateNewValues() *OrderUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(order.FieldID)
+		}
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(order.FieldCreatedAt)
 		}
@@ -1116,6 +1475,20 @@ func (u *OrderUpsertOne) ClearPlanID() *OrderUpsertOne {
 	})
 }
 
+// SetCityID sets the "city_id" field.
+func (u *OrderUpsertOne) SetCityID(v uint64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateCityID() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateCityID()
+	})
+}
+
 // SetStatus sets the "status" field.
 func (u *OrderUpsertOne) SetStatus(v uint8) *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
@@ -1228,6 +1601,97 @@ func (u *OrderUpsertOne) UpdateAmount() *OrderUpsertOne {
 	})
 }
 
+// SetRefund sets the "refund" field.
+func (u *OrderUpsertOne) SetRefund(v float64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetRefund(v)
+	})
+}
+
+// AddRefund adds v to the "refund" field.
+func (u *OrderUpsertOne) AddRefund(v float64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.AddRefund(v)
+	})
+}
+
+// UpdateRefund sets the "refund" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateRefund() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateRefund()
+	})
+}
+
+// ClearRefund clears the value of the "refund" field.
+func (u *OrderUpsertOne) ClearRefund() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearRefund()
+	})
+}
+
+// SetRefundAt sets the "refund_at" field.
+func (u *OrderUpsertOne) SetRefundAt(v time.Time) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetRefundAt(v)
+	})
+}
+
+// UpdateRefundAt sets the "refund_at" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateRefundAt() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateRefundAt()
+	})
+}
+
+// ClearRefundAt clears the value of the "refund_at" field.
+func (u *OrderUpsertOne) ClearRefundAt() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearRefundAt()
+	})
+}
+
+// SetRefundOutTradeNo sets the "refund_out_trade_no" field.
+func (u *OrderUpsertOne) SetRefundOutTradeNo(v time.Time) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetRefundOutTradeNo(v)
+	})
+}
+
+// UpdateRefundOutTradeNo sets the "refund_out_trade_no" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateRefundOutTradeNo() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateRefundOutTradeNo()
+	})
+}
+
+// ClearRefundOutTradeNo clears the value of the "refund_out_trade_no" field.
+func (u *OrderUpsertOne) ClearRefundOutTradeNo() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearRefundOutTradeNo()
+	})
+}
+
+// SetRefundTradeNo sets the "refund_trade_no" field.
+func (u *OrderUpsertOne) SetRefundTradeNo(v time.Time) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetRefundTradeNo(v)
+	})
+}
+
+// UpdateRefundTradeNo sets the "refund_trade_no" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateRefundTradeNo() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateRefundTradeNo()
+	})
+}
+
+// ClearRefundTradeNo clears the value of the "refund_trade_no" field.
+func (u *OrderUpsertOne) ClearRefundTradeNo() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearRefundTradeNo()
+	})
+}
+
 // SetPlanDetail sets the "plan_detail" field.
 func (u *OrderUpsertOne) SetPlanDetail(v model.PlanItem) *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
@@ -1253,13 +1717,6 @@ func (u *OrderUpsertOne) ClearPlanDetail() *OrderUpsertOne {
 func (u *OrderUpsertOne) SetParentID(v uint64) *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
 		s.SetParentID(v)
-	})
-}
-
-// AddParentID adds v to the "parent_id" field.
-func (u *OrderUpsertOne) AddParentID(v uint64) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.AddParentID(v)
 	})
 }
 
@@ -1295,6 +1752,48 @@ func (u *OrderUpsertOne) UpdateSubordinate() *OrderUpsertOne {
 func (u *OrderUpsertOne) ClearSubordinate() *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearSubordinate()
+	})
+}
+
+// SetStart sets the "start" field.
+func (u *OrderUpsertOne) SetStart(v time.Time) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetStart(v)
+	})
+}
+
+// UpdateStart sets the "start" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateStart() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateStart()
+	})
+}
+
+// ClearStart clears the value of the "start" field.
+func (u *OrderUpsertOne) ClearStart() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearStart()
+	})
+}
+
+// SetEnd sets the "end" field.
+func (u *OrderUpsertOne) SetEnd(v time.Time) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetEnd(v)
+	})
+}
+
+// UpdateEnd sets the "end" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateEnd() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateEnd()
+	})
+}
+
+// ClearEnd clears the value of the "end" field.
+func (u *OrderUpsertOne) ClearEnd() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearEnd()
 	})
 }
 
@@ -1375,7 +1874,7 @@ func (ocb *OrderCreateBulk) Save(ctx context.Context) ([]*Order, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil {
+				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = uint64(id)
 				}
@@ -1466,6 +1965,9 @@ type OrderUpsertBulk struct {
 //	client.Order.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(order.FieldID)
+//			}),
 //		).
 //		Exec(ctx)
 //
@@ -1473,6 +1975,10 @@ func (u *OrderUpsertBulk) UpdateNewValues() *OrderUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(order.FieldID)
+				return
+			}
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(order.FieldCreatedAt)
 			}
@@ -1674,6 +2180,20 @@ func (u *OrderUpsertBulk) ClearPlanID() *OrderUpsertBulk {
 	})
 }
 
+// SetCityID sets the "city_id" field.
+func (u *OrderUpsertBulk) SetCityID(v uint64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateCityID() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateCityID()
+	})
+}
+
 // SetStatus sets the "status" field.
 func (u *OrderUpsertBulk) SetStatus(v uint8) *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
@@ -1786,6 +2306,97 @@ func (u *OrderUpsertBulk) UpdateAmount() *OrderUpsertBulk {
 	})
 }
 
+// SetRefund sets the "refund" field.
+func (u *OrderUpsertBulk) SetRefund(v float64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetRefund(v)
+	})
+}
+
+// AddRefund adds v to the "refund" field.
+func (u *OrderUpsertBulk) AddRefund(v float64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.AddRefund(v)
+	})
+}
+
+// UpdateRefund sets the "refund" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateRefund() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateRefund()
+	})
+}
+
+// ClearRefund clears the value of the "refund" field.
+func (u *OrderUpsertBulk) ClearRefund() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearRefund()
+	})
+}
+
+// SetRefundAt sets the "refund_at" field.
+func (u *OrderUpsertBulk) SetRefundAt(v time.Time) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetRefundAt(v)
+	})
+}
+
+// UpdateRefundAt sets the "refund_at" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateRefundAt() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateRefundAt()
+	})
+}
+
+// ClearRefundAt clears the value of the "refund_at" field.
+func (u *OrderUpsertBulk) ClearRefundAt() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearRefundAt()
+	})
+}
+
+// SetRefundOutTradeNo sets the "refund_out_trade_no" field.
+func (u *OrderUpsertBulk) SetRefundOutTradeNo(v time.Time) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetRefundOutTradeNo(v)
+	})
+}
+
+// UpdateRefundOutTradeNo sets the "refund_out_trade_no" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateRefundOutTradeNo() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateRefundOutTradeNo()
+	})
+}
+
+// ClearRefundOutTradeNo clears the value of the "refund_out_trade_no" field.
+func (u *OrderUpsertBulk) ClearRefundOutTradeNo() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearRefundOutTradeNo()
+	})
+}
+
+// SetRefundTradeNo sets the "refund_trade_no" field.
+func (u *OrderUpsertBulk) SetRefundTradeNo(v time.Time) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetRefundTradeNo(v)
+	})
+}
+
+// UpdateRefundTradeNo sets the "refund_trade_no" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateRefundTradeNo() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateRefundTradeNo()
+	})
+}
+
+// ClearRefundTradeNo clears the value of the "refund_trade_no" field.
+func (u *OrderUpsertBulk) ClearRefundTradeNo() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearRefundTradeNo()
+	})
+}
+
 // SetPlanDetail sets the "plan_detail" field.
 func (u *OrderUpsertBulk) SetPlanDetail(v model.PlanItem) *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
@@ -1811,13 +2422,6 @@ func (u *OrderUpsertBulk) ClearPlanDetail() *OrderUpsertBulk {
 func (u *OrderUpsertBulk) SetParentID(v uint64) *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.SetParentID(v)
-	})
-}
-
-// AddParentID adds v to the "parent_id" field.
-func (u *OrderUpsertBulk) AddParentID(v uint64) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.AddParentID(v)
 	})
 }
 
@@ -1853,6 +2457,48 @@ func (u *OrderUpsertBulk) UpdateSubordinate() *OrderUpsertBulk {
 func (u *OrderUpsertBulk) ClearSubordinate() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearSubordinate()
+	})
+}
+
+// SetStart sets the "start" field.
+func (u *OrderUpsertBulk) SetStart(v time.Time) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetStart(v)
+	})
+}
+
+// UpdateStart sets the "start" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateStart() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateStart()
+	})
+}
+
+// ClearStart clears the value of the "start" field.
+func (u *OrderUpsertBulk) ClearStart() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearStart()
+	})
+}
+
+// SetEnd sets the "end" field.
+func (u *OrderUpsertBulk) SetEnd(v time.Time) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetEnd(v)
+	})
+}
+
+// UpdateEnd sets the "end" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateEnd() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateEnd()
+	})
+}
+
+// ClearEnd clears the value of the "end" field.
+func (u *OrderUpsertBulk) ClearEnd() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearEnd()
 	})
 }
 

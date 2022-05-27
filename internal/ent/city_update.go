@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -261,6 +262,21 @@ func (cu *CityUpdate) AddFaults(c ...*CabinetFault) *CityUpdate {
 	return cu.AddFaultIDs(ids...)
 }
 
+// AddOrderIDs adds the "orders" edge to the Order entity by IDs.
+func (cu *CityUpdate) AddOrderIDs(ids ...uint64) *CityUpdate {
+	cu.mutation.AddOrderIDs(ids...)
+	return cu
+}
+
+// AddOrders adds the "orders" edges to the Order entity.
+func (cu *CityUpdate) AddOrders(o ...*Order) *CityUpdate {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return cu.AddOrderIDs(ids...)
+}
+
 // Mutation returns the CityMutation object of the builder.
 func (cu *CityUpdate) Mutation() *CityMutation {
 	return cu.mutation
@@ -354,6 +370,27 @@ func (cu *CityUpdate) RemoveFaults(c ...*CabinetFault) *CityUpdate {
 		ids[i] = c[i].ID
 	}
 	return cu.RemoveFaultIDs(ids...)
+}
+
+// ClearOrders clears all "orders" edges to the Order entity.
+func (cu *CityUpdate) ClearOrders() *CityUpdate {
+	cu.mutation.ClearOrders()
+	return cu
+}
+
+// RemoveOrderIDs removes the "orders" edge to Order entities by IDs.
+func (cu *CityUpdate) RemoveOrderIDs(ids ...uint64) *CityUpdate {
+	cu.mutation.RemoveOrderIDs(ids...)
+	return cu
+}
+
+// RemoveOrders removes "orders" edges to Order entities.
+func (cu *CityUpdate) RemoveOrders(o ...*Order) *CityUpdate {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return cu.RemoveOrderIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -834,6 +871,60 @@ func (cu *CityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if cu.mutation.OrdersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   city.OrdersTable,
+			Columns: []string{city.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.RemovedOrdersIDs(); len(nodes) > 0 && !cu.mutation.OrdersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   city.OrdersTable,
+			Columns: []string{city.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.OrdersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   city.OrdersTable,
+			Columns: []string{city.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{city.Label}
@@ -1082,6 +1173,21 @@ func (cuo *CityUpdateOne) AddFaults(c ...*CabinetFault) *CityUpdateOne {
 	return cuo.AddFaultIDs(ids...)
 }
 
+// AddOrderIDs adds the "orders" edge to the Order entity by IDs.
+func (cuo *CityUpdateOne) AddOrderIDs(ids ...uint64) *CityUpdateOne {
+	cuo.mutation.AddOrderIDs(ids...)
+	return cuo
+}
+
+// AddOrders adds the "orders" edges to the Order entity.
+func (cuo *CityUpdateOne) AddOrders(o ...*Order) *CityUpdateOne {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return cuo.AddOrderIDs(ids...)
+}
+
 // Mutation returns the CityMutation object of the builder.
 func (cuo *CityUpdateOne) Mutation() *CityMutation {
 	return cuo.mutation
@@ -1175,6 +1281,27 @@ func (cuo *CityUpdateOne) RemoveFaults(c ...*CabinetFault) *CityUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return cuo.RemoveFaultIDs(ids...)
+}
+
+// ClearOrders clears all "orders" edges to the Order entity.
+func (cuo *CityUpdateOne) ClearOrders() *CityUpdateOne {
+	cuo.mutation.ClearOrders()
+	return cuo
+}
+
+// RemoveOrderIDs removes the "orders" edge to Order entities by IDs.
+func (cuo *CityUpdateOne) RemoveOrderIDs(ids ...uint64) *CityUpdateOne {
+	cuo.mutation.RemoveOrderIDs(ids...)
+	return cuo
+}
+
+// RemoveOrders removes "orders" edges to Order entities.
+func (cuo *CityUpdateOne) RemoveOrders(o ...*Order) *CityUpdateOne {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return cuo.RemoveOrderIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1677,6 +1804,60 @@ func (cuo *CityUpdateOne) sqlSave(ctx context.Context) (_node *City, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: cabinetfault.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.OrdersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   city.OrdersTable,
+			Columns: []string{city.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.RemovedOrdersIDs(); len(nodes) > 0 && !cuo.mutation.OrdersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   city.OrdersTable,
+			Columns: []string{city.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.OrdersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   city.OrdersTable,
+			Columns: []string{city.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
 				},
 			},
 		}

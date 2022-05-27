@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -33,6 +34,7 @@ type CityQuery struct {
 	withChildren *CityQuery
 	withBranches *BranchQuery
 	withFaults   *CabinetFaultQuery
+	withOrders   *OrderQuery
 	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -173,6 +175,28 @@ func (cq *CityQuery) QueryFaults() *CabinetFaultQuery {
 			sqlgraph.From(city.Table, city.FieldID, selector),
 			sqlgraph.To(cabinetfault.Table, cabinetfault.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, city.FaultsTable, city.FaultsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryOrders chains the current query on the "orders" edge.
+func (cq *CityQuery) QueryOrders() *OrderQuery {
+	query := &OrderQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(city.Table, city.FieldID, selector),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, city.OrdersTable, city.OrdersColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -366,6 +390,7 @@ func (cq *CityQuery) Clone() *CityQuery {
 		withChildren: cq.withChildren.Clone(),
 		withBranches: cq.withBranches.Clone(),
 		withFaults:   cq.withFaults.Clone(),
+		withOrders:   cq.withOrders.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
@@ -425,6 +450,17 @@ func (cq *CityQuery) WithFaults(opts ...func(*CabinetFaultQuery)) *CityQuery {
 		opt(query)
 	}
 	cq.withFaults = query
+	return cq
+}
+
+// WithOrders tells the query-builder to eager-load the nodes that are connected to
+// the "orders" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CityQuery) WithOrders(opts ...func(*OrderQuery)) *CityQuery {
+	query := &OrderQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withOrders = query
 	return cq
 }
 
@@ -498,12 +534,13 @@ func (cq *CityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*City, e
 	var (
 		nodes       = []*City{}
 		_spec       = cq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			cq.withPlans != nil,
 			cq.withParent != nil,
 			cq.withChildren != nil,
 			cq.withBranches != nil,
 			cq.withFaults != nil,
+			cq.withOrders != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -685,6 +722,31 @@ func (cq *CityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*City, e
 				return nil, fmt.Errorf(`unexpected foreign-key "city_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Faults = append(node.Edges.Faults, n)
+		}
+	}
+
+	if query := cq.withOrders; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*City)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Orders = []*Order{}
+		}
+		query.Where(predicate.Order(func(s *sql.Selector) {
+			s.Where(sql.InValues(city.OrdersColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.CityID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "city_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Orders = append(node.Edges.Orders, n)
 		}
 	}
 

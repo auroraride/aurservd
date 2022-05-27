@@ -8,11 +8,11 @@ package internal
 import (
     "context"
     "entgo.io/ent"
+    "entgo.io/ent/entc/integration/ent/hook"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
     "fmt"
-    "github.com/auroraride/aurservd/internal/ent/hook"
     "github.com/sony/sonyflake"
 )
 

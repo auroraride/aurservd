@@ -296,23 +296,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Order",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			order.FieldCreatedAt:    {Type: field.TypeTime, Column: order.FieldCreatedAt},
-			order.FieldUpdatedAt:    {Type: field.TypeTime, Column: order.FieldUpdatedAt},
-			order.FieldDeletedAt:    {Type: field.TypeTime, Column: order.FieldDeletedAt},
-			order.FieldCreator:      {Type: field.TypeJSON, Column: order.FieldCreator},
-			order.FieldLastModifier: {Type: field.TypeJSON, Column: order.FieldLastModifier},
-			order.FieldRemark:       {Type: field.TypeString, Column: order.FieldRemark},
-			order.FieldRiderID:      {Type: field.TypeUint64, Column: order.FieldRiderID},
-			order.FieldPlanID:       {Type: field.TypeUint64, Column: order.FieldPlanID},
-			order.FieldStatus:       {Type: field.TypeUint8, Column: order.FieldStatus},
-			order.FieldPayway:       {Type: field.TypeUint8, Column: order.FieldPayway},
-			order.FieldType:         {Type: field.TypeUint, Column: order.FieldType},
-			order.FieldOutTradeNo:   {Type: field.TypeString, Column: order.FieldOutTradeNo},
-			order.FieldTradeNo:      {Type: field.TypeString, Column: order.FieldTradeNo},
-			order.FieldAmount:       {Type: field.TypeFloat64, Column: order.FieldAmount},
-			order.FieldPlanDetail:   {Type: field.TypeJSON, Column: order.FieldPlanDetail},
-			order.FieldParentID:     {Type: field.TypeUint64, Column: order.FieldParentID},
-			order.FieldSubordinate:  {Type: field.TypeJSON, Column: order.FieldSubordinate},
+			order.FieldCreatedAt:        {Type: field.TypeTime, Column: order.FieldCreatedAt},
+			order.FieldUpdatedAt:        {Type: field.TypeTime, Column: order.FieldUpdatedAt},
+			order.FieldDeletedAt:        {Type: field.TypeTime, Column: order.FieldDeletedAt},
+			order.FieldCreator:          {Type: field.TypeJSON, Column: order.FieldCreator},
+			order.FieldLastModifier:     {Type: field.TypeJSON, Column: order.FieldLastModifier},
+			order.FieldRemark:           {Type: field.TypeString, Column: order.FieldRemark},
+			order.FieldRiderID:          {Type: field.TypeUint64, Column: order.FieldRiderID},
+			order.FieldPlanID:           {Type: field.TypeUint64, Column: order.FieldPlanID},
+			order.FieldCityID:           {Type: field.TypeUint64, Column: order.FieldCityID},
+			order.FieldStatus:           {Type: field.TypeUint8, Column: order.FieldStatus},
+			order.FieldPayway:           {Type: field.TypeUint8, Column: order.FieldPayway},
+			order.FieldType:             {Type: field.TypeUint, Column: order.FieldType},
+			order.FieldOutTradeNo:       {Type: field.TypeString, Column: order.FieldOutTradeNo},
+			order.FieldTradeNo:          {Type: field.TypeString, Column: order.FieldTradeNo},
+			order.FieldAmount:           {Type: field.TypeFloat64, Column: order.FieldAmount},
+			order.FieldRefund:           {Type: field.TypeFloat64, Column: order.FieldRefund},
+			order.FieldRefundAt:         {Type: field.TypeTime, Column: order.FieldRefundAt},
+			order.FieldRefundOutTradeNo: {Type: field.TypeTime, Column: order.FieldRefundOutTradeNo},
+			order.FieldRefundTradeNo:    {Type: field.TypeTime, Column: order.FieldRefundTradeNo},
+			order.FieldPlanDetail:       {Type: field.TypeJSON, Column: order.FieldPlanDetail},
+			order.FieldParentID:         {Type: field.TypeUint64, Column: order.FieldParentID},
+			order.FieldSubordinate:      {Type: field.TypeJSON, Column: order.FieldSubordinate},
+			order.FieldStart:            {Type: field.TypeTime, Column: order.FieldStart},
+			order.FieldEnd:              {Type: field.TypeTime, Column: order.FieldEnd},
 		},
 	}
 	graph.Nodes[11] = &sqlgraph.Node{
@@ -689,6 +696,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"CabinetFault",
 	)
 	graph.MustAddE(
+		"orders",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   city.OrdersTable,
+			Columns: []string{city.OrdersColumn},
+			Bidi:    false,
+		},
+		"City",
+		"Order",
+	)
+	graph.MustAddE(
 		"order",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -759,6 +778,42 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Order",
 		"Commission",
+	)
+	graph.MustAddE(
+		"parent",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   order.ParentTable,
+			Columns: []string{order.ParentColumn},
+			Bidi:    false,
+		},
+		"Order",
+		"Order",
+	)
+	graph.MustAddE(
+		"children",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.ChildrenTable,
+			Columns: []string{order.ChildrenColumn},
+			Bidi:    false,
+		},
+		"Order",
+		"Order",
+	)
+	graph.MustAddE(
+		"city",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   order.CityTable,
+			Columns: []string{order.CityColumn},
+			Bidi:    false,
+		},
+		"Order",
+		"City",
 	)
 	graph.MustAddE(
 		"rider",
@@ -1839,6 +1894,20 @@ func (f *CityFilter) WhereHasFaultsWith(preds ...predicate.CabinetFault) {
 	})))
 }
 
+// WhereHasOrders applies a predicate to check if query has an edge orders.
+func (f *CityFilter) WhereHasOrders() {
+	f.Where(entql.HasEdge("orders"))
+}
+
+// WhereHasOrdersWith applies a predicate to check if query has an edge orders with a given conditions (other predicates).
+func (f *CityFilter) WhereHasOrdersWith(preds ...predicate.Order) {
+	f.Where(entql.HasEdgeWith("orders", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (cq *CommissionQuery) addPredicate(pred func(s *sql.Selector)) {
 	cq.predicates = append(cq.predicates, pred)
@@ -2316,6 +2385,11 @@ func (f *OrderFilter) WherePlanID(p entql.Uint64P) {
 	f.Where(p.Field(order.FieldPlanID))
 }
 
+// WhereCityID applies the entql uint64 predicate on the city_id field.
+func (f *OrderFilter) WhereCityID(p entql.Uint64P) {
+	f.Where(p.Field(order.FieldCityID))
+}
+
 // WhereStatus applies the entql uint8 predicate on the status field.
 func (f *OrderFilter) WhereStatus(p entql.Uint8P) {
 	f.Where(p.Field(order.FieldStatus))
@@ -2346,6 +2420,26 @@ func (f *OrderFilter) WhereAmount(p entql.Float64P) {
 	f.Where(p.Field(order.FieldAmount))
 }
 
+// WhereRefund applies the entql float64 predicate on the refund field.
+func (f *OrderFilter) WhereRefund(p entql.Float64P) {
+	f.Where(p.Field(order.FieldRefund))
+}
+
+// WhereRefundAt applies the entql time.Time predicate on the refund_at field.
+func (f *OrderFilter) WhereRefundAt(p entql.TimeP) {
+	f.Where(p.Field(order.FieldRefundAt))
+}
+
+// WhereRefundOutTradeNo applies the entql time.Time predicate on the refund_out_trade_no field.
+func (f *OrderFilter) WhereRefundOutTradeNo(p entql.TimeP) {
+	f.Where(p.Field(order.FieldRefundOutTradeNo))
+}
+
+// WhereRefundTradeNo applies the entql time.Time predicate on the refund_trade_no field.
+func (f *OrderFilter) WhereRefundTradeNo(p entql.TimeP) {
+	f.Where(p.Field(order.FieldRefundTradeNo))
+}
+
 // WherePlanDetail applies the entql json.RawMessage predicate on the plan_detail field.
 func (f *OrderFilter) WherePlanDetail(p entql.BytesP) {
 	f.Where(p.Field(order.FieldPlanDetail))
@@ -2359,6 +2453,16 @@ func (f *OrderFilter) WhereParentID(p entql.Uint64P) {
 // WhereSubordinate applies the entql json.RawMessage predicate on the subordinate field.
 func (f *OrderFilter) WhereSubordinate(p entql.BytesP) {
 	f.Where(p.Field(order.FieldSubordinate))
+}
+
+// WhereStart applies the entql time.Time predicate on the start field.
+func (f *OrderFilter) WhereStart(p entql.TimeP) {
+	f.Where(p.Field(order.FieldStart))
+}
+
+// WhereEnd applies the entql time.Time predicate on the end field.
+func (f *OrderFilter) WhereEnd(p entql.TimeP) {
+	f.Where(p.Field(order.FieldEnd))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.
@@ -2397,6 +2501,48 @@ func (f *OrderFilter) WhereHasCommission() {
 // WhereHasCommissionWith applies a predicate to check if query has an edge commission with a given conditions (other predicates).
 func (f *OrderFilter) WhereHasCommissionWith(preds ...predicate.Commission) {
 	f.Where(entql.HasEdgeWith("commission", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasParent applies a predicate to check if query has an edge parent.
+func (f *OrderFilter) WhereHasParent() {
+	f.Where(entql.HasEdge("parent"))
+}
+
+// WhereHasParentWith applies a predicate to check if query has an edge parent with a given conditions (other predicates).
+func (f *OrderFilter) WhereHasParentWith(preds ...predicate.Order) {
+	f.Where(entql.HasEdgeWith("parent", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasChildren applies a predicate to check if query has an edge children.
+func (f *OrderFilter) WhereHasChildren() {
+	f.Where(entql.HasEdge("children"))
+}
+
+// WhereHasChildrenWith applies a predicate to check if query has an edge children with a given conditions (other predicates).
+func (f *OrderFilter) WhereHasChildrenWith(preds ...predicate.Order) {
+	f.Where(entql.HasEdgeWith("children", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCity applies a predicate to check if query has an edge city.
+func (f *OrderFilter) WhereHasCity() {
+	f.Where(entql.HasEdge("city"))
+}
+
+// WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
+func (f *OrderFilter) WhereHasCityWith(preds ...predicate.City) {
+	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

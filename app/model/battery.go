@@ -8,8 +8,8 @@ package model
 // BatteryModel 电池型号
 type BatteryModel struct {
     ID       uint64  `json:"id"`
-    Voltage  float64 `json:"voltage"`
-    Capacity float64 `json:"capacity"`
+    Voltage  float64 `json:"voltage"`  // 电压
+    Capacity float64 `json:"capacity"` // 容量
 }
 
 // BatteryModelCreateReq 电池型号创建请求

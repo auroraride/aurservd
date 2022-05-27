@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -116,6 +117,12 @@ func (ou *OrderUpdate) ClearPlanID() *OrderUpdate {
 	return ou
 }
 
+// SetCityID sets the "city_id" field.
+func (ou *OrderUpdate) SetCityID(u uint64) *OrderUpdate {
+	ou.mutation.SetCityID(u)
+	return ou
+}
+
 // SetStatus sets the "status" field.
 func (ou *OrderUpdate) SetStatus(u uint8) *OrderUpdate {
 	ou.mutation.ResetStatus()
@@ -134,6 +141,93 @@ func (ou *OrderUpdate) SetNillableStatus(u *uint8) *OrderUpdate {
 // AddStatus adds u to the "status" field.
 func (ou *OrderUpdate) AddStatus(u int8) *OrderUpdate {
 	ou.mutation.AddStatus(u)
+	return ou
+}
+
+// SetRefund sets the "refund" field.
+func (ou *OrderUpdate) SetRefund(f float64) *OrderUpdate {
+	ou.mutation.ResetRefund()
+	ou.mutation.SetRefund(f)
+	return ou
+}
+
+// SetNillableRefund sets the "refund" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableRefund(f *float64) *OrderUpdate {
+	if f != nil {
+		ou.SetRefund(*f)
+	}
+	return ou
+}
+
+// AddRefund adds f to the "refund" field.
+func (ou *OrderUpdate) AddRefund(f float64) *OrderUpdate {
+	ou.mutation.AddRefund(f)
+	return ou
+}
+
+// ClearRefund clears the value of the "refund" field.
+func (ou *OrderUpdate) ClearRefund() *OrderUpdate {
+	ou.mutation.ClearRefund()
+	return ou
+}
+
+// SetRefundAt sets the "refund_at" field.
+func (ou *OrderUpdate) SetRefundAt(t time.Time) *OrderUpdate {
+	ou.mutation.SetRefundAt(t)
+	return ou
+}
+
+// SetNillableRefundAt sets the "refund_at" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableRefundAt(t *time.Time) *OrderUpdate {
+	if t != nil {
+		ou.SetRefundAt(*t)
+	}
+	return ou
+}
+
+// ClearRefundAt clears the value of the "refund_at" field.
+func (ou *OrderUpdate) ClearRefundAt() *OrderUpdate {
+	ou.mutation.ClearRefundAt()
+	return ou
+}
+
+// SetRefundOutTradeNo sets the "refund_out_trade_no" field.
+func (ou *OrderUpdate) SetRefundOutTradeNo(t time.Time) *OrderUpdate {
+	ou.mutation.SetRefundOutTradeNo(t)
+	return ou
+}
+
+// SetNillableRefundOutTradeNo sets the "refund_out_trade_no" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableRefundOutTradeNo(t *time.Time) *OrderUpdate {
+	if t != nil {
+		ou.SetRefundOutTradeNo(*t)
+	}
+	return ou
+}
+
+// ClearRefundOutTradeNo clears the value of the "refund_out_trade_no" field.
+func (ou *OrderUpdate) ClearRefundOutTradeNo() *OrderUpdate {
+	ou.mutation.ClearRefundOutTradeNo()
+	return ou
+}
+
+// SetRefundTradeNo sets the "refund_trade_no" field.
+func (ou *OrderUpdate) SetRefundTradeNo(t time.Time) *OrderUpdate {
+	ou.mutation.SetRefundTradeNo(t)
+	return ou
+}
+
+// SetNillableRefundTradeNo sets the "refund_trade_no" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableRefundTradeNo(t *time.Time) *OrderUpdate {
+	if t != nil {
+		ou.SetRefundTradeNo(*t)
+	}
+	return ou
+}
+
+// ClearRefundTradeNo clears the value of the "refund_trade_no" field.
+func (ou *OrderUpdate) ClearRefundTradeNo() *OrderUpdate {
+	ou.mutation.ClearRefundTradeNo()
 	return ou
 }
 
@@ -159,7 +253,6 @@ func (ou *OrderUpdate) ClearPlanDetail() *OrderUpdate {
 
 // SetParentID sets the "parent_id" field.
 func (ou *OrderUpdate) SetParentID(u uint64) *OrderUpdate {
-	ou.mutation.ResetParentID()
 	ou.mutation.SetParentID(u)
 	return ou
 }
@@ -169,12 +262,6 @@ func (ou *OrderUpdate) SetNillableParentID(u *uint64) *OrderUpdate {
 	if u != nil {
 		ou.SetParentID(*u)
 	}
-	return ou
-}
-
-// AddParentID adds u to the "parent_id" field.
-func (ou *OrderUpdate) AddParentID(u int64) *OrderUpdate {
-	ou.mutation.AddParentID(u)
 	return ou
 }
 
@@ -201,6 +288,46 @@ func (ou *OrderUpdate) SetNillableSubordinate(ms *model.OrderSubordinate) *Order
 // ClearSubordinate clears the value of the "subordinate" field.
 func (ou *OrderUpdate) ClearSubordinate() *OrderUpdate {
 	ou.mutation.ClearSubordinate()
+	return ou
+}
+
+// SetStart sets the "start" field.
+func (ou *OrderUpdate) SetStart(t time.Time) *OrderUpdate {
+	ou.mutation.SetStart(t)
+	return ou
+}
+
+// SetNillableStart sets the "start" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableStart(t *time.Time) *OrderUpdate {
+	if t != nil {
+		ou.SetStart(*t)
+	}
+	return ou
+}
+
+// ClearStart clears the value of the "start" field.
+func (ou *OrderUpdate) ClearStart() *OrderUpdate {
+	ou.mutation.ClearStart()
+	return ou
+}
+
+// SetEnd sets the "end" field.
+func (ou *OrderUpdate) SetEnd(t time.Time) *OrderUpdate {
+	ou.mutation.SetEnd(t)
+	return ou
+}
+
+// SetNillableEnd sets the "end" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableEnd(t *time.Time) *OrderUpdate {
+	if t != nil {
+		ou.SetEnd(*t)
+	}
+	return ou
+}
+
+// ClearEnd clears the value of the "end" field.
+func (ou *OrderUpdate) ClearEnd() *OrderUpdate {
+	ou.mutation.ClearEnd()
 	return ou
 }
 
@@ -233,6 +360,31 @@ func (ou *OrderUpdate) SetCommission(c *Commission) *OrderUpdate {
 	return ou.SetCommissionID(c.ID)
 }
 
+// SetParent sets the "parent" edge to the Order entity.
+func (ou *OrderUpdate) SetParent(o *Order) *OrderUpdate {
+	return ou.SetParentID(o.ID)
+}
+
+// AddChildIDs adds the "children" edge to the Order entity by IDs.
+func (ou *OrderUpdate) AddChildIDs(ids ...uint64) *OrderUpdate {
+	ou.mutation.AddChildIDs(ids...)
+	return ou
+}
+
+// AddChildren adds the "children" edges to the Order entity.
+func (ou *OrderUpdate) AddChildren(o ...*Order) *OrderUpdate {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return ou.AddChildIDs(ids...)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (ou *OrderUpdate) SetCity(c *City) *OrderUpdate {
+	return ou.SetCityID(c.ID)
+}
+
 // Mutation returns the OrderMutation object of the builder.
 func (ou *OrderUpdate) Mutation() *OrderMutation {
 	return ou.mutation
@@ -253,6 +405,39 @@ func (ou *OrderUpdate) ClearPlan() *OrderUpdate {
 // ClearCommission clears the "commission" edge to the Commission entity.
 func (ou *OrderUpdate) ClearCommission() *OrderUpdate {
 	ou.mutation.ClearCommission()
+	return ou
+}
+
+// ClearParent clears the "parent" edge to the Order entity.
+func (ou *OrderUpdate) ClearParent() *OrderUpdate {
+	ou.mutation.ClearParent()
+	return ou
+}
+
+// ClearChildren clears all "children" edges to the Order entity.
+func (ou *OrderUpdate) ClearChildren() *OrderUpdate {
+	ou.mutation.ClearChildren()
+	return ou
+}
+
+// RemoveChildIDs removes the "children" edge to Order entities by IDs.
+func (ou *OrderUpdate) RemoveChildIDs(ids ...uint64) *OrderUpdate {
+	ou.mutation.RemoveChildIDs(ids...)
+	return ou
+}
+
+// RemoveChildren removes "children" edges to Order entities.
+func (ou *OrderUpdate) RemoveChildren(o ...*Order) *OrderUpdate {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return ou.RemoveChildIDs(ids...)
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (ou *OrderUpdate) ClearCity() *OrderUpdate {
+	ou.mutation.ClearCity()
 	return ou
 }
 
@@ -335,6 +520,9 @@ func (ou *OrderUpdate) defaults() error {
 func (ou *OrderUpdate) check() error {
 	if _, ok := ou.mutation.RiderID(); ou.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Order.rider"`)
+	}
+	if _, ok := ou.mutation.CityID(); ou.mutation.CityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Order.city"`)
 	}
 	return nil
 }
@@ -423,6 +611,65 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: order.FieldStatus,
 		})
 	}
+	if value, ok := ou.mutation.Refund(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldRefund,
+		})
+	}
+	if value, ok := ou.mutation.AddedRefund(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldRefund,
+		})
+	}
+	if ou.mutation.RefundCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: order.FieldRefund,
+		})
+	}
+	if value, ok := ou.mutation.RefundAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: order.FieldRefundAt,
+		})
+	}
+	if ou.mutation.RefundAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: order.FieldRefundAt,
+		})
+	}
+	if value, ok := ou.mutation.RefundOutTradeNo(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: order.FieldRefundOutTradeNo,
+		})
+	}
+	if ou.mutation.RefundOutTradeNoCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: order.FieldRefundOutTradeNo,
+		})
+	}
+	if value, ok := ou.mutation.RefundTradeNo(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: order.FieldRefundTradeNo,
+		})
+	}
+	if ou.mutation.RefundTradeNoCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: order.FieldRefundTradeNo,
+		})
+	}
 	if value, ok := ou.mutation.PlanDetail(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -436,26 +683,6 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: order.FieldPlanDetail,
 		})
 	}
-	if value, ok := ou.mutation.ParentID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
-			Value:  value,
-			Column: order.FieldParentID,
-		})
-	}
-	if value, ok := ou.mutation.AddedParentID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
-			Value:  value,
-			Column: order.FieldParentID,
-		})
-	}
-	if ou.mutation.ParentIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
-			Column: order.FieldParentID,
-		})
-	}
 	if value, ok := ou.mutation.Subordinate(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -467,6 +694,32 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: order.FieldSubordinate,
+		})
+	}
+	if value, ok := ou.mutation.Start(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: order.FieldStart,
+		})
+	}
+	if ou.mutation.StartCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: order.FieldStart,
+		})
+	}
+	if value, ok := ou.mutation.End(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: order.FieldEnd,
+		})
+	}
+	if ou.mutation.EndCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: order.FieldEnd,
 		})
 	}
 	if ou.mutation.RiderCleared() {
@@ -566,6 +819,130 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: commission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ou.mutation.ParentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   order.ParentTable,
+			Columns: []string{order.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   order.ParentTable,
+			Columns: []string{order.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ou.mutation.ChildrenCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.ChildrenTable,
+			Columns: []string{order.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.RemovedChildrenIDs(); len(nodes) > 0 && !ou.mutation.ChildrenCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.ChildrenTable,
+			Columns: []string{order.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.ChildrenIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.ChildrenTable,
+			Columns: []string{order.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ou.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   order.CityTable,
+			Columns: []string{order.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   order.CityTable,
+			Columns: []string{order.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
 				},
 			},
 		}
@@ -677,6 +1054,12 @@ func (ouo *OrderUpdateOne) ClearPlanID() *OrderUpdateOne {
 	return ouo
 }
 
+// SetCityID sets the "city_id" field.
+func (ouo *OrderUpdateOne) SetCityID(u uint64) *OrderUpdateOne {
+	ouo.mutation.SetCityID(u)
+	return ouo
+}
+
 // SetStatus sets the "status" field.
 func (ouo *OrderUpdateOne) SetStatus(u uint8) *OrderUpdateOne {
 	ouo.mutation.ResetStatus()
@@ -695,6 +1078,93 @@ func (ouo *OrderUpdateOne) SetNillableStatus(u *uint8) *OrderUpdateOne {
 // AddStatus adds u to the "status" field.
 func (ouo *OrderUpdateOne) AddStatus(u int8) *OrderUpdateOne {
 	ouo.mutation.AddStatus(u)
+	return ouo
+}
+
+// SetRefund sets the "refund" field.
+func (ouo *OrderUpdateOne) SetRefund(f float64) *OrderUpdateOne {
+	ouo.mutation.ResetRefund()
+	ouo.mutation.SetRefund(f)
+	return ouo
+}
+
+// SetNillableRefund sets the "refund" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableRefund(f *float64) *OrderUpdateOne {
+	if f != nil {
+		ouo.SetRefund(*f)
+	}
+	return ouo
+}
+
+// AddRefund adds f to the "refund" field.
+func (ouo *OrderUpdateOne) AddRefund(f float64) *OrderUpdateOne {
+	ouo.mutation.AddRefund(f)
+	return ouo
+}
+
+// ClearRefund clears the value of the "refund" field.
+func (ouo *OrderUpdateOne) ClearRefund() *OrderUpdateOne {
+	ouo.mutation.ClearRefund()
+	return ouo
+}
+
+// SetRefundAt sets the "refund_at" field.
+func (ouo *OrderUpdateOne) SetRefundAt(t time.Time) *OrderUpdateOne {
+	ouo.mutation.SetRefundAt(t)
+	return ouo
+}
+
+// SetNillableRefundAt sets the "refund_at" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableRefundAt(t *time.Time) *OrderUpdateOne {
+	if t != nil {
+		ouo.SetRefundAt(*t)
+	}
+	return ouo
+}
+
+// ClearRefundAt clears the value of the "refund_at" field.
+func (ouo *OrderUpdateOne) ClearRefundAt() *OrderUpdateOne {
+	ouo.mutation.ClearRefundAt()
+	return ouo
+}
+
+// SetRefundOutTradeNo sets the "refund_out_trade_no" field.
+func (ouo *OrderUpdateOne) SetRefundOutTradeNo(t time.Time) *OrderUpdateOne {
+	ouo.mutation.SetRefundOutTradeNo(t)
+	return ouo
+}
+
+// SetNillableRefundOutTradeNo sets the "refund_out_trade_no" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableRefundOutTradeNo(t *time.Time) *OrderUpdateOne {
+	if t != nil {
+		ouo.SetRefundOutTradeNo(*t)
+	}
+	return ouo
+}
+
+// ClearRefundOutTradeNo clears the value of the "refund_out_trade_no" field.
+func (ouo *OrderUpdateOne) ClearRefundOutTradeNo() *OrderUpdateOne {
+	ouo.mutation.ClearRefundOutTradeNo()
+	return ouo
+}
+
+// SetRefundTradeNo sets the "refund_trade_no" field.
+func (ouo *OrderUpdateOne) SetRefundTradeNo(t time.Time) *OrderUpdateOne {
+	ouo.mutation.SetRefundTradeNo(t)
+	return ouo
+}
+
+// SetNillableRefundTradeNo sets the "refund_trade_no" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableRefundTradeNo(t *time.Time) *OrderUpdateOne {
+	if t != nil {
+		ouo.SetRefundTradeNo(*t)
+	}
+	return ouo
+}
+
+// ClearRefundTradeNo clears the value of the "refund_trade_no" field.
+func (ouo *OrderUpdateOne) ClearRefundTradeNo() *OrderUpdateOne {
+	ouo.mutation.ClearRefundTradeNo()
 	return ouo
 }
 
@@ -720,7 +1190,6 @@ func (ouo *OrderUpdateOne) ClearPlanDetail() *OrderUpdateOne {
 
 // SetParentID sets the "parent_id" field.
 func (ouo *OrderUpdateOne) SetParentID(u uint64) *OrderUpdateOne {
-	ouo.mutation.ResetParentID()
 	ouo.mutation.SetParentID(u)
 	return ouo
 }
@@ -730,12 +1199,6 @@ func (ouo *OrderUpdateOne) SetNillableParentID(u *uint64) *OrderUpdateOne {
 	if u != nil {
 		ouo.SetParentID(*u)
 	}
-	return ouo
-}
-
-// AddParentID adds u to the "parent_id" field.
-func (ouo *OrderUpdateOne) AddParentID(u int64) *OrderUpdateOne {
-	ouo.mutation.AddParentID(u)
 	return ouo
 }
 
@@ -762,6 +1225,46 @@ func (ouo *OrderUpdateOne) SetNillableSubordinate(ms *model.OrderSubordinate) *O
 // ClearSubordinate clears the value of the "subordinate" field.
 func (ouo *OrderUpdateOne) ClearSubordinate() *OrderUpdateOne {
 	ouo.mutation.ClearSubordinate()
+	return ouo
+}
+
+// SetStart sets the "start" field.
+func (ouo *OrderUpdateOne) SetStart(t time.Time) *OrderUpdateOne {
+	ouo.mutation.SetStart(t)
+	return ouo
+}
+
+// SetNillableStart sets the "start" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableStart(t *time.Time) *OrderUpdateOne {
+	if t != nil {
+		ouo.SetStart(*t)
+	}
+	return ouo
+}
+
+// ClearStart clears the value of the "start" field.
+func (ouo *OrderUpdateOne) ClearStart() *OrderUpdateOne {
+	ouo.mutation.ClearStart()
+	return ouo
+}
+
+// SetEnd sets the "end" field.
+func (ouo *OrderUpdateOne) SetEnd(t time.Time) *OrderUpdateOne {
+	ouo.mutation.SetEnd(t)
+	return ouo
+}
+
+// SetNillableEnd sets the "end" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableEnd(t *time.Time) *OrderUpdateOne {
+	if t != nil {
+		ouo.SetEnd(*t)
+	}
+	return ouo
+}
+
+// ClearEnd clears the value of the "end" field.
+func (ouo *OrderUpdateOne) ClearEnd() *OrderUpdateOne {
+	ouo.mutation.ClearEnd()
 	return ouo
 }
 
@@ -794,6 +1297,31 @@ func (ouo *OrderUpdateOne) SetCommission(c *Commission) *OrderUpdateOne {
 	return ouo.SetCommissionID(c.ID)
 }
 
+// SetParent sets the "parent" edge to the Order entity.
+func (ouo *OrderUpdateOne) SetParent(o *Order) *OrderUpdateOne {
+	return ouo.SetParentID(o.ID)
+}
+
+// AddChildIDs adds the "children" edge to the Order entity by IDs.
+func (ouo *OrderUpdateOne) AddChildIDs(ids ...uint64) *OrderUpdateOne {
+	ouo.mutation.AddChildIDs(ids...)
+	return ouo
+}
+
+// AddChildren adds the "children" edges to the Order entity.
+func (ouo *OrderUpdateOne) AddChildren(o ...*Order) *OrderUpdateOne {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return ouo.AddChildIDs(ids...)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (ouo *OrderUpdateOne) SetCity(c *City) *OrderUpdateOne {
+	return ouo.SetCityID(c.ID)
+}
+
 // Mutation returns the OrderMutation object of the builder.
 func (ouo *OrderUpdateOne) Mutation() *OrderMutation {
 	return ouo.mutation
@@ -814,6 +1342,39 @@ func (ouo *OrderUpdateOne) ClearPlan() *OrderUpdateOne {
 // ClearCommission clears the "commission" edge to the Commission entity.
 func (ouo *OrderUpdateOne) ClearCommission() *OrderUpdateOne {
 	ouo.mutation.ClearCommission()
+	return ouo
+}
+
+// ClearParent clears the "parent" edge to the Order entity.
+func (ouo *OrderUpdateOne) ClearParent() *OrderUpdateOne {
+	ouo.mutation.ClearParent()
+	return ouo
+}
+
+// ClearChildren clears all "children" edges to the Order entity.
+func (ouo *OrderUpdateOne) ClearChildren() *OrderUpdateOne {
+	ouo.mutation.ClearChildren()
+	return ouo
+}
+
+// RemoveChildIDs removes the "children" edge to Order entities by IDs.
+func (ouo *OrderUpdateOne) RemoveChildIDs(ids ...uint64) *OrderUpdateOne {
+	ouo.mutation.RemoveChildIDs(ids...)
+	return ouo
+}
+
+// RemoveChildren removes "children" edges to Order entities.
+func (ouo *OrderUpdateOne) RemoveChildren(o ...*Order) *OrderUpdateOne {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return ouo.RemoveChildIDs(ids...)
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (ouo *OrderUpdateOne) ClearCity() *OrderUpdateOne {
+	ouo.mutation.ClearCity()
 	return ouo
 }
 
@@ -909,6 +1470,9 @@ func (ouo *OrderUpdateOne) defaults() error {
 func (ouo *OrderUpdateOne) check() error {
 	if _, ok := ouo.mutation.RiderID(); ouo.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Order.rider"`)
+	}
+	if _, ok := ouo.mutation.CityID(); ouo.mutation.CityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Order.city"`)
 	}
 	return nil
 }
@@ -1014,6 +1578,65 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 			Column: order.FieldStatus,
 		})
 	}
+	if value, ok := ouo.mutation.Refund(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldRefund,
+		})
+	}
+	if value, ok := ouo.mutation.AddedRefund(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldRefund,
+		})
+	}
+	if ouo.mutation.RefundCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: order.FieldRefund,
+		})
+	}
+	if value, ok := ouo.mutation.RefundAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: order.FieldRefundAt,
+		})
+	}
+	if ouo.mutation.RefundAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: order.FieldRefundAt,
+		})
+	}
+	if value, ok := ouo.mutation.RefundOutTradeNo(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: order.FieldRefundOutTradeNo,
+		})
+	}
+	if ouo.mutation.RefundOutTradeNoCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: order.FieldRefundOutTradeNo,
+		})
+	}
+	if value, ok := ouo.mutation.RefundTradeNo(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: order.FieldRefundTradeNo,
+		})
+	}
+	if ouo.mutation.RefundTradeNoCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: order.FieldRefundTradeNo,
+		})
+	}
 	if value, ok := ouo.mutation.PlanDetail(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -1027,26 +1650,6 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 			Column: order.FieldPlanDetail,
 		})
 	}
-	if value, ok := ouo.mutation.ParentID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
-			Value:  value,
-			Column: order.FieldParentID,
-		})
-	}
-	if value, ok := ouo.mutation.AddedParentID(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
-			Value:  value,
-			Column: order.FieldParentID,
-		})
-	}
-	if ouo.mutation.ParentIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
-			Column: order.FieldParentID,
-		})
-	}
 	if value, ok := ouo.mutation.Subordinate(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -1058,6 +1661,32 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: order.FieldSubordinate,
+		})
+	}
+	if value, ok := ouo.mutation.Start(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: order.FieldStart,
+		})
+	}
+	if ouo.mutation.StartCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: order.FieldStart,
+		})
+	}
+	if value, ok := ouo.mutation.End(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: order.FieldEnd,
+		})
+	}
+	if ouo.mutation.EndCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: order.FieldEnd,
 		})
 	}
 	if ouo.mutation.RiderCleared() {
@@ -1157,6 +1786,130 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: commission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ouo.mutation.ParentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   order.ParentTable,
+			Columns: []string{order.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   order.ParentTable,
+			Columns: []string{order.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ouo.mutation.ChildrenCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.ChildrenTable,
+			Columns: []string{order.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.RemovedChildrenIDs(); len(nodes) > 0 && !ouo.mutation.ChildrenCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.ChildrenTable,
+			Columns: []string{order.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.ChildrenIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.ChildrenTable,
+			Columns: []string{order.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ouo.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   order.CityTable,
+			Columns: []string{order.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   order.CityTable,
+			Columns: []string{order.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
 				},
 			},
 		}

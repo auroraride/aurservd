@@ -10,6 +10,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/internal/payment"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -25,11 +26,13 @@ type orderService struct {
     ctx      context.Context
     modifier *model.Modifier
     rider    *ent.Rider
+    orm      *ent.OrderClient
 }
 
 func NewOrder() *orderService {
     return &orderService{
         ctx: context.Background(),
+        orm: ar.Ent.Order,
     }
 }
 
@@ -53,8 +56,12 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
     if !NewContract().Effective(s.rider) {
         snag.Panic("请先签约")
     }
+    // 查询是否存在未使用的骑士卡
+    if s.RiderNotActivedExists(s.rider.ID) {
+        snag.Panic("当前有未使用的骑士卡")
+    }
     // 查询套餐是否存在
-    plan := NewPlan().QueryEffective(req.PlanID)
+    plan := NewPlan().QueryEffectiveWithID(req.PlanID)
     cp := new(model.PlanItem)
     _ = copier.CopyWithOption(cp, plan, copier.Option{Converters: []copier.TypeConverter{
         {
@@ -92,6 +99,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
         Deposit:    deposit,
         Payway:     req.Payway,
         Expire:     time.Now().Add(10 * time.Minute),
+        CityID:     req.CityID,
     }
     // 订单缓存
     err := cache.Set(s.ctx, "ORDER_"+no, prepay, 20*time.Minute).Err()
@@ -140,6 +148,7 @@ func (s *orderService) OrderPaid(trade *model.OrderCache) {
         SetStatus(model.OrderStatusPaid).
         SetNillablePlanDetail(trade.Plan).
         SetType(trade.OrderType).
+        SetCityID(trade.CityID).
         Save(s.ctx)
     // 如果有押金, 创建押金订单
     if trade.Deposit > 0 {
@@ -168,4 +177,62 @@ func (s *orderService) OrderPaid(trade *model.OrderCache) {
 
     // 删除缓存
     cache.Del(context.Background(), "ORDER_"+trade.OutTradeNo)
+}
+
+// RiderNotActivedExists 查找用户未激活的新订单
+// 已支付 && 开始时间为空 && 新签 && 重签
+func (s *orderService) RiderNotActivedExists(riderID uint64) bool {
+    o, _ := s.orm.QueryNotDeleted().Where(
+        order.RiderID(riderID),
+        order.Status(model.OrderStatusPaid),
+        order.TypeIn(model.OrderTypeNewPlan, model.OrderTypeRenewal),
+        order.StartIsNil(),
+    ).Exist(s.ctx)
+    return o
+}
+
+// RiderNotActived 获取未激活骑士卡详情
+func (s *orderService) RiderNotActived(riderID uint64) *model.OrderNotActived {
+    o, err := s.orm.QueryNotDeleted().
+        Where(
+            order.RiderID(riderID),
+            order.Status(model.OrderStatusPaid),
+            order.TypeIn(model.OrderTypeNewPlan, model.OrderTypeRenewal),
+            order.StartIsNil(),
+        ).
+        WithCity().
+        WithPlan(func(pq *ent.PlanQuery) {
+            pq.WithPms()
+        }).
+        WithChildren(func(cq *ent.OrderQuery) {
+            cq.Where(order.Type(model.OrderTypeDeposit))
+        }).
+        Only(s.ctx)
+    if err != nil {
+        return nil
+    }
+    item := &model.OrderNotActived{
+        ID:     o.ID,
+        Amount: o.Amount,
+        Total:  o.Amount,
+        Payway: o.Payway,
+        Plan:   o.PlanDetail,
+        City: model.City{
+            ID:   o.Edges.City.ID,
+            Name: o.Edges.City.Name,
+        },
+        Time: o.CreatedAt.Format(carbon.DateLayout),
+    }
+    for _, pm := range o.Edges.Plan.Edges.Pms {
+        item.Models = append(item.Models, model.BatteryModel{
+            ID:       pm.ID,
+            Voltage:  pm.Voltage,
+            Capacity: pm.Capacity,
+        })
+    }
+    if len(o.Edges.Children) > 0 {
+        item.Deposit = o.Edges.Children[0].Amount
+    }
+    item.Total += item.Deposit
+    return item
 }

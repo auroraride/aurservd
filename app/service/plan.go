@@ -56,8 +56,8 @@ func (s *planService) Query(id uint64) *ent.Plan {
     return item
 }
 
-// QueryEffective 获取有效期内的骑行卡
-func (s *planService) QueryEffective(id uint64) *ent.Plan {
+// QueryEffectiveWithID 获取当前生效的骑行卡
+func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
     now := time.Now()
     item, err := s.orm.QueryNotDeleted().
         Where(

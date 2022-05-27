@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -42,6 +43,9 @@ type Order struct {
 	// PlanID holds the value of the "plan_id" field.
 	// 骑士卡ID
 	PlanID uint64 `json:"plan_id,omitempty"`
+	// CityID holds the value of the "city_id" field.
+	// 城市ID
+	CityID uint64 `json:"city_id,omitempty"`
 	// Status holds the value of the "status" field.
 	// 订单状态 0未支付 1已支付 2申请退款 3已退款
 	Status uint8 `json:"status,omitempty"`
@@ -49,7 +53,7 @@ type Order struct {
 	// 支付方式 1支付宝 2微信
 	Payway uint8 `json:"payway,omitempty"`
 	// Type holds the value of the "type" field.
-	// 订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金
+	// 订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
 	Type uint `json:"type,omitempty"`
 	// OutTradeNo holds the value of the "out_trade_no" field.
 	// 交易订单号
@@ -60,15 +64,33 @@ type Order struct {
 	// Amount holds the value of the "amount" field.
 	// 支付金额
 	Amount float64 `json:"amount,omitempty"`
+	// Refund holds the value of the "refund" field.
+	// 退款金额
+	Refund float64 `json:"refund,omitempty"`
+	// RefundAt holds the value of the "refund_at" field.
+	// 退款时间
+	RefundAt time.Time `json:"refund_at,omitempty"`
+	// RefundOutTradeNo holds the value of the "refund_out_trade_no" field.
+	// 退款订单号
+	RefundOutTradeNo time.Time `json:"refund_out_trade_no,omitempty"`
+	// RefundTradeNo holds the value of the "refund_trade_no" field.
+	// 退款平台订单号
+	RefundTradeNo time.Time `json:"refund_trade_no,omitempty"`
 	// PlanDetail holds the value of the "plan_detail" field.
 	// 骑士卡详情
 	PlanDetail model.PlanItem `json:"plan_detail,omitempty"`
 	// ParentID holds the value of the "parent_id" field.
-	// 续签/更改电池接续从属订单ID(上个订单)
+	// 续签/更改电池/押金所属订单ID
 	ParentID uint64 `json:"parent_id,omitempty"`
 	// Subordinate holds the value of the "subordinate" field.
 	// 接续订单属性
 	Subordinate model.OrderSubordinate `json:"subordinate,omitempty"`
+	// Start holds the value of the "start" field.
+	// 有效期开始日期
+	Start time.Time `json:"start,omitempty"`
+	// End holds the value of the "end" field.
+	// 有效期结束日期
+	End time.Time `json:"end,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrderQuery when eager-loading is set.
 	Edges OrderEdges `json:"edges"`
@@ -82,9 +104,15 @@ type OrderEdges struct {
 	Plan *Plan `json:"plan,omitempty"`
 	// Commission holds the value of the commission edge.
 	Commission *Commission `json:"commission,omitempty"`
+	// Parent holds the value of the parent edge.
+	Parent *Order `json:"parent,omitempty"`
+	// Children holds the value of the children edge.
+	Children []*Order `json:"children,omitempty"`
+	// City holds the value of the city edge.
+	City *City `json:"city,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [6]bool
 }
 
 // RiderOrErr returns the Rider value or an error if the edge
@@ -129,6 +157,43 @@ func (e OrderEdges) CommissionOrErr() (*Commission, error) {
 	return nil, &NotLoadedError{edge: "commission"}
 }
 
+// ParentOrErr returns the Parent value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e OrderEdges) ParentOrErr() (*Order, error) {
+	if e.loadedTypes[3] {
+		if e.Parent == nil {
+			// The edge parent was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: order.Label}
+		}
+		return e.Parent, nil
+	}
+	return nil, &NotLoadedError{edge: "parent"}
+}
+
+// ChildrenOrErr returns the Children value or an error if the edge
+// was not loaded in eager-loading.
+func (e OrderEdges) ChildrenOrErr() ([]*Order, error) {
+	if e.loadedTypes[4] {
+		return e.Children, nil
+	}
+	return nil, &NotLoadedError{edge: "children"}
+}
+
+// CityOrErr returns the City value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e OrderEdges) CityOrErr() (*City, error) {
+	if e.loadedTypes[5] {
+		if e.City == nil {
+			// The edge city was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: city.Label}
+		}
+		return e.City, nil
+	}
+	return nil, &NotLoadedError{edge: "city"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Order) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -136,13 +201,13 @@ func (*Order) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case order.FieldCreator, order.FieldLastModifier, order.FieldPlanDetail, order.FieldSubordinate:
 			values[i] = new([]byte)
-		case order.FieldAmount:
+		case order.FieldAmount, order.FieldRefund:
 			values[i] = new(sql.NullFloat64)
-		case order.FieldID, order.FieldRiderID, order.FieldPlanID, order.FieldStatus, order.FieldPayway, order.FieldType, order.FieldParentID:
+		case order.FieldID, order.FieldRiderID, order.FieldPlanID, order.FieldCityID, order.FieldStatus, order.FieldPayway, order.FieldType, order.FieldParentID:
 			values[i] = new(sql.NullInt64)
 		case order.FieldRemark, order.FieldOutTradeNo, order.FieldTradeNo:
 			values[i] = new(sql.NullString)
-		case order.FieldCreatedAt, order.FieldUpdatedAt, order.FieldDeletedAt:
+		case order.FieldCreatedAt, order.FieldUpdatedAt, order.FieldDeletedAt, order.FieldRefundAt, order.FieldRefundOutTradeNo, order.FieldRefundTradeNo, order.FieldStart, order.FieldEnd:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Order", columns[i])
@@ -218,6 +283,12 @@ func (o *Order) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				o.PlanID = uint64(value.Int64)
 			}
+		case order.FieldCityID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field city_id", values[i])
+			} else if value.Valid {
+				o.CityID = uint64(value.Int64)
+			}
 		case order.FieldStatus:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
@@ -254,6 +325,30 @@ func (o *Order) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				o.Amount = value.Float64
 			}
+		case order.FieldRefund:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field refund", values[i])
+			} else if value.Valid {
+				o.Refund = value.Float64
+			}
+		case order.FieldRefundAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field refund_at", values[i])
+			} else if value.Valid {
+				o.RefundAt = value.Time
+			}
+		case order.FieldRefundOutTradeNo:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field refund_out_trade_no", values[i])
+			} else if value.Valid {
+				o.RefundOutTradeNo = value.Time
+			}
+		case order.FieldRefundTradeNo:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field refund_trade_no", values[i])
+			} else if value.Valid {
+				o.RefundTradeNo = value.Time
+			}
 		case order.FieldPlanDetail:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field plan_detail", values[i])
@@ -276,6 +371,18 @@ func (o *Order) assignValues(columns []string, values []interface{}) error {
 					return fmt.Errorf("unmarshal field subordinate: %w", err)
 				}
 			}
+		case order.FieldStart:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field start", values[i])
+			} else if value.Valid {
+				o.Start = value.Time
+			}
+		case order.FieldEnd:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field end", values[i])
+			} else if value.Valid {
+				o.End = value.Time
+			}
 		}
 	}
 	return nil
@@ -294,6 +401,21 @@ func (o *Order) QueryPlan() *PlanQuery {
 // QueryCommission queries the "commission" edge of the Order entity.
 func (o *Order) QueryCommission() *CommissionQuery {
 	return (&OrderClient{config: o.config}).QueryCommission(o)
+}
+
+// QueryParent queries the "parent" edge of the Order entity.
+func (o *Order) QueryParent() *OrderQuery {
+	return (&OrderClient{config: o.config}).QueryParent(o)
+}
+
+// QueryChildren queries the "children" edge of the Order entity.
+func (o *Order) QueryChildren() *OrderQuery {
+	return (&OrderClient{config: o.config}).QueryChildren(o)
+}
+
+// QueryCity queries the "city" edge of the Order entity.
+func (o *Order) QueryCity() *CityQuery {
+	return (&OrderClient{config: o.config}).QueryCity(o)
 }
 
 // Update returns a builder for updating this Order.
@@ -337,6 +459,8 @@ func (o *Order) String() string {
 	builder.WriteString(fmt.Sprintf("%v", o.RiderID))
 	builder.WriteString(", plan_id=")
 	builder.WriteString(fmt.Sprintf("%v", o.PlanID))
+	builder.WriteString(", city_id=")
+	builder.WriteString(fmt.Sprintf("%v", o.CityID))
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", o.Status))
 	builder.WriteString(", payway=")
@@ -349,12 +473,24 @@ func (o *Order) String() string {
 	builder.WriteString(o.TradeNo)
 	builder.WriteString(", amount=")
 	builder.WriteString(fmt.Sprintf("%v", o.Amount))
+	builder.WriteString(", refund=")
+	builder.WriteString(fmt.Sprintf("%v", o.Refund))
+	builder.WriteString(", refund_at=")
+	builder.WriteString(o.RefundAt.Format(time.ANSIC))
+	builder.WriteString(", refund_out_trade_no=")
+	builder.WriteString(o.RefundOutTradeNo.Format(time.ANSIC))
+	builder.WriteString(", refund_trade_no=")
+	builder.WriteString(o.RefundTradeNo.Format(time.ANSIC))
 	builder.WriteString(", plan_detail=")
 	builder.WriteString(fmt.Sprintf("%v", o.PlanDetail))
 	builder.WriteString(", parent_id=")
 	builder.WriteString(fmt.Sprintf("%v", o.ParentID))
 	builder.WriteString(", subordinate=")
 	builder.WriteString(fmt.Sprintf("%v", o.Subordinate))
+	builder.WriteString(", start=")
+	builder.WriteString(o.Start.Format(time.ANSIC))
+	builder.WriteString(", end=")
+	builder.WriteString(o.End.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

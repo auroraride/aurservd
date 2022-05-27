@@ -2171,6 +2171,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/order/not-active": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R30007 未激活骑士卡信息",
+                "operationId": "RiderOrderNotActive",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.OrderNotActived"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/path": {
             "get": {
                 "consumes": [
@@ -2356,12 +2388,14 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "capacity": {
+                    "description": "容量",
                     "type": "number"
                 },
                 "id": {
                     "type": "integer"
                 },
                 "voltage": {
+                    "description": "电压",
                     "type": "number"
                 }
             }
@@ -3279,13 +3313,18 @@ const docTemplate = `{
         "model.OrderCreateReq": {
             "type": "object",
             "required": [
+                "cityId",
                 "orderType",
                 "payway",
                 "planId"
             ],
             "properties": {
+                "cityId": {
+                    "description": "城市ID ",
+                    "type": "integer"
+                },
                 "orderType": {
-                    "description": "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金",
+                    "description": "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
                     "type": "integer",
                     "enum": [
                         1,
@@ -3293,7 +3332,8 @@ const docTemplate = `{
                         3,
                         4,
                         5,
-                        6
+                        6,
+                        7
                     ]
                 },
                 "payway": {
@@ -3320,6 +3360,54 @@ const docTemplate = `{
                 "prepay": {
                     "description": "预支付字符串",
                     "type": "string"
+                }
+            }
+        },
+        "model.OrderNotActived": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "骑士卡金额",
+                    "type": "number"
+                },
+                "city": {
+                    "description": "所属城市",
+                    "$ref": "#/definitions/model.City"
+                },
+                "deposit": {
+                    "description": "押金, 若押金为0则押金一行不显示",
+                    "type": "number"
+                },
+                "id": {
+                    "description": "订单编号",
+                    "type": "integer"
+                },
+                "models": {
+                    "description": "可用电池型号, 显示为` + "`" + `72V30AH` + "`" + `即Voltage(V)+Capacity(AH), 逗号分隔",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BatteryModel"
+                    }
+                },
+                "payway": {
+                    "description": "支付方式 1支付宝 2微信",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "plan": {
+                    "description": "骑行卡详情",
+                    "$ref": "#/definitions/model.PlanItem"
+                },
+                "time": {
+                    "description": "支付时间",
+                    "type": "string"
+                },
+                "total": {
+                    "description": "总金额, 总金额为 amount + deposit",
+                    "type": "number"
                 }
             }
         },
@@ -3374,6 +3462,58 @@ const docTemplate = `{
                 "enable": {
                     "description": "启用或禁用",
                     "type": "boolean"
+                }
+            }
+        },
+        "model.PlanItem": {
+            "type": "object",
+            "required": [
+                "days",
+                "end",
+                "name",
+                "price",
+                "start"
+            ],
+            "properties": {
+                "commission": {
+                    "description": "提成",
+                    "type": "number"
+                },
+                "days": {
+                    "description": "有效天数 ",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "desc": {
+                    "description": "优惠信息",
+                    "type": "string"
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
+                "end": {
+                    "description": "结束日期 ",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "骑士卡名称 ",
+                    "type": "string"
+                },
+                "original": {
+                    "description": "原价",
+                    "type": "number"
+                },
+                "price": {
+                    "description": "价格 ",
+                    "type": "number"
+                },
+                "start": {
+                    "description": "开始日期 ",
+                    "type": "string"
                 }
             }
         },
@@ -3582,6 +3722,10 @@ const docTemplate = `{
                 "isNewDevice": {
                     "description": "是否新设备",
                     "type": "boolean"
+                },
+                "planNotActivedId": {
+                    "description": "未激活订单ID",
+                    "type": "integer"
                 },
                 "qrcode": {
                     "description": "二维码",

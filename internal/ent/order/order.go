@@ -29,6 +29,8 @@ const (
 	FieldRiderID = "rider_id"
 	// FieldPlanID holds the string denoting the plan_id field in the database.
 	FieldPlanID = "plan_id"
+	// FieldCityID holds the string denoting the city_id field in the database.
+	FieldCityID = "city_id"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldPayway holds the string denoting the payway field in the database.
@@ -41,18 +43,36 @@ const (
 	FieldTradeNo = "trade_no"
 	// FieldAmount holds the string denoting the amount field in the database.
 	FieldAmount = "amount"
+	// FieldRefund holds the string denoting the refund field in the database.
+	FieldRefund = "refund"
+	// FieldRefundAt holds the string denoting the refund_at field in the database.
+	FieldRefundAt = "refund_at"
+	// FieldRefundOutTradeNo holds the string denoting the refund_out_trade_no field in the database.
+	FieldRefundOutTradeNo = "refund_out_trade_no"
+	// FieldRefundTradeNo holds the string denoting the refund_trade_no field in the database.
+	FieldRefundTradeNo = "refund_trade_no"
 	// FieldPlanDetail holds the string denoting the plan_detail field in the database.
 	FieldPlanDetail = "plan_detail"
 	// FieldParentID holds the string denoting the parent_id field in the database.
 	FieldParentID = "parent_id"
 	// FieldSubordinate holds the string denoting the subordinate field in the database.
 	FieldSubordinate = "subordinate"
+	// FieldStart holds the string denoting the start field in the database.
+	FieldStart = "start"
+	// FieldEnd holds the string denoting the end field in the database.
+	FieldEnd = "end"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeCommission holds the string denoting the commission edge name in mutations.
 	EdgeCommission = "commission"
+	// EdgeParent holds the string denoting the parent edge name in mutations.
+	EdgeParent = "parent"
+	// EdgeChildren holds the string denoting the children edge name in mutations.
+	EdgeChildren = "children"
+	// EdgeCity holds the string denoting the city edge name in mutations.
+	EdgeCity = "city"
 	// Table holds the table name of the order in the database.
 	Table = "order"
 	// RiderTable is the table that holds the rider relation/edge.
@@ -76,6 +96,21 @@ const (
 	CommissionInverseTable = "commission"
 	// CommissionColumn is the table column denoting the commission relation/edge.
 	CommissionColumn = "order_id"
+	// ParentTable is the table that holds the parent relation/edge.
+	ParentTable = "order"
+	// ParentColumn is the table column denoting the parent relation/edge.
+	ParentColumn = "parent_id"
+	// ChildrenTable is the table that holds the children relation/edge.
+	ChildrenTable = "order"
+	// ChildrenColumn is the table column denoting the children relation/edge.
+	ChildrenColumn = "parent_id"
+	// CityTable is the table that holds the city relation/edge.
+	CityTable = "order"
+	// CityInverseTable is the table name for the City entity.
+	// It exists in this package in order to avoid circular dependency with the "city" package.
+	CityInverseTable = "city"
+	// CityColumn is the table column denoting the city relation/edge.
+	CityColumn = "city_id"
 )
 
 // Columns holds all SQL columns for order fields.
@@ -89,15 +124,22 @@ var Columns = []string{
 	FieldRemark,
 	FieldRiderID,
 	FieldPlanID,
+	FieldCityID,
 	FieldStatus,
 	FieldPayway,
 	FieldType,
 	FieldOutTradeNo,
 	FieldTradeNo,
 	FieldAmount,
+	FieldRefund,
+	FieldRefundAt,
+	FieldRefundOutTradeNo,
+	FieldRefundTradeNo,
 	FieldPlanDetail,
 	FieldParentID,
 	FieldSubordinate,
+	FieldStart,
+	FieldEnd,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -117,7 +159,7 @@ func ValidColumn(column string) bool {
 //	import _ "github.com/auroraride/aurservd/internal/ent/runtime"
 //
 var (
-	Hooks [1]ent.Hook
+	Hooks [2]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

@@ -42,6 +42,8 @@ func (City) Edges() []ent.Edge {
         edge.To("children", City.Type).From("parent").Field("parent_id").Unique(),
         edge.To("branches", Branch.Type),
         edge.To("faults", CabinetFault.Type),
+        edge.To("orders", Order.Type),
+        // edge.To("commissions", Commission.Type),
     }
 }
 

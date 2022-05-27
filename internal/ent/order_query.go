@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -31,6 +32,9 @@ type OrderQuery struct {
 	withRider      *RiderQuery
 	withPlan       *PlanQuery
 	withCommission *CommissionQuery
+	withParent     *OrderQuery
+	withChildren   *OrderQuery
+	withCity       *CityQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -127,6 +131,72 @@ func (oq *OrderQuery) QueryCommission() *CommissionQuery {
 			sqlgraph.From(order.Table, order.FieldID, selector),
 			sqlgraph.To(commission.Table, commission.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, order.CommissionTable, order.CommissionColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryParent chains the current query on the "parent" edge.
+func (oq *OrderQuery) QueryParent() *OrderQuery {
+	query := &OrderQuery{config: oq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := oq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := oq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, selector),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, order.ParentTable, order.ParentColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryChildren chains the current query on the "children" edge.
+func (oq *OrderQuery) QueryChildren() *OrderQuery {
+	query := &OrderQuery{config: oq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := oq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := oq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, selector),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, order.ChildrenTable, order.ChildrenColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCity chains the current query on the "city" edge.
+func (oq *OrderQuery) QueryCity() *CityQuery {
+	query := &CityQuery{config: oq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := oq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := oq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, selector),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, order.CityTable, order.CityColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
 		return fromU, nil
@@ -318,6 +388,9 @@ func (oq *OrderQuery) Clone() *OrderQuery {
 		withRider:      oq.withRider.Clone(),
 		withPlan:       oq.withPlan.Clone(),
 		withCommission: oq.withCommission.Clone(),
+		withParent:     oq.withParent.Clone(),
+		withChildren:   oq.withChildren.Clone(),
+		withCity:       oq.withCity.Clone(),
 		// clone intermediate query.
 		sql:    oq.sql.Clone(),
 		path:   oq.path,
@@ -355,6 +428,39 @@ func (oq *OrderQuery) WithCommission(opts ...func(*CommissionQuery)) *OrderQuery
 		opt(query)
 	}
 	oq.withCommission = query
+	return oq
+}
+
+// WithParent tells the query-builder to eager-load the nodes that are connected to
+// the "parent" edge. The optional arguments are used to configure the query builder of the edge.
+func (oq *OrderQuery) WithParent(opts ...func(*OrderQuery)) *OrderQuery {
+	query := &OrderQuery{config: oq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	oq.withParent = query
+	return oq
+}
+
+// WithChildren tells the query-builder to eager-load the nodes that are connected to
+// the "children" edge. The optional arguments are used to configure the query builder of the edge.
+func (oq *OrderQuery) WithChildren(opts ...func(*OrderQuery)) *OrderQuery {
+	query := &OrderQuery{config: oq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	oq.withChildren = query
+	return oq
+}
+
+// WithCity tells the query-builder to eager-load the nodes that are connected to
+// the "city" edge. The optional arguments are used to configure the query builder of the edge.
+func (oq *OrderQuery) WithCity(opts ...func(*CityQuery)) *OrderQuery {
+	query := &CityQuery{config: oq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	oq.withCity = query
 	return oq
 }
 
@@ -428,10 +534,13 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 	var (
 		nodes       = []*Order{}
 		_spec       = oq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [6]bool{
 			oq.withRider != nil,
 			oq.withPlan != nil,
 			oq.withCommission != nil,
+			oq.withParent != nil,
+			oq.withChildren != nil,
+			oq.withCity != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -529,6 +638,83 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 				return nil, fmt.Errorf(`unexpected foreign-key "order_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Commission = n
+		}
+	}
+
+	if query := oq.withParent; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Order)
+		for i := range nodes {
+			fk := nodes[i].ParentID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(order.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "parent_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Parent = n
+			}
+		}
+	}
+
+	if query := oq.withChildren; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Order)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Children = []*Order{}
+		}
+		query.Where(predicate.Order(func(s *sql.Selector) {
+			s.Where(sql.InValues(order.ChildrenColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ParentID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "parent_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Children = append(node.Edges.Children, n)
+		}
+	}
+
+	if query := oq.withCity; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Order)
+		for i := range nodes {
+			fk := nodes[i].CityID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(city.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.City = n
+			}
 		}
 	}
 

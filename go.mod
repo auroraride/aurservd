@@ -31,6 +31,7 @@ require (
 	github.com/mattn/go-colorable v0.1.12
 	github.com/mojocn/base64Captcha v1.3.5
 	github.com/rs/xid v1.4.0
+	github.com/shopspring/decimal v1.3.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/smartwalle/alipay/v3 v3.1.7
 	github.com/sony/sonyflake v1.0.0
@@ -105,7 +106,6 @@ require (
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
-	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/smartwalle/crypto4go v1.0.2 // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
