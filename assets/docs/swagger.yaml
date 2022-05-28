@@ -723,40 +723,14 @@ definitions:
         description: 预支付字符串
         type: string
     type: object
-  model.OrderNotActived:
+  model.OrderPlan:
     properties:
-      amount:
-        description: 骑士卡金额
-        type: number
-      city:
-        $ref: '#/definitions/model.City'
-        description: 所属城市
-      deposit:
-        description: 押金, 若押金为0则押金一行不显示
-        type: number
       id:
-        description: 订单编号
+        description: 骑士卡ID
         type: integer
-      models:
-        description: 可用电池型号, 显示为`72V30AH`即Voltage(V)+Capacity(AH), 逗号分隔
-        items:
-          $ref: '#/definitions/model.BatteryModel'
-        type: array
-      payway:
-        description: 支付方式 1支付宝 2微信
-        enum:
-        - 1
-        - 2
-        type: integer
-      plan:
-        $ref: '#/definitions/model.PlanItem'
-        description: 骑行卡详情
-      time:
-        description: 支付时间
+      name:
+        description: 骑士卡名称
         type: string
-      total:
-        description: 总金额, 总金额为 amount + deposit
-        type: number
     type: object
   model.Pagination:
     properties:
@@ -794,45 +768,6 @@ definitions:
         type: boolean
     required:
     - enable
-    type: object
-  model.PlanItem:
-    properties:
-      commission:
-        description: 提成
-        type: number
-      days:
-        description: '有效天数 '
-        minimum: 1
-        type: integer
-      desc:
-        description: 优惠信息
-        type: string
-      enable:
-        description: 是否启用
-        type: boolean
-      end:
-        description: '结束日期 '
-        type: string
-      id:
-        type: integer
-      name:
-        description: '骑士卡名称 '
-        type: string
-      original:
-        description: 原价
-        type: number
-      price:
-        description: '价格 '
-        type: number
-      start:
-        description: '开始日期 '
-        type: string
-    required:
-    - days
-    - end
-    - name
-    - price
-    - start
     type: object
   model.PlanItemRes:
     properties:
@@ -958,21 +893,38 @@ definitions:
       alterDays:
         description: 改动天数
         type: integer
+      amount:
+        description: 骑士卡金额
+        type: number
+      city:
+        $ref: '#/definitions/model.City'
+        description: 所属城市
       days:
         description: 总天数
         type: integer
+      deposit:
+        description: 押金(只在未启用骑士卡中显示), 若押金为0则押金一行不显示
+        type: number
       endAt:
-        description: 结束时间
+        description: 结束时间 / 预计套餐结束时间
         type: string
+      id:
+        description: 订单ID
+        type: integer
+      models:
+        description: 可用电池型号, 显示为`72V30AH`即Voltage(V)+Capacity(AH), 逗号分隔
+        items:
+          $ref: '#/definitions/model.BatteryModel'
+        type: array
       pausedDays:
         description: 暂停天数
         type: integer
-      planId:
-        description: 骑士卡ID
-        type: integer
-      planName:
-        description: 骑士卡名称
+      payAt:
+        description: 支付时间
         type: string
+      plan:
+        $ref: '#/definitions/model.OrderPlan'
+        description: 骑士卡信息
       remaining:
         description: 剩余天数
         type: integer
@@ -988,6 +940,9 @@ definitions:
         - 3
         - 4
         type: integer
+      total:
+        description: 总金额, 总金额为 amount + deposit
+        type: number
       voltage:
         description: 可用电压型号
         type: number
@@ -2630,27 +2585,6 @@ paths:
           schema:
             $ref: '#/definitions/model.OrderCreateRes'
       summary: R30006 支付请求
-      tags:
-      - '[R]骑手接口'
-  /rider/v1/order/not-active:
-    get:
-      consumes:
-      - application/json
-      operationId: RiderOrderNotActived
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.OrderNotActived'
-      summary: R30007 未激活骑士卡信息
       tags:
       - '[R]骑手接口'
   /rider/v1/path:

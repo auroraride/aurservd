@@ -55,52 +55,6 @@ func (s *riderOrderService) FindNotActived(riderID uint64) *ent.Order {
     return o
 }
 
-// NotActivedDetail 获取未激活骑士卡详情
-func (s *riderOrderService) NotActivedDetail(riderID uint64) *model.OrderNotActived {
-    o, err := s.orm.QueryNotDeleted().
-        Where(
-            order.RiderID(riderID),
-            order.Status(model.OrderStatusPaid),
-            order.TypeIn(model.OrderTypeNewPlan, model.OrderTypeRenewal),
-            order.StartAtIsNil(),
-        ).
-        WithCity().
-        WithPlan(func(pq *ent.PlanQuery) {
-            pq.WithPms()
-        }).
-        WithChildren(func(cq *ent.OrderQuery) {
-            cq.Where(order.Type(model.OrderTypeDeposit))
-        }).
-        Only(s.ctx)
-    if err != nil {
-        return nil
-    }
-    item := &model.OrderNotActived{
-        ID:     o.ID,
-        Amount: o.Amount,
-        Total:  o.Amount,
-        Payway: o.Payway,
-        Plan:   o.PlanDetail,
-        City: model.City{
-            ID:   o.Edges.City.ID,
-            Name: o.Edges.City.Name,
-        },
-        Time: o.CreatedAt.Format(carbon.DateLayout),
-    }
-    for _, pm := range o.Edges.Plan.Edges.Pms {
-        item.Models = append(item.Models, model.BatteryModel{
-            ID:       pm.ID,
-            Voltage:  pm.Voltage,
-            Capacity: pm.Capacity,
-        })
-    }
-    if len(o.Edges.Children) > 0 {
-        item.Deposit = o.Edges.Children[0].Amount
-    }
-    item.Total += item.Deposit
-    return item
-}
-
 // Recent 获取最近的订单
 func (s *riderOrderService) Recent(riderID uint64) *model.RiderRecentOrder {
     now := time.Now()
@@ -108,6 +62,7 @@ func (s *riderOrderService) Recent(riderID uint64) *model.RiderRecentOrder {
     o, _ := ar.Ent.Order.
         QueryNotDeleted().
         WithAlters().
+        WithCity().
         WithPauses().
         WithPlan(
             func(pq *ent.PlanQuery) {
@@ -119,17 +74,44 @@ func (s *riderOrderService) Recent(riderID uint64) *model.RiderRecentOrder {
             order.Status(model.OrderStatusPaid),
             order.TypeIn(model.OrderRiderPlan...),
         ).
+        WithChildren(func(cq *ent.OrderQuery) {
+            cq.Where(order.Type(model.OrderTypeDeposit))
+        }).
         Only(s.ctx)
     if o == nil {
         return nil
     }
+
     ro := &model.RiderRecentOrder{
-        PlanID:   o.PlanID,
-        PlanName: o.PlanDetail.Name,
-        Days:     int(o.PlanDetail.Days),
-        // Start:       "",
-        // End:         "",
-        Voltage: o.Edges.Plan.Edges.Pms[0].Voltage,
+        ID:     o.ID,
+        Days:   int(o.PlanDetail.Days),
+        PayAt:  o.CreatedAt.Format(carbon.DateTimeLayout),
+        Amount: o.Amount,
+        Total:  o.Amount,
+        City: model.City{
+            ID:   o.Edges.City.ID,
+            Name: o.Edges.City.Name,
+        },
+        Plan: model.OrderPlan{
+            ID:   o.PlanID,
+            Name: o.PlanDetail.Name,
+        },
+    }
+
+    if len(o.Edges.Children) > 0 {
+        ro.Deposit = o.Edges.Children[0].Amount
+    }
+    ro.Total += ro.Deposit
+
+    for i, pm := range o.Edges.Plan.Edges.Pms {
+        if i == 0 {
+            ro.Voltage = pm.Voltage
+        }
+        ro.Models = append(ro.Models, model.BatteryModel{
+            ID:       pm.ID,
+            Voltage:  pm.Voltage,
+            Capacity: pm.Capacity,
+        })
     }
 
     // 计算改动天数

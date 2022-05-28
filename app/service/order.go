@@ -150,21 +150,26 @@ func (s *orderService) OrderPaid(trade *model.OrderCache) {
         SetCityID(trade.CityID).
         SetDays(trade.Plan.Days).
         Save(s.ctx)
-    // 如果有押金, 创建押金订单
-    if trade.Deposit > 0 {
-        _, _ = ar.Ent.Order.Create().
-            SetPayway(trade.Payway).
-            SetRiderID(trade.RiderID).
-            SetAmount(trade.Deposit).
-            SetOutTradeNo(model.SettingDeposit + "-" + trade.OutTradeNo).
-            SetTradeNo(model.SettingDeposit + "-" + trade.TradeNo).
-            SetStatus(model.OrderStatusPaid).
-            SetType(model.OrderTypeDeposit).
-            Save(s.ctx)
-    }
     if err != nil {
         log.Errorf("[ORDER PAID ERROR]: %s, Trade: %#v", err.Error(), trade)
         return
+    }
+    // 如果有押金, 创建押金订单
+    if trade.Deposit > 0 {
+        _, err = ar.Ent.Order.Create().
+            SetStatus(model.OrderStatusPaid).
+            SetPayway(trade.Payway).
+            SetType(model.OrderTypeDeposit).
+            SetOutTradeNo(model.SettingDeposit + "-" + trade.OutTradeNo).
+            SetTradeNo(model.SettingDeposit + "-" + trade.TradeNo).
+            SetAmount(trade.Deposit).
+            SetCityID(trade.CityID).
+            SetRiderID(trade.RiderID).
+            Save(s.ctx)
+        if err != nil {
+            log.Errorf("[DEPOSIT PAID ERROR]: %s, Trade: %#v", err.Error(), trade)
+            return
+        }
     }
     // 当新签和重签的时候有提成
     if trade.OrderType == model.OrderTypeNewPlan || trade.OrderType == model.OrderTypeRenewal {

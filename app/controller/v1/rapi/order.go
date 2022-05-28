@@ -33,20 +33,3 @@ func (*order) Create(c echo.Context) (err error) {
         service.NewOrderWithRider(ctx.Rider).Create(req),
     )
 }
-
-// NotActived
-// @ID           RiderOrderNotActived
-// @Router       /rider/v1/order/not-active [GET]
-// @Summary      R30007 未激活骑士卡信息
-// @Tags         [R]骑手接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Success      200  {object}  model.OrderNotActived  "请求成功"
-func (*order) NotActived(c echo.Context) (err error) {
-    ctx := app.ContextX[app.RiderContext](c)
-
-    return ctx.SendResponse(
-        service.NewRiderOrder().NotActivedDetail(ctx.Rider.ID),
-    )
-}

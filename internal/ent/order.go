@@ -71,7 +71,7 @@ type Order struct {
 	// 退款详细
 	Refund model.OrderRefund `json:"refund,omitempty"`
 	// ParentID holds the value of the "parent_id" field.
-	// 续签所属订单ID
+	// 续签/押金所属订单ID
 	ParentID uint64 `json:"parent_id,omitempty"`
 	// StartAt holds the value of the "start_at" field.
 	// 开始时间

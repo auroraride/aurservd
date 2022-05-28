@@ -37,7 +37,7 @@ func (Order) Fields() []ent.Field {
         field.Float("amount").Immutable().Comment("支付金额"),
         field.JSON("plan_detail", model.PlanItem{}).Optional().Comment("骑士卡详情"),
         field.JSON("refund", model.OrderRefund{}).Optional().Comment("退款详细"),
-        field.Uint64("parent_id").Optional().Comment("续签所属订单ID"),
+        field.Uint64("parent_id").Optional().Comment("续签/押金所属订单ID"),
         field.Time("start_at").Optional().Nillable().Comment("开始时间"),
         field.Time("end_at").Optional().Nillable().Comment("结束时间"),
         field.Time("paused_at").Optional().Comment("当前是否暂停计费, 暂停计费时间"),
