@@ -1759,6 +1759,90 @@ func HasOrdersWith(preds ...predicate.Order) predicate.Rider {
 	})
 }
 
+// HasPauses applies the HasEdge predicate on the "pauses" edge.
+func HasPauses() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(PausesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PausesTable, PausesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPausesWith applies the HasEdge predicate on the "pauses" edge with a given conditions (other predicates).
+func HasPausesWith(preds ...predicate.OrderPause) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(PausesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PausesTable, PausesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasArrearages applies the HasEdge predicate on the "arrearages" edge.
+func HasArrearages() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ArrearagesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ArrearagesTable, ArrearagesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasArrearagesWith applies the HasEdge predicate on the "arrearages" edge with a given conditions (other predicates).
+func HasArrearagesWith(preds ...predicate.OrderArrearage) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ArrearagesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ArrearagesTable, ArrearagesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAlters applies the HasEdge predicate on the "alters" edge.
+func HasAlters() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(AltersTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, AltersTable, AltersColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAltersWith applies the HasEdge predicate on the "alters" edge with a given conditions (other predicates).
+func HasAltersWith(preds ...predicate.OrderAlter) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(AltersInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, AltersTable, AltersColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Rider) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {

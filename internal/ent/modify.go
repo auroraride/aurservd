@@ -128,6 +128,27 @@ func (c *OrderClient) ModifyOne(old *Order, data any) *OrderUpdateOne {
 	return CallModifyMethod[OrderUpdateOne, Order](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for OrderAlter.
+func (c *OrderAlterClient) ModifyOne(old *OrderAlter, data any) *OrderAlterUpdateOne {
+	mutation := newOrderAlterMutation(c.config, OpUpdateOne, withOrderAlter(old))
+	up := &OrderAlterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return CallModifyMethod[OrderAlterUpdateOne, OrderAlter](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for OrderArrearage.
+func (c *OrderArrearageClient) ModifyOne(old *OrderArrearage, data any) *OrderArrearageUpdateOne {
+	mutation := newOrderArrearageMutation(c.config, OpUpdateOne, withOrderArrearage(old))
+	up := &OrderArrearageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return CallModifyMethod[OrderArrearageUpdateOne, OrderArrearage](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for OrderPause.
+func (c *OrderPauseClient) ModifyOne(old *OrderPause, data any) *OrderPauseUpdateOne {
+	mutation := newOrderPauseMutation(c.config, OpUpdateOne, withOrderPause(old))
+	up := &OrderPauseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return CallModifyMethod[OrderPauseUpdateOne, OrderPause](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Person.
 func (c *PersonClient) ModifyOne(old *Person, data any) *PersonUpdateOne {
 	mutation := newPersonMutation(c.config, OpUpdateOne, withPerson(old))

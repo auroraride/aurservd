@@ -331,19 +331,19 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
         }
     }
     if req.Start != nil {
-        start, err := time.Parse(carbon.DateLayout, *req.Start)
-        if err != nil {
+        start := carbon.ParseByLayout(*req.Start, carbon.DateLayout)
+        if start.Error != nil {
             snag.Panic("日期格式错误")
         }
-        q.Where(rider.CreatedAtGTE(start))
+        q.Where(rider.CreatedAtGTE(start.Carbon2Time()))
     }
     if req.End != nil {
-        end, err := time.Parse(carbon.DateLayout, *req.End)
-        if err != nil {
+        end := carbon.ParseByLayout(*req.End, carbon.DateLayout)
+        if end.Error != nil {
             snag.Panic("日期格式错误")
         }
-        end.AddDate(0, 0, 1)
-        q.Where(rider.CreatedAtLT(end))
+        end.AddDay()
+        q.Where(rider.CreatedAtLT(end.Carbon2Time()))
     }
     if req.Modified != nil {
         m := *req.Modified
@@ -433,6 +433,7 @@ func (s *riderService) Deposit(u *ent.Rider) float64 {
 
 // Profile 获取用户资料
 func (s *riderService) Profile(u *ent.Rider, device *model.Device) *model.RiderSigninRes {
+    ro := NewRiderOrder().Recent(u.ID)
     profile := &model.RiderSigninRes{
         ID:              u.ID,
         IsNewDevice:     s.IsNewDevice(u, device),
@@ -441,11 +442,8 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device) *model.RiderS
         Contact:         u.Contact,
         Qrcode:          fmt.Sprintf("https://rider.auroraride.com/%d", u.ID),
         Deposit:         s.Deposit(u),
-        OrderNotActived: NewOrder().FindRiderNotActived(u.ID) != nil,
-    }
-    o := NewOrder().FindRiderNotActived(u.ID)
-    if o != nil {
-        profile.OrderNotActived = true
+        RecentOrder:     ro,
+        OrderNotActived: ro != nil && ro.Status == model.RiderOrderStatusPending,
     }
     return profile
 }

@@ -16,6 +16,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/order"
+	"github.com/auroraride/aurservd/internal/ent/orderalter"
+	"github.com/auroraride/aurservd/internal/ent/orderarrearage"
+	"github.com/auroraride/aurservd/internal/ent/orderpause"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
@@ -305,6 +308,51 @@ func (rc *RiderCreate) AddOrders(o ...*Order) *RiderCreate {
 		ids[i] = o[i].ID
 	}
 	return rc.AddOrderIDs(ids...)
+}
+
+// AddPauseIDs adds the "pauses" edge to the OrderPause entity by IDs.
+func (rc *RiderCreate) AddPauseIDs(ids ...uint64) *RiderCreate {
+	rc.mutation.AddPauseIDs(ids...)
+	return rc
+}
+
+// AddPauses adds the "pauses" edges to the OrderPause entity.
+func (rc *RiderCreate) AddPauses(o ...*OrderPause) *RiderCreate {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return rc.AddPauseIDs(ids...)
+}
+
+// AddArrearageIDs adds the "arrearages" edge to the OrderArrearage entity by IDs.
+func (rc *RiderCreate) AddArrearageIDs(ids ...uint64) *RiderCreate {
+	rc.mutation.AddArrearageIDs(ids...)
+	return rc
+}
+
+// AddArrearages adds the "arrearages" edges to the OrderArrearage entity.
+func (rc *RiderCreate) AddArrearages(o ...*OrderArrearage) *RiderCreate {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return rc.AddArrearageIDs(ids...)
+}
+
+// AddAlterIDs adds the "alters" edge to the OrderAlter entity by IDs.
+func (rc *RiderCreate) AddAlterIDs(ids ...uint64) *RiderCreate {
+	rc.mutation.AddAlterIDs(ids...)
+	return rc
+}
+
+// AddAlters adds the "alters" edges to the OrderAlter entity.
+func (rc *RiderCreate) AddAlters(o ...*OrderAlter) *RiderCreate {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return rc.AddAlterIDs(ids...)
 }
 
 // Mutation returns the RiderMutation object of the builder.
@@ -708,6 +756,63 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.PausesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.PausesTable,
+			Columns: []string{rider.PausesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: orderpause.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.ArrearagesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.ArrearagesTable,
+			Columns: []string{rider.ArrearagesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: orderarrearage.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.AltersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.AltersTable,
+			Columns: []string{rider.AltersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: orderalter.FieldID,
 				},
 			},
 		}

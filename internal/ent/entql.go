@@ -14,6 +14,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
+	"github.com/auroraride/aurservd/internal/ent/orderalter"
+	"github.com/auroraride/aurservd/internal/ent/orderarrearage"
+	"github.com/auroraride/aurservd/internal/ent/orderpause"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -29,7 +32,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 16)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 19)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   batterymodel.Table,
@@ -296,33 +299,99 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Order",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			order.FieldCreatedAt:        {Type: field.TypeTime, Column: order.FieldCreatedAt},
-			order.FieldUpdatedAt:        {Type: field.TypeTime, Column: order.FieldUpdatedAt},
-			order.FieldDeletedAt:        {Type: field.TypeTime, Column: order.FieldDeletedAt},
-			order.FieldCreator:          {Type: field.TypeJSON, Column: order.FieldCreator},
-			order.FieldLastModifier:     {Type: field.TypeJSON, Column: order.FieldLastModifier},
-			order.FieldRemark:           {Type: field.TypeString, Column: order.FieldRemark},
-			order.FieldRiderID:          {Type: field.TypeUint64, Column: order.FieldRiderID},
-			order.FieldPlanID:           {Type: field.TypeUint64, Column: order.FieldPlanID},
-			order.FieldCityID:           {Type: field.TypeUint64, Column: order.FieldCityID},
-			order.FieldStatus:           {Type: field.TypeUint8, Column: order.FieldStatus},
-			order.FieldPayway:           {Type: field.TypeUint8, Column: order.FieldPayway},
-			order.FieldType:             {Type: field.TypeUint, Column: order.FieldType},
-			order.FieldOutTradeNo:       {Type: field.TypeString, Column: order.FieldOutTradeNo},
-			order.FieldTradeNo:          {Type: field.TypeString, Column: order.FieldTradeNo},
-			order.FieldAmount:           {Type: field.TypeFloat64, Column: order.FieldAmount},
-			order.FieldRefund:           {Type: field.TypeFloat64, Column: order.FieldRefund},
-			order.FieldRefundAt:         {Type: field.TypeTime, Column: order.FieldRefundAt},
-			order.FieldRefundOutTradeNo: {Type: field.TypeTime, Column: order.FieldRefundOutTradeNo},
-			order.FieldRefundTradeNo:    {Type: field.TypeTime, Column: order.FieldRefundTradeNo},
-			order.FieldPlanDetail:       {Type: field.TypeJSON, Column: order.FieldPlanDetail},
-			order.FieldParentID:         {Type: field.TypeUint64, Column: order.FieldParentID},
-			order.FieldSubordinate:      {Type: field.TypeJSON, Column: order.FieldSubordinate},
-			order.FieldStart:            {Type: field.TypeTime, Column: order.FieldStart},
-			order.FieldEnd:              {Type: field.TypeTime, Column: order.FieldEnd},
+			order.FieldCreatedAt:    {Type: field.TypeTime, Column: order.FieldCreatedAt},
+			order.FieldUpdatedAt:    {Type: field.TypeTime, Column: order.FieldUpdatedAt},
+			order.FieldDeletedAt:    {Type: field.TypeTime, Column: order.FieldDeletedAt},
+			order.FieldCreator:      {Type: field.TypeJSON, Column: order.FieldCreator},
+			order.FieldLastModifier: {Type: field.TypeJSON, Column: order.FieldLastModifier},
+			order.FieldRemark:       {Type: field.TypeString, Column: order.FieldRemark},
+			order.FieldRiderID:      {Type: field.TypeUint64, Column: order.FieldRiderID},
+			order.FieldPlanID:       {Type: field.TypeUint64, Column: order.FieldPlanID},
+			order.FieldCityID:       {Type: field.TypeUint64, Column: order.FieldCityID},
+			order.FieldStatus:       {Type: field.TypeUint8, Column: order.FieldStatus},
+			order.FieldPayway:       {Type: field.TypeUint8, Column: order.FieldPayway},
+			order.FieldType:         {Type: field.TypeUint, Column: order.FieldType},
+			order.FieldOutTradeNo:   {Type: field.TypeString, Column: order.FieldOutTradeNo},
+			order.FieldTradeNo:      {Type: field.TypeString, Column: order.FieldTradeNo},
+			order.FieldAmount:       {Type: field.TypeFloat64, Column: order.FieldAmount},
+			order.FieldPlanDetail:   {Type: field.TypeJSON, Column: order.FieldPlanDetail},
+			order.FieldRefund:       {Type: field.TypeJSON, Column: order.FieldRefund},
+			order.FieldParentID:     {Type: field.TypeUint64, Column: order.FieldParentID},
+			order.FieldStartAt:      {Type: field.TypeTime, Column: order.FieldStartAt},
+			order.FieldEndAt:        {Type: field.TypeTime, Column: order.FieldEndAt},
+			order.FieldPausedAt:     {Type: field.TypeTime, Column: order.FieldPausedAt},
+			order.FieldDays:         {Type: field.TypeUint, Column: order.FieldDays},
 		},
 	}
 	graph.Nodes[11] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   orderalter.Table,
+			Columns: orderalter.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: orderalter.FieldID,
+			},
+		},
+		Type: "OrderAlter",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			orderalter.FieldCreatedAt:    {Type: field.TypeTime, Column: orderalter.FieldCreatedAt},
+			orderalter.FieldUpdatedAt:    {Type: field.TypeTime, Column: orderalter.FieldUpdatedAt},
+			orderalter.FieldDeletedAt:    {Type: field.TypeTime, Column: orderalter.FieldDeletedAt},
+			orderalter.FieldCreator:      {Type: field.TypeJSON, Column: orderalter.FieldCreator},
+			orderalter.FieldLastModifier: {Type: field.TypeJSON, Column: orderalter.FieldLastModifier},
+			orderalter.FieldRemark:       {Type: field.TypeString, Column: orderalter.FieldRemark},
+			orderalter.FieldRiderID:      {Type: field.TypeUint64, Column: orderalter.FieldRiderID},
+			orderalter.FieldOrderID:      {Type: field.TypeUint64, Column: orderalter.FieldOrderID},
+			orderalter.FieldDays:         {Type: field.TypeInt, Column: orderalter.FieldDays},
+			orderalter.FieldReason:       {Type: field.TypeString, Column: orderalter.FieldReason},
+		},
+	}
+	graph.Nodes[12] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   orderarrearage.Table,
+			Columns: orderarrearage.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: orderarrearage.FieldID,
+			},
+		},
+		Type: "OrderArrearage",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			orderarrearage.FieldCreatedAt:    {Type: field.TypeTime, Column: orderarrearage.FieldCreatedAt},
+			orderarrearage.FieldUpdatedAt:    {Type: field.TypeTime, Column: orderarrearage.FieldUpdatedAt},
+			orderarrearage.FieldDeletedAt:    {Type: field.TypeTime, Column: orderarrearage.FieldDeletedAt},
+			orderarrearage.FieldCreator:      {Type: field.TypeJSON, Column: orderarrearage.FieldCreator},
+			orderarrearage.FieldLastModifier: {Type: field.TypeJSON, Column: orderarrearage.FieldLastModifier},
+			orderarrearage.FieldRemark:       {Type: field.TypeString, Column: orderarrearage.FieldRemark},
+			orderarrearage.FieldRiderID:      {Type: field.TypeUint64, Column: orderarrearage.FieldRiderID},
+			orderarrearage.FieldOrderID:      {Type: field.TypeUint64, Column: orderarrearage.FieldOrderID},
+		},
+	}
+	graph.Nodes[13] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   orderpause.Table,
+			Columns: orderpause.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: orderpause.FieldID,
+			},
+		},
+		Type: "OrderPause",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			orderpause.FieldCreatedAt:    {Type: field.TypeTime, Column: orderpause.FieldCreatedAt},
+			orderpause.FieldUpdatedAt:    {Type: field.TypeTime, Column: orderpause.FieldUpdatedAt},
+			orderpause.FieldDeletedAt:    {Type: field.TypeTime, Column: orderpause.FieldDeletedAt},
+			orderpause.FieldCreator:      {Type: field.TypeJSON, Column: orderpause.FieldCreator},
+			orderpause.FieldLastModifier: {Type: field.TypeJSON, Column: orderpause.FieldLastModifier},
+			orderpause.FieldRemark:       {Type: field.TypeString, Column: orderpause.FieldRemark},
+			orderpause.FieldRiderID:      {Type: field.TypeUint64, Column: orderpause.FieldRiderID},
+			orderpause.FieldOrderID:      {Type: field.TypeUint64, Column: orderpause.FieldOrderID},
+			orderpause.FieldStartAt:      {Type: field.TypeTime, Column: orderpause.FieldStartAt},
+			orderpause.FieldEndAt:        {Type: field.TypeTime, Column: orderpause.FieldEndAt},
+			orderpause.FieldDays:         {Type: field.TypeInt, Column: orderpause.FieldDays},
+		},
+	}
+	graph.Nodes[14] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   person.Table,
 			Columns: person.Columns,
@@ -351,7 +420,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			person.FieldAuthAt:         {Type: field.TypeTime, Column: person.FieldAuthAt},
 		},
 	}
-	graph.Nodes[12] = &sqlgraph.Node{
+	graph.Nodes[15] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   plan.Table,
 			Columns: plan.Columns,
@@ -379,7 +448,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			plan.FieldDesc:         {Type: field.TypeString, Column: plan.FieldDesc},
 		},
 	}
-	graph.Nodes[13] = &sqlgraph.Node{
+	graph.Nodes[16] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   rider.Table,
 			Columns: rider.Columns,
@@ -411,7 +480,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldBlocked:        {Type: field.TypeBool, Column: rider.FieldBlocked},
 		},
 	}
-	graph.Nodes[14] = &sqlgraph.Node{
+	graph.Nodes[17] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   setting.Table,
 			Columns: setting.Columns,
@@ -432,7 +501,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			setting.FieldContent:      {Type: field.TypeString, Column: setting.FieldContent},
 		},
 	}
-	graph.Nodes[15] = &sqlgraph.Node{
+	graph.Nodes[18] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   store.Table,
 			Columns: store.Columns,
@@ -816,6 +885,114 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"City",
 	)
 	graph.MustAddE(
+		"pauses",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.PausesTable,
+			Columns: []string{order.PausesColumn},
+			Bidi:    false,
+		},
+		"Order",
+		"OrderPause",
+	)
+	graph.MustAddE(
+		"arrearages",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.ArrearagesTable,
+			Columns: []string{order.ArrearagesColumn},
+			Bidi:    false,
+		},
+		"Order",
+		"OrderArrearage",
+	)
+	graph.MustAddE(
+		"alters",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.AltersTable,
+			Columns: []string{order.AltersColumn},
+			Bidi:    false,
+		},
+		"Order",
+		"OrderAlter",
+	)
+	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   orderalter.RiderTable,
+			Columns: []string{orderalter.RiderColumn},
+			Bidi:    false,
+		},
+		"OrderAlter",
+		"Rider",
+	)
+	graph.MustAddE(
+		"order",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   orderalter.OrderTable,
+			Columns: []string{orderalter.OrderColumn},
+			Bidi:    false,
+		},
+		"OrderAlter",
+		"Order",
+	)
+	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   orderarrearage.RiderTable,
+			Columns: []string{orderarrearage.RiderColumn},
+			Bidi:    false,
+		},
+		"OrderArrearage",
+		"Rider",
+	)
+	graph.MustAddE(
+		"order",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   orderarrearage.OrderTable,
+			Columns: []string{orderarrearage.OrderColumn},
+			Bidi:    false,
+		},
+		"OrderArrearage",
+		"Order",
+	)
+	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   orderpause.RiderTable,
+			Columns: []string{orderpause.RiderColumn},
+			Bidi:    false,
+		},
+		"OrderPause",
+		"Rider",
+	)
+	graph.MustAddE(
+		"order",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   orderpause.OrderTable,
+			Columns: []string{orderpause.OrderColumn},
+			Bidi:    false,
+		},
+		"OrderPause",
+		"Order",
+	)
+	graph.MustAddE(
 		"rider",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -922,6 +1099,42 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Rider",
 		"Order",
+	)
+	graph.MustAddE(
+		"pauses",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.PausesTable,
+			Columns: []string{rider.PausesColumn},
+			Bidi:    false,
+		},
+		"Rider",
+		"OrderPause",
+	)
+	graph.MustAddE(
+		"arrearages",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.ArrearagesTable,
+			Columns: []string{rider.ArrearagesColumn},
+			Bidi:    false,
+		},
+		"Rider",
+		"OrderArrearage",
+	)
+	graph.MustAddE(
+		"alters",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.AltersTable,
+			Columns: []string{rider.AltersColumn},
+			Bidi:    false,
+		},
+		"Rider",
+		"OrderAlter",
 	)
 	graph.MustAddE(
 		"branch",
@@ -2420,29 +2633,14 @@ func (f *OrderFilter) WhereAmount(p entql.Float64P) {
 	f.Where(p.Field(order.FieldAmount))
 }
 
-// WhereRefund applies the entql float64 predicate on the refund field.
-func (f *OrderFilter) WhereRefund(p entql.Float64P) {
-	f.Where(p.Field(order.FieldRefund))
-}
-
-// WhereRefundAt applies the entql time.Time predicate on the refund_at field.
-func (f *OrderFilter) WhereRefundAt(p entql.TimeP) {
-	f.Where(p.Field(order.FieldRefundAt))
-}
-
-// WhereRefundOutTradeNo applies the entql time.Time predicate on the refund_out_trade_no field.
-func (f *OrderFilter) WhereRefundOutTradeNo(p entql.TimeP) {
-	f.Where(p.Field(order.FieldRefundOutTradeNo))
-}
-
-// WhereRefundTradeNo applies the entql time.Time predicate on the refund_trade_no field.
-func (f *OrderFilter) WhereRefundTradeNo(p entql.TimeP) {
-	f.Where(p.Field(order.FieldRefundTradeNo))
-}
-
 // WherePlanDetail applies the entql json.RawMessage predicate on the plan_detail field.
 func (f *OrderFilter) WherePlanDetail(p entql.BytesP) {
 	f.Where(p.Field(order.FieldPlanDetail))
+}
+
+// WhereRefund applies the entql json.RawMessage predicate on the refund field.
+func (f *OrderFilter) WhereRefund(p entql.BytesP) {
+	f.Where(p.Field(order.FieldRefund))
 }
 
 // WhereParentID applies the entql uint64 predicate on the parent_id field.
@@ -2450,19 +2648,24 @@ func (f *OrderFilter) WhereParentID(p entql.Uint64P) {
 	f.Where(p.Field(order.FieldParentID))
 }
 
-// WhereSubordinate applies the entql json.RawMessage predicate on the subordinate field.
-func (f *OrderFilter) WhereSubordinate(p entql.BytesP) {
-	f.Where(p.Field(order.FieldSubordinate))
+// WhereStartAt applies the entql time.Time predicate on the start_at field.
+func (f *OrderFilter) WhereStartAt(p entql.TimeP) {
+	f.Where(p.Field(order.FieldStartAt))
 }
 
-// WhereStart applies the entql time.Time predicate on the start field.
-func (f *OrderFilter) WhereStart(p entql.TimeP) {
-	f.Where(p.Field(order.FieldStart))
+// WhereEndAt applies the entql time.Time predicate on the end_at field.
+func (f *OrderFilter) WhereEndAt(p entql.TimeP) {
+	f.Where(p.Field(order.FieldEndAt))
 }
 
-// WhereEnd applies the entql time.Time predicate on the end field.
-func (f *OrderFilter) WhereEnd(p entql.TimeP) {
-	f.Where(p.Field(order.FieldEnd))
+// WherePausedAt applies the entql time.Time predicate on the paused_at field.
+func (f *OrderFilter) WherePausedAt(p entql.TimeP) {
+	f.Where(p.Field(order.FieldPausedAt))
+}
+
+// WhereDays applies the entql uint predicate on the days field.
+func (f *OrderFilter) WhereDays(p entql.UintP) {
+	f.Where(p.Field(order.FieldDays))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.
@@ -2549,6 +2752,397 @@ func (f *OrderFilter) WhereHasCityWith(preds ...predicate.City) {
 	})))
 }
 
+// WhereHasPauses applies a predicate to check if query has an edge pauses.
+func (f *OrderFilter) WhereHasPauses() {
+	f.Where(entql.HasEdge("pauses"))
+}
+
+// WhereHasPausesWith applies a predicate to check if query has an edge pauses with a given conditions (other predicates).
+func (f *OrderFilter) WhereHasPausesWith(preds ...predicate.OrderPause) {
+	f.Where(entql.HasEdgeWith("pauses", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasArrearages applies a predicate to check if query has an edge arrearages.
+func (f *OrderFilter) WhereHasArrearages() {
+	f.Where(entql.HasEdge("arrearages"))
+}
+
+// WhereHasArrearagesWith applies a predicate to check if query has an edge arrearages with a given conditions (other predicates).
+func (f *OrderFilter) WhereHasArrearagesWith(preds ...predicate.OrderArrearage) {
+	f.Where(entql.HasEdgeWith("arrearages", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasAlters applies a predicate to check if query has an edge alters.
+func (f *OrderFilter) WhereHasAlters() {
+	f.Where(entql.HasEdge("alters"))
+}
+
+// WhereHasAltersWith applies a predicate to check if query has an edge alters with a given conditions (other predicates).
+func (f *OrderFilter) WhereHasAltersWith(preds ...predicate.OrderAlter) {
+	f.Where(entql.HasEdgeWith("alters", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (oaq *OrderAlterQuery) addPredicate(pred func(s *sql.Selector)) {
+	oaq.predicates = append(oaq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the OrderAlterQuery builder.
+func (oaq *OrderAlterQuery) Filter() *OrderAlterFilter {
+	return &OrderAlterFilter{oaq.config, oaq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *OrderAlterMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the OrderAlterMutation builder.
+func (m *OrderAlterMutation) Filter() *OrderAlterFilter {
+	return &OrderAlterFilter{m.config, m}
+}
+
+// OrderAlterFilter provides a generic filtering capability at runtime for OrderAlterQuery.
+type OrderAlterFilter struct {
+	config
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *OrderAlterFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *OrderAlterFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(orderalter.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *OrderAlterFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(orderalter.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *OrderAlterFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(orderalter.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *OrderAlterFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(orderalter.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *OrderAlterFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(orderalter.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *OrderAlterFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(orderalter.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *OrderAlterFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(orderalter.FieldRemark))
+}
+
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *OrderAlterFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(orderalter.FieldRiderID))
+}
+
+// WhereOrderID applies the entql uint64 predicate on the order_id field.
+func (f *OrderAlterFilter) WhereOrderID(p entql.Uint64P) {
+	f.Where(p.Field(orderalter.FieldOrderID))
+}
+
+// WhereDays applies the entql int predicate on the days field.
+func (f *OrderAlterFilter) WhereDays(p entql.IntP) {
+	f.Where(p.Field(orderalter.FieldDays))
+}
+
+// WhereReason applies the entql string predicate on the reason field.
+func (f *OrderAlterFilter) WhereReason(p entql.StringP) {
+	f.Where(p.Field(orderalter.FieldReason))
+}
+
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *OrderAlterFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *OrderAlterFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasOrder applies a predicate to check if query has an edge order.
+func (f *OrderAlterFilter) WhereHasOrder() {
+	f.Where(entql.HasEdge("order"))
+}
+
+// WhereHasOrderWith applies a predicate to check if query has an edge order with a given conditions (other predicates).
+func (f *OrderAlterFilter) WhereHasOrderWith(preds ...predicate.Order) {
+	f.Where(entql.HasEdgeWith("order", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (oaq *OrderArrearageQuery) addPredicate(pred func(s *sql.Selector)) {
+	oaq.predicates = append(oaq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the OrderArrearageQuery builder.
+func (oaq *OrderArrearageQuery) Filter() *OrderArrearageFilter {
+	return &OrderArrearageFilter{oaq.config, oaq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *OrderArrearageMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the OrderArrearageMutation builder.
+func (m *OrderArrearageMutation) Filter() *OrderArrearageFilter {
+	return &OrderArrearageFilter{m.config, m}
+}
+
+// OrderArrearageFilter provides a generic filtering capability at runtime for OrderArrearageQuery.
+type OrderArrearageFilter struct {
+	config
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *OrderArrearageFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[12].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *OrderArrearageFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(orderarrearage.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *OrderArrearageFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(orderarrearage.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *OrderArrearageFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(orderarrearage.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *OrderArrearageFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(orderarrearage.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *OrderArrearageFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(orderarrearage.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *OrderArrearageFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(orderarrearage.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *OrderArrearageFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(orderarrearage.FieldRemark))
+}
+
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *OrderArrearageFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(orderarrearage.FieldRiderID))
+}
+
+// WhereOrderID applies the entql uint64 predicate on the order_id field.
+func (f *OrderArrearageFilter) WhereOrderID(p entql.Uint64P) {
+	f.Where(p.Field(orderarrearage.FieldOrderID))
+}
+
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *OrderArrearageFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *OrderArrearageFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasOrder applies a predicate to check if query has an edge order.
+func (f *OrderArrearageFilter) WhereHasOrder() {
+	f.Where(entql.HasEdge("order"))
+}
+
+// WhereHasOrderWith applies a predicate to check if query has an edge order with a given conditions (other predicates).
+func (f *OrderArrearageFilter) WhereHasOrderWith(preds ...predicate.Order) {
+	f.Where(entql.HasEdgeWith("order", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (opq *OrderPauseQuery) addPredicate(pred func(s *sql.Selector)) {
+	opq.predicates = append(opq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the OrderPauseQuery builder.
+func (opq *OrderPauseQuery) Filter() *OrderPauseFilter {
+	return &OrderPauseFilter{opq.config, opq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *OrderPauseMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the OrderPauseMutation builder.
+func (m *OrderPauseMutation) Filter() *OrderPauseFilter {
+	return &OrderPauseFilter{m.config, m}
+}
+
+// OrderPauseFilter provides a generic filtering capability at runtime for OrderPauseQuery.
+type OrderPauseFilter struct {
+	config
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *OrderPauseFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[13].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *OrderPauseFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(orderpause.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *OrderPauseFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(orderpause.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *OrderPauseFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(orderpause.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *OrderPauseFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(orderpause.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *OrderPauseFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(orderpause.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *OrderPauseFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(orderpause.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *OrderPauseFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(orderpause.FieldRemark))
+}
+
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *OrderPauseFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(orderpause.FieldRiderID))
+}
+
+// WhereOrderID applies the entql uint64 predicate on the order_id field.
+func (f *OrderPauseFilter) WhereOrderID(p entql.Uint64P) {
+	f.Where(p.Field(orderpause.FieldOrderID))
+}
+
+// WhereStartAt applies the entql time.Time predicate on the start_at field.
+func (f *OrderPauseFilter) WhereStartAt(p entql.TimeP) {
+	f.Where(p.Field(orderpause.FieldStartAt))
+}
+
+// WhereEndAt applies the entql time.Time predicate on the end_at field.
+func (f *OrderPauseFilter) WhereEndAt(p entql.TimeP) {
+	f.Where(p.Field(orderpause.FieldEndAt))
+}
+
+// WhereDays applies the entql int predicate on the days field.
+func (f *OrderPauseFilter) WhereDays(p entql.IntP) {
+	f.Where(p.Field(orderpause.FieldDays))
+}
+
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *OrderPauseFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *OrderPauseFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasOrder applies a predicate to check if query has an edge order.
+func (f *OrderPauseFilter) WhereHasOrder() {
+	f.Where(entql.HasEdge("order"))
+}
+
+// WhereHasOrderWith applies a predicate to check if query has an edge order with a given conditions (other predicates).
+func (f *OrderPauseFilter) WhereHasOrderWith(preds ...predicate.Order) {
+	f.Where(entql.HasEdgeWith("order", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (pq *PersonQuery) addPredicate(pred func(s *sql.Selector)) {
 	pq.predicates = append(pq.predicates, pred)
@@ -2578,7 +3172,7 @@ type PersonFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PersonFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[11].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[14].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2712,7 +3306,7 @@ type PlanFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PlanFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[12].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[15].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2869,7 +3463,7 @@ type RiderFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RiderFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[13].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[16].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -3045,6 +3639,48 @@ func (f *RiderFilter) WhereHasOrdersWith(preds ...predicate.Order) {
 	})))
 }
 
+// WhereHasPauses applies a predicate to check if query has an edge pauses.
+func (f *RiderFilter) WhereHasPauses() {
+	f.Where(entql.HasEdge("pauses"))
+}
+
+// WhereHasPausesWith applies a predicate to check if query has an edge pauses with a given conditions (other predicates).
+func (f *RiderFilter) WhereHasPausesWith(preds ...predicate.OrderPause) {
+	f.Where(entql.HasEdgeWith("pauses", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasArrearages applies a predicate to check if query has an edge arrearages.
+func (f *RiderFilter) WhereHasArrearages() {
+	f.Where(entql.HasEdge("arrearages"))
+}
+
+// WhereHasArrearagesWith applies a predicate to check if query has an edge arrearages with a given conditions (other predicates).
+func (f *RiderFilter) WhereHasArrearagesWith(preds ...predicate.OrderArrearage) {
+	f.Where(entql.HasEdgeWith("arrearages", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasAlters applies a predicate to check if query has an edge alters.
+func (f *RiderFilter) WhereHasAlters() {
+	f.Where(entql.HasEdge("alters"))
+}
+
+// WhereHasAltersWith applies a predicate to check if query has an edge alters with a given conditions (other predicates).
+func (f *RiderFilter) WhereHasAltersWith(preds ...predicate.OrderAlter) {
+	f.Where(entql.HasEdgeWith("alters", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (sq *SettingQuery) addPredicate(pred func(s *sql.Selector)) {
 	sq.predicates = append(sq.predicates, pred)
@@ -3074,7 +3710,7 @@ type SettingFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SettingFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[14].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[17].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -3154,7 +3790,7 @@ type StoreFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *StoreFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[15].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[18].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

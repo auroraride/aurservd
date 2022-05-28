@@ -47,6 +47,6 @@ func (*order) NotActived(c echo.Context) (err error) {
     ctx := app.ContextX[app.RiderContext](c)
 
     return ctx.SendResponse(
-        service.NewOrder().RiderNotActived(ctx.Rider.ID),
+        service.NewRiderOrder().NotActivedDetail(ctx.Rider.ID),
     )
 }

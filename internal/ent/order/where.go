@@ -184,34 +184,6 @@ func Amount(v float64) predicate.Order {
 	})
 }
 
-// Refund applies equality check predicate on the "refund" field. It's identical to RefundEQ.
-func Refund(v float64) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRefund), v))
-	})
-}
-
-// RefundAt applies equality check predicate on the "refund_at" field. It's identical to RefundAtEQ.
-func RefundAt(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRefundAt), v))
-	})
-}
-
-// RefundOutTradeNo applies equality check predicate on the "refund_out_trade_no" field. It's identical to RefundOutTradeNoEQ.
-func RefundOutTradeNo(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRefundOutTradeNo), v))
-	})
-}
-
-// RefundTradeNo applies equality check predicate on the "refund_trade_no" field. It's identical to RefundTradeNoEQ.
-func RefundTradeNo(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRefundTradeNo), v))
-	})
-}
-
 // ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
 func ParentID(v uint64) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
@@ -219,17 +191,31 @@ func ParentID(v uint64) predicate.Order {
 	})
 }
 
-// Start applies equality check predicate on the "start" field. It's identical to StartEQ.
-func Start(v time.Time) predicate.Order {
+// StartAt applies equality check predicate on the "start_at" field. It's identical to StartAtEQ.
+func StartAt(v time.Time) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStart), v))
+		s.Where(sql.EQ(s.C(FieldStartAt), v))
 	})
 }
 
-// End applies equality check predicate on the "end" field. It's identical to EndEQ.
-func End(v time.Time) predicate.Order {
+// EndAt applies equality check predicate on the "end_at" field. It's identical to EndAtEQ.
+func EndAt(v time.Time) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEnd), v))
+		s.Where(sql.EQ(s.C(FieldEndAt), v))
+	})
+}
+
+// PausedAt applies equality check predicate on the "paused_at" field. It's identical to PausedAtEQ.
+func PausedAt(v time.Time) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPausedAt), v))
+	})
+}
+
+// Days applies equality check predicate on the "days" field. It's identical to DaysEQ.
+func Days(v uint) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDays), v))
 	})
 }
 
@@ -1312,79 +1298,17 @@ func AmountLTE(v float64) predicate.Order {
 	})
 }
 
-// RefundEQ applies the EQ predicate on the "refund" field.
-func RefundEQ(v float64) predicate.Order {
+// PlanDetailIsNil applies the IsNil predicate on the "plan_detail" field.
+func PlanDetailIsNil() predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRefund), v))
+		s.Where(sql.IsNull(s.C(FieldPlanDetail)))
 	})
 }
 
-// RefundNEQ applies the NEQ predicate on the "refund" field.
-func RefundNEQ(v float64) predicate.Order {
+// PlanDetailNotNil applies the NotNil predicate on the "plan_detail" field.
+func PlanDetailNotNil() predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRefund), v))
-	})
-}
-
-// RefundIn applies the In predicate on the "refund" field.
-func RefundIn(vs ...float64) predicate.Order {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Order(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldRefund), v...))
-	})
-}
-
-// RefundNotIn applies the NotIn predicate on the "refund" field.
-func RefundNotIn(vs ...float64) predicate.Order {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Order(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldRefund), v...))
-	})
-}
-
-// RefundGT applies the GT predicate on the "refund" field.
-func RefundGT(v float64) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRefund), v))
-	})
-}
-
-// RefundGTE applies the GTE predicate on the "refund" field.
-func RefundGTE(v float64) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRefund), v))
-	})
-}
-
-// RefundLT applies the LT predicate on the "refund" field.
-func RefundLT(v float64) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRefund), v))
-	})
-}
-
-// RefundLTE applies the LTE predicate on the "refund" field.
-func RefundLTE(v float64) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRefund), v))
+		s.Where(sql.NotNull(s.C(FieldPlanDetail)))
 	})
 }
 
@@ -1399,290 +1323,6 @@ func RefundIsNil() predicate.Order {
 func RefundNotNil() predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldRefund)))
-	})
-}
-
-// RefundAtEQ applies the EQ predicate on the "refund_at" field.
-func RefundAtEQ(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRefundAt), v))
-	})
-}
-
-// RefundAtNEQ applies the NEQ predicate on the "refund_at" field.
-func RefundAtNEQ(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRefundAt), v))
-	})
-}
-
-// RefundAtIn applies the In predicate on the "refund_at" field.
-func RefundAtIn(vs ...time.Time) predicate.Order {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Order(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldRefundAt), v...))
-	})
-}
-
-// RefundAtNotIn applies the NotIn predicate on the "refund_at" field.
-func RefundAtNotIn(vs ...time.Time) predicate.Order {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Order(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldRefundAt), v...))
-	})
-}
-
-// RefundAtGT applies the GT predicate on the "refund_at" field.
-func RefundAtGT(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRefundAt), v))
-	})
-}
-
-// RefundAtGTE applies the GTE predicate on the "refund_at" field.
-func RefundAtGTE(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRefundAt), v))
-	})
-}
-
-// RefundAtLT applies the LT predicate on the "refund_at" field.
-func RefundAtLT(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRefundAt), v))
-	})
-}
-
-// RefundAtLTE applies the LTE predicate on the "refund_at" field.
-func RefundAtLTE(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRefundAt), v))
-	})
-}
-
-// RefundAtIsNil applies the IsNil predicate on the "refund_at" field.
-func RefundAtIsNil() predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRefundAt)))
-	})
-}
-
-// RefundAtNotNil applies the NotNil predicate on the "refund_at" field.
-func RefundAtNotNil() predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRefundAt)))
-	})
-}
-
-// RefundOutTradeNoEQ applies the EQ predicate on the "refund_out_trade_no" field.
-func RefundOutTradeNoEQ(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRefundOutTradeNo), v))
-	})
-}
-
-// RefundOutTradeNoNEQ applies the NEQ predicate on the "refund_out_trade_no" field.
-func RefundOutTradeNoNEQ(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRefundOutTradeNo), v))
-	})
-}
-
-// RefundOutTradeNoIn applies the In predicate on the "refund_out_trade_no" field.
-func RefundOutTradeNoIn(vs ...time.Time) predicate.Order {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Order(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldRefundOutTradeNo), v...))
-	})
-}
-
-// RefundOutTradeNoNotIn applies the NotIn predicate on the "refund_out_trade_no" field.
-func RefundOutTradeNoNotIn(vs ...time.Time) predicate.Order {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Order(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldRefundOutTradeNo), v...))
-	})
-}
-
-// RefundOutTradeNoGT applies the GT predicate on the "refund_out_trade_no" field.
-func RefundOutTradeNoGT(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRefundOutTradeNo), v))
-	})
-}
-
-// RefundOutTradeNoGTE applies the GTE predicate on the "refund_out_trade_no" field.
-func RefundOutTradeNoGTE(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRefundOutTradeNo), v))
-	})
-}
-
-// RefundOutTradeNoLT applies the LT predicate on the "refund_out_trade_no" field.
-func RefundOutTradeNoLT(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRefundOutTradeNo), v))
-	})
-}
-
-// RefundOutTradeNoLTE applies the LTE predicate on the "refund_out_trade_no" field.
-func RefundOutTradeNoLTE(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRefundOutTradeNo), v))
-	})
-}
-
-// RefundOutTradeNoIsNil applies the IsNil predicate on the "refund_out_trade_no" field.
-func RefundOutTradeNoIsNil() predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRefundOutTradeNo)))
-	})
-}
-
-// RefundOutTradeNoNotNil applies the NotNil predicate on the "refund_out_trade_no" field.
-func RefundOutTradeNoNotNil() predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRefundOutTradeNo)))
-	})
-}
-
-// RefundTradeNoEQ applies the EQ predicate on the "refund_trade_no" field.
-func RefundTradeNoEQ(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldRefundTradeNo), v))
-	})
-}
-
-// RefundTradeNoNEQ applies the NEQ predicate on the "refund_trade_no" field.
-func RefundTradeNoNEQ(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldRefundTradeNo), v))
-	})
-}
-
-// RefundTradeNoIn applies the In predicate on the "refund_trade_no" field.
-func RefundTradeNoIn(vs ...time.Time) predicate.Order {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Order(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldRefundTradeNo), v...))
-	})
-}
-
-// RefundTradeNoNotIn applies the NotIn predicate on the "refund_trade_no" field.
-func RefundTradeNoNotIn(vs ...time.Time) predicate.Order {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Order(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldRefundTradeNo), v...))
-	})
-}
-
-// RefundTradeNoGT applies the GT predicate on the "refund_trade_no" field.
-func RefundTradeNoGT(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldRefundTradeNo), v))
-	})
-}
-
-// RefundTradeNoGTE applies the GTE predicate on the "refund_trade_no" field.
-func RefundTradeNoGTE(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldRefundTradeNo), v))
-	})
-}
-
-// RefundTradeNoLT applies the LT predicate on the "refund_trade_no" field.
-func RefundTradeNoLT(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldRefundTradeNo), v))
-	})
-}
-
-// RefundTradeNoLTE applies the LTE predicate on the "refund_trade_no" field.
-func RefundTradeNoLTE(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldRefundTradeNo), v))
-	})
-}
-
-// RefundTradeNoIsNil applies the IsNil predicate on the "refund_trade_no" field.
-func RefundTradeNoIsNil() predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRefundTradeNo)))
-	})
-}
-
-// RefundTradeNoNotNil applies the NotNil predicate on the "refund_trade_no" field.
-func RefundTradeNoNotNil() predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRefundTradeNo)))
-	})
-}
-
-// PlanDetailIsNil applies the IsNil predicate on the "plan_detail" field.
-func PlanDetailIsNil() predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldPlanDetail)))
-	})
-}
-
-// PlanDetailNotNil applies the NotNil predicate on the "plan_detail" field.
-func PlanDetailNotNil() predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldPlanDetail)))
 	})
 }
 
@@ -1748,36 +1388,22 @@ func ParentIDNotNil() predicate.Order {
 	})
 }
 
-// SubordinateIsNil applies the IsNil predicate on the "subordinate" field.
-func SubordinateIsNil() predicate.Order {
+// StartAtEQ applies the EQ predicate on the "start_at" field.
+func StartAtEQ(v time.Time) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldSubordinate)))
+		s.Where(sql.EQ(s.C(FieldStartAt), v))
 	})
 }
 
-// SubordinateNotNil applies the NotNil predicate on the "subordinate" field.
-func SubordinateNotNil() predicate.Order {
+// StartAtNEQ applies the NEQ predicate on the "start_at" field.
+func StartAtNEQ(v time.Time) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldSubordinate)))
+		s.Where(sql.NEQ(s.C(FieldStartAt), v))
 	})
 }
 
-// StartEQ applies the EQ predicate on the "start" field.
-func StartEQ(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStart), v))
-	})
-}
-
-// StartNEQ applies the NEQ predicate on the "start" field.
-func StartNEQ(v time.Time) predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStart), v))
-	})
-}
-
-// StartIn applies the In predicate on the "start" field.
-func StartIn(vs ...time.Time) predicate.Order {
+// StartAtIn applies the In predicate on the "start_at" field.
+func StartAtIn(vs ...time.Time) predicate.Order {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1789,12 +1415,12 @@ func StartIn(vs ...time.Time) predicate.Order {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldStart), v...))
+		s.Where(sql.In(s.C(FieldStartAt), v...))
 	})
 }
 
-// StartNotIn applies the NotIn predicate on the "start" field.
-func StartNotIn(vs ...time.Time) predicate.Order {
+// StartAtNotIn applies the NotIn predicate on the "start_at" field.
+func StartAtNotIn(vs ...time.Time) predicate.Order {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1806,68 +1432,68 @@ func StartNotIn(vs ...time.Time) predicate.Order {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldStart), v...))
+		s.Where(sql.NotIn(s.C(FieldStartAt), v...))
 	})
 }
 
-// StartGT applies the GT predicate on the "start" field.
-func StartGT(v time.Time) predicate.Order {
+// StartAtGT applies the GT predicate on the "start_at" field.
+func StartAtGT(v time.Time) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldStart), v))
+		s.Where(sql.GT(s.C(FieldStartAt), v))
 	})
 }
 
-// StartGTE applies the GTE predicate on the "start" field.
-func StartGTE(v time.Time) predicate.Order {
+// StartAtGTE applies the GTE predicate on the "start_at" field.
+func StartAtGTE(v time.Time) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldStart), v))
+		s.Where(sql.GTE(s.C(FieldStartAt), v))
 	})
 }
 
-// StartLT applies the LT predicate on the "start" field.
-func StartLT(v time.Time) predicate.Order {
+// StartAtLT applies the LT predicate on the "start_at" field.
+func StartAtLT(v time.Time) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldStart), v))
+		s.Where(sql.LT(s.C(FieldStartAt), v))
 	})
 }
 
-// StartLTE applies the LTE predicate on the "start" field.
-func StartLTE(v time.Time) predicate.Order {
+// StartAtLTE applies the LTE predicate on the "start_at" field.
+func StartAtLTE(v time.Time) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldStart), v))
+		s.Where(sql.LTE(s.C(FieldStartAt), v))
 	})
 }
 
-// StartIsNil applies the IsNil predicate on the "start" field.
-func StartIsNil() predicate.Order {
+// StartAtIsNil applies the IsNil predicate on the "start_at" field.
+func StartAtIsNil() predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldStart)))
+		s.Where(sql.IsNull(s.C(FieldStartAt)))
 	})
 }
 
-// StartNotNil applies the NotNil predicate on the "start" field.
-func StartNotNil() predicate.Order {
+// StartAtNotNil applies the NotNil predicate on the "start_at" field.
+func StartAtNotNil() predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldStart)))
+		s.Where(sql.NotNull(s.C(FieldStartAt)))
 	})
 }
 
-// EndEQ applies the EQ predicate on the "end" field.
-func EndEQ(v time.Time) predicate.Order {
+// EndAtEQ applies the EQ predicate on the "end_at" field.
+func EndAtEQ(v time.Time) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldEnd), v))
+		s.Where(sql.EQ(s.C(FieldEndAt), v))
 	})
 }
 
-// EndNEQ applies the NEQ predicate on the "end" field.
-func EndNEQ(v time.Time) predicate.Order {
+// EndAtNEQ applies the NEQ predicate on the "end_at" field.
+func EndAtNEQ(v time.Time) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldEnd), v))
+		s.Where(sql.NEQ(s.C(FieldEndAt), v))
 	})
 }
 
-// EndIn applies the In predicate on the "end" field.
-func EndIn(vs ...time.Time) predicate.Order {
+// EndAtIn applies the In predicate on the "end_at" field.
+func EndAtIn(vs ...time.Time) predicate.Order {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1879,12 +1505,12 @@ func EndIn(vs ...time.Time) predicate.Order {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldEnd), v...))
+		s.Where(sql.In(s.C(FieldEndAt), v...))
 	})
 }
 
-// EndNotIn applies the NotIn predicate on the "end" field.
-func EndNotIn(vs ...time.Time) predicate.Order {
+// EndAtNotIn applies the NotIn predicate on the "end_at" field.
+func EndAtNotIn(vs ...time.Time) predicate.Order {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1896,49 +1522,229 @@ func EndNotIn(vs ...time.Time) predicate.Order {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldEnd), v...))
+		s.Where(sql.NotIn(s.C(FieldEndAt), v...))
 	})
 }
 
-// EndGT applies the GT predicate on the "end" field.
-func EndGT(v time.Time) predicate.Order {
+// EndAtGT applies the GT predicate on the "end_at" field.
+func EndAtGT(v time.Time) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldEnd), v))
+		s.Where(sql.GT(s.C(FieldEndAt), v))
 	})
 }
 
-// EndGTE applies the GTE predicate on the "end" field.
-func EndGTE(v time.Time) predicate.Order {
+// EndAtGTE applies the GTE predicate on the "end_at" field.
+func EndAtGTE(v time.Time) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldEnd), v))
+		s.Where(sql.GTE(s.C(FieldEndAt), v))
 	})
 }
 
-// EndLT applies the LT predicate on the "end" field.
-func EndLT(v time.Time) predicate.Order {
+// EndAtLT applies the LT predicate on the "end_at" field.
+func EndAtLT(v time.Time) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldEnd), v))
+		s.Where(sql.LT(s.C(FieldEndAt), v))
 	})
 }
 
-// EndLTE applies the LTE predicate on the "end" field.
-func EndLTE(v time.Time) predicate.Order {
+// EndAtLTE applies the LTE predicate on the "end_at" field.
+func EndAtLTE(v time.Time) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldEnd), v))
+		s.Where(sql.LTE(s.C(FieldEndAt), v))
 	})
 }
 
-// EndIsNil applies the IsNil predicate on the "end" field.
-func EndIsNil() predicate.Order {
+// EndAtIsNil applies the IsNil predicate on the "end_at" field.
+func EndAtIsNil() predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldEnd)))
+		s.Where(sql.IsNull(s.C(FieldEndAt)))
 	})
 }
 
-// EndNotNil applies the NotNil predicate on the "end" field.
-func EndNotNil() predicate.Order {
+// EndAtNotNil applies the NotNil predicate on the "end_at" field.
+func EndAtNotNil() predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldEnd)))
+		s.Where(sql.NotNull(s.C(FieldEndAt)))
+	})
+}
+
+// PausedAtEQ applies the EQ predicate on the "paused_at" field.
+func PausedAtEQ(v time.Time) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPausedAt), v))
+	})
+}
+
+// PausedAtNEQ applies the NEQ predicate on the "paused_at" field.
+func PausedAtNEQ(v time.Time) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPausedAt), v))
+	})
+}
+
+// PausedAtIn applies the In predicate on the "paused_at" field.
+func PausedAtIn(vs ...time.Time) predicate.Order {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldPausedAt), v...))
+	})
+}
+
+// PausedAtNotIn applies the NotIn predicate on the "paused_at" field.
+func PausedAtNotIn(vs ...time.Time) predicate.Order {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldPausedAt), v...))
+	})
+}
+
+// PausedAtGT applies the GT predicate on the "paused_at" field.
+func PausedAtGT(v time.Time) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPausedAt), v))
+	})
+}
+
+// PausedAtGTE applies the GTE predicate on the "paused_at" field.
+func PausedAtGTE(v time.Time) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPausedAt), v))
+	})
+}
+
+// PausedAtLT applies the LT predicate on the "paused_at" field.
+func PausedAtLT(v time.Time) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPausedAt), v))
+	})
+}
+
+// PausedAtLTE applies the LTE predicate on the "paused_at" field.
+func PausedAtLTE(v time.Time) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPausedAt), v))
+	})
+}
+
+// PausedAtIsNil applies the IsNil predicate on the "paused_at" field.
+func PausedAtIsNil() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPausedAt)))
+	})
+}
+
+// PausedAtNotNil applies the NotNil predicate on the "paused_at" field.
+func PausedAtNotNil() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPausedAt)))
+	})
+}
+
+// DaysEQ applies the EQ predicate on the "days" field.
+func DaysEQ(v uint) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDays), v))
+	})
+}
+
+// DaysNEQ applies the NEQ predicate on the "days" field.
+func DaysNEQ(v uint) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDays), v))
+	})
+}
+
+// DaysIn applies the In predicate on the "days" field.
+func DaysIn(vs ...uint) predicate.Order {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDays), v...))
+	})
+}
+
+// DaysNotIn applies the NotIn predicate on the "days" field.
+func DaysNotIn(vs ...uint) predicate.Order {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDays), v...))
+	})
+}
+
+// DaysGT applies the GT predicate on the "days" field.
+func DaysGT(v uint) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDays), v))
+	})
+}
+
+// DaysGTE applies the GTE predicate on the "days" field.
+func DaysGTE(v uint) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDays), v))
+	})
+}
+
+// DaysLT applies the LT predicate on the "days" field.
+func DaysLT(v uint) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDays), v))
+	})
+}
+
+// DaysLTE applies the LTE predicate on the "days" field.
+func DaysLTE(v uint) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDays), v))
+	})
+}
+
+// DaysIsNil applies the IsNil predicate on the "days" field.
+func DaysIsNil() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldDays)))
+	})
+}
+
+// DaysNotNil applies the NotNil predicate on the "days" field.
+func DaysNotNil() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldDays)))
 	})
 }
 
@@ -2101,6 +1907,90 @@ func HasCityWith(preds ...predicate.City) predicate.Order {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(CityInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, CityTable, CityColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasPauses applies the HasEdge predicate on the "pauses" edge.
+func HasPauses() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(PausesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PausesTable, PausesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPausesWith applies the HasEdge predicate on the "pauses" edge with a given conditions (other predicates).
+func HasPausesWith(preds ...predicate.OrderPause) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(PausesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PausesTable, PausesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasArrearages applies the HasEdge predicate on the "arrearages" edge.
+func HasArrearages() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ArrearagesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ArrearagesTable, ArrearagesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasArrearagesWith applies the HasEdge predicate on the "arrearages" edge with a given conditions (other predicates).
+func HasArrearagesWith(preds ...predicate.OrderArrearage) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ArrearagesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ArrearagesTable, ArrearagesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAlters applies the HasEdge predicate on the "alters" edge.
+func HasAlters() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(AltersTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, AltersTable, AltersColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAltersWith applies the HasEdge predicate on the "alters" edge with a given conditions (other predicates).
+func HasAltersWith(preds ...predicate.OrderAlter) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(AltersInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, AltersTable, AltersColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

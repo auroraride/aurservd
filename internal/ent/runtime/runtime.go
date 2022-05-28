@@ -16,6 +16,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
+	"github.com/auroraride/aurservd/internal/ent/orderalter"
+	"github.com/auroraride/aurservd/internal/ent/orderarrearage"
+	"github.com/auroraride/aurservd/internal/ent/orderpause"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -301,6 +304,57 @@ func init() {
 	orderDescStatus := orderFields[3].Descriptor()
 	// order.DefaultStatus holds the default value on creation for the status field.
 	order.DefaultStatus = orderDescStatus.Default.(uint8)
+	orderalterMixin := schema.OrderAlter{}.Mixin()
+	orderalterMixinHooks2 := orderalterMixin[2].Hooks()
+	orderalter.Hooks[0] = orderalterMixinHooks2[0]
+	orderalterMixinFields0 := orderalterMixin[0].Fields()
+	_ = orderalterMixinFields0
+	orderalterFields := schema.OrderAlter{}.Fields()
+	_ = orderalterFields
+	// orderalterDescCreatedAt is the schema descriptor for created_at field.
+	orderalterDescCreatedAt := orderalterMixinFields0[0].Descriptor()
+	// orderalter.DefaultCreatedAt holds the default value on creation for the created_at field.
+	orderalter.DefaultCreatedAt = orderalterDescCreatedAt.Default.(func() time.Time)
+	// orderalterDescUpdatedAt is the schema descriptor for updated_at field.
+	orderalterDescUpdatedAt := orderalterMixinFields0[1].Descriptor()
+	// orderalter.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	orderalter.DefaultUpdatedAt = orderalterDescUpdatedAt.Default.(func() time.Time)
+	// orderalter.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	orderalter.UpdateDefaultUpdatedAt = orderalterDescUpdatedAt.UpdateDefault.(func() time.Time)
+	orderarrearageMixin := schema.OrderArrearage{}.Mixin()
+	orderarrearageMixinHooks2 := orderarrearageMixin[2].Hooks()
+	orderarrearage.Hooks[0] = orderarrearageMixinHooks2[0]
+	orderarrearageMixinFields0 := orderarrearageMixin[0].Fields()
+	_ = orderarrearageMixinFields0
+	orderarrearageFields := schema.OrderArrearage{}.Fields()
+	_ = orderarrearageFields
+	// orderarrearageDescCreatedAt is the schema descriptor for created_at field.
+	orderarrearageDescCreatedAt := orderarrearageMixinFields0[0].Descriptor()
+	// orderarrearage.DefaultCreatedAt holds the default value on creation for the created_at field.
+	orderarrearage.DefaultCreatedAt = orderarrearageDescCreatedAt.Default.(func() time.Time)
+	// orderarrearageDescUpdatedAt is the schema descriptor for updated_at field.
+	orderarrearageDescUpdatedAt := orderarrearageMixinFields0[1].Descriptor()
+	// orderarrearage.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	orderarrearage.DefaultUpdatedAt = orderarrearageDescUpdatedAt.Default.(func() time.Time)
+	// orderarrearage.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	orderarrearage.UpdateDefaultUpdatedAt = orderarrearageDescUpdatedAt.UpdateDefault.(func() time.Time)
+	orderpauseMixin := schema.OrderPause{}.Mixin()
+	orderpauseMixinHooks2 := orderpauseMixin[2].Hooks()
+	orderpause.Hooks[0] = orderpauseMixinHooks2[0]
+	orderpauseMixinFields0 := orderpauseMixin[0].Fields()
+	_ = orderpauseMixinFields0
+	orderpauseFields := schema.OrderPause{}.Fields()
+	_ = orderpauseFields
+	// orderpauseDescCreatedAt is the schema descriptor for created_at field.
+	orderpauseDescCreatedAt := orderpauseMixinFields0[0].Descriptor()
+	// orderpause.DefaultCreatedAt holds the default value on creation for the created_at field.
+	orderpause.DefaultCreatedAt = orderpauseDescCreatedAt.Default.(func() time.Time)
+	// orderpauseDescUpdatedAt is the schema descriptor for updated_at field.
+	orderpauseDescUpdatedAt := orderpauseMixinFields0[1].Descriptor()
+	// orderpause.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	orderpause.DefaultUpdatedAt = orderpauseDescUpdatedAt.Default.(func() time.Time)
+	// orderpause.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	orderpause.UpdateDefaultUpdatedAt = orderpauseDescUpdatedAt.UpdateDefault.(func() time.Time)
 	personMixin := schema.Person{}.Mixin()
 	personMixinHooks2 := personMixin[2].Hooks()
 	person.Hooks[0] = personMixinHooks2[0]

@@ -36,6 +36,12 @@ type Tx struct {
 	Manager *ManagerClient
 	// Order is the client for interacting with the Order builders.
 	Order *OrderClient
+	// OrderAlter is the client for interacting with the OrderAlter builders.
+	OrderAlter *OrderAlterClient
+	// OrderArrearage is the client for interacting with the OrderArrearage builders.
+	OrderArrearage *OrderArrearageClient
+	// OrderPause is the client for interacting with the OrderPause builders.
+	OrderPause *OrderPauseClient
 	// Person is the client for interacting with the Person builders.
 	Person *PersonClient
 	// Plan is the client for interacting with the Plan builders.
@@ -192,6 +198,9 @@ func (tx *Tx) init() {
 	tx.Enterprise = NewEnterpriseClient(tx.config)
 	tx.Manager = NewManagerClient(tx.config)
 	tx.Order = NewOrderClient(tx.config)
+	tx.OrderAlter = NewOrderAlterClient(tx.config)
+	tx.OrderArrearage = NewOrderArrearageClient(tx.config)
+	tx.OrderPause = NewOrderPauseClient(tx.config)
 	tx.Person = NewPersonClient(tx.config)
 	tx.Plan = NewPlanClient(tx.config)
 	tx.Rider = NewRiderClient(tx.config)

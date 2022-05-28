@@ -15,13 +15,15 @@ type RiderContext struct {
     *BaseContext
 
     Rider *ent.Rider
+    Token string
 }
 
 // NewRiderContext 创建骑手上下文
-func NewRiderContext(c echo.Context, rider *ent.Rider) *RiderContext {
+func NewRiderContext(c echo.Context, rider *ent.Rider, token string) *RiderContext {
     return &RiderContext{
         BaseContext: Context(c),
         Rider:       rider,
+        Token:       token,
     }
 }
 

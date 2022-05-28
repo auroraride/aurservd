@@ -538,14 +538,12 @@ var (
 		{Name: "out_trade_no", Type: field.TypeString, Unique: true, Comment: "交易订单号"},
 		{Name: "trade_no", Type: field.TypeString, Comment: "平台订单号"},
 		{Name: "amount", Type: field.TypeFloat64, Comment: "支付金额"},
-		{Name: "refund", Type: field.TypeFloat64, Comment: "退款金额", Nullable: true},
-		{Name: "refund_at", Type: field.TypeTime, Comment: "退款时间", Nullable: true},
-		{Name: "refund_out_trade_no", Type: field.TypeTime, Comment: "退款订单号", Nullable: true},
-		{Name: "refund_trade_no", Type: field.TypeTime, Comment: "退款平台订单号", Nullable: true},
 		{Name: "plan_detail", Type: field.TypeJSON, Comment: "骑士卡详情", Nullable: true},
-		{Name: "subordinate", Type: field.TypeJSON, Comment: "接续订单属性", Nullable: true},
-		{Name: "start", Type: field.TypeTime, Comment: "有效期开始日期", Nullable: true, SchemaType: map[string]string{"postgres": "date"}},
-		{Name: "end", Type: field.TypeTime, Comment: "有效期结束日期", Nullable: true, SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "refund", Type: field.TypeJSON, Comment: "退款详细", Nullable: true},
+		{Name: "start_at", Type: field.TypeTime, Comment: "开始时间", Nullable: true},
+		{Name: "end_at", Type: field.TypeTime, Comment: "结束时间", Nullable: true},
+		{Name: "paused_at", Type: field.TypeTime, Comment: "当前是否暂停计费, 暂停计费时间", Nullable: true},
+		{Name: "days", Type: field.TypeUint, Comment: "骑士卡天数", Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64},
 		{Name: "parent_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
@@ -559,25 +557,25 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "order_city_orders",
-				Columns:    []*schema.Column{OrderColumns[21]},
+				Columns:    []*schema.Column{OrderColumns[19]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "order_order_children",
-				Columns:    []*schema.Column{OrderColumns[22]},
+				Columns:    []*schema.Column{OrderColumns[20]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "order_plan_orders",
-				Columns:    []*schema.Column{OrderColumns[23]},
+				Columns:    []*schema.Column{OrderColumns[21]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "order_rider_orders",
-				Columns:    []*schema.Column{OrderColumns[24]},
+				Columns:    []*schema.Column{OrderColumns[22]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -599,24 +597,166 @@ var (
 				Columns: []*schema.Column{OrderColumns[11], OrderColumns[10]},
 			},
 			{
-				Name:    "order_refund_trade_no_refund_out_trade_no",
-				Unique:  false,
-				Columns: []*schema.Column{OrderColumns[16], OrderColumns[15]},
-			},
-			{
-				Name:    "order_refund_at",
-				Unique:  false,
-				Columns: []*schema.Column{OrderColumns[14]},
-			},
-			{
 				Name:    "order_status",
 				Unique:  false,
 				Columns: []*schema.Column{OrderColumns[7]},
 			},
 			{
-				Name:    "order_start_end",
+				Name:    "order_paused_at",
 				Unique:  false,
-				Columns: []*schema.Column{OrderColumns[19], OrderColumns[20]},
+				Columns: []*schema.Column{OrderColumns[17]},
+			},
+			{
+				Name:    "order_start_at_end_at",
+				Unique:  false,
+				Columns: []*schema.Column{OrderColumns[15], OrderColumns[16]},
+			},
+		},
+	}
+	// OrderAlterColumns holds the columns for the "order_alter" table.
+	OrderAlterColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "备注", Nullable: true},
+		{Name: "days", Type: field.TypeInt, Comment: "更改天数"},
+		{Name: "reason", Type: field.TypeString, Comment: "更改原因"},
+		{Name: "order_id", Type: field.TypeUint64},
+		{Name: "rider_id", Type: field.TypeUint64},
+	}
+	// OrderAlterTable holds the schema information for the "order_alter" table.
+	OrderAlterTable = &schema.Table{
+		Name:       "order_alter",
+		Columns:    OrderAlterColumns,
+		PrimaryKey: []*schema.Column{OrderAlterColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "order_alter_order_alters",
+				Columns:    []*schema.Column{OrderAlterColumns[9]},
+				RefColumns: []*schema.Column{OrderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "order_alter_rider_alters",
+				Columns:    []*schema.Column{OrderAlterColumns[10]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "orderalter_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{OrderAlterColumns[1]},
+			},
+			{
+				Name:    "orderalter_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{OrderAlterColumns[3]},
+			},
+		},
+	}
+	// OrderArrearageColumns holds the columns for the "order_arrearage" table.
+	OrderArrearageColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "备注", Nullable: true},
+		{Name: "order_id", Type: field.TypeUint64},
+		{Name: "rider_id", Type: field.TypeUint64},
+	}
+	// OrderArrearageTable holds the schema information for the "order_arrearage" table.
+	OrderArrearageTable = &schema.Table{
+		Name:       "order_arrearage",
+		Columns:    OrderArrearageColumns,
+		PrimaryKey: []*schema.Column{OrderArrearageColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "order_arrearage_order_arrearages",
+				Columns:    []*schema.Column{OrderArrearageColumns[7]},
+				RefColumns: []*schema.Column{OrderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "order_arrearage_rider_arrearages",
+				Columns:    []*schema.Column{OrderArrearageColumns[8]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "orderarrearage_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{OrderArrearageColumns[1]},
+			},
+			{
+				Name:    "orderarrearage_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{OrderArrearageColumns[3]},
+			},
+		},
+	}
+	// OrderPauseColumns holds the columns for the "order_pause" table.
+	OrderPauseColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "备注", Nullable: true},
+		{Name: "start_at", Type: field.TypeTime, Comment: "暂停开始时间"},
+		{Name: "end_at", Type: field.TypeTime, Comment: "暂停结束时间", Nullable: true},
+		{Name: "days", Type: field.TypeInt, Comment: "暂停天数", Nullable: true},
+		{Name: "order_id", Type: field.TypeUint64},
+		{Name: "rider_id", Type: field.TypeUint64},
+	}
+	// OrderPauseTable holds the schema information for the "order_pause" table.
+	OrderPauseTable = &schema.Table{
+		Name:       "order_pause",
+		Columns:    OrderPauseColumns,
+		PrimaryKey: []*schema.Column{OrderPauseColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "order_pause_order_pauses",
+				Columns:    []*schema.Column{OrderPauseColumns[10]},
+				RefColumns: []*schema.Column{OrderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "order_pause_rider_pauses",
+				Columns:    []*schema.Column{OrderPauseColumns[11]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "orderpause_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{OrderPauseColumns[1]},
+			},
+			{
+				Name:    "orderpause_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{OrderPauseColumns[3]},
+			},
+			{
+				Name:    "orderpause_start_at",
+				Unique:  false,
+				Columns: []*schema.Column{OrderPauseColumns[7]},
+			},
+			{
+				Name:    "orderpause_end_at",
+				Unique:  false,
+				Columns: []*schema.Column{OrderPauseColumns[8]},
 			},
 		},
 	}
@@ -747,7 +887,7 @@ var (
 		{Name: "phone", Type: field.TypeString, Unique: true, Comment: "手机号", Size: 11},
 		{Name: "contact", Type: field.TypeJSON, Comment: "紧急联系人", Nullable: true},
 		{Name: "device_type", Type: field.TypeUint8, Comment: "登录设备类型: 1iOS 2Android"},
-		{Name: "last_device", Type: field.TypeString, Comment: "上次登录设备ID", Size: 60},
+		{Name: "last_device", Type: field.TypeString, Comment: "最近登录设备", Size: 60},
 		{Name: "is_new_device", Type: field.TypeBool, Comment: "是否新设备", Default: false},
 		{Name: "last_face", Type: field.TypeString, Comment: "上次登录人脸", Nullable: true},
 		{Name: "push_id", Type: field.TypeString, Unique: true, Comment: "推送ID", Nullable: true, Size: 60},
@@ -973,6 +1113,9 @@ var (
 		EnterpriseTable,
 		ManagerTable,
 		OrderTable,
+		OrderAlterTable,
+		OrderArrearageTable,
+		OrderPauseTable,
 		PersonTable,
 		PlanTable,
 		RiderTable,
@@ -1031,6 +1174,21 @@ func init() {
 	OrderTable.ForeignKeys[3].RefTable = RiderTable
 	OrderTable.Annotation = &entsql.Annotation{
 		Table: "order",
+	}
+	OrderAlterTable.ForeignKeys[0].RefTable = OrderTable
+	OrderAlterTable.ForeignKeys[1].RefTable = RiderTable
+	OrderAlterTable.Annotation = &entsql.Annotation{
+		Table: "order_alter",
+	}
+	OrderArrearageTable.ForeignKeys[0].RefTable = OrderTable
+	OrderArrearageTable.ForeignKeys[1].RefTable = RiderTable
+	OrderArrearageTable.Annotation = &entsql.Annotation{
+		Table: "order_arrearage",
+	}
+	OrderPauseTable.ForeignKeys[0].RefTable = OrderTable
+	OrderPauseTable.ForeignKeys[1].RefTable = RiderTable
+	OrderPauseTable.Annotation = &entsql.Annotation{
+		Table: "order_pause",
 	}
 	PersonTable.Annotation = &entsql.Annotation{
 		Table: "person",

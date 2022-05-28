@@ -43,24 +43,20 @@ const (
 	FieldTradeNo = "trade_no"
 	// FieldAmount holds the string denoting the amount field in the database.
 	FieldAmount = "amount"
-	// FieldRefund holds the string denoting the refund field in the database.
-	FieldRefund = "refund"
-	// FieldRefundAt holds the string denoting the refund_at field in the database.
-	FieldRefundAt = "refund_at"
-	// FieldRefundOutTradeNo holds the string denoting the refund_out_trade_no field in the database.
-	FieldRefundOutTradeNo = "refund_out_trade_no"
-	// FieldRefundTradeNo holds the string denoting the refund_trade_no field in the database.
-	FieldRefundTradeNo = "refund_trade_no"
 	// FieldPlanDetail holds the string denoting the plan_detail field in the database.
 	FieldPlanDetail = "plan_detail"
+	// FieldRefund holds the string denoting the refund field in the database.
+	FieldRefund = "refund"
 	// FieldParentID holds the string denoting the parent_id field in the database.
 	FieldParentID = "parent_id"
-	// FieldSubordinate holds the string denoting the subordinate field in the database.
-	FieldSubordinate = "subordinate"
-	// FieldStart holds the string denoting the start field in the database.
-	FieldStart = "start"
-	// FieldEnd holds the string denoting the end field in the database.
-	FieldEnd = "end"
+	// FieldStartAt holds the string denoting the start_at field in the database.
+	FieldStartAt = "start_at"
+	// FieldEndAt holds the string denoting the end_at field in the database.
+	FieldEndAt = "end_at"
+	// FieldPausedAt holds the string denoting the paused_at field in the database.
+	FieldPausedAt = "paused_at"
+	// FieldDays holds the string denoting the days field in the database.
+	FieldDays = "days"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
@@ -73,6 +69,12 @@ const (
 	EdgeChildren = "children"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
+	// EdgePauses holds the string denoting the pauses edge name in mutations.
+	EdgePauses = "pauses"
+	// EdgeArrearages holds the string denoting the arrearages edge name in mutations.
+	EdgeArrearages = "arrearages"
+	// EdgeAlters holds the string denoting the alters edge name in mutations.
+	EdgeAlters = "alters"
 	// Table holds the table name of the order in the database.
 	Table = "order"
 	// RiderTable is the table that holds the rider relation/edge.
@@ -111,6 +113,27 @@ const (
 	CityInverseTable = "city"
 	// CityColumn is the table column denoting the city relation/edge.
 	CityColumn = "city_id"
+	// PausesTable is the table that holds the pauses relation/edge.
+	PausesTable = "order_pause"
+	// PausesInverseTable is the table name for the OrderPause entity.
+	// It exists in this package in order to avoid circular dependency with the "orderpause" package.
+	PausesInverseTable = "order_pause"
+	// PausesColumn is the table column denoting the pauses relation/edge.
+	PausesColumn = "order_id"
+	// ArrearagesTable is the table that holds the arrearages relation/edge.
+	ArrearagesTable = "order_arrearage"
+	// ArrearagesInverseTable is the table name for the OrderArrearage entity.
+	// It exists in this package in order to avoid circular dependency with the "orderarrearage" package.
+	ArrearagesInverseTable = "order_arrearage"
+	// ArrearagesColumn is the table column denoting the arrearages relation/edge.
+	ArrearagesColumn = "order_id"
+	// AltersTable is the table that holds the alters relation/edge.
+	AltersTable = "order_alter"
+	// AltersInverseTable is the table name for the OrderAlter entity.
+	// It exists in this package in order to avoid circular dependency with the "orderalter" package.
+	AltersInverseTable = "order_alter"
+	// AltersColumn is the table column denoting the alters relation/edge.
+	AltersColumn = "order_id"
 )
 
 // Columns holds all SQL columns for order fields.
@@ -131,15 +154,13 @@ var Columns = []string{
 	FieldOutTradeNo,
 	FieldTradeNo,
 	FieldAmount,
-	FieldRefund,
-	FieldRefundAt,
-	FieldRefundOutTradeNo,
-	FieldRefundTradeNo,
 	FieldPlanDetail,
+	FieldRefund,
 	FieldParentID,
-	FieldSubordinate,
-	FieldStart,
-	FieldEnd,
+	FieldStartAt,
+	FieldEndAt,
+	FieldPausedAt,
+	FieldDays,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

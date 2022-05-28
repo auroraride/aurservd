@@ -53,7 +53,7 @@ func ({{ .name }}) Fields() []ent.Field {
 
 // Edges of the {{ .name }}.
 func ({{ .name }}) Edges() []ent.Edge {
-    return nil
+    return []ent.Edge{}
 }
 
 func ({{ .name }}) Mixin() []ent.Mixin {
@@ -65,7 +65,7 @@ func ({{ .name }}) Mixin() []ent.Mixin {
 }
 
 func ({{ .name }}) Indexes() []ent.Index {
-    return nil
+    return []ent.Index{}
 }
 `))
 

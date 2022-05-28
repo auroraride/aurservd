@@ -3680,6 +3680,58 @@ const docTemplate = `{
                 }
             }
         },
+        "model.RiderRecentOrder": {
+            "type": "object",
+            "properties": {
+                "alterDays": {
+                    "description": "改动天数",
+                    "type": "integer"
+                },
+                "days": {
+                    "description": "总天数",
+                    "type": "integer"
+                },
+                "endAt": {
+                    "description": "结束时间",
+                    "type": "string"
+                },
+                "pausedDays": {
+                    "description": "暂停天数",
+                    "type": "integer"
+                },
+                "planId": {
+                    "description": "骑士卡ID",
+                    "type": "integer"
+                },
+                "planName": {
+                    "description": "骑士卡名称",
+                    "type": "string"
+                },
+                "remaining": {
+                    "description": "剩余天数",
+                    "type": "integer"
+                },
+                "startAt": {
+                    "description": "开始时间",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态 0未激活 1计费中 2暂停中 3已逾期 4已归还(已过期)",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4
+                    ]
+                },
+                "voltage": {
+                    "description": "可用电压型号",
+                    "type": "number"
+                }
+            }
+        },
         "model.RiderSampleInfo": {
             "type": "object",
             "properties": {
@@ -3730,6 +3782,10 @@ const docTemplate = `{
                 "qrcode": {
                     "description": "二维码",
                     "type": "string"
+                },
+                "recentOrder": {
+                    "description": "骑手最近订单详情",
+                    "$ref": "#/definitions/model.RiderRecentOrder"
                 },
                 "token": {
                     "description": "认证token",

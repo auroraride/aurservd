@@ -62,7 +62,7 @@ func RiderMiddleware() echo.MiddlewareFunc {
             }
 
             // 重载context
-            return next(app.NewRiderContext(c, u))
+            return next(app.NewRiderContext(c, u, token))
         }
     }
 }

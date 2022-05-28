@@ -152,6 +152,45 @@ func (f OrderFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return f(ctx, mv)
 }
 
+// The OrderAlterFunc type is an adapter to allow the use of ordinary
+// function as OrderAlter mutator.
+type OrderAlterFunc func(context.Context, *ent.OrderAlterMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OrderAlterFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.OrderAlterMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrderAlterMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The OrderArrearageFunc type is an adapter to allow the use of ordinary
+// function as OrderArrearage mutator.
+type OrderArrearageFunc func(context.Context, *ent.OrderArrearageMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OrderArrearageFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.OrderArrearageMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrderArrearageMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The OrderPauseFunc type is an adapter to allow the use of ordinary
+// function as OrderPause mutator.
+type OrderPauseFunc func(context.Context, *ent.OrderPauseMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OrderPauseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.OrderPauseMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrderPauseMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The PersonFunc type is an adapter to allow the use of ordinary
 // function as Person mutator.
 type PersonFunc func(context.Context, *ent.PersonMutation) (ent.Value, error)

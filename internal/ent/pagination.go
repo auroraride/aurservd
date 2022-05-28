@@ -195,6 +195,57 @@ func (oq *OrderQuery) PaginationResult(req model.PaginationReq) model.Pagination
 	}
 }
 
+// Pagination returns pagination query builder for OrderAlterQuery.
+func (oaq *OrderAlterQuery) Pagination(req model.PaginationReq) *OrderAlterQuery {
+	oaq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return oaq
+}
+
+// PaginationResult returns pagination for OrderAlterQuery.
+func (oaq *OrderAlterQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := oaq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for OrderArrearageQuery.
+func (oaq *OrderArrearageQuery) Pagination(req model.PaginationReq) *OrderArrearageQuery {
+	oaq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return oaq
+}
+
+// PaginationResult returns pagination for OrderArrearageQuery.
+func (oaq *OrderArrearageQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := oaq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for OrderPauseQuery.
+func (opq *OrderPauseQuery) Pagination(req model.PaginationReq) *OrderPauseQuery {
+	opq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return opq
+}
+
+// PaginationResult returns pagination for OrderPauseQuery.
+func (opq *OrderPauseQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := opq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for PersonQuery.
 func (pq *PersonQuery) Pagination(req model.PaginationReq) *PersonQuery {
 	pq.Offset(req.GetOffset()).Limit(req.GetLimit())

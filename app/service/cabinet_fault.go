@@ -15,7 +15,6 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
     "github.com/jinzhu/copier"
-    "time"
 )
 
 type cabinetFaultService struct {
@@ -110,19 +109,19 @@ func (s *cabinetFaultService) List(req *model.CabinetFaultListReq) (res *model.P
         q.Where(cabinetfault.Status(*req.Status))
     }
     if req.Start != nil {
-        start, err := time.Parse(carbon.DateLayout, *req.Start)
-        if err != nil {
+        start := carbon.ParseByLayout(*req.Start, carbon.DateLayout)
+        if start.Error != nil {
             snag.Panic("日期格式错误")
         }
-        q.Where(cabinetfault.CreatedAtGTE(start))
+        q.Where(cabinetfault.CreatedAtGTE(start.Carbon2Time()))
     }
     if req.End != nil {
-        end, err := time.Parse(carbon.DateLayout, *req.End)
-        if err != nil {
+        end := carbon.ParseByLayout(*req.End, carbon.DateLayout)
+        if end.Error != nil {
             snag.Panic("日期格式错误")
         }
-        end.AddDate(0, 0, 1)
-        q.Where(cabinetfault.CreatedAtLT(end))
+        end.AddDay()
+        q.Where(cabinetfault.CreatedAtLT(end.Carbon2Time()))
     }
     res = &model.PaginationRes{Pagination: q.PaginationResult(req.PaginationReq)}
     items := q.Pagination(req.PaginationReq).AllX(s.ctx)

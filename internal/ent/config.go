@@ -39,6 +39,9 @@ type hooks struct {
 	Enterprise     []ent.Hook
 	Manager        []ent.Hook
 	Order          []ent.Hook
+	OrderAlter     []ent.Hook
+	OrderArrearage []ent.Hook
+	OrderPause     []ent.Hook
 	Person         []ent.Hook
 	Plan           []ent.Hook
 	Rider          []ent.Hook

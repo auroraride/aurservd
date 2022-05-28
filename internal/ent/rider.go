@@ -51,7 +51,7 @@ type Rider struct {
 	// 登录设备类型: 1iOS 2Android
 	DeviceType uint8 `json:"device_type,omitempty"`
 	// LastDevice holds the value of the "last_device" field.
-	// 上次登录设备ID
+	// 最近登录设备
 	LastDevice string `json:"last_device,omitempty"`
 	// IsNewDevice holds the value of the "is_new_device" field.
 	// 是否新设备
@@ -91,9 +91,15 @@ type RiderEdges struct {
 	Faults []*CabinetFault `json:"faults,omitempty"`
 	// Orders holds the value of the orders edge.
 	Orders []*Order `json:"orders,omitempty"`
+	// Pauses holds the value of the pauses edge.
+	Pauses []*OrderPause `json:"pauses,omitempty"`
+	// Arrearages holds the value of the arrearages edge.
+	Arrearages []*OrderArrearage `json:"arrearages,omitempty"`
+	// Alters holds the value of the alters edge.
+	Alters []*OrderAlter `json:"alters,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [8]bool
 }
 
 // PersonOrErr returns the Person value or an error if the edge
@@ -149,6 +155,33 @@ func (e RiderEdges) OrdersOrErr() ([]*Order, error) {
 		return e.Orders, nil
 	}
 	return nil, &NotLoadedError{edge: "orders"}
+}
+
+// PausesOrErr returns the Pauses value or an error if the edge
+// was not loaded in eager-loading.
+func (e RiderEdges) PausesOrErr() ([]*OrderPause, error) {
+	if e.loadedTypes[5] {
+		return e.Pauses, nil
+	}
+	return nil, &NotLoadedError{edge: "pauses"}
+}
+
+// ArrearagesOrErr returns the Arrearages value or an error if the edge
+// was not loaded in eager-loading.
+func (e RiderEdges) ArrearagesOrErr() ([]*OrderArrearage, error) {
+	if e.loadedTypes[6] {
+		return e.Arrearages, nil
+	}
+	return nil, &NotLoadedError{edge: "arrearages"}
+}
+
+// AltersOrErr returns the Alters value or an error if the edge
+// was not loaded in eager-loading.
+func (e RiderEdges) AltersOrErr() ([]*OrderAlter, error) {
+	if e.loadedTypes[7] {
+		return e.Alters, nil
+	}
+	return nil, &NotLoadedError{edge: "alters"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -340,6 +373,21 @@ func (r *Rider) QueryFaults() *CabinetFaultQuery {
 // QueryOrders queries the "orders" edge of the Rider entity.
 func (r *Rider) QueryOrders() *OrderQuery {
 	return (&RiderClient{config: r.config}).QueryOrders(r)
+}
+
+// QueryPauses queries the "pauses" edge of the Rider entity.
+func (r *Rider) QueryPauses() *OrderPauseQuery {
+	return (&RiderClient{config: r.config}).QueryPauses(r)
+}
+
+// QueryArrearages queries the "arrearages" edge of the Rider entity.
+func (r *Rider) QueryArrearages() *OrderArrearageQuery {
+	return (&RiderClient{config: r.config}).QueryArrearages(r)
+}
+
+// QueryAlters queries the "alters" edge of the Rider entity.
+func (r *Rider) QueryAlters() *OrderAlterQuery {
+	return (&RiderClient{config: r.config}).QueryAlters(r)
 }
 
 // Update returns a builder for updating this Rider.

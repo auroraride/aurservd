@@ -97,8 +97,8 @@ func (s *planService) Duplicated(cities, models []uint64, start, end time.Time, 
 
 // CreatePlan 创建骑士卡
 func (s *planService) CreatePlan(req *model.PlanCreateReq) {
-    start, _ := time.Parse(carbon.DateLayout, req.Start)
-    end, _ := time.Parse(carbon.DateLayout, req.End)
+    start := carbon.ParseByLayout(req.Start, carbon.DateLayout).Carbon2Time()
+    end := carbon.Parse(req.End, carbon.DateLayout).Carbon2Time()
     // 查询是否重复
     if s.Duplicated(req.Cities, req.Models, start, end, req.Days) {
         snag.Panic("骑士卡冲突")

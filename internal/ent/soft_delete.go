@@ -17,6 +17,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
+	"github.com/auroraride/aurservd/internal/ent/orderalter"
+	"github.com/auroraride/aurservd/internal/ent/orderarrearage"
+	"github.com/auroraride/aurservd/internal/ent/orderpause"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -456,6 +459,126 @@ func (c *OrderClient) GetNotDeleted(ctx context.Context, id uint64) (*Order, err
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *OrderClient) GetNotDeletedX(ctx context.Context, id uint64) *Order {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for OrderAlter.
+func (c *OrderAlterClient) SoftDelete() *OrderAlterUpdate {
+	mutation := newOrderAlterMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &OrderAlterUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *OrderAlterClient) SoftDeleteOne(oa *OrderAlter) *OrderAlterUpdateOne {
+	mutation := newOrderAlterMutation(c.config, OpUpdateOne, withOrderAlter(oa))
+	mutation.SetDeletedAt(time.Now())
+	return &OrderAlterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *OrderAlterClient) SoftDeleteOneID(id uint64) *OrderAlterUpdateOne {
+	mutation := newOrderAlterMutation(c.config, OpUpdateOne, withOrderAlterID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &OrderAlterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for OrderAlter.
+func (c *OrderAlterClient) QueryNotDeleted() *OrderAlterQuery {
+	return c.Query().Where(orderalter.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a OrderAlter not deleted entity by its id.
+func (c *OrderAlterClient) GetNotDeleted(ctx context.Context, id uint64) (*OrderAlter, error) {
+	return c.Query().Where(orderalter.ID(id), orderalter.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *OrderAlterClient) GetNotDeletedX(ctx context.Context, id uint64) *OrderAlter {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for OrderArrearage.
+func (c *OrderArrearageClient) SoftDelete() *OrderArrearageUpdate {
+	mutation := newOrderArrearageMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &OrderArrearageUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *OrderArrearageClient) SoftDeleteOne(oa *OrderArrearage) *OrderArrearageUpdateOne {
+	mutation := newOrderArrearageMutation(c.config, OpUpdateOne, withOrderArrearage(oa))
+	mutation.SetDeletedAt(time.Now())
+	return &OrderArrearageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *OrderArrearageClient) SoftDeleteOneID(id uint64) *OrderArrearageUpdateOne {
+	mutation := newOrderArrearageMutation(c.config, OpUpdateOne, withOrderArrearageID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &OrderArrearageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for OrderArrearage.
+func (c *OrderArrearageClient) QueryNotDeleted() *OrderArrearageQuery {
+	return c.Query().Where(orderarrearage.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a OrderArrearage not deleted entity by its id.
+func (c *OrderArrearageClient) GetNotDeleted(ctx context.Context, id uint64) (*OrderArrearage, error) {
+	return c.Query().Where(orderarrearage.ID(id), orderarrearage.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *OrderArrearageClient) GetNotDeletedX(ctx context.Context, id uint64) *OrderArrearage {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for OrderPause.
+func (c *OrderPauseClient) SoftDelete() *OrderPauseUpdate {
+	mutation := newOrderPauseMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &OrderPauseUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *OrderPauseClient) SoftDeleteOne(op *OrderPause) *OrderPauseUpdateOne {
+	mutation := newOrderPauseMutation(c.config, OpUpdateOne, withOrderPause(op))
+	mutation.SetDeletedAt(time.Now())
+	return &OrderPauseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *OrderPauseClient) SoftDeleteOneID(id uint64) *OrderPauseUpdateOne {
+	mutation := newOrderPauseMutation(c.config, OpUpdateOne, withOrderPauseID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &OrderPauseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for OrderPause.
+func (c *OrderPauseClient) QueryNotDeleted() *OrderPauseQuery {
+	return c.Query().Where(orderpause.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a OrderPause not deleted entity by its id.
+func (c *OrderPauseClient) GetNotDeleted(ctx context.Context, id uint64) (*OrderPause, error) {
+	return c.Query().Where(orderpause.ID(id), orderpause.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *OrderPauseClient) GetNotDeletedX(ctx context.Context, id uint64) *OrderPause {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

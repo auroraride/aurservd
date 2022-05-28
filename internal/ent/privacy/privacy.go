@@ -429,6 +429,78 @@ func (f OrderMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation)
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.OrderMutation", m)
 }
 
+// The OrderAlterQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type OrderAlterQueryRuleFunc func(context.Context, *ent.OrderAlterQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f OrderAlterQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.OrderAlterQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.OrderAlterQuery", q)
+}
+
+// The OrderAlterMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type OrderAlterMutationRuleFunc func(context.Context, *ent.OrderAlterMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f OrderAlterMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.OrderAlterMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.OrderAlterMutation", m)
+}
+
+// The OrderArrearageQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type OrderArrearageQueryRuleFunc func(context.Context, *ent.OrderArrearageQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f OrderArrearageQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.OrderArrearageQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.OrderArrearageQuery", q)
+}
+
+// The OrderArrearageMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type OrderArrearageMutationRuleFunc func(context.Context, *ent.OrderArrearageMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f OrderArrearageMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.OrderArrearageMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.OrderArrearageMutation", m)
+}
+
+// The OrderPauseQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type OrderPauseQueryRuleFunc func(context.Context, *ent.OrderPauseQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f OrderPauseQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.OrderPauseQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.OrderPauseQuery", q)
+}
+
+// The OrderPauseMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type OrderPauseMutationRuleFunc func(context.Context, *ent.OrderPauseMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f OrderPauseMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.OrderPauseMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.OrderPauseMutation", m)
+}
+
 // The PersonQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type PersonQueryRuleFunc func(context.Context, *ent.PersonQuery) error
@@ -606,6 +678,12 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.OrderQuery:
 		return q.Filter(), nil
+	case *ent.OrderAlterQuery:
+		return q.Filter(), nil
+	case *ent.OrderArrearageQuery:
+		return q.Filter(), nil
+	case *ent.OrderPauseQuery:
+		return q.Filter(), nil
 	case *ent.PersonQuery:
 		return q.Filter(), nil
 	case *ent.PlanQuery:
@@ -644,6 +722,12 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.ManagerMutation:
 		return m.Filter(), nil
 	case *ent.OrderMutation:
+		return m.Filter(), nil
+	case *ent.OrderAlterMutation:
+		return m.Filter(), nil
+	case *ent.OrderArrearageMutation:
+		return m.Filter(), nil
+	case *ent.OrderPauseMutation:
 		return m.Filter(), nil
 	case *ent.PersonMutation:
 		return m.Filter(), nil

@@ -20,6 +20,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
+	"github.com/auroraride/aurservd/internal/ent/orderalter"
+	"github.com/auroraride/aurservd/internal/ent/orderarrearage"
+	"github.com/auroraride/aurservd/internal/ent/orderpause"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -58,6 +61,12 @@ type Client struct {
 	Manager *ManagerClient
 	// Order is the client for interacting with the Order builders.
 	Order *OrderClient
+	// OrderAlter is the client for interacting with the OrderAlter builders.
+	OrderAlter *OrderAlterClient
+	// OrderArrearage is the client for interacting with the OrderArrearage builders.
+	OrderArrearage *OrderArrearageClient
+	// OrderPause is the client for interacting with the OrderPause builders.
+	OrderPause *OrderPauseClient
 	// Person is the client for interacting with the Person builders.
 	Person *PersonClient
 	// Plan is the client for interacting with the Plan builders.
@@ -92,6 +101,9 @@ func (c *Client) init() {
 	c.Enterprise = NewEnterpriseClient(c.config)
 	c.Manager = NewManagerClient(c.config)
 	c.Order = NewOrderClient(c.config)
+	c.OrderAlter = NewOrderAlterClient(c.config)
+	c.OrderArrearage = NewOrderArrearageClient(c.config)
+	c.OrderPause = NewOrderPauseClient(c.config)
 	c.Person = NewPersonClient(c.config)
 	c.Plan = NewPlanClient(c.config)
 	c.Rider = NewRiderClient(c.config)
@@ -141,6 +153,9 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Enterprise:     NewEnterpriseClient(cfg),
 		Manager:        NewManagerClient(cfg),
 		Order:          NewOrderClient(cfg),
+		OrderAlter:     NewOrderAlterClient(cfg),
+		OrderArrearage: NewOrderArrearageClient(cfg),
+		OrderPause:     NewOrderPauseClient(cfg),
 		Person:         NewPersonClient(cfg),
 		Plan:           NewPlanClient(cfg),
 		Rider:          NewRiderClient(cfg),
@@ -176,6 +191,9 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Enterprise:     NewEnterpriseClient(cfg),
 		Manager:        NewManagerClient(cfg),
 		Order:          NewOrderClient(cfg),
+		OrderAlter:     NewOrderAlterClient(cfg),
+		OrderArrearage: NewOrderArrearageClient(cfg),
+		OrderPause:     NewOrderPauseClient(cfg),
 		Person:         NewPersonClient(cfg),
 		Plan:           NewPlanClient(cfg),
 		Rider:          NewRiderClient(cfg),
@@ -221,6 +239,9 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Enterprise.Use(hooks...)
 	c.Manager.Use(hooks...)
 	c.Order.Use(hooks...)
+	c.OrderAlter.Use(hooks...)
+	c.OrderArrearage.Use(hooks...)
+	c.OrderPause.Use(hooks...)
 	c.Person.Use(hooks...)
 	c.Plan.Use(hooks...)
 	c.Rider.Use(hooks...)
@@ -1703,10 +1724,427 @@ func (c *OrderClient) QueryCity(o *Order) *CityQuery {
 	return query
 }
 
+// QueryPauses queries the pauses edge of a Order.
+func (c *OrderClient) QueryPauses(o *Order) *OrderPauseQuery {
+	query := &OrderPauseQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, id),
+			sqlgraph.To(orderpause.Table, orderpause.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, order.PausesTable, order.PausesColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryArrearages queries the arrearages edge of a Order.
+func (c *OrderClient) QueryArrearages(o *Order) *OrderArrearageQuery {
+	query := &OrderArrearageQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, id),
+			sqlgraph.To(orderarrearage.Table, orderarrearage.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, order.ArrearagesTable, order.ArrearagesColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAlters queries the alters edge of a Order.
+func (c *OrderClient) QueryAlters(o *Order) *OrderAlterQuery {
+	query := &OrderAlterQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, id),
+			sqlgraph.To(orderalter.Table, orderalter.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, order.AltersTable, order.AltersColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *OrderClient) Hooks() []Hook {
 	hooks := c.hooks.Order
 	return append(hooks[:len(hooks):len(hooks)], order.Hooks[:]...)
+}
+
+// OrderAlterClient is a client for the OrderAlter schema.
+type OrderAlterClient struct {
+	config
+}
+
+// NewOrderAlterClient returns a client for the OrderAlter from the given config.
+func NewOrderAlterClient(c config) *OrderAlterClient {
+	return &OrderAlterClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `orderalter.Hooks(f(g(h())))`.
+func (c *OrderAlterClient) Use(hooks ...Hook) {
+	c.hooks.OrderAlter = append(c.hooks.OrderAlter, hooks...)
+}
+
+// Create returns a create builder for OrderAlter.
+func (c *OrderAlterClient) Create() *OrderAlterCreate {
+	mutation := newOrderAlterMutation(c.config, OpCreate)
+	return &OrderAlterCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of OrderAlter entities.
+func (c *OrderAlterClient) CreateBulk(builders ...*OrderAlterCreate) *OrderAlterCreateBulk {
+	return &OrderAlterCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for OrderAlter.
+func (c *OrderAlterClient) Update() *OrderAlterUpdate {
+	mutation := newOrderAlterMutation(c.config, OpUpdate)
+	return &OrderAlterUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *OrderAlterClient) UpdateOne(oa *OrderAlter) *OrderAlterUpdateOne {
+	mutation := newOrderAlterMutation(c.config, OpUpdateOne, withOrderAlter(oa))
+	return &OrderAlterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *OrderAlterClient) UpdateOneID(id uint64) *OrderAlterUpdateOne {
+	mutation := newOrderAlterMutation(c.config, OpUpdateOne, withOrderAlterID(id))
+	return &OrderAlterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for OrderAlter.
+func (c *OrderAlterClient) Delete() *OrderAlterDelete {
+	mutation := newOrderAlterMutation(c.config, OpDelete)
+	return &OrderAlterDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *OrderAlterClient) DeleteOne(oa *OrderAlter) *OrderAlterDeleteOne {
+	return c.DeleteOneID(oa.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *OrderAlterClient) DeleteOneID(id uint64) *OrderAlterDeleteOne {
+	builder := c.Delete().Where(orderalter.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &OrderAlterDeleteOne{builder}
+}
+
+// Query returns a query builder for OrderAlter.
+func (c *OrderAlterClient) Query() *OrderAlterQuery {
+	return &OrderAlterQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a OrderAlter entity by its id.
+func (c *OrderAlterClient) Get(ctx context.Context, id uint64) (*OrderAlter, error) {
+	return c.Query().Where(orderalter.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *OrderAlterClient) GetX(ctx context.Context, id uint64) *OrderAlter {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryRider queries the rider edge of a OrderAlter.
+func (c *OrderAlterClient) QueryRider(oa *OrderAlter) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := oa.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(orderalter.Table, orderalter.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, orderalter.RiderTable, orderalter.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(oa.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOrder queries the order edge of a OrderAlter.
+func (c *OrderAlterClient) QueryOrder(oa *OrderAlter) *OrderQuery {
+	query := &OrderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := oa.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(orderalter.Table, orderalter.FieldID, id),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, orderalter.OrderTable, orderalter.OrderColumn),
+		)
+		fromV = sqlgraph.Neighbors(oa.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *OrderAlterClient) Hooks() []Hook {
+	hooks := c.hooks.OrderAlter
+	return append(hooks[:len(hooks):len(hooks)], orderalter.Hooks[:]...)
+}
+
+// OrderArrearageClient is a client for the OrderArrearage schema.
+type OrderArrearageClient struct {
+	config
+}
+
+// NewOrderArrearageClient returns a client for the OrderArrearage from the given config.
+func NewOrderArrearageClient(c config) *OrderArrearageClient {
+	return &OrderArrearageClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `orderarrearage.Hooks(f(g(h())))`.
+func (c *OrderArrearageClient) Use(hooks ...Hook) {
+	c.hooks.OrderArrearage = append(c.hooks.OrderArrearage, hooks...)
+}
+
+// Create returns a create builder for OrderArrearage.
+func (c *OrderArrearageClient) Create() *OrderArrearageCreate {
+	mutation := newOrderArrearageMutation(c.config, OpCreate)
+	return &OrderArrearageCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of OrderArrearage entities.
+func (c *OrderArrearageClient) CreateBulk(builders ...*OrderArrearageCreate) *OrderArrearageCreateBulk {
+	return &OrderArrearageCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for OrderArrearage.
+func (c *OrderArrearageClient) Update() *OrderArrearageUpdate {
+	mutation := newOrderArrearageMutation(c.config, OpUpdate)
+	return &OrderArrearageUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *OrderArrearageClient) UpdateOne(oa *OrderArrearage) *OrderArrearageUpdateOne {
+	mutation := newOrderArrearageMutation(c.config, OpUpdateOne, withOrderArrearage(oa))
+	return &OrderArrearageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *OrderArrearageClient) UpdateOneID(id uint64) *OrderArrearageUpdateOne {
+	mutation := newOrderArrearageMutation(c.config, OpUpdateOne, withOrderArrearageID(id))
+	return &OrderArrearageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for OrderArrearage.
+func (c *OrderArrearageClient) Delete() *OrderArrearageDelete {
+	mutation := newOrderArrearageMutation(c.config, OpDelete)
+	return &OrderArrearageDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *OrderArrearageClient) DeleteOne(oa *OrderArrearage) *OrderArrearageDeleteOne {
+	return c.DeleteOneID(oa.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *OrderArrearageClient) DeleteOneID(id uint64) *OrderArrearageDeleteOne {
+	builder := c.Delete().Where(orderarrearage.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &OrderArrearageDeleteOne{builder}
+}
+
+// Query returns a query builder for OrderArrearage.
+func (c *OrderArrearageClient) Query() *OrderArrearageQuery {
+	return &OrderArrearageQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a OrderArrearage entity by its id.
+func (c *OrderArrearageClient) Get(ctx context.Context, id uint64) (*OrderArrearage, error) {
+	return c.Query().Where(orderarrearage.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *OrderArrearageClient) GetX(ctx context.Context, id uint64) *OrderArrearage {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryRider queries the rider edge of a OrderArrearage.
+func (c *OrderArrearageClient) QueryRider(oa *OrderArrearage) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := oa.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(orderarrearage.Table, orderarrearage.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, orderarrearage.RiderTable, orderarrearage.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(oa.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOrder queries the order edge of a OrderArrearage.
+func (c *OrderArrearageClient) QueryOrder(oa *OrderArrearage) *OrderQuery {
+	query := &OrderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := oa.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(orderarrearage.Table, orderarrearage.FieldID, id),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, orderarrearage.OrderTable, orderarrearage.OrderColumn),
+		)
+		fromV = sqlgraph.Neighbors(oa.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *OrderArrearageClient) Hooks() []Hook {
+	hooks := c.hooks.OrderArrearage
+	return append(hooks[:len(hooks):len(hooks)], orderarrearage.Hooks[:]...)
+}
+
+// OrderPauseClient is a client for the OrderPause schema.
+type OrderPauseClient struct {
+	config
+}
+
+// NewOrderPauseClient returns a client for the OrderPause from the given config.
+func NewOrderPauseClient(c config) *OrderPauseClient {
+	return &OrderPauseClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `orderpause.Hooks(f(g(h())))`.
+func (c *OrderPauseClient) Use(hooks ...Hook) {
+	c.hooks.OrderPause = append(c.hooks.OrderPause, hooks...)
+}
+
+// Create returns a create builder for OrderPause.
+func (c *OrderPauseClient) Create() *OrderPauseCreate {
+	mutation := newOrderPauseMutation(c.config, OpCreate)
+	return &OrderPauseCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of OrderPause entities.
+func (c *OrderPauseClient) CreateBulk(builders ...*OrderPauseCreate) *OrderPauseCreateBulk {
+	return &OrderPauseCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for OrderPause.
+func (c *OrderPauseClient) Update() *OrderPauseUpdate {
+	mutation := newOrderPauseMutation(c.config, OpUpdate)
+	return &OrderPauseUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *OrderPauseClient) UpdateOne(op *OrderPause) *OrderPauseUpdateOne {
+	mutation := newOrderPauseMutation(c.config, OpUpdateOne, withOrderPause(op))
+	return &OrderPauseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *OrderPauseClient) UpdateOneID(id uint64) *OrderPauseUpdateOne {
+	mutation := newOrderPauseMutation(c.config, OpUpdateOne, withOrderPauseID(id))
+	return &OrderPauseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for OrderPause.
+func (c *OrderPauseClient) Delete() *OrderPauseDelete {
+	mutation := newOrderPauseMutation(c.config, OpDelete)
+	return &OrderPauseDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *OrderPauseClient) DeleteOne(op *OrderPause) *OrderPauseDeleteOne {
+	return c.DeleteOneID(op.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *OrderPauseClient) DeleteOneID(id uint64) *OrderPauseDeleteOne {
+	builder := c.Delete().Where(orderpause.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &OrderPauseDeleteOne{builder}
+}
+
+// Query returns a query builder for OrderPause.
+func (c *OrderPauseClient) Query() *OrderPauseQuery {
+	return &OrderPauseQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a OrderPause entity by its id.
+func (c *OrderPauseClient) Get(ctx context.Context, id uint64) (*OrderPause, error) {
+	return c.Query().Where(orderpause.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *OrderPauseClient) GetX(ctx context.Context, id uint64) *OrderPause {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryRider queries the rider edge of a OrderPause.
+func (c *OrderPauseClient) QueryRider(op *OrderPause) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := op.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(orderpause.Table, orderpause.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, orderpause.RiderTable, orderpause.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(op.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOrder queries the order edge of a OrderPause.
+func (c *OrderPauseClient) QueryOrder(op *OrderPause) *OrderQuery {
+	query := &OrderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := op.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(orderpause.Table, orderpause.FieldID, id),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, orderpause.OrderTable, orderpause.OrderColumn),
+		)
+		fromV = sqlgraph.Neighbors(op.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *OrderPauseClient) Hooks() []Hook {
+	hooks := c.hooks.OrderPause
+	return append(hooks[:len(hooks):len(hooks)], orderpause.Hooks[:]...)
 }
 
 // PersonClient is a client for the Person schema.
@@ -2113,6 +2551,54 @@ func (c *RiderClient) QueryOrders(r *Rider) *OrderQuery {
 			sqlgraph.From(rider.Table, rider.FieldID, id),
 			sqlgraph.To(order.Table, order.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, rider.OrdersTable, rider.OrdersColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPauses queries the pauses edge of a Rider.
+func (c *RiderClient) QueryPauses(r *Rider) *OrderPauseQuery {
+	query := &OrderPauseQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rider.Table, rider.FieldID, id),
+			sqlgraph.To(orderpause.Table, orderpause.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.PausesTable, rider.PausesColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryArrearages queries the arrearages edge of a Rider.
+func (c *RiderClient) QueryArrearages(r *Rider) *OrderArrearageQuery {
+	query := &OrderArrearageQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rider.Table, rider.FieldID, id),
+			sqlgraph.To(orderarrearage.Table, orderarrearage.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.ArrearagesTable, rider.ArrearagesColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAlters queries the alters edge of a Rider.
+func (c *RiderClient) QueryAlters(r *Rider) *OrderAlterQuery {
+	query := &OrderAlterQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rider.Table, rider.FieldID, id),
+			sqlgraph.To(orderalter.Table, orderalter.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.AltersTable, rider.AltersColumn),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil

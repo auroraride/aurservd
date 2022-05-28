@@ -11,10 +11,10 @@ import (
 )
 
 const (
-    OrderTypeNewPlan       uint = iota + 1 // 新签
-    OrderTypeRePlan                        // 续签
-    OrderTypeRenewal                       // 重签
-    OrderTypeChangeBattery                 // 更换电池
+    OrderTypeNewPlan       uint = iota + 1 // 新签, 需要计算业绩
+    OrderTypeRePlan                        // 续签, 无需计算业绩
+    OrderTypeRenewal                       // 重签, 相当于新签 需要计算业绩
+    OrderTypeChangeBattery                 // 更改电池, 相当于续签 无需计算业绩
     OrderTypeRescue                        // 救援
     OrderTypeFee                           // 滞纳金
     OrderTypeDeposit                       // 押金
@@ -28,8 +28,13 @@ const (
 const (
     OrderStatusPending       uint8 = iota // 未支付
     OrderStatusPaid                       // 已支付
-    OrderStatusRefundPending              // 申请退款
+    OrderStatusRefundPending              // 申请退款, 退款后业绩订单需要删除
     OrderStatusRefundSuccess              // 已退款
+)
+
+var (
+    // OrderRiderPlan 骑手骑士卡订单
+    OrderRiderPlan = []uint{OrderTypeNewPlan, OrderTypeRenewal, OrderTypeRePlan, OrderTypeChangeBattery}
 )
 
 // OrderCreateReq 订单创建请求
@@ -84,4 +89,24 @@ type OrderNotActived struct {
     City    City           `json:"city"`               // 所属城市
     Models  []BatteryModel `json:"models"`             // 可用电池型号, 显示为`72V30AH`即Voltage(V)+Capacity(AH), 逗号分隔
     Time    string         `json:"time"`               // 支付时间
+}
+
+// OrderRefund 退款详情
+type OrderRefund struct {
+    Amount     float64 `json:"amount"`     // 退款金额
+    RefundAt   string  `json:"refundAt"`   // 退款时间
+    OutTradeNo string  `json:"outTradeNo"` // 退款订单编号
+    TradeNo    string  `json:"tradeNo"`    // 退款平台订单编号
+}
+
+// OrderDaysLog 订单日期修改
+type OrderDaysLog struct {
+    Modifier *Modifier
+    Days     int    `json:"days"`   // 修改天数, 正加负减
+    Reason   string `json:"reason"` // 理由
+}
+
+// OrderArrearage 滞纳金
+type OrderArrearage struct {
+    Days int
 }

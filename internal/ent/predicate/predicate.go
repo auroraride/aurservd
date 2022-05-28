@@ -39,6 +39,15 @@ type Manager func(*sql.Selector)
 // Order is the predicate function for order builders.
 type Order func(*sql.Selector)
 
+// OrderAlter is the predicate function for orderalter builders.
+type OrderAlter func(*sql.Selector)
+
+// OrderArrearage is the predicate function for orderarrearage builders.
+type OrderArrearage func(*sql.Selector)
+
+// OrderPause is the predicate function for orderpause builders.
+type OrderPause func(*sql.Selector)
+
 // Person is the predicate function for person builders.
 type Person func(*sql.Selector)
 

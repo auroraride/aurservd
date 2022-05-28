@@ -112,6 +112,36 @@ func (o *Order) GetID() uint64 {
 	return o.ID
 }
 
+// GetTableName returns table name for OrderAlter.
+func (oa *OrderAlter) GetTableName() string {
+	return "order_alter"
+}
+
+// GetID returns id for OrderAlter.
+func (oa *OrderAlter) GetID() uint64 {
+	return oa.ID
+}
+
+// GetTableName returns table name for OrderArrearage.
+func (oa *OrderArrearage) GetTableName() string {
+	return "order_arrearage"
+}
+
+// GetID returns id for OrderArrearage.
+func (oa *OrderArrearage) GetID() uint64 {
+	return oa.ID
+}
+
+// GetTableName returns table name for OrderPause.
+func (op *OrderPause) GetTableName() string {
+	return "order_pause"
+}
+
+// GetID returns id for OrderPause.
+func (op *OrderPause) GetID() uint64 {
+	return op.ID
+}
+
 // GetTableName returns table name for Person.
 func (pe *Person) GetTableName() string {
 	return "person"
