@@ -2570,6 +2570,41 @@ paths:
       tags:
       - '[R]骑手接口'
   /rider/v1/order:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderOrderList
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.RiderRecentOrder'
+                  type: array
+              type: object
+      summary: R30008 骑士卡购买历史
+      tags:
+      - '[R]骑手接口'
     post:
       consumes:
       - application/json

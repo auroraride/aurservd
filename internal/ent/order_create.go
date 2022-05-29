@@ -239,6 +239,20 @@ func (oc *OrderCreate) SetNillableEndAt(t *time.Time) *OrderCreate {
 	return oc
 }
 
+// SetRefundAt sets the "refund_at" field.
+func (oc *OrderCreate) SetRefundAt(t time.Time) *OrderCreate {
+	oc.mutation.SetRefundAt(t)
+	return oc
+}
+
+// SetNillableRefundAt sets the "refund_at" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableRefundAt(t *time.Time) *OrderCreate {
+	if t != nil {
+		oc.SetRefundAt(*t)
+	}
+	return oc
+}
+
 // SetPausedAt sets the "paused_at" field.
 func (oc *OrderCreate) SetPausedAt(t time.Time) *OrderCreate {
 	oc.mutation.SetPausedAt(t)
@@ -693,6 +707,14 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 			Column: order.FieldEndAt,
 		})
 		_node.EndAt = &value
+	}
+	if value, ok := oc.mutation.RefundAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: order.FieldRefundAt,
+		})
+		_node.RefundAt = &value
 	}
 	if value, ok := oc.mutation.PausedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -1282,6 +1304,24 @@ func (u *OrderUpsert) ClearEndAt() *OrderUpsert {
 	return u
 }
 
+// SetRefundAt sets the "refund_at" field.
+func (u *OrderUpsert) SetRefundAt(v time.Time) *OrderUpsert {
+	u.Set(order.FieldRefundAt, v)
+	return u
+}
+
+// UpdateRefundAt sets the "refund_at" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateRefundAt() *OrderUpsert {
+	u.SetExcluded(order.FieldRefundAt)
+	return u
+}
+
+// ClearRefundAt clears the value of the "refund_at" field.
+func (u *OrderUpsert) ClearRefundAt() *OrderUpsert {
+	u.SetNull(order.FieldRefundAt)
+	return u
+}
+
 // SetPausedAt sets the "paused_at" field.
 func (u *OrderUpsert) SetPausedAt(v time.Time) *OrderUpsert {
 	u.Set(order.FieldPausedAt, v)
@@ -1773,6 +1813,27 @@ func (u *OrderUpsertOne) UpdateEndAt() *OrderUpsertOne {
 func (u *OrderUpsertOne) ClearEndAt() *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearEndAt()
+	})
+}
+
+// SetRefundAt sets the "refund_at" field.
+func (u *OrderUpsertOne) SetRefundAt(v time.Time) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetRefundAt(v)
+	})
+}
+
+// UpdateRefundAt sets the "refund_at" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateRefundAt() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateRefundAt()
+	})
+}
+
+// ClearRefundAt clears the value of the "refund_at" field.
+func (u *OrderUpsertOne) ClearRefundAt() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearRefundAt()
 	})
 }
 
@@ -2439,6 +2500,27 @@ func (u *OrderUpsertBulk) UpdateEndAt() *OrderUpsertBulk {
 func (u *OrderUpsertBulk) ClearEndAt() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearEndAt()
+	})
+}
+
+// SetRefundAt sets the "refund_at" field.
+func (u *OrderUpsertBulk) SetRefundAt(v time.Time) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetRefundAt(v)
+	})
+}
+
+// UpdateRefundAt sets the "refund_at" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateRefundAt() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateRefundAt()
+	})
+}
+
+// ClearRefundAt clears the value of the "refund_at" field.
+func (u *OrderUpsertBulk) ClearRefundAt() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearRefundAt()
 	})
 }
 

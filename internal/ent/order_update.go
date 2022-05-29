@@ -228,6 +228,26 @@ func (ou *OrderUpdate) ClearEndAt() *OrderUpdate {
 	return ou
 }
 
+// SetRefundAt sets the "refund_at" field.
+func (ou *OrderUpdate) SetRefundAt(t time.Time) *OrderUpdate {
+	ou.mutation.SetRefundAt(t)
+	return ou
+}
+
+// SetNillableRefundAt sets the "refund_at" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableRefundAt(t *time.Time) *OrderUpdate {
+	if t != nil {
+		ou.SetRefundAt(*t)
+	}
+	return ou
+}
+
+// ClearRefundAt clears the value of the "refund_at" field.
+func (ou *OrderUpdate) ClearRefundAt() *OrderUpdate {
+	ou.mutation.ClearRefundAt()
+	return ou
+}
+
 // SetPausedAt sets the "paused_at" field.
 func (ou *OrderUpdate) SetPausedAt(t time.Time) *OrderUpdate {
 	ou.mutation.SetPausedAt(t)
@@ -736,6 +756,19 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: order.FieldEndAt,
+		})
+	}
+	if value, ok := ou.mutation.RefundAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: order.FieldRefundAt,
+		})
+	}
+	if ou.mutation.RefundAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: order.FieldRefundAt,
 		})
 	}
 	if value, ok := ou.mutation.PausedAt(); ok {
@@ -1426,6 +1459,26 @@ func (ouo *OrderUpdateOne) ClearEndAt() *OrderUpdateOne {
 	return ouo
 }
 
+// SetRefundAt sets the "refund_at" field.
+func (ouo *OrderUpdateOne) SetRefundAt(t time.Time) *OrderUpdateOne {
+	ouo.mutation.SetRefundAt(t)
+	return ouo
+}
+
+// SetNillableRefundAt sets the "refund_at" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableRefundAt(t *time.Time) *OrderUpdateOne {
+	if t != nil {
+		ouo.SetRefundAt(*t)
+	}
+	return ouo
+}
+
+// ClearRefundAt clears the value of the "refund_at" field.
+func (ouo *OrderUpdateOne) ClearRefundAt() *OrderUpdateOne {
+	ouo.mutation.ClearRefundAt()
+	return ouo
+}
+
 // SetPausedAt sets the "paused_at" field.
 func (ouo *OrderUpdateOne) SetPausedAt(t time.Time) *OrderUpdateOne {
 	ouo.mutation.SetPausedAt(t)
@@ -1964,6 +2017,19 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: order.FieldEndAt,
+		})
+	}
+	if value, ok := ouo.mutation.RefundAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: order.FieldRefundAt,
+		})
+	}
+	if ouo.mutation.RefundAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: order.FieldRefundAt,
 		})
 	}
 	if value, ok := ouo.mutation.PausedAt(); ok {

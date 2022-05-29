@@ -542,6 +542,7 @@ var (
 		{Name: "plan_detail", Type: field.TypeJSON, Comment: "骑士卡详情", Nullable: true},
 		{Name: "start_at", Type: field.TypeTime, Comment: "开始时间", Nullable: true},
 		{Name: "end_at", Type: field.TypeTime, Comment: "归还时间", Nullable: true},
+		{Name: "refund_at", Type: field.TypeTime, Comment: "退款时间", Nullable: true},
 		{Name: "paused_at", Type: field.TypeTime, Comment: "当前是否暂停计费, 暂停计费时间", Nullable: true},
 		{Name: "days", Type: field.TypeUint, Comment: "骑士卡天数", Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64},
@@ -557,25 +558,25 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "order_city_orders",
-				Columns:    []*schema.Column{OrderColumns[19]},
+				Columns:    []*schema.Column{OrderColumns[20]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "order_order_children",
-				Columns:    []*schema.Column{OrderColumns[20]},
+				Columns:    []*schema.Column{OrderColumns[21]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "order_plan_orders",
-				Columns:    []*schema.Column{OrderColumns[21]},
+				Columns:    []*schema.Column{OrderColumns[22]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "order_rider_orders",
-				Columns:    []*schema.Column{OrderColumns[22]},
+				Columns:    []*schema.Column{OrderColumns[23]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -609,7 +610,7 @@ var (
 			{
 				Name:    "order_paused_at",
 				Unique:  false,
-				Columns: []*schema.Column{OrderColumns[17]},
+				Columns: []*schema.Column{OrderColumns[18]},
 			},
 			{
 				Name:    "order_start_at_end_at",

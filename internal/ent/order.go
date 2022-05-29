@@ -79,6 +79,9 @@ type Order struct {
 	// EndAt holds the value of the "end_at" field.
 	// 归还时间
 	EndAt *time.Time `json:"end_at,omitempty"`
+	// RefundAt holds the value of the "refund_at" field.
+	// 退款时间
+	RefundAt *time.Time `json:"refund_at,omitempty"`
 	// PausedAt holds the value of the "paused_at" field.
 	// 当前是否暂停计费, 暂停计费时间
 	PausedAt *time.Time `json:"paused_at,omitempty"`
@@ -245,7 +248,7 @@ func (*Order) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case order.FieldRemark, order.FieldOutTradeNo, order.FieldTradeNo:
 			values[i] = new(sql.NullString)
-		case order.FieldCreatedAt, order.FieldUpdatedAt, order.FieldDeletedAt, order.FieldStartAt, order.FieldEndAt, order.FieldPausedAt:
+		case order.FieldCreatedAt, order.FieldUpdatedAt, order.FieldDeletedAt, order.FieldStartAt, order.FieldEndAt, order.FieldRefundAt, order.FieldPausedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Order", columns[i])
@@ -397,6 +400,13 @@ func (o *Order) assignValues(columns []string, values []interface{}) error {
 				o.EndAt = new(time.Time)
 				*o.EndAt = value.Time
 			}
+		case order.FieldRefundAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field refund_at", values[i])
+			} else if value.Valid {
+				o.RefundAt = new(time.Time)
+				*o.RefundAt = value.Time
+			}
 		case order.FieldPausedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field paused_at", values[i])
@@ -532,6 +542,10 @@ func (o *Order) String() string {
 	}
 	if v := o.EndAt; v != nil {
 		builder.WriteString(", end_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	if v := o.RefundAt; v != nil {
+		builder.WriteString(", refund_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	if v := o.PausedAt; v != nil {

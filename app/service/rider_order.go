@@ -55,33 +55,10 @@ func (s *riderOrderService) FindNotActived(riderID uint64) *ent.Order {
     return o
 }
 
-// Recent 获取最近的订单
-func (s *riderOrderService) Recent(riderID uint64) *model.RiderRecentOrder {
+// Detail 计算骑手当前订单详情
+func (s *riderOrderService) Detail(o *ent.Order) *model.RiderRecentOrder {
     now := time.Now()
     tt := tools.NewTime()
-    o, _ := ar.Ent.Order.
-        QueryNotDeleted().
-        WithAlters().
-        WithCity().
-        WithPauses().
-        WithPlan(
-            func(pq *ent.PlanQuery) {
-                pq.WithPms()
-            },
-        ).
-        Where(
-            order.RiderID(riderID),
-            order.Status(model.OrderStatusPaid),
-            order.TypeIn(model.OrderRiderPlan...),
-        ).
-        WithChildren(func(cq *ent.OrderQuery) {
-            cq.Where(order.Type(model.OrderTypeDeposit))
-        }).
-        Only(s.ctx)
-    if o == nil {
-        return nil
-    }
-
     ro := &model.RiderRecentOrder{
         ID:     o.ID,
         Days:   int(o.PlanDetail.Days),
@@ -140,6 +117,12 @@ func (s *riderOrderService) Recent(riderID uint64) *model.RiderRecentOrder {
     remaining := int(o.Days) + alter + paused - past
 
     switch true {
+    case o.Status == model.OrderStatusRefundSuccess:
+        // 已退款
+        ro.Status = model.RiderOrderStatusRefunded
+        ro.EndAt = o.RefundAt.Format(carbon.DateLayout)
+        remaining = 0
+        break
     case o.StartAt == nil:
         // 未激活
         ro.Status = model.RiderOrderStatusPending
@@ -172,4 +155,64 @@ func (s *riderOrderService) Recent(riderID uint64) *model.RiderRecentOrder {
     ro.AlterDays = alter
 
     return ro
+}
+
+// Recent 获取最近的订单
+func (s *riderOrderService) Recent(riderID uint64) *model.RiderRecentOrder {
+    o, _ := ar.Ent.Order.
+        QueryNotDeleted().
+        WithAlters().
+        WithCity().
+        WithPauses().
+        WithPlan(
+            func(pq *ent.PlanQuery) {
+                pq.WithPms()
+            },
+        ).
+        Where(
+            order.RiderID(riderID),
+            order.StatusIn(model.OrderStatusPaid, model.OrderStatusRefundPending),
+            order.TypeIn(model.OrderRiderPlan...),
+        ).
+        WithChildren(func(cq *ent.OrderQuery) {
+            cq.Where(order.Type(model.OrderTypeDeposit))
+        }).
+        Only(s.ctx)
+    if o == nil {
+        return nil
+    }
+
+    return s.Detail(o)
+}
+
+// List 分页获取骑手订单
+func (s *riderOrderService) List(riderID uint64, req *model.PaginationReq) *model.PaginationRes {
+    if req.PageSize > 10 {
+        req.PageSize = 10
+    }
+    q := s.orm.QueryNotDeleted().
+        WithAlters().
+        WithCity().
+        WithPauses().
+        WithPlan(
+            func(pq *ent.PlanQuery) {
+                pq.WithPms()
+            },
+        ).
+        Order(ent.Desc(order.FieldCreatedAt)).
+        Where(
+            order.RiderID(riderID),
+            order.TypeIn(model.OrderRiderPlan...),
+        )
+    return model.ParsePaginationResponse[model.RiderRecentOrder](
+        q.PaginationResult(*req),
+        func() []model.RiderRecentOrder {
+            items := q.Pagination(*req).AllX(s.ctx)
+            out := make([]model.RiderRecentOrder, len(items))
+            for i, item := range items {
+                out[i] = *s.Detail(item)
+            }
+            return out
+        },
+    )
 }

@@ -49,3 +49,21 @@ func (*order) Refund(c echo.Context) (err error) {
     service.NewOrderWithRider(ctx.Rider).Refund(ctx.Rider.ID, req)
     return ctx.SendResponse()
 }
+
+// List
+// @ID           RiderOrderList
+// @Router       /rider/v1/order [GET]
+// @Summary      R30008 骑士卡购买历史
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        query  query  model.PaginationReq  true  "desc"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Success      200  {object}  model.PaginationRes{items=[]model.RiderRecentOrder}  "请求成功"
+func (*order) List(c echo.Context) (err error) {
+    ctx, req := app.RiderContextAndBinding[model.PaginationReq](c)
+    return ctx.SendResponse(
+        service.NewRiderOrder().List(ctx.Rider.ID, req),
+    )
+}

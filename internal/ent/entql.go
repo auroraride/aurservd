@@ -320,6 +320,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			order.FieldParentID:     {Type: field.TypeUint64, Column: order.FieldParentID},
 			order.FieldStartAt:      {Type: field.TypeTime, Column: order.FieldStartAt},
 			order.FieldEndAt:        {Type: field.TypeTime, Column: order.FieldEndAt},
+			order.FieldRefundAt:     {Type: field.TypeTime, Column: order.FieldRefundAt},
 			order.FieldPausedAt:     {Type: field.TypeTime, Column: order.FieldPausedAt},
 			order.FieldDays:         {Type: field.TypeUint, Column: order.FieldDays},
 		},
@@ -2706,6 +2707,11 @@ func (f *OrderFilter) WhereStartAt(p entql.TimeP) {
 // WhereEndAt applies the entql time.Time predicate on the end_at field.
 func (f *OrderFilter) WhereEndAt(p entql.TimeP) {
 	f.Where(p.Field(order.FieldEndAt))
+}
+
+// WhereRefundAt applies the entql time.Time predicate on the refund_at field.
+func (f *OrderFilter) WhereRefundAt(p entql.TimeP) {
+	f.Where(p.Field(order.FieldRefundAt))
 }
 
 // WherePausedAt applies the entql time.Time predicate on the paused_at field.

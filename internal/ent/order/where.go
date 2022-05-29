@@ -212,6 +212,13 @@ func EndAt(v time.Time) predicate.Order {
 	})
 }
 
+// RefundAt applies equality check predicate on the "refund_at" field. It's identical to RefundAtEQ.
+func RefundAt(v time.Time) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRefundAt), v))
+	})
+}
+
 // PausedAt applies equality check predicate on the "paused_at" field. It's identical to PausedAtEQ.
 func PausedAt(v time.Time) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
@@ -1634,6 +1641,96 @@ func EndAtIsNil() predicate.Order {
 func EndAtNotNil() predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldEndAt)))
+	})
+}
+
+// RefundAtEQ applies the EQ predicate on the "refund_at" field.
+func RefundAtEQ(v time.Time) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRefundAt), v))
+	})
+}
+
+// RefundAtNEQ applies the NEQ predicate on the "refund_at" field.
+func RefundAtNEQ(v time.Time) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRefundAt), v))
+	})
+}
+
+// RefundAtIn applies the In predicate on the "refund_at" field.
+func RefundAtIn(vs ...time.Time) predicate.Order {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldRefundAt), v...))
+	})
+}
+
+// RefundAtNotIn applies the NotIn predicate on the "refund_at" field.
+func RefundAtNotIn(vs ...time.Time) predicate.Order {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldRefundAt), v...))
+	})
+}
+
+// RefundAtGT applies the GT predicate on the "refund_at" field.
+func RefundAtGT(v time.Time) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldRefundAt), v))
+	})
+}
+
+// RefundAtGTE applies the GTE predicate on the "refund_at" field.
+func RefundAtGTE(v time.Time) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldRefundAt), v))
+	})
+}
+
+// RefundAtLT applies the LT predicate on the "refund_at" field.
+func RefundAtLT(v time.Time) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldRefundAt), v))
+	})
+}
+
+// RefundAtLTE applies the LTE predicate on the "refund_at" field.
+func RefundAtLTE(v time.Time) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldRefundAt), v))
+	})
+}
+
+// RefundAtIsNil applies the IsNil predicate on the "refund_at" field.
+func RefundAtIsNil() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldRefundAt)))
+	})
+}
+
+// RefundAtNotNil applies the NotNil predicate on the "refund_at" field.
+func RefundAtNotNil() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldRefundAt)))
 	})
 }
 

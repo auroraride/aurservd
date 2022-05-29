@@ -11,6 +11,7 @@ const (
     RiderOrderStatusPaused                // 暂停中
     RiderOrderStatusOverdue               // 已逾期
     RiderOrderStatusRemanded              // 已过期, 已归还电池
+    RiderOrderStatusRefunded              // 已退款
 )
 
 type OrderPlan struct {

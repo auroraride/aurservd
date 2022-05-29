@@ -160,6 +160,7 @@ func (s *orderService) Refund(riderID uint64, req *model.OrderRefundReq) {
             order.RiderID(riderID),
             order.EndAtIsNil(),
             order.StatusIn(model.OrderStatusPaid, model.OrderStatusRefundPending),
+            order.TypeIn(model.OrderRiderPlan...),
         ).Exist(s.ctx); exist {
             snag.Panic("当前无法退款")
         }
@@ -285,7 +286,10 @@ func (s *orderService) OrderPaid(trade *model.PaymentPlan) {
 func (s *orderService) RefundSuccess(req *model.PaymentRefund) {
     ctx := context.Background()
     tx, _ := ar.Ent.Tx(ctx)
-    tx.Order.UpdateOneID(req.OrderID).SetStatus(model.OrderStatusRefundSuccess).SaveX(ctx)
+    tx.Order.UpdateOneID(req.OrderID).
+        SetStatus(model.OrderStatusRefundSuccess).
+        SetEndAt(req.Time).
+        SaveX(ctx)
 
     tx.OrderRefund.Update().
         Where(orderrefund.OutRefundNo(req.OutRefundNo)).

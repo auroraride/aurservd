@@ -53,6 +53,8 @@ const (
 	FieldStartAt = "start_at"
 	// FieldEndAt holds the string denoting the end_at field in the database.
 	FieldEndAt = "end_at"
+	// FieldRefundAt holds the string denoting the refund_at field in the database.
+	FieldRefundAt = "refund_at"
 	// FieldPausedAt holds the string denoting the paused_at field in the database.
 	FieldPausedAt = "paused_at"
 	// FieldDays holds the string denoting the days field in the database.
@@ -168,6 +170,7 @@ var Columns = []string{
 	FieldParentID,
 	FieldStartAt,
 	FieldEndAt,
+	FieldRefundAt,
 	FieldPausedAt,
 	FieldDays,
 }

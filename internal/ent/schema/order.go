@@ -40,6 +40,7 @@ func (Order) Fields() []ent.Field {
         field.Uint64("parent_id").Optional().Comment("续签/押金所属订单ID"),
         field.Time("start_at").Optional().Nillable().Comment("开始时间"),
         field.Time("end_at").Optional().Nillable().Comment("归还时间"),
+        field.Time("refund_at").Optional().Nillable().Comment("退款时间"),
         field.Time("paused_at").Optional().Nillable().Comment("当前是否暂停计费, 暂停计费时间"),
         field.Uint("days").Optional().Comment("骑士卡天数"),
     }
