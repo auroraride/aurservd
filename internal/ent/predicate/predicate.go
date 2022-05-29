@@ -48,6 +48,9 @@ type OrderArrearage func(*sql.Selector)
 // OrderPause is the predicate function for orderpause builders.
 type OrderPause func(*sql.Selector)
 
+// OrderRefund is the predicate function for orderrefund builders.
+type OrderRefund func(*sql.Selector)
+
 // Person is the predicate function for person builders.
 type Person func(*sql.Selector)
 

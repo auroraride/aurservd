@@ -5,10 +5,22 @@
 
 package payment
 
+import (
+    "github.com/auroraride/aurservd/app/model"
+    "net/http"
+)
+
+type Payment interface {
+    AppPay(prepay *model.PaymentCache) (string, error)
+    Notification(req *http.Request) *model.PaymentCache
+    Refund(req *model.PaymentRefund)
+}
+
 func Boot() {
     _alipay = &alipayClient{
         Client:       newAlipayClient(),
         notifyClient: newNotifyClient(),
+        refundClient: newRefundClient(),
     }
     _wechat = newWechatClient()
 }

@@ -43,10 +43,10 @@ const (
 	FieldTradeNo = "trade_no"
 	// FieldAmount holds the string denoting the amount field in the database.
 	FieldAmount = "amount"
+	// FieldTotal holds the string denoting the total field in the database.
+	FieldTotal = "total"
 	// FieldPlanDetail holds the string denoting the plan_detail field in the database.
 	FieldPlanDetail = "plan_detail"
-	// FieldRefund holds the string denoting the refund field in the database.
-	FieldRefund = "refund"
 	// FieldParentID holds the string denoting the parent_id field in the database.
 	FieldParentID = "parent_id"
 	// FieldStartAt holds the string denoting the start_at field in the database.
@@ -75,6 +75,8 @@ const (
 	EdgeArrearages = "arrearages"
 	// EdgeAlters holds the string denoting the alters edge name in mutations.
 	EdgeAlters = "alters"
+	// EdgeRefunds holds the string denoting the refunds edge name in mutations.
+	EdgeRefunds = "refunds"
 	// Table holds the table name of the order in the database.
 	Table = "order"
 	// RiderTable is the table that holds the rider relation/edge.
@@ -134,6 +136,13 @@ const (
 	AltersInverseTable = "order_alter"
 	// AltersColumn is the table column denoting the alters relation/edge.
 	AltersColumn = "order_id"
+	// RefundsTable is the table that holds the refunds relation/edge.
+	RefundsTable = "order_refund"
+	// RefundsInverseTable is the table name for the OrderRefund entity.
+	// It exists in this package in order to avoid circular dependency with the "orderrefund" package.
+	RefundsInverseTable = "order_refund"
+	// RefundsColumn is the table column denoting the refunds relation/edge.
+	RefundsColumn = "order_id"
 )
 
 // Columns holds all SQL columns for order fields.
@@ -154,8 +163,8 @@ var Columns = []string{
 	FieldOutTradeNo,
 	FieldTradeNo,
 	FieldAmount,
+	FieldTotal,
 	FieldPlanDetail,
-	FieldRefund,
 	FieldParentID,
 	FieldStartAt,
 	FieldEndAt,
@@ -189,4 +198,6 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus uint8
+	// DefaultTotal holds the default value on creation for the "total" field.
+	DefaultTotal float64
 )

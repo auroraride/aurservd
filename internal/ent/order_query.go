@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderalter"
 	"github.com/auroraride/aurservd/internal/ent/orderarrearage"
 	"github.com/auroraride/aurservd/internal/ent/orderpause"
+	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -41,6 +42,7 @@ type OrderQuery struct {
 	withPauses     *OrderPauseQuery
 	withArrearages *OrderArrearageQuery
 	withAlters     *OrderAlterQuery
+	withRefunds    *OrderRefundQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -276,6 +278,28 @@ func (oq *OrderQuery) QueryAlters() *OrderAlterQuery {
 	return query
 }
 
+// QueryRefunds chains the current query on the "refunds" edge.
+func (oq *OrderQuery) QueryRefunds() *OrderRefundQuery {
+	query := &OrderRefundQuery{config: oq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := oq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := oq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, selector),
+			sqlgraph.To(orderrefund.Table, orderrefund.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, order.RefundsTable, order.RefundsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Order entity from the query.
 // Returns a *NotFoundError when no Order was found.
 func (oq *OrderQuery) First(ctx context.Context) (*Order, error) {
@@ -466,6 +490,7 @@ func (oq *OrderQuery) Clone() *OrderQuery {
 		withPauses:     oq.withPauses.Clone(),
 		withArrearages: oq.withArrearages.Clone(),
 		withAlters:     oq.withAlters.Clone(),
+		withRefunds:    oq.withRefunds.Clone(),
 		// clone intermediate query.
 		sql:    oq.sql.Clone(),
 		path:   oq.path,
@@ -572,6 +597,17 @@ func (oq *OrderQuery) WithAlters(opts ...func(*OrderAlterQuery)) *OrderQuery {
 	return oq
 }
 
+// WithRefunds tells the query-builder to eager-load the nodes that are connected to
+// the "refunds" edge. The optional arguments are used to configure the query builder of the edge.
+func (oq *OrderQuery) WithRefunds(opts ...func(*OrderRefundQuery)) *OrderQuery {
+	query := &OrderRefundQuery{config: oq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	oq.withRefunds = query
+	return oq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -642,7 +678,7 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 	var (
 		nodes       = []*Order{}
 		_spec       = oq.querySpec()
-		loadedTypes = [9]bool{
+		loadedTypes = [10]bool{
 			oq.withRider != nil,
 			oq.withPlan != nil,
 			oq.withCommission != nil,
@@ -652,6 +688,7 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 			oq.withPauses != nil,
 			oq.withArrearages != nil,
 			oq.withAlters != nil,
+			oq.withRefunds != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -901,6 +938,31 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 				return nil, fmt.Errorf(`unexpected foreign-key "order_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Alters = append(node.Edges.Alters, n)
+		}
+	}
+
+	if query := oq.withRefunds; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Order)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Refunds = []*OrderRefund{}
+		}
+		query.Where(predicate.OrderRefund(func(s *sql.Selector) {
+			s.Where(sql.InValues(order.RefundsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.OrderID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "order_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Refunds = append(node.Edges.Refunds, n)
 		}
 	}
 

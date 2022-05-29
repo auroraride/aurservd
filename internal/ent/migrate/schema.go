@@ -535,13 +535,13 @@ var (
 		{Name: "status", Type: field.TypeUint8, Comment: "订单状态 0未支付 1已支付 2申请退款 3已退款", Default: 1},
 		{Name: "payway", Type: field.TypeUint8, Comment: "支付方式 1支付宝 2微信"},
 		{Name: "type", Type: field.TypeUint, Comment: "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金"},
-		{Name: "out_trade_no", Type: field.TypeString, Unique: true, Comment: "交易订单号"},
+		{Name: "out_trade_no", Type: field.TypeString, Comment: "交易订单号"},
 		{Name: "trade_no", Type: field.TypeString, Comment: "平台订单号"},
-		{Name: "amount", Type: field.TypeFloat64, Comment: "支付金额"},
+		{Name: "amount", Type: field.TypeFloat64, Comment: "该订单金额(拆分项)"},
+		{Name: "total", Type: field.TypeFloat64, Comment: "此次支付总金额", Default: 0},
 		{Name: "plan_detail", Type: field.TypeJSON, Comment: "骑士卡详情", Nullable: true},
-		{Name: "refund", Type: field.TypeJSON, Comment: "退款详细", Nullable: true},
 		{Name: "start_at", Type: field.TypeTime, Comment: "开始时间", Nullable: true},
-		{Name: "end_at", Type: field.TypeTime, Comment: "结束时间", Nullable: true},
+		{Name: "end_at", Type: field.TypeTime, Comment: "归还时间", Nullable: true},
 		{Name: "paused_at", Type: field.TypeTime, Comment: "当前是否暂停计费, 暂停计费时间", Nullable: true},
 		{Name: "days", Type: field.TypeUint, Comment: "骑士卡天数", Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64},
@@ -592,9 +592,14 @@ var (
 				Columns: []*schema.Column{OrderColumns[3]},
 			},
 			{
-				Name:    "order_trade_no_out_trade_no",
+				Name:    "order_trade_no",
 				Unique:  false,
-				Columns: []*schema.Column{OrderColumns[11], OrderColumns[10]},
+				Columns: []*schema.Column{OrderColumns[11]},
+			},
+			{
+				Name:    "order_out_trade_no",
+				Unique:  false,
+				Columns: []*schema.Column{OrderColumns[10]},
 			},
 			{
 				Name:    "order_status",
@@ -757,6 +762,58 @@ var (
 				Name:    "orderpause_end_at",
 				Unique:  false,
 				Columns: []*schema.Column{OrderPauseColumns[8]},
+			},
+		},
+	}
+	// OrderRefundColumns holds the columns for the "order_refund" table.
+	OrderRefundColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "备注", Nullable: true},
+		{Name: "status", Type: field.TypeUint8, Comment: "退款状态"},
+		{Name: "amount", Type: field.TypeFloat64, Comment: "退款金额"},
+		{Name: "out_refund_no", Type: field.TypeString, Unique: true, Comment: "退款订单编号"},
+		{Name: "reason", Type: field.TypeString, Comment: "退款理由"},
+		{Name: "refund_at", Type: field.TypeTime, Comment: "退款成功时间", Nullable: true},
+		{Name: "order_id", Type: field.TypeUint64},
+	}
+	// OrderRefundTable holds the schema information for the "order_refund" table.
+	OrderRefundTable = &schema.Table{
+		Name:       "order_refund",
+		Columns:    OrderRefundColumns,
+		PrimaryKey: []*schema.Column{OrderRefundColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "order_refund_order_refunds",
+				Columns:    []*schema.Column{OrderRefundColumns[12]},
+				RefColumns: []*schema.Column{OrderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "orderrefund_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{OrderRefundColumns[1]},
+			},
+			{
+				Name:    "orderrefund_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{OrderRefundColumns[3]},
+			},
+			{
+				Name:    "orderrefund_status",
+				Unique:  false,
+				Columns: []*schema.Column{OrderRefundColumns[7]},
+			},
+			{
+				Name:    "orderrefund_out_refund_no",
+				Unique:  false,
+				Columns: []*schema.Column{OrderRefundColumns[9]},
 			},
 		},
 	}
@@ -1116,6 +1173,7 @@ var (
 		OrderAlterTable,
 		OrderArrearageTable,
 		OrderPauseTable,
+		OrderRefundTable,
 		PersonTable,
 		PlanTable,
 		RiderTable,
@@ -1189,6 +1247,10 @@ func init() {
 	OrderPauseTable.ForeignKeys[1].RefTable = RiderTable
 	OrderPauseTable.Annotation = &entsql.Annotation{
 		Table: "order_pause",
+	}
+	OrderRefundTable.ForeignKeys[0].RefTable = OrderTable
+	OrderRefundTable.Annotation = &entsql.Annotation{
+		Table: "order_refund",
 	}
 	PersonTable.Annotation = &entsql.Annotation{
 		Table: "person",

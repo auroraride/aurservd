@@ -2163,6 +2163,47 @@
                 }
             }
         },
+        "/rider/v1/order/refund": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R30007 申请退款",
+                "operationId": "RiderOrderRefund",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.OrderRefundReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/path": {
             "get": {
                 "consumes": [
@@ -3333,6 +3374,19 @@
                 "name": {
                     "description": "骑士卡名称",
                     "type": "string"
+                }
+            }
+        },
+        "model.OrderRefundReq": {
+            "type": "object",
+            "properties": {
+                "deposit": {
+                    "description": "是否退押金, 押金退款条件: 1. 无最近订单; 2. 存在订单且状态为已退款或已退租",
+                    "type": "boolean"
+                },
+                "orderID": {
+                    "description": "订单ID, 和deposit不能同时存在, 也不能同时为空",
+                    "type": "integer"
                 }
             }
         },

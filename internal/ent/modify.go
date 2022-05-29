@@ -149,6 +149,13 @@ func (c *OrderPauseClient) ModifyOne(old *OrderPause, data any) *OrderPauseUpdat
 	return CallModifyMethod[OrderPauseUpdateOne, OrderPause](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for OrderRefund.
+func (c *OrderRefundClient) ModifyOne(old *OrderRefund, data any) *OrderRefundUpdateOne {
+	mutation := newOrderRefundMutation(c.config, OpUpdateOne, withOrderRefund(old))
+	up := &OrderRefundUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return CallModifyMethod[OrderRefundUpdateOne, OrderRefund](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Person.
 func (c *PersonClient) ModifyOne(old *Person, data any) *PersonUpdateOne {
 	mutation := newPersonMutation(c.config, OpUpdateOne, withPerson(old))

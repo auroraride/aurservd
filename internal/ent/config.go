@@ -42,6 +42,7 @@ type hooks struct {
 	OrderAlter     []ent.Hook
 	OrderArrearage []ent.Hook
 	OrderPause     []ent.Hook
+	OrderRefund    []ent.Hook
 	Person         []ent.Hook
 	Plan           []ent.Hook
 	Rider          []ent.Hook

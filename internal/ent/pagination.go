@@ -246,6 +246,23 @@ func (opq *OrderPauseQuery) PaginationResult(req model.PaginationReq) model.Pagi
 	}
 }
 
+// Pagination returns pagination query builder for OrderRefundQuery.
+func (orq *OrderRefundQuery) Pagination(req model.PaginationReq) *OrderRefundQuery {
+	orq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return orq
+}
+
+// PaginationResult returns pagination for OrderRefundQuery.
+func (orq *OrderRefundQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := orq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for PersonQuery.
 func (pq *PersonQuery) Pagination(req model.PaginationReq) *PersonQuery {
 	pq.Offset(req.GetOffset()).Limit(req.GetLimit())

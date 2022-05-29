@@ -191,6 +191,19 @@ func (f OrderPauseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return f(ctx, mv)
 }
 
+// The OrderRefundFunc type is an adapter to allow the use of ordinary
+// function as OrderRefund mutator.
+type OrderRefundFunc func(context.Context, *ent.OrderRefundMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OrderRefundFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.OrderRefundMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrderRefundMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The PersonFunc type is an adapter to allow the use of ordinary
 // function as Person mutator.
 type PersonFunc func(context.Context, *ent.PersonMutation) (ent.Value, error)

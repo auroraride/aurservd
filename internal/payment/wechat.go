@@ -10,6 +10,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/cache"
+    "github.com/auroraride/aurservd/pkg/snag"
     jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "github.com/wechatpay-apiv3/wechatpay-go/core"
@@ -19,10 +20,12 @@ import (
     "github.com/wechatpay-apiv3/wechatpay-go/core/option"
     "github.com/wechatpay-apiv3/wechatpay-go/services/payments"
     "github.com/wechatpay-apiv3/wechatpay-go/services/payments/app"
+    "github.com/wechatpay-apiv3/wechatpay-go/services/refunddomestic"
     "github.com/wechatpay-apiv3/wechatpay-go/utils"
     "io/ioutil"
     "math"
     "net/http"
+    "time"
 )
 
 const (
@@ -67,7 +70,8 @@ func NewWechat() *wechatClient {
 }
 
 // AppPay APP支付
-func (c *wechatClient) AppPay(prepay *model.OrderCache) (string, error) {
+func (c *wechatClient) AppPay(pc *model.PaymentCache) (string, error) {
+    prepay := pc.Plan
     cfg := ar.Config.Payment.Wechat
 
     svc := app.AppApiService{
@@ -111,29 +115,117 @@ type WechatPayResponse struct {
     Message string `json:"message"`
 }
 
-// Notification 微信支付回调
-func (c *wechatClient) Notification(req *http.Request) (*WechatPayResponse, *model.OrderCache) {
-    transaction := new(payments.Transaction)
-    _, err := c.notifyClient.ParseNotifyRequest(context.Background(), req, transaction)
+// Refund 退款
+func (c *wechatClient) Refund(req *model.PaymentRefund) {
+    svc := refunddomestic.RefundsApiService{Client: c.Client}
+    cfg := ar.Config.Payment.Wechat
+    resp, result, err := svc.Create(context.Background(),
+        refunddomestic.CreateRequest{
+            TransactionId: core.String(req.TradeNo),
+            OutRefundNo:   core.String(req.OutRefundNo),
+            Reason:        core.String(req.Reason),
+            NotifyUrl:     core.String(cfg.RefundUrl),
+            Amount: &refunddomestic.AmountReq{
+                Currency: core.String("CNY"),
+                Refund:   core.Int64(int64(math.Round(req.RefundAmount * 100))),
+                Total:    core.Int64(int64(math.Round(req.Total * 100))),
+            },
+        },
+    )
     if err != nil {
-        log.Error(err)
-        return &WechatPayResponse{
-            Code:    WechatPayCodeFail,
-            Message: WechatPayCodeFail,
-        }, nil
+        b, _ := ioutil.ReadAll(result.Response.Body)
+        log.Errorf("微信退款调用失败: %#v, %s", err, string(b))
+        snag.Panic("退款失败")
     }
 
+    req.Request = true
+
+    s := resp.Status
+    if *s == refunddomestic.STATUS_SUCCESS {
+        req.Success = true
+        req.Time = *resp.SuccessTime
+    }
+    return
+}
+
+// Notification 微信支付回调
+func (c *wechatClient) Notification(req *http.Request) *model.PaymentCache {
+    transaction := new(payments.Transaction)
+    nq, err := c.notifyClient.ParseNotifyRequest(context.Background(), req, transaction)
+    if err != nil {
+        log.Error(err)
+        return nil
+    }
+
+    b, _ := jsoniter.MarshalIndent(transaction, "", "  ")
+    nb, _ := jsoniter.MarshalIndent(nq, "", "  ")
+    log.Infof("微信支付回调反馈\n%s\n%s", b, nb)
+
+    pc := new(model.PaymentCache)
     // 从缓存中获取订单数据
     out := transaction.OutTradeNo
-    trade := new(model.OrderCache)
-    err = cache.Get(context.Background(), "ORDER_"+*out).Scan(trade)
+    err = cache.Get(context.Background(), *out).Scan(pc)
+    if err != nil {
+        log.Errorf("从缓存获取订单信息失败: %v", err)
+        return nil
+    }
+
+    state := transaction.TradeState
+    if pc.CacheType != model.PaymentCacheTypePlan || *state != "SUCCESS" {
+        return nil
+    }
+
+    pc.Plan.TradeNo = *(transaction.TransactionId)
+
+    return pc
+}
+
+type WechatRefundTransaction struct {
+    Mchid               string    `json:"mchid"`
+    TransactionId       string    `json:"transaction_id"`
+    OutTradeNo          string    `json:"out_trade_no"`
+    RefundId            string    `json:"refund_id"`
+    OutRefundNo         string    `json:"out_refund_no"`
+    RefundStatus        string    `json:"refund_status"`
+    SuccessTime         time.Time `json:"success_time"`
+    UserReceivedAccount string    `json:"user_received_account"`
+    Amount              struct {
+        Total       int `json:"total"`
+        Refund      int `json:"refund"`
+        PayerTotal  int `json:"payer_total"`
+        PayerRefund int `json:"payer_refund"`
+    } `json:"amount"`
+}
+
+// RefundNotification 微信退款回调
+func (c *wechatClient) RefundNotification(req *http.Request) *model.PaymentCache {
+    transaction := new(WechatRefundTransaction)
+    nq, err := c.notifyClient.ParseNotifyRequest(context.Background(), req, transaction)
     if err != nil {
         log.Error(err)
+        return nil
     }
-    trade.TradeNo = *(transaction.TransactionId)
 
-    return &WechatPayResponse{
-        Code:    WechatPayCodeSuccess,
-        Message: WechatPayCodeSuccess,
-    }, trade
+    b, _ := jsoniter.MarshalIndent(transaction, "", "  ")
+    nb, _ := jsoniter.MarshalIndent(nq, "", "  ")
+    log.Infof("微信退款回调反馈\n%s\n%s", b, nb)
+
+    pc := new(model.PaymentCache)
+
+    // 从缓存中获取订单数据
+    err = cache.Get(context.Background(), transaction.OutRefundNo).Scan(pc)
+    if err != nil {
+        log.Errorf("从缓存获取订单信息失败: %v", err)
+        return nil
+    }
+
+    if transaction.RefundStatus != "SUCCESS" {
+        return nil
+    }
+
+    pc.Refund.Success = true
+    pc.Refund.Request = true
+    pc.Refund.Time = transaction.SuccessTime
+
+    return pc
 }

@@ -19,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderalter"
 	"github.com/auroraride/aurservd/internal/ent/orderarrearage"
 	"github.com/auroraride/aurservd/internal/ent/orderpause"
+	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -304,6 +305,10 @@ func init() {
 	orderDescStatus := orderFields[3].Descriptor()
 	// order.DefaultStatus holds the default value on creation for the status field.
 	order.DefaultStatus = orderDescStatus.Default.(uint8)
+	// orderDescTotal is the schema descriptor for total field.
+	orderDescTotal := orderFields[9].Descriptor()
+	// order.DefaultTotal holds the default value on creation for the total field.
+	order.DefaultTotal = orderDescTotal.Default.(float64)
 	orderalterMixin := schema.OrderAlter{}.Mixin()
 	orderalterMixinHooks2 := orderalterMixin[2].Hooks()
 	orderalter.Hooks[0] = orderalterMixinHooks2[0]
@@ -355,6 +360,23 @@ func init() {
 	orderpause.DefaultUpdatedAt = orderpauseDescUpdatedAt.Default.(func() time.Time)
 	// orderpause.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	orderpause.UpdateDefaultUpdatedAt = orderpauseDescUpdatedAt.UpdateDefault.(func() time.Time)
+	orderrefundMixin := schema.OrderRefund{}.Mixin()
+	orderrefundMixinHooks2 := orderrefundMixin[2].Hooks()
+	orderrefund.Hooks[0] = orderrefundMixinHooks2[0]
+	orderrefundMixinFields0 := orderrefundMixin[0].Fields()
+	_ = orderrefundMixinFields0
+	orderrefundFields := schema.OrderRefund{}.Fields()
+	_ = orderrefundFields
+	// orderrefundDescCreatedAt is the schema descriptor for created_at field.
+	orderrefundDescCreatedAt := orderrefundMixinFields0[0].Descriptor()
+	// orderrefund.DefaultCreatedAt holds the default value on creation for the created_at field.
+	orderrefund.DefaultCreatedAt = orderrefundDescCreatedAt.Default.(func() time.Time)
+	// orderrefundDescUpdatedAt is the schema descriptor for updated_at field.
+	orderrefundDescUpdatedAt := orderrefundMixinFields0[1].Descriptor()
+	// orderrefund.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	orderrefund.DefaultUpdatedAt = orderrefundDescUpdatedAt.Default.(func() time.Time)
+	// orderrefund.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	orderrefund.UpdateDefaultUpdatedAt = orderrefundDescUpdatedAt.UpdateDefault.(func() time.Time)
 	personMixin := schema.Person{}.Mixin()
 	personMixinHooks2 := personMixin[2].Hooks()
 	person.Hooks[0] = personMixinHooks2[0]

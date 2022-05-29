@@ -14,7 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/contract"
     "github.com/auroraride/aurservd/internal/esign"
     "github.com/auroraride/aurservd/pkg/snag"
-    "github.com/sony/sonyflake"
+    "github.com/auroraride/aurservd/pkg/tools"
 )
 
 const (
@@ -54,9 +54,8 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
         return model.ContractSignRes{Effective: true}
     }
 
-    sid, _ := sonyflake.NewSonyflake(sonyflake.Settings{}).NextID()
     var (
-        sn           = fmt.Sprintf("%d", sid)
+        sn           = tools.NewUnique().NewSonyflakeID()
         cfg          = s.esign.Config
         orm          = ar.Ent
         person       = u.Edges.Person

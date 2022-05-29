@@ -184,6 +184,13 @@ func Amount(v float64) predicate.Order {
 	})
 }
 
+// Total applies equality check predicate on the "total" field. It's identical to TotalEQ.
+func Total(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTotal), v))
+	})
+}
+
 // ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
 func ParentID(v uint64) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
@@ -1298,6 +1305,82 @@ func AmountLTE(v float64) predicate.Order {
 	})
 }
 
+// TotalEQ applies the EQ predicate on the "total" field.
+func TotalEQ(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTotal), v))
+	})
+}
+
+// TotalNEQ applies the NEQ predicate on the "total" field.
+func TotalNEQ(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTotal), v))
+	})
+}
+
+// TotalIn applies the In predicate on the "total" field.
+func TotalIn(vs ...float64) predicate.Order {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldTotal), v...))
+	})
+}
+
+// TotalNotIn applies the NotIn predicate on the "total" field.
+func TotalNotIn(vs ...float64) predicate.Order {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldTotal), v...))
+	})
+}
+
+// TotalGT applies the GT predicate on the "total" field.
+func TotalGT(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldTotal), v))
+	})
+}
+
+// TotalGTE applies the GTE predicate on the "total" field.
+func TotalGTE(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldTotal), v))
+	})
+}
+
+// TotalLT applies the LT predicate on the "total" field.
+func TotalLT(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldTotal), v))
+	})
+}
+
+// TotalLTE applies the LTE predicate on the "total" field.
+func TotalLTE(v float64) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldTotal), v))
+	})
+}
+
 // PlanDetailIsNil applies the IsNil predicate on the "plan_detail" field.
 func PlanDetailIsNil() predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
@@ -1309,20 +1392,6 @@ func PlanDetailIsNil() predicate.Order {
 func PlanDetailNotNil() predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldPlanDetail)))
-	})
-}
-
-// RefundIsNil applies the IsNil predicate on the "refund" field.
-func RefundIsNil() predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldRefund)))
-	})
-}
-
-// RefundNotNil applies the NotNil predicate on the "refund" field.
-func RefundNotNil() predicate.Order {
-	return predicate.Order(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldRefund)))
 	})
 }
 
@@ -1991,6 +2060,34 @@ func HasAltersWith(preds ...predicate.OrderAlter) predicate.Order {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(AltersInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, AltersTable, AltersColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasRefunds applies the HasEdge predicate on the "refunds" edge.
+func HasRefunds() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(RefundsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, RefundsTable, RefundsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRefundsWith applies the HasEdge predicate on the "refunds" edge with a given conditions (other predicates).
+func HasRefundsWith(preds ...predicate.OrderRefund) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(RefundsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, RefundsTable, RefundsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

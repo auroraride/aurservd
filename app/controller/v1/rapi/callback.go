@@ -7,6 +7,7 @@ package rapi
 
 import (
     "github.com/auroraride/aurservd/app/service"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/payment"
     "github.com/labstack/echo/v4"
     "net/http"
@@ -35,13 +36,21 @@ func (*callback) ESignCallback(c echo.Context) error {
 
 // AlipayCallback 支付宝回调
 func (*callback) AlipayCallback(c echo.Context) (err error) {
-    service.NewOrder().OrderPaid(payment.NewAlipay().Notification(c.Request(), c.Response()))
-    return nil
+    res := payment.NewAlipay().Notification(c.Request())
+    service.NewOrder().DoPayment(res)
+    return c.String(http.StatusOK, "success")
 }
 
-// WechatpayCallback 微信回调
-func (*callback) WechatpayCallback(c echo.Context) (err error) {
-    res, trade := payment.NewWechat().Notification(c.Request())
-    go service.NewOrder().OrderPaid(trade)
-    return c.JSON(http.StatusOK, res)
+// WechatPayCallback 微信回调
+func (*callback) WechatPayCallback(c echo.Context) (err error) {
+    res := payment.NewWechat().Notification(c.Request())
+    service.NewOrder().DoPayment(res)
+    return c.JSON(http.StatusOK, ar.Map{"code": "SUCCESS", "message": "成功"})
+}
+
+// WechatRefundCallback 微信退款回调
+func (*callback) WechatRefundCallback(c echo.Context) (err error) {
+    res := payment.NewWechat().RefundNotification(c.Request())
+    service.NewOrder().DoPayment(res)
+    return c.JSON(http.StatusOK, ar.Map{"code": "SUCCESS", "message": "成功"})
 }

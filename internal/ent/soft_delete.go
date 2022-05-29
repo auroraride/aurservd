@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderalter"
 	"github.com/auroraride/aurservd/internal/ent/orderarrearage"
 	"github.com/auroraride/aurservd/internal/ent/orderpause"
+	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -579,6 +580,46 @@ func (c *OrderPauseClient) GetNotDeleted(ctx context.Context, id uint64) (*Order
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *OrderPauseClient) GetNotDeletedX(ctx context.Context, id uint64) *OrderPause {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for OrderRefund.
+func (c *OrderRefundClient) SoftDelete() *OrderRefundUpdate {
+	mutation := newOrderRefundMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &OrderRefundUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *OrderRefundClient) SoftDeleteOne(or *OrderRefund) *OrderRefundUpdateOne {
+	mutation := newOrderRefundMutation(c.config, OpUpdateOne, withOrderRefund(or))
+	mutation.SetDeletedAt(time.Now())
+	return &OrderRefundUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *OrderRefundClient) SoftDeleteOneID(id uint64) *OrderRefundUpdateOne {
+	mutation := newOrderRefundMutation(c.config, OpUpdateOne, withOrderRefundID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &OrderRefundUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for OrderRefund.
+func (c *OrderRefundClient) QueryNotDeleted() *OrderRefundQuery {
+	return c.Query().Where(orderrefund.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a OrderRefund not deleted entity by its id.
+func (c *OrderRefundClient) GetNotDeleted(ctx context.Context, id uint64) (*OrderRefund, error) {
+	return c.Query().Where(orderrefund.ID(id), orderrefund.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *OrderRefundClient) GetNotDeletedX(ctx context.Context, id uint64) *OrderRefund {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

@@ -164,6 +164,7 @@ type config struct {
             MchCertificateSerialNumber string
             MchAPIv3Key                string
             NotifyUrl                  string
+            RefundUrl                  string
         }
         Alipay struct {
             Appid         string

@@ -33,3 +33,19 @@ func (*order) Create(c echo.Context) (err error) {
         service.NewOrderWithRider(ctx.Rider).Create(req),
     )
 }
+
+// Refund
+// @ID           RiderOrderRefund
+// @Router       /rider/v1/order/refund [POST]
+// @Summary      R30007 申请退款
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        body  body  model.OrderRefundReq  true  "desc"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*order) Refund(c echo.Context) (err error) {
+    ctx, req := app.RiderContextAndBinding[model.OrderRefundReq](c)
+    service.NewOrderWithRider(ctx.Rider).Refund(ctx.Rider.ID, req)
+    return ctx.SendResponse()
+}

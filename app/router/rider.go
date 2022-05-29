@@ -14,10 +14,11 @@ import (
 func loadRideRoutes() {
     g := root.Group("rider/v1")
 
-    g.Any("/callback", rapi.Callback.RiderCallback, middleware.BodyDump())                  // 骑手api回调中心
-    g.Any("/callback/esign", rapi.Callback.ESignCallback, middleware.BodyDumpRaw())         // esign回调中心
-    g.Any("/callback/alipay", rapi.Callback.AlipayCallback, middleware.BodyDumpRaw())       // 骑手支付宝回调中心
-    g.Any("/callback/wechatpay", rapi.Callback.WechatpayCallback, middleware.BodyDumpRaw()) // 骑手微信支付回调中心
+    g.Any("/callback", rapi.Callback.RiderCallback, middleware.BodyDump())                            // 骑手api回调中心
+    g.Any("/callback/esign", rapi.Callback.ESignCallback, middleware.BodyDumpRaw())                   // esign回调中心
+    g.Any("/callback/alipay", rapi.Callback.AlipayCallback, middleware.BodyDumpRaw())                 // 骑手支付宝回调中心
+    g.Any("/callback/wechatpay", rapi.Callback.WechatPayCallback, middleware.BodyDumpRaw())           // 骑手微信支付回调中心
+    g.Any("/callback/wechatpay/refund", rapi.Callback.WechatRefundCallback, middleware.BodyDumpRaw()) // 骑手微信退款回调中心
 
     // 引入骑手api需要的中间件
     g.Use(middleware.DeviceMiddleware(), middleware.RiderMiddleware())
@@ -54,6 +55,7 @@ func loadRideRoutes() {
     g.GET("/battery/voltage", rapi.Battery.ListVoltage)
     g.GET("/plan", rapi.Plan.List)
     g.POST("/order", rapi.Order.Create)
+    g.POST("/order/refund", rapi.Order.Refund) // 退款
 
     // 电柜
     cabinet := g.Group("/cabinet")

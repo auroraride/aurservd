@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderalter"
 	"github.com/auroraride/aurservd/internal/ent/orderarrearage"
 	"github.com/auroraride/aurservd/internal/ent/orderpause"
+	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -32,7 +33,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 19)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 20)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   batterymodel.Table,
@@ -314,8 +315,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			order.FieldOutTradeNo:   {Type: field.TypeString, Column: order.FieldOutTradeNo},
 			order.FieldTradeNo:      {Type: field.TypeString, Column: order.FieldTradeNo},
 			order.FieldAmount:       {Type: field.TypeFloat64, Column: order.FieldAmount},
+			order.FieldTotal:        {Type: field.TypeFloat64, Column: order.FieldTotal},
 			order.FieldPlanDetail:   {Type: field.TypeJSON, Column: order.FieldPlanDetail},
-			order.FieldRefund:       {Type: field.TypeJSON, Column: order.FieldRefund},
 			order.FieldParentID:     {Type: field.TypeUint64, Column: order.FieldParentID},
 			order.FieldStartAt:      {Type: field.TypeTime, Column: order.FieldStartAt},
 			order.FieldEndAt:        {Type: field.TypeTime, Column: order.FieldEndAt},
@@ -393,6 +394,31 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[14] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
+			Table:   orderrefund.Table,
+			Columns: orderrefund.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: orderrefund.FieldID,
+			},
+		},
+		Type: "OrderRefund",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			orderrefund.FieldCreatedAt:    {Type: field.TypeTime, Column: orderrefund.FieldCreatedAt},
+			orderrefund.FieldUpdatedAt:    {Type: field.TypeTime, Column: orderrefund.FieldUpdatedAt},
+			orderrefund.FieldDeletedAt:    {Type: field.TypeTime, Column: orderrefund.FieldDeletedAt},
+			orderrefund.FieldCreator:      {Type: field.TypeJSON, Column: orderrefund.FieldCreator},
+			orderrefund.FieldLastModifier: {Type: field.TypeJSON, Column: orderrefund.FieldLastModifier},
+			orderrefund.FieldRemark:       {Type: field.TypeString, Column: orderrefund.FieldRemark},
+			orderrefund.FieldOrderID:      {Type: field.TypeUint64, Column: orderrefund.FieldOrderID},
+			orderrefund.FieldStatus:       {Type: field.TypeUint8, Column: orderrefund.FieldStatus},
+			orderrefund.FieldAmount:       {Type: field.TypeFloat64, Column: orderrefund.FieldAmount},
+			orderrefund.FieldOutRefundNo:  {Type: field.TypeString, Column: orderrefund.FieldOutRefundNo},
+			orderrefund.FieldReason:       {Type: field.TypeString, Column: orderrefund.FieldReason},
+			orderrefund.FieldRefundAt:     {Type: field.TypeTime, Column: orderrefund.FieldRefundAt},
+		},
+	}
+	graph.Nodes[15] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
 			Table:   person.Table,
 			Columns: person.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -420,7 +446,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			person.FieldAuthAt:         {Type: field.TypeTime, Column: person.FieldAuthAt},
 		},
 	}
-	graph.Nodes[15] = &sqlgraph.Node{
+	graph.Nodes[16] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   plan.Table,
 			Columns: plan.Columns,
@@ -448,7 +474,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			plan.FieldDesc:         {Type: field.TypeString, Column: plan.FieldDesc},
 		},
 	}
-	graph.Nodes[16] = &sqlgraph.Node{
+	graph.Nodes[17] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   rider.Table,
 			Columns: rider.Columns,
@@ -480,7 +506,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldBlocked:        {Type: field.TypeBool, Column: rider.FieldBlocked},
 		},
 	}
-	graph.Nodes[17] = &sqlgraph.Node{
+	graph.Nodes[18] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   setting.Table,
 			Columns: setting.Columns,
@@ -501,7 +527,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			setting.FieldContent:      {Type: field.TypeString, Column: setting.FieldContent},
 		},
 	}
-	graph.Nodes[18] = &sqlgraph.Node{
+	graph.Nodes[19] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   store.Table,
 			Columns: store.Columns,
@@ -921,6 +947,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"OrderAlter",
 	)
 	graph.MustAddE(
+		"refunds",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.RefundsTable,
+			Columns: []string{order.RefundsColumn},
+			Bidi:    false,
+		},
+		"Order",
+		"OrderRefund",
+	)
+	graph.MustAddE(
 		"rider",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -990,6 +1028,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"OrderPause",
+		"Order",
+	)
+	graph.MustAddE(
+		"order",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   orderrefund.OrderTable,
+			Columns: []string{orderrefund.OrderColumn},
+			Bidi:    false,
+		},
+		"OrderRefund",
 		"Order",
 	)
 	graph.MustAddE(
@@ -2633,14 +2683,14 @@ func (f *OrderFilter) WhereAmount(p entql.Float64P) {
 	f.Where(p.Field(order.FieldAmount))
 }
 
+// WhereTotal applies the entql float64 predicate on the total field.
+func (f *OrderFilter) WhereTotal(p entql.Float64P) {
+	f.Where(p.Field(order.FieldTotal))
+}
+
 // WherePlanDetail applies the entql json.RawMessage predicate on the plan_detail field.
 func (f *OrderFilter) WherePlanDetail(p entql.BytesP) {
 	f.Where(p.Field(order.FieldPlanDetail))
-}
-
-// WhereRefund applies the entql json.RawMessage predicate on the refund field.
-func (f *OrderFilter) WhereRefund(p entql.BytesP) {
-	f.Where(p.Field(order.FieldRefund))
 }
 
 // WhereParentID applies the entql uint64 predicate on the parent_id field.
@@ -2788,6 +2838,20 @@ func (f *OrderFilter) WhereHasAlters() {
 // WhereHasAltersWith applies a predicate to check if query has an edge alters with a given conditions (other predicates).
 func (f *OrderFilter) WhereHasAltersWith(preds ...predicate.OrderAlter) {
 	f.Where(entql.HasEdgeWith("alters", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRefunds applies a predicate to check if query has an edge refunds.
+func (f *OrderFilter) WhereHasRefunds() {
+	f.Where(entql.HasEdge("refunds"))
+}
+
+// WhereHasRefundsWith applies a predicate to check if query has an edge refunds with a given conditions (other predicates).
+func (f *OrderFilter) WhereHasRefundsWith(preds ...predicate.OrderRefund) {
+	f.Where(entql.HasEdgeWith("refunds", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -3144,6 +3208,120 @@ func (f *OrderPauseFilter) WhereHasOrderWith(preds ...predicate.Order) {
 }
 
 // addPredicate implements the predicateAdder interface.
+func (orq *OrderRefundQuery) addPredicate(pred func(s *sql.Selector)) {
+	orq.predicates = append(orq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the OrderRefundQuery builder.
+func (orq *OrderRefundQuery) Filter() *OrderRefundFilter {
+	return &OrderRefundFilter{orq.config, orq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *OrderRefundMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the OrderRefundMutation builder.
+func (m *OrderRefundMutation) Filter() *OrderRefundFilter {
+	return &OrderRefundFilter{m.config, m}
+}
+
+// OrderRefundFilter provides a generic filtering capability at runtime for OrderRefundQuery.
+type OrderRefundFilter struct {
+	config
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *OrderRefundFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[14].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *OrderRefundFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(orderrefund.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *OrderRefundFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(orderrefund.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *OrderRefundFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(orderrefund.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *OrderRefundFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(orderrefund.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *OrderRefundFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(orderrefund.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *OrderRefundFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(orderrefund.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *OrderRefundFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(orderrefund.FieldRemark))
+}
+
+// WhereOrderID applies the entql uint64 predicate on the order_id field.
+func (f *OrderRefundFilter) WhereOrderID(p entql.Uint64P) {
+	f.Where(p.Field(orderrefund.FieldOrderID))
+}
+
+// WhereStatus applies the entql uint8 predicate on the status field.
+func (f *OrderRefundFilter) WhereStatus(p entql.Uint8P) {
+	f.Where(p.Field(orderrefund.FieldStatus))
+}
+
+// WhereAmount applies the entql float64 predicate on the amount field.
+func (f *OrderRefundFilter) WhereAmount(p entql.Float64P) {
+	f.Where(p.Field(orderrefund.FieldAmount))
+}
+
+// WhereOutRefundNo applies the entql string predicate on the out_refund_no field.
+func (f *OrderRefundFilter) WhereOutRefundNo(p entql.StringP) {
+	f.Where(p.Field(orderrefund.FieldOutRefundNo))
+}
+
+// WhereReason applies the entql string predicate on the reason field.
+func (f *OrderRefundFilter) WhereReason(p entql.StringP) {
+	f.Where(p.Field(orderrefund.FieldReason))
+}
+
+// WhereRefundAt applies the entql time.Time predicate on the refund_at field.
+func (f *OrderRefundFilter) WhereRefundAt(p entql.TimeP) {
+	f.Where(p.Field(orderrefund.FieldRefundAt))
+}
+
+// WhereHasOrder applies a predicate to check if query has an edge order.
+func (f *OrderRefundFilter) WhereHasOrder() {
+	f.Where(entql.HasEdge("order"))
+}
+
+// WhereHasOrderWith applies a predicate to check if query has an edge order with a given conditions (other predicates).
+func (f *OrderRefundFilter) WhereHasOrderWith(preds ...predicate.Order) {
+	f.Where(entql.HasEdgeWith("order", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (pq *PersonQuery) addPredicate(pred func(s *sql.Selector)) {
 	pq.predicates = append(pq.predicates, pred)
 }
@@ -3172,7 +3350,7 @@ type PersonFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PersonFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[14].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[15].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -3306,7 +3484,7 @@ type PlanFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *PlanFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[15].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[16].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -3463,7 +3641,7 @@ type RiderFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RiderFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[16].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[17].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -3710,7 +3888,7 @@ type SettingFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SettingFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[17].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[18].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -3790,7 +3968,7 @@ type StoreFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *StoreFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[18].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[19].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

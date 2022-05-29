@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderalter"
 	"github.com/auroraride/aurservd/internal/ent/orderarrearage"
 	"github.com/auroraride/aurservd/internal/ent/orderpause"
+	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 )
@@ -168,6 +169,20 @@ func (oc *OrderCreate) SetAmount(f float64) *OrderCreate {
 	return oc
 }
 
+// SetTotal sets the "total" field.
+func (oc *OrderCreate) SetTotal(f float64) *OrderCreate {
+	oc.mutation.SetTotal(f)
+	return oc
+}
+
+// SetNillableTotal sets the "total" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableTotal(f *float64) *OrderCreate {
+	if f != nil {
+		oc.SetTotal(*f)
+	}
+	return oc
+}
+
 // SetPlanDetail sets the "plan_detail" field.
 func (oc *OrderCreate) SetPlanDetail(mi model.PlanItem) *OrderCreate {
 	oc.mutation.SetPlanDetail(mi)
@@ -178,20 +193,6 @@ func (oc *OrderCreate) SetPlanDetail(mi model.PlanItem) *OrderCreate {
 func (oc *OrderCreate) SetNillablePlanDetail(mi *model.PlanItem) *OrderCreate {
 	if mi != nil {
 		oc.SetPlanDetail(*mi)
-	}
-	return oc
-}
-
-// SetRefund sets the "refund" field.
-func (oc *OrderCreate) SetRefund(mr model.OrderRefund) *OrderCreate {
-	oc.mutation.SetRefund(mr)
-	return oc
-}
-
-// SetNillableRefund sets the "refund" field if the given value is not nil.
-func (oc *OrderCreate) SetNillableRefund(mr *model.OrderRefund) *OrderCreate {
-	if mr != nil {
-		oc.SetRefund(*mr)
 	}
 	return oc
 }
@@ -371,6 +372,21 @@ func (oc *OrderCreate) AddAlters(o ...*OrderAlter) *OrderCreate {
 	return oc.AddAlterIDs(ids...)
 }
 
+// AddRefundIDs adds the "refunds" edge to the OrderRefund entity by IDs.
+func (oc *OrderCreate) AddRefundIDs(ids ...uint64) *OrderCreate {
+	oc.mutation.AddRefundIDs(ids...)
+	return oc
+}
+
+// AddRefunds adds the "refunds" edges to the OrderRefund entity.
+func (oc *OrderCreate) AddRefunds(o ...*OrderRefund) *OrderCreate {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return oc.AddRefundIDs(ids...)
+}
+
 // Mutation returns the OrderMutation object of the builder.
 func (oc *OrderCreate) Mutation() *OrderMutation {
 	return oc.mutation
@@ -468,6 +484,10 @@ func (oc *OrderCreate) defaults() error {
 		v := order.DefaultStatus
 		oc.mutation.SetStatus(v)
 	}
+	if _, ok := oc.mutation.Total(); !ok {
+		v := order.DefaultTotal
+		oc.mutation.SetTotal(v)
+	}
 	return nil
 }
 
@@ -502,6 +522,9 @@ func (oc *OrderCreate) check() error {
 	}
 	if _, ok := oc.mutation.Amount(); !ok {
 		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "Order.amount"`)}
+	}
+	if _, ok := oc.mutation.Total(); !ok {
+		return &ValidationError{Name: "total", err: errors.New(`ent: missing required field "Order.total"`)}
 	}
 	if _, ok := oc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Order.rider"`)}
@@ -639,6 +662,14 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		})
 		_node.Amount = value
 	}
+	if value, ok := oc.mutation.Total(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: order.FieldTotal,
+		})
+		_node.Total = value
+	}
 	if value, ok := oc.mutation.PlanDetail(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
@@ -646,14 +677,6 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 			Column: order.FieldPlanDetail,
 		})
 		_node.PlanDetail = value
-	}
-	if value, ok := oc.mutation.Refund(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: order.FieldRefund,
-		})
-		_node.Refund = value
 	}
 	if value, ok := oc.mutation.StartAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -677,7 +700,7 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: order.FieldPausedAt,
 		})
-		_node.PausedAt = value
+		_node.PausedAt = &value
 	}
 	if value, ok := oc.mutation.Days(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -854,6 +877,25 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: orderalter.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := oc.mutation.RefundsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.RefundsTable,
+			Columns: []string{order.RefundsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: orderrefund.FieldID,
 				},
 			},
 		}
@@ -1150,6 +1192,24 @@ func (u *OrderUpsert) AddAmount(v float64) *OrderUpsert {
 	return u
 }
 
+// SetTotal sets the "total" field.
+func (u *OrderUpsert) SetTotal(v float64) *OrderUpsert {
+	u.Set(order.FieldTotal, v)
+	return u
+}
+
+// UpdateTotal sets the "total" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateTotal() *OrderUpsert {
+	u.SetExcluded(order.FieldTotal)
+	return u
+}
+
+// AddTotal adds v to the "total" field.
+func (u *OrderUpsert) AddTotal(v float64) *OrderUpsert {
+	u.Add(order.FieldTotal, v)
+	return u
+}
+
 // SetPlanDetail sets the "plan_detail" field.
 func (u *OrderUpsert) SetPlanDetail(v model.PlanItem) *OrderUpsert {
 	u.Set(order.FieldPlanDetail, v)
@@ -1165,24 +1225,6 @@ func (u *OrderUpsert) UpdatePlanDetail() *OrderUpsert {
 // ClearPlanDetail clears the value of the "plan_detail" field.
 func (u *OrderUpsert) ClearPlanDetail() *OrderUpsert {
 	u.SetNull(order.FieldPlanDetail)
-	return u
-}
-
-// SetRefund sets the "refund" field.
-func (u *OrderUpsert) SetRefund(v model.OrderRefund) *OrderUpsert {
-	u.Set(order.FieldRefund, v)
-	return u
-}
-
-// UpdateRefund sets the "refund" field to the value that was provided on create.
-func (u *OrderUpsert) UpdateRefund() *OrderUpsert {
-	u.SetExcluded(order.FieldRefund)
-	return u
-}
-
-// ClearRefund clears the value of the "refund" field.
-func (u *OrderUpsert) ClearRefund() *OrderUpsert {
-	u.SetNull(order.FieldRefund)
 	return u
 }
 
@@ -1320,6 +1362,9 @@ func (u *OrderUpsertOne) UpdateNewValues() *OrderUpsertOne {
 		}
 		if _, exists := u.create.mutation.Amount(); exists {
 			s.SetIgnore(order.FieldAmount)
+		}
+		if _, exists := u.create.mutation.Total(); exists {
+			s.SetIgnore(order.FieldTotal)
 		}
 	}))
 	return u
@@ -1626,6 +1671,27 @@ func (u *OrderUpsertOne) UpdateAmount() *OrderUpsertOne {
 	})
 }
 
+// SetTotal sets the "total" field.
+func (u *OrderUpsertOne) SetTotal(v float64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetTotal(v)
+	})
+}
+
+// AddTotal adds v to the "total" field.
+func (u *OrderUpsertOne) AddTotal(v float64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.AddTotal(v)
+	})
+}
+
+// UpdateTotal sets the "total" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateTotal() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateTotal()
+	})
+}
+
 // SetPlanDetail sets the "plan_detail" field.
 func (u *OrderUpsertOne) SetPlanDetail(v model.PlanItem) *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
@@ -1644,27 +1710,6 @@ func (u *OrderUpsertOne) UpdatePlanDetail() *OrderUpsertOne {
 func (u *OrderUpsertOne) ClearPlanDetail() *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearPlanDetail()
-	})
-}
-
-// SetRefund sets the "refund" field.
-func (u *OrderUpsertOne) SetRefund(v model.OrderRefund) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetRefund(v)
-	})
-}
-
-// UpdateRefund sets the "refund" field to the value that was provided on create.
-func (u *OrderUpsertOne) UpdateRefund() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateRefund()
-	})
-}
-
-// ClearRefund clears the value of the "refund" field.
-func (u *OrderUpsertOne) ClearRefund() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearRefund()
 	})
 }
 
@@ -1983,6 +2028,9 @@ func (u *OrderUpsertBulk) UpdateNewValues() *OrderUpsertBulk {
 			if _, exists := b.mutation.Amount(); exists {
 				s.SetIgnore(order.FieldAmount)
 			}
+			if _, exists := b.mutation.Total(); exists {
+				s.SetIgnore(order.FieldTotal)
+			}
 		}
 	}))
 	return u
@@ -2289,6 +2337,27 @@ func (u *OrderUpsertBulk) UpdateAmount() *OrderUpsertBulk {
 	})
 }
 
+// SetTotal sets the "total" field.
+func (u *OrderUpsertBulk) SetTotal(v float64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetTotal(v)
+	})
+}
+
+// AddTotal adds v to the "total" field.
+func (u *OrderUpsertBulk) AddTotal(v float64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.AddTotal(v)
+	})
+}
+
+// UpdateTotal sets the "total" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateTotal() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateTotal()
+	})
+}
+
 // SetPlanDetail sets the "plan_detail" field.
 func (u *OrderUpsertBulk) SetPlanDetail(v model.PlanItem) *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
@@ -2307,27 +2376,6 @@ func (u *OrderUpsertBulk) UpdatePlanDetail() *OrderUpsertBulk {
 func (u *OrderUpsertBulk) ClearPlanDetail() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearPlanDetail()
-	})
-}
-
-// SetRefund sets the "refund" field.
-func (u *OrderUpsertBulk) SetRefund(v model.OrderRefund) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetRefund(v)
-	})
-}
-
-// UpdateRefund sets the "refund" field to the value that was provided on create.
-func (u *OrderUpsertBulk) UpdateRefund() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateRefund()
-	})
-}
-
-// ClearRefund clears the value of the "refund" field.
-func (u *OrderUpsertBulk) ClearRefund() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearRefund()
 	})
 }
 

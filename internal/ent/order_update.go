@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/orderalter"
 	"github.com/auroraride/aurservd/internal/ent/orderarrearage"
 	"github.com/auroraride/aurservd/internal/ent/orderpause"
+	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -164,26 +165,6 @@ func (ou *OrderUpdate) SetNillablePlanDetail(mi *model.PlanItem) *OrderUpdate {
 // ClearPlanDetail clears the value of the "plan_detail" field.
 func (ou *OrderUpdate) ClearPlanDetail() *OrderUpdate {
 	ou.mutation.ClearPlanDetail()
-	return ou
-}
-
-// SetRefund sets the "refund" field.
-func (ou *OrderUpdate) SetRefund(mr model.OrderRefund) *OrderUpdate {
-	ou.mutation.SetRefund(mr)
-	return ou
-}
-
-// SetNillableRefund sets the "refund" field if the given value is not nil.
-func (ou *OrderUpdate) SetNillableRefund(mr *model.OrderRefund) *OrderUpdate {
-	if mr != nil {
-		ou.SetRefund(*mr)
-	}
-	return ou
-}
-
-// ClearRefund clears the value of the "refund" field.
-func (ou *OrderUpdate) ClearRefund() *OrderUpdate {
-	ou.mutation.ClearRefund()
 	return ou
 }
 
@@ -393,6 +374,21 @@ func (ou *OrderUpdate) AddAlters(o ...*OrderAlter) *OrderUpdate {
 	return ou.AddAlterIDs(ids...)
 }
 
+// AddRefundIDs adds the "refunds" edge to the OrderRefund entity by IDs.
+func (ou *OrderUpdate) AddRefundIDs(ids ...uint64) *OrderUpdate {
+	ou.mutation.AddRefundIDs(ids...)
+	return ou
+}
+
+// AddRefunds adds the "refunds" edges to the OrderRefund entity.
+func (ou *OrderUpdate) AddRefunds(o ...*OrderRefund) *OrderUpdate {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return ou.AddRefundIDs(ids...)
+}
+
 // Mutation returns the OrderMutation object of the builder.
 func (ou *OrderUpdate) Mutation() *OrderMutation {
 	return ou.mutation
@@ -510,6 +506,27 @@ func (ou *OrderUpdate) RemoveAlters(o ...*OrderAlter) *OrderUpdate {
 		ids[i] = o[i].ID
 	}
 	return ou.RemoveAlterIDs(ids...)
+}
+
+// ClearRefunds clears all "refunds" edges to the OrderRefund entity.
+func (ou *OrderUpdate) ClearRefunds() *OrderUpdate {
+	ou.mutation.ClearRefunds()
+	return ou
+}
+
+// RemoveRefundIDs removes the "refunds" edge to OrderRefund entities by IDs.
+func (ou *OrderUpdate) RemoveRefundIDs(ids ...uint64) *OrderUpdate {
+	ou.mutation.RemoveRefundIDs(ids...)
+	return ou
+}
+
+// RemoveRefunds removes "refunds" edges to OrderRefund entities.
+func (ou *OrderUpdate) RemoveRefunds(o ...*OrderRefund) *OrderUpdate {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return ou.RemoveRefundIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -693,19 +710,6 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: order.FieldPlanDetail,
-		})
-	}
-	if value, ok := ou.mutation.Refund(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: order.FieldRefund,
-		})
-	}
-	if ou.mutation.RefundCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: order.FieldRefund,
 		})
 	}
 	if value, ok := ou.mutation.StartAt(); ok {
@@ -1158,6 +1162,60 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ou.mutation.RefundsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.RefundsTable,
+			Columns: []string{order.RefundsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: orderrefund.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.RemovedRefundsIDs(); len(nodes) > 0 && !ou.mutation.RefundsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.RefundsTable,
+			Columns: []string{order.RefundsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: orderrefund.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.RefundsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.RefundsTable,
+			Columns: []string{order.RefundsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: orderrefund.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ou.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{order.Label}
@@ -1305,26 +1363,6 @@ func (ouo *OrderUpdateOne) SetNillablePlanDetail(mi *model.PlanItem) *OrderUpdat
 // ClearPlanDetail clears the value of the "plan_detail" field.
 func (ouo *OrderUpdateOne) ClearPlanDetail() *OrderUpdateOne {
 	ouo.mutation.ClearPlanDetail()
-	return ouo
-}
-
-// SetRefund sets the "refund" field.
-func (ouo *OrderUpdateOne) SetRefund(mr model.OrderRefund) *OrderUpdateOne {
-	ouo.mutation.SetRefund(mr)
-	return ouo
-}
-
-// SetNillableRefund sets the "refund" field if the given value is not nil.
-func (ouo *OrderUpdateOne) SetNillableRefund(mr *model.OrderRefund) *OrderUpdateOne {
-	if mr != nil {
-		ouo.SetRefund(*mr)
-	}
-	return ouo
-}
-
-// ClearRefund clears the value of the "refund" field.
-func (ouo *OrderUpdateOne) ClearRefund() *OrderUpdateOne {
-	ouo.mutation.ClearRefund()
 	return ouo
 }
 
@@ -1534,6 +1572,21 @@ func (ouo *OrderUpdateOne) AddAlters(o ...*OrderAlter) *OrderUpdateOne {
 	return ouo.AddAlterIDs(ids...)
 }
 
+// AddRefundIDs adds the "refunds" edge to the OrderRefund entity by IDs.
+func (ouo *OrderUpdateOne) AddRefundIDs(ids ...uint64) *OrderUpdateOne {
+	ouo.mutation.AddRefundIDs(ids...)
+	return ouo
+}
+
+// AddRefunds adds the "refunds" edges to the OrderRefund entity.
+func (ouo *OrderUpdateOne) AddRefunds(o ...*OrderRefund) *OrderUpdateOne {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return ouo.AddRefundIDs(ids...)
+}
+
 // Mutation returns the OrderMutation object of the builder.
 func (ouo *OrderUpdateOne) Mutation() *OrderMutation {
 	return ouo.mutation
@@ -1651,6 +1704,27 @@ func (ouo *OrderUpdateOne) RemoveAlters(o ...*OrderAlter) *OrderUpdateOne {
 		ids[i] = o[i].ID
 	}
 	return ouo.RemoveAlterIDs(ids...)
+}
+
+// ClearRefunds clears all "refunds" edges to the OrderRefund entity.
+func (ouo *OrderUpdateOne) ClearRefunds() *OrderUpdateOne {
+	ouo.mutation.ClearRefunds()
+	return ouo
+}
+
+// RemoveRefundIDs removes the "refunds" edge to OrderRefund entities by IDs.
+func (ouo *OrderUpdateOne) RemoveRefundIDs(ids ...uint64) *OrderUpdateOne {
+	ouo.mutation.RemoveRefundIDs(ids...)
+	return ouo
+}
+
+// RemoveRefunds removes "refunds" edges to OrderRefund entities.
+func (ouo *OrderUpdateOne) RemoveRefunds(o ...*OrderRefund) *OrderUpdateOne {
+	ids := make([]uint64, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return ouo.RemoveRefundIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1864,19 +1938,6 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: order.FieldPlanDetail,
-		})
-	}
-	if value, ok := ouo.mutation.Refund(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: order.FieldRefund,
-		})
-	}
-	if ouo.mutation.RefundCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Column: order.FieldRefund,
 		})
 	}
 	if value, ok := ouo.mutation.StartAt(); ok {
@@ -2321,6 +2382,60 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: orderalter.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ouo.mutation.RefundsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.RefundsTable,
+			Columns: []string{order.RefundsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: orderrefund.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.RemovedRefundsIDs(); len(nodes) > 0 && !ouo.mutation.RefundsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.RefundsTable,
+			Columns: []string{order.RefundsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: orderrefund.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.RefundsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   order.RefundsTable,
+			Columns: []string{order.RefundsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: orderrefund.FieldID,
 				},
 			},
 		}

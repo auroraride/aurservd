@@ -10,12 +10,15 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/commission"
+    "github.com/auroraride/aurservd/internal/ent/order"
+    "github.com/auroraride/aurservd/internal/ent/orderrefund"
     "github.com/auroraride/aurservd/internal/payment"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     "github.com/jinzhu/copier"
-    "github.com/lithammer/shortuuid/v4"
     "github.com/shopspring/decimal"
     log "github.com/sirupsen/logrus"
     "time"
@@ -77,31 +80,36 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
     }})
     // 判定用户是否需要缴纳押金
     deposit := NewRider().Deposit(s.rider)
-    no := shortuuid.New()
+    no := tools.NewUnique().NewSonyflakeID()
     result.OutTradeNo = no
     // 生成订单字段
     price := plan.Price
     // DEBUG 模式支付一分钱
     mode := ar.Config.App.Mode
     if mode == "debug" {
-        deposit = 0.01
         price = 0.01
+        if deposit > 0 {
+            deposit = 0.01
+        }
     }
     total, _ := decimal.NewFromFloat(price).Add(decimal.NewFromFloat(deposit)).Float64()
-    prepay := &model.OrderCache{
-        OrderType:  req.OrderType,
-        OutTradeNo: no,
-        RiderID:    s.rider.ID,
-        Plan:       cp,
-        Name:       "购买" + plan.Name,
-        Amount:     total,
-        Deposit:    deposit,
-        Payway:     req.Payway,
-        Expire:     time.Now().Add(10 * time.Minute),
-        CityID:     req.CityID,
+    prepay := &model.PaymentCache{
+        CacheType: model.PaymentCacheTypePlan,
+        Plan: &model.PaymentPlan{
+            OrderType:  req.OrderType,
+            OutTradeNo: no,
+            RiderID:    s.rider.ID,
+            Plan:       cp,
+            Name:       "购买" + plan.Name,
+            Amount:     total,
+            Deposit:    deposit,
+            Payway:     req.Payway,
+            Expire:     time.Now().Add(10 * time.Minute),
+            CityID:     req.CityID,
+        },
     }
     // 订单缓存
-    err := cache.Set(s.ctx, "ORDER_"+no, prepay, 20*time.Minute).Err()
+    err := cache.Set(s.ctx, no, prepay, 20*time.Minute).Err()
     if err != nil {
         log.Error(err)
         snag.Panic("订单创建失败")
@@ -133,15 +141,102 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
     return
 }
 
+// Refund 退款
+func (s *orderService) Refund(riderID uint64, req *model.OrderRefundReq) {
+    if (req.Deposit == nil && req.OrderID == nil) || (req.Deposit != nil && req.OrderID != nil) {
+        snag.Panic("退款参数错误")
+    }
+    q := s.orm.QueryNotDeleted().
+        Where(
+            order.RiderID(riderID),
+            order.Status(model.OrderStatusPaid),
+        )
+    if req.OrderID != nil {
+        q.Where(order.ID(*req.OrderID))
+    }
+    if req.Deposit != nil && *req.Deposit {
+        // 查找是否满足退押金条件
+        if exist, _ := s.orm.QueryNotDeleted().Where(
+            order.RiderID(riderID),
+            order.EndAtIsNil(),
+            order.StatusIn(model.OrderStatusPaid, model.OrderStatusRefundPending),
+        ).Exist(s.ctx); exist {
+            snag.Panic("当前无法退款")
+        }
+        q.Where(order.Type(model.OrderTypeDeposit))
+    }
+
+    o, _ := q.Only(s.ctx)
+
+    if o == nil {
+        snag.Panic("未找到有效订单")
+    }
+    no := tools.NewUnique().NewSonyflakeID()
+    refund := &model.PaymentRefund{
+        OrderID:      o.ID,
+        TradeNo:      o.TradeNo,
+        Total:        o.Total,
+        RefundAmount: o.Amount,
+        OutRefundNo:  no,
+        Reason:       "用户申请",
+    }
+    // 缓存
+    cache.Set(s.ctx, no, &model.PaymentCache{CacheType: model.PaymentCacheTypeRefund, Refund: refund}, 0)
+
+    switch o.Payway {
+    case model.OrderPaywayAlipay:
+        payment.NewAlipay().Refund(refund)
+        break
+    case model.OrderPaywayWechat:
+        payment.NewWechat().Refund(refund)
+        break
+    }
+
+    if refund.Request {
+        o.Update().SetStatus(model.OrderStatusRefundPending).SaveX(s.ctx)
+        // 保存订单
+        ar.Ent.OrderRefund.Create().
+            SetOrder(o).
+            SetAmount(refund.RefundAmount).
+            SetOutRefundNo(no).
+            SetReason(refund.Reason).
+            SetStatus(model.OrderRefundStatusPending).
+            SaveX(s.ctx)
+
+        if refund.Success {
+            s.RefundSuccess(refund)
+        }
+    }
+}
+
+// DoPayment 处理支付
+func (s *orderService) DoPayment(pc *model.PaymentCache) {
+    if pc == nil {
+        return
+    }
+    switch pc.CacheType {
+    case model.PaymentCacheTypePlan:
+        s.OrderPaid(pc.Plan)
+        break
+    case model.PaymentCacheTypeRefund:
+        s.RefundSuccess(pc.Refund)
+    }
+}
+
 // OrderPaid 订单成功支付
 // TODO 业绩提成逻辑
 // TODO 2续签 3重签 4更改电池 5救援 6滞纳金 逻辑
-func (s *orderService) OrderPaid(trade *model.OrderCache) {
+func (s *orderService) OrderPaid(trade *model.PaymentPlan) {
+    // 查询订单是否已存在
+    if exists, err := ar.Ent.Order.Query().Where(order.OutTradeNo(trade.OutTradeNo)).Exist(s.ctx); err == nil && exists {
+        return
+    }
     o, err := ar.Ent.Order.Create().
         SetPayway(trade.Payway).
         SetPlanID(trade.Plan.ID).
         SetRiderID(trade.RiderID).
         SetAmount(decimal.NewFromFloat(trade.Amount).Sub(decimal.NewFromFloat(trade.Deposit)).InexactFloat64()).
+        SetTotal(trade.Amount).
         SetOutTradeNo(trade.OutTradeNo).
         SetTradeNo(trade.TradeNo).
         SetStatus(model.OrderStatusPaid).
@@ -160,11 +255,13 @@ func (s *orderService) OrderPaid(trade *model.OrderCache) {
             SetStatus(model.OrderStatusPaid).
             SetPayway(trade.Payway).
             SetType(model.OrderTypeDeposit).
-            SetOutTradeNo(model.SettingDeposit + "-" + trade.OutTradeNo).
-            SetTradeNo(model.SettingDeposit + "-" + trade.TradeNo).
+            SetOutTradeNo(trade.OutTradeNo).
+            SetTradeNo(trade.TradeNo).
             SetAmount(trade.Deposit).
+            SetTotal(trade.Amount).
             SetCityID(trade.CityID).
             SetRiderID(trade.RiderID).
+            SetParentID(o.ID).
             Save(s.ctx)
         if err != nil {
             log.Errorf("[DEPOSIT PAID ERROR]: %s, Trade: %#v", err.Error(), trade)
@@ -181,5 +278,26 @@ func (s *orderService) OrderPaid(trade *model.OrderCache) {
     }
 
     // 删除缓存
-    cache.Del(context.Background(), "ORDER_"+trade.OutTradeNo)
+    cache.Del(context.Background(), trade.OutTradeNo)
+}
+
+// RefundSuccess 成功退款
+func (s *orderService) RefundSuccess(req *model.PaymentRefund) {
+    ctx := context.Background()
+    tx, _ := ar.Ent.Tx(ctx)
+    tx.Order.UpdateOneID(req.OrderID).SetStatus(model.OrderStatusRefundSuccess).SaveX(ctx)
+
+    tx.OrderRefund.Update().
+        Where(orderrefund.OutRefundNo(req.OutRefundNo)).
+        SetStatus(model.OrderRefundStatusSuccess).
+        SetRefundAt(req.Time).
+        SaveX(ctx)
+
+    // 删除提成订单
+    tx.Commission.Delete().Where(commission.OrderID(req.OrderID)).ExecX(ctx)
+
+    _ = tx.Commit()
+
+    // 删除缓存
+    cache.Del(ctx, req.OutRefundNo)
 }

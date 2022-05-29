@@ -5,11 +5,6 @@
 
 package model
 
-import (
-    jsoniter "github.com/json-iterator/go"
-    "time"
-)
-
 const (
     OrderTypeNewPlan       uint = iota + 1 // 新签, 需要计算业绩
     OrderTypeRePlan                        // 续签, 无需计算业绩
@@ -32,6 +27,12 @@ const (
     OrderStatusRefundSuccess              // 已退款
 )
 
+const (
+    OrderRefundStatusPending uint8 = iota // 退款中
+    OrderRefundStatusSuccess              // 成功退款
+    OrderRefundStatusFail                 // 退款失败
+)
+
 var (
     // OrderRiderPlan 骑手骑士卡订单
     OrderRiderPlan = []uint{OrderTypeNewPlan, OrderTypeRenewal, OrderTypeRePlan, OrderTypeChangeBattery}
@@ -51,29 +52,6 @@ type OrderCreateRes struct {
     OutTradeNo string `json:"outTradeNo"` // 交易编码
 }
 
-// OrderCache 订单缓存
-type OrderCache struct {
-    CityID     uint64    `json:"cityID"`            // 城市ID
-    OrderType  uint      `json:"orderType"`         // 订单类型
-    OutTradeNo string    `json:"outTradeNo"`        // 订单号
-    RiderID    uint64    `json:"riderId"`           // 骑手ID
-    Name       string    `json:"name"`              // 订单名称
-    Amount     float64   `json:"amount"`            // 总金额 = 套餐 + 押金
-    Payway     uint8     `json:"payway"`            // 支付方式
-    Expire     time.Time `json:"expire"`            // 过期时间
-    TradeNo    string    `json:"tradeNo,omitempty"` // 平台单号
-    Plan       *PlanItem `json:"plan,omitempty"`    // 骑士卡
-    Deposit    float64   `json:"deposit"`           // 附带押金
-}
-
-func (oc *OrderCache) MarshalBinary() ([]byte, error) {
-    return jsoniter.Marshal(oc)
-}
-
-func (oc *OrderCache) UnmarshalBinary(data []byte) error {
-    return jsoniter.Unmarshal(data, oc)
-}
-
 // OrderSubordinate 从属订单信息
 type OrderSubordinate struct {
 }
@@ -91,14 +69,6 @@ type OrderNotActived struct {
     Time    string         `json:"time"`               // 支付时间
 }
 
-// OrderRefund 退款详情
-type OrderRefund struct {
-    Amount     float64 `json:"amount"`     // 退款金额
-    RefundAt   string  `json:"refundAt"`   // 退款时间
-    OutTradeNo string  `json:"outTradeNo"` // 退款订单编号
-    TradeNo    string  `json:"tradeNo"`    // 退款平台订单编号
-}
-
 // OrderDaysLog 订单日期修改
 type OrderDaysLog struct {
     Modifier *Modifier
@@ -106,7 +76,8 @@ type OrderDaysLog struct {
     Reason   string `json:"reason"` // 理由
 }
 
-// OrderArrearage 滞纳金
-type OrderArrearage struct {
-    Days int
+// OrderRefundReq 退款申请
+type OrderRefundReq struct {
+    OrderID *uint64 `json:"orderID"` // 订单ID, 和deposit不能同时存在, 也不能同时为空
+    Deposit *bool   `json:"deposit"` // 是否退押金, 押金退款条件: 1. 无最近订单; 2. 存在订单且状态为已退款或已退租
 }

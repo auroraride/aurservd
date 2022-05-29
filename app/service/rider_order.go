@@ -138,16 +138,13 @@ func (s *riderOrderService) Recent(riderID uint64) *model.RiderRecentOrder {
     }
 
     remaining := int(o.Days) + alter + paused - past
-    ro.Remaining = remaining
-    ro.PausedDays = paused
-    ro.AlterDays = alter
 
     switch true {
     case o.StartAt == nil:
         // 未激活
         ro.Status = model.RiderOrderStatusPending
         break
-    case o.PausedAt.IsZero() && o.StartAt != nil:
+    case o.PausedAt == nil && o.StartAt != nil && o.EndAt == nil:
         if remaining >= 0 {
             // 计费中
             ro.Status = model.RiderOrderStatusNormal
@@ -155,7 +152,7 @@ func (s *riderOrderService) Recent(riderID uint64) *model.RiderRecentOrder {
             ro.Status = model.RiderOrderStatusOverdue
         }
         break
-    case !o.PausedAt.IsZero():
+    case o.PausedAt != nil:
         // 暂停中
         ro.Status = model.RiderOrderStatusPaused
         break
@@ -163,8 +160,16 @@ func (s *riderOrderService) Recent(riderID uint64) *model.RiderRecentOrder {
         // 已归还
         ro.Status = model.RiderOrderStatusRemanded
         ro.EndAt = o.EndAt.Format(carbon.DateLayout)
+        remaining = 0
         break
     }
+
+    if remaining >= 0 && o.EndAt == nil {
+        ro.EndAt = time.Now().AddDate(0, 0, remaining).Format(carbon.DateLayout)
+    }
+    ro.Remaining = remaining
+    ro.PausedDays = paused
+    ro.AlterDays = alter
 
     return ro
 }

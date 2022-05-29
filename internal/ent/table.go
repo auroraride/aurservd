@@ -142,6 +142,16 @@ func (op *OrderPause) GetID() uint64 {
 	return op.ID
 }
 
+// GetTableName returns table name for OrderRefund.
+func (or *OrderRefund) GetTableName() string {
+	return "order_refund"
+}
+
+// GetID returns id for OrderRefund.
+func (or *OrderRefund) GetID() uint64 {
+	return or.ID
+}
+
 // GetTableName returns table name for Person.
 func (pe *Person) GetTableName() string {
 	return "person"
