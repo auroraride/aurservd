@@ -30,3 +30,12 @@ func CreateClient(addr, password string, db int) {
     Get = client.Get
     Del = client.Del
 }
+
+func Float64(key string) float64 {
+    f := float64(80)
+    saved, err := client.Get(context.Background(), key).Float64()
+    if err == nil {
+        f = saved
+    }
+    return f
+}

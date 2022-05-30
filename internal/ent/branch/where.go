@@ -1057,6 +1057,34 @@ func GeomLTE(v *model.Geometry) predicate.Branch {
 	})
 }
 
+// HasCity applies the HasEdge predicate on the "city" edge.
+func HasCity() predicate.Branch {
+	return predicate.Branch(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CityTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCityWith applies the HasEdge predicate on the "city" edge with a given conditions (other predicates).
+func HasCityWith(preds ...predicate.City) predicate.Branch {
+	return predicate.Branch(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CityInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasContracts applies the HasEdge predicate on the "contracts" edge.
 func HasContracts() predicate.Branch {
 	return predicate.Branch(func(s *sql.Selector) {
@@ -1104,34 +1132,6 @@ func HasCabinetsWith(preds ...predicate.Cabinet) predicate.Branch {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(CabinetsInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, CabinetsTable, CabinetsColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasCity applies the HasEdge predicate on the "city" edge.
-func HasCity() predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CityTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, CityTable, CityColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasCityWith applies the HasEdge predicate on the "city" edge with a given conditions (other predicates).
-func HasCityWith(preds ...predicate.City) predicate.Branch {
-	return predicate.Branch(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CityInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, CityTable, CityColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

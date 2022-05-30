@@ -8,9 +8,35 @@ import (
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
+    "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
+
+type RiderMixin struct {
+    mixin.Schema
+    Optional bool
+}
+
+func (rm RiderMixin) Fields() []ent.Field {
+    f := field.Uint64("rider_id").Comment("骑手ID")
+    if rm.Optional {
+        f.Optional()
+    }
+    return []ent.Field{
+        f,
+    }
+}
+
+func (rm RiderMixin) Edges() []ent.Edge {
+    e := edge.To("rider", Rider.Type).Unique().Field("rider_id").Comment("骑手")
+    if !rm.Optional {
+        e.Required()
+    }
+    return []ent.Edge{
+        e,
+    }
+}
 
 // Rider holds the schema definition for the Rider entity.
 type Rider struct {
@@ -48,12 +74,13 @@ func (Rider) Edges() []ent.Edge {
     return []ent.Edge{
         edge.From("person", Person.Type).Ref("rider").Unique().Field("person_id"),
         edge.From("enterprise", Enterprise.Type).Ref("riders").Unique().Field("enterprise_id"),
+
         edge.To("contract", Contract.Type),
         edge.To("faults", CabinetFault.Type),
         edge.To("orders", Order.Type),
-        edge.To("pauses", OrderPause.Type),
-        edge.To("arrearages", OrderArrearage.Type),
-        edge.To("alters", OrderAlter.Type),
+
+        edge.To("exchanges", CabinetExchange.Type).Comment("换电记录"),
+        edge.To("subscribes", Subscribe.Type).Comment("订阅"),
     }
 }
 

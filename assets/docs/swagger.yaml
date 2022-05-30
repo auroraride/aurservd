@@ -298,6 +298,15 @@ definitions:
         description: 电压(V)
         type: number
     type: object
+  model.CabinetBinBasicInfo:
+    properties:
+      electricity:
+        description: 当前电量
+        type: number
+      index:
+        description: 仓位index
+        type: integer
+    type: object
   model.CabinetCreateReq:
     properties:
       branchId:
@@ -629,7 +638,7 @@ definitions:
         description: 签署URL
         type: string
     type: object
-  model.EmployeeItem:
+  model.Employee:
     properties:
       id:
         type: integer
@@ -825,6 +834,14 @@ definitions:
     - price
     - start
     type: object
+  model.QRPostReq:
+    properties:
+      qrcode:
+        description: '二维码 '
+        type: string
+    required:
+    - qrcode
+    type: object
   model.RiderBlockReq:
     properties:
       block:
@@ -833,6 +850,18 @@ definitions:
       id:
         description: 骑手ID
         type: integer
+    type: object
+  model.RiderCabinetOperateProcess:
+    properties:
+      alternative:
+        $ref: '#/definitions/model.CabinetBinBasicInfo'
+        description: 备选方案
+      emptyBin:
+        $ref: '#/definitions/model.CabinetBinBasicInfo'
+        description: 空仓位
+      fullBin:
+        $ref: '#/definitions/model.CabinetBinBasicInfo'
+        description: 满电仓位
     type: object
   model.RiderContact:
     properties:
@@ -931,6 +960,9 @@ definitions:
       payAt:
         description: 支付时间
         type: string
+      payway:
+        description: 支付方式
+        type: integer
       plan:
         $ref: '#/definitions/model.OrderPlan'
         description: 骑士卡信息
@@ -1098,7 +1130,7 @@ definitions:
         $ref: '#/definitions/model.City'
         description: 城市
       employee:
-        $ref: '#/definitions/model.EmployeeItem'
+        $ref: '#/definitions/model.Employee'
         description: 店员, 有可能不存在
       id:
         type: integer
@@ -1261,6 +1293,33 @@ paths:
       summary: C3.获取阿里云oss临时凭证
       tags:
       - '[C]公共接口'
+  /employee/v1/order/active:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderOrderActive
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.QRPostReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: E20001 激活骑士卡
+      tags:
+      - '[E]门店接口'
   /manager/v1/{id}/contract:
     post:
       consumes:
@@ -2466,6 +2525,59 @@ paths:
       summary: R20002 网点骑行规划时间
       tags:
       - '[R]骑手接口'
+  /rider/v1/cabinet/{serial}:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderCabinetProcess
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 电柜二维码
+        in: path
+        name: serial
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderCabinetOperateProcess'
+      summary: R40001 确认换电信息
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/cabinet/report:
+    post:
+      consumes:
+      - application/json
+      operationId: CabinetReport
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CabinetFaultReportReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R4000X 电柜故障上报
+      tags:
+      - '[R]骑手接口'
   /rider/v1/city:
     get:
       consumes:
@@ -2656,33 +2768,6 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: R30007 申请退款
-      tags:
-      - '[R]骑手接口'
-  /rider/v1/path:
-    get:
-      consumes:
-      - application/json
-      operationId: CabinetReport
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      - description: desc
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.CabinetFaultReportReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: R40001 电柜故障上报
       tags:
       - '[R]骑手接口'
   /rider/v1/plan:

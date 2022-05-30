@@ -61,6 +61,19 @@ func (f CabinetFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return f(ctx, mv)
 }
 
+// The CabinetExchangeFunc type is an adapter to allow the use of ordinary
+// function as CabinetExchange mutator.
+type CabinetExchangeFunc func(context.Context, *ent.CabinetExchangeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CabinetExchangeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.CabinetExchangeMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CabinetExchangeMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The CabinetFaultFunc type is an adapter to allow the use of ordinary
 // function as CabinetFault mutator.
 type CabinetFaultFunc func(context.Context, *ent.CabinetFaultMutation) (ent.Value, error)
@@ -113,6 +126,19 @@ func (f ContractFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return f(ctx, mv)
 }
 
+// The EmployeeFunc type is an adapter to allow the use of ordinary
+// function as Employee mutator.
+type EmployeeFunc func(context.Context, *ent.EmployeeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EmployeeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.EmployeeMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EmployeeMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The EnterpriseFunc type is an adapter to allow the use of ordinary
 // function as Enterprise mutator.
 type EnterpriseFunc func(context.Context, *ent.EnterpriseMutation) (ent.Value, error)
@@ -148,45 +174,6 @@ func (f OrderFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	mv, ok := m.(*ent.OrderMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrderMutation", m)
-	}
-	return f(ctx, mv)
-}
-
-// The OrderAlterFunc type is an adapter to allow the use of ordinary
-// function as OrderAlter mutator.
-type OrderAlterFunc func(context.Context, *ent.OrderAlterMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f OrderAlterFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.OrderAlterMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrderAlterMutation", m)
-	}
-	return f(ctx, mv)
-}
-
-// The OrderArrearageFunc type is an adapter to allow the use of ordinary
-// function as OrderArrearage mutator.
-type OrderArrearageFunc func(context.Context, *ent.OrderArrearageMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f OrderArrearageFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.OrderArrearageMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrderArrearageMutation", m)
-	}
-	return f(ctx, mv)
-}
-
-// The OrderPauseFunc type is an adapter to allow the use of ordinary
-// function as OrderPause mutator.
-type OrderPauseFunc func(context.Context, *ent.OrderPauseMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f OrderPauseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.OrderPauseMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrderPauseMutation", m)
 	}
 	return f(ctx, mv)
 }
@@ -265,6 +252,45 @@ func (f StoreFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	mv, ok := m.(*ent.StoreMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.StoreMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The SubscribeFunc type is an adapter to allow the use of ordinary
+// function as Subscribe mutator.
+type SubscribeFunc func(context.Context, *ent.SubscribeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SubscribeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.SubscribeMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SubscribeMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The SubscribeAlterFunc type is an adapter to allow the use of ordinary
+// function as SubscribeAlter mutator.
+type SubscribeAlterFunc func(context.Context, *ent.SubscribeAlterMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SubscribeAlterFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.SubscribeAlterMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SubscribeAlterMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The SubscribePauseFunc type is an adapter to allow the use of ordinary
+// function as SubscribePause mutator.
+type SubscribePauseFunc func(context.Context, *ent.SubscribePauseMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SubscribePauseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.SubscribePauseMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SubscribePauseMutation", m)
 	}
 	return f(ctx, mv)
 }

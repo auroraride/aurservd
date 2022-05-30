@@ -33,7 +33,7 @@ type PaymentPlan struct {
     Payway     uint8     `json:"payway"`            // 支付方式
     Expire     time.Time `json:"expire"`            // 过期时间
     TradeNo    string    `json:"tradeNo,omitempty"` // 平台单号
-    Plan       *PlanItem `json:"plan,omitempty"`    // 骑士卡
+    PlanID     uint64    `json:"planId"`            // 骑士卡ID
     Deposit    float64   `json:"deposit"`           // 附带押金
 }
 

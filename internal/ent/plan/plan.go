@@ -47,8 +47,6 @@ const (
 	EdgePms = "pms"
 	// EdgeCities holds the string denoting the cities edge name in mutations.
 	EdgeCities = "cities"
-	// EdgeOrders holds the string denoting the orders edge name in mutations.
-	EdgeOrders = "orders"
 	// Table holds the table name of the plan in the database.
 	Table = "plan"
 	// PmsTable is the table that holds the pms relation/edge. The primary key declared below.
@@ -61,13 +59,6 @@ const (
 	// CitiesInverseTable is the table name for the City entity.
 	// It exists in this package in order to avoid circular dependency with the "city" package.
 	CitiesInverseTable = "city"
-	// OrdersTable is the table that holds the orders relation/edge.
-	OrdersTable = "order"
-	// OrdersInverseTable is the table name for the Order entity.
-	// It exists in this package in order to avoid circular dependency with the "order" package.
-	OrdersInverseTable = "order"
-	// OrdersColumn is the table column denoting the orders relation/edge.
-	OrdersColumn = "plan_id"
 )
 
 // Columns holds all SQL columns for plan fields.

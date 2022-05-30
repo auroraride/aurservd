@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 )
 
@@ -231,6 +232,21 @@ func (cc *CabinetCreate) AddFaults(c ...*CabinetFault) *CabinetCreate {
 		ids[i] = c[i].ID
 	}
 	return cc.AddFaultIDs(ids...)
+}
+
+// AddExchangeIDs adds the "exchanges" edge to the CabinetExchange entity by IDs.
+func (cc *CabinetCreate) AddExchangeIDs(ids ...uint64) *CabinetCreate {
+	cc.mutation.AddExchangeIDs(ids...)
+	return cc
+}
+
+// AddExchanges adds the "exchanges" edges to the CabinetExchange entity.
+func (cc *CabinetCreate) AddExchanges(c ...*CabinetExchange) *CabinetCreate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cc.AddExchangeIDs(ids...)
 }
 
 // Mutation returns the CabinetMutation object of the builder.
@@ -593,6 +609,25 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: cabinetfault.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.ExchangesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.ExchangesTable,
+			Columns: []string{cabinet.ExchangesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetexchange.FieldID,
 				},
 			},
 		}

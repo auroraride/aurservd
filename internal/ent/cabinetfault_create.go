@@ -95,6 +95,12 @@ func (cfc *CabinetFaultCreate) SetNillableRemark(s *string) *CabinetFaultCreate 
 	return cfc
 }
 
+// SetCityID sets the "city_id" field.
+func (cfc *CabinetFaultCreate) SetCityID(u uint64) *CabinetFaultCreate {
+	cfc.mutation.SetCityID(u)
+	return cfc
+}
+
 // SetStatus sets the "status" field.
 func (cfc *CabinetFaultCreate) SetStatus(u uint8) *CabinetFaultCreate {
 	cfc.mutation.SetStatus(u)
@@ -106,12 +112,6 @@ func (cfc *CabinetFaultCreate) SetNillableStatus(u *uint8) *CabinetFaultCreate {
 	if u != nil {
 		cfc.SetStatus(*u)
 	}
-	return cfc
-}
-
-// SetCityID sets the "city_id" field.
-func (cfc *CabinetFaultCreate) SetCityID(u uint64) *CabinetFaultCreate {
-	cfc.mutation.SetCityID(u)
 	return cfc
 }
 
@@ -167,6 +167,11 @@ func (cfc *CabinetFaultCreate) SetNillableDescription(s *string) *CabinetFaultCr
 	return cfc
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (cfc *CabinetFaultCreate) SetCity(c *City) *CabinetFaultCreate {
+	return cfc.SetCityID(c.ID)
+}
+
 // SetBranch sets the "branch" edge to the Branch entity.
 func (cfc *CabinetFaultCreate) SetBranch(b *Branch) *CabinetFaultCreate {
 	return cfc.SetBranchID(b.ID)
@@ -180,11 +185,6 @@ func (cfc *CabinetFaultCreate) SetCabinet(c *Cabinet) *CabinetFaultCreate {
 // SetRider sets the "rider" edge to the Rider entity.
 func (cfc *CabinetFaultCreate) SetRider(r *Rider) *CabinetFaultCreate {
 	return cfc.SetRiderID(r.ID)
-}
-
-// SetCity sets the "city" edge to the City entity.
-func (cfc *CabinetFaultCreate) SetCity(c *City) *CabinetFaultCreate {
-	return cfc.SetCityID(c.ID)
 }
 
 // Mutation returns the CabinetFaultMutation object of the builder.
@@ -295,11 +295,11 @@ func (cfc *CabinetFaultCreate) check() error {
 	if _, ok := cfc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "CabinetFault.updated_at"`)}
 	}
-	if _, ok := cfc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "CabinetFault.status"`)}
-	}
 	if _, ok := cfc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city_id", err: errors.New(`ent: missing required field "CabinetFault.city_id"`)}
+	}
+	if _, ok := cfc.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "CabinetFault.status"`)}
 	}
 	if _, ok := cfc.mutation.BranchID(); !ok {
 		return &ValidationError{Name: "branch_id", err: errors.New(`ent: missing required field "CabinetFault.branch_id"`)}
@@ -310,6 +310,9 @@ func (cfc *CabinetFaultCreate) check() error {
 	if _, ok := cfc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "CabinetFault.rider_id"`)}
 	}
+	if _, ok := cfc.mutation.CityID(); !ok {
+		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "CabinetFault.city"`)}
+	}
 	if _, ok := cfc.mutation.BranchID(); !ok {
 		return &ValidationError{Name: "branch", err: errors.New(`ent: missing required edge "CabinetFault.branch"`)}
 	}
@@ -318,9 +321,6 @@ func (cfc *CabinetFaultCreate) check() error {
 	}
 	if _, ok := cfc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "CabinetFault.rider"`)}
-	}
-	if _, ok := cfc.mutation.CityID(); !ok {
-		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "CabinetFault.city"`)}
 	}
 	return nil
 }
@@ -430,6 +430,26 @@ func (cfc *CabinetFaultCreate) createSpec() (*CabinetFault, *sqlgraph.CreateSpec
 		})
 		_node.Description = value
 	}
+	if nodes := cfc.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   cabinetfault.CityTable,
+			Columns: []string{cabinetfault.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CityID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := cfc.mutation.BranchIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -488,26 +508,6 @@ func (cfc *CabinetFaultCreate) createSpec() (*CabinetFault, *sqlgraph.CreateSpec
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.RiderID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := cfc.mutation.CityIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   cabinetfault.CityTable,
-			Columns: []string{cabinetfault.CityColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.CityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -660,6 +660,18 @@ func (u *CabinetFaultUpsert) ClearRemark() *CabinetFaultUpsert {
 	return u
 }
 
+// SetCityID sets the "city_id" field.
+func (u *CabinetFaultUpsert) SetCityID(v uint64) *CabinetFaultUpsert {
+	u.Set(cabinetfault.FieldCityID, v)
+	return u
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *CabinetFaultUpsert) UpdateCityID() *CabinetFaultUpsert {
+	u.SetExcluded(cabinetfault.FieldCityID)
+	return u
+}
+
 // SetStatus sets the "status" field.
 func (u *CabinetFaultUpsert) SetStatus(v uint8) *CabinetFaultUpsert {
 	u.Set(cabinetfault.FieldStatus, v)
@@ -675,18 +687,6 @@ func (u *CabinetFaultUpsert) UpdateStatus() *CabinetFaultUpsert {
 // AddStatus adds v to the "status" field.
 func (u *CabinetFaultUpsert) AddStatus(v uint8) *CabinetFaultUpsert {
 	u.Add(cabinetfault.FieldStatus, v)
-	return u
-}
-
-// SetCityID sets the "city_id" field.
-func (u *CabinetFaultUpsert) SetCityID(v uint64) *CabinetFaultUpsert {
-	u.Set(cabinetfault.FieldCityID, v)
-	return u
-}
-
-// UpdateCityID sets the "city_id" field to the value that was provided on create.
-func (u *CabinetFaultUpsert) UpdateCityID() *CabinetFaultUpsert {
-	u.SetExcluded(cabinetfault.FieldCityID)
 	return u
 }
 
@@ -942,6 +942,20 @@ func (u *CabinetFaultUpsertOne) ClearRemark() *CabinetFaultUpsertOne {
 	})
 }
 
+// SetCityID sets the "city_id" field.
+func (u *CabinetFaultUpsertOne) SetCityID(v uint64) *CabinetFaultUpsertOne {
+	return u.Update(func(s *CabinetFaultUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *CabinetFaultUpsertOne) UpdateCityID() *CabinetFaultUpsertOne {
+	return u.Update(func(s *CabinetFaultUpsert) {
+		s.UpdateCityID()
+	})
+}
+
 // SetStatus sets the "status" field.
 func (u *CabinetFaultUpsertOne) SetStatus(v uint8) *CabinetFaultUpsertOne {
 	return u.Update(func(s *CabinetFaultUpsert) {
@@ -960,20 +974,6 @@ func (u *CabinetFaultUpsertOne) AddStatus(v uint8) *CabinetFaultUpsertOne {
 func (u *CabinetFaultUpsertOne) UpdateStatus() *CabinetFaultUpsertOne {
 	return u.Update(func(s *CabinetFaultUpsert) {
 		s.UpdateStatus()
-	})
-}
-
-// SetCityID sets the "city_id" field.
-func (u *CabinetFaultUpsertOne) SetCityID(v uint64) *CabinetFaultUpsertOne {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.SetCityID(v)
-	})
-}
-
-// UpdateCityID sets the "city_id" field to the value that was provided on create.
-func (u *CabinetFaultUpsertOne) UpdateCityID() *CabinetFaultUpsertOne {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.UpdateCityID()
 	})
 }
 
@@ -1408,6 +1408,20 @@ func (u *CabinetFaultUpsertBulk) ClearRemark() *CabinetFaultUpsertBulk {
 	})
 }
 
+// SetCityID sets the "city_id" field.
+func (u *CabinetFaultUpsertBulk) SetCityID(v uint64) *CabinetFaultUpsertBulk {
+	return u.Update(func(s *CabinetFaultUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *CabinetFaultUpsertBulk) UpdateCityID() *CabinetFaultUpsertBulk {
+	return u.Update(func(s *CabinetFaultUpsert) {
+		s.UpdateCityID()
+	})
+}
+
 // SetStatus sets the "status" field.
 func (u *CabinetFaultUpsertBulk) SetStatus(v uint8) *CabinetFaultUpsertBulk {
 	return u.Update(func(s *CabinetFaultUpsert) {
@@ -1426,20 +1440,6 @@ func (u *CabinetFaultUpsertBulk) AddStatus(v uint8) *CabinetFaultUpsertBulk {
 func (u *CabinetFaultUpsertBulk) UpdateStatus() *CabinetFaultUpsertBulk {
 	return u.Update(func(s *CabinetFaultUpsert) {
 		s.UpdateStatus()
-	})
-}
-
-// SetCityID sets the "city_id" field.
-func (u *CabinetFaultUpsertBulk) SetCityID(v uint64) *CabinetFaultUpsertBulk {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.SetCityID(v)
-	})
-}
-
-// UpdateCityID sets the "city_id" field to the value that was provided on create.
-func (u *CabinetFaultUpsertBulk) UpdateCityID() *CabinetFaultUpsertBulk {
-	return u.Update(func(s *CabinetFaultUpsert) {
-		s.UpdateCityID()
 	})
 }
 

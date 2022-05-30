@@ -101,11 +101,12 @@ func Run() {
     )
 
     // 载入路由
-    loadRedocRoute()    // 文档
-    loadKaixinRoutes()  // 凯信
-    loadCommonRoutes()  // 公共API
-    loadRideRoutes()    // 骑手路由
-    loadManagerRoutes() // 管理员路由
+    loadRedocRoute()     // 文档
+    loadKaixinRoutes()   // 凯信
+    loadCommonRoutes()   // 公共API
+    loadRideRoutes()     // 骑手路由
+    loadManagerRoutes()  // 管理员路由
+    loadEmployeeRoutes() // 门店端路由
 
     log.Fatal(e.Start(cfg.Address))
 }

@@ -22,6 +22,8 @@ type Tx struct {
 	BranchContract *BranchContractClient
 	// Cabinet is the client for interacting with the Cabinet builders.
 	Cabinet *CabinetClient
+	// CabinetExchange is the client for interacting with the CabinetExchange builders.
+	CabinetExchange *CabinetExchangeClient
 	// CabinetFault is the client for interacting with the CabinetFault builders.
 	CabinetFault *CabinetFaultClient
 	// City is the client for interacting with the City builders.
@@ -30,18 +32,14 @@ type Tx struct {
 	Commission *CommissionClient
 	// Contract is the client for interacting with the Contract builders.
 	Contract *ContractClient
+	// Employee is the client for interacting with the Employee builders.
+	Employee *EmployeeClient
 	// Enterprise is the client for interacting with the Enterprise builders.
 	Enterprise *EnterpriseClient
 	// Manager is the client for interacting with the Manager builders.
 	Manager *ManagerClient
 	// Order is the client for interacting with the Order builders.
 	Order *OrderClient
-	// OrderAlter is the client for interacting with the OrderAlter builders.
-	OrderAlter *OrderAlterClient
-	// OrderArrearage is the client for interacting with the OrderArrearage builders.
-	OrderArrearage *OrderArrearageClient
-	// OrderPause is the client for interacting with the OrderPause builders.
-	OrderPause *OrderPauseClient
 	// OrderRefund is the client for interacting with the OrderRefund builders.
 	OrderRefund *OrderRefundClient
 	// Person is the client for interacting with the Person builders.
@@ -54,6 +52,12 @@ type Tx struct {
 	Setting *SettingClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
+	// Subscribe is the client for interacting with the Subscribe builders.
+	Subscribe *SubscribeClient
+	// SubscribeAlter is the client for interacting with the SubscribeAlter builders.
+	SubscribeAlter *SubscribeAlterClient
+	// SubscribePause is the client for interacting with the SubscribePause builders.
+	SubscribePause *SubscribePauseClient
 
 	// lazily loaded.
 	client     *Client
@@ -193,22 +197,24 @@ func (tx *Tx) init() {
 	tx.Branch = NewBranchClient(tx.config)
 	tx.BranchContract = NewBranchContractClient(tx.config)
 	tx.Cabinet = NewCabinetClient(tx.config)
+	tx.CabinetExchange = NewCabinetExchangeClient(tx.config)
 	tx.CabinetFault = NewCabinetFaultClient(tx.config)
 	tx.City = NewCityClient(tx.config)
 	tx.Commission = NewCommissionClient(tx.config)
 	tx.Contract = NewContractClient(tx.config)
+	tx.Employee = NewEmployeeClient(tx.config)
 	tx.Enterprise = NewEnterpriseClient(tx.config)
 	tx.Manager = NewManagerClient(tx.config)
 	tx.Order = NewOrderClient(tx.config)
-	tx.OrderAlter = NewOrderAlterClient(tx.config)
-	tx.OrderArrearage = NewOrderArrearageClient(tx.config)
-	tx.OrderPause = NewOrderPauseClient(tx.config)
 	tx.OrderRefund = NewOrderRefundClient(tx.config)
 	tx.Person = NewPersonClient(tx.config)
 	tx.Plan = NewPlanClient(tx.config)
 	tx.Rider = NewRiderClient(tx.config)
 	tx.Setting = NewSettingClient(tx.config)
 	tx.Store = NewStoreClient(tx.config)
+	tx.Subscribe = NewSubscribeClient(tx.config)
+	tx.SubscribeAlter = NewSubscribeAlterClient(tx.config)
+	tx.SubscribePause = NewSubscribePauseClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

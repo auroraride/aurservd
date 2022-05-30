@@ -1570,6 +1570,34 @@ func HasFaultsWith(preds ...predicate.CabinetFault) predicate.Cabinet {
 	})
 }
 
+// HasExchanges applies the HasEdge predicate on the "exchanges" edge.
+func HasExchanges() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ExchangesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ExchangesTable, ExchangesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasExchangesWith applies the HasEdge predicate on the "exchanges" edge with a given conditions (other predicates).
+func HasExchangesWith(preds ...predicate.CabinetExchange) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ExchangesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ExchangesTable, ExchangesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Cabinet) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {

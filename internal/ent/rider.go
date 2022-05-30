@@ -91,15 +91,13 @@ type RiderEdges struct {
 	Faults []*CabinetFault `json:"faults,omitempty"`
 	// Orders holds the value of the orders edge.
 	Orders []*Order `json:"orders,omitempty"`
-	// Pauses holds the value of the pauses edge.
-	Pauses []*OrderPause `json:"pauses,omitempty"`
-	// Arrearages holds the value of the arrearages edge.
-	Arrearages []*OrderArrearage `json:"arrearages,omitempty"`
-	// Alters holds the value of the alters edge.
-	Alters []*OrderAlter `json:"alters,omitempty"`
+	// Exchanges holds the value of the exchanges edge.
+	Exchanges []*CabinetExchange `json:"exchanges,omitempty"`
+	// Subscribes holds the value of the subscribes edge.
+	Subscribes []*Subscribe `json:"subscribes,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [7]bool
 }
 
 // PersonOrErr returns the Person value or an error if the edge
@@ -157,31 +155,22 @@ func (e RiderEdges) OrdersOrErr() ([]*Order, error) {
 	return nil, &NotLoadedError{edge: "orders"}
 }
 
-// PausesOrErr returns the Pauses value or an error if the edge
+// ExchangesOrErr returns the Exchanges value or an error if the edge
 // was not loaded in eager-loading.
-func (e RiderEdges) PausesOrErr() ([]*OrderPause, error) {
+func (e RiderEdges) ExchangesOrErr() ([]*CabinetExchange, error) {
 	if e.loadedTypes[5] {
-		return e.Pauses, nil
+		return e.Exchanges, nil
 	}
-	return nil, &NotLoadedError{edge: "pauses"}
+	return nil, &NotLoadedError{edge: "exchanges"}
 }
 
-// ArrearagesOrErr returns the Arrearages value or an error if the edge
+// SubscribesOrErr returns the Subscribes value or an error if the edge
 // was not loaded in eager-loading.
-func (e RiderEdges) ArrearagesOrErr() ([]*OrderArrearage, error) {
+func (e RiderEdges) SubscribesOrErr() ([]*Subscribe, error) {
 	if e.loadedTypes[6] {
-		return e.Arrearages, nil
+		return e.Subscribes, nil
 	}
-	return nil, &NotLoadedError{edge: "arrearages"}
-}
-
-// AltersOrErr returns the Alters value or an error if the edge
-// was not loaded in eager-loading.
-func (e RiderEdges) AltersOrErr() ([]*OrderAlter, error) {
-	if e.loadedTypes[7] {
-		return e.Alters, nil
-	}
-	return nil, &NotLoadedError{edge: "alters"}
+	return nil, &NotLoadedError{edge: "subscribes"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -375,19 +364,14 @@ func (r *Rider) QueryOrders() *OrderQuery {
 	return (&RiderClient{config: r.config}).QueryOrders(r)
 }
 
-// QueryPauses queries the "pauses" edge of the Rider entity.
-func (r *Rider) QueryPauses() *OrderPauseQuery {
-	return (&RiderClient{config: r.config}).QueryPauses(r)
+// QueryExchanges queries the "exchanges" edge of the Rider entity.
+func (r *Rider) QueryExchanges() *CabinetExchangeQuery {
+	return (&RiderClient{config: r.config}).QueryExchanges(r)
 }
 
-// QueryArrearages queries the "arrearages" edge of the Rider entity.
-func (r *Rider) QueryArrearages() *OrderArrearageQuery {
-	return (&RiderClient{config: r.config}).QueryArrearages(r)
-}
-
-// QueryAlters queries the "alters" edge of the Rider entity.
-func (r *Rider) QueryAlters() *OrderAlterQuery {
-	return (&RiderClient{config: r.config}).QueryAlters(r)
+// QuerySubscribes queries the "subscribes" edge of the Rider entity.
+func (r *Rider) QuerySubscribes() *SubscribeQuery {
+	return (&RiderClient{config: r.config}).QuerySubscribes(r)
 }
 
 // Update returns a builder for updating this Rider.

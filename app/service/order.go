@@ -52,15 +52,62 @@ func NewOrderWithModifier(m *model.Modifier) *orderService {
     return s
 }
 
+// PreconditionNewly 新签订单前置条件判定
+// 返回值为最终判定的订单类型(有可能是重签)
+func (s *orderService) PreconditionNewly(sub *model.Subscribe) (state uint) {
+    if sub == nil {
+        return model.OrderTypeNewly
+    }
+    switch sub.Status {
+    case model.SubscribeStatusInactive:
+        snag.Panic("当前有未激活的骑士卡")
+        break
+    case model.SubscribeStatusCanceled:
+        return model.OrderTypeNewly
+    case model.SubscribeStatusUnSubscribed:
+        return model.OrderTypeAgain
+    default:
+        snag.Panic("不满足新签条件")
+        break
+    }
+    return model.OrderTypeNewly
+}
+
+// PreconditionRenewal 是否满足续签条件
+func (s *orderService) PreconditionRenewal(sub *model.Subscribe) {
+    if sub == nil ||
+        sub.Status == model.SubscribeStatusInactive ||
+        sub.Status == model.SubscribeStatusUnSubscribed ||
+        sub.Status == model.SubscribeStatusCanceled {
+        snag.Panic("当前无使用中的骑士卡")
+    }
+    if sub.Remaining < 0 {
+        snag.Panic("请先缴纳逾期费用")
+    }
+}
+
 // Create 创建订单
+// TODO 需要做更改电池逻辑, 退款 + 推送订单
 func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCreateRes) {
     // 查询骑手是否签约过
     if !NewContract().Effective(s.rider) {
         snag.Panic("请先签约")
     }
-    // 查询是否存在未使用的骑士卡
-    if NewRiderOrder().FindNotActived(s.rider.ID) != nil {
-        snag.Panic("当前有未使用的骑士卡")
+    sub := NewSubscribe().Recent(s.rider.ID)
+    // 判定类型条件
+    otype := req.OrderType
+    switch otype {
+    case model.OrderTypeNewly:
+        // 新签判定
+        otype = s.PreconditionNewly(sub)
+        break
+    case model.OrderTypeRenewal:
+        // 续签判定
+        s.PreconditionRenewal(sub)
+        break
+    default:
+        snag.Panic("未知的支付请求")
+        break
     }
     // 查询套餐是否存在
     plan := NewPlan().QueryEffectiveWithID(req.PlanID)
@@ -92,14 +139,15 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
             deposit = 0.01
         }
     }
+
     total, _ := decimal.NewFromFloat(price).Add(decimal.NewFromFloat(deposit)).Float64()
     prepay := &model.PaymentCache{
         CacheType: model.PaymentCacheTypePlan,
         Plan: &model.PaymentPlan{
-            OrderType:  req.OrderType,
+            OrderType:  otype,
             OutTradeNo: no,
             RiderID:    s.rider.ID,
-            Plan:       cp,
+            PlanID:     cp.ID,
             Name:       "购买" + plan.Name,
             Amount:     total,
             Deposit:    deposit,
@@ -142,72 +190,73 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
 }
 
 // Refund 退款
+// TODO 重构退款申请逻辑
 func (s *orderService) Refund(riderID uint64, req *model.OrderRefundReq) {
-    if (req.Deposit == nil && req.OrderID == nil) || (req.Deposit != nil && req.OrderID != nil) {
-        snag.Panic("退款参数错误")
-    }
-    q := s.orm.QueryNotDeleted().
-        Where(
-            order.RiderID(riderID),
-            order.Status(model.OrderStatusPaid),
-        )
-    if req.OrderID != nil {
-        q.Where(order.ID(*req.OrderID))
-    }
-    if req.Deposit != nil && *req.Deposit {
-        // 查找是否满足退押金条件
-        if exist, _ := s.orm.QueryNotDeleted().Where(
-            order.RiderID(riderID),
-            order.EndAtIsNil(),
-            order.StatusIn(model.OrderStatusPaid, model.OrderStatusRefundPending),
-            order.TypeIn(model.OrderRiderPlan...),
-        ).Exist(s.ctx); exist {
-            snag.Panic("当前无法退款")
-        }
-        q.Where(order.Type(model.OrderTypeDeposit))
-    }
-
-    o, _ := q.Only(s.ctx)
-
-    if o == nil {
-        snag.Panic("未找到有效订单")
-    }
-    no := tools.NewUnique().NewSonyflakeID()
-    refund := &model.PaymentRefund{
-        OrderID:      o.ID,
-        TradeNo:      o.TradeNo,
-        Total:        o.Total,
-        RefundAmount: o.Amount,
-        OutRefundNo:  no,
-        Reason:       "用户申请",
-    }
-    // 缓存
-    cache.Set(s.ctx, no, &model.PaymentCache{CacheType: model.PaymentCacheTypeRefund, Refund: refund}, 0)
-
-    switch o.Payway {
-    case model.OrderPaywayAlipay:
-        payment.NewAlipay().Refund(refund)
-        break
-    case model.OrderPaywayWechat:
-        payment.NewWechat().Refund(refund)
-        break
-    }
-
-    if refund.Request {
-        o.Update().SetStatus(model.OrderStatusRefundPending).SaveX(s.ctx)
-        // 保存订单
-        ar.Ent.OrderRefund.Create().
-            SetOrder(o).
-            SetAmount(refund.RefundAmount).
-            SetOutRefundNo(no).
-            SetReason(refund.Reason).
-            SetStatus(model.OrderRefundStatusPending).
-            SaveX(s.ctx)
-
-        if refund.Success {
-            s.RefundSuccess(refund)
-        }
-    }
+    // if (req.Deposit == nil && req.OrderID == nil) || (req.Deposit != nil && req.OrderID != nil) {
+    //     snag.Panic("退款参数错误")
+    // }
+    // q := s.orm.QueryNotDeleted().
+    //     Where(
+    //         order.RiderID(riderID),
+    //         order.Status(model.OrderStatusPaid),
+    //     )
+    // if req.OrderID != nil {
+    //     q.Where(order.ID(*req.OrderID))
+    // }
+    // if req.Deposit != nil && *req.Deposit {
+    //     // 是否满足退押金条件
+    //     if exist, _ := s.orm.QueryNotDeleted().Where(
+    //         order.RiderID(riderID),
+    //         order.EndAtIsNil(),
+    //         order.StatusIn(model.OrderStatusPaid, model.OrderStatusRefundPending),
+    //         order.TypeIn(model.OrderSubscribeTypes...),
+    //     ).Exist(s.ctx); exist {
+    //         snag.Panic("当前无法退押金")
+    //     }
+    //     q.Where(order.Type(model.OrderTypeDeposit))
+    // }
+    //
+    // o, _ := q.Only(s.ctx)
+    //
+    // if o == nil {
+    //     snag.Panic("未找到有效订单")
+    // }
+    // no := tools.NewUnique().NewSonyflakeID()
+    // refund := &model.PaymentRefund{
+    //     OrderID:      o.ID,
+    //     TradeNo:      o.TradeNo,
+    //     Total:        o.Total,
+    //     RefundAmount: o.Amount,
+    //     OutRefundNo:  no,
+    //     Reason:       "用户申请",
+    // }
+    // // 缓存
+    // cache.Set(s.ctx, no, &model.PaymentCache{CacheType: model.PaymentCacheTypeRefund, Refund: refund}, 0)
+    //
+    // switch o.Payway {
+    // case model.OrderPaywayAlipay:
+    //     payment.NewAlipay().Refund(refund)
+    //     break
+    // case model.OrderPaywayWechat:
+    //     payment.NewWechat().Refund(refund)
+    //     break
+    // }
+    //
+    // if refund.Request {
+    //     o.Update().SetStatus(model.OrderStatusRefundPending).SaveX(s.ctx)
+    //     // 保存订单
+    //     ar.Ent.OrderRefund.Create().
+    //         SetOrder(o).
+    //         SetAmount(refund.RefundAmount).
+    //         SetOutRefundNo(no).
+    //         SetReason(refund.Reason).
+    //         SetStatus(model.OrderRefundStatusPending).
+    //         SaveX(s.ctx)
+    //
+    //     if refund.Success {
+    //         s.RefundSuccess(refund)
+    //     }
+    // }
 }
 
 // DoPayment 处理支付
@@ -225,6 +274,7 @@ func (s *orderService) DoPayment(pc *model.PaymentCache) {
 }
 
 // OrderPaid 订单成功支付
+// TODO 重构
 // TODO 业绩提成逻辑
 // TODO 2续签 3重签 4更改电池 5救援 6滞纳金 逻辑
 func (s *orderService) OrderPaid(trade *model.PaymentPlan) {
@@ -270,7 +320,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentPlan) {
         }
     }
     // 当新签和重签的时候有提成
-    if trade.OrderType == model.OrderTypeNewPlan || trade.OrderType == model.OrderTypeRenewal {
+    if trade.OrderType == model.OrderTypeNewly || trade.OrderType == model.OrderTypeAgain {
         // 创建提成
         _, err = ar.Ent.Commission.Create().SetOrder(o).SetAmount(trade.Plan.Commission).SetStatus(model.CommissionStatusPending).Save(s.ctx)
         if err != nil {

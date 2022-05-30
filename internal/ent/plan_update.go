@@ -14,7 +14,6 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -230,21 +229,6 @@ func (pu *PlanUpdate) AddCities(c ...*City) *PlanUpdate {
 	return pu.AddCityIDs(ids...)
 }
 
-// AddOrderIDs adds the "orders" edge to the Order entity by IDs.
-func (pu *PlanUpdate) AddOrderIDs(ids ...uint64) *PlanUpdate {
-	pu.mutation.AddOrderIDs(ids...)
-	return pu
-}
-
-// AddOrders adds the "orders" edges to the Order entity.
-func (pu *PlanUpdate) AddOrders(o ...*Order) *PlanUpdate {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
-	}
-	return pu.AddOrderIDs(ids...)
-}
-
 // Mutation returns the PlanMutation object of the builder.
 func (pu *PlanUpdate) Mutation() *PlanMutation {
 	return pu.mutation
@@ -290,27 +274,6 @@ func (pu *PlanUpdate) RemoveCities(c ...*City) *PlanUpdate {
 		ids[i] = c[i].ID
 	}
 	return pu.RemoveCityIDs(ids...)
-}
-
-// ClearOrders clears all "orders" edges to the Order entity.
-func (pu *PlanUpdate) ClearOrders() *PlanUpdate {
-	pu.mutation.ClearOrders()
-	return pu
-}
-
-// RemoveOrderIDs removes the "orders" edge to Order entities by IDs.
-func (pu *PlanUpdate) RemoveOrderIDs(ids ...uint64) *PlanUpdate {
-	pu.mutation.RemoveOrderIDs(ids...)
-	return pu
-}
-
-// RemoveOrders removes "orders" edges to Order entities.
-func (pu *PlanUpdate) RemoveOrders(o ...*Order) *PlanUpdate {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
-	}
-	return pu.RemoveOrderIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -663,60 +626,6 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if pu.mutation.OrdersCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   plan.OrdersTable,
-			Columns: []string{plan.OrdersColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := pu.mutation.RemovedOrdersIDs(); len(nodes) > 0 && !pu.mutation.OrdersCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   plan.OrdersTable,
-			Columns: []string{plan.OrdersColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := pu.mutation.OrdersIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   plan.OrdersTable,
-			Columns: []string{plan.OrdersColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{plan.Label}
@@ -934,21 +843,6 @@ func (puo *PlanUpdateOne) AddCities(c ...*City) *PlanUpdateOne {
 	return puo.AddCityIDs(ids...)
 }
 
-// AddOrderIDs adds the "orders" edge to the Order entity by IDs.
-func (puo *PlanUpdateOne) AddOrderIDs(ids ...uint64) *PlanUpdateOne {
-	puo.mutation.AddOrderIDs(ids...)
-	return puo
-}
-
-// AddOrders adds the "orders" edges to the Order entity.
-func (puo *PlanUpdateOne) AddOrders(o ...*Order) *PlanUpdateOne {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
-	}
-	return puo.AddOrderIDs(ids...)
-}
-
 // Mutation returns the PlanMutation object of the builder.
 func (puo *PlanUpdateOne) Mutation() *PlanMutation {
 	return puo.mutation
@@ -994,27 +888,6 @@ func (puo *PlanUpdateOne) RemoveCities(c ...*City) *PlanUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return puo.RemoveCityIDs(ids...)
-}
-
-// ClearOrders clears all "orders" edges to the Order entity.
-func (puo *PlanUpdateOne) ClearOrders() *PlanUpdateOne {
-	puo.mutation.ClearOrders()
-	return puo
-}
-
-// RemoveOrderIDs removes the "orders" edge to Order entities by IDs.
-func (puo *PlanUpdateOne) RemoveOrderIDs(ids ...uint64) *PlanUpdateOne {
-	puo.mutation.RemoveOrderIDs(ids...)
-	return puo
-}
-
-// RemoveOrders removes "orders" edges to Order entities.
-func (puo *PlanUpdateOne) RemoveOrders(o ...*Order) *PlanUpdateOne {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
-	}
-	return puo.RemoveOrderIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1389,60 +1262,6 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: city.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if puo.mutation.OrdersCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   plan.OrdersTable,
-			Columns: []string{plan.OrdersColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := puo.mutation.RemovedOrdersIDs(); len(nodes) > 0 && !puo.mutation.OrdersCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   plan.OrdersTable,
-			Columns: []string{plan.OrdersColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := puo.mutation.OrdersIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   plan.OrdersTable,
-			Columns: []string{plan.OrdersColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
 				},
 			},
 		}

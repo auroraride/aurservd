@@ -22,6 +22,7 @@ import (
     "github.com/jinzhu/copier"
     "github.com/lithammer/shortuuid/v4"
     log "github.com/sirupsen/logrus"
+    "sort"
     "time"
 )
 
@@ -323,4 +324,51 @@ func (s *cabinetService) Reboot(req *model.IDPostReq) bool {
     }()
 
     return state
+}
+
+// QueryWithSerial 根据序列号查找电柜
+func (s *cabinetService) QueryWithSerial(serial string) *ent.Cabinet {
+    cab, _ := s.orm.QueryNotDeleted().Where(cabinet.Serial(serial)).Only(s.ctx)
+    if cab == nil {
+        snag.Panic("未找到电柜")
+    }
+    return cab
+}
+
+// Usable 获取换电可用仓位信息
+func (s *cabinetService) Usable(cab *ent.Cabinet) (op model.RiderCabinetOperateProcess) {
+    sort.Slice(cab.Bin, func(i, j int) bool {
+        return cab.Bin[i].Electricity.Value() > cab.Bin[j].Electricity.Value()
+    })
+    // 查看电柜是否有满电
+    for index, bin := range cab.Bin {
+        if !bin.Battery && op.EmptyBin == nil {
+            // 获取空仓
+            op.EmptyBin = &model.CabinetBinBasicInfo{
+                Index:       index,
+                Electricity: bin.Electricity,
+            }
+        }
+        if bin.Electricity.IsBatteryFull() && op.FullBin == nil {
+            op.FullBin = &model.CabinetBinBasicInfo{
+                Index:       index,
+                Electricity: bin.Electricity,
+            }
+        }
+    }
+    if op.FullBin == nil {
+        op.Alternative = &model.CabinetBinBasicInfo{
+            Index:       len(cab.Bin) - 1,
+            Electricity: cab.Bin[len(cab.Bin)-1].Electricity,
+        }
+    }
+    return
+}
+
+// Health 判定电柜是否可用
+// TODO 上次获取状态多久后标记为offline
+func (s *cabinetService) Health(cab *ent.Cabinet) bool {
+    return cab.Status == model.CabinetStatusNormal &&
+        cab.Health == model.CabinetHealthStatusOnline &&
+        len(cab.Bin) > 0
 }

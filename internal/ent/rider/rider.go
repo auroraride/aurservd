@@ -61,12 +61,10 @@ const (
 	EdgeFaults = "faults"
 	// EdgeOrders holds the string denoting the orders edge name in mutations.
 	EdgeOrders = "orders"
-	// EdgePauses holds the string denoting the pauses edge name in mutations.
-	EdgePauses = "pauses"
-	// EdgeArrearages holds the string denoting the arrearages edge name in mutations.
-	EdgeArrearages = "arrearages"
-	// EdgeAlters holds the string denoting the alters edge name in mutations.
-	EdgeAlters = "alters"
+	// EdgeExchanges holds the string denoting the exchanges edge name in mutations.
+	EdgeExchanges = "exchanges"
+	// EdgeSubscribes holds the string denoting the subscribes edge name in mutations.
+	EdgeSubscribes = "subscribes"
 	// Table holds the table name of the rider in the database.
 	Table = "rider"
 	// PersonTable is the table that holds the person relation/edge.
@@ -104,27 +102,20 @@ const (
 	OrdersInverseTable = "order"
 	// OrdersColumn is the table column denoting the orders relation/edge.
 	OrdersColumn = "rider_id"
-	// PausesTable is the table that holds the pauses relation/edge.
-	PausesTable = "order_pause"
-	// PausesInverseTable is the table name for the OrderPause entity.
-	// It exists in this package in order to avoid circular dependency with the "orderpause" package.
-	PausesInverseTable = "order_pause"
-	// PausesColumn is the table column denoting the pauses relation/edge.
-	PausesColumn = "rider_id"
-	// ArrearagesTable is the table that holds the arrearages relation/edge.
-	ArrearagesTable = "order_arrearage"
-	// ArrearagesInverseTable is the table name for the OrderArrearage entity.
-	// It exists in this package in order to avoid circular dependency with the "orderarrearage" package.
-	ArrearagesInverseTable = "order_arrearage"
-	// ArrearagesColumn is the table column denoting the arrearages relation/edge.
-	ArrearagesColumn = "rider_id"
-	// AltersTable is the table that holds the alters relation/edge.
-	AltersTable = "order_alter"
-	// AltersInverseTable is the table name for the OrderAlter entity.
-	// It exists in this package in order to avoid circular dependency with the "orderalter" package.
-	AltersInverseTable = "order_alter"
-	// AltersColumn is the table column denoting the alters relation/edge.
-	AltersColumn = "rider_id"
+	// ExchangesTable is the table that holds the exchanges relation/edge.
+	ExchangesTable = "cabinet_exchange"
+	// ExchangesInverseTable is the table name for the CabinetExchange entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinetexchange" package.
+	ExchangesInverseTable = "cabinet_exchange"
+	// ExchangesColumn is the table column denoting the exchanges relation/edge.
+	ExchangesColumn = "rider_id"
+	// SubscribesTable is the table that holds the subscribes relation/edge.
+	SubscribesTable = "subscribe"
+	// SubscribesInverseTable is the table name for the Subscribe entity.
+	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
+	SubscribesInverseTable = "subscribe"
+	// SubscribesColumn is the table column denoting the subscribes relation/edge.
+	SubscribesColumn = "rider_id"
 )
 
 // Columns holds all SQL columns for rider fields.

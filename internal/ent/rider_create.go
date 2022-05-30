@@ -12,15 +12,14 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/order"
-	"github.com/auroraride/aurservd/internal/ent/orderalter"
-	"github.com/auroraride/aurservd/internal/ent/orderarrearage"
-	"github.com/auroraride/aurservd/internal/ent/orderpause"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // RiderCreate is the builder for creating a Rider entity.
@@ -310,49 +309,34 @@ func (rc *RiderCreate) AddOrders(o ...*Order) *RiderCreate {
 	return rc.AddOrderIDs(ids...)
 }
 
-// AddPauseIDs adds the "pauses" edge to the OrderPause entity by IDs.
-func (rc *RiderCreate) AddPauseIDs(ids ...uint64) *RiderCreate {
-	rc.mutation.AddPauseIDs(ids...)
+// AddExchangeIDs adds the "exchanges" edge to the CabinetExchange entity by IDs.
+func (rc *RiderCreate) AddExchangeIDs(ids ...uint64) *RiderCreate {
+	rc.mutation.AddExchangeIDs(ids...)
 	return rc
 }
 
-// AddPauses adds the "pauses" edges to the OrderPause entity.
-func (rc *RiderCreate) AddPauses(o ...*OrderPause) *RiderCreate {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
+// AddExchanges adds the "exchanges" edges to the CabinetExchange entity.
+func (rc *RiderCreate) AddExchanges(c ...*CabinetExchange) *RiderCreate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return rc.AddPauseIDs(ids...)
+	return rc.AddExchangeIDs(ids...)
 }
 
-// AddArrearageIDs adds the "arrearages" edge to the OrderArrearage entity by IDs.
-func (rc *RiderCreate) AddArrearageIDs(ids ...uint64) *RiderCreate {
-	rc.mutation.AddArrearageIDs(ids...)
+// AddSubscribeIDs adds the "subscribes" edge to the Subscribe entity by IDs.
+func (rc *RiderCreate) AddSubscribeIDs(ids ...uint64) *RiderCreate {
+	rc.mutation.AddSubscribeIDs(ids...)
 	return rc
 }
 
-// AddArrearages adds the "arrearages" edges to the OrderArrearage entity.
-func (rc *RiderCreate) AddArrearages(o ...*OrderArrearage) *RiderCreate {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
+// AddSubscribes adds the "subscribes" edges to the Subscribe entity.
+func (rc *RiderCreate) AddSubscribes(s ...*Subscribe) *RiderCreate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
 	}
-	return rc.AddArrearageIDs(ids...)
-}
-
-// AddAlterIDs adds the "alters" edge to the OrderAlter entity by IDs.
-func (rc *RiderCreate) AddAlterIDs(ids ...uint64) *RiderCreate {
-	rc.mutation.AddAlterIDs(ids...)
-	return rc
-}
-
-// AddAlters adds the "alters" edges to the OrderAlter entity.
-func (rc *RiderCreate) AddAlters(o ...*OrderAlter) *RiderCreate {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
-	}
-	return rc.AddAlterIDs(ids...)
+	return rc.AddSubscribeIDs(ids...)
 }
 
 // Mutation returns the RiderMutation object of the builder.
@@ -764,17 +748,17 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := rc.mutation.PausesIDs(); len(nodes) > 0 {
+	if nodes := rc.mutation.ExchangesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.PausesTable,
-			Columns: []string{rider.PausesColumn},
+			Table:   rider.ExchangesTable,
+			Columns: []string{rider.ExchangesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: orderpause.FieldID,
+					Column: cabinetexchange.FieldID,
 				},
 			},
 		}
@@ -783,36 +767,17 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := rc.mutation.ArrearagesIDs(); len(nodes) > 0 {
+	if nodes := rc.mutation.SubscribesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.ArrearagesTable,
-			Columns: []string{rider.ArrearagesColumn},
+			Table:   rider.SubscribesTable,
+			Columns: []string{rider.SubscribesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: orderarrearage.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := rc.mutation.AltersIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   rider.AltersTable,
-			Columns: []string{rider.AltersColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: orderalter.FieldID,
+					Column: subscribe.FieldID,
 				},
 			},
 		}

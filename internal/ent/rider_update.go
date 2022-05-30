@@ -12,16 +12,15 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/order"
-	"github.com/auroraride/aurservd/internal/ent/orderalter"
-	"github.com/auroraride/aurservd/internal/ent/orderarrearage"
-	"github.com/auroraride/aurservd/internal/ent/orderpause"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // RiderUpdate is the builder for updating Rider entities.
@@ -355,49 +354,34 @@ func (ru *RiderUpdate) AddOrders(o ...*Order) *RiderUpdate {
 	return ru.AddOrderIDs(ids...)
 }
 
-// AddPauseIDs adds the "pauses" edge to the OrderPause entity by IDs.
-func (ru *RiderUpdate) AddPauseIDs(ids ...uint64) *RiderUpdate {
-	ru.mutation.AddPauseIDs(ids...)
+// AddExchangeIDs adds the "exchanges" edge to the CabinetExchange entity by IDs.
+func (ru *RiderUpdate) AddExchangeIDs(ids ...uint64) *RiderUpdate {
+	ru.mutation.AddExchangeIDs(ids...)
 	return ru
 }
 
-// AddPauses adds the "pauses" edges to the OrderPause entity.
-func (ru *RiderUpdate) AddPauses(o ...*OrderPause) *RiderUpdate {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
+// AddExchanges adds the "exchanges" edges to the CabinetExchange entity.
+func (ru *RiderUpdate) AddExchanges(c ...*CabinetExchange) *RiderUpdate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return ru.AddPauseIDs(ids...)
+	return ru.AddExchangeIDs(ids...)
 }
 
-// AddArrearageIDs adds the "arrearages" edge to the OrderArrearage entity by IDs.
-func (ru *RiderUpdate) AddArrearageIDs(ids ...uint64) *RiderUpdate {
-	ru.mutation.AddArrearageIDs(ids...)
+// AddSubscribeIDs adds the "subscribes" edge to the Subscribe entity by IDs.
+func (ru *RiderUpdate) AddSubscribeIDs(ids ...uint64) *RiderUpdate {
+	ru.mutation.AddSubscribeIDs(ids...)
 	return ru
 }
 
-// AddArrearages adds the "arrearages" edges to the OrderArrearage entity.
-func (ru *RiderUpdate) AddArrearages(o ...*OrderArrearage) *RiderUpdate {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
+// AddSubscribes adds the "subscribes" edges to the Subscribe entity.
+func (ru *RiderUpdate) AddSubscribes(s ...*Subscribe) *RiderUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
 	}
-	return ru.AddArrearageIDs(ids...)
-}
-
-// AddAlterIDs adds the "alters" edge to the OrderAlter entity by IDs.
-func (ru *RiderUpdate) AddAlterIDs(ids ...uint64) *RiderUpdate {
-	ru.mutation.AddAlterIDs(ids...)
-	return ru
-}
-
-// AddAlters adds the "alters" edges to the OrderAlter entity.
-func (ru *RiderUpdate) AddAlters(o ...*OrderAlter) *RiderUpdate {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
-	}
-	return ru.AddAlterIDs(ids...)
+	return ru.AddSubscribeIDs(ids...)
 }
 
 // Mutation returns the RiderMutation object of the builder.
@@ -480,67 +464,46 @@ func (ru *RiderUpdate) RemoveOrders(o ...*Order) *RiderUpdate {
 	return ru.RemoveOrderIDs(ids...)
 }
 
-// ClearPauses clears all "pauses" edges to the OrderPause entity.
-func (ru *RiderUpdate) ClearPauses() *RiderUpdate {
-	ru.mutation.ClearPauses()
+// ClearExchanges clears all "exchanges" edges to the CabinetExchange entity.
+func (ru *RiderUpdate) ClearExchanges() *RiderUpdate {
+	ru.mutation.ClearExchanges()
 	return ru
 }
 
-// RemovePauseIDs removes the "pauses" edge to OrderPause entities by IDs.
-func (ru *RiderUpdate) RemovePauseIDs(ids ...uint64) *RiderUpdate {
-	ru.mutation.RemovePauseIDs(ids...)
+// RemoveExchangeIDs removes the "exchanges" edge to CabinetExchange entities by IDs.
+func (ru *RiderUpdate) RemoveExchangeIDs(ids ...uint64) *RiderUpdate {
+	ru.mutation.RemoveExchangeIDs(ids...)
 	return ru
 }
 
-// RemovePauses removes "pauses" edges to OrderPause entities.
-func (ru *RiderUpdate) RemovePauses(o ...*OrderPause) *RiderUpdate {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
+// RemoveExchanges removes "exchanges" edges to CabinetExchange entities.
+func (ru *RiderUpdate) RemoveExchanges(c ...*CabinetExchange) *RiderUpdate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return ru.RemovePauseIDs(ids...)
+	return ru.RemoveExchangeIDs(ids...)
 }
 
-// ClearArrearages clears all "arrearages" edges to the OrderArrearage entity.
-func (ru *RiderUpdate) ClearArrearages() *RiderUpdate {
-	ru.mutation.ClearArrearages()
+// ClearSubscribes clears all "subscribes" edges to the Subscribe entity.
+func (ru *RiderUpdate) ClearSubscribes() *RiderUpdate {
+	ru.mutation.ClearSubscribes()
 	return ru
 }
 
-// RemoveArrearageIDs removes the "arrearages" edge to OrderArrearage entities by IDs.
-func (ru *RiderUpdate) RemoveArrearageIDs(ids ...uint64) *RiderUpdate {
-	ru.mutation.RemoveArrearageIDs(ids...)
+// RemoveSubscribeIDs removes the "subscribes" edge to Subscribe entities by IDs.
+func (ru *RiderUpdate) RemoveSubscribeIDs(ids ...uint64) *RiderUpdate {
+	ru.mutation.RemoveSubscribeIDs(ids...)
 	return ru
 }
 
-// RemoveArrearages removes "arrearages" edges to OrderArrearage entities.
-func (ru *RiderUpdate) RemoveArrearages(o ...*OrderArrearage) *RiderUpdate {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
+// RemoveSubscribes removes "subscribes" edges to Subscribe entities.
+func (ru *RiderUpdate) RemoveSubscribes(s ...*Subscribe) *RiderUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
 	}
-	return ru.RemoveArrearageIDs(ids...)
-}
-
-// ClearAlters clears all "alters" edges to the OrderAlter entity.
-func (ru *RiderUpdate) ClearAlters() *RiderUpdate {
-	ru.mutation.ClearAlters()
-	return ru
-}
-
-// RemoveAlterIDs removes the "alters" edge to OrderAlter entities by IDs.
-func (ru *RiderUpdate) RemoveAlterIDs(ids ...uint64) *RiderUpdate {
-	ru.mutation.RemoveAlterIDs(ids...)
-	return ru
-}
-
-// RemoveAlters removes "alters" edges to OrderAlter entities.
-func (ru *RiderUpdate) RemoveAlters(o ...*OrderAlter) *RiderUpdate {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
-	}
-	return ru.RemoveAlterIDs(ids...)
+	return ru.RemoveSubscribeIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1060,33 +1023,33 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ru.mutation.PausesCleared() {
+	if ru.mutation.ExchangesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.PausesTable,
-			Columns: []string{rider.PausesColumn},
+			Table:   rider.ExchangesTable,
+			Columns: []string{rider.ExchangesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: orderpause.FieldID,
+					Column: cabinetexchange.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ru.mutation.RemovedPausesIDs(); len(nodes) > 0 && !ru.mutation.PausesCleared() {
+	if nodes := ru.mutation.RemovedExchangesIDs(); len(nodes) > 0 && !ru.mutation.ExchangesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.PausesTable,
-			Columns: []string{rider.PausesColumn},
+			Table:   rider.ExchangesTable,
+			Columns: []string{rider.ExchangesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: orderpause.FieldID,
+					Column: cabinetexchange.FieldID,
 				},
 			},
 		}
@@ -1095,71 +1058,17 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ru.mutation.PausesIDs(); len(nodes) > 0 {
+	if nodes := ru.mutation.ExchangesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.PausesTable,
-			Columns: []string{rider.PausesColumn},
+			Table:   rider.ExchangesTable,
+			Columns: []string{rider.ExchangesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: orderpause.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if ru.mutation.ArrearagesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   rider.ArrearagesTable,
-			Columns: []string{rider.ArrearagesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: orderarrearage.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ru.mutation.RemovedArrearagesIDs(); len(nodes) > 0 && !ru.mutation.ArrearagesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   rider.ArrearagesTable,
-			Columns: []string{rider.ArrearagesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: orderarrearage.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ru.mutation.ArrearagesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   rider.ArrearagesTable,
-			Columns: []string{rider.ArrearagesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: orderarrearage.FieldID,
+					Column: cabinetexchange.FieldID,
 				},
 			},
 		}
@@ -1168,33 +1077,33 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ru.mutation.AltersCleared() {
+	if ru.mutation.SubscribesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.AltersTable,
-			Columns: []string{rider.AltersColumn},
+			Table:   rider.SubscribesTable,
+			Columns: []string{rider.SubscribesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: orderalter.FieldID,
+					Column: subscribe.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ru.mutation.RemovedAltersIDs(); len(nodes) > 0 && !ru.mutation.AltersCleared() {
+	if nodes := ru.mutation.RemovedSubscribesIDs(); len(nodes) > 0 && !ru.mutation.SubscribesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.AltersTable,
-			Columns: []string{rider.AltersColumn},
+			Table:   rider.SubscribesTable,
+			Columns: []string{rider.SubscribesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: orderalter.FieldID,
+					Column: subscribe.FieldID,
 				},
 			},
 		}
@@ -1203,17 +1112,17 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ru.mutation.AltersIDs(); len(nodes) > 0 {
+	if nodes := ru.mutation.SubscribesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.AltersTable,
-			Columns: []string{rider.AltersColumn},
+			Table:   rider.SubscribesTable,
+			Columns: []string{rider.SubscribesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: orderalter.FieldID,
+					Column: subscribe.FieldID,
 				},
 			},
 		}
@@ -1559,49 +1468,34 @@ func (ruo *RiderUpdateOne) AddOrders(o ...*Order) *RiderUpdateOne {
 	return ruo.AddOrderIDs(ids...)
 }
 
-// AddPauseIDs adds the "pauses" edge to the OrderPause entity by IDs.
-func (ruo *RiderUpdateOne) AddPauseIDs(ids ...uint64) *RiderUpdateOne {
-	ruo.mutation.AddPauseIDs(ids...)
+// AddExchangeIDs adds the "exchanges" edge to the CabinetExchange entity by IDs.
+func (ruo *RiderUpdateOne) AddExchangeIDs(ids ...uint64) *RiderUpdateOne {
+	ruo.mutation.AddExchangeIDs(ids...)
 	return ruo
 }
 
-// AddPauses adds the "pauses" edges to the OrderPause entity.
-func (ruo *RiderUpdateOne) AddPauses(o ...*OrderPause) *RiderUpdateOne {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
+// AddExchanges adds the "exchanges" edges to the CabinetExchange entity.
+func (ruo *RiderUpdateOne) AddExchanges(c ...*CabinetExchange) *RiderUpdateOne {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return ruo.AddPauseIDs(ids...)
+	return ruo.AddExchangeIDs(ids...)
 }
 
-// AddArrearageIDs adds the "arrearages" edge to the OrderArrearage entity by IDs.
-func (ruo *RiderUpdateOne) AddArrearageIDs(ids ...uint64) *RiderUpdateOne {
-	ruo.mutation.AddArrearageIDs(ids...)
+// AddSubscribeIDs adds the "subscribes" edge to the Subscribe entity by IDs.
+func (ruo *RiderUpdateOne) AddSubscribeIDs(ids ...uint64) *RiderUpdateOne {
+	ruo.mutation.AddSubscribeIDs(ids...)
 	return ruo
 }
 
-// AddArrearages adds the "arrearages" edges to the OrderArrearage entity.
-func (ruo *RiderUpdateOne) AddArrearages(o ...*OrderArrearage) *RiderUpdateOne {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
+// AddSubscribes adds the "subscribes" edges to the Subscribe entity.
+func (ruo *RiderUpdateOne) AddSubscribes(s ...*Subscribe) *RiderUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
 	}
-	return ruo.AddArrearageIDs(ids...)
-}
-
-// AddAlterIDs adds the "alters" edge to the OrderAlter entity by IDs.
-func (ruo *RiderUpdateOne) AddAlterIDs(ids ...uint64) *RiderUpdateOne {
-	ruo.mutation.AddAlterIDs(ids...)
-	return ruo
-}
-
-// AddAlters adds the "alters" edges to the OrderAlter entity.
-func (ruo *RiderUpdateOne) AddAlters(o ...*OrderAlter) *RiderUpdateOne {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
-	}
-	return ruo.AddAlterIDs(ids...)
+	return ruo.AddSubscribeIDs(ids...)
 }
 
 // Mutation returns the RiderMutation object of the builder.
@@ -1684,67 +1578,46 @@ func (ruo *RiderUpdateOne) RemoveOrders(o ...*Order) *RiderUpdateOne {
 	return ruo.RemoveOrderIDs(ids...)
 }
 
-// ClearPauses clears all "pauses" edges to the OrderPause entity.
-func (ruo *RiderUpdateOne) ClearPauses() *RiderUpdateOne {
-	ruo.mutation.ClearPauses()
+// ClearExchanges clears all "exchanges" edges to the CabinetExchange entity.
+func (ruo *RiderUpdateOne) ClearExchanges() *RiderUpdateOne {
+	ruo.mutation.ClearExchanges()
 	return ruo
 }
 
-// RemovePauseIDs removes the "pauses" edge to OrderPause entities by IDs.
-func (ruo *RiderUpdateOne) RemovePauseIDs(ids ...uint64) *RiderUpdateOne {
-	ruo.mutation.RemovePauseIDs(ids...)
+// RemoveExchangeIDs removes the "exchanges" edge to CabinetExchange entities by IDs.
+func (ruo *RiderUpdateOne) RemoveExchangeIDs(ids ...uint64) *RiderUpdateOne {
+	ruo.mutation.RemoveExchangeIDs(ids...)
 	return ruo
 }
 
-// RemovePauses removes "pauses" edges to OrderPause entities.
-func (ruo *RiderUpdateOne) RemovePauses(o ...*OrderPause) *RiderUpdateOne {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
+// RemoveExchanges removes "exchanges" edges to CabinetExchange entities.
+func (ruo *RiderUpdateOne) RemoveExchanges(c ...*CabinetExchange) *RiderUpdateOne {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
 	}
-	return ruo.RemovePauseIDs(ids...)
+	return ruo.RemoveExchangeIDs(ids...)
 }
 
-// ClearArrearages clears all "arrearages" edges to the OrderArrearage entity.
-func (ruo *RiderUpdateOne) ClearArrearages() *RiderUpdateOne {
-	ruo.mutation.ClearArrearages()
+// ClearSubscribes clears all "subscribes" edges to the Subscribe entity.
+func (ruo *RiderUpdateOne) ClearSubscribes() *RiderUpdateOne {
+	ruo.mutation.ClearSubscribes()
 	return ruo
 }
 
-// RemoveArrearageIDs removes the "arrearages" edge to OrderArrearage entities by IDs.
-func (ruo *RiderUpdateOne) RemoveArrearageIDs(ids ...uint64) *RiderUpdateOne {
-	ruo.mutation.RemoveArrearageIDs(ids...)
+// RemoveSubscribeIDs removes the "subscribes" edge to Subscribe entities by IDs.
+func (ruo *RiderUpdateOne) RemoveSubscribeIDs(ids ...uint64) *RiderUpdateOne {
+	ruo.mutation.RemoveSubscribeIDs(ids...)
 	return ruo
 }
 
-// RemoveArrearages removes "arrearages" edges to OrderArrearage entities.
-func (ruo *RiderUpdateOne) RemoveArrearages(o ...*OrderArrearage) *RiderUpdateOne {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
+// RemoveSubscribes removes "subscribes" edges to Subscribe entities.
+func (ruo *RiderUpdateOne) RemoveSubscribes(s ...*Subscribe) *RiderUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
 	}
-	return ruo.RemoveArrearageIDs(ids...)
-}
-
-// ClearAlters clears all "alters" edges to the OrderAlter entity.
-func (ruo *RiderUpdateOne) ClearAlters() *RiderUpdateOne {
-	ruo.mutation.ClearAlters()
-	return ruo
-}
-
-// RemoveAlterIDs removes the "alters" edge to OrderAlter entities by IDs.
-func (ruo *RiderUpdateOne) RemoveAlterIDs(ids ...uint64) *RiderUpdateOne {
-	ruo.mutation.RemoveAlterIDs(ids...)
-	return ruo
-}
-
-// RemoveAlters removes "alters" edges to OrderAlter entities.
-func (ruo *RiderUpdateOne) RemoveAlters(o ...*OrderAlter) *RiderUpdateOne {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
-	}
-	return ruo.RemoveAlterIDs(ids...)
+	return ruo.RemoveSubscribeIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -2294,33 +2167,33 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ruo.mutation.PausesCleared() {
+	if ruo.mutation.ExchangesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.PausesTable,
-			Columns: []string{rider.PausesColumn},
+			Table:   rider.ExchangesTable,
+			Columns: []string{rider.ExchangesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: orderpause.FieldID,
+					Column: cabinetexchange.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ruo.mutation.RemovedPausesIDs(); len(nodes) > 0 && !ruo.mutation.PausesCleared() {
+	if nodes := ruo.mutation.RemovedExchangesIDs(); len(nodes) > 0 && !ruo.mutation.ExchangesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.PausesTable,
-			Columns: []string{rider.PausesColumn},
+			Table:   rider.ExchangesTable,
+			Columns: []string{rider.ExchangesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: orderpause.FieldID,
+					Column: cabinetexchange.FieldID,
 				},
 			},
 		}
@@ -2329,71 +2202,17 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ruo.mutation.PausesIDs(); len(nodes) > 0 {
+	if nodes := ruo.mutation.ExchangesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.PausesTable,
-			Columns: []string{rider.PausesColumn},
+			Table:   rider.ExchangesTable,
+			Columns: []string{rider.ExchangesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: orderpause.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if ruo.mutation.ArrearagesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   rider.ArrearagesTable,
-			Columns: []string{rider.ArrearagesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: orderarrearage.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ruo.mutation.RemovedArrearagesIDs(); len(nodes) > 0 && !ruo.mutation.ArrearagesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   rider.ArrearagesTable,
-			Columns: []string{rider.ArrearagesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: orderarrearage.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ruo.mutation.ArrearagesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   rider.ArrearagesTable,
-			Columns: []string{rider.ArrearagesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: orderarrearage.FieldID,
+					Column: cabinetexchange.FieldID,
 				},
 			},
 		}
@@ -2402,33 +2221,33 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ruo.mutation.AltersCleared() {
+	if ruo.mutation.SubscribesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.AltersTable,
-			Columns: []string{rider.AltersColumn},
+			Table:   rider.SubscribesTable,
+			Columns: []string{rider.SubscribesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: orderalter.FieldID,
+					Column: subscribe.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ruo.mutation.RemovedAltersIDs(); len(nodes) > 0 && !ruo.mutation.AltersCleared() {
+	if nodes := ruo.mutation.RemovedSubscribesIDs(); len(nodes) > 0 && !ruo.mutation.SubscribesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.AltersTable,
-			Columns: []string{rider.AltersColumn},
+			Table:   rider.SubscribesTable,
+			Columns: []string{rider.SubscribesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: orderalter.FieldID,
+					Column: subscribe.FieldID,
 				},
 			},
 		}
@@ -2437,17 +2256,17 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ruo.mutation.AltersIDs(); len(nodes) > 0 {
+	if nodes := ruo.mutation.SubscribesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.AltersTable,
-			Columns: []string{rider.AltersColumn},
+			Table:   rider.SubscribesTable,
+			Columns: []string{rider.SubscribesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: orderalter.FieldID,
+					Column: subscribe.FieldID,
 				},
 			},
 		}

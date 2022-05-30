@@ -64,15 +64,9 @@ type CityEdges struct {
 	Parent *City `json:"parent,omitempty"`
 	// Children holds the value of the children edge.
 	Children []*City `json:"children,omitempty"`
-	// Branches holds the value of the branches edge.
-	Branches []*Branch `json:"branches,omitempty"`
-	// Faults holds the value of the faults edge.
-	Faults []*CabinetFault `json:"faults,omitempty"`
-	// Orders holds the value of the orders edge.
-	Orders []*Order `json:"orders,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [3]bool
 }
 
 // PlansOrErr returns the Plans value or an error if the edge
@@ -105,33 +99,6 @@ func (e CityEdges) ChildrenOrErr() ([]*City, error) {
 		return e.Children, nil
 	}
 	return nil, &NotLoadedError{edge: "children"}
-}
-
-// BranchesOrErr returns the Branches value or an error if the edge
-// was not loaded in eager-loading.
-func (e CityEdges) BranchesOrErr() ([]*Branch, error) {
-	if e.loadedTypes[3] {
-		return e.Branches, nil
-	}
-	return nil, &NotLoadedError{edge: "branches"}
-}
-
-// FaultsOrErr returns the Faults value or an error if the edge
-// was not loaded in eager-loading.
-func (e CityEdges) FaultsOrErr() ([]*CabinetFault, error) {
-	if e.loadedTypes[4] {
-		return e.Faults, nil
-	}
-	return nil, &NotLoadedError{edge: "faults"}
-}
-
-// OrdersOrErr returns the Orders value or an error if the edge
-// was not loaded in eager-loading.
-func (e CityEdges) OrdersOrErr() ([]*Order, error) {
-	if e.loadedTypes[5] {
-		return e.Orders, nil
-	}
-	return nil, &NotLoadedError{edge: "orders"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -269,21 +236,6 @@ func (c *City) QueryParent() *CityQuery {
 // QueryChildren queries the "children" edge of the City entity.
 func (c *City) QueryChildren() *CityQuery {
 	return (&CityClient{config: c.config}).QueryChildren(c)
-}
-
-// QueryBranches queries the "branches" edge of the City entity.
-func (c *City) QueryBranches() *BranchQuery {
-	return (&CityClient{config: c.config}).QueryBranches(c)
-}
-
-// QueryFaults queries the "faults" edge of the City entity.
-func (c *City) QueryFaults() *CabinetFaultQuery {
-	return (&CityClient{config: c.config}).QueryFaults(c)
-}
-
-// QueryOrders queries the "orders" edge of the City entity.
-func (c *City) QueryOrders() *OrderQuery {
-	return (&CityClient{config: c.config}).QueryOrders(c)
 }
 
 // Update returns a builder for updating this City.

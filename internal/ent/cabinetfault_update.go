@@ -91,6 +91,12 @@ func (cfu *CabinetFaultUpdate) ClearRemark() *CabinetFaultUpdate {
 	return cfu
 }
 
+// SetCityID sets the "city_id" field.
+func (cfu *CabinetFaultUpdate) SetCityID(u uint64) *CabinetFaultUpdate {
+	cfu.mutation.SetCityID(u)
+	return cfu
+}
+
 // SetStatus sets the "status" field.
 func (cfu *CabinetFaultUpdate) SetStatus(u uint8) *CabinetFaultUpdate {
 	cfu.mutation.ResetStatus()
@@ -109,12 +115,6 @@ func (cfu *CabinetFaultUpdate) SetNillableStatus(u *uint8) *CabinetFaultUpdate {
 // AddStatus adds u to the "status" field.
 func (cfu *CabinetFaultUpdate) AddStatus(u int8) *CabinetFaultUpdate {
 	cfu.mutation.AddStatus(u)
-	return cfu
-}
-
-// SetCityID sets the "city_id" field.
-func (cfu *CabinetFaultUpdate) SetCityID(u uint64) *CabinetFaultUpdate {
-	cfu.mutation.SetCityID(u)
 	return cfu
 }
 
@@ -188,6 +188,11 @@ func (cfu *CabinetFaultUpdate) ClearDescription() *CabinetFaultUpdate {
 	return cfu
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (cfu *CabinetFaultUpdate) SetCity(c *City) *CabinetFaultUpdate {
+	return cfu.SetCityID(c.ID)
+}
+
 // SetBranch sets the "branch" edge to the Branch entity.
 func (cfu *CabinetFaultUpdate) SetBranch(b *Branch) *CabinetFaultUpdate {
 	return cfu.SetBranchID(b.ID)
@@ -203,14 +208,15 @@ func (cfu *CabinetFaultUpdate) SetRider(r *Rider) *CabinetFaultUpdate {
 	return cfu.SetRiderID(r.ID)
 }
 
-// SetCity sets the "city" edge to the City entity.
-func (cfu *CabinetFaultUpdate) SetCity(c *City) *CabinetFaultUpdate {
-	return cfu.SetCityID(c.ID)
-}
-
 // Mutation returns the CabinetFaultMutation object of the builder.
 func (cfu *CabinetFaultUpdate) Mutation() *CabinetFaultMutation {
 	return cfu.mutation
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (cfu *CabinetFaultUpdate) ClearCity() *CabinetFaultUpdate {
+	cfu.mutation.ClearCity()
+	return cfu
 }
 
 // ClearBranch clears the "branch" edge to the Branch entity.
@@ -228,12 +234,6 @@ func (cfu *CabinetFaultUpdate) ClearCabinet() *CabinetFaultUpdate {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (cfu *CabinetFaultUpdate) ClearRider() *CabinetFaultUpdate {
 	cfu.mutation.ClearRider()
-	return cfu
-}
-
-// ClearCity clears the "city" edge to the City entity.
-func (cfu *CabinetFaultUpdate) ClearCity() *CabinetFaultUpdate {
-	cfu.mutation.ClearCity()
 	return cfu
 }
 
@@ -314,6 +314,9 @@ func (cfu *CabinetFaultUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (cfu *CabinetFaultUpdate) check() error {
+	if _, ok := cfu.mutation.CityID(); cfu.mutation.CityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "CabinetFault.city"`)
+	}
 	if _, ok := cfu.mutation.BranchID(); cfu.mutation.BranchCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "CabinetFault.branch"`)
 	}
@@ -322,9 +325,6 @@ func (cfu *CabinetFaultUpdate) check() error {
 	}
 	if _, ok := cfu.mutation.RiderID(); cfu.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "CabinetFault.rider"`)
-	}
-	if _, ok := cfu.mutation.CityID(); cfu.mutation.CityCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "CabinetFault.city"`)
 	}
 	return nil
 }
@@ -452,6 +452,41 @@ func (cfu *CabinetFaultUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: cabinetfault.FieldDescription,
 		})
 	}
+	if cfu.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   cabinetfault.CityTable,
+			Columns: []string{cabinetfault.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cfu.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   cabinetfault.CityTable,
+			Columns: []string{cabinetfault.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if cfu.mutation.BranchCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -557,41 +592,6 @@ func (cfu *CabinetFaultUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if cfu.mutation.CityCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   cabinetfault.CityTable,
-			Columns: []string{cabinetfault.CityColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cfu.mutation.CityIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   cabinetfault.CityTable,
-			Columns: []string{cabinetfault.CityColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cfu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{cabinetfault.Label}
@@ -669,6 +669,12 @@ func (cfuo *CabinetFaultUpdateOne) ClearRemark() *CabinetFaultUpdateOne {
 	return cfuo
 }
 
+// SetCityID sets the "city_id" field.
+func (cfuo *CabinetFaultUpdateOne) SetCityID(u uint64) *CabinetFaultUpdateOne {
+	cfuo.mutation.SetCityID(u)
+	return cfuo
+}
+
 // SetStatus sets the "status" field.
 func (cfuo *CabinetFaultUpdateOne) SetStatus(u uint8) *CabinetFaultUpdateOne {
 	cfuo.mutation.ResetStatus()
@@ -687,12 +693,6 @@ func (cfuo *CabinetFaultUpdateOne) SetNillableStatus(u *uint8) *CabinetFaultUpda
 // AddStatus adds u to the "status" field.
 func (cfuo *CabinetFaultUpdateOne) AddStatus(u int8) *CabinetFaultUpdateOne {
 	cfuo.mutation.AddStatus(u)
-	return cfuo
-}
-
-// SetCityID sets the "city_id" field.
-func (cfuo *CabinetFaultUpdateOne) SetCityID(u uint64) *CabinetFaultUpdateOne {
-	cfuo.mutation.SetCityID(u)
 	return cfuo
 }
 
@@ -766,6 +766,11 @@ func (cfuo *CabinetFaultUpdateOne) ClearDescription() *CabinetFaultUpdateOne {
 	return cfuo
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (cfuo *CabinetFaultUpdateOne) SetCity(c *City) *CabinetFaultUpdateOne {
+	return cfuo.SetCityID(c.ID)
+}
+
 // SetBranch sets the "branch" edge to the Branch entity.
 func (cfuo *CabinetFaultUpdateOne) SetBranch(b *Branch) *CabinetFaultUpdateOne {
 	return cfuo.SetBranchID(b.ID)
@@ -781,14 +786,15 @@ func (cfuo *CabinetFaultUpdateOne) SetRider(r *Rider) *CabinetFaultUpdateOne {
 	return cfuo.SetRiderID(r.ID)
 }
 
-// SetCity sets the "city" edge to the City entity.
-func (cfuo *CabinetFaultUpdateOne) SetCity(c *City) *CabinetFaultUpdateOne {
-	return cfuo.SetCityID(c.ID)
-}
-
 // Mutation returns the CabinetFaultMutation object of the builder.
 func (cfuo *CabinetFaultUpdateOne) Mutation() *CabinetFaultMutation {
 	return cfuo.mutation
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (cfuo *CabinetFaultUpdateOne) ClearCity() *CabinetFaultUpdateOne {
+	cfuo.mutation.ClearCity()
+	return cfuo
 }
 
 // ClearBranch clears the "branch" edge to the Branch entity.
@@ -806,12 +812,6 @@ func (cfuo *CabinetFaultUpdateOne) ClearCabinet() *CabinetFaultUpdateOne {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (cfuo *CabinetFaultUpdateOne) ClearRider() *CabinetFaultUpdateOne {
 	cfuo.mutation.ClearRider()
-	return cfuo
-}
-
-// ClearCity clears the "city" edge to the City entity.
-func (cfuo *CabinetFaultUpdateOne) ClearCity() *CabinetFaultUpdateOne {
-	cfuo.mutation.ClearCity()
 	return cfuo
 }
 
@@ -905,6 +905,9 @@ func (cfuo *CabinetFaultUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (cfuo *CabinetFaultUpdateOne) check() error {
+	if _, ok := cfuo.mutation.CityID(); cfuo.mutation.CityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "CabinetFault.city"`)
+	}
 	if _, ok := cfuo.mutation.BranchID(); cfuo.mutation.BranchCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "CabinetFault.branch"`)
 	}
@@ -913,9 +916,6 @@ func (cfuo *CabinetFaultUpdateOne) check() error {
 	}
 	if _, ok := cfuo.mutation.RiderID(); cfuo.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "CabinetFault.rider"`)
-	}
-	if _, ok := cfuo.mutation.CityID(); cfuo.mutation.CityCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "CabinetFault.city"`)
 	}
 	return nil
 }
@@ -1060,6 +1060,41 @@ func (cfuo *CabinetFaultUpdateOne) sqlSave(ctx context.Context) (_node *CabinetF
 			Column: cabinetfault.FieldDescription,
 		})
 	}
+	if cfuo.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   cabinetfault.CityTable,
+			Columns: []string{cabinetfault.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cfuo.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   cabinetfault.CityTable,
+			Columns: []string{cabinetfault.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if cfuo.mutation.BranchCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1157,41 +1192,6 @@ func (cfuo *CabinetFaultUpdateOne) sqlSave(ctx context.Context) (_node *CabinetF
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: rider.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if cfuo.mutation.CityCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   cabinetfault.CityTable,
-			Columns: []string{cabinetfault.CityColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cfuo.mutation.CityIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   cabinetfault.CityTable,
-			Columns: []string{cabinetfault.CityColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
 				},
 			},
 		}

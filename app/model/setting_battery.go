@@ -20,5 +20,9 @@ func NewBatteryElectricity(pos float64) BatteryElectricity {
 
 // IsBatteryFull 电池是否满电
 func (be BatteryElectricity) IsBatteryFull() bool {
-    return be >= BatteryElectricity(cache.BatteryFull(SettingBatteryFull))
+    return be >= BatteryElectricity(cache.Float64(SettingBatteryFull))
+}
+
+func (be BatteryElectricity) Value() float64 {
+    return float64(be)
 }

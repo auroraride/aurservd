@@ -6,13 +6,13 @@
 package model
 
 const (
-    OrderTypeNewPlan       uint = iota + 1 // 新签, 需要计算业绩
-    OrderTypeRePlan                        // 续签, 无需计算业绩
-    OrderTypeRenewal                       // 重签, 相当于新签 需要计算业绩
-    OrderTypeChangeBattery                 // 更改电池, 相当于续签 无需计算业绩
-    OrderTypeRescue                        // 救援
-    OrderTypeFee                           // 滞纳金
-    OrderTypeDeposit                       // 押金
+    OrderTypeNewly     uint = iota + 1 // 新签, 需要计算业绩
+    OrderTypeRenewal                   // 续签, 无需计算业绩
+    OrderTypeAgain                     // 重签, 相当于新签, 需要判定是否计算业绩
+    OrderTypeTransform                 // 更改电池, 相当于续签 无需计算业绩
+    OrderTypeRescue                    // 救援
+    OrderTypeFee                       // 滞纳金
+    OrderTypeDeposit                   // 押金
 )
 
 const (
@@ -25,17 +25,13 @@ const (
     OrderStatusPaid                       // 已支付
     OrderStatusRefundPending              // 申请退款, 退款后业绩订单需要删除
     OrderStatusRefundSuccess              // 已退款
+    OrderStatusRefundRefused              // 退款被拒绝
 )
 
 const (
     OrderRefundStatusPending uint8 = iota // 退款中
     OrderRefundStatusSuccess              // 成功退款
     OrderRefundStatusFail                 // 退款失败
-)
-
-var (
-    // OrderRiderPlan 骑手骑士卡订单
-    OrderRiderPlan = []uint{OrderTypeNewPlan, OrderTypeRenewal, OrderTypeRePlan, OrderTypeChangeBattery}
 )
 
 // OrderCreateReq 订单创建请求

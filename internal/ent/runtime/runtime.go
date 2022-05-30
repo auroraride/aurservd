@@ -9,16 +9,15 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
-	"github.com/auroraride/aurservd/internal/ent/orderalter"
-	"github.com/auroraride/aurservd/internal/ent/orderarrearage"
-	"github.com/auroraride/aurservd/internal/ent/orderpause"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -26,6 +25,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/schema"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
+	"github.com/auroraride/aurservd/internal/ent/subscribealter"
+	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -112,6 +114,27 @@ func init() {
 	cabinetDescBatteryFullNum := cabinetFields[11].Descriptor()
 	// cabinet.DefaultBatteryFullNum holds the default value on creation for the battery_full_num field.
 	cabinet.DefaultBatteryFullNum = cabinetDescBatteryFullNum.Default.(uint)
+	cabinetexchangeMixin := schema.CabinetExchange{}.Mixin()
+	cabinetexchangeMixinHooks2 := cabinetexchangeMixin[2].Hooks()
+	cabinetexchange.Hooks[0] = cabinetexchangeMixinHooks2[0]
+	cabinetexchangeMixinFields0 := cabinetexchangeMixin[0].Fields()
+	_ = cabinetexchangeMixinFields0
+	cabinetexchangeFields := schema.CabinetExchange{}.Fields()
+	_ = cabinetexchangeFields
+	// cabinetexchangeDescCreatedAt is the schema descriptor for created_at field.
+	cabinetexchangeDescCreatedAt := cabinetexchangeMixinFields0[0].Descriptor()
+	// cabinetexchange.DefaultCreatedAt holds the default value on creation for the created_at field.
+	cabinetexchange.DefaultCreatedAt = cabinetexchangeDescCreatedAt.Default.(func() time.Time)
+	// cabinetexchangeDescUpdatedAt is the schema descriptor for updated_at field.
+	cabinetexchangeDescUpdatedAt := cabinetexchangeMixinFields0[1].Descriptor()
+	// cabinetexchange.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	cabinetexchange.DefaultUpdatedAt = cabinetexchangeDescUpdatedAt.Default.(func() time.Time)
+	// cabinetexchange.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	cabinetexchange.UpdateDefaultUpdatedAt = cabinetexchangeDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// cabinetexchangeDescAlternative is the schema descriptor for alternative field.
+	cabinetexchangeDescAlternative := cabinetexchangeFields[2].Descriptor()
+	// cabinetexchange.DefaultAlternative holds the default value on creation for the alternative field.
+	cabinetexchange.DefaultAlternative = cabinetexchangeDescAlternative.Default.(bool)
 	cabinetfaultMixin := schema.CabinetFault{}.Mixin()
 	cabinetfaultMixinHooks2 := cabinetfaultMixin[2].Hooks()
 	cabinetfault.Hooks[0] = cabinetfaultMixinHooks2[0]
@@ -240,6 +263,23 @@ func init() {
 	contractDescEffective := contractFields[5].Descriptor()
 	// contract.DefaultEffective holds the default value on creation for the effective field.
 	contract.DefaultEffective = contractDescEffective.Default.(bool)
+	employeeMixin := schema.Employee{}.Mixin()
+	employeeMixinHooks2 := employeeMixin[2].Hooks()
+	employee.Hooks[0] = employeeMixinHooks2[0]
+	employeeMixinFields0 := employeeMixin[0].Fields()
+	_ = employeeMixinFields0
+	employeeFields := schema.Employee{}.Fields()
+	_ = employeeFields
+	// employeeDescCreatedAt is the schema descriptor for created_at field.
+	employeeDescCreatedAt := employeeMixinFields0[0].Descriptor()
+	// employee.DefaultCreatedAt holds the default value on creation for the created_at field.
+	employee.DefaultCreatedAt = employeeDescCreatedAt.Default.(func() time.Time)
+	// employeeDescUpdatedAt is the schema descriptor for updated_at field.
+	employeeDescUpdatedAt := employeeMixinFields0[1].Descriptor()
+	// employee.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	employee.DefaultUpdatedAt = employeeDescUpdatedAt.Default.(func() time.Time)
+	// employee.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	employee.UpdateDefaultUpdatedAt = employeeDescUpdatedAt.UpdateDefault.(func() time.Time)
 	enterpriseMixin := schema.Enterprise{}.Mixin()
 	enterpriseMixinHooks2 := enterpriseMixin[2].Hooks()
 	enterprise.Hooks[0] = enterpriseMixinHooks2[0]
@@ -309,57 +349,6 @@ func init() {
 	orderDescTotal := orderFields[9].Descriptor()
 	// order.DefaultTotal holds the default value on creation for the total field.
 	order.DefaultTotal = orderDescTotal.Default.(float64)
-	orderalterMixin := schema.OrderAlter{}.Mixin()
-	orderalterMixinHooks2 := orderalterMixin[2].Hooks()
-	orderalter.Hooks[0] = orderalterMixinHooks2[0]
-	orderalterMixinFields0 := orderalterMixin[0].Fields()
-	_ = orderalterMixinFields0
-	orderalterFields := schema.OrderAlter{}.Fields()
-	_ = orderalterFields
-	// orderalterDescCreatedAt is the schema descriptor for created_at field.
-	orderalterDescCreatedAt := orderalterMixinFields0[0].Descriptor()
-	// orderalter.DefaultCreatedAt holds the default value on creation for the created_at field.
-	orderalter.DefaultCreatedAt = orderalterDescCreatedAt.Default.(func() time.Time)
-	// orderalterDescUpdatedAt is the schema descriptor for updated_at field.
-	orderalterDescUpdatedAt := orderalterMixinFields0[1].Descriptor()
-	// orderalter.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	orderalter.DefaultUpdatedAt = orderalterDescUpdatedAt.Default.(func() time.Time)
-	// orderalter.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	orderalter.UpdateDefaultUpdatedAt = orderalterDescUpdatedAt.UpdateDefault.(func() time.Time)
-	orderarrearageMixin := schema.OrderArrearage{}.Mixin()
-	orderarrearageMixinHooks2 := orderarrearageMixin[2].Hooks()
-	orderarrearage.Hooks[0] = orderarrearageMixinHooks2[0]
-	orderarrearageMixinFields0 := orderarrearageMixin[0].Fields()
-	_ = orderarrearageMixinFields0
-	orderarrearageFields := schema.OrderArrearage{}.Fields()
-	_ = orderarrearageFields
-	// orderarrearageDescCreatedAt is the schema descriptor for created_at field.
-	orderarrearageDescCreatedAt := orderarrearageMixinFields0[0].Descriptor()
-	// orderarrearage.DefaultCreatedAt holds the default value on creation for the created_at field.
-	orderarrearage.DefaultCreatedAt = orderarrearageDescCreatedAt.Default.(func() time.Time)
-	// orderarrearageDescUpdatedAt is the schema descriptor for updated_at field.
-	orderarrearageDescUpdatedAt := orderarrearageMixinFields0[1].Descriptor()
-	// orderarrearage.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	orderarrearage.DefaultUpdatedAt = orderarrearageDescUpdatedAt.Default.(func() time.Time)
-	// orderarrearage.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	orderarrearage.UpdateDefaultUpdatedAt = orderarrearageDescUpdatedAt.UpdateDefault.(func() time.Time)
-	orderpauseMixin := schema.OrderPause{}.Mixin()
-	orderpauseMixinHooks2 := orderpauseMixin[2].Hooks()
-	orderpause.Hooks[0] = orderpauseMixinHooks2[0]
-	orderpauseMixinFields0 := orderpauseMixin[0].Fields()
-	_ = orderpauseMixinFields0
-	orderpauseFields := schema.OrderPause{}.Fields()
-	_ = orderpauseFields
-	// orderpauseDescCreatedAt is the schema descriptor for created_at field.
-	orderpauseDescCreatedAt := orderpauseMixinFields0[0].Descriptor()
-	// orderpause.DefaultCreatedAt holds the default value on creation for the created_at field.
-	orderpause.DefaultCreatedAt = orderpauseDescCreatedAt.Default.(func() time.Time)
-	// orderpauseDescUpdatedAt is the schema descriptor for updated_at field.
-	orderpauseDescUpdatedAt := orderpauseMixinFields0[1].Descriptor()
-	// orderpause.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	orderpause.DefaultUpdatedAt = orderpauseDescUpdatedAt.Default.(func() time.Time)
-	// orderpause.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	orderpause.UpdateDefaultUpdatedAt = orderpauseDescUpdatedAt.UpdateDefault.(func() time.Time)
 	orderrefundMixin := schema.OrderRefund{}.Mixin()
 	orderrefundMixinHooks2 := orderrefundMixin[2].Hooks()
 	orderrefund.Hooks[0] = orderrefundMixinHooks2[0]
@@ -512,6 +501,57 @@ func init() {
 	storeDescStatus := storeFields[3].Descriptor()
 	// store.DefaultStatus holds the default value on creation for the status field.
 	store.DefaultStatus = storeDescStatus.Default.(uint8)
+	subscribeMixin := schema.Subscribe{}.Mixin()
+	subscribeMixinHooks2 := subscribeMixin[2].Hooks()
+	subscribe.Hooks[0] = subscribeMixinHooks2[0]
+	subscribeMixinFields0 := subscribeMixin[0].Fields()
+	_ = subscribeMixinFields0
+	subscribeFields := schema.Subscribe{}.Fields()
+	_ = subscribeFields
+	// subscribeDescCreatedAt is the schema descriptor for created_at field.
+	subscribeDescCreatedAt := subscribeMixinFields0[0].Descriptor()
+	// subscribe.DefaultCreatedAt holds the default value on creation for the created_at field.
+	subscribe.DefaultCreatedAt = subscribeDescCreatedAt.Default.(func() time.Time)
+	// subscribeDescUpdatedAt is the schema descriptor for updated_at field.
+	subscribeDescUpdatedAt := subscribeMixinFields0[1].Descriptor()
+	// subscribe.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	subscribe.DefaultUpdatedAt = subscribeDescUpdatedAt.Default.(func() time.Time)
+	// subscribe.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	subscribe.UpdateDefaultUpdatedAt = subscribeDescUpdatedAt.UpdateDefault.(func() time.Time)
+	subscribealterMixin := schema.SubscribeAlter{}.Mixin()
+	subscribealterMixinHooks2 := subscribealterMixin[2].Hooks()
+	subscribealter.Hooks[0] = subscribealterMixinHooks2[0]
+	subscribealterMixinFields0 := subscribealterMixin[0].Fields()
+	_ = subscribealterMixinFields0
+	subscribealterFields := schema.SubscribeAlter{}.Fields()
+	_ = subscribealterFields
+	// subscribealterDescCreatedAt is the schema descriptor for created_at field.
+	subscribealterDescCreatedAt := subscribealterMixinFields0[0].Descriptor()
+	// subscribealter.DefaultCreatedAt holds the default value on creation for the created_at field.
+	subscribealter.DefaultCreatedAt = subscribealterDescCreatedAt.Default.(func() time.Time)
+	// subscribealterDescUpdatedAt is the schema descriptor for updated_at field.
+	subscribealterDescUpdatedAt := subscribealterMixinFields0[1].Descriptor()
+	// subscribealter.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	subscribealter.DefaultUpdatedAt = subscribealterDescUpdatedAt.Default.(func() time.Time)
+	// subscribealter.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	subscribealter.UpdateDefaultUpdatedAt = subscribealterDescUpdatedAt.UpdateDefault.(func() time.Time)
+	subscribepauseMixin := schema.SubscribePause{}.Mixin()
+	subscribepauseMixinHooks2 := subscribepauseMixin[2].Hooks()
+	subscribepause.Hooks[0] = subscribepauseMixinHooks2[0]
+	subscribepauseMixinFields0 := subscribepauseMixin[0].Fields()
+	_ = subscribepauseMixinFields0
+	subscribepauseFields := schema.SubscribePause{}.Fields()
+	_ = subscribepauseFields
+	// subscribepauseDescCreatedAt is the schema descriptor for created_at field.
+	subscribepauseDescCreatedAt := subscribepauseMixinFields0[0].Descriptor()
+	// subscribepause.DefaultCreatedAt holds the default value on creation for the created_at field.
+	subscribepause.DefaultCreatedAt = subscribepauseDescCreatedAt.Default.(func() time.Time)
+	// subscribepauseDescUpdatedAt is the schema descriptor for updated_at field.
+	subscribepauseDescUpdatedAt := subscribepauseMixinFields0[1].Descriptor()
+	// subscribepause.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	subscribepause.DefaultUpdatedAt = subscribepauseDescUpdatedAt.Default.(func() time.Time)
+	// subscribepause.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	subscribepause.UpdateDefaultUpdatedAt = subscribepauseDescUpdatedAt.UpdateDefault.(func() time.Time)
 }
 
 const (

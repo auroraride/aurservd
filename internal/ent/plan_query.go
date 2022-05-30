@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -30,7 +29,6 @@ type PlanQuery struct {
 	// eager-loading edges.
 	withPms    *BatteryModelQuery
 	withCities *CityQuery
-	withOrders *OrderQuery
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -105,28 +103,6 @@ func (pq *PlanQuery) QueryCities() *CityQuery {
 			sqlgraph.From(plan.Table, plan.FieldID, selector),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, plan.CitiesTable, plan.CitiesPrimaryKey...),
-		)
-		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryOrders chains the current query on the "orders" edge.
-func (pq *PlanQuery) QueryOrders() *OrderQuery {
-	query := &OrderQuery{config: pq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := pq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := pq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(plan.Table, plan.FieldID, selector),
-			sqlgraph.To(order.Table, order.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, plan.OrdersTable, plan.OrdersColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -317,7 +293,6 @@ func (pq *PlanQuery) Clone() *PlanQuery {
 		predicates: append([]predicate.Plan{}, pq.predicates...),
 		withPms:    pq.withPms.Clone(),
 		withCities: pq.withCities.Clone(),
-		withOrders: pq.withOrders.Clone(),
 		// clone intermediate query.
 		sql:    pq.sql.Clone(),
 		path:   pq.path,
@@ -344,17 +319,6 @@ func (pq *PlanQuery) WithCities(opts ...func(*CityQuery)) *PlanQuery {
 		opt(query)
 	}
 	pq.withCities = query
-	return pq
-}
-
-// WithOrders tells the query-builder to eager-load the nodes that are connected to
-// the "orders" edge. The optional arguments are used to configure the query builder of the edge.
-func (pq *PlanQuery) WithOrders(opts ...func(*OrderQuery)) *PlanQuery {
-	query := &OrderQuery{config: pq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	pq.withOrders = query
 	return pq
 }
 
@@ -428,10 +392,9 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 	var (
 		nodes       = []*Plan{}
 		_spec       = pq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [2]bool{
 			pq.withPms != nil,
 			pq.withCities != nil,
-			pq.withOrders != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -559,31 +522,6 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 			for kn := range nodes {
 				kn.Edges.Cities = append(kn.Edges.Cities, n)
 			}
-		}
-	}
-
-	if query := pq.withOrders; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[uint64]*Plan)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Orders = []*Order{}
-		}
-		query.Where(predicate.Order(func(s *sql.Selector) {
-			s.Where(sql.InValues(plan.OrdersColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			fk := n.PlanID
-			node, ok := nodeids[fk]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "plan_id" returned %v for node %v`, fk, n.ID)
-			}
-			node.Edges.Orders = append(node.Edges.Orders, n)
 		}
 	}
 

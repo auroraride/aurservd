@@ -28,11 +28,11 @@ type StoreModifyReq struct {
 }
 
 type StoreItem struct {
-    ID       uint64        `json:"id"`
-    Name     string        `json:"name"`               // 门店名称
-    Status   uint8         `json:"status"`             // 状态
-    City     City          `json:"city"`               // 城市
-    Employee *EmployeeItem `json:"employee,omitempty"` // 店员, 有可能不存在
+    ID       uint64    `json:"id"`
+    Name     string    `json:"name"`               // 门店名称
+    Status   uint8     `json:"status"`             // 状态
+    City     City      `json:"city"`               // 城市
+    Employee *Employee `json:"employee,omitempty"` // 店员, 有可能不存在
 }
 
 type StoreListReq struct {

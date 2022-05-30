@@ -51,6 +51,7 @@ func (Cabinet) Edges() []ent.Edge {
             Field("branch_id"),
         edge.To("bms", BatteryModel.Type),
         edge.To("faults", CabinetFault.Type),
+        edge.To("exchanges", CabinetExchange.Type),
     }
 }
 

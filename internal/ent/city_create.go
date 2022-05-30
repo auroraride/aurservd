@@ -12,10 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/branch"
-	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
-	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 )
 
@@ -202,51 +199,6 @@ func (cc *CityCreate) AddChildren(c ...*City) *CityCreate {
 		ids[i] = c[i].ID
 	}
 	return cc.AddChildIDs(ids...)
-}
-
-// AddBranchIDs adds the "branches" edge to the Branch entity by IDs.
-func (cc *CityCreate) AddBranchIDs(ids ...uint64) *CityCreate {
-	cc.mutation.AddBranchIDs(ids...)
-	return cc
-}
-
-// AddBranches adds the "branches" edges to the Branch entity.
-func (cc *CityCreate) AddBranches(b ...*Branch) *CityCreate {
-	ids := make([]uint64, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return cc.AddBranchIDs(ids...)
-}
-
-// AddFaultIDs adds the "faults" edge to the CabinetFault entity by IDs.
-func (cc *CityCreate) AddFaultIDs(ids ...uint64) *CityCreate {
-	cc.mutation.AddFaultIDs(ids...)
-	return cc
-}
-
-// AddFaults adds the "faults" edges to the CabinetFault entity.
-func (cc *CityCreate) AddFaults(c ...*CabinetFault) *CityCreate {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
-	}
-	return cc.AddFaultIDs(ids...)
-}
-
-// AddOrderIDs adds the "orders" edge to the Order entity by IDs.
-func (cc *CityCreate) AddOrderIDs(ids ...uint64) *CityCreate {
-	cc.mutation.AddOrderIDs(ids...)
-	return cc
-}
-
-// AddOrders adds the "orders" edges to the Order entity.
-func (cc *CityCreate) AddOrders(o ...*Order) *CityCreate {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
-	}
-	return cc.AddOrderIDs(ids...)
 }
 
 // Mutation returns the CityMutation object of the builder.
@@ -541,63 +493,6 @@ func (cc *CityCreate) createSpec() (*City, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: city.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := cc.mutation.BranchesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   city.BranchesTable,
-			Columns: []string{city.BranchesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: branch.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := cc.mutation.FaultsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   city.FaultsTable,
-			Columns: []string{city.FaultsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: cabinetfault.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := cc.mutation.OrdersIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   city.OrdersTable,
-			Columns: []string{city.OrdersColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: order.FieldID,
 				},
 			},
 		}

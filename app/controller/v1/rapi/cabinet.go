@@ -18,8 +18,8 @@ var Cabinet = new(cabinet)
 
 // Report
 // @ID           CabinetReport
-// @Router       /rider/v1/path [GET]
-// @Summary      R40001 电柜故障上报
+// @Router       /rider/v1/cabinet/report [POST]
+// @Summary      R4000X 电柜故障上报
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
@@ -32,4 +32,19 @@ func (*cabinet) Report(c echo.Context) (err error) {
     return ctx.SendResponse(
         model.StatusResponse{Status: service.NewCabinetFault().Report(ctx.Rider, req)},
     )
+}
+
+// Process
+// @ID           RiderCabinetProcess
+// @Router       /rider/v1/cabinet/{serial} [GET]
+// @Summary      R40001 确认换电信息
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        serial  path  string  true  "电柜二维码"
+// @Success      200  {object}  model.RiderCabinetOperateProcess  "请求成功"
+func (*cabinet) Process(c echo.Context) (err error) {
+    ctx, req := app.RiderContextAndBinding[model.RiderCabinetOperateReq](c)
+    return ctx.SendResponse(service.NewRiderCabinetWithRider(ctx.Rider).Process(req))
 }

@@ -4,10 +4,37 @@ import (
     "entgo.io/ent"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
+    "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
+    "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
+
+type ManagerMixin struct {
+    mixin.Schema
+    Optional bool
+}
+
+func (mm ManagerMixin) Fields() []ent.Field {
+    f := field.Uint64("manager_id").Comment("管理人ID")
+    if mm.Optional {
+        f.Optional()
+    }
+    return []ent.Field{
+        f,
+    }
+}
+
+func (mm ManagerMixin) Edges() []ent.Edge {
+    e := edge.To("manager", Manager.Type).Unique().Field("manager_id")
+    if !mm.Optional {
+        e.Required()
+    }
+    return []ent.Edge{
+        e,
+    }
+}
 
 // Manager holds the schema definition for the Manager entity.
 type Manager struct {

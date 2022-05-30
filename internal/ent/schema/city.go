@@ -7,8 +7,30 @@ import (
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
+    "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
+
+type CityMixin struct {
+    mixin.Schema
+    Optional bool
+}
+
+func (cm CityMixin) Fields() []ent.Field {
+    f := field.Uint64("city_id").Comment("城市ID")
+    if cm.Optional {
+        f.Optional()
+    }
+    return []ent.Field{f}
+}
+
+func (cm CityMixin) Edges() []ent.Edge {
+    e := edge.To("city", City.Type).Unique().Field("city_id")
+    if !cm.Optional {
+        e.Required()
+    }
+    return []ent.Edge{e}
+}
 
 // City holds the schema definition for the City entity.
 type City struct {
@@ -40,10 +62,6 @@ func (City) Edges() []ent.Edge {
     return []ent.Edge{
         edge.From("plans", Plan.Type).Ref("cities"),
         edge.To("children", City.Type).From("parent").Field("parent_id").Unique(),
-        edge.To("branches", Branch.Type),
-        edge.To("faults", CabinetFault.Type),
-        edge.To("orders", Order.Type),
-        // edge.To("commissions", Commission.Type),
     }
 }
 

@@ -28,10 +28,10 @@ type CabinetFaultQuery struct {
 	fields     []string
 	predicates []predicate.CabinetFault
 	// eager-loading edges.
+	withCity    *CityQuery
 	withBranch  *BranchQuery
 	withCabinet *CabinetQuery
 	withRider   *RiderQuery
-	withCity    *CityQuery
 	modifiers   []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -67,6 +67,28 @@ func (cfq *CabinetFaultQuery) Unique(unique bool) *CabinetFaultQuery {
 func (cfq *CabinetFaultQuery) Order(o ...OrderFunc) *CabinetFaultQuery {
 	cfq.order = append(cfq.order, o...)
 	return cfq
+}
+
+// QueryCity chains the current query on the "city" edge.
+func (cfq *CabinetFaultQuery) QueryCity() *CityQuery {
+	query := &CityQuery{config: cfq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cfq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cfq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinetfault.Table, cabinetfault.FieldID, selector),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, cabinetfault.CityTable, cabinetfault.CityColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cfq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryBranch chains the current query on the "branch" edge.
@@ -128,28 +150,6 @@ func (cfq *CabinetFaultQuery) QueryRider() *RiderQuery {
 			sqlgraph.From(cabinetfault.Table, cabinetfault.FieldID, selector),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, cabinetfault.RiderTable, cabinetfault.RiderColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(cfq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryCity chains the current query on the "city" edge.
-func (cfq *CabinetFaultQuery) QueryCity() *CityQuery {
-	query := &CityQuery{config: cfq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := cfq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := cfq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(cabinetfault.Table, cabinetfault.FieldID, selector),
-			sqlgraph.To(city.Table, city.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, cabinetfault.CityTable, cabinetfault.CityColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cfq.driver.Dialect(), step)
 		return fromU, nil
@@ -338,15 +338,26 @@ func (cfq *CabinetFaultQuery) Clone() *CabinetFaultQuery {
 		offset:      cfq.offset,
 		order:       append([]OrderFunc{}, cfq.order...),
 		predicates:  append([]predicate.CabinetFault{}, cfq.predicates...),
+		withCity:    cfq.withCity.Clone(),
 		withBranch:  cfq.withBranch.Clone(),
 		withCabinet: cfq.withCabinet.Clone(),
 		withRider:   cfq.withRider.Clone(),
-		withCity:    cfq.withCity.Clone(),
 		// clone intermediate query.
 		sql:    cfq.sql.Clone(),
 		path:   cfq.path,
 		unique: cfq.unique,
 	}
+}
+
+// WithCity tells the query-builder to eager-load the nodes that are connected to
+// the "city" edge. The optional arguments are used to configure the query builder of the edge.
+func (cfq *CabinetFaultQuery) WithCity(opts ...func(*CityQuery)) *CabinetFaultQuery {
+	query := &CityQuery{config: cfq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cfq.withCity = query
+	return cfq
 }
 
 // WithBranch tells the query-builder to eager-load the nodes that are connected to
@@ -379,17 +390,6 @@ func (cfq *CabinetFaultQuery) WithRider(opts ...func(*RiderQuery)) *CabinetFault
 		opt(query)
 	}
 	cfq.withRider = query
-	return cfq
-}
-
-// WithCity tells the query-builder to eager-load the nodes that are connected to
-// the "city" edge. The optional arguments are used to configure the query builder of the edge.
-func (cfq *CabinetFaultQuery) WithCity(opts ...func(*CityQuery)) *CabinetFaultQuery {
-	query := &CityQuery{config: cfq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	cfq.withCity = query
 	return cfq
 }
 
@@ -464,10 +464,10 @@ func (cfq *CabinetFaultQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 		nodes       = []*CabinetFault{}
 		_spec       = cfq.querySpec()
 		loadedTypes = [4]bool{
+			cfq.withCity != nil,
 			cfq.withBranch != nil,
 			cfq.withCabinet != nil,
 			cfq.withRider != nil,
-			cfq.withCity != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -490,6 +490,32 @@ func (cfq *CabinetFaultQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+
+	if query := cfq.withCity; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*CabinetFault)
+		for i := range nodes {
+			fk := nodes[i].CityID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(city.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.City = n
+			}
+		}
 	}
 
 	if query := cfq.withBranch; query != nil {
@@ -566,32 +592,6 @@ func (cfq *CabinetFaultQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 			}
 			for i := range nodes {
 				nodes[i].Edges.Rider = n
-			}
-		}
-	}
-
-	if query := cfq.withCity; query != nil {
-		ids := make([]uint64, 0, len(nodes))
-		nodeids := make(map[uint64][]*CabinetFault)
-		for i := range nodes {
-			fk := nodes[i].CityID
-			if _, ok := nodeids[fk]; !ok {
-				ids = append(ids, fk)
-			}
-			nodeids[fk] = append(nodeids[fk], nodes[i])
-		}
-		query.Where(city.IDIn(ids...))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
-			}
-			for i := range nodes {
-				nodes[i].Edges.City = n
 			}
 		}
 	}

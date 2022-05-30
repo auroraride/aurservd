@@ -13,22 +13,24 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
-	"github.com/auroraride/aurservd/internal/ent/orderalter"
-	"github.com/auroraride/aurservd/internal/ent/orderarrearage"
-	"github.com/auroraride/aurservd/internal/ent/orderpause"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
+	"github.com/auroraride/aurservd/internal/ent/subscribealter"
+	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -48,6 +50,8 @@ type Client struct {
 	BranchContract *BranchContractClient
 	// Cabinet is the client for interacting with the Cabinet builders.
 	Cabinet *CabinetClient
+	// CabinetExchange is the client for interacting with the CabinetExchange builders.
+	CabinetExchange *CabinetExchangeClient
 	// CabinetFault is the client for interacting with the CabinetFault builders.
 	CabinetFault *CabinetFaultClient
 	// City is the client for interacting with the City builders.
@@ -56,18 +60,14 @@ type Client struct {
 	Commission *CommissionClient
 	// Contract is the client for interacting with the Contract builders.
 	Contract *ContractClient
+	// Employee is the client for interacting with the Employee builders.
+	Employee *EmployeeClient
 	// Enterprise is the client for interacting with the Enterprise builders.
 	Enterprise *EnterpriseClient
 	// Manager is the client for interacting with the Manager builders.
 	Manager *ManagerClient
 	// Order is the client for interacting with the Order builders.
 	Order *OrderClient
-	// OrderAlter is the client for interacting with the OrderAlter builders.
-	OrderAlter *OrderAlterClient
-	// OrderArrearage is the client for interacting with the OrderArrearage builders.
-	OrderArrearage *OrderArrearageClient
-	// OrderPause is the client for interacting with the OrderPause builders.
-	OrderPause *OrderPauseClient
 	// OrderRefund is the client for interacting with the OrderRefund builders.
 	OrderRefund *OrderRefundClient
 	// Person is the client for interacting with the Person builders.
@@ -80,6 +80,12 @@ type Client struct {
 	Setting *SettingClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
+	// Subscribe is the client for interacting with the Subscribe builders.
+	Subscribe *SubscribeClient
+	// SubscribeAlter is the client for interacting with the SubscribeAlter builders.
+	SubscribeAlter *SubscribeAlterClient
+	// SubscribePause is the client for interacting with the SubscribePause builders.
+	SubscribePause *SubscribePauseClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -97,22 +103,24 @@ func (c *Client) init() {
 	c.Branch = NewBranchClient(c.config)
 	c.BranchContract = NewBranchContractClient(c.config)
 	c.Cabinet = NewCabinetClient(c.config)
+	c.CabinetExchange = NewCabinetExchangeClient(c.config)
 	c.CabinetFault = NewCabinetFaultClient(c.config)
 	c.City = NewCityClient(c.config)
 	c.Commission = NewCommissionClient(c.config)
 	c.Contract = NewContractClient(c.config)
+	c.Employee = NewEmployeeClient(c.config)
 	c.Enterprise = NewEnterpriseClient(c.config)
 	c.Manager = NewManagerClient(c.config)
 	c.Order = NewOrderClient(c.config)
-	c.OrderAlter = NewOrderAlterClient(c.config)
-	c.OrderArrearage = NewOrderArrearageClient(c.config)
-	c.OrderPause = NewOrderPauseClient(c.config)
 	c.OrderRefund = NewOrderRefundClient(c.config)
 	c.Person = NewPersonClient(c.config)
 	c.Plan = NewPlanClient(c.config)
 	c.Rider = NewRiderClient(c.config)
 	c.Setting = NewSettingClient(c.config)
 	c.Store = NewStoreClient(c.config)
+	c.Subscribe = NewSubscribeClient(c.config)
+	c.SubscribeAlter = NewSubscribeAlterClient(c.config)
+	c.SubscribePause = NewSubscribePauseClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -144,28 +152,30 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:            ctx,
-		config:         cfg,
-		BatteryModel:   NewBatteryModelClient(cfg),
-		Branch:         NewBranchClient(cfg),
-		BranchContract: NewBranchContractClient(cfg),
-		Cabinet:        NewCabinetClient(cfg),
-		CabinetFault:   NewCabinetFaultClient(cfg),
-		City:           NewCityClient(cfg),
-		Commission:     NewCommissionClient(cfg),
-		Contract:       NewContractClient(cfg),
-		Enterprise:     NewEnterpriseClient(cfg),
-		Manager:        NewManagerClient(cfg),
-		Order:          NewOrderClient(cfg),
-		OrderAlter:     NewOrderAlterClient(cfg),
-		OrderArrearage: NewOrderArrearageClient(cfg),
-		OrderPause:     NewOrderPauseClient(cfg),
-		OrderRefund:    NewOrderRefundClient(cfg),
-		Person:         NewPersonClient(cfg),
-		Plan:           NewPlanClient(cfg),
-		Rider:          NewRiderClient(cfg),
-		Setting:        NewSettingClient(cfg),
-		Store:          NewStoreClient(cfg),
+		ctx:             ctx,
+		config:          cfg,
+		BatteryModel:    NewBatteryModelClient(cfg),
+		Branch:          NewBranchClient(cfg),
+		BranchContract:  NewBranchContractClient(cfg),
+		Cabinet:         NewCabinetClient(cfg),
+		CabinetExchange: NewCabinetExchangeClient(cfg),
+		CabinetFault:    NewCabinetFaultClient(cfg),
+		City:            NewCityClient(cfg),
+		Commission:      NewCommissionClient(cfg),
+		Contract:        NewContractClient(cfg),
+		Employee:        NewEmployeeClient(cfg),
+		Enterprise:      NewEnterpriseClient(cfg),
+		Manager:         NewManagerClient(cfg),
+		Order:           NewOrderClient(cfg),
+		OrderRefund:     NewOrderRefundClient(cfg),
+		Person:          NewPersonClient(cfg),
+		Plan:            NewPlanClient(cfg),
+		Rider:           NewRiderClient(cfg),
+		Setting:         NewSettingClient(cfg),
+		Store:           NewStoreClient(cfg),
+		Subscribe:       NewSubscribeClient(cfg),
+		SubscribeAlter:  NewSubscribeAlterClient(cfg),
+		SubscribePause:  NewSubscribePauseClient(cfg),
 	}, nil
 }
 
@@ -183,28 +193,30 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:            ctx,
-		config:         cfg,
-		BatteryModel:   NewBatteryModelClient(cfg),
-		Branch:         NewBranchClient(cfg),
-		BranchContract: NewBranchContractClient(cfg),
-		Cabinet:        NewCabinetClient(cfg),
-		CabinetFault:   NewCabinetFaultClient(cfg),
-		City:           NewCityClient(cfg),
-		Commission:     NewCommissionClient(cfg),
-		Contract:       NewContractClient(cfg),
-		Enterprise:     NewEnterpriseClient(cfg),
-		Manager:        NewManagerClient(cfg),
-		Order:          NewOrderClient(cfg),
-		OrderAlter:     NewOrderAlterClient(cfg),
-		OrderArrearage: NewOrderArrearageClient(cfg),
-		OrderPause:     NewOrderPauseClient(cfg),
-		OrderRefund:    NewOrderRefundClient(cfg),
-		Person:         NewPersonClient(cfg),
-		Plan:           NewPlanClient(cfg),
-		Rider:          NewRiderClient(cfg),
-		Setting:        NewSettingClient(cfg),
-		Store:          NewStoreClient(cfg),
+		ctx:             ctx,
+		config:          cfg,
+		BatteryModel:    NewBatteryModelClient(cfg),
+		Branch:          NewBranchClient(cfg),
+		BranchContract:  NewBranchContractClient(cfg),
+		Cabinet:         NewCabinetClient(cfg),
+		CabinetExchange: NewCabinetExchangeClient(cfg),
+		CabinetFault:    NewCabinetFaultClient(cfg),
+		City:            NewCityClient(cfg),
+		Commission:      NewCommissionClient(cfg),
+		Contract:        NewContractClient(cfg),
+		Employee:        NewEmployeeClient(cfg),
+		Enterprise:      NewEnterpriseClient(cfg),
+		Manager:         NewManagerClient(cfg),
+		Order:           NewOrderClient(cfg),
+		OrderRefund:     NewOrderRefundClient(cfg),
+		Person:          NewPersonClient(cfg),
+		Plan:            NewPlanClient(cfg),
+		Rider:           NewRiderClient(cfg),
+		Setting:         NewSettingClient(cfg),
+		Store:           NewStoreClient(cfg),
+		Subscribe:       NewSubscribeClient(cfg),
+		SubscribeAlter:  NewSubscribeAlterClient(cfg),
+		SubscribePause:  NewSubscribePauseClient(cfg),
 	}, nil
 }
 
@@ -238,22 +250,24 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Branch.Use(hooks...)
 	c.BranchContract.Use(hooks...)
 	c.Cabinet.Use(hooks...)
+	c.CabinetExchange.Use(hooks...)
 	c.CabinetFault.Use(hooks...)
 	c.City.Use(hooks...)
 	c.Commission.Use(hooks...)
 	c.Contract.Use(hooks...)
+	c.Employee.Use(hooks...)
 	c.Enterprise.Use(hooks...)
 	c.Manager.Use(hooks...)
 	c.Order.Use(hooks...)
-	c.OrderAlter.Use(hooks...)
-	c.OrderArrearage.Use(hooks...)
-	c.OrderPause.Use(hooks...)
 	c.OrderRefund.Use(hooks...)
 	c.Person.Use(hooks...)
 	c.Plan.Use(hooks...)
 	c.Rider.Use(hooks...)
 	c.Setting.Use(hooks...)
 	c.Store.Use(hooks...)
+	c.Subscribe.Use(hooks...)
+	c.SubscribeAlter.Use(hooks...)
+	c.SubscribePause.Use(hooks...)
 }
 
 // BatteryModelClient is a client for the BatteryModel schema.
@@ -464,6 +478,22 @@ func (c *BranchClient) GetX(ctx context.Context, id uint64) *Branch {
 	return obj
 }
 
+// QueryCity queries the city edge of a Branch.
+func (c *BranchClient) QueryCity(b *Branch) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(branch.Table, branch.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, branch.CityTable, branch.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryContracts queries the contracts edge of a Branch.
 func (c *BranchClient) QueryContracts(b *Branch) *BranchContractQuery {
 	query := &BranchContractQuery{config: c.config}
@@ -489,22 +519,6 @@ func (c *BranchClient) QueryCabinets(b *Branch) *CabinetQuery {
 			sqlgraph.From(branch.Table, branch.FieldID, id),
 			sqlgraph.To(cabinet.Table, cabinet.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, branch.CabinetsTable, branch.CabinetsColumn),
-		)
-		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryCity queries the city edge of a Branch.
-func (c *BranchClient) QueryCity(b *Branch) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := b.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(branch.Table, branch.FieldID, id),
-			sqlgraph.To(city.Table, city.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, branch.CityTable, branch.CityColumn),
 		)
 		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
 		return fromV, nil
@@ -790,10 +804,149 @@ func (c *CabinetClient) QueryFaults(ca *Cabinet) *CabinetFaultQuery {
 	return query
 }
 
+// QueryExchanges queries the exchanges edge of a Cabinet.
+func (c *CabinetClient) QueryExchanges(ca *Cabinet) *CabinetExchangeQuery {
+	query := &CabinetExchangeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
+			sqlgraph.To(cabinetexchange.Table, cabinetexchange.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, cabinet.ExchangesTable, cabinet.ExchangesColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *CabinetClient) Hooks() []Hook {
 	hooks := c.hooks.Cabinet
 	return append(hooks[:len(hooks):len(hooks)], cabinet.Hooks[:]...)
+}
+
+// CabinetExchangeClient is a client for the CabinetExchange schema.
+type CabinetExchangeClient struct {
+	config
+}
+
+// NewCabinetExchangeClient returns a client for the CabinetExchange from the given config.
+func NewCabinetExchangeClient(c config) *CabinetExchangeClient {
+	return &CabinetExchangeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `cabinetexchange.Hooks(f(g(h())))`.
+func (c *CabinetExchangeClient) Use(hooks ...Hook) {
+	c.hooks.CabinetExchange = append(c.hooks.CabinetExchange, hooks...)
+}
+
+// Create returns a create builder for CabinetExchange.
+func (c *CabinetExchangeClient) Create() *CabinetExchangeCreate {
+	mutation := newCabinetExchangeMutation(c.config, OpCreate)
+	return &CabinetExchangeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CabinetExchange entities.
+func (c *CabinetExchangeClient) CreateBulk(builders ...*CabinetExchangeCreate) *CabinetExchangeCreateBulk {
+	return &CabinetExchangeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CabinetExchange.
+func (c *CabinetExchangeClient) Update() *CabinetExchangeUpdate {
+	mutation := newCabinetExchangeMutation(c.config, OpUpdate)
+	return &CabinetExchangeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CabinetExchangeClient) UpdateOne(ce *CabinetExchange) *CabinetExchangeUpdateOne {
+	mutation := newCabinetExchangeMutation(c.config, OpUpdateOne, withCabinetExchange(ce))
+	return &CabinetExchangeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CabinetExchangeClient) UpdateOneID(id uint64) *CabinetExchangeUpdateOne {
+	mutation := newCabinetExchangeMutation(c.config, OpUpdateOne, withCabinetExchangeID(id))
+	return &CabinetExchangeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CabinetExchange.
+func (c *CabinetExchangeClient) Delete() *CabinetExchangeDelete {
+	mutation := newCabinetExchangeMutation(c.config, OpDelete)
+	return &CabinetExchangeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *CabinetExchangeClient) DeleteOne(ce *CabinetExchange) *CabinetExchangeDeleteOne {
+	return c.DeleteOneID(ce.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *CabinetExchangeClient) DeleteOneID(id uint64) *CabinetExchangeDeleteOne {
+	builder := c.Delete().Where(cabinetexchange.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CabinetExchangeDeleteOne{builder}
+}
+
+// Query returns a query builder for CabinetExchange.
+func (c *CabinetExchangeClient) Query() *CabinetExchangeQuery {
+	return &CabinetExchangeQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a CabinetExchange entity by its id.
+func (c *CabinetExchangeClient) Get(ctx context.Context, id uint64) (*CabinetExchange, error) {
+	return c.Query().Where(cabinetexchange.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CabinetExchangeClient) GetX(ctx context.Context, id uint64) *CabinetExchange {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryRider queries the rider edge of a CabinetExchange.
+func (c *CabinetExchangeClient) QueryRider(ce *CabinetExchange) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ce.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinetexchange.Table, cabinetexchange.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cabinetexchange.RiderTable, cabinetexchange.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(ce.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCabinet queries the cabinet edge of a CabinetExchange.
+func (c *CabinetExchangeClient) QueryCabinet(ce *CabinetExchange) *CabinetQuery {
+	query := &CabinetQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ce.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinetexchange.Table, cabinetexchange.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cabinetexchange.CabinetTable, cabinetexchange.CabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(ce.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CabinetExchangeClient) Hooks() []Hook {
+	hooks := c.hooks.CabinetExchange
+	return append(hooks[:len(hooks):len(hooks)], cabinetexchange.Hooks[:]...)
 }
 
 // CabinetFaultClient is a client for the CabinetFault schema.
@@ -881,6 +1034,22 @@ func (c *CabinetFaultClient) GetX(ctx context.Context, id uint64) *CabinetFault 
 	return obj
 }
 
+// QueryCity queries the city edge of a CabinetFault.
+func (c *CabinetFaultClient) QueryCity(cf *CabinetFault) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := cf.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinetfault.Table, cabinetfault.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, cabinetfault.CityTable, cabinetfault.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(cf.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryBranch queries the branch edge of a CabinetFault.
 func (c *CabinetFaultClient) QueryBranch(cf *CabinetFault) *BranchQuery {
 	query := &BranchQuery{config: c.config}
@@ -922,22 +1091,6 @@ func (c *CabinetFaultClient) QueryRider(cf *CabinetFault) *RiderQuery {
 			sqlgraph.From(cabinetfault.Table, cabinetfault.FieldID, id),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, cabinetfault.RiderTable, cabinetfault.RiderColumn),
-		)
-		fromV = sqlgraph.Neighbors(cf.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryCity queries the city edge of a CabinetFault.
-func (c *CabinetFaultClient) QueryCity(cf *CabinetFault) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := cf.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(cabinetfault.Table, cabinetfault.FieldID, id),
-			sqlgraph.To(city.Table, city.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, cabinetfault.CityTable, cabinetfault.CityColumn),
 		)
 		fromV = sqlgraph.Neighbors(cf.driver.Dialect(), step)
 		return fromV, nil
@@ -1077,54 +1230,6 @@ func (c *CityClient) QueryChildren(ci *City) *CityQuery {
 			sqlgraph.From(city.Table, city.FieldID, id),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, city.ChildrenTable, city.ChildrenColumn),
-		)
-		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryBranches queries the branches edge of a City.
-func (c *CityClient) QueryBranches(ci *City) *BranchQuery {
-	query := &BranchQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := ci.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(city.Table, city.FieldID, id),
-			sqlgraph.To(branch.Table, branch.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, city.BranchesTable, city.BranchesColumn),
-		)
-		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryFaults queries the faults edge of a City.
-func (c *CityClient) QueryFaults(ci *City) *CabinetFaultQuery {
-	query := &CabinetFaultQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := ci.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(city.Table, city.FieldID, id),
-			sqlgraph.To(cabinetfault.Table, cabinetfault.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, city.FaultsTable, city.FaultsColumn),
-		)
-		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryOrders queries the orders edge of a City.
-func (c *CityClient) QueryOrders(ci *City) *OrderQuery {
-	query := &OrderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := ci.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(city.Table, city.FieldID, id),
-			sqlgraph.To(order.Table, order.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, city.OrdersTable, city.OrdersColumn),
 		)
 		fromV = sqlgraph.Neighbors(ci.driver.Dialect(), step)
 		return fromV, nil
@@ -1350,6 +1455,97 @@ func (c *ContractClient) QueryRider(co *Contract) *RiderQuery {
 func (c *ContractClient) Hooks() []Hook {
 	hooks := c.hooks.Contract
 	return append(hooks[:len(hooks):len(hooks)], contract.Hooks[:]...)
+}
+
+// EmployeeClient is a client for the Employee schema.
+type EmployeeClient struct {
+	config
+}
+
+// NewEmployeeClient returns a client for the Employee from the given config.
+func NewEmployeeClient(c config) *EmployeeClient {
+	return &EmployeeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `employee.Hooks(f(g(h())))`.
+func (c *EmployeeClient) Use(hooks ...Hook) {
+	c.hooks.Employee = append(c.hooks.Employee, hooks...)
+}
+
+// Create returns a create builder for Employee.
+func (c *EmployeeClient) Create() *EmployeeCreate {
+	mutation := newEmployeeMutation(c.config, OpCreate)
+	return &EmployeeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Employee entities.
+func (c *EmployeeClient) CreateBulk(builders ...*EmployeeCreate) *EmployeeCreateBulk {
+	return &EmployeeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Employee.
+func (c *EmployeeClient) Update() *EmployeeUpdate {
+	mutation := newEmployeeMutation(c.config, OpUpdate)
+	return &EmployeeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EmployeeClient) UpdateOne(e *Employee) *EmployeeUpdateOne {
+	mutation := newEmployeeMutation(c.config, OpUpdateOne, withEmployee(e))
+	return &EmployeeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EmployeeClient) UpdateOneID(id uint64) *EmployeeUpdateOne {
+	mutation := newEmployeeMutation(c.config, OpUpdateOne, withEmployeeID(id))
+	return &EmployeeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Employee.
+func (c *EmployeeClient) Delete() *EmployeeDelete {
+	mutation := newEmployeeMutation(c.config, OpDelete)
+	return &EmployeeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *EmployeeClient) DeleteOne(e *Employee) *EmployeeDeleteOne {
+	return c.DeleteOneID(e.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *EmployeeClient) DeleteOneID(id uint64) *EmployeeDeleteOne {
+	builder := c.Delete().Where(employee.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EmployeeDeleteOne{builder}
+}
+
+// Query returns a query builder for Employee.
+func (c *EmployeeClient) Query() *EmployeeQuery {
+	return &EmployeeQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Employee entity by its id.
+func (c *EmployeeClient) Get(ctx context.Context, id uint64) (*Employee, error) {
+	return c.Query().Where(employee.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EmployeeClient) GetX(ctx context.Context, id uint64) *Employee {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *EmployeeClient) Hooks() []Hook {
+	hooks := c.hooks.Employee
+	return append(hooks[:len(hooks):len(hooks)], employee.Hooks[:]...)
 }
 
 // EnterpriseClient is a client for the Enterprise schema.
@@ -1635,6 +1831,38 @@ func (c *OrderClient) GetX(ctx context.Context, id uint64) *Order {
 	return obj
 }
 
+// QueryPlan queries the plan edge of a Order.
+func (c *OrderClient) QueryPlan(o *Order) *PlanQuery {
+	query := &PlanQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, order.PlanTable, order.PlanColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCity queries the city edge of a Order.
+func (c *OrderClient) QueryCity(o *Order) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, order.CityTable, order.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryRider queries the rider edge of a Order.
 func (c *OrderClient) QueryRider(o *Order) *RiderQuery {
 	query := &RiderQuery{config: c.config}
@@ -1651,15 +1879,15 @@ func (c *OrderClient) QueryRider(o *Order) *RiderQuery {
 	return query
 }
 
-// QueryPlan queries the plan edge of a Order.
-func (c *OrderClient) QueryPlan(o *Order) *PlanQuery {
-	query := &PlanQuery{config: c.config}
+// QuerySubscribe queries the subscribe edge of a Order.
+func (c *OrderClient) QuerySubscribe(o *Order) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := o.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(order.Table, order.FieldID, id),
-			sqlgraph.To(plan.Table, plan.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, order.PlanTable, order.PlanColumn),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, order.SubscribeTable, order.SubscribeColumn),
 		)
 		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
 		return fromV, nil
@@ -1715,70 +1943,6 @@ func (c *OrderClient) QueryChildren(o *Order) *OrderQuery {
 	return query
 }
 
-// QueryCity queries the city edge of a Order.
-func (c *OrderClient) QueryCity(o *Order) *CityQuery {
-	query := &CityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := o.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(order.Table, order.FieldID, id),
-			sqlgraph.To(city.Table, city.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, order.CityTable, order.CityColumn),
-		)
-		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryPauses queries the pauses edge of a Order.
-func (c *OrderClient) QueryPauses(o *Order) *OrderPauseQuery {
-	query := &OrderPauseQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := o.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(order.Table, order.FieldID, id),
-			sqlgraph.To(orderpause.Table, orderpause.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, order.PausesTable, order.PausesColumn),
-		)
-		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryArrearages queries the arrearages edge of a Order.
-func (c *OrderClient) QueryArrearages(o *Order) *OrderArrearageQuery {
-	query := &OrderArrearageQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := o.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(order.Table, order.FieldID, id),
-			sqlgraph.To(orderarrearage.Table, orderarrearage.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, order.ArrearagesTable, order.ArrearagesColumn),
-		)
-		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryAlters queries the alters edge of a Order.
-func (c *OrderClient) QueryAlters(o *Order) *OrderAlterQuery {
-	query := &OrderAlterQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := o.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(order.Table, order.FieldID, id),
-			sqlgraph.To(orderalter.Table, orderalter.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, order.AltersTable, order.AltersColumn),
-		)
-		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryRefunds queries the refunds edge of a Order.
 func (c *OrderClient) QueryRefunds(o *Order) *OrderRefundQuery {
 	query := &OrderRefundQuery{config: c.config}
@@ -1799,375 +1963,6 @@ func (c *OrderClient) QueryRefunds(o *Order) *OrderRefundQuery {
 func (c *OrderClient) Hooks() []Hook {
 	hooks := c.hooks.Order
 	return append(hooks[:len(hooks):len(hooks)], order.Hooks[:]...)
-}
-
-// OrderAlterClient is a client for the OrderAlter schema.
-type OrderAlterClient struct {
-	config
-}
-
-// NewOrderAlterClient returns a client for the OrderAlter from the given config.
-func NewOrderAlterClient(c config) *OrderAlterClient {
-	return &OrderAlterClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `orderalter.Hooks(f(g(h())))`.
-func (c *OrderAlterClient) Use(hooks ...Hook) {
-	c.hooks.OrderAlter = append(c.hooks.OrderAlter, hooks...)
-}
-
-// Create returns a create builder for OrderAlter.
-func (c *OrderAlterClient) Create() *OrderAlterCreate {
-	mutation := newOrderAlterMutation(c.config, OpCreate)
-	return &OrderAlterCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of OrderAlter entities.
-func (c *OrderAlterClient) CreateBulk(builders ...*OrderAlterCreate) *OrderAlterCreateBulk {
-	return &OrderAlterCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for OrderAlter.
-func (c *OrderAlterClient) Update() *OrderAlterUpdate {
-	mutation := newOrderAlterMutation(c.config, OpUpdate)
-	return &OrderAlterUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *OrderAlterClient) UpdateOne(oa *OrderAlter) *OrderAlterUpdateOne {
-	mutation := newOrderAlterMutation(c.config, OpUpdateOne, withOrderAlter(oa))
-	return &OrderAlterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *OrderAlterClient) UpdateOneID(id uint64) *OrderAlterUpdateOne {
-	mutation := newOrderAlterMutation(c.config, OpUpdateOne, withOrderAlterID(id))
-	return &OrderAlterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for OrderAlter.
-func (c *OrderAlterClient) Delete() *OrderAlterDelete {
-	mutation := newOrderAlterMutation(c.config, OpDelete)
-	return &OrderAlterDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a delete builder for the given entity.
-func (c *OrderAlterClient) DeleteOne(oa *OrderAlter) *OrderAlterDeleteOne {
-	return c.DeleteOneID(oa.ID)
-}
-
-// DeleteOneID returns a delete builder for the given id.
-func (c *OrderAlterClient) DeleteOneID(id uint64) *OrderAlterDeleteOne {
-	builder := c.Delete().Where(orderalter.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &OrderAlterDeleteOne{builder}
-}
-
-// Query returns a query builder for OrderAlter.
-func (c *OrderAlterClient) Query() *OrderAlterQuery {
-	return &OrderAlterQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a OrderAlter entity by its id.
-func (c *OrderAlterClient) Get(ctx context.Context, id uint64) (*OrderAlter, error) {
-	return c.Query().Where(orderalter.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *OrderAlterClient) GetX(ctx context.Context, id uint64) *OrderAlter {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryRider queries the rider edge of a OrderAlter.
-func (c *OrderAlterClient) QueryRider(oa *OrderAlter) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := oa.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(orderalter.Table, orderalter.FieldID, id),
-			sqlgraph.To(rider.Table, rider.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, orderalter.RiderTable, orderalter.RiderColumn),
-		)
-		fromV = sqlgraph.Neighbors(oa.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryOrder queries the order edge of a OrderAlter.
-func (c *OrderAlterClient) QueryOrder(oa *OrderAlter) *OrderQuery {
-	query := &OrderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := oa.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(orderalter.Table, orderalter.FieldID, id),
-			sqlgraph.To(order.Table, order.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, orderalter.OrderTable, orderalter.OrderColumn),
-		)
-		fromV = sqlgraph.Neighbors(oa.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *OrderAlterClient) Hooks() []Hook {
-	hooks := c.hooks.OrderAlter
-	return append(hooks[:len(hooks):len(hooks)], orderalter.Hooks[:]...)
-}
-
-// OrderArrearageClient is a client for the OrderArrearage schema.
-type OrderArrearageClient struct {
-	config
-}
-
-// NewOrderArrearageClient returns a client for the OrderArrearage from the given config.
-func NewOrderArrearageClient(c config) *OrderArrearageClient {
-	return &OrderArrearageClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `orderarrearage.Hooks(f(g(h())))`.
-func (c *OrderArrearageClient) Use(hooks ...Hook) {
-	c.hooks.OrderArrearage = append(c.hooks.OrderArrearage, hooks...)
-}
-
-// Create returns a create builder for OrderArrearage.
-func (c *OrderArrearageClient) Create() *OrderArrearageCreate {
-	mutation := newOrderArrearageMutation(c.config, OpCreate)
-	return &OrderArrearageCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of OrderArrearage entities.
-func (c *OrderArrearageClient) CreateBulk(builders ...*OrderArrearageCreate) *OrderArrearageCreateBulk {
-	return &OrderArrearageCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for OrderArrearage.
-func (c *OrderArrearageClient) Update() *OrderArrearageUpdate {
-	mutation := newOrderArrearageMutation(c.config, OpUpdate)
-	return &OrderArrearageUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *OrderArrearageClient) UpdateOne(oa *OrderArrearage) *OrderArrearageUpdateOne {
-	mutation := newOrderArrearageMutation(c.config, OpUpdateOne, withOrderArrearage(oa))
-	return &OrderArrearageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *OrderArrearageClient) UpdateOneID(id uint64) *OrderArrearageUpdateOne {
-	mutation := newOrderArrearageMutation(c.config, OpUpdateOne, withOrderArrearageID(id))
-	return &OrderArrearageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for OrderArrearage.
-func (c *OrderArrearageClient) Delete() *OrderArrearageDelete {
-	mutation := newOrderArrearageMutation(c.config, OpDelete)
-	return &OrderArrearageDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a delete builder for the given entity.
-func (c *OrderArrearageClient) DeleteOne(oa *OrderArrearage) *OrderArrearageDeleteOne {
-	return c.DeleteOneID(oa.ID)
-}
-
-// DeleteOneID returns a delete builder for the given id.
-func (c *OrderArrearageClient) DeleteOneID(id uint64) *OrderArrearageDeleteOne {
-	builder := c.Delete().Where(orderarrearage.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &OrderArrearageDeleteOne{builder}
-}
-
-// Query returns a query builder for OrderArrearage.
-func (c *OrderArrearageClient) Query() *OrderArrearageQuery {
-	return &OrderArrearageQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a OrderArrearage entity by its id.
-func (c *OrderArrearageClient) Get(ctx context.Context, id uint64) (*OrderArrearage, error) {
-	return c.Query().Where(orderarrearage.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *OrderArrearageClient) GetX(ctx context.Context, id uint64) *OrderArrearage {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryRider queries the rider edge of a OrderArrearage.
-func (c *OrderArrearageClient) QueryRider(oa *OrderArrearage) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := oa.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(orderarrearage.Table, orderarrearage.FieldID, id),
-			sqlgraph.To(rider.Table, rider.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, orderarrearage.RiderTable, orderarrearage.RiderColumn),
-		)
-		fromV = sqlgraph.Neighbors(oa.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryOrder queries the order edge of a OrderArrearage.
-func (c *OrderArrearageClient) QueryOrder(oa *OrderArrearage) *OrderQuery {
-	query := &OrderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := oa.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(orderarrearage.Table, orderarrearage.FieldID, id),
-			sqlgraph.To(order.Table, order.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, orderarrearage.OrderTable, orderarrearage.OrderColumn),
-		)
-		fromV = sqlgraph.Neighbors(oa.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *OrderArrearageClient) Hooks() []Hook {
-	hooks := c.hooks.OrderArrearage
-	return append(hooks[:len(hooks):len(hooks)], orderarrearage.Hooks[:]...)
-}
-
-// OrderPauseClient is a client for the OrderPause schema.
-type OrderPauseClient struct {
-	config
-}
-
-// NewOrderPauseClient returns a client for the OrderPause from the given config.
-func NewOrderPauseClient(c config) *OrderPauseClient {
-	return &OrderPauseClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `orderpause.Hooks(f(g(h())))`.
-func (c *OrderPauseClient) Use(hooks ...Hook) {
-	c.hooks.OrderPause = append(c.hooks.OrderPause, hooks...)
-}
-
-// Create returns a create builder for OrderPause.
-func (c *OrderPauseClient) Create() *OrderPauseCreate {
-	mutation := newOrderPauseMutation(c.config, OpCreate)
-	return &OrderPauseCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of OrderPause entities.
-func (c *OrderPauseClient) CreateBulk(builders ...*OrderPauseCreate) *OrderPauseCreateBulk {
-	return &OrderPauseCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for OrderPause.
-func (c *OrderPauseClient) Update() *OrderPauseUpdate {
-	mutation := newOrderPauseMutation(c.config, OpUpdate)
-	return &OrderPauseUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *OrderPauseClient) UpdateOne(op *OrderPause) *OrderPauseUpdateOne {
-	mutation := newOrderPauseMutation(c.config, OpUpdateOne, withOrderPause(op))
-	return &OrderPauseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *OrderPauseClient) UpdateOneID(id uint64) *OrderPauseUpdateOne {
-	mutation := newOrderPauseMutation(c.config, OpUpdateOne, withOrderPauseID(id))
-	return &OrderPauseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for OrderPause.
-func (c *OrderPauseClient) Delete() *OrderPauseDelete {
-	mutation := newOrderPauseMutation(c.config, OpDelete)
-	return &OrderPauseDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a delete builder for the given entity.
-func (c *OrderPauseClient) DeleteOne(op *OrderPause) *OrderPauseDeleteOne {
-	return c.DeleteOneID(op.ID)
-}
-
-// DeleteOneID returns a delete builder for the given id.
-func (c *OrderPauseClient) DeleteOneID(id uint64) *OrderPauseDeleteOne {
-	builder := c.Delete().Where(orderpause.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &OrderPauseDeleteOne{builder}
-}
-
-// Query returns a query builder for OrderPause.
-func (c *OrderPauseClient) Query() *OrderPauseQuery {
-	return &OrderPauseQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a OrderPause entity by its id.
-func (c *OrderPauseClient) Get(ctx context.Context, id uint64) (*OrderPause, error) {
-	return c.Query().Where(orderpause.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *OrderPauseClient) GetX(ctx context.Context, id uint64) *OrderPause {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryRider queries the rider edge of a OrderPause.
-func (c *OrderPauseClient) QueryRider(op *OrderPause) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := op.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(orderpause.Table, orderpause.FieldID, id),
-			sqlgraph.To(rider.Table, rider.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, orderpause.RiderTable, orderpause.RiderColumn),
-		)
-		fromV = sqlgraph.Neighbors(op.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryOrder queries the order edge of a OrderPause.
-func (c *OrderPauseClient) QueryOrder(op *OrderPause) *OrderQuery {
-	query := &OrderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := op.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(orderpause.Table, orderpause.FieldID, id),
-			sqlgraph.To(order.Table, order.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, orderpause.OrderTable, orderpause.OrderColumn),
-		)
-		fromV = sqlgraph.Neighbors(op.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *OrderPauseClient) Hooks() []Hook {
-	hooks := c.hooks.OrderPause
-	return append(hooks[:len(hooks):len(hooks)], orderpause.Hooks[:]...)
 }
 
 // OrderRefundClient is a client for the OrderRefund schema.
@@ -2501,22 +2296,6 @@ func (c *PlanClient) QueryCities(pl *Plan) *CityQuery {
 	return query
 }
 
-// QueryOrders queries the orders edge of a Plan.
-func (c *PlanClient) QueryOrders(pl *Plan) *OrderQuery {
-	query := &OrderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := pl.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(plan.Table, plan.FieldID, id),
-			sqlgraph.To(order.Table, order.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, plan.OrdersTable, plan.OrdersColumn),
-		)
-		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // Hooks returns the client hooks.
 func (c *PlanClient) Hooks() []Hook {
 	hooks := c.hooks.Plan
@@ -2688,15 +2467,15 @@ func (c *RiderClient) QueryOrders(r *Rider) *OrderQuery {
 	return query
 }
 
-// QueryPauses queries the pauses edge of a Rider.
-func (c *RiderClient) QueryPauses(r *Rider) *OrderPauseQuery {
-	query := &OrderPauseQuery{config: c.config}
+// QueryExchanges queries the exchanges edge of a Rider.
+func (c *RiderClient) QueryExchanges(r *Rider) *CabinetExchangeQuery {
+	query := &CabinetExchangeQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, id),
-			sqlgraph.To(orderpause.Table, orderpause.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, rider.PausesTable, rider.PausesColumn),
+			sqlgraph.To(cabinetexchange.Table, cabinetexchange.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.ExchangesTable, rider.ExchangesColumn),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil
@@ -2704,31 +2483,15 @@ func (c *RiderClient) QueryPauses(r *Rider) *OrderPauseQuery {
 	return query
 }
 
-// QueryArrearages queries the arrearages edge of a Rider.
-func (c *RiderClient) QueryArrearages(r *Rider) *OrderArrearageQuery {
-	query := &OrderArrearageQuery{config: c.config}
+// QuerySubscribes queries the subscribes edge of a Rider.
+func (c *RiderClient) QuerySubscribes(r *Rider) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, id),
-			sqlgraph.To(orderarrearage.Table, orderarrearage.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, rider.ArrearagesTable, rider.ArrearagesColumn),
-		)
-		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryAlters queries the alters edge of a Rider.
-func (c *RiderClient) QueryAlters(r *Rider) *OrderAlterQuery {
-	query := &OrderAlterQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := r.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(rider.Table, rider.FieldID, id),
-			sqlgraph.To(orderalter.Table, orderalter.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, rider.AltersTable, rider.AltersColumn),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.SubscribesTable, rider.SubscribesColumn),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil
@@ -2938,4 +2701,501 @@ func (c *StoreClient) QueryBranch(s *Store) *BranchQuery {
 func (c *StoreClient) Hooks() []Hook {
 	hooks := c.hooks.Store
 	return append(hooks[:len(hooks):len(hooks)], store.Hooks[:]...)
+}
+
+// SubscribeClient is a client for the Subscribe schema.
+type SubscribeClient struct {
+	config
+}
+
+// NewSubscribeClient returns a client for the Subscribe from the given config.
+func NewSubscribeClient(c config) *SubscribeClient {
+	return &SubscribeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `subscribe.Hooks(f(g(h())))`.
+func (c *SubscribeClient) Use(hooks ...Hook) {
+	c.hooks.Subscribe = append(c.hooks.Subscribe, hooks...)
+}
+
+// Create returns a create builder for Subscribe.
+func (c *SubscribeClient) Create() *SubscribeCreate {
+	mutation := newSubscribeMutation(c.config, OpCreate)
+	return &SubscribeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Subscribe entities.
+func (c *SubscribeClient) CreateBulk(builders ...*SubscribeCreate) *SubscribeCreateBulk {
+	return &SubscribeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Subscribe.
+func (c *SubscribeClient) Update() *SubscribeUpdate {
+	mutation := newSubscribeMutation(c.config, OpUpdate)
+	return &SubscribeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SubscribeClient) UpdateOne(s *Subscribe) *SubscribeUpdateOne {
+	mutation := newSubscribeMutation(c.config, OpUpdateOne, withSubscribe(s))
+	return &SubscribeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SubscribeClient) UpdateOneID(id uint64) *SubscribeUpdateOne {
+	mutation := newSubscribeMutation(c.config, OpUpdateOne, withSubscribeID(id))
+	return &SubscribeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Subscribe.
+func (c *SubscribeClient) Delete() *SubscribeDelete {
+	mutation := newSubscribeMutation(c.config, OpDelete)
+	return &SubscribeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *SubscribeClient) DeleteOne(s *Subscribe) *SubscribeDeleteOne {
+	return c.DeleteOneID(s.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *SubscribeClient) DeleteOneID(id uint64) *SubscribeDeleteOne {
+	builder := c.Delete().Where(subscribe.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SubscribeDeleteOne{builder}
+}
+
+// Query returns a query builder for Subscribe.
+func (c *SubscribeClient) Query() *SubscribeQuery {
+	return &SubscribeQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Subscribe entity by its id.
+func (c *SubscribeClient) Get(ctx context.Context, id uint64) (*Subscribe, error) {
+	return c.Query().Where(subscribe.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SubscribeClient) GetX(ctx context.Context, id uint64) *Subscribe {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryPlan queries the plan edge of a Subscribe.
+func (c *SubscribeClient) QueryPlan(s *Subscribe) *PlanQuery {
+	query := &PlanQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.PlanTable, subscribe.PlanColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEmployee queries the employee edge of a Subscribe.
+func (c *SubscribeClient) QueryEmployee(s *Subscribe) *EmployeeQuery {
+	query := &EmployeeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.EmployeeTable, subscribe.EmployeeColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCity queries the city edge of a Subscribe.
+func (c *SubscribeClient) QueryCity(s *Subscribe) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.CityTable, subscribe.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRider queries the rider edge of a Subscribe.
+func (c *SubscribeClient) QueryRider(s *Subscribe) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, subscribe.RiderTable, subscribe.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPauses queries the pauses edge of a Subscribe.
+func (c *SubscribeClient) QueryPauses(s *Subscribe) *SubscribePauseQuery {
+	query := &SubscribePauseQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
+			sqlgraph.To(subscribepause.Table, subscribepause.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, subscribe.PausesTable, subscribe.PausesColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAlters queries the alters edge of a Subscribe.
+func (c *SubscribeClient) QueryAlters(s *Subscribe) *SubscribeAlterQuery {
+	query := &SubscribeAlterQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
+			sqlgraph.To(subscribealter.Table, subscribealter.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, subscribe.AltersTable, subscribe.AltersColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOrders queries the orders edge of a Subscribe.
+func (c *SubscribeClient) QueryOrders(s *Subscribe) *OrderQuery {
+	query := &OrderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, subscribe.OrdersTable, subscribe.OrdersColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStartOrder queries the start_order edge of a Subscribe.
+func (c *SubscribeClient) QueryStartOrder(s *Subscribe) *OrderQuery {
+	query := &OrderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.StartOrderTable, subscribe.StartOrderColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *SubscribeClient) Hooks() []Hook {
+	hooks := c.hooks.Subscribe
+	return append(hooks[:len(hooks):len(hooks)], subscribe.Hooks[:]...)
+}
+
+// SubscribeAlterClient is a client for the SubscribeAlter schema.
+type SubscribeAlterClient struct {
+	config
+}
+
+// NewSubscribeAlterClient returns a client for the SubscribeAlter from the given config.
+func NewSubscribeAlterClient(c config) *SubscribeAlterClient {
+	return &SubscribeAlterClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `subscribealter.Hooks(f(g(h())))`.
+func (c *SubscribeAlterClient) Use(hooks ...Hook) {
+	c.hooks.SubscribeAlter = append(c.hooks.SubscribeAlter, hooks...)
+}
+
+// Create returns a create builder for SubscribeAlter.
+func (c *SubscribeAlterClient) Create() *SubscribeAlterCreate {
+	mutation := newSubscribeAlterMutation(c.config, OpCreate)
+	return &SubscribeAlterCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SubscribeAlter entities.
+func (c *SubscribeAlterClient) CreateBulk(builders ...*SubscribeAlterCreate) *SubscribeAlterCreateBulk {
+	return &SubscribeAlterCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SubscribeAlter.
+func (c *SubscribeAlterClient) Update() *SubscribeAlterUpdate {
+	mutation := newSubscribeAlterMutation(c.config, OpUpdate)
+	return &SubscribeAlterUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SubscribeAlterClient) UpdateOne(sa *SubscribeAlter) *SubscribeAlterUpdateOne {
+	mutation := newSubscribeAlterMutation(c.config, OpUpdateOne, withSubscribeAlter(sa))
+	return &SubscribeAlterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SubscribeAlterClient) UpdateOneID(id uint64) *SubscribeAlterUpdateOne {
+	mutation := newSubscribeAlterMutation(c.config, OpUpdateOne, withSubscribeAlterID(id))
+	return &SubscribeAlterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SubscribeAlter.
+func (c *SubscribeAlterClient) Delete() *SubscribeAlterDelete {
+	mutation := newSubscribeAlterMutation(c.config, OpDelete)
+	return &SubscribeAlterDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *SubscribeAlterClient) DeleteOne(sa *SubscribeAlter) *SubscribeAlterDeleteOne {
+	return c.DeleteOneID(sa.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *SubscribeAlterClient) DeleteOneID(id uint64) *SubscribeAlterDeleteOne {
+	builder := c.Delete().Where(subscribealter.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SubscribeAlterDeleteOne{builder}
+}
+
+// Query returns a query builder for SubscribeAlter.
+func (c *SubscribeAlterClient) Query() *SubscribeAlterQuery {
+	return &SubscribeAlterQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a SubscribeAlter entity by its id.
+func (c *SubscribeAlterClient) Get(ctx context.Context, id uint64) (*SubscribeAlter, error) {
+	return c.Query().Where(subscribealter.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SubscribeAlterClient) GetX(ctx context.Context, id uint64) *SubscribeAlter {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryRider queries the rider edge of a SubscribeAlter.
+func (c *SubscribeAlterClient) QueryRider(sa *SubscribeAlter) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sa.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribealter.Table, subscribealter.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribealter.RiderTable, subscribealter.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(sa.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryManager queries the manager edge of a SubscribeAlter.
+func (c *SubscribeAlterClient) QueryManager(sa *SubscribeAlter) *ManagerQuery {
+	query := &ManagerQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sa.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribealter.Table, subscribealter.FieldID, id),
+			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribealter.ManagerTable, subscribealter.ManagerColumn),
+		)
+		fromV = sqlgraph.Neighbors(sa.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySubscribe queries the subscribe edge of a SubscribeAlter.
+func (c *SubscribeAlterClient) QuerySubscribe(sa *SubscribeAlter) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sa.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribealter.Table, subscribealter.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, subscribealter.SubscribeTable, subscribealter.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(sa.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *SubscribeAlterClient) Hooks() []Hook {
+	hooks := c.hooks.SubscribeAlter
+	return append(hooks[:len(hooks):len(hooks)], subscribealter.Hooks[:]...)
+}
+
+// SubscribePauseClient is a client for the SubscribePause schema.
+type SubscribePauseClient struct {
+	config
+}
+
+// NewSubscribePauseClient returns a client for the SubscribePause from the given config.
+func NewSubscribePauseClient(c config) *SubscribePauseClient {
+	return &SubscribePauseClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `subscribepause.Hooks(f(g(h())))`.
+func (c *SubscribePauseClient) Use(hooks ...Hook) {
+	c.hooks.SubscribePause = append(c.hooks.SubscribePause, hooks...)
+}
+
+// Create returns a create builder for SubscribePause.
+func (c *SubscribePauseClient) Create() *SubscribePauseCreate {
+	mutation := newSubscribePauseMutation(c.config, OpCreate)
+	return &SubscribePauseCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SubscribePause entities.
+func (c *SubscribePauseClient) CreateBulk(builders ...*SubscribePauseCreate) *SubscribePauseCreateBulk {
+	return &SubscribePauseCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SubscribePause.
+func (c *SubscribePauseClient) Update() *SubscribePauseUpdate {
+	mutation := newSubscribePauseMutation(c.config, OpUpdate)
+	return &SubscribePauseUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SubscribePauseClient) UpdateOne(sp *SubscribePause) *SubscribePauseUpdateOne {
+	mutation := newSubscribePauseMutation(c.config, OpUpdateOne, withSubscribePause(sp))
+	return &SubscribePauseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SubscribePauseClient) UpdateOneID(id uint64) *SubscribePauseUpdateOne {
+	mutation := newSubscribePauseMutation(c.config, OpUpdateOne, withSubscribePauseID(id))
+	return &SubscribePauseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SubscribePause.
+func (c *SubscribePauseClient) Delete() *SubscribePauseDelete {
+	mutation := newSubscribePauseMutation(c.config, OpDelete)
+	return &SubscribePauseDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *SubscribePauseClient) DeleteOne(sp *SubscribePause) *SubscribePauseDeleteOne {
+	return c.DeleteOneID(sp.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *SubscribePauseClient) DeleteOneID(id uint64) *SubscribePauseDeleteOne {
+	builder := c.Delete().Where(subscribepause.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SubscribePauseDeleteOne{builder}
+}
+
+// Query returns a query builder for SubscribePause.
+func (c *SubscribePauseClient) Query() *SubscribePauseQuery {
+	return &SubscribePauseQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a SubscribePause entity by its id.
+func (c *SubscribePauseClient) Get(ctx context.Context, id uint64) (*SubscribePause, error) {
+	return c.Query().Where(subscribepause.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SubscribePauseClient) GetX(ctx context.Context, id uint64) *SubscribePause {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryRider queries the rider edge of a SubscribePause.
+func (c *SubscribePauseClient) QueryRider(sp *SubscribePause) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribepause.RiderTable, subscribepause.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(sp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEmployee queries the employee edge of a SubscribePause.
+func (c *SubscribePauseClient) QueryEmployee(sp *SubscribePause) *EmployeeQuery {
+	query := &EmployeeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribepause.EmployeeTable, subscribepause.EmployeeColumn),
+		)
+		fromV = sqlgraph.Neighbors(sp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySubscribe queries the subscribe edge of a SubscribePause.
+func (c *SubscribePauseClient) QuerySubscribe(sp *SubscribePause) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, subscribepause.SubscribeTable, subscribepause.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(sp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *SubscribePauseClient) Hooks() []Hook {
+	hooks := c.hooks.SubscribePause
+	return append(hooks[:len(hooks):len(hooks)], subscribepause.Hooks[:]...)
 }

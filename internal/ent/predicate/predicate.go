@@ -18,6 +18,9 @@ type BranchContract func(*sql.Selector)
 // Cabinet is the predicate function for cabinet builders.
 type Cabinet func(*sql.Selector)
 
+// CabinetExchange is the predicate function for cabinetexchange builders.
+type CabinetExchange func(*sql.Selector)
+
 // CabinetFault is the predicate function for cabinetfault builders.
 type CabinetFault func(*sql.Selector)
 
@@ -30,6 +33,9 @@ type Commission func(*sql.Selector)
 // Contract is the predicate function for contract builders.
 type Contract func(*sql.Selector)
 
+// Employee is the predicate function for employee builders.
+type Employee func(*sql.Selector)
+
 // Enterprise is the predicate function for enterprise builders.
 type Enterprise func(*sql.Selector)
 
@@ -38,15 +44,6 @@ type Manager func(*sql.Selector)
 
 // Order is the predicate function for order builders.
 type Order func(*sql.Selector)
-
-// OrderAlter is the predicate function for orderalter builders.
-type OrderAlter func(*sql.Selector)
-
-// OrderArrearage is the predicate function for orderarrearage builders.
-type OrderArrearage func(*sql.Selector)
-
-// OrderPause is the predicate function for orderpause builders.
-type OrderPause func(*sql.Selector)
 
 // OrderRefund is the predicate function for orderrefund builders.
 type OrderRefund func(*sql.Selector)
@@ -65,3 +62,12 @@ type Setting func(*sql.Selector)
 
 // Store is the predicate function for store builders.
 type Store func(*sql.Selector)
+
+// Subscribe is the predicate function for subscribe builders.
+type Subscribe func(*sql.Selector)
+
+// SubscribeAlter is the predicate function for subscribealter builders.
+type SubscribeAlter func(*sql.Selector)
+
+// SubscribePause is the predicate function for subscribepause builders.
+type SubscribePause func(*sql.Selector)

@@ -5,7 +5,7 @@
 
 package model
 
-type EmployeeItem struct {
+type Employee struct {
     ID    uint64 `json:"id"`
     Name  string `json:"name"`  // 店员名称
     Phone string `json:"phone"` // 店员电话

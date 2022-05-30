@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -28,10 +29,11 @@ type CabinetQuery struct {
 	fields     []string
 	predicates []predicate.Cabinet
 	// eager-loading edges.
-	withBranch *BranchQuery
-	withBms    *BatteryModelQuery
-	withFaults *CabinetFaultQuery
-	modifiers  []func(*sql.Selector)
+	withBranch    *BranchQuery
+	withBms       *BatteryModelQuery
+	withFaults    *CabinetFaultQuery
+	withExchanges *CabinetExchangeQuery
+	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -127,6 +129,28 @@ func (cq *CabinetQuery) QueryFaults() *CabinetFaultQuery {
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
 			sqlgraph.To(cabinetfault.Table, cabinetfault.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, cabinet.FaultsTable, cabinet.FaultsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryExchanges chains the current query on the "exchanges" edge.
+func (cq *CabinetQuery) QueryExchanges() *CabinetExchangeQuery {
+	query := &CabinetExchangeQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
+			sqlgraph.To(cabinetexchange.Table, cabinetexchange.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, cabinet.ExchangesTable, cabinet.ExchangesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -310,14 +334,15 @@ func (cq *CabinetQuery) Clone() *CabinetQuery {
 		return nil
 	}
 	return &CabinetQuery{
-		config:     cq.config,
-		limit:      cq.limit,
-		offset:     cq.offset,
-		order:      append([]OrderFunc{}, cq.order...),
-		predicates: append([]predicate.Cabinet{}, cq.predicates...),
-		withBranch: cq.withBranch.Clone(),
-		withBms:    cq.withBms.Clone(),
-		withFaults: cq.withFaults.Clone(),
+		config:        cq.config,
+		limit:         cq.limit,
+		offset:        cq.offset,
+		order:         append([]OrderFunc{}, cq.order...),
+		predicates:    append([]predicate.Cabinet{}, cq.predicates...),
+		withBranch:    cq.withBranch.Clone(),
+		withBms:       cq.withBms.Clone(),
+		withFaults:    cq.withFaults.Clone(),
+		withExchanges: cq.withExchanges.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
@@ -355,6 +380,17 @@ func (cq *CabinetQuery) WithFaults(opts ...func(*CabinetFaultQuery)) *CabinetQue
 		opt(query)
 	}
 	cq.withFaults = query
+	return cq
+}
+
+// WithExchanges tells the query-builder to eager-load the nodes that are connected to
+// the "exchanges" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CabinetQuery) WithExchanges(opts ...func(*CabinetExchangeQuery)) *CabinetQuery {
+	query := &CabinetExchangeQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withExchanges = query
 	return cq
 }
 
@@ -428,10 +464,11 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 	var (
 		nodes       = []*Cabinet{}
 		_spec       = cq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			cq.withBranch != nil,
 			cq.withBms != nil,
 			cq.withFaults != nil,
+			cq.withExchanges != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -557,6 +594,31 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 				return nil, fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Faults = append(node.Edges.Faults, n)
+		}
+	}
+
+	if query := cq.withExchanges; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Cabinet)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Exchanges = []*CabinetExchange{}
+		}
+		query.Where(predicate.CabinetExchange(func(s *sql.Selector) {
+			s.Where(sql.InValues(cabinet.ExchangesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.CabinetID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Exchanges = append(node.Edges.Exchanges, n)
 		}
 	}
 

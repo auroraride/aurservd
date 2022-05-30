@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -276,6 +277,21 @@ func (cu *CabinetUpdate) AddFaults(c ...*CabinetFault) *CabinetUpdate {
 	return cu.AddFaultIDs(ids...)
 }
 
+// AddExchangeIDs adds the "exchanges" edge to the CabinetExchange entity by IDs.
+func (cu *CabinetUpdate) AddExchangeIDs(ids ...uint64) *CabinetUpdate {
+	cu.mutation.AddExchangeIDs(ids...)
+	return cu
+}
+
+// AddExchanges adds the "exchanges" edges to the CabinetExchange entity.
+func (cu *CabinetUpdate) AddExchanges(c ...*CabinetExchange) *CabinetUpdate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cu.AddExchangeIDs(ids...)
+}
+
 // Mutation returns the CabinetMutation object of the builder.
 func (cu *CabinetUpdate) Mutation() *CabinetMutation {
 	return cu.mutation
@@ -327,6 +343,27 @@ func (cu *CabinetUpdate) RemoveFaults(c ...*CabinetFault) *CabinetUpdate {
 		ids[i] = c[i].ID
 	}
 	return cu.RemoveFaultIDs(ids...)
+}
+
+// ClearExchanges clears all "exchanges" edges to the CabinetExchange entity.
+func (cu *CabinetUpdate) ClearExchanges() *CabinetUpdate {
+	cu.mutation.ClearExchanges()
+	return cu
+}
+
+// RemoveExchangeIDs removes the "exchanges" edge to CabinetExchange entities by IDs.
+func (cu *CabinetUpdate) RemoveExchangeIDs(ids ...uint64) *CabinetUpdate {
+	cu.mutation.RemoveExchangeIDs(ids...)
+	return cu
+}
+
+// RemoveExchanges removes "exchanges" edges to CabinetExchange entities.
+func (cu *CabinetUpdate) RemoveExchanges(c ...*CabinetExchange) *CabinetUpdate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cu.RemoveExchangeIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -729,6 +766,60 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if cu.mutation.ExchangesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.ExchangesTable,
+			Columns: []string{cabinet.ExchangesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetexchange.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.RemovedExchangesIDs(); len(nodes) > 0 && !cu.mutation.ExchangesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.ExchangesTable,
+			Columns: []string{cabinet.ExchangesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetexchange.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.ExchangesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.ExchangesTable,
+			Columns: []string{cabinet.ExchangesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetexchange.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{cabinet.Label}
@@ -992,6 +1083,21 @@ func (cuo *CabinetUpdateOne) AddFaults(c ...*CabinetFault) *CabinetUpdateOne {
 	return cuo.AddFaultIDs(ids...)
 }
 
+// AddExchangeIDs adds the "exchanges" edge to the CabinetExchange entity by IDs.
+func (cuo *CabinetUpdateOne) AddExchangeIDs(ids ...uint64) *CabinetUpdateOne {
+	cuo.mutation.AddExchangeIDs(ids...)
+	return cuo
+}
+
+// AddExchanges adds the "exchanges" edges to the CabinetExchange entity.
+func (cuo *CabinetUpdateOne) AddExchanges(c ...*CabinetExchange) *CabinetUpdateOne {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cuo.AddExchangeIDs(ids...)
+}
+
 // Mutation returns the CabinetMutation object of the builder.
 func (cuo *CabinetUpdateOne) Mutation() *CabinetMutation {
 	return cuo.mutation
@@ -1043,6 +1149,27 @@ func (cuo *CabinetUpdateOne) RemoveFaults(c ...*CabinetFault) *CabinetUpdateOne 
 		ids[i] = c[i].ID
 	}
 	return cuo.RemoveFaultIDs(ids...)
+}
+
+// ClearExchanges clears all "exchanges" edges to the CabinetExchange entity.
+func (cuo *CabinetUpdateOne) ClearExchanges() *CabinetUpdateOne {
+	cuo.mutation.ClearExchanges()
+	return cuo
+}
+
+// RemoveExchangeIDs removes the "exchanges" edge to CabinetExchange entities by IDs.
+func (cuo *CabinetUpdateOne) RemoveExchangeIDs(ids ...uint64) *CabinetUpdateOne {
+	cuo.mutation.RemoveExchangeIDs(ids...)
+	return cuo
+}
+
+// RemoveExchanges removes "exchanges" edges to CabinetExchange entities.
+func (cuo *CabinetUpdateOne) RemoveExchanges(c ...*CabinetExchange) *CabinetUpdateOne {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cuo.RemoveExchangeIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1467,6 +1594,60 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: cabinetfault.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.ExchangesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.ExchangesTable,
+			Columns: []string{cabinet.ExchangesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetexchange.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.RemovedExchangesIDs(); len(nodes) > 0 && !cuo.mutation.ExchangesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.ExchangesTable,
+			Columns: []string{cabinet.ExchangesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetexchange.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.ExchangesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.ExchangesTable,
+			Columns: []string{cabinet.ExchangesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinetexchange.FieldID,
 				},
 			},
 		}

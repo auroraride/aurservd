@@ -8,8 +8,30 @@ import (
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
+    "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
+
+type PlanMixin struct {
+    mixin.Schema
+    Optional bool
+}
+
+func (pm PlanMixin) Fields() []ent.Field {
+    f := field.Uint64("plan_id").Comment("骑士卡ID")
+    if pm.Optional {
+        f.Optional()
+    }
+    return []ent.Field{f}
+}
+
+func (pm PlanMixin) Edges() []ent.Edge {
+    e := edge.To("plan", Plan.Type).Unique().Field("plan_id")
+    if !pm.Optional {
+        e.Required()
+    }
+    return []ent.Edge{e}
+}
 
 // Plan holds the schema definition for the Plan entity.
 type Plan struct {
@@ -43,7 +65,6 @@ func (Plan) Edges() []ent.Edge {
     return []ent.Edge{
         edge.To("pms", BatteryModel.Type),
         edge.To("cities", City.Type),
-        edge.To("orders", Order.Type),
     }
 }
 

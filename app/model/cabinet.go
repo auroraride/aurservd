@@ -190,3 +190,9 @@ type CabinetDoorOperateReq struct {
     Operation *CabinetDoorOperate `json:"operation" validate:"required"` // 操作方式 1:开仓 2:锁定(标记为故障) 3:解锁(取消标记故障)
     Phone     *string             `json:"phone"`                         // 骑手手机号
 }
+
+// CabinetBinBasicInfo 电柜仓位基础属性
+type CabinetBinBasicInfo struct {
+    Index       int                `json:"index"`       // 仓位index
+    Electricity BatteryElectricity `json:"electricity"` // 电量
+}

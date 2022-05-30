@@ -25,10 +25,10 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
-	// FieldStatus holds the string denoting the status field in the database.
-	FieldStatus = "status"
 	// FieldCityID holds the string denoting the city_id field in the database.
 	FieldCityID = "city_id"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
 	// FieldBranchID holds the string denoting the branch_id field in the database.
 	FieldBranchID = "branch_id"
 	// FieldCabinetID holds the string denoting the cabinet_id field in the database.
@@ -41,16 +41,23 @@ const (
 	FieldAttachments = "attachments"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// EdgeCity holds the string denoting the city edge name in mutations.
+	EdgeCity = "city"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
 	EdgeBranch = "branch"
 	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
 	EdgeCabinet = "cabinet"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
-	// EdgeCity holds the string denoting the city edge name in mutations.
-	EdgeCity = "city"
 	// Table holds the table name of the cabinetfault in the database.
 	Table = "cabinet_fault"
+	// CityTable is the table that holds the city relation/edge.
+	CityTable = "cabinet_fault"
+	// CityInverseTable is the table name for the City entity.
+	// It exists in this package in order to avoid circular dependency with the "city" package.
+	CityInverseTable = "city"
+	// CityColumn is the table column denoting the city relation/edge.
+	CityColumn = "city_id"
 	// BranchTable is the table that holds the branch relation/edge.
 	BranchTable = "cabinet_fault"
 	// BranchInverseTable is the table name for the Branch entity.
@@ -72,13 +79,6 @@ const (
 	RiderInverseTable = "rider"
 	// RiderColumn is the table column denoting the rider relation/edge.
 	RiderColumn = "rider_id"
-	// CityTable is the table that holds the city relation/edge.
-	CityTable = "cabinet_fault"
-	// CityInverseTable is the table name for the City entity.
-	// It exists in this package in order to avoid circular dependency with the "city" package.
-	CityInverseTable = "city"
-	// CityColumn is the table column denoting the city relation/edge.
-	CityColumn = "city_id"
 )
 
 // Columns holds all SQL columns for cabinetfault fields.
@@ -90,8 +90,8 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
-	FieldStatus,
 	FieldCityID,
+	FieldStatus,
 	FieldBranchID,
 	FieldCabinetID,
 	FieldRiderID,

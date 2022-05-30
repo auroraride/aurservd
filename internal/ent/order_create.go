@@ -15,12 +15,10 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/order"
-	"github.com/auroraride/aurservd/internal/ent/orderalter"
-	"github.com/auroraride/aurservd/internal/ent/orderarrearage"
-	"github.com/auroraride/aurservd/internal/ent/orderpause"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // OrderCreate is the builder for creating a Order entity.
@@ -99,29 +97,57 @@ func (oc *OrderCreate) SetNillableRemark(s *string) *OrderCreate {
 	return oc
 }
 
-// SetRiderID sets the "rider_id" field.
-func (oc *OrderCreate) SetRiderID(u uint64) *OrderCreate {
-	oc.mutation.SetRiderID(u)
-	return oc
-}
-
 // SetPlanID sets the "plan_id" field.
 func (oc *OrderCreate) SetPlanID(u uint64) *OrderCreate {
 	oc.mutation.SetPlanID(u)
 	return oc
 }
 
-// SetNillablePlanID sets the "plan_id" field if the given value is not nil.
-func (oc *OrderCreate) SetNillablePlanID(u *uint64) *OrderCreate {
+// SetCityID sets the "city_id" field.
+func (oc *OrderCreate) SetCityID(u uint64) *OrderCreate {
+	oc.mutation.SetCityID(u)
+	return oc
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableCityID(u *uint64) *OrderCreate {
 	if u != nil {
-		oc.SetPlanID(*u)
+		oc.SetCityID(*u)
 	}
 	return oc
 }
 
-// SetCityID sets the "city_id" field.
-func (oc *OrderCreate) SetCityID(u uint64) *OrderCreate {
-	oc.mutation.SetCityID(u)
+// SetRiderID sets the "rider_id" field.
+func (oc *OrderCreate) SetRiderID(u uint64) *OrderCreate {
+	oc.mutation.SetRiderID(u)
+	return oc
+}
+
+// SetParentID sets the "parent_id" field.
+func (oc *OrderCreate) SetParentID(u uint64) *OrderCreate {
+	oc.mutation.SetParentID(u)
+	return oc
+}
+
+// SetNillableParentID sets the "parent_id" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableParentID(u *uint64) *OrderCreate {
+	if u != nil {
+		oc.SetParentID(*u)
+	}
+	return oc
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (oc *OrderCreate) SetSubscribeID(u uint64) *OrderCreate {
+	oc.mutation.SetSubscribeID(u)
+	return oc
+}
+
+// SetNillableSubscribeID sets the "subscribe_id" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableSubscribeID(u *uint64) *OrderCreate {
+	if u != nil {
+		oc.SetSubscribeID(*u)
+	}
 	return oc
 }
 
@@ -183,62 +209,6 @@ func (oc *OrderCreate) SetNillableTotal(f *float64) *OrderCreate {
 	return oc
 }
 
-// SetPlanDetail sets the "plan_detail" field.
-func (oc *OrderCreate) SetPlanDetail(mi model.PlanItem) *OrderCreate {
-	oc.mutation.SetPlanDetail(mi)
-	return oc
-}
-
-// SetNillablePlanDetail sets the "plan_detail" field if the given value is not nil.
-func (oc *OrderCreate) SetNillablePlanDetail(mi *model.PlanItem) *OrderCreate {
-	if mi != nil {
-		oc.SetPlanDetail(*mi)
-	}
-	return oc
-}
-
-// SetParentID sets the "parent_id" field.
-func (oc *OrderCreate) SetParentID(u uint64) *OrderCreate {
-	oc.mutation.SetParentID(u)
-	return oc
-}
-
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (oc *OrderCreate) SetNillableParentID(u *uint64) *OrderCreate {
-	if u != nil {
-		oc.SetParentID(*u)
-	}
-	return oc
-}
-
-// SetStartAt sets the "start_at" field.
-func (oc *OrderCreate) SetStartAt(t time.Time) *OrderCreate {
-	oc.mutation.SetStartAt(t)
-	return oc
-}
-
-// SetNillableStartAt sets the "start_at" field if the given value is not nil.
-func (oc *OrderCreate) SetNillableStartAt(t *time.Time) *OrderCreate {
-	if t != nil {
-		oc.SetStartAt(*t)
-	}
-	return oc
-}
-
-// SetEndAt sets the "end_at" field.
-func (oc *OrderCreate) SetEndAt(t time.Time) *OrderCreate {
-	oc.mutation.SetEndAt(t)
-	return oc
-}
-
-// SetNillableEndAt sets the "end_at" field if the given value is not nil.
-func (oc *OrderCreate) SetNillableEndAt(t *time.Time) *OrderCreate {
-	if t != nil {
-		oc.SetEndAt(*t)
-	}
-	return oc
-}
-
 // SetRefundAt sets the "refund_at" field.
 func (oc *OrderCreate) SetRefundAt(t time.Time) *OrderCreate {
 	oc.mutation.SetRefundAt(t)
@@ -253,38 +223,20 @@ func (oc *OrderCreate) SetNillableRefundAt(t *time.Time) *OrderCreate {
 	return oc
 }
 
-// SetPausedAt sets the "paused_at" field.
-func (oc *OrderCreate) SetPausedAt(t time.Time) *OrderCreate {
-	oc.mutation.SetPausedAt(t)
-	return oc
-}
-
-// SetNillablePausedAt sets the "paused_at" field if the given value is not nil.
-func (oc *OrderCreate) SetNillablePausedAt(t *time.Time) *OrderCreate {
-	if t != nil {
-		oc.SetPausedAt(*t)
-	}
-	return oc
-}
-
-// SetDays sets the "days" field.
-func (oc *OrderCreate) SetDays(u uint) *OrderCreate {
-	oc.mutation.SetDays(u)
-	return oc
-}
-
-// SetNillableDays sets the "days" field if the given value is not nil.
-func (oc *OrderCreate) SetNillableDays(u *uint) *OrderCreate {
-	if u != nil {
-		oc.SetDays(*u)
-	}
-	return oc
-}
-
 // SetID sets the "id" field.
 func (oc *OrderCreate) SetID(u uint64) *OrderCreate {
 	oc.mutation.SetID(u)
 	return oc
+}
+
+// SetPlan sets the "plan" edge to the Plan entity.
+func (oc *OrderCreate) SetPlan(p *Plan) *OrderCreate {
+	return oc.SetPlanID(p.ID)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (oc *OrderCreate) SetCity(c *City) *OrderCreate {
+	return oc.SetCityID(c.ID)
 }
 
 // SetRider sets the "rider" edge to the Rider entity.
@@ -292,9 +244,9 @@ func (oc *OrderCreate) SetRider(r *Rider) *OrderCreate {
 	return oc.SetRiderID(r.ID)
 }
 
-// SetPlan sets the "plan" edge to the Plan entity.
-func (oc *OrderCreate) SetPlan(p *Plan) *OrderCreate {
-	return oc.SetPlanID(p.ID)
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (oc *OrderCreate) SetSubscribe(s *Subscribe) *OrderCreate {
+	return oc.SetSubscribeID(s.ID)
 }
 
 // SetCommissionID sets the "commission" edge to the Commission entity by ID.
@@ -334,56 +286,6 @@ func (oc *OrderCreate) AddChildren(o ...*Order) *OrderCreate {
 		ids[i] = o[i].ID
 	}
 	return oc.AddChildIDs(ids...)
-}
-
-// SetCity sets the "city" edge to the City entity.
-func (oc *OrderCreate) SetCity(c *City) *OrderCreate {
-	return oc.SetCityID(c.ID)
-}
-
-// AddPauseIDs adds the "pauses" edge to the OrderPause entity by IDs.
-func (oc *OrderCreate) AddPauseIDs(ids ...uint64) *OrderCreate {
-	oc.mutation.AddPauseIDs(ids...)
-	return oc
-}
-
-// AddPauses adds the "pauses" edges to the OrderPause entity.
-func (oc *OrderCreate) AddPauses(o ...*OrderPause) *OrderCreate {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
-	}
-	return oc.AddPauseIDs(ids...)
-}
-
-// AddArrearageIDs adds the "arrearages" edge to the OrderArrearage entity by IDs.
-func (oc *OrderCreate) AddArrearageIDs(ids ...uint64) *OrderCreate {
-	oc.mutation.AddArrearageIDs(ids...)
-	return oc
-}
-
-// AddArrearages adds the "arrearages" edges to the OrderArrearage entity.
-func (oc *OrderCreate) AddArrearages(o ...*OrderArrearage) *OrderCreate {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
-	}
-	return oc.AddArrearageIDs(ids...)
-}
-
-// AddAlterIDs adds the "alters" edge to the OrderAlter entity by IDs.
-func (oc *OrderCreate) AddAlterIDs(ids ...uint64) *OrderCreate {
-	oc.mutation.AddAlterIDs(ids...)
-	return oc
-}
-
-// AddAlters adds the "alters" edges to the OrderAlter entity.
-func (oc *OrderCreate) AddAlters(o ...*OrderAlter) *OrderCreate {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
-	}
-	return oc.AddAlterIDs(ids...)
 }
 
 // AddRefundIDs adds the "refunds" edge to the OrderRefund entity by IDs.
@@ -513,11 +415,11 @@ func (oc *OrderCreate) check() error {
 	if _, ok := oc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Order.updated_at"`)}
 	}
+	if _, ok := oc.mutation.PlanID(); !ok {
+		return &ValidationError{Name: "plan_id", err: errors.New(`ent: missing required field "Order.plan_id"`)}
+	}
 	if _, ok := oc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "Order.rider_id"`)}
-	}
-	if _, ok := oc.mutation.CityID(); !ok {
-		return &ValidationError{Name: "city_id", err: errors.New(`ent: missing required field "Order.city_id"`)}
 	}
 	if _, ok := oc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Order.status"`)}
@@ -540,11 +442,11 @@ func (oc *OrderCreate) check() error {
 	if _, ok := oc.mutation.Total(); !ok {
 		return &ValidationError{Name: "total", err: errors.New(`ent: missing required field "Order.total"`)}
 	}
+	if _, ok := oc.mutation.PlanID(); !ok {
+		return &ValidationError{Name: "plan", err: errors.New(`ent: missing required edge "Order.plan"`)}
+	}
 	if _, ok := oc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Order.rider"`)}
-	}
-	if _, ok := oc.mutation.CityID(); !ok {
-		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Order.city"`)}
 	}
 	return nil
 }
@@ -684,30 +586,6 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		})
 		_node.Total = value
 	}
-	if value, ok := oc.mutation.PlanDetail(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: order.FieldPlanDetail,
-		})
-		_node.PlanDetail = value
-	}
-	if value, ok := oc.mutation.StartAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: order.FieldStartAt,
-		})
-		_node.StartAt = &value
-	}
-	if value, ok := oc.mutation.EndAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: order.FieldEndAt,
-		})
-		_node.EndAt = &value
-	}
 	if value, ok := oc.mutation.RefundAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -716,21 +594,45 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		})
 		_node.RefundAt = &value
 	}
-	if value, ok := oc.mutation.PausedAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: order.FieldPausedAt,
-		})
-		_node.PausedAt = &value
+	if nodes := oc.mutation.PlanIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.PlanTable,
+			Columns: []string{order.PlanColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.PlanID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if value, ok := oc.mutation.Days(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
-			Value:  value,
-			Column: order.FieldDays,
-		})
-		_node.Days = value
+	if nodes := oc.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   order.CityTable,
+			Columns: []string{order.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CityID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := oc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -752,24 +654,24 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		_node.RiderID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := oc.mutation.PlanIDs(); len(nodes) > 0 {
+	if nodes := oc.mutation.SubscribeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   order.PlanTable,
-			Columns: []string{order.PlanColumn},
+			Table:   order.SubscribeTable,
+			Columns: []string{order.SubscribeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: plan.FieldID,
+					Column: subscribe.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.PlanID = nodes[0]
+		_node.SubscribeID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := oc.mutation.CommissionIDs(); len(nodes) > 0 {
@@ -822,83 +724,6 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: order.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := oc.mutation.CityIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   order.CityTable,
-			Columns: []string{order.CityColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.CityID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := oc.mutation.PausesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   order.PausesTable,
-			Columns: []string{order.PausesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: orderpause.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := oc.mutation.ArrearagesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   order.ArrearagesTable,
-			Columns: []string{order.ArrearagesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: orderarrearage.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := oc.mutation.AltersIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   order.AltersTable,
-			Columns: []string{order.AltersColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: orderalter.FieldID,
 				},
 			},
 		}
@@ -1076,18 +901,6 @@ func (u *OrderUpsert) ClearRemark() *OrderUpsert {
 	return u
 }
 
-// SetRiderID sets the "rider_id" field.
-func (u *OrderUpsert) SetRiderID(v uint64) *OrderUpsert {
-	u.Set(order.FieldRiderID, v)
-	return u
-}
-
-// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
-func (u *OrderUpsert) UpdateRiderID() *OrderUpsert {
-	u.SetExcluded(order.FieldRiderID)
-	return u
-}
-
 // SetPlanID sets the "plan_id" field.
 func (u *OrderUpsert) SetPlanID(v uint64) *OrderUpsert {
 	u.Set(order.FieldPlanID, v)
@@ -1100,12 +913,6 @@ func (u *OrderUpsert) UpdatePlanID() *OrderUpsert {
 	return u
 }
 
-// ClearPlanID clears the value of the "plan_id" field.
-func (u *OrderUpsert) ClearPlanID() *OrderUpsert {
-	u.SetNull(order.FieldPlanID)
-	return u
-}
-
 // SetCityID sets the "city_id" field.
 func (u *OrderUpsert) SetCityID(v uint64) *OrderUpsert {
 	u.Set(order.FieldCityID, v)
@@ -1115,6 +922,60 @@ func (u *OrderUpsert) SetCityID(v uint64) *OrderUpsert {
 // UpdateCityID sets the "city_id" field to the value that was provided on create.
 func (u *OrderUpsert) UpdateCityID() *OrderUpsert {
 	u.SetExcluded(order.FieldCityID)
+	return u
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *OrderUpsert) ClearCityID() *OrderUpsert {
+	u.SetNull(order.FieldCityID)
+	return u
+}
+
+// SetRiderID sets the "rider_id" field.
+func (u *OrderUpsert) SetRiderID(v uint64) *OrderUpsert {
+	u.Set(order.FieldRiderID, v)
+	return u
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateRiderID() *OrderUpsert {
+	u.SetExcluded(order.FieldRiderID)
+	return u
+}
+
+// SetParentID sets the "parent_id" field.
+func (u *OrderUpsert) SetParentID(v uint64) *OrderUpsert {
+	u.Set(order.FieldParentID, v)
+	return u
+}
+
+// UpdateParentID sets the "parent_id" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateParentID() *OrderUpsert {
+	u.SetExcluded(order.FieldParentID)
+	return u
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (u *OrderUpsert) ClearParentID() *OrderUpsert {
+	u.SetNull(order.FieldParentID)
+	return u
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *OrderUpsert) SetSubscribeID(v uint64) *OrderUpsert {
+	u.Set(order.FieldSubscribeID, v)
+	return u
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateSubscribeID() *OrderUpsert {
+	u.SetExcluded(order.FieldSubscribeID)
+	return u
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *OrderUpsert) ClearSubscribeID() *OrderUpsert {
+	u.SetNull(order.FieldSubscribeID)
 	return u
 }
 
@@ -1232,78 +1093,6 @@ func (u *OrderUpsert) AddTotal(v float64) *OrderUpsert {
 	return u
 }
 
-// SetPlanDetail sets the "plan_detail" field.
-func (u *OrderUpsert) SetPlanDetail(v model.PlanItem) *OrderUpsert {
-	u.Set(order.FieldPlanDetail, v)
-	return u
-}
-
-// UpdatePlanDetail sets the "plan_detail" field to the value that was provided on create.
-func (u *OrderUpsert) UpdatePlanDetail() *OrderUpsert {
-	u.SetExcluded(order.FieldPlanDetail)
-	return u
-}
-
-// ClearPlanDetail clears the value of the "plan_detail" field.
-func (u *OrderUpsert) ClearPlanDetail() *OrderUpsert {
-	u.SetNull(order.FieldPlanDetail)
-	return u
-}
-
-// SetParentID sets the "parent_id" field.
-func (u *OrderUpsert) SetParentID(v uint64) *OrderUpsert {
-	u.Set(order.FieldParentID, v)
-	return u
-}
-
-// UpdateParentID sets the "parent_id" field to the value that was provided on create.
-func (u *OrderUpsert) UpdateParentID() *OrderUpsert {
-	u.SetExcluded(order.FieldParentID)
-	return u
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (u *OrderUpsert) ClearParentID() *OrderUpsert {
-	u.SetNull(order.FieldParentID)
-	return u
-}
-
-// SetStartAt sets the "start_at" field.
-func (u *OrderUpsert) SetStartAt(v time.Time) *OrderUpsert {
-	u.Set(order.FieldStartAt, v)
-	return u
-}
-
-// UpdateStartAt sets the "start_at" field to the value that was provided on create.
-func (u *OrderUpsert) UpdateStartAt() *OrderUpsert {
-	u.SetExcluded(order.FieldStartAt)
-	return u
-}
-
-// ClearStartAt clears the value of the "start_at" field.
-func (u *OrderUpsert) ClearStartAt() *OrderUpsert {
-	u.SetNull(order.FieldStartAt)
-	return u
-}
-
-// SetEndAt sets the "end_at" field.
-func (u *OrderUpsert) SetEndAt(v time.Time) *OrderUpsert {
-	u.Set(order.FieldEndAt, v)
-	return u
-}
-
-// UpdateEndAt sets the "end_at" field to the value that was provided on create.
-func (u *OrderUpsert) UpdateEndAt() *OrderUpsert {
-	u.SetExcluded(order.FieldEndAt)
-	return u
-}
-
-// ClearEndAt clears the value of the "end_at" field.
-func (u *OrderUpsert) ClearEndAt() *OrderUpsert {
-	u.SetNull(order.FieldEndAt)
-	return u
-}
-
 // SetRefundAt sets the "refund_at" field.
 func (u *OrderUpsert) SetRefundAt(v time.Time) *OrderUpsert {
 	u.Set(order.FieldRefundAt, v)
@@ -1319,48 +1108,6 @@ func (u *OrderUpsert) UpdateRefundAt() *OrderUpsert {
 // ClearRefundAt clears the value of the "refund_at" field.
 func (u *OrderUpsert) ClearRefundAt() *OrderUpsert {
 	u.SetNull(order.FieldRefundAt)
-	return u
-}
-
-// SetPausedAt sets the "paused_at" field.
-func (u *OrderUpsert) SetPausedAt(v time.Time) *OrderUpsert {
-	u.Set(order.FieldPausedAt, v)
-	return u
-}
-
-// UpdatePausedAt sets the "paused_at" field to the value that was provided on create.
-func (u *OrderUpsert) UpdatePausedAt() *OrderUpsert {
-	u.SetExcluded(order.FieldPausedAt)
-	return u
-}
-
-// ClearPausedAt clears the value of the "paused_at" field.
-func (u *OrderUpsert) ClearPausedAt() *OrderUpsert {
-	u.SetNull(order.FieldPausedAt)
-	return u
-}
-
-// SetDays sets the "days" field.
-func (u *OrderUpsert) SetDays(v uint) *OrderUpsert {
-	u.Set(order.FieldDays, v)
-	return u
-}
-
-// UpdateDays sets the "days" field to the value that was provided on create.
-func (u *OrderUpsert) UpdateDays() *OrderUpsert {
-	u.SetExcluded(order.FieldDays)
-	return u
-}
-
-// AddDays adds v to the "days" field.
-func (u *OrderUpsert) AddDays(v uint) *OrderUpsert {
-	u.Add(order.FieldDays, v)
-	return u
-}
-
-// ClearDays clears the value of the "days" field.
-func (u *OrderUpsert) ClearDays() *OrderUpsert {
-	u.SetNull(order.FieldDays)
 	return u
 }
 
@@ -1550,20 +1297,6 @@ func (u *OrderUpsertOne) ClearRemark() *OrderUpsertOne {
 	})
 }
 
-// SetRiderID sets the "rider_id" field.
-func (u *OrderUpsertOne) SetRiderID(v uint64) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetRiderID(v)
-	})
-}
-
-// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
-func (u *OrderUpsertOne) UpdateRiderID() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateRiderID()
-	})
-}
-
 // SetPlanID sets the "plan_id" field.
 func (u *OrderUpsertOne) SetPlanID(v uint64) *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
@@ -1578,13 +1311,6 @@ func (u *OrderUpsertOne) UpdatePlanID() *OrderUpsertOne {
 	})
 }
 
-// ClearPlanID clears the value of the "plan_id" field.
-func (u *OrderUpsertOne) ClearPlanID() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearPlanID()
-	})
-}
-
 // SetCityID sets the "city_id" field.
 func (u *OrderUpsertOne) SetCityID(v uint64) *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
@@ -1596,6 +1322,69 @@ func (u *OrderUpsertOne) SetCityID(v uint64) *OrderUpsertOne {
 func (u *OrderUpsertOne) UpdateCityID() *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
 		s.UpdateCityID()
+	})
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *OrderUpsertOne) ClearCityID() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearCityID()
+	})
+}
+
+// SetRiderID sets the "rider_id" field.
+func (u *OrderUpsertOne) SetRiderID(v uint64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetRiderID(v)
+	})
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateRiderID() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateRiderID()
+	})
+}
+
+// SetParentID sets the "parent_id" field.
+func (u *OrderUpsertOne) SetParentID(v uint64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetParentID(v)
+	})
+}
+
+// UpdateParentID sets the "parent_id" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateParentID() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateParentID()
+	})
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (u *OrderUpsertOne) ClearParentID() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearParentID()
+	})
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *OrderUpsertOne) SetSubscribeID(v uint64) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateSubscribeID() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *OrderUpsertOne) ClearSubscribeID() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearSubscribeID()
 	})
 }
 
@@ -1732,90 +1521,6 @@ func (u *OrderUpsertOne) UpdateTotal() *OrderUpsertOne {
 	})
 }
 
-// SetPlanDetail sets the "plan_detail" field.
-func (u *OrderUpsertOne) SetPlanDetail(v model.PlanItem) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetPlanDetail(v)
-	})
-}
-
-// UpdatePlanDetail sets the "plan_detail" field to the value that was provided on create.
-func (u *OrderUpsertOne) UpdatePlanDetail() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdatePlanDetail()
-	})
-}
-
-// ClearPlanDetail clears the value of the "plan_detail" field.
-func (u *OrderUpsertOne) ClearPlanDetail() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearPlanDetail()
-	})
-}
-
-// SetParentID sets the "parent_id" field.
-func (u *OrderUpsertOne) SetParentID(v uint64) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetParentID(v)
-	})
-}
-
-// UpdateParentID sets the "parent_id" field to the value that was provided on create.
-func (u *OrderUpsertOne) UpdateParentID() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateParentID()
-	})
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (u *OrderUpsertOne) ClearParentID() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearParentID()
-	})
-}
-
-// SetStartAt sets the "start_at" field.
-func (u *OrderUpsertOne) SetStartAt(v time.Time) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetStartAt(v)
-	})
-}
-
-// UpdateStartAt sets the "start_at" field to the value that was provided on create.
-func (u *OrderUpsertOne) UpdateStartAt() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateStartAt()
-	})
-}
-
-// ClearStartAt clears the value of the "start_at" field.
-func (u *OrderUpsertOne) ClearStartAt() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearStartAt()
-	})
-}
-
-// SetEndAt sets the "end_at" field.
-func (u *OrderUpsertOne) SetEndAt(v time.Time) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetEndAt(v)
-	})
-}
-
-// UpdateEndAt sets the "end_at" field to the value that was provided on create.
-func (u *OrderUpsertOne) UpdateEndAt() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateEndAt()
-	})
-}
-
-// ClearEndAt clears the value of the "end_at" field.
-func (u *OrderUpsertOne) ClearEndAt() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearEndAt()
-	})
-}
-
 // SetRefundAt sets the "refund_at" field.
 func (u *OrderUpsertOne) SetRefundAt(v time.Time) *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
@@ -1834,55 +1539,6 @@ func (u *OrderUpsertOne) UpdateRefundAt() *OrderUpsertOne {
 func (u *OrderUpsertOne) ClearRefundAt() *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearRefundAt()
-	})
-}
-
-// SetPausedAt sets the "paused_at" field.
-func (u *OrderUpsertOne) SetPausedAt(v time.Time) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetPausedAt(v)
-	})
-}
-
-// UpdatePausedAt sets the "paused_at" field to the value that was provided on create.
-func (u *OrderUpsertOne) UpdatePausedAt() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdatePausedAt()
-	})
-}
-
-// ClearPausedAt clears the value of the "paused_at" field.
-func (u *OrderUpsertOne) ClearPausedAt() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearPausedAt()
-	})
-}
-
-// SetDays sets the "days" field.
-func (u *OrderUpsertOne) SetDays(v uint) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetDays(v)
-	})
-}
-
-// AddDays adds v to the "days" field.
-func (u *OrderUpsertOne) AddDays(v uint) *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.AddDays(v)
-	})
-}
-
-// UpdateDays sets the "days" field to the value that was provided on create.
-func (u *OrderUpsertOne) UpdateDays() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateDays()
-	})
-}
-
-// ClearDays clears the value of the "days" field.
-func (u *OrderUpsertOne) ClearDays() *OrderUpsertOne {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearDays()
 	})
 }
 
@@ -2237,20 +1893,6 @@ func (u *OrderUpsertBulk) ClearRemark() *OrderUpsertBulk {
 	})
 }
 
-// SetRiderID sets the "rider_id" field.
-func (u *OrderUpsertBulk) SetRiderID(v uint64) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetRiderID(v)
-	})
-}
-
-// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
-func (u *OrderUpsertBulk) UpdateRiderID() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateRiderID()
-	})
-}
-
 // SetPlanID sets the "plan_id" field.
 func (u *OrderUpsertBulk) SetPlanID(v uint64) *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
@@ -2265,13 +1907,6 @@ func (u *OrderUpsertBulk) UpdatePlanID() *OrderUpsertBulk {
 	})
 }
 
-// ClearPlanID clears the value of the "plan_id" field.
-func (u *OrderUpsertBulk) ClearPlanID() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearPlanID()
-	})
-}
-
 // SetCityID sets the "city_id" field.
 func (u *OrderUpsertBulk) SetCityID(v uint64) *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
@@ -2283,6 +1918,69 @@ func (u *OrderUpsertBulk) SetCityID(v uint64) *OrderUpsertBulk {
 func (u *OrderUpsertBulk) UpdateCityID() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.UpdateCityID()
+	})
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *OrderUpsertBulk) ClearCityID() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearCityID()
+	})
+}
+
+// SetRiderID sets the "rider_id" field.
+func (u *OrderUpsertBulk) SetRiderID(v uint64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetRiderID(v)
+	})
+}
+
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateRiderID() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateRiderID()
+	})
+}
+
+// SetParentID sets the "parent_id" field.
+func (u *OrderUpsertBulk) SetParentID(v uint64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetParentID(v)
+	})
+}
+
+// UpdateParentID sets the "parent_id" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateParentID() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateParentID()
+	})
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (u *OrderUpsertBulk) ClearParentID() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearParentID()
+	})
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *OrderUpsertBulk) SetSubscribeID(v uint64) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateSubscribeID() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
+// ClearSubscribeID clears the value of the "subscribe_id" field.
+func (u *OrderUpsertBulk) ClearSubscribeID() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearSubscribeID()
 	})
 }
 
@@ -2419,90 +2117,6 @@ func (u *OrderUpsertBulk) UpdateTotal() *OrderUpsertBulk {
 	})
 }
 
-// SetPlanDetail sets the "plan_detail" field.
-func (u *OrderUpsertBulk) SetPlanDetail(v model.PlanItem) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetPlanDetail(v)
-	})
-}
-
-// UpdatePlanDetail sets the "plan_detail" field to the value that was provided on create.
-func (u *OrderUpsertBulk) UpdatePlanDetail() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdatePlanDetail()
-	})
-}
-
-// ClearPlanDetail clears the value of the "plan_detail" field.
-func (u *OrderUpsertBulk) ClearPlanDetail() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearPlanDetail()
-	})
-}
-
-// SetParentID sets the "parent_id" field.
-func (u *OrderUpsertBulk) SetParentID(v uint64) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetParentID(v)
-	})
-}
-
-// UpdateParentID sets the "parent_id" field to the value that was provided on create.
-func (u *OrderUpsertBulk) UpdateParentID() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateParentID()
-	})
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (u *OrderUpsertBulk) ClearParentID() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearParentID()
-	})
-}
-
-// SetStartAt sets the "start_at" field.
-func (u *OrderUpsertBulk) SetStartAt(v time.Time) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetStartAt(v)
-	})
-}
-
-// UpdateStartAt sets the "start_at" field to the value that was provided on create.
-func (u *OrderUpsertBulk) UpdateStartAt() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateStartAt()
-	})
-}
-
-// ClearStartAt clears the value of the "start_at" field.
-func (u *OrderUpsertBulk) ClearStartAt() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearStartAt()
-	})
-}
-
-// SetEndAt sets the "end_at" field.
-func (u *OrderUpsertBulk) SetEndAt(v time.Time) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetEndAt(v)
-	})
-}
-
-// UpdateEndAt sets the "end_at" field to the value that was provided on create.
-func (u *OrderUpsertBulk) UpdateEndAt() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateEndAt()
-	})
-}
-
-// ClearEndAt clears the value of the "end_at" field.
-func (u *OrderUpsertBulk) ClearEndAt() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearEndAt()
-	})
-}
-
 // SetRefundAt sets the "refund_at" field.
 func (u *OrderUpsertBulk) SetRefundAt(v time.Time) *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
@@ -2521,55 +2135,6 @@ func (u *OrderUpsertBulk) UpdateRefundAt() *OrderUpsertBulk {
 func (u *OrderUpsertBulk) ClearRefundAt() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearRefundAt()
-	})
-}
-
-// SetPausedAt sets the "paused_at" field.
-func (u *OrderUpsertBulk) SetPausedAt(v time.Time) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetPausedAt(v)
-	})
-}
-
-// UpdatePausedAt sets the "paused_at" field to the value that was provided on create.
-func (u *OrderUpsertBulk) UpdatePausedAt() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdatePausedAt()
-	})
-}
-
-// ClearPausedAt clears the value of the "paused_at" field.
-func (u *OrderUpsertBulk) ClearPausedAt() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearPausedAt()
-	})
-}
-
-// SetDays sets the "days" field.
-func (u *OrderUpsertBulk) SetDays(v uint) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.SetDays(v)
-	})
-}
-
-// AddDays adds v to the "days" field.
-func (u *OrderUpsertBulk) AddDays(v uint) *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.AddDays(v)
-	})
-}
-
-// UpdateDays sets the "days" field to the value that was provided on create.
-func (u *OrderUpsertBulk) UpdateDays() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.UpdateDays()
-	})
-}
-
-// ClearDays clears the value of the "days" field.
-func (u *OrderUpsertBulk) ClearDays() *OrderUpsertBulk {
-	return u.Update(func(s *OrderUpsert) {
-		s.ClearDays()
 	})
 }
 

@@ -7,7 +7,7 @@ package model
 
 const (
     SettingDeposit      = "DEPOSIT"       // 押金
-    SettingRenewal      = "RENEWAL"       // 重签判定时间
+    SettingRenewal      = "RENEWAL"       // 退订多久后重签计算佣金
     SettingCabinetFault = "CABINET_FAULT" // 电柜故障
     SettingRescueReason = "RESCUE_REASON" // 救援原因
     SettingRescueFee    = "RESCUE_FEE"    // 救援费用

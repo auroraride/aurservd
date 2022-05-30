@@ -433,7 +433,7 @@ func (s *riderService) Deposit(u *ent.Rider) float64 {
 
 // Profile 获取用户资料
 func (s *riderService) Profile(u *ent.Rider, device *model.Device) *model.RiderSigninRes {
-    ro := NewRiderOrder().Recent(u.ID)
+    sub := NewSubscribe().Recent(u.ID)
     profile := &model.RiderSigninRes{
         ID:              u.ID,
         IsNewDevice:     s.IsNewDevice(u, device),
@@ -442,8 +442,8 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device) *model.RiderS
         Contact:         u.Contact,
         Qrcode:          fmt.Sprintf("https://rider.auroraride.com/%d", u.ID),
         Deposit:         s.Deposit(u),
-        RecentOrder:     ro,
-        OrderNotActived: ro != nil && ro.Status == model.RiderOrderStatusPending,
+        Subscribe:       sub,
+        OrderNotActived: sub != nil && sub.Status == model.SubscribeStatusInactive,
     }
     return profile
 }

@@ -148,6 +148,11 @@ func (bu *BranchUpdate) SetGeom(m *model.Geometry) *BranchUpdate {
 	return bu
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (bu *BranchUpdate) SetCity(c *City) *BranchUpdate {
+	return bu.SetCityID(c.ID)
+}
+
 // AddContractIDs adds the "contracts" edge to the BranchContract entity by IDs.
 func (bu *BranchUpdate) AddContractIDs(ids ...uint64) *BranchUpdate {
 	bu.mutation.AddContractIDs(ids...)
@@ -176,11 +181,6 @@ func (bu *BranchUpdate) AddCabinets(c ...*Cabinet) *BranchUpdate {
 		ids[i] = c[i].ID
 	}
 	return bu.AddCabinetIDs(ids...)
-}
-
-// SetCity sets the "city" edge to the City entity.
-func (bu *BranchUpdate) SetCity(c *City) *BranchUpdate {
-	return bu.SetCityID(c.ID)
 }
 
 // AddFaultIDs adds the "faults" edge to the CabinetFault entity by IDs.
@@ -216,6 +216,12 @@ func (bu *BranchUpdate) AddStores(s ...*Store) *BranchUpdate {
 // Mutation returns the BranchMutation object of the builder.
 func (bu *BranchUpdate) Mutation() *BranchMutation {
 	return bu.mutation
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (bu *BranchUpdate) ClearCity() *BranchUpdate {
+	bu.mutation.ClearCity()
+	return bu
 }
 
 // ClearContracts clears all "contracts" edges to the BranchContract entity.
@@ -258,12 +264,6 @@ func (bu *BranchUpdate) RemoveCabinets(c ...*Cabinet) *BranchUpdate {
 		ids[i] = c[i].ID
 	}
 	return bu.RemoveCabinetIDs(ids...)
-}
-
-// ClearCity clears the "city" edge to the City entity.
-func (bu *BranchUpdate) ClearCity() *BranchUpdate {
-	bu.mutation.ClearCity()
-	return bu
 }
 
 // ClearFaults clears all "faults" edges to the CabinetFault entity.
@@ -517,6 +517,41 @@ func (bu *BranchUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: branch.FieldGeom,
 		})
 	}
+	if bu.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   branch.CityTable,
+			Columns: []string{branch.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   branch.CityTable,
+			Columns: []string{branch.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if bu.mutation.ContractsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -617,41 +652,6 @@ func (bu *BranchUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: cabinet.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if bu.mutation.CityCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   branch.CityTable,
-			Columns: []string{branch.CityColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := bu.mutation.CityIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   branch.CityTable,
-			Columns: []string{branch.CityColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
 				},
 			},
 		}
@@ -901,6 +901,11 @@ func (buo *BranchUpdateOne) SetGeom(m *model.Geometry) *BranchUpdateOne {
 	return buo
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (buo *BranchUpdateOne) SetCity(c *City) *BranchUpdateOne {
+	return buo.SetCityID(c.ID)
+}
+
 // AddContractIDs adds the "contracts" edge to the BranchContract entity by IDs.
 func (buo *BranchUpdateOne) AddContractIDs(ids ...uint64) *BranchUpdateOne {
 	buo.mutation.AddContractIDs(ids...)
@@ -929,11 +934,6 @@ func (buo *BranchUpdateOne) AddCabinets(c ...*Cabinet) *BranchUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return buo.AddCabinetIDs(ids...)
-}
-
-// SetCity sets the "city" edge to the City entity.
-func (buo *BranchUpdateOne) SetCity(c *City) *BranchUpdateOne {
-	return buo.SetCityID(c.ID)
 }
 
 // AddFaultIDs adds the "faults" edge to the CabinetFault entity by IDs.
@@ -969,6 +969,12 @@ func (buo *BranchUpdateOne) AddStores(s ...*Store) *BranchUpdateOne {
 // Mutation returns the BranchMutation object of the builder.
 func (buo *BranchUpdateOne) Mutation() *BranchMutation {
 	return buo.mutation
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (buo *BranchUpdateOne) ClearCity() *BranchUpdateOne {
+	buo.mutation.ClearCity()
+	return buo
 }
 
 // ClearContracts clears all "contracts" edges to the BranchContract entity.
@@ -1011,12 +1017,6 @@ func (buo *BranchUpdateOne) RemoveCabinets(c ...*Cabinet) *BranchUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return buo.RemoveCabinetIDs(ids...)
-}
-
-// ClearCity clears the "city" edge to the City entity.
-func (buo *BranchUpdateOne) ClearCity() *BranchUpdateOne {
-	buo.mutation.ClearCity()
-	return buo
 }
 
 // ClearFaults clears all "faults" edges to the CabinetFault entity.
@@ -1300,6 +1300,41 @@ func (buo *BranchUpdateOne) sqlSave(ctx context.Context) (_node *Branch, err err
 			Column: branch.FieldGeom,
 		})
 	}
+	if buo.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   branch.CityTable,
+			Columns: []string{branch.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   branch.CityTable,
+			Columns: []string{branch.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if buo.mutation.ContractsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -1400,41 +1435,6 @@ func (buo *BranchUpdateOne) sqlSave(ctx context.Context) (_node *Branch, err err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: cabinet.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if buo.mutation.CityCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   branch.CityTable,
-			Columns: []string{branch.CityColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := buo.mutation.CityIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   branch.CityTable,
-			Columns: []string{branch.CityColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
 				},
 			},
 		}

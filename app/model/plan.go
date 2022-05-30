@@ -26,6 +26,13 @@ type PlanListReq struct {
     Enable *bool   `json:"enable" query:"enable"` // 启用状态
 }
 
+// Plan 骑士卡基础信息
+type Plan struct {
+    ID   uint64 `json:"id"`   // 骑士卡ID
+    Name string `json:"name"` // 骑士卡名称
+    Days uint   `json:"days"` // 骑士卡天数
+}
+
 type PlanItem struct {
     ID         uint64  `json:"id"`
     Name       string  `json:"name" validate:"required" trans:"骑士卡名称"`

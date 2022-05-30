@@ -42,6 +42,16 @@ func (c *Cabinet) GetID() uint64 {
 	return c.ID
 }
 
+// GetTableName returns table name for CabinetExchange.
+func (ce *CabinetExchange) GetTableName() string {
+	return "cabinet_exchange"
+}
+
+// GetID returns id for CabinetExchange.
+func (ce *CabinetExchange) GetID() uint64 {
+	return ce.ID
+}
+
 // GetTableName returns table name for CabinetFault.
 func (cf *CabinetFault) GetTableName() string {
 	return "cabinet_fault"
@@ -82,6 +92,16 @@ func (c *Contract) GetID() uint64 {
 	return c.ID
 }
 
+// GetTableName returns table name for Employee.
+func (e *Employee) GetTableName() string {
+	return "employee"
+}
+
+// GetID returns id for Employee.
+func (e *Employee) GetID() uint64 {
+	return e.ID
+}
+
 // GetTableName returns table name for Enterprise.
 func (e *Enterprise) GetTableName() string {
 	return "enterprise"
@@ -110,36 +130,6 @@ func (o *Order) GetTableName() string {
 // GetID returns id for Order.
 func (o *Order) GetID() uint64 {
 	return o.ID
-}
-
-// GetTableName returns table name for OrderAlter.
-func (oa *OrderAlter) GetTableName() string {
-	return "order_alter"
-}
-
-// GetID returns id for OrderAlter.
-func (oa *OrderAlter) GetID() uint64 {
-	return oa.ID
-}
-
-// GetTableName returns table name for OrderArrearage.
-func (oa *OrderArrearage) GetTableName() string {
-	return "order_arrearage"
-}
-
-// GetID returns id for OrderArrearage.
-func (oa *OrderArrearage) GetID() uint64 {
-	return oa.ID
-}
-
-// GetTableName returns table name for OrderPause.
-func (op *OrderPause) GetTableName() string {
-	return "order_pause"
-}
-
-// GetID returns id for OrderPause.
-func (op *OrderPause) GetID() uint64 {
-	return op.ID
 }
 
 // GetTableName returns table name for OrderRefund.
@@ -200,4 +190,34 @@ func (s *Store) GetTableName() string {
 // GetID returns id for Store.
 func (s *Store) GetID() uint64 {
 	return s.ID
+}
+
+// GetTableName returns table name for Subscribe.
+func (s *Subscribe) GetTableName() string {
+	return "subscribe"
+}
+
+// GetID returns id for Subscribe.
+func (s *Subscribe) GetID() uint64 {
+	return s.ID
+}
+
+// GetTableName returns table name for SubscribeAlter.
+func (sa *SubscribeAlter) GetTableName() string {
+	return "subscribe_alter"
+}
+
+// GetID returns id for SubscribeAlter.
+func (sa *SubscribeAlter) GetID() uint64 {
+	return sa.ID
+}
+
+// GetTableName returns table name for SubscribePause.
+func (sp *SubscribePause) GetTableName() string {
+	return "subscribe_pause"
+}
+
+// GetID returns id for SubscribePause.
+func (sp *SubscribePause) GetID() uint64 {
+	return sp.ID
 }

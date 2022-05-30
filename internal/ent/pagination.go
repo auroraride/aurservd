@@ -76,6 +76,23 @@ func (cq *CabinetQuery) PaginationResult(req model.PaginationReq) model.Paginati
 	}
 }
 
+// Pagination returns pagination query builder for CabinetExchangeQuery.
+func (ceq *CabinetExchangeQuery) Pagination(req model.PaginationReq) *CabinetExchangeQuery {
+	ceq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return ceq
+}
+
+// PaginationResult returns pagination for CabinetExchangeQuery.
+func (ceq *CabinetExchangeQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := ceq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for CabinetFaultQuery.
 func (cfq *CabinetFaultQuery) Pagination(req model.PaginationReq) *CabinetFaultQuery {
 	cfq.Offset(req.GetOffset()).Limit(req.GetLimit())
@@ -144,6 +161,23 @@ func (cq *ContractQuery) PaginationResult(req model.PaginationReq) model.Paginat
 	}
 }
 
+// Pagination returns pagination query builder for EmployeeQuery.
+func (eq *EmployeeQuery) Pagination(req model.PaginationReq) *EmployeeQuery {
+	eq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return eq
+}
+
+// PaginationResult returns pagination for EmployeeQuery.
+func (eq *EmployeeQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := eq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for EnterpriseQuery.
 func (eq *EnterpriseQuery) Pagination(req model.PaginationReq) *EnterpriseQuery {
 	eq.Offset(req.GetOffset()).Limit(req.GetLimit())
@@ -187,57 +221,6 @@ func (oq *OrderQuery) Pagination(req model.PaginationReq) *OrderQuery {
 // PaginationResult returns pagination for OrderQuery.
 func (oq *OrderQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	ids := oq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
-	total := len(ids)
-	return model.Pagination{
-		Current: req.GetCurrent(),
-		Pages:   req.GetPages(total),
-		Total:   total,
-	}
-}
-
-// Pagination returns pagination query builder for OrderAlterQuery.
-func (oaq *OrderAlterQuery) Pagination(req model.PaginationReq) *OrderAlterQuery {
-	oaq.Offset(req.GetOffset()).Limit(req.GetLimit())
-	return oaq
-}
-
-// PaginationResult returns pagination for OrderAlterQuery.
-func (oaq *OrderAlterQuery) PaginationResult(req model.PaginationReq) model.Pagination {
-	ids := oaq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
-	total := len(ids)
-	return model.Pagination{
-		Current: req.GetCurrent(),
-		Pages:   req.GetPages(total),
-		Total:   total,
-	}
-}
-
-// Pagination returns pagination query builder for OrderArrearageQuery.
-func (oaq *OrderArrearageQuery) Pagination(req model.PaginationReq) *OrderArrearageQuery {
-	oaq.Offset(req.GetOffset()).Limit(req.GetLimit())
-	return oaq
-}
-
-// PaginationResult returns pagination for OrderArrearageQuery.
-func (oaq *OrderArrearageQuery) PaginationResult(req model.PaginationReq) model.Pagination {
-	ids := oaq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
-	total := len(ids)
-	return model.Pagination{
-		Current: req.GetCurrent(),
-		Pages:   req.GetPages(total),
-		Total:   total,
-	}
-}
-
-// Pagination returns pagination query builder for OrderPauseQuery.
-func (opq *OrderPauseQuery) Pagination(req model.PaginationReq) *OrderPauseQuery {
-	opq.Offset(req.GetOffset()).Limit(req.GetLimit())
-	return opq
-}
-
-// PaginationResult returns pagination for OrderPauseQuery.
-func (opq *OrderPauseQuery) PaginationResult(req model.PaginationReq) model.Pagination {
-	ids := opq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
 	total := len(ids)
 	return model.Pagination{
 		Current: req.GetCurrent(),
@@ -340,6 +323,57 @@ func (sq *StoreQuery) Pagination(req model.PaginationReq) *StoreQuery {
 // PaginationResult returns pagination for StoreQuery.
 func (sq *StoreQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	ids := sq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for SubscribeQuery.
+func (sq *SubscribeQuery) Pagination(req model.PaginationReq) *SubscribeQuery {
+	sq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return sq
+}
+
+// PaginationResult returns pagination for SubscribeQuery.
+func (sq *SubscribeQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := sq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for SubscribeAlterQuery.
+func (saq *SubscribeAlterQuery) Pagination(req model.PaginationReq) *SubscribeAlterQuery {
+	saq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return saq
+}
+
+// PaginationResult returns pagination for SubscribeAlterQuery.
+func (saq *SubscribeAlterQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := saq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for SubscribePauseQuery.
+func (spq *SubscribePauseQuery) Pagination(req model.PaginationReq) *SubscribePauseQuery {
+	spq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return spq
+}
+
+// PaginationResult returns pagination for SubscribePauseQuery.
+func (spq *SubscribePauseQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := spq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
 	total := len(ids)
 	return model.Pagination{
 		Current: req.GetCurrent(),

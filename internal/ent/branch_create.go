@@ -138,6 +138,11 @@ func (bc *BranchCreate) SetGeom(m *model.Geometry) *BranchCreate {
 	return bc
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (bc *BranchCreate) SetCity(c *City) *BranchCreate {
+	return bc.SetCityID(c.ID)
+}
+
 // AddContractIDs adds the "contracts" edge to the BranchContract entity by IDs.
 func (bc *BranchCreate) AddContractIDs(ids ...uint64) *BranchCreate {
 	bc.mutation.AddContractIDs(ids...)
@@ -166,11 +171,6 @@ func (bc *BranchCreate) AddCabinets(c ...*Cabinet) *BranchCreate {
 		ids[i] = c[i].ID
 	}
 	return bc.AddCabinetIDs(ids...)
-}
-
-// SetCity sets the "city" edge to the City entity.
-func (bc *BranchCreate) SetCity(c *City) *BranchCreate {
-	return bc.SetCityID(c.ID)
 }
 
 // AddFaultIDs adds the "faults" edge to the CabinetFault entity by IDs.
@@ -455,6 +455,26 @@ func (bc *BranchCreate) createSpec() (*Branch, *sqlgraph.CreateSpec) {
 		})
 		_node.Geom = value
 	}
+	if nodes := bc.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   branch.CityTable,
+			Columns: []string{branch.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CityID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := bc.mutation.ContractsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -491,26 +511,6 @@ func (bc *BranchCreate) createSpec() (*Branch, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := bc.mutation.CityIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   branch.CityTable,
-			Columns: []string{branch.CityColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: city.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.CityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := bc.mutation.FaultsIDs(); len(nodes) > 0 {

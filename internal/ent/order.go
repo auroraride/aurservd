@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // Order is the model entity for the Order schema.
@@ -37,15 +38,21 @@ type Order struct {
 	// Remark holds the value of the "remark" field.
 	// 备注
 	Remark string `json:"remark,omitempty"`
-	// RiderID holds the value of the "rider_id" field.
-	// 骑手ID
-	RiderID uint64 `json:"rider_id,omitempty"`
 	// PlanID holds the value of the "plan_id" field.
 	// 骑士卡ID
 	PlanID uint64 `json:"plan_id,omitempty"`
 	// CityID holds the value of the "city_id" field.
 	// 城市ID
 	CityID uint64 `json:"city_id,omitempty"`
+	// RiderID holds the value of the "rider_id" field.
+	// 骑手ID
+	RiderID uint64 `json:"rider_id,omitempty"`
+	// ParentID holds the value of the "parent_id" field.
+	// 押金所属订单ID
+	ParentID uint64 `json:"parent_id,omitempty"`
+	// SubscribeID holds the value of the "subscribe_id" field.
+	// 所属订阅ID
+	SubscribeID uint64 `json:"subscribe_id,omitempty"`
 	// Status holds the value of the "status" field.
 	// 订单状态 0未支付 1已支付 2申请退款 3已退款
 	Status uint8 `json:"status,omitempty"`
@@ -67,27 +74,9 @@ type Order struct {
 	// Total holds the value of the "total" field.
 	// 此次支付总金额
 	Total float64 `json:"total,omitempty"`
-	// PlanDetail holds the value of the "plan_detail" field.
-	// 骑士卡详情
-	PlanDetail model.PlanItem `json:"plan_detail,omitempty"`
-	// ParentID holds the value of the "parent_id" field.
-	// 续签/押金所属订单ID
-	ParentID uint64 `json:"parent_id,omitempty"`
-	// StartAt holds the value of the "start_at" field.
-	// 开始时间
-	StartAt *time.Time `json:"start_at,omitempty"`
-	// EndAt holds the value of the "end_at" field.
-	// 归还时间
-	EndAt *time.Time `json:"end_at,omitempty"`
 	// RefundAt holds the value of the "refund_at" field.
 	// 退款时间
 	RefundAt *time.Time `json:"refund_at,omitempty"`
-	// PausedAt holds the value of the "paused_at" field.
-	// 当前是否暂停计费, 暂停计费时间
-	PausedAt *time.Time `json:"paused_at,omitempty"`
-	// Days holds the value of the "days" field.
-	// 骑士卡天数
-	Days uint `json:"days,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrderQuery when eager-loading is set.
 	Edges OrderEdges `json:"edges"`
@@ -95,49 +84,31 @@ type Order struct {
 
 // OrderEdges holds the relations/edges for other nodes in the graph.
 type OrderEdges struct {
-	// Rider holds the value of the rider edge.
-	Rider *Rider `json:"rider,omitempty"`
 	// Plan holds the value of the plan edge.
 	Plan *Plan `json:"plan,omitempty"`
+	// City holds the value of the city edge.
+	City *City `json:"city,omitempty"`
+	// Rider holds the value of the rider edge.
+	Rider *Rider `json:"rider,omitempty"`
+	// Subscribe holds the value of the subscribe edge.
+	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// Commission holds the value of the commission edge.
 	Commission *Commission `json:"commission,omitempty"`
 	// Parent holds the value of the parent edge.
 	Parent *Order `json:"parent,omitempty"`
 	// Children holds the value of the children edge.
 	Children []*Order `json:"children,omitempty"`
-	// City holds the value of the city edge.
-	City *City `json:"city,omitempty"`
-	// Pauses holds the value of the pauses edge.
-	Pauses []*OrderPause `json:"pauses,omitempty"`
-	// Arrearages holds the value of the arrearages edge.
-	Arrearages []*OrderArrearage `json:"arrearages,omitempty"`
-	// Alters holds the value of the alters edge.
-	Alters []*OrderAlter `json:"alters,omitempty"`
 	// Refunds holds the value of the refunds edge.
 	Refunds []*OrderRefund `json:"refunds,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [10]bool
-}
-
-// RiderOrErr returns the Rider value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e OrderEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[0] {
-		if e.Rider == nil {
-			// The edge rider was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: rider.Label}
-		}
-		return e.Rider, nil
-	}
-	return nil, &NotLoadedError{edge: "rider"}
+	loadedTypes [8]bool
 }
 
 // PlanOrErr returns the Plan value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e OrderEdges) PlanOrErr() (*Plan, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[0] {
 		if e.Plan == nil {
 			// The edge plan was loaded in eager-loading,
 			// but was not found.
@@ -148,10 +119,52 @@ func (e OrderEdges) PlanOrErr() (*Plan, error) {
 	return nil, &NotLoadedError{edge: "plan"}
 }
 
+// CityOrErr returns the City value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e OrderEdges) CityOrErr() (*City, error) {
+	if e.loadedTypes[1] {
+		if e.City == nil {
+			// The edge city was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: city.Label}
+		}
+		return e.City, nil
+	}
+	return nil, &NotLoadedError{edge: "city"}
+}
+
+// RiderOrErr returns the Rider value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e OrderEdges) RiderOrErr() (*Rider, error) {
+	if e.loadedTypes[2] {
+		if e.Rider == nil {
+			// The edge rider was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: rider.Label}
+		}
+		return e.Rider, nil
+	}
+	return nil, &NotLoadedError{edge: "rider"}
+}
+
+// SubscribeOrErr returns the Subscribe value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e OrderEdges) SubscribeOrErr() (*Subscribe, error) {
+	if e.loadedTypes[3] {
+		if e.Subscribe == nil {
+			// The edge subscribe was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: subscribe.Label}
+		}
+		return e.Subscribe, nil
+	}
+	return nil, &NotLoadedError{edge: "subscribe"}
+}
+
 // CommissionOrErr returns the Commission value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e OrderEdges) CommissionOrErr() (*Commission, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[4] {
 		if e.Commission == nil {
 			// The edge commission was loaded in eager-loading,
 			// but was not found.
@@ -165,7 +178,7 @@ func (e OrderEdges) CommissionOrErr() (*Commission, error) {
 // ParentOrErr returns the Parent value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e OrderEdges) ParentOrErr() (*Order, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[5] {
 		if e.Parent == nil {
 			// The edge parent was loaded in eager-loading,
 			// but was not found.
@@ -179,57 +192,16 @@ func (e OrderEdges) ParentOrErr() (*Order, error) {
 // ChildrenOrErr returns the Children value or an error if the edge
 // was not loaded in eager-loading.
 func (e OrderEdges) ChildrenOrErr() ([]*Order, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[6] {
 		return e.Children, nil
 	}
 	return nil, &NotLoadedError{edge: "children"}
 }
 
-// CityOrErr returns the City value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e OrderEdges) CityOrErr() (*City, error) {
-	if e.loadedTypes[5] {
-		if e.City == nil {
-			// The edge city was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: city.Label}
-		}
-		return e.City, nil
-	}
-	return nil, &NotLoadedError{edge: "city"}
-}
-
-// PausesOrErr returns the Pauses value or an error if the edge
-// was not loaded in eager-loading.
-func (e OrderEdges) PausesOrErr() ([]*OrderPause, error) {
-	if e.loadedTypes[6] {
-		return e.Pauses, nil
-	}
-	return nil, &NotLoadedError{edge: "pauses"}
-}
-
-// ArrearagesOrErr returns the Arrearages value or an error if the edge
-// was not loaded in eager-loading.
-func (e OrderEdges) ArrearagesOrErr() ([]*OrderArrearage, error) {
-	if e.loadedTypes[7] {
-		return e.Arrearages, nil
-	}
-	return nil, &NotLoadedError{edge: "arrearages"}
-}
-
-// AltersOrErr returns the Alters value or an error if the edge
-// was not loaded in eager-loading.
-func (e OrderEdges) AltersOrErr() ([]*OrderAlter, error) {
-	if e.loadedTypes[8] {
-		return e.Alters, nil
-	}
-	return nil, &NotLoadedError{edge: "alters"}
-}
-
 // RefundsOrErr returns the Refunds value or an error if the edge
 // was not loaded in eager-loading.
 func (e OrderEdges) RefundsOrErr() ([]*OrderRefund, error) {
-	if e.loadedTypes[9] {
+	if e.loadedTypes[7] {
 		return e.Refunds, nil
 	}
 	return nil, &NotLoadedError{edge: "refunds"}
@@ -240,15 +212,15 @@ func (*Order) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case order.FieldCreator, order.FieldLastModifier, order.FieldPlanDetail:
+		case order.FieldCreator, order.FieldLastModifier:
 			values[i] = new([]byte)
 		case order.FieldAmount, order.FieldTotal:
 			values[i] = new(sql.NullFloat64)
-		case order.FieldID, order.FieldRiderID, order.FieldPlanID, order.FieldCityID, order.FieldStatus, order.FieldPayway, order.FieldType, order.FieldParentID, order.FieldDays:
+		case order.FieldID, order.FieldPlanID, order.FieldCityID, order.FieldRiderID, order.FieldParentID, order.FieldSubscribeID, order.FieldStatus, order.FieldPayway, order.FieldType:
 			values[i] = new(sql.NullInt64)
 		case order.FieldRemark, order.FieldOutTradeNo, order.FieldTradeNo:
 			values[i] = new(sql.NullString)
-		case order.FieldCreatedAt, order.FieldUpdatedAt, order.FieldDeletedAt, order.FieldStartAt, order.FieldEndAt, order.FieldRefundAt, order.FieldPausedAt:
+		case order.FieldCreatedAt, order.FieldUpdatedAt, order.FieldDeletedAt, order.FieldRefundAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Order", columns[i])
@@ -312,12 +284,6 @@ func (o *Order) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				o.Remark = value.String
 			}
-		case order.FieldRiderID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field rider_id", values[i])
-			} else if value.Valid {
-				o.RiderID = uint64(value.Int64)
-			}
 		case order.FieldPlanID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field plan_id", values[i])
@@ -329,6 +295,24 @@ func (o *Order) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field city_id", values[i])
 			} else if value.Valid {
 				o.CityID = uint64(value.Int64)
+			}
+		case order.FieldRiderID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field rider_id", values[i])
+			} else if value.Valid {
+				o.RiderID = uint64(value.Int64)
+			}
+		case order.FieldParentID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
+			} else if value.Valid {
+				o.ParentID = uint64(value.Int64)
+			}
+		case order.FieldSubscribeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field subscribe_id", values[i])
+			} else if value.Valid {
+				o.SubscribeID = uint64(value.Int64)
 			}
 		case order.FieldStatus:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -372,34 +356,6 @@ func (o *Order) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				o.Total = value.Float64
 			}
-		case order.FieldPlanDetail:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field plan_detail", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &o.PlanDetail); err != nil {
-					return fmt.Errorf("unmarshal field plan_detail: %w", err)
-				}
-			}
-		case order.FieldParentID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
-			} else if value.Valid {
-				o.ParentID = uint64(value.Int64)
-			}
-		case order.FieldStartAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field start_at", values[i])
-			} else if value.Valid {
-				o.StartAt = new(time.Time)
-				*o.StartAt = value.Time
-			}
-		case order.FieldEndAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field end_at", values[i])
-			} else if value.Valid {
-				o.EndAt = new(time.Time)
-				*o.EndAt = value.Time
-			}
 		case order.FieldRefundAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field refund_at", values[i])
@@ -407,22 +363,19 @@ func (o *Order) assignValues(columns []string, values []interface{}) error {
 				o.RefundAt = new(time.Time)
 				*o.RefundAt = value.Time
 			}
-		case order.FieldPausedAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field paused_at", values[i])
-			} else if value.Valid {
-				o.PausedAt = new(time.Time)
-				*o.PausedAt = value.Time
-			}
-		case order.FieldDays:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field days", values[i])
-			} else if value.Valid {
-				o.Days = uint(value.Int64)
-			}
 		}
 	}
 	return nil
+}
+
+// QueryPlan queries the "plan" edge of the Order entity.
+func (o *Order) QueryPlan() *PlanQuery {
+	return (&OrderClient{config: o.config}).QueryPlan(o)
+}
+
+// QueryCity queries the "city" edge of the Order entity.
+func (o *Order) QueryCity() *CityQuery {
+	return (&OrderClient{config: o.config}).QueryCity(o)
 }
 
 // QueryRider queries the "rider" edge of the Order entity.
@@ -430,9 +383,9 @@ func (o *Order) QueryRider() *RiderQuery {
 	return (&OrderClient{config: o.config}).QueryRider(o)
 }
 
-// QueryPlan queries the "plan" edge of the Order entity.
-func (o *Order) QueryPlan() *PlanQuery {
-	return (&OrderClient{config: o.config}).QueryPlan(o)
+// QuerySubscribe queries the "subscribe" edge of the Order entity.
+func (o *Order) QuerySubscribe() *SubscribeQuery {
+	return (&OrderClient{config: o.config}).QuerySubscribe(o)
 }
 
 // QueryCommission queries the "commission" edge of the Order entity.
@@ -448,26 +401,6 @@ func (o *Order) QueryParent() *OrderQuery {
 // QueryChildren queries the "children" edge of the Order entity.
 func (o *Order) QueryChildren() *OrderQuery {
 	return (&OrderClient{config: o.config}).QueryChildren(o)
-}
-
-// QueryCity queries the "city" edge of the Order entity.
-func (o *Order) QueryCity() *CityQuery {
-	return (&OrderClient{config: o.config}).QueryCity(o)
-}
-
-// QueryPauses queries the "pauses" edge of the Order entity.
-func (o *Order) QueryPauses() *OrderPauseQuery {
-	return (&OrderClient{config: o.config}).QueryPauses(o)
-}
-
-// QueryArrearages queries the "arrearages" edge of the Order entity.
-func (o *Order) QueryArrearages() *OrderArrearageQuery {
-	return (&OrderClient{config: o.config}).QueryArrearages(o)
-}
-
-// QueryAlters queries the "alters" edge of the Order entity.
-func (o *Order) QueryAlters() *OrderAlterQuery {
-	return (&OrderClient{config: o.config}).QueryAlters(o)
 }
 
 // QueryRefunds queries the "refunds" edge of the Order entity.
@@ -512,12 +445,16 @@ func (o *Order) String() string {
 	builder.WriteString(fmt.Sprintf("%v", o.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(o.Remark)
-	builder.WriteString(", rider_id=")
-	builder.WriteString(fmt.Sprintf("%v", o.RiderID))
 	builder.WriteString(", plan_id=")
 	builder.WriteString(fmt.Sprintf("%v", o.PlanID))
 	builder.WriteString(", city_id=")
 	builder.WriteString(fmt.Sprintf("%v", o.CityID))
+	builder.WriteString(", rider_id=")
+	builder.WriteString(fmt.Sprintf("%v", o.RiderID))
+	builder.WriteString(", parent_id=")
+	builder.WriteString(fmt.Sprintf("%v", o.ParentID))
+	builder.WriteString(", subscribe_id=")
+	builder.WriteString(fmt.Sprintf("%v", o.SubscribeID))
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", o.Status))
 	builder.WriteString(", payway=")
@@ -532,28 +469,10 @@ func (o *Order) String() string {
 	builder.WriteString(fmt.Sprintf("%v", o.Amount))
 	builder.WriteString(", total=")
 	builder.WriteString(fmt.Sprintf("%v", o.Total))
-	builder.WriteString(", plan_detail=")
-	builder.WriteString(fmt.Sprintf("%v", o.PlanDetail))
-	builder.WriteString(", parent_id=")
-	builder.WriteString(fmt.Sprintf("%v", o.ParentID))
-	if v := o.StartAt; v != nil {
-		builder.WriteString(", start_at=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
-	if v := o.EndAt; v != nil {
-		builder.WriteString(", end_at=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
 	if v := o.RefundAt; v != nil {
 		builder.WriteString(", refund_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	if v := o.PausedAt; v != nil {
-		builder.WriteString(", paused_at=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
-	builder.WriteString(", days=")
-	builder.WriteString(fmt.Sprintf("%v", o.Days))
 	builder.WriteByte(')')
 	return builder.String()
 }

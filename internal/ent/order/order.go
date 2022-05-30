@@ -25,12 +25,16 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
-	// FieldRiderID holds the string denoting the rider_id field in the database.
-	FieldRiderID = "rider_id"
 	// FieldPlanID holds the string denoting the plan_id field in the database.
 	FieldPlanID = "plan_id"
 	// FieldCityID holds the string denoting the city_id field in the database.
 	FieldCityID = "city_id"
+	// FieldRiderID holds the string denoting the rider_id field in the database.
+	FieldRiderID = "rider_id"
+	// FieldParentID holds the string denoting the parent_id field in the database.
+	FieldParentID = "parent_id"
+	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
+	FieldSubscribeID = "subscribe_id"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldPayway holds the string denoting the payway field in the database.
@@ -45,49 +49,26 @@ const (
 	FieldAmount = "amount"
 	// FieldTotal holds the string denoting the total field in the database.
 	FieldTotal = "total"
-	// FieldPlanDetail holds the string denoting the plan_detail field in the database.
-	FieldPlanDetail = "plan_detail"
-	// FieldParentID holds the string denoting the parent_id field in the database.
-	FieldParentID = "parent_id"
-	// FieldStartAt holds the string denoting the start_at field in the database.
-	FieldStartAt = "start_at"
-	// FieldEndAt holds the string denoting the end_at field in the database.
-	FieldEndAt = "end_at"
 	// FieldRefundAt holds the string denoting the refund_at field in the database.
 	FieldRefundAt = "refund_at"
-	// FieldPausedAt holds the string denoting the paused_at field in the database.
-	FieldPausedAt = "paused_at"
-	// FieldDays holds the string denoting the days field in the database.
-	FieldDays = "days"
-	// EdgeRider holds the string denoting the rider edge name in mutations.
-	EdgeRider = "rider"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
+	// EdgeCity holds the string denoting the city edge name in mutations.
+	EdgeCity = "city"
+	// EdgeRider holds the string denoting the rider edge name in mutations.
+	EdgeRider = "rider"
+	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
+	EdgeSubscribe = "subscribe"
 	// EdgeCommission holds the string denoting the commission edge name in mutations.
 	EdgeCommission = "commission"
 	// EdgeParent holds the string denoting the parent edge name in mutations.
 	EdgeParent = "parent"
 	// EdgeChildren holds the string denoting the children edge name in mutations.
 	EdgeChildren = "children"
-	// EdgeCity holds the string denoting the city edge name in mutations.
-	EdgeCity = "city"
-	// EdgePauses holds the string denoting the pauses edge name in mutations.
-	EdgePauses = "pauses"
-	// EdgeArrearages holds the string denoting the arrearages edge name in mutations.
-	EdgeArrearages = "arrearages"
-	// EdgeAlters holds the string denoting the alters edge name in mutations.
-	EdgeAlters = "alters"
 	// EdgeRefunds holds the string denoting the refunds edge name in mutations.
 	EdgeRefunds = "refunds"
 	// Table holds the table name of the order in the database.
 	Table = "order"
-	// RiderTable is the table that holds the rider relation/edge.
-	RiderTable = "order"
-	// RiderInverseTable is the table name for the Rider entity.
-	// It exists in this package in order to avoid circular dependency with the "rider" package.
-	RiderInverseTable = "rider"
-	// RiderColumn is the table column denoting the rider relation/edge.
-	RiderColumn = "rider_id"
 	// PlanTable is the table that holds the plan relation/edge.
 	PlanTable = "order"
 	// PlanInverseTable is the table name for the Plan entity.
@@ -95,6 +76,27 @@ const (
 	PlanInverseTable = "plan"
 	// PlanColumn is the table column denoting the plan relation/edge.
 	PlanColumn = "plan_id"
+	// CityTable is the table that holds the city relation/edge.
+	CityTable = "order"
+	// CityInverseTable is the table name for the City entity.
+	// It exists in this package in order to avoid circular dependency with the "city" package.
+	CityInverseTable = "city"
+	// CityColumn is the table column denoting the city relation/edge.
+	CityColumn = "city_id"
+	// RiderTable is the table that holds the rider relation/edge.
+	RiderTable = "order"
+	// RiderInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	RiderInverseTable = "rider"
+	// RiderColumn is the table column denoting the rider relation/edge.
+	RiderColumn = "rider_id"
+	// SubscribeTable is the table that holds the subscribe relation/edge.
+	SubscribeTable = "order"
+	// SubscribeInverseTable is the table name for the Subscribe entity.
+	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
+	SubscribeInverseTable = "subscribe"
+	// SubscribeColumn is the table column denoting the subscribe relation/edge.
+	SubscribeColumn = "subscribe_id"
 	// CommissionTable is the table that holds the commission relation/edge.
 	CommissionTable = "commission"
 	// CommissionInverseTable is the table name for the Commission entity.
@@ -110,34 +112,6 @@ const (
 	ChildrenTable = "order"
 	// ChildrenColumn is the table column denoting the children relation/edge.
 	ChildrenColumn = "parent_id"
-	// CityTable is the table that holds the city relation/edge.
-	CityTable = "order"
-	// CityInverseTable is the table name for the City entity.
-	// It exists in this package in order to avoid circular dependency with the "city" package.
-	CityInverseTable = "city"
-	// CityColumn is the table column denoting the city relation/edge.
-	CityColumn = "city_id"
-	// PausesTable is the table that holds the pauses relation/edge.
-	PausesTable = "order_pause"
-	// PausesInverseTable is the table name for the OrderPause entity.
-	// It exists in this package in order to avoid circular dependency with the "orderpause" package.
-	PausesInverseTable = "order_pause"
-	// PausesColumn is the table column denoting the pauses relation/edge.
-	PausesColumn = "order_id"
-	// ArrearagesTable is the table that holds the arrearages relation/edge.
-	ArrearagesTable = "order_arrearage"
-	// ArrearagesInverseTable is the table name for the OrderArrearage entity.
-	// It exists in this package in order to avoid circular dependency with the "orderarrearage" package.
-	ArrearagesInverseTable = "order_arrearage"
-	// ArrearagesColumn is the table column denoting the arrearages relation/edge.
-	ArrearagesColumn = "order_id"
-	// AltersTable is the table that holds the alters relation/edge.
-	AltersTable = "order_alter"
-	// AltersInverseTable is the table name for the OrderAlter entity.
-	// It exists in this package in order to avoid circular dependency with the "orderalter" package.
-	AltersInverseTable = "order_alter"
-	// AltersColumn is the table column denoting the alters relation/edge.
-	AltersColumn = "order_id"
 	// RefundsTable is the table that holds the refunds relation/edge.
 	RefundsTable = "order_refund"
 	// RefundsInverseTable is the table name for the OrderRefund entity.
@@ -156,9 +130,11 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
-	FieldRiderID,
 	FieldPlanID,
 	FieldCityID,
+	FieldRiderID,
+	FieldParentID,
+	FieldSubscribeID,
 	FieldStatus,
 	FieldPayway,
 	FieldType,
@@ -166,13 +142,7 @@ var Columns = []string{
 	FieldTradeNo,
 	FieldAmount,
 	FieldTotal,
-	FieldPlanDetail,
-	FieldParentID,
-	FieldStartAt,
-	FieldEndAt,
 	FieldRefundAt,
-	FieldPausedAt,
-	FieldDays,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

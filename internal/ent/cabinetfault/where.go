@@ -121,17 +121,17 @@ func Remark(v string) predicate.CabinetFault {
 	})
 }
 
-// Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
-func Status(v uint8) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
-	})
-}
-
 // CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
 func CityID(v uint64) predicate.CabinetFault {
 	return predicate.CabinetFault(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldCityID), v))
+	})
+}
+
+// Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
+func Status(v uint8) predicate.CabinetFault {
+	return predicate.CabinetFault(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStatus), v))
 	})
 }
 
@@ -565,6 +565,54 @@ func RemarkContainsFold(v string) predicate.CabinetFault {
 	})
 }
 
+// CityIDEQ applies the EQ predicate on the "city_id" field.
+func CityIDEQ(v uint64) predicate.CabinetFault {
+	return predicate.CabinetFault(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCityID), v))
+	})
+}
+
+// CityIDNEQ applies the NEQ predicate on the "city_id" field.
+func CityIDNEQ(v uint64) predicate.CabinetFault {
+	return predicate.CabinetFault(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldCityID), v))
+	})
+}
+
+// CityIDIn applies the In predicate on the "city_id" field.
+func CityIDIn(vs ...uint64) predicate.CabinetFault {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.CabinetFault(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldCityID), v...))
+	})
+}
+
+// CityIDNotIn applies the NotIn predicate on the "city_id" field.
+func CityIDNotIn(vs ...uint64) predicate.CabinetFault {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.CabinetFault(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldCityID), v...))
+	})
+}
+
 // StatusEQ applies the EQ predicate on the "status" field.
 func StatusEQ(v uint8) predicate.CabinetFault {
 	return predicate.CabinetFault(func(s *sql.Selector) {
@@ -638,54 +686,6 @@ func StatusLT(v uint8) predicate.CabinetFault {
 func StatusLTE(v uint8) predicate.CabinetFault {
 	return predicate.CabinetFault(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldStatus), v))
-	})
-}
-
-// CityIDEQ applies the EQ predicate on the "city_id" field.
-func CityIDEQ(v uint64) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCityID), v))
-	})
-}
-
-// CityIDNEQ applies the NEQ predicate on the "city_id" field.
-func CityIDNEQ(v uint64) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCityID), v))
-	})
-}
-
-// CityIDIn applies the In predicate on the "city_id" field.
-func CityIDIn(vs ...uint64) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldCityID), v...))
-	})
-}
-
-// CityIDNotIn applies the NotIn predicate on the "city_id" field.
-func CityIDNotIn(vs ...uint64) predicate.CabinetFault {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldCityID), v...))
 	})
 }
 
@@ -1097,6 +1097,34 @@ func DescriptionContainsFold(v string) predicate.CabinetFault {
 	})
 }
 
+// HasCity applies the HasEdge predicate on the "city" edge.
+func HasCity() predicate.CabinetFault {
+	return predicate.CabinetFault(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CityTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCityWith applies the HasEdge predicate on the "city" edge with a given conditions (other predicates).
+func HasCityWith(preds ...predicate.City) predicate.CabinetFault {
+	return predicate.CabinetFault(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CityInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasBranch applies the HasEdge predicate on the "branch" edge.
 func HasBranch() predicate.CabinetFault {
 	return predicate.CabinetFault(func(s *sql.Selector) {
@@ -1172,34 +1200,6 @@ func HasRiderWith(preds ...predicate.Rider) predicate.CabinetFault {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(RiderInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, RiderTable, RiderColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasCity applies the HasEdge predicate on the "city" edge.
-func HasCity() predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CityTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, CityTable, CityColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasCityWith applies the HasEdge predicate on the "city" edge with a given conditions (other predicates).
-func HasCityWith(preds ...predicate.City) predicate.CabinetFault {
-	return predicate.CabinetFault(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CityInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, CityTable, CityColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

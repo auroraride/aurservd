@@ -37,7 +37,6 @@ func (Commission) Fields() []ent.Field {
 func (Commission) Edges() []ent.Edge {
     return []ent.Edge{
         edge.From("order", Order.Type).Ref("commission").Unique().Required().Field("order_id").Comment("订单ID"),
-        // edge.From("city", City.Type).Ref("commissions").Required().Unique().Field("city_id").Comment("城市"),
     }
 }
 

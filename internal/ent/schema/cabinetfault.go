@@ -27,7 +27,6 @@ func (CabinetFault) Fields() []ent.Field {
     return []ent.Field{
         field.Uint8("status").Default(0).Comment("故障状态 0未处理 1已处理"),
         // field.JSON("city", model.City{}).Comment("城市"),
-        field.Uint64("city_id").Comment("城市ID"),
         field.Uint64("branch_id").Comment("网点ID"),
         field.Uint64("cabinet_id").Comment("电柜ID"),
         field.Uint64("rider_id").Comment("骑手ID"),
@@ -47,7 +46,6 @@ func (CabinetFault) Edges() []ent.Edge {
         edge.From("branch", Branch.Type).Ref("faults").Required().Unique().Field("branch_id"),
         edge.From("cabinet", Cabinet.Type).Ref("faults").Required().Unique().Field("cabinet_id"),
         edge.From("rider", Rider.Type).Ref("faults").Required().Unique().Field("rider_id"),
-        edge.From("city", City.Type).Ref("faults").Required().Unique().Field("city_id"),
     }
 }
 
@@ -56,6 +54,8 @@ func (CabinetFault) Mixin() []ent.Mixin {
         internal.TimeMixin{},
         internal.DeleteMixin{},
         internal.Modifier{},
+
+        CityMixin{},
     }
 }
 

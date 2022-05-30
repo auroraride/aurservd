@@ -55,6 +55,8 @@ const (
 	EdgeBms = "bms"
 	// EdgeFaults holds the string denoting the faults edge name in mutations.
 	EdgeFaults = "faults"
+	// EdgeExchanges holds the string denoting the exchanges edge name in mutations.
+	EdgeExchanges = "exchanges"
 	// Table holds the table name of the cabinet in the database.
 	Table = "cabinet"
 	// BranchTable is the table that holds the branch relation/edge.
@@ -76,6 +78,13 @@ const (
 	FaultsInverseTable = "cabinet_fault"
 	// FaultsColumn is the table column denoting the faults relation/edge.
 	FaultsColumn = "cabinet_id"
+	// ExchangesTable is the table that holds the exchanges relation/edge.
+	ExchangesTable = "cabinet_exchange"
+	// ExchangesInverseTable is the table name for the CabinetExchange entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinetexchange" package.
+	ExchangesInverseTable = "cabinet_exchange"
+	// ExchangesColumn is the table column denoting the exchanges relation/edge.
+	ExchangesColumn = "cabinet_id"
 )
 
 // Columns holds all SQL columns for cabinet fields.

@@ -72,3 +72,8 @@ type IDPostReq struct {
 type IDParamReq struct {
     ID uint64 `json:"id" param:"id" validate:"required"`
 }
+
+// QRPostReq 二维码POST请求
+type QRPostReq struct {
+    Qrcode string `json:"qrcode" validate:"required" trans:"二维码"`
+}

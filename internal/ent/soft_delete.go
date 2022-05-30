@@ -10,21 +10,23 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
-	"github.com/auroraride/aurservd/internal/ent/orderalter"
-	"github.com/auroraride/aurservd/internal/ent/orderarrearage"
-	"github.com/auroraride/aurservd/internal/ent/orderpause"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
+	"github.com/auroraride/aurservd/internal/ent/subscribealter"
+	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 )
 
 // SoftDelete returns an soft delete builder for BatteryModel.
@@ -180,6 +182,46 @@ func (c *CabinetClient) GetNotDeleted(ctx context.Context, id uint64) (*Cabinet,
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *CabinetClient) GetNotDeletedX(ctx context.Context, id uint64) *Cabinet {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for CabinetExchange.
+func (c *CabinetExchangeClient) SoftDelete() *CabinetExchangeUpdate {
+	mutation := newCabinetExchangeMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &CabinetExchangeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *CabinetExchangeClient) SoftDeleteOne(ce *CabinetExchange) *CabinetExchangeUpdateOne {
+	mutation := newCabinetExchangeMutation(c.config, OpUpdateOne, withCabinetExchange(ce))
+	mutation.SetDeletedAt(time.Now())
+	return &CabinetExchangeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *CabinetExchangeClient) SoftDeleteOneID(id uint64) *CabinetExchangeUpdateOne {
+	mutation := newCabinetExchangeMutation(c.config, OpUpdateOne, withCabinetExchangeID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &CabinetExchangeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for CabinetExchange.
+func (c *CabinetExchangeClient) QueryNotDeleted() *CabinetExchangeQuery {
+	return c.Query().Where(cabinetexchange.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a CabinetExchange not deleted entity by its id.
+func (c *CabinetExchangeClient) GetNotDeleted(ctx context.Context, id uint64) (*CabinetExchange, error) {
+	return c.Query().Where(cabinetexchange.ID(id), cabinetexchange.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *CabinetExchangeClient) GetNotDeletedX(ctx context.Context, id uint64) *CabinetExchange {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)
@@ -347,6 +389,46 @@ func (c *ContractClient) GetNotDeletedX(ctx context.Context, id uint64) *Contrac
 	return obj
 }
 
+// SoftDelete returns an soft delete builder for Employee.
+func (c *EmployeeClient) SoftDelete() *EmployeeUpdate {
+	mutation := newEmployeeMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &EmployeeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *EmployeeClient) SoftDeleteOne(e *Employee) *EmployeeUpdateOne {
+	mutation := newEmployeeMutation(c.config, OpUpdateOne, withEmployee(e))
+	mutation.SetDeletedAt(time.Now())
+	return &EmployeeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *EmployeeClient) SoftDeleteOneID(id uint64) *EmployeeUpdateOne {
+	mutation := newEmployeeMutation(c.config, OpUpdateOne, withEmployeeID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &EmployeeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Employee.
+func (c *EmployeeClient) QueryNotDeleted() *EmployeeQuery {
+	return c.Query().Where(employee.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Employee not deleted entity by its id.
+func (c *EmployeeClient) GetNotDeleted(ctx context.Context, id uint64) (*Employee, error) {
+	return c.Query().Where(employee.ID(id), employee.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *EmployeeClient) GetNotDeletedX(ctx context.Context, id uint64) *Employee {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
 // SoftDelete returns an soft delete builder for Enterprise.
 func (c *EnterpriseClient) SoftDelete() *EnterpriseUpdate {
 	mutation := newEnterpriseMutation(c.config, OpUpdate)
@@ -460,126 +542,6 @@ func (c *OrderClient) GetNotDeleted(ctx context.Context, id uint64) (*Order, err
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *OrderClient) GetNotDeletedX(ctx context.Context, id uint64) *Order {
-	obj, err := c.GetNotDeleted(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// SoftDelete returns an soft delete builder for OrderAlter.
-func (c *OrderAlterClient) SoftDelete() *OrderAlterUpdate {
-	mutation := newOrderAlterMutation(c.config, OpUpdate)
-	mutation.SetDeletedAt(time.Now())
-	return &OrderAlterUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOne returns an soft delete builder for the given entity.
-func (c *OrderAlterClient) SoftDeleteOne(oa *OrderAlter) *OrderAlterUpdateOne {
-	mutation := newOrderAlterMutation(c.config, OpUpdateOne, withOrderAlter(oa))
-	mutation.SetDeletedAt(time.Now())
-	return &OrderAlterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOneID returns an soft delete builder for the given id.
-func (c *OrderAlterClient) SoftDeleteOneID(id uint64) *OrderAlterUpdateOne {
-	mutation := newOrderAlterMutation(c.config, OpUpdateOne, withOrderAlterID(id))
-	mutation.SetDeletedAt(time.Now())
-	return &OrderAlterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// QueryNotDeleted returns a query not deleted builder for OrderAlter.
-func (c *OrderAlterClient) QueryNotDeleted() *OrderAlterQuery {
-	return c.Query().Where(orderalter.DeletedAtIsNil())
-}
-
-// GetNotDeleted returns a OrderAlter not deleted entity by its id.
-func (c *OrderAlterClient) GetNotDeleted(ctx context.Context, id uint64) (*OrderAlter, error) {
-	return c.Query().Where(orderalter.ID(id), orderalter.DeletedAtIsNil()).Only(ctx)
-}
-
-// GetNotDeletedX is like Get, but panics if an error occurs.
-func (c *OrderAlterClient) GetNotDeletedX(ctx context.Context, id uint64) *OrderAlter {
-	obj, err := c.GetNotDeleted(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// SoftDelete returns an soft delete builder for OrderArrearage.
-func (c *OrderArrearageClient) SoftDelete() *OrderArrearageUpdate {
-	mutation := newOrderArrearageMutation(c.config, OpUpdate)
-	mutation.SetDeletedAt(time.Now())
-	return &OrderArrearageUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOne returns an soft delete builder for the given entity.
-func (c *OrderArrearageClient) SoftDeleteOne(oa *OrderArrearage) *OrderArrearageUpdateOne {
-	mutation := newOrderArrearageMutation(c.config, OpUpdateOne, withOrderArrearage(oa))
-	mutation.SetDeletedAt(time.Now())
-	return &OrderArrearageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOneID returns an soft delete builder for the given id.
-func (c *OrderArrearageClient) SoftDeleteOneID(id uint64) *OrderArrearageUpdateOne {
-	mutation := newOrderArrearageMutation(c.config, OpUpdateOne, withOrderArrearageID(id))
-	mutation.SetDeletedAt(time.Now())
-	return &OrderArrearageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// QueryNotDeleted returns a query not deleted builder for OrderArrearage.
-func (c *OrderArrearageClient) QueryNotDeleted() *OrderArrearageQuery {
-	return c.Query().Where(orderarrearage.DeletedAtIsNil())
-}
-
-// GetNotDeleted returns a OrderArrearage not deleted entity by its id.
-func (c *OrderArrearageClient) GetNotDeleted(ctx context.Context, id uint64) (*OrderArrearage, error) {
-	return c.Query().Where(orderarrearage.ID(id), orderarrearage.DeletedAtIsNil()).Only(ctx)
-}
-
-// GetNotDeletedX is like Get, but panics if an error occurs.
-func (c *OrderArrearageClient) GetNotDeletedX(ctx context.Context, id uint64) *OrderArrearage {
-	obj, err := c.GetNotDeleted(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// SoftDelete returns an soft delete builder for OrderPause.
-func (c *OrderPauseClient) SoftDelete() *OrderPauseUpdate {
-	mutation := newOrderPauseMutation(c.config, OpUpdate)
-	mutation.SetDeletedAt(time.Now())
-	return &OrderPauseUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOne returns an soft delete builder for the given entity.
-func (c *OrderPauseClient) SoftDeleteOne(op *OrderPause) *OrderPauseUpdateOne {
-	mutation := newOrderPauseMutation(c.config, OpUpdateOne, withOrderPause(op))
-	mutation.SetDeletedAt(time.Now())
-	return &OrderPauseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOneID returns an soft delete builder for the given id.
-func (c *OrderPauseClient) SoftDeleteOneID(id uint64) *OrderPauseUpdateOne {
-	mutation := newOrderPauseMutation(c.config, OpUpdateOne, withOrderPauseID(id))
-	mutation.SetDeletedAt(time.Now())
-	return &OrderPauseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// QueryNotDeleted returns a query not deleted builder for OrderPause.
-func (c *OrderPauseClient) QueryNotDeleted() *OrderPauseQuery {
-	return c.Query().Where(orderpause.DeletedAtIsNil())
-}
-
-// GetNotDeleted returns a OrderPause not deleted entity by its id.
-func (c *OrderPauseClient) GetNotDeleted(ctx context.Context, id uint64) (*OrderPause, error) {
-	return c.Query().Where(orderpause.ID(id), orderpause.DeletedAtIsNil()).Only(ctx)
-}
-
-// GetNotDeletedX is like Get, but panics if an error occurs.
-func (c *OrderPauseClient) GetNotDeletedX(ctx context.Context, id uint64) *OrderPause {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)
@@ -780,6 +742,126 @@ func (c *StoreClient) GetNotDeleted(ctx context.Context, id uint64) (*Store, err
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *StoreClient) GetNotDeletedX(ctx context.Context, id uint64) *Store {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for Subscribe.
+func (c *SubscribeClient) SoftDelete() *SubscribeUpdate {
+	mutation := newSubscribeMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &SubscribeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *SubscribeClient) SoftDeleteOne(s *Subscribe) *SubscribeUpdateOne {
+	mutation := newSubscribeMutation(c.config, OpUpdateOne, withSubscribe(s))
+	mutation.SetDeletedAt(time.Now())
+	return &SubscribeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *SubscribeClient) SoftDeleteOneID(id uint64) *SubscribeUpdateOne {
+	mutation := newSubscribeMutation(c.config, OpUpdateOne, withSubscribeID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &SubscribeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Subscribe.
+func (c *SubscribeClient) QueryNotDeleted() *SubscribeQuery {
+	return c.Query().Where(subscribe.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Subscribe not deleted entity by its id.
+func (c *SubscribeClient) GetNotDeleted(ctx context.Context, id uint64) (*Subscribe, error) {
+	return c.Query().Where(subscribe.ID(id), subscribe.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *SubscribeClient) GetNotDeletedX(ctx context.Context, id uint64) *Subscribe {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for SubscribeAlter.
+func (c *SubscribeAlterClient) SoftDelete() *SubscribeAlterUpdate {
+	mutation := newSubscribeAlterMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &SubscribeAlterUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *SubscribeAlterClient) SoftDeleteOne(sa *SubscribeAlter) *SubscribeAlterUpdateOne {
+	mutation := newSubscribeAlterMutation(c.config, OpUpdateOne, withSubscribeAlter(sa))
+	mutation.SetDeletedAt(time.Now())
+	return &SubscribeAlterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *SubscribeAlterClient) SoftDeleteOneID(id uint64) *SubscribeAlterUpdateOne {
+	mutation := newSubscribeAlterMutation(c.config, OpUpdateOne, withSubscribeAlterID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &SubscribeAlterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for SubscribeAlter.
+func (c *SubscribeAlterClient) QueryNotDeleted() *SubscribeAlterQuery {
+	return c.Query().Where(subscribealter.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a SubscribeAlter not deleted entity by its id.
+func (c *SubscribeAlterClient) GetNotDeleted(ctx context.Context, id uint64) (*SubscribeAlter, error) {
+	return c.Query().Where(subscribealter.ID(id), subscribealter.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *SubscribeAlterClient) GetNotDeletedX(ctx context.Context, id uint64) *SubscribeAlter {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for SubscribePause.
+func (c *SubscribePauseClient) SoftDelete() *SubscribePauseUpdate {
+	mutation := newSubscribePauseMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &SubscribePauseUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *SubscribePauseClient) SoftDeleteOne(sp *SubscribePause) *SubscribePauseUpdateOne {
+	mutation := newSubscribePauseMutation(c.config, OpUpdateOne, withSubscribePause(sp))
+	mutation.SetDeletedAt(time.Now())
+	return &SubscribePauseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *SubscribePauseClient) SoftDeleteOneID(id uint64) *SubscribePauseUpdateOne {
+	mutation := newSubscribePauseMutation(c.config, OpUpdateOne, withSubscribePauseID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &SubscribePauseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for SubscribePause.
+func (c *SubscribePauseClient) QueryNotDeleted() *SubscribePauseQuery {
+	return c.Query().Where(subscribepause.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a SubscribePause not deleted entity by its id.
+func (c *SubscribePauseClient) GetNotDeleted(ctx context.Context, id uint64) (*SubscribePause, error) {
+	return c.Query().Where(subscribepause.ID(id), subscribepause.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *SubscribePauseClient) GetNotDeletedX(ctx context.Context, id uint64) *SubscribePause {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

@@ -27,7 +27,6 @@ func (Branch) Annotations() []schema.Annotation {
 // Fields of the Branch.
 func (Branch) Fields() []ent.Field {
     return []ent.Field{
-        field.Uint64("city_id").Comment("城市ID"),
         field.String("name").Comment("网点名称"),
         field.Float("lng").Comment("经度"),
         field.Float("lat").Comment("纬度"),
@@ -44,7 +43,6 @@ func (Branch) Edges() []ent.Edge {
     return []ent.Edge{
         edge.To("contracts", BranchContract.Type),
         edge.To("cabinets", Cabinet.Type),
-        edge.From("city", City.Type).Ref("branches").Required().Unique().Field("city_id"),
         edge.To("faults", CabinetFault.Type),
         edge.To("stores", Store.Type),
     }
@@ -55,12 +53,12 @@ func (Branch) Mixin() []ent.Mixin {
         internal.TimeMixin{},
         internal.DeleteMixin{},
         internal.Modifier{},
+        CityMixin{},
     }
 }
 
 func (Branch) Indexes() []ent.Index {
     return []ent.Index{
-        index.Fields("city_id"),
         index.Fields("lng", "lat"),
         index.Fields("geom").Annotations(
             entsql.IndexTypes(map[string]string{

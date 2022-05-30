@@ -37,12 +37,12 @@ type CabinetFault struct {
 	// Remark holds the value of the "remark" field.
 	// 备注
 	Remark string `json:"remark,omitempty"`
-	// Status holds the value of the "status" field.
-	// 故障状态 0未处理 1已处理
-	Status uint8 `json:"status,omitempty"`
 	// CityID holds the value of the "city_id" field.
 	// 城市ID
 	CityID uint64 `json:"city_id,omitempty"`
+	// Status holds the value of the "status" field.
+	// 故障状态 0未处理 1已处理
+	Status uint8 `json:"status,omitempty"`
 	// BranchID holds the value of the "branch_id" field.
 	// 网点ID
 	BranchID uint64 `json:"branch_id,omitempty"`
@@ -68,23 +68,37 @@ type CabinetFault struct {
 
 // CabinetFaultEdges holds the relations/edges for other nodes in the graph.
 type CabinetFaultEdges struct {
+	// City holds the value of the city edge.
+	City *City `json:"city,omitempty"`
 	// Branch holds the value of the branch edge.
 	Branch *Branch `json:"branch,omitempty"`
 	// Cabinet holds the value of the cabinet edge.
 	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// Rider holds the value of the rider edge.
 	Rider *Rider `json:"rider,omitempty"`
-	// City holds the value of the city edge.
-	City *City `json:"city,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [4]bool
 }
 
+// CityOrErr returns the City value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CabinetFaultEdges) CityOrErr() (*City, error) {
+	if e.loadedTypes[0] {
+		if e.City == nil {
+			// The edge city was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: city.Label}
+		}
+		return e.City, nil
+	}
+	return nil, &NotLoadedError{edge: "city"}
+}
+
 // BranchOrErr returns the Branch value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CabinetFaultEdges) BranchOrErr() (*Branch, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		if e.Branch == nil {
 			// The edge branch was loaded in eager-loading,
 			// but was not found.
@@ -98,7 +112,7 @@ func (e CabinetFaultEdges) BranchOrErr() (*Branch, error) {
 // CabinetOrErr returns the Cabinet value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CabinetFaultEdges) CabinetOrErr() (*Cabinet, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		if e.Cabinet == nil {
 			// The edge cabinet was loaded in eager-loading,
 			// but was not found.
@@ -112,7 +126,7 @@ func (e CabinetFaultEdges) CabinetOrErr() (*Cabinet, error) {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CabinetFaultEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		if e.Rider == nil {
 			// The edge rider was loaded in eager-loading,
 			// but was not found.
@@ -123,20 +137,6 @@ func (e CabinetFaultEdges) RiderOrErr() (*Rider, error) {
 	return nil, &NotLoadedError{edge: "rider"}
 }
 
-// CityOrErr returns the City value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e CabinetFaultEdges) CityOrErr() (*City, error) {
-	if e.loadedTypes[3] {
-		if e.City == nil {
-			// The edge city was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: city.Label}
-		}
-		return e.City, nil
-	}
-	return nil, &NotLoadedError{edge: "city"}
-}
-
 // scanValues returns the types for scanning values from sql.Rows.
 func (*CabinetFault) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -144,7 +144,7 @@ func (*CabinetFault) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case cabinetfault.FieldCreator, cabinetfault.FieldLastModifier, cabinetfault.FieldAttachments:
 			values[i] = new([]byte)
-		case cabinetfault.FieldID, cabinetfault.FieldStatus, cabinetfault.FieldCityID, cabinetfault.FieldBranchID, cabinetfault.FieldCabinetID, cabinetfault.FieldRiderID:
+		case cabinetfault.FieldID, cabinetfault.FieldCityID, cabinetfault.FieldStatus, cabinetfault.FieldBranchID, cabinetfault.FieldCabinetID, cabinetfault.FieldRiderID:
 			values[i] = new(sql.NullInt64)
 		case cabinetfault.FieldRemark, cabinetfault.FieldFault, cabinetfault.FieldDescription:
 			values[i] = new(sql.NullString)
@@ -212,17 +212,17 @@ func (cf *CabinetFault) assignValues(columns []string, values []interface{}) err
 			} else if value.Valid {
 				cf.Remark = value.String
 			}
-		case cabinetfault.FieldStatus:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field status", values[i])
-			} else if value.Valid {
-				cf.Status = uint8(value.Int64)
-			}
 		case cabinetfault.FieldCityID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field city_id", values[i])
 			} else if value.Valid {
 				cf.CityID = uint64(value.Int64)
+			}
+		case cabinetfault.FieldStatus:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				cf.Status = uint8(value.Int64)
 			}
 		case cabinetfault.FieldBranchID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -267,6 +267,11 @@ func (cf *CabinetFault) assignValues(columns []string, values []interface{}) err
 	return nil
 }
 
+// QueryCity queries the "city" edge of the CabinetFault entity.
+func (cf *CabinetFault) QueryCity() *CityQuery {
+	return (&CabinetFaultClient{config: cf.config}).QueryCity(cf)
+}
+
 // QueryBranch queries the "branch" edge of the CabinetFault entity.
 func (cf *CabinetFault) QueryBranch() *BranchQuery {
 	return (&CabinetFaultClient{config: cf.config}).QueryBranch(cf)
@@ -280,11 +285,6 @@ func (cf *CabinetFault) QueryCabinet() *CabinetQuery {
 // QueryRider queries the "rider" edge of the CabinetFault entity.
 func (cf *CabinetFault) QueryRider() *RiderQuery {
 	return (&CabinetFaultClient{config: cf.config}).QueryRider(cf)
-}
-
-// QueryCity queries the "city" edge of the CabinetFault entity.
-func (cf *CabinetFault) QueryCity() *CityQuery {
-	return (&CabinetFaultClient{config: cf.config}).QueryCity(cf)
 }
 
 // Update returns a builder for updating this CabinetFault.
@@ -324,10 +324,10 @@ func (cf *CabinetFault) String() string {
 	builder.WriteString(fmt.Sprintf("%v", cf.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(cf.Remark)
-	builder.WriteString(", status=")
-	builder.WriteString(fmt.Sprintf("%v", cf.Status))
 	builder.WriteString(", city_id=")
 	builder.WriteString(fmt.Sprintf("%v", cf.CityID))
+	builder.WriteString(", status=")
+	builder.WriteString(fmt.Sprintf("%v", cf.Status))
 	builder.WriteString(", branch_id=")
 	builder.WriteString(fmt.Sprintf("%v", cf.BranchID))
 	builder.WriteString(", cabinet_id=")

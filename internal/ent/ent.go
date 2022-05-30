@@ -14,22 +14,24 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
-	"github.com/auroraride/aurservd/internal/ent/orderalter"
-	"github.com/auroraride/aurservd/internal/ent/orderarrearage"
-	"github.com/auroraride/aurservd/internal/ent/orderpause"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
+	"github.com/auroraride/aurservd/internal/ent/subscribealter"
+	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -50,26 +52,28 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		batterymodel.Table:   batterymodel.ValidColumn,
-		branch.Table:         branch.ValidColumn,
-		branchcontract.Table: branchcontract.ValidColumn,
-		cabinet.Table:        cabinet.ValidColumn,
-		cabinetfault.Table:   cabinetfault.ValidColumn,
-		city.Table:           city.ValidColumn,
-		commission.Table:     commission.ValidColumn,
-		contract.Table:       contract.ValidColumn,
-		enterprise.Table:     enterprise.ValidColumn,
-		manager.Table:        manager.ValidColumn,
-		order.Table:          order.ValidColumn,
-		orderalter.Table:     orderalter.ValidColumn,
-		orderarrearage.Table: orderarrearage.ValidColumn,
-		orderpause.Table:     orderpause.ValidColumn,
-		orderrefund.Table:    orderrefund.ValidColumn,
-		person.Table:         person.ValidColumn,
-		plan.Table:           plan.ValidColumn,
-		rider.Table:          rider.ValidColumn,
-		setting.Table:        setting.ValidColumn,
-		store.Table:          store.ValidColumn,
+		batterymodel.Table:    batterymodel.ValidColumn,
+		branch.Table:          branch.ValidColumn,
+		branchcontract.Table:  branchcontract.ValidColumn,
+		cabinet.Table:         cabinet.ValidColumn,
+		cabinetexchange.Table: cabinetexchange.ValidColumn,
+		cabinetfault.Table:    cabinetfault.ValidColumn,
+		city.Table:            city.ValidColumn,
+		commission.Table:      commission.ValidColumn,
+		contract.Table:        contract.ValidColumn,
+		employee.Table:        employee.ValidColumn,
+		enterprise.Table:      enterprise.ValidColumn,
+		manager.Table:         manager.ValidColumn,
+		order.Table:           order.ValidColumn,
+		orderrefund.Table:     orderrefund.ValidColumn,
+		person.Table:          person.ValidColumn,
+		plan.Table:            plan.ValidColumn,
+		rider.Table:           rider.ValidColumn,
+		setting.Table:         setting.ValidColumn,
+		store.Table:           store.ValidColumn,
+		subscribe.Table:       subscribe.ValidColumn,
+		subscribealter.Table:  subscribealter.ValidColumn,
+		subscribepause.Table:  subscribepause.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

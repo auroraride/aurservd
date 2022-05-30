@@ -79,6 +79,13 @@ func (c *CabinetClient) ModifyOne(old *Cabinet, data any) *CabinetUpdateOne {
 	return CallModifyMethod[CabinetUpdateOne, Cabinet](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for CabinetExchange.
+func (c *CabinetExchangeClient) ModifyOne(old *CabinetExchange, data any) *CabinetExchangeUpdateOne {
+	mutation := newCabinetExchangeMutation(c.config, OpUpdateOne, withCabinetExchange(old))
+	up := &CabinetExchangeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return CallModifyMethod[CabinetExchangeUpdateOne, CabinetExchange](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for CabinetFault.
 func (c *CabinetFaultClient) ModifyOne(old *CabinetFault, data any) *CabinetFaultUpdateOne {
 	mutation := newCabinetFaultMutation(c.config, OpUpdateOne, withCabinetFault(old))
@@ -107,6 +114,13 @@ func (c *ContractClient) ModifyOne(old *Contract, data any) *ContractUpdateOne {
 	return CallModifyMethod[ContractUpdateOne, Contract](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for Employee.
+func (c *EmployeeClient) ModifyOne(old *Employee, data any) *EmployeeUpdateOne {
+	mutation := newEmployeeMutation(c.config, OpUpdateOne, withEmployee(old))
+	up := &EmployeeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return CallModifyMethod[EmployeeUpdateOne, Employee](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Enterprise.
 func (c *EnterpriseClient) ModifyOne(old *Enterprise, data any) *EnterpriseUpdateOne {
 	mutation := newEnterpriseMutation(c.config, OpUpdateOne, withEnterprise(old))
@@ -126,27 +140,6 @@ func (c *OrderClient) ModifyOne(old *Order, data any) *OrderUpdateOne {
 	mutation := newOrderMutation(c.config, OpUpdateOne, withOrder(old))
 	up := &OrderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 	return CallModifyMethod[OrderUpdateOne, Order](up, old, data)
-}
-
-// ModifyOne returns an update with pointer struct builder for OrderAlter.
-func (c *OrderAlterClient) ModifyOne(old *OrderAlter, data any) *OrderAlterUpdateOne {
-	mutation := newOrderAlterMutation(c.config, OpUpdateOne, withOrderAlter(old))
-	up := &OrderAlterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-	return CallModifyMethod[OrderAlterUpdateOne, OrderAlter](up, old, data)
-}
-
-// ModifyOne returns an update with pointer struct builder for OrderArrearage.
-func (c *OrderArrearageClient) ModifyOne(old *OrderArrearage, data any) *OrderArrearageUpdateOne {
-	mutation := newOrderArrearageMutation(c.config, OpUpdateOne, withOrderArrearage(old))
-	up := &OrderArrearageUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-	return CallModifyMethod[OrderArrearageUpdateOne, OrderArrearage](up, old, data)
-}
-
-// ModifyOne returns an update with pointer struct builder for OrderPause.
-func (c *OrderPauseClient) ModifyOne(old *OrderPause, data any) *OrderPauseUpdateOne {
-	mutation := newOrderPauseMutation(c.config, OpUpdateOne, withOrderPause(old))
-	up := &OrderPauseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-	return CallModifyMethod[OrderPauseUpdateOne, OrderPause](up, old, data)
 }
 
 // ModifyOne returns an update with pointer struct builder for OrderRefund.
@@ -189,4 +182,25 @@ func (c *StoreClient) ModifyOne(old *Store, data any) *StoreUpdateOne {
 	mutation := newStoreMutation(c.config, OpUpdateOne, withStore(old))
 	up := &StoreUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 	return CallModifyMethod[StoreUpdateOne, Store](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for Subscribe.
+func (c *SubscribeClient) ModifyOne(old *Subscribe, data any) *SubscribeUpdateOne {
+	mutation := newSubscribeMutation(c.config, OpUpdateOne, withSubscribe(old))
+	up := &SubscribeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return CallModifyMethod[SubscribeUpdateOne, Subscribe](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for SubscribeAlter.
+func (c *SubscribeAlterClient) ModifyOne(old *SubscribeAlter, data any) *SubscribeAlterUpdateOne {
+	mutation := newSubscribeAlterMutation(c.config, OpUpdateOne, withSubscribeAlter(old))
+	up := &SubscribeAlterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return CallModifyMethod[SubscribeAlterUpdateOne, SubscribeAlter](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for SubscribePause.
+func (c *SubscribePauseClient) ModifyOne(old *SubscribePause, data any) *SubscribePauseUpdateOne {
+	mutation := newSubscribePauseMutation(c.config, OpUpdateOne, withSubscribePause(old))
+	up := &SubscribePauseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return CallModifyMethod[SubscribePauseUpdateOne, SubscribePause](up, old, data)
 }

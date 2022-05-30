@@ -62,12 +62,12 @@ type Branch struct {
 
 // BranchEdges holds the relations/edges for other nodes in the graph.
 type BranchEdges struct {
+	// City holds the value of the city edge.
+	City *City `json:"city,omitempty"`
 	// Contracts holds the value of the contracts edge.
 	Contracts []*BranchContract `json:"contracts,omitempty"`
 	// Cabinets holds the value of the cabinets edge.
 	Cabinets []*Cabinet `json:"cabinets,omitempty"`
-	// City holds the value of the city edge.
-	City *City `json:"city,omitempty"`
 	// Faults holds the value of the faults edge.
 	Faults []*CabinetFault `json:"faults,omitempty"`
 	// Stores holds the value of the stores edge.
@@ -77,28 +77,10 @@ type BranchEdges struct {
 	loadedTypes [5]bool
 }
 
-// ContractsOrErr returns the Contracts value or an error if the edge
-// was not loaded in eager-loading.
-func (e BranchEdges) ContractsOrErr() ([]*BranchContract, error) {
-	if e.loadedTypes[0] {
-		return e.Contracts, nil
-	}
-	return nil, &NotLoadedError{edge: "contracts"}
-}
-
-// CabinetsOrErr returns the Cabinets value or an error if the edge
-// was not loaded in eager-loading.
-func (e BranchEdges) CabinetsOrErr() ([]*Cabinet, error) {
-	if e.loadedTypes[1] {
-		return e.Cabinets, nil
-	}
-	return nil, &NotLoadedError{edge: "cabinets"}
-}
-
 // CityOrErr returns the City value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e BranchEdges) CityOrErr() (*City, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[0] {
 		if e.City == nil {
 			// The edge city was loaded in eager-loading,
 			// but was not found.
@@ -107,6 +89,24 @@ func (e BranchEdges) CityOrErr() (*City, error) {
 		return e.City, nil
 	}
 	return nil, &NotLoadedError{edge: "city"}
+}
+
+// ContractsOrErr returns the Contracts value or an error if the edge
+// was not loaded in eager-loading.
+func (e BranchEdges) ContractsOrErr() ([]*BranchContract, error) {
+	if e.loadedTypes[1] {
+		return e.Contracts, nil
+	}
+	return nil, &NotLoadedError{edge: "contracts"}
+}
+
+// CabinetsOrErr returns the Cabinets value or an error if the edge
+// was not loaded in eager-loading.
+func (e BranchEdges) CabinetsOrErr() ([]*Cabinet, error) {
+	if e.loadedTypes[2] {
+		return e.Cabinets, nil
+	}
+	return nil, &NotLoadedError{edge: "cabinets"}
 }
 
 // FaultsOrErr returns the Faults value or an error if the edge
@@ -255,6 +255,11 @@ func (b *Branch) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
+// QueryCity queries the "city" edge of the Branch entity.
+func (b *Branch) QueryCity() *CityQuery {
+	return (&BranchClient{config: b.config}).QueryCity(b)
+}
+
 // QueryContracts queries the "contracts" edge of the Branch entity.
 func (b *Branch) QueryContracts() *BranchContractQuery {
 	return (&BranchClient{config: b.config}).QueryContracts(b)
@@ -263,11 +268,6 @@ func (b *Branch) QueryContracts() *BranchContractQuery {
 // QueryCabinets queries the "cabinets" edge of the Branch entity.
 func (b *Branch) QueryCabinets() *CabinetQuery {
 	return (&BranchClient{config: b.config}).QueryCabinets(b)
-}
-
-// QueryCity queries the "city" edge of the Branch entity.
-func (b *Branch) QueryCity() *CityQuery {
-	return (&BranchClient{config: b.config}).QueryCity(b)
 }
 
 // QueryFaults queries the "faults" edge of the Branch entity.

@@ -1759,25 +1759,25 @@ func HasOrdersWith(preds ...predicate.Order) predicate.Rider {
 	})
 }
 
-// HasPauses applies the HasEdge predicate on the "pauses" edge.
-func HasPauses() predicate.Rider {
+// HasExchanges applies the HasEdge predicate on the "exchanges" edge.
+func HasExchanges() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PausesTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, PausesTable, PausesColumn),
+			sqlgraph.To(ExchangesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ExchangesTable, ExchangesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasPausesWith applies the HasEdge predicate on the "pauses" edge with a given conditions (other predicates).
-func HasPausesWith(preds ...predicate.OrderPause) predicate.Rider {
+// HasExchangesWith applies the HasEdge predicate on the "exchanges" edge with a given conditions (other predicates).
+func HasExchangesWith(preds ...predicate.CabinetExchange) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(PausesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, PausesTable, PausesColumn),
+			sqlgraph.To(ExchangesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ExchangesTable, ExchangesColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
@@ -1787,53 +1787,25 @@ func HasPausesWith(preds ...predicate.OrderPause) predicate.Rider {
 	})
 }
 
-// HasArrearages applies the HasEdge predicate on the "arrearages" edge.
-func HasArrearages() predicate.Rider {
+// HasSubscribes applies the HasEdge predicate on the "subscribes" edge.
+func HasSubscribes() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ArrearagesTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ArrearagesTable, ArrearagesColumn),
+			sqlgraph.To(SubscribesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SubscribesTable, SubscribesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasArrearagesWith applies the HasEdge predicate on the "arrearages" edge with a given conditions (other predicates).
-func HasArrearagesWith(preds ...predicate.OrderArrearage) predicate.Rider {
+// HasSubscribesWith applies the HasEdge predicate on the "subscribes" edge with a given conditions (other predicates).
+func HasSubscribesWith(preds ...predicate.Subscribe) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ArrearagesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ArrearagesTable, ArrearagesColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasAlters applies the HasEdge predicate on the "alters" edge.
-func HasAlters() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AltersTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AltersTable, AltersColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasAltersWith applies the HasEdge predicate on the "alters" edge with a given conditions (other predicates).
-func HasAltersWith(preds ...predicate.OrderAlter) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AltersInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AltersTable, AltersColumn),
+			sqlgraph.To(SubscribesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SubscribesTable, SubscribesColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

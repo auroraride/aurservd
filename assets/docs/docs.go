@@ -112,6 +112,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/employee/v1/order/active": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]门店接口"
+                ],
+                "summary": "E20001 激活骑士卡",
+                "operationId": "RiderOrderActive",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.QRPostReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/battery/model": {
             "get": {
                 "consumes": [
@@ -1974,6 +2015,86 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/cabinet/report": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R4000X 电柜故障上报",
+                "operationId": "CabinetReport",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CabinetFaultReportReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/cabinet/{serial}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R40001 确认换电信息",
+                "operationId": "RiderCabinetProcess",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜二维码",
+                        "name": "serial",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderCabinetOperateProcess"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/city": {
             "get": {
                 "consumes": [
@@ -2256,47 +2377,6 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/model.OrderRefundReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/rider/v1/path": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[R]骑手接口"
-                ],
-                "summary": "R40001 电柜故障上报",
-                "operationId": "CabinetReport",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "desc",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.CabinetFaultReportReq"
                         }
                     }
                 ],
@@ -2841,6 +2921,19 @@ const docTemplate = `{
                 }
             }
         },
+        "model.CabinetBinBasicInfo": {
+            "type": "object",
+            "properties": {
+                "electricity": {
+                    "description": "当前电量",
+                    "type": "number"
+                },
+                "index": {
+                    "description": "仓位index",
+                    "type": "integer"
+                }
+            }
+        },
         "model.CabinetCreateReq": {
             "type": "object",
             "required": [
@@ -3295,7 +3388,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.EmployeeItem": {
+        "model.Employee": {
             "type": "object",
             "properties": {
                 "id": {
@@ -3573,6 +3666,18 @@ const docTemplate = `{
                 }
             }
         },
+        "model.QRPostReq": {
+            "type": "object",
+            "required": [
+                "qrcode"
+            ],
+            "properties": {
+                "qrcode": {
+                    "description": "二维码 ",
+                    "type": "string"
+                }
+            }
+        },
         "model.RiderBlockReq": {
             "type": "object",
             "properties": {
@@ -3583,6 +3688,23 @@ const docTemplate = `{
                 "id": {
                     "description": "骑手ID",
                     "type": "integer"
+                }
+            }
+        },
+        "model.RiderCabinetOperateProcess": {
+            "type": "object",
+            "properties": {
+                "alternative": {
+                    "description": "备选方案",
+                    "$ref": "#/definitions/model.CabinetBinBasicInfo"
+                },
+                "emptyBin": {
+                    "description": "空仓位",
+                    "$ref": "#/definitions/model.CabinetBinBasicInfo"
+                },
+                "fullBin": {
+                    "description": "满电仓位",
+                    "$ref": "#/definitions/model.CabinetBinBasicInfo"
                 }
             }
         },
@@ -3717,6 +3839,10 @@ const docTemplate = `{
                 "payAt": {
                     "description": "支付时间",
                     "type": "string"
+                },
+                "payway": {
+                    "description": "支付方式",
+                    "type": "integer"
                 },
                 "plan": {
                     "description": "骑士卡信息",
@@ -3952,7 +4078,7 @@ const docTemplate = `{
                 },
                 "employee": {
                     "description": "店员, 有可能不存在",
-                    "$ref": "#/definitions/model.EmployeeItem"
+                    "$ref": "#/definitions/model.Employee"
                 },
                 "id": {
                     "type": "integer"
