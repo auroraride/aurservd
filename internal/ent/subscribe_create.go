@@ -130,9 +130,9 @@ func (sc *SubscribeCreate) SetRiderID(u uint64) *SubscribeCreate {
 	return sc
 }
 
-// SetOrderID sets the "order_id" field.
-func (sc *SubscribeCreate) SetOrderID(u uint64) *SubscribeCreate {
-	sc.mutation.SetOrderID(u)
+// SetInitialOrderID sets the "initial_order_id" field.
+func (sc *SubscribeCreate) SetInitialOrderID(u uint64) *SubscribeCreate {
+	sc.mutation.SetInitialOrderID(u)
 	return sc
 }
 
@@ -160,9 +160,25 @@ func (sc *SubscribeCreate) SetAlterDays(u uint) *SubscribeCreate {
 	return sc
 }
 
+// SetNillableAlterDays sets the "alter_days" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableAlterDays(u *uint) *SubscribeCreate {
+	if u != nil {
+		sc.SetAlterDays(*u)
+	}
+	return sc
+}
+
 // SetPauseDays sets the "pause_days" field.
 func (sc *SubscribeCreate) SetPauseDays(u uint) *SubscribeCreate {
 	sc.mutation.SetPauseDays(u)
+	return sc
+}
+
+// SetNillablePauseDays sets the "pause_days" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillablePauseDays(u *uint) *SubscribeCreate {
+	if u != nil {
+		sc.SetPauseDays(*u)
+	}
 	return sc
 }
 
@@ -287,15 +303,9 @@ func (sc *SubscribeCreate) AddOrders(o ...*Order) *SubscribeCreate {
 	return sc.AddOrderIDs(ids...)
 }
 
-// SetStartOrderID sets the "start_order" edge to the Order entity by ID.
-func (sc *SubscribeCreate) SetStartOrderID(id uint64) *SubscribeCreate {
-	sc.mutation.SetStartOrderID(id)
-	return sc
-}
-
-// SetStartOrder sets the "start_order" edge to the Order entity.
-func (sc *SubscribeCreate) SetStartOrder(o *Order) *SubscribeCreate {
-	return sc.SetStartOrderID(o.ID)
+// SetInitialOrder sets the "initial_order" edge to the Order entity.
+func (sc *SubscribeCreate) SetInitialOrder(o *Order) *SubscribeCreate {
+	return sc.SetInitialOrderID(o.ID)
 }
 
 // Mutation returns the SubscribeMutation object of the builder.
@@ -391,6 +401,14 @@ func (sc *SubscribeCreate) defaults() error {
 		v := subscribe.DefaultUpdatedAt()
 		sc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := sc.mutation.AlterDays(); !ok {
+		v := subscribe.DefaultAlterDays
+		sc.mutation.SetAlterDays(v)
+	}
+	if _, ok := sc.mutation.PauseDays(); !ok {
+		v := subscribe.DefaultPauseDays
+		sc.mutation.SetPauseDays(v)
+	}
 	return nil
 }
 
@@ -411,8 +429,8 @@ func (sc *SubscribeCreate) check() error {
 	if _, ok := sc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "Subscribe.rider_id"`)}
 	}
-	if _, ok := sc.mutation.OrderID(); !ok {
-		return &ValidationError{Name: "order_id", err: errors.New(`ent: missing required field "Subscribe.order_id"`)}
+	if _, ok := sc.mutation.InitialOrderID(); !ok {
+		return &ValidationError{Name: "initial_order_id", err: errors.New(`ent: missing required field "Subscribe.initial_order_id"`)}
 	}
 	if _, ok := sc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Subscribe.type"`)}
@@ -438,8 +456,8 @@ func (sc *SubscribeCreate) check() error {
 	if _, ok := sc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Subscribe.rider"`)}
 	}
-	if _, ok := sc.mutation.StartOrderID(); !ok {
-		return &ValidationError{Name: "start_order", err: errors.New(`ent: missing required edge "Subscribe.start_order"`)}
+	if _, ok := sc.mutation.InitialOrderID(); !ok {
+		return &ValidationError{Name: "initial_order", err: errors.New(`ent: missing required edge "Subscribe.initial_order"`)}
 	}
 	return nil
 }
@@ -726,12 +744,12 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := sc.mutation.StartOrderIDs(); len(nodes) > 0 {
+	if nodes := sc.mutation.InitialOrderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   subscribe.StartOrderTable,
-			Columns: []string{subscribe.StartOrderColumn},
+			Table:   subscribe.InitialOrderTable,
+			Columns: []string{subscribe.InitialOrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -743,7 +761,7 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.OrderID = nodes[0]
+		_node.InitialOrderID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -950,15 +968,15 @@ func (u *SubscribeUpsert) UpdateRiderID() *SubscribeUpsert {
 	return u
 }
 
-// SetOrderID sets the "order_id" field.
-func (u *SubscribeUpsert) SetOrderID(v uint64) *SubscribeUpsert {
-	u.Set(subscribe.FieldOrderID, v)
+// SetInitialOrderID sets the "initial_order_id" field.
+func (u *SubscribeUpsert) SetInitialOrderID(v uint64) *SubscribeUpsert {
+	u.Set(subscribe.FieldInitialOrderID, v)
 	return u
 }
 
-// UpdateOrderID sets the "order_id" field to the value that was provided on create.
-func (u *SubscribeUpsert) UpdateOrderID() *SubscribeUpsert {
-	u.SetExcluded(subscribe.FieldOrderID)
+// UpdateInitialOrderID sets the "initial_order_id" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateInitialOrderID() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldInitialOrderID)
 	return u
 }
 
@@ -1352,17 +1370,17 @@ func (u *SubscribeUpsertOne) UpdateRiderID() *SubscribeUpsertOne {
 	})
 }
 
-// SetOrderID sets the "order_id" field.
-func (u *SubscribeUpsertOne) SetOrderID(v uint64) *SubscribeUpsertOne {
+// SetInitialOrderID sets the "initial_order_id" field.
+func (u *SubscribeUpsertOne) SetInitialOrderID(v uint64) *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
-		s.SetOrderID(v)
+		s.SetInitialOrderID(v)
 	})
 }
 
-// UpdateOrderID sets the "order_id" field to the value that was provided on create.
-func (u *SubscribeUpsertOne) UpdateOrderID() *SubscribeUpsertOne {
+// UpdateInitialOrderID sets the "initial_order_id" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateInitialOrderID() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
-		s.UpdateOrderID()
+		s.UpdateInitialOrderID()
 	})
 }
 
@@ -1947,17 +1965,17 @@ func (u *SubscribeUpsertBulk) UpdateRiderID() *SubscribeUpsertBulk {
 	})
 }
 
-// SetOrderID sets the "order_id" field.
-func (u *SubscribeUpsertBulk) SetOrderID(v uint64) *SubscribeUpsertBulk {
+// SetInitialOrderID sets the "initial_order_id" field.
+func (u *SubscribeUpsertBulk) SetInitialOrderID(v uint64) *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
-		s.SetOrderID(v)
+		s.SetInitialOrderID(v)
 	})
 }
 
-// UpdateOrderID sets the "order_id" field to the value that was provided on create.
-func (u *SubscribeUpsertBulk) UpdateOrderID() *SubscribeUpsertBulk {
+// UpdateInitialOrderID sets the "initial_order_id" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateInitialOrderID() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
-		s.UpdateOrderID()
+		s.UpdateInitialOrderID()
 	})
 }
 

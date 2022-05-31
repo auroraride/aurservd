@@ -50,9 +50,9 @@ type Subscribe struct {
 	// RiderID holds the value of the "rider_id" field.
 	// 骑手ID
 	RiderID uint64 `json:"rider_id,omitempty"`
-	// OrderID holds the value of the "order_id" field.
+	// InitialOrderID holds the value of the "initial_order_id" field.
 	// 初始订单ID(开通订阅的初始订单)
-	OrderID uint64 `json:"order_id,omitempty"`
+	InitialOrderID uint64 `json:"initial_order_id,omitempty"`
 	// Type holds the value of the "type" field.
 	// 订阅类型 1新签 2续签 3重签 4更改电池
 	Type uint `json:"type,omitempty"`
@@ -101,8 +101,8 @@ type SubscribeEdges struct {
 	Alters []*SubscribeAlter `json:"alters,omitempty"`
 	// Orders holds the value of the orders edge.
 	Orders []*Order `json:"orders,omitempty"`
-	// StartOrder holds the value of the start_order edge.
-	StartOrder *Order `json:"start_order,omitempty"`
+	// InitialOrder holds the value of the initial_order edge.
+	InitialOrder *Order `json:"initial_order,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [8]bool
@@ -191,18 +191,18 @@ func (e SubscribeEdges) OrdersOrErr() ([]*Order, error) {
 	return nil, &NotLoadedError{edge: "orders"}
 }
 
-// StartOrderOrErr returns the StartOrder value or an error if the edge
+// InitialOrderOrErr returns the InitialOrder value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e SubscribeEdges) StartOrderOrErr() (*Order, error) {
+func (e SubscribeEdges) InitialOrderOrErr() (*Order, error) {
 	if e.loadedTypes[7] {
-		if e.StartOrder == nil {
-			// The edge start_order was loaded in eager-loading,
+		if e.InitialOrder == nil {
+			// The edge initial_order was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: order.Label}
 		}
-		return e.StartOrder, nil
+		return e.InitialOrder, nil
 	}
-	return nil, &NotLoadedError{edge: "start_order"}
+	return nil, &NotLoadedError{edge: "initial_order"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -214,7 +214,7 @@ func (*Subscribe) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case subscribe.FieldVoltage:
 			values[i] = new(sql.NullFloat64)
-		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldRiderID, subscribe.FieldOrderID, subscribe.FieldType, subscribe.FieldDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays:
+		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldType, subscribe.FieldDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays:
 			values[i] = new(sql.NullInt64)
 		case subscribe.FieldRemark:
 			values[i] = new(sql.NullString)
@@ -306,11 +306,11 @@ func (s *Subscribe) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.RiderID = uint64(value.Int64)
 			}
-		case subscribe.FieldOrderID:
+		case subscribe.FieldInitialOrderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field order_id", values[i])
+				return fmt.Errorf("unexpected type %T for field initial_order_id", values[i])
 			} else if value.Valid {
-				s.OrderID = uint64(value.Int64)
+				s.InitialOrderID = uint64(value.Int64)
 			}
 		case subscribe.FieldType:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -410,9 +410,9 @@ func (s *Subscribe) QueryOrders() *OrderQuery {
 	return (&SubscribeClient{config: s.config}).QueryOrders(s)
 }
 
-// QueryStartOrder queries the "start_order" edge of the Subscribe entity.
-func (s *Subscribe) QueryStartOrder() *OrderQuery {
-	return (&SubscribeClient{config: s.config}).QueryStartOrder(s)
+// QueryInitialOrder queries the "initial_order" edge of the Subscribe entity.
+func (s *Subscribe) QueryInitialOrder() *OrderQuery {
+	return (&SubscribeClient{config: s.config}).QueryInitialOrder(s)
 }
 
 // Update returns a builder for updating this Subscribe.
@@ -460,8 +460,8 @@ func (s *Subscribe) String() string {
 	builder.WriteString(fmt.Sprintf("%v", s.CityID))
 	builder.WriteString(", rider_id=")
 	builder.WriteString(fmt.Sprintf("%v", s.RiderID))
-	builder.WriteString(", order_id=")
-	builder.WriteString(fmt.Sprintf("%v", s.OrderID))
+	builder.WriteString(", initial_order_id=")
+	builder.WriteString(fmt.Sprintf("%v", s.InitialOrderID))
 	builder.WriteString(", type=")
 	builder.WriteString(fmt.Sprintf("%v", s.Type))
 	builder.WriteString(", voltage=")

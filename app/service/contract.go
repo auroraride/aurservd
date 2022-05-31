@@ -55,7 +55,7 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
     }
 
     var (
-        sn           = tools.NewUnique().NewSonyflakeID()
+        sn           = tools.NewUnique().NewSN28()
         cfg          = s.esign.Config
         orm          = ar.Ent
         person       = u.Edges.Person

@@ -75,7 +75,7 @@ func NewAlipay() *alipayClient {
 
 // AppPay app支付
 func (c *alipayClient) AppPay(pc *model.PaymentCache) (string, error) {
-    prepay := pc.Plan
+    prepay := pc.Subscribe
     cfg := ar.Config.Payment.Alipay
     trade := alipay.TradeAppPay{
         Trade: alipay.Trade{
@@ -137,7 +137,7 @@ func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
         }
         switch pc.CacheType {
         case model.PaymentCacheTypePlan:
-            pc.Plan.TradeNo = result.TradeNo
+            pc.Subscribe.TradeNo = result.TradeNo
             break
         case model.PaymentCacheTypeRefund:
             pc.Refund.Success = true

@@ -132,9 +132,9 @@ func (su *SubscribeUpdate) SetRiderID(u uint64) *SubscribeUpdate {
 	return su
 }
 
-// SetOrderID sets the "order_id" field.
-func (su *SubscribeUpdate) SetOrderID(u uint64) *SubscribeUpdate {
-	su.mutation.SetOrderID(u)
+// SetInitialOrderID sets the "initial_order_id" field.
+func (su *SubscribeUpdate) SetInitialOrderID(u uint64) *SubscribeUpdate {
+	su.mutation.SetInitialOrderID(u)
 	return su
 }
 
@@ -171,6 +171,14 @@ func (su *SubscribeUpdate) SetAlterDays(u uint) *SubscribeUpdate {
 	return su
 }
 
+// SetNillableAlterDays sets the "alter_days" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableAlterDays(u *uint) *SubscribeUpdate {
+	if u != nil {
+		su.SetAlterDays(*u)
+	}
+	return su
+}
+
 // AddAlterDays adds u to the "alter_days" field.
 func (su *SubscribeUpdate) AddAlterDays(u int) *SubscribeUpdate {
 	su.mutation.AddAlterDays(u)
@@ -181,6 +189,14 @@ func (su *SubscribeUpdate) AddAlterDays(u int) *SubscribeUpdate {
 func (su *SubscribeUpdate) SetPauseDays(u uint) *SubscribeUpdate {
 	su.mutation.ResetPauseDays()
 	su.mutation.SetPauseDays(u)
+	return su
+}
+
+// SetNillablePauseDays sets the "pause_days" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillablePauseDays(u *uint) *SubscribeUpdate {
+	if u != nil {
+		su.SetPauseDays(*u)
+	}
 	return su
 }
 
@@ -335,15 +351,9 @@ func (su *SubscribeUpdate) AddOrders(o ...*Order) *SubscribeUpdate {
 	return su.AddOrderIDs(ids...)
 }
 
-// SetStartOrderID sets the "start_order" edge to the Order entity by ID.
-func (su *SubscribeUpdate) SetStartOrderID(id uint64) *SubscribeUpdate {
-	su.mutation.SetStartOrderID(id)
-	return su
-}
-
-// SetStartOrder sets the "start_order" edge to the Order entity.
-func (su *SubscribeUpdate) SetStartOrder(o *Order) *SubscribeUpdate {
-	return su.SetStartOrderID(o.ID)
+// SetInitialOrder sets the "initial_order" edge to the Order entity.
+func (su *SubscribeUpdate) SetInitialOrder(o *Order) *SubscribeUpdate {
+	return su.SetInitialOrderID(o.ID)
 }
 
 // Mutation returns the SubscribeMutation object of the builder.
@@ -438,9 +448,9 @@ func (su *SubscribeUpdate) RemoveOrders(o ...*Order) *SubscribeUpdate {
 	return su.RemoveOrderIDs(ids...)
 }
 
-// ClearStartOrder clears the "start_order" edge to the Order entity.
-func (su *SubscribeUpdate) ClearStartOrder() *SubscribeUpdate {
-	su.mutation.ClearStartOrder()
+// ClearInitialOrder clears the "initial_order" edge to the Order entity.
+func (su *SubscribeUpdate) ClearInitialOrder() *SubscribeUpdate {
+	su.mutation.ClearInitialOrder()
 	return su
 }
 
@@ -530,8 +540,8 @@ func (su *SubscribeUpdate) check() error {
 	if _, ok := su.mutation.RiderID(); su.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Subscribe.rider"`)
 	}
-	if _, ok := su.mutation.StartOrderID(); su.mutation.StartOrderCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Subscribe.start_order"`)
+	if _, ok := su.mutation.InitialOrderID(); su.mutation.InitialOrderCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Subscribe.initial_order"`)
 	}
 	return nil
 }
@@ -1016,12 +1026,12 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if su.mutation.StartOrderCleared() {
+	if su.mutation.InitialOrderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   subscribe.StartOrderTable,
-			Columns: []string{subscribe.StartOrderColumn},
+			Table:   subscribe.InitialOrderTable,
+			Columns: []string{subscribe.InitialOrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1032,12 +1042,12 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := su.mutation.StartOrderIDs(); len(nodes) > 0 {
+	if nodes := su.mutation.InitialOrderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   subscribe.StartOrderTable,
-			Columns: []string{subscribe.StartOrderColumn},
+			Table:   subscribe.InitialOrderTable,
+			Columns: []string{subscribe.InitialOrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1166,9 +1176,9 @@ func (suo *SubscribeUpdateOne) SetRiderID(u uint64) *SubscribeUpdateOne {
 	return suo
 }
 
-// SetOrderID sets the "order_id" field.
-func (suo *SubscribeUpdateOne) SetOrderID(u uint64) *SubscribeUpdateOne {
-	suo.mutation.SetOrderID(u)
+// SetInitialOrderID sets the "initial_order_id" field.
+func (suo *SubscribeUpdateOne) SetInitialOrderID(u uint64) *SubscribeUpdateOne {
+	suo.mutation.SetInitialOrderID(u)
 	return suo
 }
 
@@ -1205,6 +1215,14 @@ func (suo *SubscribeUpdateOne) SetAlterDays(u uint) *SubscribeUpdateOne {
 	return suo
 }
 
+// SetNillableAlterDays sets the "alter_days" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableAlterDays(u *uint) *SubscribeUpdateOne {
+	if u != nil {
+		suo.SetAlterDays(*u)
+	}
+	return suo
+}
+
 // AddAlterDays adds u to the "alter_days" field.
 func (suo *SubscribeUpdateOne) AddAlterDays(u int) *SubscribeUpdateOne {
 	suo.mutation.AddAlterDays(u)
@@ -1215,6 +1233,14 @@ func (suo *SubscribeUpdateOne) AddAlterDays(u int) *SubscribeUpdateOne {
 func (suo *SubscribeUpdateOne) SetPauseDays(u uint) *SubscribeUpdateOne {
 	suo.mutation.ResetPauseDays()
 	suo.mutation.SetPauseDays(u)
+	return suo
+}
+
+// SetNillablePauseDays sets the "pause_days" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillablePauseDays(u *uint) *SubscribeUpdateOne {
+	if u != nil {
+		suo.SetPauseDays(*u)
+	}
 	return suo
 }
 
@@ -1369,15 +1395,9 @@ func (suo *SubscribeUpdateOne) AddOrders(o ...*Order) *SubscribeUpdateOne {
 	return suo.AddOrderIDs(ids...)
 }
 
-// SetStartOrderID sets the "start_order" edge to the Order entity by ID.
-func (suo *SubscribeUpdateOne) SetStartOrderID(id uint64) *SubscribeUpdateOne {
-	suo.mutation.SetStartOrderID(id)
-	return suo
-}
-
-// SetStartOrder sets the "start_order" edge to the Order entity.
-func (suo *SubscribeUpdateOne) SetStartOrder(o *Order) *SubscribeUpdateOne {
-	return suo.SetStartOrderID(o.ID)
+// SetInitialOrder sets the "initial_order" edge to the Order entity.
+func (suo *SubscribeUpdateOne) SetInitialOrder(o *Order) *SubscribeUpdateOne {
+	return suo.SetInitialOrderID(o.ID)
 }
 
 // Mutation returns the SubscribeMutation object of the builder.
@@ -1472,9 +1492,9 @@ func (suo *SubscribeUpdateOne) RemoveOrders(o ...*Order) *SubscribeUpdateOne {
 	return suo.RemoveOrderIDs(ids...)
 }
 
-// ClearStartOrder clears the "start_order" edge to the Order entity.
-func (suo *SubscribeUpdateOne) ClearStartOrder() *SubscribeUpdateOne {
-	suo.mutation.ClearStartOrder()
+// ClearInitialOrder clears the "initial_order" edge to the Order entity.
+func (suo *SubscribeUpdateOne) ClearInitialOrder() *SubscribeUpdateOne {
+	suo.mutation.ClearInitialOrder()
 	return suo
 }
 
@@ -1577,8 +1597,8 @@ func (suo *SubscribeUpdateOne) check() error {
 	if _, ok := suo.mutation.RiderID(); suo.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Subscribe.rider"`)
 	}
-	if _, ok := suo.mutation.StartOrderID(); suo.mutation.StartOrderCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Subscribe.start_order"`)
+	if _, ok := suo.mutation.InitialOrderID(); suo.mutation.InitialOrderCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Subscribe.initial_order"`)
 	}
 	return nil
 }
@@ -2080,12 +2100,12 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if suo.mutation.StartOrderCleared() {
+	if suo.mutation.InitialOrderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   subscribe.StartOrderTable,
-			Columns: []string{subscribe.StartOrderColumn},
+			Table:   subscribe.InitialOrderTable,
+			Columns: []string{subscribe.InitialOrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -2096,12 +2116,12 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := suo.mutation.StartOrderIDs(); len(nodes) > 0 {
+	if nodes := suo.mutation.InitialOrderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   subscribe.StartOrderTable,
-			Columns: []string{subscribe.StartOrderColumn},
+			Table:   subscribe.InitialOrderTable,
+			Columns: []string{subscribe.InitialOrderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

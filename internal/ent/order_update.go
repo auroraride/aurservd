@@ -99,6 +99,20 @@ func (ou *OrderUpdate) SetPlanID(u uint64) *OrderUpdate {
 	return ou
 }
 
+// SetNillablePlanID sets the "plan_id" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillablePlanID(u *uint64) *OrderUpdate {
+	if u != nil {
+		ou.SetPlanID(*u)
+	}
+	return ou
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (ou *OrderUpdate) ClearPlanID() *OrderUpdate {
+	ou.mutation.ClearPlanID()
+	return ou
+}
+
 // SetCityID sets the "city_id" field.
 func (ou *OrderUpdate) SetCityID(u uint64) *OrderUpdate {
 	ou.mutation.SetCityID(u)
@@ -440,9 +454,6 @@ func (ou *OrderUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (ou *OrderUpdate) check() error {
-	if _, ok := ou.mutation.PlanID(); ou.mutation.PlanCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Order.plan"`)
-	}
 	if _, ok := ou.mutation.RiderID(); ou.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Order.rider"`)
 	}
@@ -947,6 +958,20 @@ func (ouo *OrderUpdateOne) SetPlanID(u uint64) *OrderUpdateOne {
 	return ouo
 }
 
+// SetNillablePlanID sets the "plan_id" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillablePlanID(u *uint64) *OrderUpdateOne {
+	if u != nil {
+		ouo.SetPlanID(*u)
+	}
+	return ouo
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (ouo *OrderUpdateOne) ClearPlanID() *OrderUpdateOne {
+	ouo.mutation.ClearPlanID()
+	return ouo
+}
+
 // SetCityID sets the "city_id" field.
 func (ouo *OrderUpdateOne) SetCityID(u uint64) *OrderUpdateOne {
 	ouo.mutation.SetCityID(u)
@@ -1301,9 +1326,6 @@ func (ouo *OrderUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (ouo *OrderUpdateOne) check() error {
-	if _, ok := ouo.mutation.PlanID(); ouo.mutation.PlanCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Order.plan"`)
-	}
 	if _, ok := ouo.mutation.RiderID(); ouo.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Order.rider"`)
 	}

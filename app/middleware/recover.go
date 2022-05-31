@@ -10,6 +10,8 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
     mw "github.com/labstack/echo/v4/middleware"
+    log "github.com/sirupsen/logrus"
+    "runtime/debug"
 )
 
 func Recover() echo.MiddlewareFunc {
@@ -17,6 +19,7 @@ func Recover() echo.MiddlewareFunc {
         return func(c echo.Context) error {
             defer func() {
                 if r := recover(); r != nil {
+                    log.Error(string(debug.Stack()))
                     switch r.(type) {
                     case *snag.Error:
                         c.Error(r.(*snag.Error))
@@ -33,4 +36,3 @@ func Recover() echo.MiddlewareFunc {
         }
     }
 }
-

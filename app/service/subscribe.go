@@ -10,10 +10,12 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
+    "time"
 )
 
 type subscribeService struct {
@@ -75,7 +77,11 @@ func (s *subscribeService) PausedDays(sub *ent.Subscribe) int {
         subscribepause.EndAtIsNil(),
         subscribepause.SubscribeID(sub.ID),
     ).Only(s.ctx)
-    return int(sub.PauseDays) + tools.NewTime().SubDaysToNow(pause.StartAt)
+    var dd int
+    if pause != nil {
+        dd = tools.NewTime().SubDaysToNow(pause.StartAt)
+    }
+    return int(sub.PauseDays) + dd
 }
 
 // QueryRecentOnly 获取骑手最近的一次订阅
@@ -92,11 +98,16 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
     sub, _ := s.orm.QueryNotDeleted().
         Where(subscribe.RiderID(riderID)).
         Order(ent.Desc(subscribe.FieldCreatedAt)).
-        WithStartOrder().
         WithPlan(func(pq *ent.PlanQuery) {
             pq.WithPms()
         }).
         WithCity().
+        // 查询初始订单和对应的押金订单
+        WithInitialOrder(func(ioq *ent.OrderQuery) {
+            ioq.WithChildren(func(doq *ent.OrderQuery) {
+                doq.Where(order.Type(model.OrderTypeDeposit))
+            })
+        }).
         Only(s.ctx)
 
     if sub == nil {
@@ -119,7 +130,6 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
             Name: sub.Edges.Plan.Name,
             Days: sub.Edges.Plan.Days,
         },
-        Order: &model.SubscribeOrderInfo{},
     }
 
     for _, pm := range sub.Edges.Plan.Edges.Pms {
@@ -130,9 +140,11 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
         })
     }
 
+    start := sub.StartAt
     if res.Status == model.SubscribeStatusInactive {
         // 骑士卡未激活时, 剩余时间等于骑士卡初始时间
         res.Remaining = res.Days
+        start = tools.NewPointer().Time(time.Now())
     } else {
         // 骑士卡已激活剩余时间
         res.Remaining = res.Days + res.PauseDays + res.AlterDays - tools.NewTime().SubDaysToNow(*sub.StartAt)
@@ -146,19 +158,35 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
 
     // 结束日期
     if sub.EndAt == nil {
-        res.EndAt = sub.StartAt.AddDate(0, 0, res.Remaining).Format(carbon.DateLayout)
+        res.EndAt = start.AddDate(0, 0, res.Remaining).Format(carbon.DateLayout)
     } else {
         res.EndAt = sub.EndAt.Format(carbon.DateLayout)
     }
 
-    // 已取消不显示到期日期
-    if res.Status == model.SubscribeStatusUnSubscribed {
+    // 已取消(退款)不显示到期日期
+    if res.Status == model.SubscribeStatusCanceled {
         res.EndAt = "-"
     }
 
     // 若剩余天数小于0 则为逾期状态
     if res.Remaining < 0 {
         res.Status = model.SubscribeStatusOverdue
+    }
+
+    // 如果是未激活则查询支付信息
+    if res.Status == model.SubscribeStatusInactive {
+        o := sub.Edges.InitialOrder
+        res.Order = &model.SubscribeOrderInfo{
+            ID:     o.ID,
+            Status: o.Status,
+            PayAt:  o.CreatedAt.Format(carbon.DateTimeLayout),
+            Payway: o.Payway,
+            Amount: o.Amount,
+            Total:  o.Total,
+        }
+        if len(o.Edges.Children) > 0 {
+            res.Order.Deposit = o.Edges.Children[0].Amount
+        }
     }
 
     return res

@@ -48,7 +48,7 @@ type Order struct {
 	// 骑手ID
 	RiderID uint64 `json:"rider_id,omitempty"`
 	// ParentID holds the value of the "parent_id" field.
-	// 押金所属订单ID
+	// 父订单ID
 	ParentID uint64 `json:"parent_id,omitempty"`
 	// SubscribeID holds the value of the "subscribe_id" field.
 	// 所属订阅ID
@@ -69,10 +69,10 @@ type Order struct {
 	// 平台订单号
 	TradeNo string `json:"trade_no,omitempty"`
 	// Amount holds the value of the "amount" field.
-	// 该订单金额(拆分项)
+	// 子订单金额(拆分项此条订单)
 	Amount float64 `json:"amount,omitempty"`
 	// Total holds the value of the "total" field.
-	// 此次支付总金额
+	// 此次支付总金额(包含所有子订单的总支付)
 	Total float64 `json:"total,omitempty"`
 	// RefundAt holds the value of the "refund_at" field.
 	// 退款时间

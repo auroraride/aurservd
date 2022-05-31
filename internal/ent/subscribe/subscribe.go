@@ -33,8 +33,8 @@ const (
 	FieldCityID = "city_id"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
-	// FieldOrderID holds the string denoting the order_id field in the database.
-	FieldOrderID = "order_id"
+	// FieldInitialOrderID holds the string denoting the initial_order_id field in the database.
+	FieldInitialOrderID = "initial_order_id"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// FieldVoltage holds the string denoting the voltage field in the database.
@@ -67,8 +67,8 @@ const (
 	EdgeAlters = "alters"
 	// EdgeOrders holds the string denoting the orders edge name in mutations.
 	EdgeOrders = "orders"
-	// EdgeStartOrder holds the string denoting the start_order edge name in mutations.
-	EdgeStartOrder = "start_order"
+	// EdgeInitialOrder holds the string denoting the initial_order edge name in mutations.
+	EdgeInitialOrder = "initial_order"
 	// Table holds the table name of the subscribe in the database.
 	Table = "subscribe"
 	// PlanTable is the table that holds the plan relation/edge.
@@ -120,13 +120,13 @@ const (
 	OrdersInverseTable = "order"
 	// OrdersColumn is the table column denoting the orders relation/edge.
 	OrdersColumn = "subscribe_id"
-	// StartOrderTable is the table that holds the start_order relation/edge.
-	StartOrderTable = "subscribe"
-	// StartOrderInverseTable is the table name for the Order entity.
+	// InitialOrderTable is the table that holds the initial_order relation/edge.
+	InitialOrderTable = "subscribe"
+	// InitialOrderInverseTable is the table name for the Order entity.
 	// It exists in this package in order to avoid circular dependency with the "order" package.
-	StartOrderInverseTable = "order"
-	// StartOrderColumn is the table column denoting the start_order relation/edge.
-	StartOrderColumn = "order_id"
+	InitialOrderInverseTable = "order"
+	// InitialOrderColumn is the table column denoting the initial_order relation/edge.
+	InitialOrderColumn = "initial_order_id"
 )
 
 // Columns holds all SQL columns for subscribe fields.
@@ -142,7 +142,7 @@ var Columns = []string{
 	FieldEmployeeID,
 	FieldCityID,
 	FieldRiderID,
-	FieldOrderID,
+	FieldInitialOrderID,
 	FieldType,
 	FieldVoltage,
 	FieldDays,
@@ -178,4 +178,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultAlterDays holds the default value on creation for the "alter_days" field.
+	DefaultAlterDays uint
+	// DefaultPauseDays holds the default value on creation for the "pause_days" field.
+	DefaultPauseDays uint
 )

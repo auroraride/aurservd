@@ -1,6 +1,6 @@
 // Copyright (C) liasica. 2022-present.
 //
-// Created at 2022-05-29
+// Created at 2022-05-30
 // Based on aurservd by liasica, magicrolan@qq.com.
 
 package eapi
@@ -12,13 +12,13 @@ import (
     "github.com/labstack/echo/v4"
 )
 
-type order struct{}
+type subscribe struct{}
 
-var Order = new(order)
+var Subscribe = new(subscribe)
 
 // Active
 // @ID           RiderOrderActive
-// @Router       /employee/v1/order/active [POST]
+// @Router       /employee/v1/subscribe/active [POST]
 // @Summary      E20001 激活骑士卡
 // @Tags         [E]门店接口
 // @Accept       json
@@ -26,10 +26,10 @@ var Order = new(order)
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
 // @Param        body  body  model.QRPostReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
-func (*order) Active(c echo.Context) (err error) {
+func (*subscribe) Active(c echo.Context) (err error) {
     ctx, req := app.ContextBinding[model.QRPostReq](c)
     // TODO 真实employee
-    service.NewEmployeeOrderWithEmployee(&model.Employee{
+    service.NewEmployeeSubscribeWithEmployee(&model.Employee{
         ID:    1,
         Name:  "超级店员",
         Phone: "18888888888",

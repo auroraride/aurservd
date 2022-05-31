@@ -71,7 +71,7 @@ func NewWechat() *wechatClient {
 
 // AppPay APP支付
 func (c *wechatClient) AppPay(pc *model.PaymentCache) (string, error) {
-    prepay := pc.Plan
+    prepay := pc.Subscribe
     cfg := ar.Config.Payment.Wechat
 
     svc := app.AppApiService{
@@ -175,7 +175,7 @@ func (c *wechatClient) Notification(req *http.Request) *model.PaymentCache {
         return nil
     }
 
-    pc.Plan.TradeNo = *(transaction.TransactionId)
+    pc.Subscribe.TradeNo = *(transaction.TransactionId)
 
     return pc
 }

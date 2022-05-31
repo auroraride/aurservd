@@ -518,6 +518,14 @@ func init() {
 	subscribe.DefaultUpdatedAt = subscribeDescUpdatedAt.Default.(func() time.Time)
 	// subscribe.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	subscribe.UpdateDefaultUpdatedAt = subscribeDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// subscribeDescAlterDays is the schema descriptor for alter_days field.
+	subscribeDescAlterDays := subscribeFields[5].Descriptor()
+	// subscribe.DefaultAlterDays holds the default value on creation for the alter_days field.
+	subscribe.DefaultAlterDays = subscribeDescAlterDays.Default.(uint)
+	// subscribeDescPauseDays is the schema descriptor for pause_days field.
+	subscribeDescPauseDays := subscribeFields[6].Descriptor()
+	// subscribe.DefaultPauseDays holds the default value on creation for the pause_days field.
+	subscribe.DefaultPauseDays = subscribeDescPauseDays.Default.(uint)
 	subscribealterMixin := schema.SubscribeAlter{}.Mixin()
 	subscribealterMixinHooks2 := subscribealterMixin[2].Hooks()
 	subscribealter.Hooks[0] = subscribealterMixinHooks2[0]

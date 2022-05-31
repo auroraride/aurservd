@@ -112,7 +112,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/employee/v1/order/active": {
+        "/employee/v1/subscribe/active": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -2299,7 +2299,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.RiderRecentOrder"
+                                                "$ref": "#/definitions/model.Subscribe"
                                             }
                                         }
                                     }
@@ -3522,19 +3522,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.OrderPlan": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "description": "骑士卡ID",
-                    "type": "integer"
-                },
-                "name": {
-                    "description": "骑士卡名称",
-                    "type": "string"
-                }
-            }
-        },
         "model.OrderRefundReq": {
             "type": "object",
             "properties": {
@@ -3587,6 +3574,23 @@ const docTemplate = `{
                 "id": {
                     "description": "骑手ID",
                     "type": "integer"
+                }
+            }
+        },
+        "model.Plan": {
+            "type": "object",
+            "properties": {
+                "days": {
+                    "description": "骑士卡天数",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "骑士卡ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "骑士卡名称",
+                    "type": "string"
                 }
             }
         },
@@ -3794,89 +3798,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.RiderRecentOrder": {
-            "type": "object",
-            "properties": {
-                "alterDays": {
-                    "description": "改动天数",
-                    "type": "integer"
-                },
-                "amount": {
-                    "description": "骑士卡金额",
-                    "type": "number"
-                },
-                "city": {
-                    "description": "所属城市",
-                    "$ref": "#/definitions/model.City"
-                },
-                "days": {
-                    "description": "总天数",
-                    "type": "integer"
-                },
-                "deposit": {
-                    "description": "押金(只在未启用骑士卡中显示), 若押金为0则押金一行不显示",
-                    "type": "number"
-                },
-                "endAt": {
-                    "description": "结束时间 / 预计套餐结束时间",
-                    "type": "string"
-                },
-                "id": {
-                    "description": "订单ID",
-                    "type": "integer"
-                },
-                "models": {
-                    "description": "可用电池型号, 显示为` + "`" + `72V30AH` + "`" + `即Voltage(V)+Capacity(AH), 逗号分隔",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.BatteryModel"
-                    }
-                },
-                "pausedDays": {
-                    "description": "暂停天数",
-                    "type": "integer"
-                },
-                "payAt": {
-                    "description": "支付时间",
-                    "type": "string"
-                },
-                "payway": {
-                    "description": "支付方式",
-                    "type": "integer"
-                },
-                "plan": {
-                    "description": "骑士卡信息",
-                    "$ref": "#/definitions/model.OrderPlan"
-                },
-                "remaining": {
-                    "description": "剩余天数",
-                    "type": "integer"
-                },
-                "startAt": {
-                    "description": "开始时间",
-                    "type": "string"
-                },
-                "status": {
-                    "description": "状态 0未激活 1计费中 2暂停中 3已逾期 4已归还(已过期)",
-                    "type": "integer",
-                    "enum": [
-                        0,
-                        1,
-                        2,
-                        3,
-                        4
-                    ]
-                },
-                "total": {
-                    "description": "总金额, 总金额为 amount + deposit",
-                    "type": "number"
-                },
-                "voltage": {
-                    "description": "可用电压型号",
-                    "type": "number"
-                }
-            }
-        },
         "model.RiderSampleInfo": {
             "type": "object",
             "properties": {
@@ -3921,16 +3842,16 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "orderNotActived": {
-                    "description": "存在未激活订单",
+                    "description": "是否存在未激活订单",
                     "type": "boolean"
                 },
                 "qrcode": {
                     "description": "二维码",
                     "type": "string"
                 },
-                "recentOrder": {
-                    "description": "骑手最近订单详情",
-                    "$ref": "#/definitions/model.RiderRecentOrder"
+                "subscribe": {
+                    "description": "骑士卡",
+                    "$ref": "#/definitions/model.Subscribe"
                 },
                 "token": {
                     "description": "认证token",
@@ -4113,6 +4034,106 @@ const docTemplate = `{
                         2,
                         3
                     ]
+                }
+            }
+        },
+        "model.Subscribe": {
+            "type": "object",
+            "properties": {
+                "alterDays": {
+                    "description": "改动天数",
+                    "type": "integer"
+                },
+                "city": {
+                    "description": "所属城市",
+                    "$ref": "#/definitions/model.City"
+                },
+                "days": {
+                    "description": "总天数",
+                    "type": "integer"
+                },
+                "endAt": {
+                    "description": "结束时间 / 预计套餐结束时间",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "订阅ID",
+                    "type": "integer"
+                },
+                "models": {
+                    "description": "可用电池型号, 显示为` + "`" + `72V30AH` + "`" + `即Voltage(V)+Capacity(AH), 逗号分隔",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BatteryModel"
+                    }
+                },
+                "order": {
+                    "description": "订单信息",
+                    "$ref": "#/definitions/model.SubscribeOrderInfo"
+                },
+                "pauseDays": {
+                    "description": "暂停天数",
+                    "type": "integer"
+                },
+                "plan": {
+                    "description": "骑士卡信息",
+                    "$ref": "#/definitions/model.Plan"
+                },
+                "remaining": {
+                    "description": "剩余天数",
+                    "type": "integer"
+                },
+                "startAt": {
+                    "description": "开始时间",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态 0未激活 1计费中 2暂停中 3已逾期 4已归还(已过期)",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4
+                    ]
+                },
+                "voltage": {
+                    "description": "可用电压型号",
+                    "type": "number"
+                }
+            }
+        },
+        "model.SubscribeOrderInfo": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "骑士卡金额",
+                    "type": "number"
+                },
+                "deposit": {
+                    "description": "押金(只在未启用骑士卡中显示), 若押金为0则押金一行不显示",
+                    "type": "number"
+                },
+                "id": {
+                    "description": "订阅ID",
+                    "type": "integer"
+                },
+                "payAt": {
+                    "description": "支付时间",
+                    "type": "string"
+                },
+                "payway": {
+                    "description": "支付方式",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "总支付金额, 总金额为 amount + deposit",
+                    "type": "number"
                 }
             }
         },

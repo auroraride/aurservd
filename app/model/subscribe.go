@@ -14,20 +14,15 @@ const (
     SubscribeStatusCanceled                  // 已取消, 已退款
 )
 
-var (
-    // OrderSubscribeTypes 骑手骑士卡订单类型
-    OrderSubscribeTypes = []uint{OrderTypeNewly, OrderTypeAgain, OrderTypeRenewal, OrderTypeTransform}
-)
-
 // SubscribeOrderInfo 订阅订单信息
 type SubscribeOrderInfo struct {
-    ID      uint64  `json:"id"`      // 订单ID
-    Status  uint    `json:"status"`  // 订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝
+    ID      uint64  `json:"id"`      // 订阅ID
+    Status  uint8   `json:"status"`  // 订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝
     PayAt   string  `json:"payAt"`   // 支付时间
     Payway  uint8   `json:"payway"`  // 支付方式
     Amount  float64 `json:"amount"`  // 骑士卡金额
     Deposit float64 `json:"deposit"` // 押金(只在未启用骑士卡中显示), 若押金为0则押金一行不显示
-    Total   float64 `json:"total"`   // 总金额, 总金额为 amount + deposit
+    Total   float64 `json:"total"`   // 总支付金额, 总金额为 amount + deposit
 }
 
 type Subscribe struct {

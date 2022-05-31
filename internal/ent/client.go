@@ -2900,15 +2900,15 @@ func (c *SubscribeClient) QueryOrders(s *Subscribe) *OrderQuery {
 	return query
 }
 
-// QueryStartOrder queries the start_order edge of a Subscribe.
-func (c *SubscribeClient) QueryStartOrder(s *Subscribe) *OrderQuery {
+// QueryInitialOrder queries the initial_order edge of a Subscribe.
+func (c *SubscribeClient) QueryInitialOrder(s *Subscribe) *OrderQuery {
 	query := &OrderQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
 			sqlgraph.To(order.Table, order.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.StartOrderTable, subscribe.StartOrderColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.InitialOrderTable, subscribe.InitialOrderColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

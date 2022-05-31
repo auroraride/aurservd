@@ -625,10 +625,10 @@ var (
 		{Name: "type", Type: field.TypeUint, Comment: "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金"},
 		{Name: "out_trade_no", Type: field.TypeString, Comment: "交易订单号"},
 		{Name: "trade_no", Type: field.TypeString, Comment: "平台订单号"},
-		{Name: "amount", Type: field.TypeFloat64, Comment: "该订单金额(拆分项)"},
-		{Name: "total", Type: field.TypeFloat64, Comment: "此次支付总金额", Default: 0},
+		{Name: "amount", Type: field.TypeFloat64, Comment: "子订单金额(拆分项此条订单)"},
+		{Name: "total", Type: field.TypeFloat64, Comment: "此次支付总金额(包含所有子订单的总支付)", Default: 0},
 		{Name: "refund_at", Type: field.TypeTime, Comment: "退款时间", Nullable: true},
-		{Name: "plan_id", Type: field.TypeUint64},
+		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "parent_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64},
@@ -644,7 +644,7 @@ var (
 				Symbol:     "order_plan_plan",
 				Columns:    []*schema.Column{OrderColumns[15]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "order_city_city",
@@ -1028,8 +1028,8 @@ var (
 		{Name: "type", Type: field.TypeUint, Comment: "订阅类型 1新签 2续签 3重签 4更改电池"},
 		{Name: "voltage", Type: field.TypeFloat64, Comment: "可用电压型号"},
 		{Name: "days", Type: field.TypeUint, Comment: "骑士卡天数"},
-		{Name: "alter_days", Type: field.TypeUint, Comment: "改动天数"},
-		{Name: "pause_days", Type: field.TypeUint, Comment: "暂停天数"},
+		{Name: "alter_days", Type: field.TypeUint, Comment: "改动天数", Default: 0},
+		{Name: "pause_days", Type: field.TypeUint, Comment: "暂停天数", Default: 0},
 		{Name: "paused_at", Type: field.TypeTime, Comment: "当前是否暂停计费, 暂停计费时间", Nullable: true},
 		{Name: "start_at", Type: field.TypeTime, Comment: "激活时间", Nullable: true},
 		{Name: "end_at", Type: field.TypeTime, Comment: "归还时间", Nullable: true},
@@ -1038,7 +1038,7 @@ var (
 		{Name: "plan_id", Type: field.TypeUint64},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64},
-		{Name: "order_id", Type: field.TypeUint64},
+		{Name: "initial_order_id", Type: field.TypeUint64},
 	}
 	// SubscribeTable holds the schema information for the "subscribe" table.
 	SubscribeTable = &schema.Table{
@@ -1071,7 +1071,7 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "subscribe_order_start_order",
+				Symbol:     "subscribe_order_initial_order",
 				Columns:    []*schema.Column{SubscribeColumns[20]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.NoAction,

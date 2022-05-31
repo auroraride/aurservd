@@ -9,10 +9,15 @@ const (
     OrderTypeNewly     uint = iota + 1 // 新签, 需要计算业绩
     OrderTypeRenewal                   // 续签, 无需计算业绩
     OrderTypeAgain                     // 重签, 相当于新签, 需要判定是否计算业绩
-    OrderTypeTransform                 // 更改电池, 相当于续签 无需计算业绩
+    OrderTypeTransform                 // 更改电池, 相当于续签 无需计算业绩 TODO 更改电池逻辑
     OrderTypeRescue                    // 救援
     OrderTypeFee                       // 滞纳金
     OrderTypeDeposit                   // 押金
+)
+
+var (
+    // OrderSubscribeTypes 骑手骑士卡订单类型
+    OrderSubscribeTypes = []uint{OrderTypeNewly, OrderTypeAgain, OrderTypeRenewal, OrderTypeTransform}
 )
 
 const (
@@ -63,13 +68,6 @@ type OrderNotActived struct {
     City    City           `json:"city"`               // 所属城市
     Models  []BatteryModel `json:"models"`             // 可用电池型号, 显示为`72V30AH`即Voltage(V)+Capacity(AH), 逗号分隔
     Time    string         `json:"time"`               // 支付时间
-}
-
-// OrderDaysLog 订单日期修改
-type OrderDaysLog struct {
-    Modifier *Modifier
-    Days     int    `json:"days"`   // 修改天数, 正加负减
-    Reason   string `json:"reason"` // 理由
 }
 
 // OrderRefundReq 退款申请

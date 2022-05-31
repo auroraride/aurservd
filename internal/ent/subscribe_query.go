@@ -32,15 +32,15 @@ type SubscribeQuery struct {
 	fields     []string
 	predicates []predicate.Subscribe
 	// eager-loading edges.
-	withPlan       *PlanQuery
-	withEmployee   *EmployeeQuery
-	withCity       *CityQuery
-	withRider      *RiderQuery
-	withPauses     *SubscribePauseQuery
-	withAlters     *SubscribeAlterQuery
-	withOrders     *OrderQuery
-	withStartOrder *OrderQuery
-	modifiers      []func(*sql.Selector)
+	withPlan         *PlanQuery
+	withEmployee     *EmployeeQuery
+	withCity         *CityQuery
+	withRider        *RiderQuery
+	withPauses       *SubscribePauseQuery
+	withAlters       *SubscribeAlterQuery
+	withOrders       *OrderQuery
+	withInitialOrder *OrderQuery
+	modifiers        []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -231,8 +231,8 @@ func (sq *SubscribeQuery) QueryOrders() *OrderQuery {
 	return query
 }
 
-// QueryStartOrder chains the current query on the "start_order" edge.
-func (sq *SubscribeQuery) QueryStartOrder() *OrderQuery {
+// QueryInitialOrder chains the current query on the "initial_order" edge.
+func (sq *SubscribeQuery) QueryInitialOrder() *OrderQuery {
 	query := &OrderQuery{config: sq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
@@ -245,7 +245,7 @@ func (sq *SubscribeQuery) QueryStartOrder() *OrderQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
 			sqlgraph.To(order.Table, order.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.StartOrderTable, subscribe.StartOrderColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.InitialOrderTable, subscribe.InitialOrderColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -429,19 +429,19 @@ func (sq *SubscribeQuery) Clone() *SubscribeQuery {
 		return nil
 	}
 	return &SubscribeQuery{
-		config:         sq.config,
-		limit:          sq.limit,
-		offset:         sq.offset,
-		order:          append([]OrderFunc{}, sq.order...),
-		predicates:     append([]predicate.Subscribe{}, sq.predicates...),
-		withPlan:       sq.withPlan.Clone(),
-		withEmployee:   sq.withEmployee.Clone(),
-		withCity:       sq.withCity.Clone(),
-		withRider:      sq.withRider.Clone(),
-		withPauses:     sq.withPauses.Clone(),
-		withAlters:     sq.withAlters.Clone(),
-		withOrders:     sq.withOrders.Clone(),
-		withStartOrder: sq.withStartOrder.Clone(),
+		config:           sq.config,
+		limit:            sq.limit,
+		offset:           sq.offset,
+		order:            append([]OrderFunc{}, sq.order...),
+		predicates:       append([]predicate.Subscribe{}, sq.predicates...),
+		withPlan:         sq.withPlan.Clone(),
+		withEmployee:     sq.withEmployee.Clone(),
+		withCity:         sq.withCity.Clone(),
+		withRider:        sq.withRider.Clone(),
+		withPauses:       sq.withPauses.Clone(),
+		withAlters:       sq.withAlters.Clone(),
+		withOrders:       sq.withOrders.Clone(),
+		withInitialOrder: sq.withInitialOrder.Clone(),
 		// clone intermediate query.
 		sql:    sq.sql.Clone(),
 		path:   sq.path,
@@ -526,14 +526,14 @@ func (sq *SubscribeQuery) WithOrders(opts ...func(*OrderQuery)) *SubscribeQuery 
 	return sq
 }
 
-// WithStartOrder tells the query-builder to eager-load the nodes that are connected to
-// the "start_order" edge. The optional arguments are used to configure the query builder of the edge.
-func (sq *SubscribeQuery) WithStartOrder(opts ...func(*OrderQuery)) *SubscribeQuery {
+// WithInitialOrder tells the query-builder to eager-load the nodes that are connected to
+// the "initial_order" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *SubscribeQuery) WithInitialOrder(opts ...func(*OrderQuery)) *SubscribeQuery {
 	query := &OrderQuery{config: sq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	sq.withStartOrder = query
+	sq.withInitialOrder = query
 	return sq
 }
 
@@ -615,7 +615,7 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 			sq.withPauses != nil,
 			sq.withAlters != nil,
 			sq.withOrders != nil,
-			sq.withStartOrder != nil,
+			sq.withInitialOrder != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -819,11 +819,11 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 		}
 	}
 
-	if query := sq.withStartOrder; query != nil {
+	if query := sq.withInitialOrder; query != nil {
 		ids := make([]uint64, 0, len(nodes))
 		nodeids := make(map[uint64][]*Subscribe)
 		for i := range nodes {
-			fk := nodes[i].OrderID
+			fk := nodes[i].InitialOrderID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
@@ -837,10 +837,10 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "order_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "initial_order_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.StartOrder = n
+				nodes[i].Edges.InitialOrder = n
 			}
 		}
 	}

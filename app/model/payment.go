@@ -17,24 +17,30 @@ const (
 
 // PaymentCache 支付缓存
 type PaymentCache struct {
-    CacheType uint           `json:"cacheType"`        // 订单类型
-    Plan      *PaymentPlan   `json:"create,omitempty"` // 购买骑士卡订单
-    Refund    *PaymentRefund `json:"refund,omitempty"` // 退款订单
+    CacheType uint              `json:"cacheType"`        // 订单类型
+    Subscribe *PaymentSubscribe `json:"create,omitempty"` // 购买骑士卡订单
+    Refund    *PaymentRefund    `json:"refund,omitempty"` // 退款订单
 }
 
-// PaymentPlan 购买骑士卡订单
-type PaymentPlan struct {
-    CityID     uint64    `json:"cityID"`            // 城市ID
-    OrderType  uint      `json:"orderType"`         // 订单类型
-    OutTradeNo string    `json:"outTradeNo"`        // 订单号
-    RiderID    uint64    `json:"riderId"`           // 骑手ID
-    Name       string    `json:"name"`              // 订单名称
-    Amount     float64   `json:"amount"`            // 总金额 = 套餐 + 押金
-    Payway     uint8     `json:"payway"`            // 支付方式
-    Expire     time.Time `json:"expire"`            // 过期时间
-    TradeNo    string    `json:"tradeNo,omitempty"` // 平台单号
-    PlanID     uint64    `json:"planId"`            // 骑士卡ID
-    Deposit    float64   `json:"deposit"`           // 附带押金
+// PaymentSubscribe 购买骑士卡订单
+type PaymentSubscribe struct {
+    CityID      uint64    `json:"cityID"`            // 城市ID
+    OrderType   uint      `json:"orderType"`         // 订单类型
+    OutTradeNo  string    `json:"outTradeNo"`        // 订单号
+    RiderID     uint64    `json:"riderId"`           // 骑手ID
+    Name        string    `json:"name"`              // 订单名称
+    Amount      float64   `json:"amount"`            // 总金额 = 套餐 + 押金
+    Payway      uint8     `json:"payway"`            // 支付方式
+    Expire      time.Time `json:"expire"`            // 过期时间
+    TradeNo     string    `json:"tradeNo,omitempty"` // 平台单号
+    PlanID      uint64    `json:"planId"`            // 骑士卡ID
+    Deposit     float64   `json:"deposit"`           // 附带押金
+    PastDays    int       `json:"pastDays"`          // 距离上次退订天数
+    Commission  float64   `json:"commission"`        // 提成金额
+    Voltage     float64   `json:"voltage"`           // 可用电压型号
+    Days        uint      `json:"days"`              // 骑士卡天数
+    OrderID     *uint64   `json:"orderId"`           // 子订单ID
+    SubscribeID *uint64   `json:"subscribeId"`       // 续费订单携带订阅ID
 }
 
 func (oc *PaymentCache) MarshalBinary() ([]byte, error) {

@@ -538,26 +538,26 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Subscribe",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			subscribe.FieldCreatedAt:    {Type: field.TypeTime, Column: subscribe.FieldCreatedAt},
-			subscribe.FieldUpdatedAt:    {Type: field.TypeTime, Column: subscribe.FieldUpdatedAt},
-			subscribe.FieldDeletedAt:    {Type: field.TypeTime, Column: subscribe.FieldDeletedAt},
-			subscribe.FieldCreator:      {Type: field.TypeJSON, Column: subscribe.FieldCreator},
-			subscribe.FieldLastModifier: {Type: field.TypeJSON, Column: subscribe.FieldLastModifier},
-			subscribe.FieldRemark:       {Type: field.TypeString, Column: subscribe.FieldRemark},
-			subscribe.FieldPlanID:       {Type: field.TypeUint64, Column: subscribe.FieldPlanID},
-			subscribe.FieldEmployeeID:   {Type: field.TypeUint64, Column: subscribe.FieldEmployeeID},
-			subscribe.FieldCityID:       {Type: field.TypeUint64, Column: subscribe.FieldCityID},
-			subscribe.FieldRiderID:      {Type: field.TypeUint64, Column: subscribe.FieldRiderID},
-			subscribe.FieldOrderID:      {Type: field.TypeUint64, Column: subscribe.FieldOrderID},
-			subscribe.FieldType:         {Type: field.TypeUint, Column: subscribe.FieldType},
-			subscribe.FieldVoltage:      {Type: field.TypeFloat64, Column: subscribe.FieldVoltage},
-			subscribe.FieldDays:         {Type: field.TypeUint, Column: subscribe.FieldDays},
-			subscribe.FieldAlterDays:    {Type: field.TypeUint, Column: subscribe.FieldAlterDays},
-			subscribe.FieldPauseDays:    {Type: field.TypeUint, Column: subscribe.FieldPauseDays},
-			subscribe.FieldPausedAt:     {Type: field.TypeTime, Column: subscribe.FieldPausedAt},
-			subscribe.FieldStartAt:      {Type: field.TypeTime, Column: subscribe.FieldStartAt},
-			subscribe.FieldEndAt:        {Type: field.TypeTime, Column: subscribe.FieldEndAt},
-			subscribe.FieldRefundAt:     {Type: field.TypeTime, Column: subscribe.FieldRefundAt},
+			subscribe.FieldCreatedAt:      {Type: field.TypeTime, Column: subscribe.FieldCreatedAt},
+			subscribe.FieldUpdatedAt:      {Type: field.TypeTime, Column: subscribe.FieldUpdatedAt},
+			subscribe.FieldDeletedAt:      {Type: field.TypeTime, Column: subscribe.FieldDeletedAt},
+			subscribe.FieldCreator:        {Type: field.TypeJSON, Column: subscribe.FieldCreator},
+			subscribe.FieldLastModifier:   {Type: field.TypeJSON, Column: subscribe.FieldLastModifier},
+			subscribe.FieldRemark:         {Type: field.TypeString, Column: subscribe.FieldRemark},
+			subscribe.FieldPlanID:         {Type: field.TypeUint64, Column: subscribe.FieldPlanID},
+			subscribe.FieldEmployeeID:     {Type: field.TypeUint64, Column: subscribe.FieldEmployeeID},
+			subscribe.FieldCityID:         {Type: field.TypeUint64, Column: subscribe.FieldCityID},
+			subscribe.FieldRiderID:        {Type: field.TypeUint64, Column: subscribe.FieldRiderID},
+			subscribe.FieldInitialOrderID: {Type: field.TypeUint64, Column: subscribe.FieldInitialOrderID},
+			subscribe.FieldType:           {Type: field.TypeUint, Column: subscribe.FieldType},
+			subscribe.FieldVoltage:        {Type: field.TypeFloat64, Column: subscribe.FieldVoltage},
+			subscribe.FieldDays:           {Type: field.TypeUint, Column: subscribe.FieldDays},
+			subscribe.FieldAlterDays:      {Type: field.TypeUint, Column: subscribe.FieldAlterDays},
+			subscribe.FieldPauseDays:      {Type: field.TypeUint, Column: subscribe.FieldPauseDays},
+			subscribe.FieldPausedAt:       {Type: field.TypeTime, Column: subscribe.FieldPausedAt},
+			subscribe.FieldStartAt:        {Type: field.TypeTime, Column: subscribe.FieldStartAt},
+			subscribe.FieldEndAt:          {Type: field.TypeTime, Column: subscribe.FieldEndAt},
+			subscribe.FieldRefundAt:       {Type: field.TypeTime, Column: subscribe.FieldRefundAt},
 		},
 	}
 	graph.Nodes[20] = &sqlgraph.Node{
@@ -1222,12 +1222,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Order",
 	)
 	graph.MustAddE(
-		"start_order",
+		"initial_order",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   subscribe.StartOrderTable,
-			Columns: []string{subscribe.StartOrderColumn},
+			Table:   subscribe.InitialOrderTable,
+			Columns: []string{subscribe.InitialOrderColumn},
 			Bidi:    false,
 		},
 		"Subscribe",
@@ -4000,9 +4000,9 @@ func (f *SubscribeFilter) WhereRiderID(p entql.Uint64P) {
 	f.Where(p.Field(subscribe.FieldRiderID))
 }
 
-// WhereOrderID applies the entql uint64 predicate on the order_id field.
-func (f *SubscribeFilter) WhereOrderID(p entql.Uint64P) {
-	f.Where(p.Field(subscribe.FieldOrderID))
+// WhereInitialOrderID applies the entql uint64 predicate on the initial_order_id field.
+func (f *SubscribeFilter) WhereInitialOrderID(p entql.Uint64P) {
+	f.Where(p.Field(subscribe.FieldInitialOrderID))
 }
 
 // WhereType applies the entql uint predicate on the type field.
@@ -4148,14 +4148,14 @@ func (f *SubscribeFilter) WhereHasOrdersWith(preds ...predicate.Order) {
 	})))
 }
 
-// WhereHasStartOrder applies a predicate to check if query has an edge start_order.
-func (f *SubscribeFilter) WhereHasStartOrder() {
-	f.Where(entql.HasEdge("start_order"))
+// WhereHasInitialOrder applies a predicate to check if query has an edge initial_order.
+func (f *SubscribeFilter) WhereHasInitialOrder() {
+	f.Where(entql.HasEdge("initial_order"))
 }
 
-// WhereHasStartOrderWith applies a predicate to check if query has an edge start_order with a given conditions (other predicates).
-func (f *SubscribeFilter) WhereHasStartOrderWith(preds ...predicate.Order) {
-	f.Where(entql.HasEdgeWith("start_order", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasInitialOrderWith applies a predicate to check if query has an edge initial_order with a given conditions (other predicates).
+func (f *SubscribeFilter) WhereHasInitialOrderWith(preds ...predicate.Order) {
+	f.Where(entql.HasEdgeWith("initial_order", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

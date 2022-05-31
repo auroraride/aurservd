@@ -10,5 +10,5 @@ import "github.com/auroraride/aurservd/app/controller/v1/eapi"
 func loadEmployeeRoutes() {
     g := root.Group("employee/v1")
 
-    g.POST("/order/active", eapi.Order.Active)
+    g.POST("/subscribe/active", eapi.Subscribe.Active)
 }

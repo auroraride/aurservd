@@ -149,10 +149,10 @@ func RiderID(v uint64) predicate.Subscribe {
 	})
 }
 
-// OrderID applies equality check predicate on the "order_id" field. It's identical to OrderIDEQ.
-func OrderID(v uint64) predicate.Subscribe {
+// InitialOrderID applies equality check predicate on the "initial_order_id" field. It's identical to InitialOrderIDEQ.
+func InitialOrderID(v uint64) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOrderID), v))
+		s.Where(sql.EQ(s.C(FieldInitialOrderID), v))
 	})
 }
 
@@ -820,22 +820,22 @@ func RiderIDNotIn(vs ...uint64) predicate.Subscribe {
 	})
 }
 
-// OrderIDEQ applies the EQ predicate on the "order_id" field.
-func OrderIDEQ(v uint64) predicate.Subscribe {
+// InitialOrderIDEQ applies the EQ predicate on the "initial_order_id" field.
+func InitialOrderIDEQ(v uint64) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOrderID), v))
+		s.Where(sql.EQ(s.C(FieldInitialOrderID), v))
 	})
 }
 
-// OrderIDNEQ applies the NEQ predicate on the "order_id" field.
-func OrderIDNEQ(v uint64) predicate.Subscribe {
+// InitialOrderIDNEQ applies the NEQ predicate on the "initial_order_id" field.
+func InitialOrderIDNEQ(v uint64) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldOrderID), v))
+		s.Where(sql.NEQ(s.C(FieldInitialOrderID), v))
 	})
 }
 
-// OrderIDIn applies the In predicate on the "order_id" field.
-func OrderIDIn(vs ...uint64) predicate.Subscribe {
+// InitialOrderIDIn applies the In predicate on the "initial_order_id" field.
+func InitialOrderIDIn(vs ...uint64) predicate.Subscribe {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -847,12 +847,12 @@ func OrderIDIn(vs ...uint64) predicate.Subscribe {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldOrderID), v...))
+		s.Where(sql.In(s.C(FieldInitialOrderID), v...))
 	})
 }
 
-// OrderIDNotIn applies the NotIn predicate on the "order_id" field.
-func OrderIDNotIn(vs ...uint64) predicate.Subscribe {
+// InitialOrderIDNotIn applies the NotIn predicate on the "initial_order_id" field.
+func InitialOrderIDNotIn(vs ...uint64) predicate.Subscribe {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -864,7 +864,7 @@ func OrderIDNotIn(vs ...uint64) predicate.Subscribe {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldOrderID), v...))
+		s.Where(sql.NotIn(s.C(FieldInitialOrderID), v...))
 	})
 }
 
@@ -1804,25 +1804,25 @@ func HasOrdersWith(preds ...predicate.Order) predicate.Subscribe {
 	})
 }
 
-// HasStartOrder applies the HasEdge predicate on the "start_order" edge.
-func HasStartOrder() predicate.Subscribe {
+// HasInitialOrder applies the HasEdge predicate on the "initial_order" edge.
+func HasInitialOrder() predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StartOrderTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, StartOrderTable, StartOrderColumn),
+			sqlgraph.To(InitialOrderTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, InitialOrderTable, InitialOrderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasStartOrderWith applies the HasEdge predicate on the "start_order" edge with a given conditions (other predicates).
-func HasStartOrderWith(preds ...predicate.Order) predicate.Subscribe {
+// HasInitialOrderWith applies the HasEdge predicate on the "initial_order" edge with a given conditions (other predicates).
+func HasInitialOrderWith(preds ...predicate.Order) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StartOrderInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, StartOrderTable, StartOrderColumn),
+			sqlgraph.To(InitialOrderInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, InitialOrderTable, InitialOrderColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

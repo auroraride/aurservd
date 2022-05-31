@@ -103,6 +103,14 @@ func (oc *OrderCreate) SetPlanID(u uint64) *OrderCreate {
 	return oc
 }
 
+// SetNillablePlanID sets the "plan_id" field if the given value is not nil.
+func (oc *OrderCreate) SetNillablePlanID(u *uint64) *OrderCreate {
+	if u != nil {
+		oc.SetPlanID(*u)
+	}
+	return oc
+}
+
 // SetCityID sets the "city_id" field.
 func (oc *OrderCreate) SetCityID(u uint64) *OrderCreate {
 	oc.mutation.SetCityID(u)
@@ -415,9 +423,6 @@ func (oc *OrderCreate) check() error {
 	if _, ok := oc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Order.updated_at"`)}
 	}
-	if _, ok := oc.mutation.PlanID(); !ok {
-		return &ValidationError{Name: "plan_id", err: errors.New(`ent: missing required field "Order.plan_id"`)}
-	}
 	if _, ok := oc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "Order.rider_id"`)}
 	}
@@ -441,9 +446,6 @@ func (oc *OrderCreate) check() error {
 	}
 	if _, ok := oc.mutation.Total(); !ok {
 		return &ValidationError{Name: "total", err: errors.New(`ent: missing required field "Order.total"`)}
-	}
-	if _, ok := oc.mutation.PlanID(); !ok {
-		return &ValidationError{Name: "plan", err: errors.New(`ent: missing required edge "Order.plan"`)}
 	}
 	if _, ok := oc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Order.rider"`)}
@@ -913,6 +915,12 @@ func (u *OrderUpsert) UpdatePlanID() *OrderUpsert {
 	return u
 }
 
+// ClearPlanID clears the value of the "plan_id" field.
+func (u *OrderUpsert) ClearPlanID() *OrderUpsert {
+	u.SetNull(order.FieldPlanID)
+	return u
+}
+
 // SetCityID sets the "city_id" field.
 func (u *OrderUpsert) SetCityID(v uint64) *OrderUpsert {
 	u.Set(order.FieldCityID, v)
@@ -1308,6 +1316,13 @@ func (u *OrderUpsertOne) SetPlanID(v uint64) *OrderUpsertOne {
 func (u *OrderUpsertOne) UpdatePlanID() *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
 		s.UpdatePlanID()
+	})
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (u *OrderUpsertOne) ClearPlanID() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearPlanID()
 	})
 }
 
@@ -1904,6 +1919,13 @@ func (u *OrderUpsertBulk) SetPlanID(v uint64) *OrderUpsertBulk {
 func (u *OrderUpsertBulk) UpdatePlanID() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.UpdatePlanID()
+	})
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (u *OrderUpsertBulk) ClearPlanID() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearPlanID()
 	})
 }
 

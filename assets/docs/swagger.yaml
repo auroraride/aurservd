@@ -732,15 +732,6 @@ definitions:
         description: 预支付字符串
         type: string
     type: object
-  model.OrderPlan:
-    properties:
-      id:
-        description: 骑士卡ID
-        type: integer
-      name:
-        description: 骑士卡名称
-        type: string
-    type: object
   model.OrderRefundReq:
     properties:
       deposit:
@@ -778,6 +769,18 @@ definitions:
       id:
         description: 骑手ID
         type: integer
+    type: object
+  model.Plan:
+    properties:
+      days:
+        description: 骑士卡天数
+        type: integer
+      id:
+        description: 骑士卡ID
+        type: integer
+      name:
+        description: 骑士卡名称
+        type: string
     type: object
   model.PlanEnableModifyReq:
     properties:
@@ -926,68 +929,6 @@ definitions:
         description: 价格
         type: number
     type: object
-  model.RiderRecentOrder:
-    properties:
-      alterDays:
-        description: 改动天数
-        type: integer
-      amount:
-        description: 骑士卡金额
-        type: number
-      city:
-        $ref: '#/definitions/model.City'
-        description: 所属城市
-      days:
-        description: 总天数
-        type: integer
-      deposit:
-        description: 押金(只在未启用骑士卡中显示), 若押金为0则押金一行不显示
-        type: number
-      endAt:
-        description: 结束时间 / 预计套餐结束时间
-        type: string
-      id:
-        description: 订单ID
-        type: integer
-      models:
-        description: 可用电池型号, 显示为`72V30AH`即Voltage(V)+Capacity(AH), 逗号分隔
-        items:
-          $ref: '#/definitions/model.BatteryModel'
-        type: array
-      pausedDays:
-        description: 暂停天数
-        type: integer
-      payAt:
-        description: 支付时间
-        type: string
-      payway:
-        description: 支付方式
-        type: integer
-      plan:
-        $ref: '#/definitions/model.OrderPlan'
-        description: 骑士卡信息
-      remaining:
-        description: 剩余天数
-        type: integer
-      startAt:
-        description: 开始时间
-        type: string
-      status:
-        description: 状态 0未激活 1计费中 2暂停中 3已逾期 4已归还(已过期)
-        enum:
-        - 0
-        - 1
-        - 2
-        - 3
-        - 4
-        type: integer
-      total:
-        description: 总金额, 总金额为 amount + deposit
-        type: number
-      voltage:
-        description: 可用电压型号
-        type: number
-    type: object
   model.RiderSampleInfo:
     properties:
       id:
@@ -1020,14 +961,14 @@ definitions:
         description: 是否新设备
         type: boolean
       orderNotActived:
-        description: 存在未激活订单
+        description: 是否存在未激活订单
         type: boolean
       qrcode:
         description: 二维码
         type: string
-      recentOrder:
-        $ref: '#/definitions/model.RiderRecentOrder'
-        description: 骑手最近订单详情
+      subscribe:
+        $ref: '#/definitions/model.Subscribe'
+        description: 骑士卡
       token:
         description: 认证token
         type: string
@@ -1157,6 +1098,80 @@ definitions:
         - 2
         - 3
         type: integer
+    type: object
+  model.Subscribe:
+    properties:
+      alterDays:
+        description: 改动天数
+        type: integer
+      city:
+        $ref: '#/definitions/model.City'
+        description: 所属城市
+      days:
+        description: 总天数
+        type: integer
+      endAt:
+        description: 结束时间 / 预计套餐结束时间
+        type: string
+      id:
+        description: 订阅ID
+        type: integer
+      models:
+        description: 可用电池型号, 显示为`72V30AH`即Voltage(V)+Capacity(AH), 逗号分隔
+        items:
+          $ref: '#/definitions/model.BatteryModel'
+        type: array
+      order:
+        $ref: '#/definitions/model.SubscribeOrderInfo'
+        description: 订单信息
+      pauseDays:
+        description: 暂停天数
+        type: integer
+      plan:
+        $ref: '#/definitions/model.Plan'
+        description: 骑士卡信息
+      remaining:
+        description: 剩余天数
+        type: integer
+      startAt:
+        description: 开始时间
+        type: string
+      status:
+        description: 状态 0未激活 1计费中 2暂停中 3已逾期 4已归还(已过期)
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        type: integer
+      voltage:
+        description: 可用电压型号
+        type: number
+    type: object
+  model.SubscribeOrderInfo:
+    properties:
+      amount:
+        description: 骑士卡金额
+        type: number
+      deposit:
+        description: 押金(只在未启用骑士卡中显示), 若押金为0则押金一行不显示
+        type: number
+      id:
+        description: 订阅ID
+        type: integer
+      payAt:
+        description: 支付时间
+        type: string
+      payway:
+        description: 支付方式
+        type: integer
+      status:
+        description: 订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝
+        type: integer
+      total:
+        description: 总支付金额, 总金额为 amount + deposit
+        type: number
     type: object
   model.UserPlanItem:
     properties:
@@ -1293,7 +1308,7 @@ paths:
       summary: C3.获取阿里云oss临时凭证
       tags:
       - '[C]公共接口'
-  /employee/v1/order/active:
+  /employee/v1/subscribe/active:
     post:
       consumes:
       - application/json
@@ -2711,7 +2726,7 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/model.RiderRecentOrder'
+                    $ref: '#/definitions/model.Subscribe'
                   type: array
               type: object
       summary: R30008 骑士卡购买历史

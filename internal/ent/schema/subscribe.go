@@ -28,12 +28,12 @@ func (Subscribe) Annotations() []schema.Annotation {
 func (Subscribe) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("rider_id").Comment("骑手ID"),
-        field.Uint64("order_id").Comment("初始订单ID(开通订阅的初始订单)"),
+        field.Uint64("initial_order_id").Comment("初始订单ID(开通订阅的初始订单)"),
         field.Uint("type").Immutable().Comment("订阅类型 1新签 2续签 3重签 4更改电池"),
         field.Float("voltage").Comment("可用电压型号"),
         field.Uint("days").Comment("骑士卡天数"),
-        field.Uint("alter_days").Comment("改动天数"),
-        field.Uint("pause_days").Comment("暂停天数"),
+        field.Uint("alter_days").Default(0).Comment("改动天数"),
+        field.Uint("pause_days").Default(0).Comment("暂停天数"),
         field.Time("paused_at").Optional().Nillable().Comment("当前是否暂停计费, 暂停计费时间"),
         field.Time("start_at").Optional().Nillable().Comment("激活时间"),
         field.Time("end_at").Optional().Nillable().Comment("归还时间"),
@@ -50,7 +50,7 @@ func (Subscribe) Edges() []ent.Edge {
         edge.To("alters", SubscribeAlter.Type),
         edge.To("orders", Order.Type),
 
-        edge.To("start_order", Order.Type).Unique().Required().Field("order_id").Comment("对应初始订单"),
+        edge.To("initial_order", Order.Type).Unique().Required().Field("initial_order_id").Comment("对应初始订单"),
     }
 }
 

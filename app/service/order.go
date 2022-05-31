@@ -7,12 +7,11 @@ package service
 
 import (
     "context"
+    "encoding/json"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
-    "github.com/auroraride/aurservd/internal/ent/commission"
     "github.com/auroraride/aurservd/internal/ent/order"
-    "github.com/auroraride/aurservd/internal/ent/orderrefund"
     "github.com/auroraride/aurservd/internal/payment"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -95,6 +94,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
     }
     sub := NewSubscribe().Recent(s.rider.ID)
     // 判定类型条件
+    var subID, orderID *uint64
     otype := req.OrderType
     switch otype {
     case model.OrderTypeNewly:
@@ -104,11 +104,14 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
     case model.OrderTypeRenewal:
         // 续签判定
         s.PreconditionRenewal(sub)
+        subID = tools.NewPointer().UInt64(sub.ID)
+        orderID = tools.NewPointer().UInt64(sub.Order.ID)
         break
     default:
         snag.Panic("未知的支付请求")
         break
     }
+
     // 查询套餐是否存在
     plan := NewPlan().QueryEffectiveWithID(req.PlanID)
     cp := new(model.PlanItem)
@@ -125,9 +128,16 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
             },
         },
     }})
+
+    // 距离上次订阅过去的时间
+    var pastDays int
+    if otype == model.OrderTypeAgain {
+        pastDays = tools.NewTime().SubDaysToNowString(sub.EndAt)
+    }
+
     // 判定用户是否需要缴纳押金
     deposit := NewRider().Deposit(s.rider)
-    no := tools.NewUnique().NewSonyflakeID()
+    no := tools.NewUnique().NewSN28()
     result.OutTradeNo = no
     // 生成订单字段
     price := plan.Price
@@ -141,21 +151,29 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
     }
 
     total, _ := decimal.NewFromFloat(price).Add(decimal.NewFromFloat(deposit)).Float64()
+
     prepay := &model.PaymentCache{
         CacheType: model.PaymentCacheTypePlan,
-        Plan: &model.PaymentPlan{
-            OrderType:  otype,
-            OutTradeNo: no,
-            RiderID:    s.rider.ID,
-            PlanID:     cp.ID,
-            Name:       "购买" + plan.Name,
-            Amount:     total,
-            Deposit:    deposit,
-            Payway:     req.Payway,
-            Expire:     time.Now().Add(10 * time.Minute),
-            CityID:     req.CityID,
+        Subscribe: &model.PaymentSubscribe{
+            CityID:      req.CityID,
+            OrderType:   otype,
+            OutTradeNo:  no,
+            RiderID:     s.rider.ID,
+            Name:        "购买" + plan.Name,
+            Amount:      total,
+            Payway:      req.Payway,
+            Expire:      time.Now().Add(10 * time.Minute),
+            PlanID:      cp.ID,
+            Deposit:     deposit,
+            PastDays:    pastDays,
+            Commission:  plan.Commission,
+            Voltage:     plan.Edges.Pms[0].Voltage,
+            Days:        plan.Days,
+            OrderID:     orderID,
+            SubscribeID: subID,
         },
     }
+
     // 订单缓存
     err := cache.Set(s.ctx, no, prepay, 20*time.Minute).Err()
     if err != nil {
@@ -221,7 +239,7 @@ func (s *orderService) Refund(riderID uint64, req *model.OrderRefundReq) {
     // if o == nil {
     //     snag.Panic("未找到有效订单")
     // }
-    // no := tools.NewUnique().NewSonyflakeID()
+    // no := tools.NewUnique().NewSN28()
     // refund := &model.PaymentRefund{
     //     OrderID:      o.ID,
     //     TradeNo:      o.TradeNo,
@@ -266,7 +284,7 @@ func (s *orderService) DoPayment(pc *model.PaymentCache) {
     }
     switch pc.CacheType {
     case model.PaymentCacheTypePlan:
-        s.OrderPaid(pc.Plan)
+        s.OrderPaid(pc.Subscribe)
         break
     case model.PaymentCacheTypeRefund:
         s.RefundSuccess(pc.Refund)
@@ -277,32 +295,43 @@ func (s *orderService) DoPayment(pc *model.PaymentCache) {
 // TODO 重构
 // TODO 业绩提成逻辑
 // TODO 2续签 3重签 4更改电池 5救援 6滞纳金 逻辑
-func (s *orderService) OrderPaid(trade *model.PaymentPlan) {
+func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
     // 查询订单是否已存在
     if exists, err := ar.Ent.Order.Query().Where(order.OutTradeNo(trade.OutTradeNo)).Exist(s.ctx); err == nil && exists {
         return
     }
-    o, err := ar.Ent.Order.Create().
+
+    j, _ := json.MarshalIndent(trade, "", "  ")
+    log.Infof("[ORDER PAID %s] %s", trade.OutTradeNo, j)
+
+    ctx := context.Background()
+    tx, _ := ar.Ent.Tx(ctx)
+
+    // 创建订单
+    oc := tx.Order.Create().
         SetPayway(trade.Payway).
-        SetPlanID(trade.Plan.ID).
+        SetPlanID(trade.PlanID).
         SetRiderID(trade.RiderID).
         SetAmount(decimal.NewFromFloat(trade.Amount).Sub(decimal.NewFromFloat(trade.Deposit)).InexactFloat64()).
         SetTotal(trade.Amount).
         SetOutTradeNo(trade.OutTradeNo).
         SetTradeNo(trade.TradeNo).
         SetStatus(model.OrderStatusPaid).
-        SetNillablePlanDetail(trade.Plan).
         SetType(trade.OrderType).
         SetCityID(trade.CityID).
-        SetDays(trade.Plan.Days).
-        Save(s.ctx)
+        SetNillableParentID(trade.OrderID).
+        SetNillableSubscribeID(trade.SubscribeID)
+    o, err := oc.Save(s.ctx)
     if err != nil {
-        log.Errorf("[ORDER PAID ERROR]: %s, Trade: %#v", err.Error(), trade)
+        log.Errorf("[ORDER PAID %s ERROR]: %s", trade.OutTradeNo, err.Error())
+        _ = tx.Rollback()
         return
     }
+
     // 如果有押金, 创建押金订单
+    var do *ent.Order
     if trade.Deposit > 0 {
-        _, err = ar.Ent.Order.Create().
+        do, err = tx.Order.Create().
             SetStatus(model.OrderStatusPaid).
             SetPayway(trade.Payway).
             SetType(model.OrderTypeDeposit).
@@ -315,43 +344,85 @@ func (s *orderService) OrderPaid(trade *model.PaymentPlan) {
             SetParentID(o.ID).
             Save(s.ctx)
         if err != nil {
-            log.Errorf("[DEPOSIT PAID ERROR]: %s, Trade: %#v", err.Error(), trade)
+            log.Errorf("[ORDER PAID %s DEPOSIT ERROR]: %s", trade.OutTradeNo, err.Error())
+            _ = tx.Rollback()
             return
         }
     }
-    // 当新签和重签的时候有提成
+
+    // 创建或更新subscribe
+    // 新签或重签
     if trade.OrderType == model.OrderTypeNewly || trade.OrderType == model.OrderTypeAgain {
-        // 创建提成
-        _, err = ar.Ent.Commission.Create().SetOrder(o).SetAmount(trade.Plan.Commission).SetStatus(model.CommissionStatusPending).Save(s.ctx)
+        // 创建subscribe
+        // var sub *ent.Subscribe
+        sc := tx.Subscribe.Create().
+            SetType(model.OrderTypeNewly).
+            SetRiderID(trade.RiderID).
+            SetVoltage(trade.Voltage).
+            SetDays(trade.Days).
+            SetPlanID(trade.PlanID).
+            SetCityID(trade.CityID).
+            SetInitialOrderID(o.ID).
+            AddOrders(o)
+        if do != nil {
+            sc.AddOrders(do)
+        }
+        _, err = sc.Save(ctx)
         if err != nil {
-            log.Errorf("订单提成创建失败: %d: %s", o.ID, err.Error())
+            log.Errorf("[ORDER PAID %s SUBSCRIBE(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
+            _ = tx.Rollback()
+            return
+        }
+    }
+
+    // 续签
+    if trade.OrderType == model.OrderTypeRenewal {
+        _, err = tx.Subscribe.UpdateOneID(*trade.SubscribeID).AddDays(int(trade.Days)).Save(ctx)
+        if err != nil {
+            log.Errorf("[ORDER PAID %s SUBSCRIBE(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
+            _ = tx.Rollback()
+            return
+        }
+    }
+
+    // 当新签和重签的时候有提成
+    if trade.OrderType == model.OrderTypeNewly || (trade.OrderType == model.OrderTypeAgain && model.NewRecentSubscribePastDays(trade.PastDays).Commission()) {
+        // 创建提成
+        _, err = tx.Commission.Create().SetOrderID(o.ID).SetAmount(trade.Commission).SetStatus(model.CommissionStatusPending).Save(s.ctx)
+        if err != nil {
+            log.Errorf("[ORDER PAID %s COMMISSION(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
+            _ = tx.Rollback()
+            return
         }
     }
 
     // 删除缓存
     cache.Del(context.Background(), trade.OutTradeNo)
+
+    // 提交事务
+    _ = tx.Commit()
 }
 
 // RefundSuccess 成功退款
 func (s *orderService) RefundSuccess(req *model.PaymentRefund) {
-    ctx := context.Background()
-    tx, _ := ar.Ent.Tx(ctx)
-    tx.Order.UpdateOneID(req.OrderID).
-        SetStatus(model.OrderStatusRefundSuccess).
-        SetEndAt(req.Time).
-        SaveX(ctx)
-
-    tx.OrderRefund.Update().
-        Where(orderrefund.OutRefundNo(req.OutRefundNo)).
-        SetStatus(model.OrderRefundStatusSuccess).
-        SetRefundAt(req.Time).
-        SaveX(ctx)
-
-    // 删除提成订单
-    tx.Commission.Delete().Where(commission.OrderID(req.OrderID)).ExecX(ctx)
-
-    _ = tx.Commit()
-
-    // 删除缓存
-    cache.Del(ctx, req.OutRefundNo)
+    // ctx := context.Background()
+    // tx, _ := ar.Ent.Tx(ctx)
+    // tx.Order.UpdateOneID(req.OrderID).
+    //     SetStatus(model.OrderStatusRefundSuccess).
+    //     SetEndAt(req.Time).
+    //     SaveX(ctx)
+    //
+    // tx.OrderRefund.Update().
+    //     Where(orderrefund.OutRefundNo(req.OutRefundNo)).
+    //     SetStatus(model.OrderRefundStatusSuccess).
+    //     SetRefundAt(req.Time).
+    //     SaveX(ctx)
+    //
+    // // 删除提成订单
+    // tx.Commission.Delete().Where(commission.OrderID(req.OrderID)).ExecX(ctx)
+    //
+    // _ = tx.Commit()
+    //
+    // // 删除缓存
+    // cache.Del(ctx, req.OutRefundNo)
 }

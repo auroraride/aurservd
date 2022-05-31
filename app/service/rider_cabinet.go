@@ -41,8 +41,8 @@ func NewRiderCabinetWithModifier(m *model.Modifier) *riderCabinetService {
 // Process 获取待换电信息
 func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) model.RiderCabinetOperateProcess {
     // 是否有生效中套餐
-    o := NewRiderOrder().Recent(s.rider.ID)
-    if o == nil || o.Status != model.RiderOrderStatusNormal {
+    o := NewSubscribe().Recent(s.rider.ID)
+    if o == nil || o.Status != model.SubscribeStatusUsing {
         snag.Panic("无生效中的骑行卡")
     }
     // 查询电柜

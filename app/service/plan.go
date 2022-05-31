@@ -66,6 +66,7 @@ func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
             plan.StartLTE(now),
             plan.EndGTE(now),
         ).
+        WithPms().
         Only(s.ctx)
     if err != nil || item == nil {
         snag.Panic("未找到有效的骑士卡")

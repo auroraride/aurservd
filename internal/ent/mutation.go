@@ -15109,9 +15109,22 @@ func (m *OrderMutation) OldPlanID(ctx context.Context) (v uint64, err error) {
 	return oldValue.PlanID, nil
 }
 
+// ClearPlanID clears the value of the "plan_id" field.
+func (m *OrderMutation) ClearPlanID() {
+	m.plan = nil
+	m.clearedFields[order.FieldPlanID] = struct{}{}
+}
+
+// PlanIDCleared returns if the "plan_id" field was cleared in this mutation.
+func (m *OrderMutation) PlanIDCleared() bool {
+	_, ok := m.clearedFields[order.FieldPlanID]
+	return ok
+}
+
 // ResetPlanID resets all changes to the "plan_id" field.
 func (m *OrderMutation) ResetPlanID() {
 	m.plan = nil
+	delete(m.clearedFields, order.FieldPlanID)
 }
 
 // SetCityID sets the "city_id" field.
@@ -15705,7 +15718,7 @@ func (m *OrderMutation) ClearPlan() {
 
 // PlanCleared reports if the "plan" edge to the Plan entity was cleared.
 func (m *OrderMutation) PlanCleared() bool {
-	return m.clearedplan
+	return m.PlanIDCleared() || m.clearedplan
 }
 
 // PlanIDs returns the "plan" edge IDs in the mutation.
@@ -16392,6 +16405,9 @@ func (m *OrderMutation) ClearedFields() []string {
 	if m.FieldCleared(order.FieldRemark) {
 		fields = append(fields, order.FieldRemark)
 	}
+	if m.FieldCleared(order.FieldPlanID) {
+		fields = append(fields, order.FieldPlanID)
+	}
 	if m.FieldCleared(order.FieldCityID) {
 		fields = append(fields, order.FieldCityID)
 	}
@@ -16429,6 +16445,9 @@ func (m *OrderMutation) ClearField(name string) error {
 		return nil
 	case order.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case order.FieldPlanID:
+		m.ClearPlanID()
 		return nil
 	case order.FieldCityID:
 		m.ClearCityID()
@@ -24542,52 +24561,52 @@ func (m *StoreMutation) ResetEdge(name string) error {
 // SubscribeMutation represents an operation that mutates the Subscribe nodes in the graph.
 type SubscribeMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *uint64
-	created_at         *time.Time
-	updated_at         *time.Time
-	deleted_at         *time.Time
-	creator            **model.Modifier
-	last_modifier      **model.Modifier
-	remark             *string
-	_type              *uint
-	add_type           *int
-	voltage            *float64
-	addvoltage         *float64
-	days               *uint
-	adddays            *int
-	alter_days         *uint
-	addalter_days      *int
-	pause_days         *uint
-	addpause_days      *int
-	paused_at          *time.Time
-	start_at           *time.Time
-	end_at             *time.Time
-	refund_at          *time.Time
-	clearedFields      map[string]struct{}
-	plan               *uint64
-	clearedplan        bool
-	employee           *uint64
-	clearedemployee    bool
-	city               *uint64
-	clearedcity        bool
-	rider              *uint64
-	clearedrider       bool
-	pauses             map[uint64]struct{}
-	removedpauses      map[uint64]struct{}
-	clearedpauses      bool
-	alters             map[uint64]struct{}
-	removedalters      map[uint64]struct{}
-	clearedalters      bool
-	orders             map[uint64]struct{}
-	removedorders      map[uint64]struct{}
-	clearedorders      bool
-	start_order        *uint64
-	clearedstart_order bool
-	done               bool
-	oldValue           func(context.Context) (*Subscribe, error)
-	predicates         []predicate.Subscribe
+	op                   Op
+	typ                  string
+	id                   *uint64
+	created_at           *time.Time
+	updated_at           *time.Time
+	deleted_at           *time.Time
+	creator              **model.Modifier
+	last_modifier        **model.Modifier
+	remark               *string
+	_type                *uint
+	add_type             *int
+	voltage              *float64
+	addvoltage           *float64
+	days                 *uint
+	adddays              *int
+	alter_days           *uint
+	addalter_days        *int
+	pause_days           *uint
+	addpause_days        *int
+	paused_at            *time.Time
+	start_at             *time.Time
+	end_at               *time.Time
+	refund_at            *time.Time
+	clearedFields        map[string]struct{}
+	plan                 *uint64
+	clearedplan          bool
+	employee             *uint64
+	clearedemployee      bool
+	city                 *uint64
+	clearedcity          bool
+	rider                *uint64
+	clearedrider         bool
+	pauses               map[uint64]struct{}
+	removedpauses        map[uint64]struct{}
+	clearedpauses        bool
+	alters               map[uint64]struct{}
+	removedalters        map[uint64]struct{}
+	clearedalters        bool
+	orders               map[uint64]struct{}
+	removedorders        map[uint64]struct{}
+	clearedorders        bool
+	initial_order        *uint64
+	clearedinitial_order bool
+	done                 bool
+	oldValue             func(context.Context) (*Subscribe, error)
+	predicates           []predicate.Subscribe
 }
 
 var _ ent.Mutation = (*SubscribeMutation)(nil)
@@ -25113,40 +25132,40 @@ func (m *SubscribeMutation) ResetRiderID() {
 	m.rider = nil
 }
 
-// SetOrderID sets the "order_id" field.
-func (m *SubscribeMutation) SetOrderID(u uint64) {
-	m.start_order = &u
+// SetInitialOrderID sets the "initial_order_id" field.
+func (m *SubscribeMutation) SetInitialOrderID(u uint64) {
+	m.initial_order = &u
 }
 
-// OrderID returns the value of the "order_id" field in the mutation.
-func (m *SubscribeMutation) OrderID() (r uint64, exists bool) {
-	v := m.start_order
+// InitialOrderID returns the value of the "initial_order_id" field in the mutation.
+func (m *SubscribeMutation) InitialOrderID() (r uint64, exists bool) {
+	v := m.initial_order
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldOrderID returns the old "order_id" field's value of the Subscribe entity.
+// OldInitialOrderID returns the old "initial_order_id" field's value of the Subscribe entity.
 // If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SubscribeMutation) OldOrderID(ctx context.Context) (v uint64, err error) {
+func (m *SubscribeMutation) OldInitialOrderID(ctx context.Context) (v uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldOrderID is only allowed on UpdateOne operations")
+		return v, errors.New("OldInitialOrderID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldOrderID requires an ID field in the mutation")
+		return v, errors.New("OldInitialOrderID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldOrderID: %w", err)
+		return v, fmt.Errorf("querying old value for OldInitialOrderID: %w", err)
 	}
-	return oldValue.OrderID, nil
+	return oldValue.InitialOrderID, nil
 }
 
-// ResetOrderID resets all changes to the "order_id" field.
-func (m *SubscribeMutation) ResetOrderID() {
-	m.start_order = nil
+// ResetInitialOrderID resets all changes to the "initial_order_id" field.
+func (m *SubscribeMutation) ResetInitialOrderID() {
+	m.initial_order = nil
 }
 
 // SetType sets the "type" field.
@@ -25891,43 +25910,30 @@ func (m *SubscribeMutation) ResetOrders() {
 	m.removedorders = nil
 }
 
-// SetStartOrderID sets the "start_order" edge to the Order entity by id.
-func (m *SubscribeMutation) SetStartOrderID(id uint64) {
-	m.start_order = &id
+// ClearInitialOrder clears the "initial_order" edge to the Order entity.
+func (m *SubscribeMutation) ClearInitialOrder() {
+	m.clearedinitial_order = true
 }
 
-// ClearStartOrder clears the "start_order" edge to the Order entity.
-func (m *SubscribeMutation) ClearStartOrder() {
-	m.clearedstart_order = true
+// InitialOrderCleared reports if the "initial_order" edge to the Order entity was cleared.
+func (m *SubscribeMutation) InitialOrderCleared() bool {
+	return m.clearedinitial_order
 }
 
-// StartOrderCleared reports if the "start_order" edge to the Order entity was cleared.
-func (m *SubscribeMutation) StartOrderCleared() bool {
-	return m.clearedstart_order
-}
-
-// StartOrderID returns the "start_order" edge ID in the mutation.
-func (m *SubscribeMutation) StartOrderID() (id uint64, exists bool) {
-	if m.start_order != nil {
-		return *m.start_order, true
-	}
-	return
-}
-
-// StartOrderIDs returns the "start_order" edge IDs in the mutation.
+// InitialOrderIDs returns the "initial_order" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// StartOrderID instead. It exists only for internal usage by the builders.
-func (m *SubscribeMutation) StartOrderIDs() (ids []uint64) {
-	if id := m.start_order; id != nil {
+// InitialOrderID instead. It exists only for internal usage by the builders.
+func (m *SubscribeMutation) InitialOrderIDs() (ids []uint64) {
+	if id := m.initial_order; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetStartOrder resets all changes to the "start_order" edge.
-func (m *SubscribeMutation) ResetStartOrder() {
-	m.start_order = nil
-	m.clearedstart_order = false
+// ResetInitialOrder resets all changes to the "initial_order" edge.
+func (m *SubscribeMutation) ResetInitialOrder() {
+	m.initial_order = nil
+	m.clearedinitial_order = false
 }
 
 // Where appends a list predicates to the SubscribeMutation builder.
@@ -25980,8 +25986,8 @@ func (m *SubscribeMutation) Fields() []string {
 	if m.rider != nil {
 		fields = append(fields, subscribe.FieldRiderID)
 	}
-	if m.start_order != nil {
-		fields = append(fields, subscribe.FieldOrderID)
+	if m.initial_order != nil {
+		fields = append(fields, subscribe.FieldInitialOrderID)
 	}
 	if m._type != nil {
 		fields = append(fields, subscribe.FieldType)
@@ -26038,8 +26044,8 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.CityID()
 	case subscribe.FieldRiderID:
 		return m.RiderID()
-	case subscribe.FieldOrderID:
-		return m.OrderID()
+	case subscribe.FieldInitialOrderID:
+		return m.InitialOrderID()
 	case subscribe.FieldType:
 		return m.GetType()
 	case subscribe.FieldVoltage:
@@ -26087,8 +26093,8 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldCityID(ctx)
 	case subscribe.FieldRiderID:
 		return m.OldRiderID(ctx)
-	case subscribe.FieldOrderID:
-		return m.OldOrderID(ctx)
+	case subscribe.FieldInitialOrderID:
+		return m.OldInitialOrderID(ctx)
 	case subscribe.FieldType:
 		return m.OldType(ctx)
 	case subscribe.FieldVoltage:
@@ -26186,12 +26192,12 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRiderID(v)
 		return nil
-	case subscribe.FieldOrderID:
+	case subscribe.FieldInitialOrderID:
 		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetOrderID(v)
+		m.SetInitialOrderID(v)
 		return nil
 	case subscribe.FieldType:
 		v, ok := value.(uint)
@@ -26455,8 +26461,8 @@ func (m *SubscribeMutation) ResetField(name string) error {
 	case subscribe.FieldRiderID:
 		m.ResetRiderID()
 		return nil
-	case subscribe.FieldOrderID:
-		m.ResetOrderID()
+	case subscribe.FieldInitialOrderID:
+		m.ResetInitialOrderID()
 		return nil
 	case subscribe.FieldType:
 		m.ResetType()
@@ -26513,8 +26519,8 @@ func (m *SubscribeMutation) AddedEdges() []string {
 	if m.orders != nil {
 		edges = append(edges, subscribe.EdgeOrders)
 	}
-	if m.start_order != nil {
-		edges = append(edges, subscribe.EdgeStartOrder)
+	if m.initial_order != nil {
+		edges = append(edges, subscribe.EdgeInitialOrder)
 	}
 	return edges
 }
@@ -26557,8 +26563,8 @@ func (m *SubscribeMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case subscribe.EdgeStartOrder:
-		if id := m.start_order; id != nil {
+	case subscribe.EdgeInitialOrder:
+		if id := m.initial_order; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -26630,8 +26636,8 @@ func (m *SubscribeMutation) ClearedEdges() []string {
 	if m.clearedorders {
 		edges = append(edges, subscribe.EdgeOrders)
 	}
-	if m.clearedstart_order {
-		edges = append(edges, subscribe.EdgeStartOrder)
+	if m.clearedinitial_order {
+		edges = append(edges, subscribe.EdgeInitialOrder)
 	}
 	return edges
 }
@@ -26654,8 +26660,8 @@ func (m *SubscribeMutation) EdgeCleared(name string) bool {
 		return m.clearedalters
 	case subscribe.EdgeOrders:
 		return m.clearedorders
-	case subscribe.EdgeStartOrder:
-		return m.clearedstart_order
+	case subscribe.EdgeInitialOrder:
+		return m.clearedinitial_order
 	}
 	return false
 }
@@ -26676,8 +26682,8 @@ func (m *SubscribeMutation) ClearEdge(name string) error {
 	case subscribe.EdgeRider:
 		m.ClearRider()
 		return nil
-	case subscribe.EdgeStartOrder:
-		m.ClearStartOrder()
+	case subscribe.EdgeInitialOrder:
+		m.ClearInitialOrder()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe unique edge %s", name)
@@ -26708,8 +26714,8 @@ func (m *SubscribeMutation) ResetEdge(name string) error {
 	case subscribe.EdgeOrders:
 		m.ResetOrders()
 		return nil
-	case subscribe.EdgeStartOrder:
-		m.ResetStartOrder()
+	case subscribe.EdgeInitialOrder:
+		m.ResetInitialOrder()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe edge %s", name)

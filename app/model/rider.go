@@ -36,7 +36,7 @@ type RiderSigninRes struct {
     Contact         *RiderContact `json:"contact,omitempty"`   // 联系人
     Qrcode          string        `json:"qrcode"`              // 二维码
     Deposit         float64       `json:"deposit"`             // 需缴押金
-    OrderNotActived bool          `json:"orderNotActived"`     // 存在未激活订单
+    OrderNotActived bool          `json:"orderNotActived"`     // 是否存在未激活订单
     Subscribe       *Subscribe    `json:"subscribe,omitempty"` // 骑士卡
 }
 
