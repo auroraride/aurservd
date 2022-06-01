@@ -909,6 +909,41 @@ definitions:
         $ref: '#/definitions/model.UserPlanItem'
         description: 当前有效骑士卡, 若无此字段则代表当前无有效骑士卡
     type: object
+  model.RiderOrder:
+    properties:
+      amount:
+        description: 支付金额
+        type: number
+      city:
+        $ref: '#/definitions/model.City'
+        description: 城市
+      id:
+        description: 订单ID
+        type: integer
+      models:
+        description: 可用型号
+        items:
+          $ref: '#/definitions/model.BatteryModel'
+        type: array
+      outTradeNo:
+        description: 订单编号
+        type: string
+      payAt:
+        description: 支付时间
+        type: string
+      payway:
+        description: 支付方式 1支付宝 2微信
+        type: integer
+      plan:
+        $ref: '#/definitions/model.Plan'
+        description: 骑士卡
+      status:
+        description: 订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝
+        type: integer
+      type:
+        description: 订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
+        type: integer
+    type: object
   model.RiderPlanItem:
     properties:
       days:
@@ -1137,7 +1172,7 @@ definitions:
         description: 开始时间
         type: string
       status:
-        description: 状态 0未激活 1计费中 2暂停中 3已逾期 4已归还(已过期)
+        description: 状态 0未激活 1计费中 2暂停中 3已逾期 4已归还(已过期) 5已取消/已退款
         enum:
         - 0
         - 1
@@ -2726,7 +2761,7 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/model.Subscribe'
+                    $ref: '#/definitions/model.RiderOrder'
                   type: array
               type: object
       summary: R30008 骑士卡购买历史

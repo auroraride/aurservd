@@ -72,6 +72,6 @@ type OrderNotActived struct {
 
 // OrderRefundReq 退款申请
 type OrderRefundReq struct {
-    OrderID *uint64 `json:"orderID"` // 订单ID, 和deposit不能同时存在, 也不能同时为空
-    Deposit *bool   `json:"deposit"` // 是否退押金, 押金退款条件: 1. 无最近订单; 2. 存在订单且状态为已退款或已退租
+    SubscribeID *uint64 `json:"subscribeId"` // 骑士卡ID, 和deposit不能同时存在, 也不能同时为空
+    Deposit     *bool   `json:"deposit"`     // 是否退押金, 押金退款条件: 1. 无最近订单; 2. 存在订单且状态为已退款或已退租
 }

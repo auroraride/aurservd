@@ -6,13 +6,14 @@
 package model
 
 type RiderOrder struct {
-    ID     uint64         `json:"id"`
-    Type   uint           `json:"type"`
-    Status uint8          `json:"status"`
-    Payway uint8          `json:"payway"`
-    PayAt  string         `json:"payAt"`
-    Amount float64        `json:"amount"`
-    Plan   Plan           `json:"plan"`
-    City   City           `json:"city"`
-    Models []BatteryModel `json:"models"`
+    ID         uint64         `json:"id"`         // 订单ID
+    Type       uint           `json:"type"`       // 订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
+    Status     uint8          `json:"status"`     // 订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝
+    Payway     uint8          `json:"payway"`     // 支付方式 1支付宝 2微信
+    PayAt      string         `json:"payAt"`      // 支付时间
+    Amount     float64        `json:"amount"`     // 支付金额
+    OutTradeNo string         `json:"outTradeNo"` // 订单编号
+    Plan       Plan           `json:"plan"`       // 骑士卡
+    City       City           `json:"city"`       // 城市
+    Models     []BatteryModel `json:"models"`     // 可用型号
 }

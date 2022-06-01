@@ -23,6 +23,7 @@ import (
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/golang-module/carbon/v2"
     "github.com/rs/xid"
+    log "github.com/sirupsen/logrus"
     "strconv"
     "time"
 )
@@ -417,14 +418,23 @@ func (s *riderService) Block(req *model.RiderBlockReq) {
     ol.PutOperateLog()
 }
 
-// Deposit 获取用户应交押金
-func (s *riderService) Deposit(u *ent.Rider) float64 {
-    exist, _ := ar.Ent.Order.QueryNotDeleted().Where(
-        order.RiderID(u.ID),
+// DepositOrder 获取骑手押金订单
+func (s *riderService) DepositOrder(riderID uint64) *ent.Order {
+    o, err := ar.Ent.Order.QueryNotDeleted().Where(
+        order.RiderID(riderID),
         order.Status(model.OrderStatusPaid),
         order.Type(model.OrderTypeDeposit),
-    ).Exist(s.ctx)
-    if exist {
+    ).First(s.ctx)
+    if err != nil {
+        log.Error(err)
+    }
+    return o
+}
+
+// Deposit 获取用户应交押金
+func (s *riderService) Deposit(riderID uint64) float64 {
+    o := s.DepositOrder(riderID)
+    if o != nil {
         return 0
     }
     f, _ := cache.Get(s.ctx, model.SettingDeposit).Float64()
@@ -441,7 +451,7 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device) *model.RiderS
         IsAuthed:        s.IsAuthed(u),
         Contact:         u.Contact,
         Qrcode:          fmt.Sprintf("https://rider.auroraride.com/%d", u.ID),
-        Deposit:         s.Deposit(u),
+        Deposit:         s.Deposit(u.ID),
         Subscribe:       sub,
         OrderNotActived: sub != nil && sub.Status == model.SubscribeStatusInactive,
     }

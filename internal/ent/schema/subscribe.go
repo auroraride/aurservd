@@ -59,6 +59,7 @@ func (Subscribe) Mixin() []ent.Mixin {
         internal.TimeMixin{},
         internal.DeleteMixin{},
         internal.Modifier{},
+        internal.SonyflakeIDMixin{},
 
         PlanMixin{},
         EmployeeMixin{},

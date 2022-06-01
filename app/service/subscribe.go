@@ -15,6 +15,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
+    log "github.com/sirupsen/logrus"
     "time"
 )
 
@@ -95,7 +96,7 @@ func (s *subscribeService) QueryRecentOnly(riderID uint64) *ent.Subscribe {
 
 // Recent 获取骑手最近订阅详情
 func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
-    sub, _ := s.orm.QueryNotDeleted().
+    sub, err := s.orm.QueryNotDeleted().
         Where(subscribe.RiderID(riderID)).
         Order(ent.Desc(subscribe.FieldCreatedAt)).
         WithPlan(func(pq *ent.PlanQuery) {
@@ -108,7 +109,12 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
                 doq.Where(order.Type(model.OrderTypeDeposit))
             })
         }).
-        Only(s.ctx)
+        Limit(1).
+        First(s.ctx)
+
+    if err != nil {
+        log.Error(err)
+    }
 
     if sub == nil {
         return nil
@@ -141,14 +147,14 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
     }
 
     start := sub.StartAt
-    if res.Status == model.SubscribeStatusInactive {
+    if res.Status == model.SubscribeStatusInactive || res.Status == model.SubscribeStatusCanceled {
         // 骑士卡未激活时, 剩余时间等于骑士卡初始时间
         res.Remaining = res.Days
         start = tools.NewPointer().Time(time.Now())
     } else {
         // 骑士卡已激活剩余时间
         res.Remaining = res.Days + res.PauseDays + res.AlterDays - tools.NewTime().SubDaysToNow(*sub.StartAt)
-        res.StartAt = sub.StartAt.Format(carbon.DateLayout)
+        res.StartAt = start.Format(carbon.DateLayout)
     }
 
     // 若已退订或已取消

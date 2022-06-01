@@ -136,7 +136,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
     }
 
     // 判定用户是否需要缴纳押金
-    deposit := NewRider().Deposit(s.rider)
+    deposit := NewRider().Deposit(s.rider.ID)
     no := tools.NewUnique().NewSN28()
     result.OutTradeNo = no
     // 生成订单字段
@@ -210,9 +210,42 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
 // Refund 退款
 // TODO 重构退款申请逻辑
 func (s *orderService) Refund(riderID uint64, req *model.OrderRefundReq) {
-    // if (req.Deposit == nil && req.OrderID == nil) || (req.Deposit != nil && req.OrderID != nil) {
-    //     snag.Panic("退款参数错误")
-    // }
+    if (req.Deposit == nil && req.SubscribeID == nil) || (req.Deposit != nil && req.SubscribeID != nil) {
+        snag.Panic("退款参数错误")
+    }
+
+    sub := NewSubscribe().Recent(riderID)
+    orc := ar.Ent.OrderRefund.Create().SetOutRefundNo(tools.NewUnique().NewSN28())
+    if req.SubscribeID != nil {
+        if sub.ID != *req.SubscribeID {
+            snag.Panic("未找到有效骑士卡")
+        }
+        if sub.Status != model.SubscribeStatusInactive {
+            snag.Panic("骑士卡已激活, 无法退款")
+        }
+        orc.SetOrderID(sub.Order.ID).
+            SetAmount(sub.Order.Amount).
+            SetReason("骑士卡未激活, 用户申请")
+    }
+
+    if req.Deposit != nil {
+        // 押金退款逻辑
+        if sub.Status != model.SubscribeStatusUnSubscribed && sub.Status != model.SubscribeStatusCanceled {
+            snag.Panic("骑士卡正在使用中, 无法退押金")
+        }
+        // 获取骑手押金订单
+        o := NewRider().DepositOrder(s.rider.ID)
+        if o == nil {
+            snag.Panic("未找到押金订单")
+        }
+        orc.SetOrderID(o.ID).SetAmount(o.Amount).SetReason("无使用中的骑士卡, 用户申请退还押金")
+    }
+
+    _, err := orc.Save(s.ctx)
+    if err != nil {
+        snag.Panic("押金退还申请失败")
+    }
+
     // q := s.orm.QueryNotDeleted().
     //     Where(
     //         order.RiderID(riderID),

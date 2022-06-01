@@ -2291,7 +2291,7 @@
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.Subscribe"
+                                                "$ref": "#/definitions/model.RiderOrder"
                                             }
                                         }
                                     }
@@ -3762,6 +3762,54 @@
                 }
             }
         },
+        "model.RiderOrder": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "支付金额",
+                    "type": "number"
+                },
+                "city": {
+                    "description": "城市",
+                    "$ref": "#/definitions/model.City"
+                },
+                "id": {
+                    "description": "订单ID",
+                    "type": "integer"
+                },
+                "models": {
+                    "description": "可用型号",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BatteryModel"
+                    }
+                },
+                "outTradeNo": {
+                    "description": "订单编号",
+                    "type": "string"
+                },
+                "payAt": {
+                    "description": "支付时间",
+                    "type": "string"
+                },
+                "payway": {
+                    "description": "支付方式 1支付宝 2微信",
+                    "type": "integer"
+                },
+                "plan": {
+                    "description": "骑士卡",
+                    "$ref": "#/definitions/model.Plan"
+                },
+                "status": {
+                    "description": "订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝",
+                    "type": "integer"
+                },
+                "type": {
+                    "description": "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
+                    "type": "integer"
+                }
+            }
+        },
         "model.RiderPlanItem": {
             "type": "object",
             "properties": {
@@ -4080,7 +4128,7 @@
                     "type": "string"
                 },
                 "status": {
-                    "description": "状态 0未激活 1计费中 2暂停中 3已逾期 4已归还(已过期)",
+                    "description": "状态 0未激活 1计费中 2暂停中 3已逾期 4已归还(已过期) 5已取消/已退款",
                     "type": "integer",
                     "enum": [
                         0,

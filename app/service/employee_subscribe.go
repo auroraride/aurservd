@@ -54,18 +54,22 @@ func NewEmployeeSubscribeWithEmployee(e *model.Employee) *employeeSubscribeServi
 // Active 激活订单
 // TODO 后续逻辑
 func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
-    id, _ := strconv.ParseUint(strings.TrimSpace(strings.ReplaceAll(req.Qrcode, "ORDER:", "")), 10, 64)
+    id, _ := strconv.ParseUint(strings.TrimSpace(strings.ReplaceAll(req.Qrcode, "SUBSCRIBE:", "")), 10, 64)
     // 查询订单状态
-    o, _ := ar.Ent.Subscribe.QueryNotDeleted().
+    sub, _ := ar.Ent.Subscribe.QueryNotDeleted().
         Where(
             subscribe.ID(id),
             subscribe.RefundAtIsNil(),
             subscribe.TypeIn(model.OrderTypeNewly, model.OrderTypeAgain),
             subscribe.StartAtIsNil(),
         ).
+        WithInitialOrder().
         Only(s.ctx)
-    if o == nil {
+    if sub == nil {
         snag.Panic("未找到骑士卡")
     }
-    o.Update().SetStartAt(time.Now()).SetEmployeeID(s.employee.ID).SaveX(s.ctx)
+    if sub.Edges.InitialOrder.Status == model.OrderStatusRefundPending {
+        snag.Panic("骑士卡已申请退款")
+    }
+    sub.Update().SetStartAt(time.Now()).SetEmployeeID(s.employee.ID).SaveX(s.ctx)
 }
