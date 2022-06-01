@@ -52,7 +52,6 @@ func (Order) Edges() []ent.Edge {
 
 func (Order) Mixin() []ent.Mixin {
     return []ent.Mixin{
-        internal.SonyflakeIDMixin{},
         internal.TimeMixin{},
         internal.DeleteMixin{},
         internal.Modifier{},

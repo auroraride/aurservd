@@ -248,12 +248,6 @@ func (rc *RiderCreate) SetNillableBlocked(b *bool) *RiderCreate {
 	return rc
 }
 
-// SetID sets the "id" field.
-func (rc *RiderCreate) SetID(u uint64) *RiderCreate {
-	rc.mutation.SetID(u)
-	return rc
-}
-
 // SetPerson sets the "person" edge to the Person entity.
 func (rc *RiderCreate) SetPerson(p *Person) *RiderCreate {
 	return rc.SetPersonID(p.ID)
@@ -492,10 +486,8 @@ func (rc *RiderCreate) sqlSave(ctx context.Context) (*Rider, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
-	}
+	id := _spec.ID.Value.(int64)
+	_node.ID = uint64(id)
 	return _node, nil
 }
 
@@ -511,10 +503,6 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 		}
 	)
 	_spec.OnConflict = rc.conflict
-	if id, ok := rc.mutation.ID(); ok {
-		_node.ID = id
-		_spec.ID.Value = id
-	}
 	if value, ok := rc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -1146,24 +1134,18 @@ func (u *RiderUpsert) UpdateBlocked() *RiderUpsert {
 	return u
 }
 
-// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
 //	client.Rider.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
-//			sql.ResolveWith(func(u *sql.UpdateSet) {
-//				u.SetIgnore(rider.FieldID)
-//			}),
 //		).
 //		Exec(ctx)
 //
 func (u *RiderUpsertOne) UpdateNewValues() *RiderUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
-		if _, exists := u.create.mutation.ID(); exists {
-			s.SetIgnore(rider.FieldID)
-		}
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(rider.FieldCreatedAt)
 		}
@@ -1636,7 +1618,7 @@ func (rcb *RiderCreateBulk) Save(ctx context.Context) ([]*Rider, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
+				if specs[i].ID.Value != nil {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = uint64(id)
 				}
@@ -1727,9 +1709,6 @@ type RiderUpsertBulk struct {
 //	client.Rider.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
-//			sql.ResolveWith(func(u *sql.UpdateSet) {
-//				u.SetIgnore(rider.FieldID)
-//			}),
 //		).
 //		Exec(ctx)
 //
@@ -1737,10 +1716,6 @@ func (u *RiderUpsertBulk) UpdateNewValues() *RiderUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		for _, b := range u.create.builders {
-			if _, exists := b.mutation.ID(); exists {
-				s.SetIgnore(rider.FieldID)
-				return
-			}
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(rider.FieldCreatedAt)
 			}

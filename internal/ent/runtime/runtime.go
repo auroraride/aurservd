@@ -323,20 +323,18 @@ func init() {
 	// manager.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	manager.NameValidator = managerDescName.Validators[0].(func(string) error)
 	orderMixin := schema.Order{}.Mixin()
-	orderMixinHooks0 := orderMixin[0].Hooks()
-	orderMixinHooks3 := orderMixin[3].Hooks()
-	order.Hooks[0] = orderMixinHooks0[0]
-	order.Hooks[1] = orderMixinHooks3[0]
-	orderMixinFields1 := orderMixin[1].Fields()
-	_ = orderMixinFields1
+	orderMixinHooks2 := orderMixin[2].Hooks()
+	order.Hooks[0] = orderMixinHooks2[0]
+	orderMixinFields0 := orderMixin[0].Fields()
+	_ = orderMixinFields0
 	orderFields := schema.Order{}.Fields()
 	_ = orderFields
 	// orderDescCreatedAt is the schema descriptor for created_at field.
-	orderDescCreatedAt := orderMixinFields1[0].Descriptor()
+	orderDescCreatedAt := orderMixinFields0[0].Descriptor()
 	// order.DefaultCreatedAt holds the default value on creation for the created_at field.
 	order.DefaultCreatedAt = orderDescCreatedAt.Default.(func() time.Time)
 	// orderDescUpdatedAt is the schema descriptor for updated_at field.
-	orderDescUpdatedAt := orderMixinFields1[1].Descriptor()
+	orderDescUpdatedAt := orderMixinFields0[1].Descriptor()
 	// order.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	order.DefaultUpdatedAt = orderDescUpdatedAt.Default.(func() time.Time)
 	// order.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
@@ -421,20 +419,18 @@ func init() {
 	// plan.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	plan.UpdateDefaultUpdatedAt = planDescUpdatedAt.UpdateDefault.(func() time.Time)
 	riderMixin := schema.Rider{}.Mixin()
-	riderMixinHooks0 := riderMixin[0].Hooks()
-	riderMixinHooks3 := riderMixin[3].Hooks()
-	rider.Hooks[0] = riderMixinHooks0[0]
-	rider.Hooks[1] = riderMixinHooks3[0]
-	riderMixinFields1 := riderMixin[1].Fields()
-	_ = riderMixinFields1
+	riderMixinHooks2 := riderMixin[2].Hooks()
+	rider.Hooks[0] = riderMixinHooks2[0]
+	riderMixinFields0 := riderMixin[0].Fields()
+	_ = riderMixinFields0
 	riderFields := schema.Rider{}.Fields()
 	_ = riderFields
 	// riderDescCreatedAt is the schema descriptor for created_at field.
-	riderDescCreatedAt := riderMixinFields1[0].Descriptor()
+	riderDescCreatedAt := riderMixinFields0[0].Descriptor()
 	// rider.DefaultCreatedAt holds the default value on creation for the created_at field.
 	rider.DefaultCreatedAt = riderDescCreatedAt.Default.(func() time.Time)
 	// riderDescUpdatedAt is the schema descriptor for updated_at field.
-	riderDescUpdatedAt := riderMixinFields1[1].Descriptor()
+	riderDescUpdatedAt := riderMixinFields0[1].Descriptor()
 	// rider.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	rider.DefaultUpdatedAt = riderDescUpdatedAt.Default.(func() time.Time)
 	// rider.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
@@ -503,9 +499,7 @@ func init() {
 	store.DefaultStatus = storeDescStatus.Default.(uint8)
 	subscribeMixin := schema.Subscribe{}.Mixin()
 	subscribeMixinHooks2 := subscribeMixin[2].Hooks()
-	subscribeMixinHooks3 := subscribeMixin[3].Hooks()
 	subscribe.Hooks[0] = subscribeMixinHooks2[0]
-	subscribe.Hooks[1] = subscribeMixinHooks3[0]
 	subscribeMixinFields0 := subscribeMixin[0].Fields()
 	_ = subscribeMixinFields0
 	subscribeFields := schema.Subscribe{}.Fields()

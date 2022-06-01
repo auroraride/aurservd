@@ -238,12 +238,6 @@ func (sc *SubscribeCreate) SetNillableRefundAt(t *time.Time) *SubscribeCreate {
 	return sc
 }
 
-// SetID sets the "id" field.
-func (sc *SubscribeCreate) SetID(u uint64) *SubscribeCreate {
-	sc.mutation.SetID(u)
-	return sc
-}
-
 // SetPlan sets the "plan" edge to the Plan entity.
 func (sc *SubscribeCreate) SetPlan(p *Plan) *SubscribeCreate {
 	return sc.SetPlanID(p.ID)
@@ -476,10 +470,8 @@ func (sc *SubscribeCreate) sqlSave(ctx context.Context) (*Subscribe, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
-	}
+	id := _spec.ID.Value.(int64)
+	_node.ID = uint64(id)
 	return _node, nil
 }
 
@@ -495,10 +487,6 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		}
 	)
 	_spec.OnConflict = sc.conflict
-	if id, ok := sc.mutation.ID(); ok {
-		_node.ID = id
-		_spec.ID.Value = id
-	}
 	if value, ok := sc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -1154,24 +1142,18 @@ func (u *SubscribeUpsert) ClearRefundAt() *SubscribeUpsert {
 	return u
 }
 
-// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
 //	client.Subscribe.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
-//			sql.ResolveWith(func(u *sql.UpdateSet) {
-//				u.SetIgnore(subscribe.FieldID)
-//			}),
 //		).
 //		Exec(ctx)
 //
 func (u *SubscribeUpsertOne) UpdateNewValues() *SubscribeUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
-		if _, exists := u.create.mutation.ID(); exists {
-			s.SetIgnore(subscribe.FieldID)
-		}
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(subscribe.FieldCreatedAt)
 		}
@@ -1668,7 +1650,7 @@ func (scb *SubscribeCreateBulk) Save(ctx context.Context) ([]*Subscribe, error) 
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
+				if specs[i].ID.Value != nil {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = uint64(id)
 				}
@@ -1759,9 +1741,6 @@ type SubscribeUpsertBulk struct {
 //	client.Subscribe.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
-//			sql.ResolveWith(func(u *sql.UpdateSet) {
-//				u.SetIgnore(subscribe.FieldID)
-//			}),
 //		).
 //		Exec(ctx)
 //
@@ -1769,10 +1748,6 @@ func (u *SubscribeUpsertBulk) UpdateNewValues() *SubscribeUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		for _, b := range u.create.builders {
-			if _, exists := b.mutation.ID(); exists {
-				s.SetIgnore(subscribe.FieldID)
-				return
-			}
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(subscribe.FieldCreatedAt)
 			}

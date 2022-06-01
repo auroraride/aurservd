@@ -86,7 +86,6 @@ func (Rider) Edges() []ent.Edge {
 
 func (Rider) Mixin() []ent.Mixin {
     return []ent.Mixin{
-        internal.SonyflakeIDMixin{},
         internal.TimeMixin{},
         internal.DeleteMixin{},
         internal.Modifier{},

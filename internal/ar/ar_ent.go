@@ -58,7 +58,7 @@ func (c *orm) autoMigrate() {
         schema.WithAtlas(true),
         migrate.WithDropIndex(true),
         migrate.WithDropColumn(true),
-        // migrate.WithGlobalUniqueID(true),
+        migrate.WithGlobalUniqueID(true),
         schema.WithApplyHook(func(next schema.Applier) schema.Applier {
             return schema.ApplyFunc(func(ctx context.Context, conn dialect.ExecQuerier, plan *atlasMigrate.Plan) error {
                 for _, change := range plan.Changes {

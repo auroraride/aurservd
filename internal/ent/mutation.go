@@ -14776,12 +14776,6 @@ func (m OrderMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of Order entities.
-func (m *OrderMutation) SetID(id uint64) {
-	m.id = &id
-}
-
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
 func (m *OrderMutation) ID() (id uint64, exists bool) {
@@ -20890,12 +20884,6 @@ func (m RiderMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of Rider entities.
-func (m *RiderMutation) SetID(id uint64) {
-	m.id = &id
-}
-
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
 func (m *RiderMutation) ID() (id uint64, exists bool) {
@@ -24677,12 +24665,6 @@ func (m SubscribeMutation) Tx() (*Tx, error) {
 	tx := &Tx{config: m.config}
 	tx.init()
 	return tx, nil
-}
-
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of Subscribe entities.
-func (m *SubscribeMutation) SetID(id uint64) {
-	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available

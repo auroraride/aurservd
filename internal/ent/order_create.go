@@ -231,12 +231,6 @@ func (oc *OrderCreate) SetNillableRefundAt(t *time.Time) *OrderCreate {
 	return oc
 }
 
-// SetID sets the "id" field.
-func (oc *OrderCreate) SetID(u uint64) *OrderCreate {
-	oc.mutation.SetID(u)
-	return oc
-}
-
 // SetPlan sets the "plan" edge to the Plan entity.
 func (oc *OrderCreate) SetPlan(p *Plan) *OrderCreate {
 	return oc.SetPlanID(p.ID)
@@ -461,10 +455,8 @@ func (oc *OrderCreate) sqlSave(ctx context.Context) (*Order, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != _node.ID {
-		id := _spec.ID.Value.(int64)
-		_node.ID = uint64(id)
-	}
+	id := _spec.ID.Value.(int64)
+	_node.ID = uint64(id)
 	return _node, nil
 }
 
@@ -480,10 +472,6 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		}
 	)
 	_spec.OnConflict = oc.conflict
-	if id, ok := oc.mutation.ID(); ok {
-		_node.ID = id
-		_spec.ID.Value = id
-	}
 	if value, ok := oc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -1119,24 +1107,18 @@ func (u *OrderUpsert) ClearRefundAt() *OrderUpsert {
 	return u
 }
 
-// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
 //	client.Order.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
-//			sql.ResolveWith(func(u *sql.UpdateSet) {
-//				u.SetIgnore(order.FieldID)
-//			}),
 //		).
 //		Exec(ctx)
 //
 func (u *OrderUpsertOne) UpdateNewValues() *OrderUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
-		if _, exists := u.create.mutation.ID(); exists {
-			s.SetIgnore(order.FieldID)
-		}
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(order.FieldCreatedAt)
 		}
@@ -1634,7 +1616,7 @@ func (ocb *OrderCreateBulk) Save(ctx context.Context) ([]*Order, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil && nodes[i].ID == 0 {
+				if specs[i].ID.Value != nil {
 					id := specs[i].ID.Value.(int64)
 					nodes[i].ID = uint64(id)
 				}
@@ -1725,9 +1707,6 @@ type OrderUpsertBulk struct {
 //	client.Order.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
-//			sql.ResolveWith(func(u *sql.UpdateSet) {
-//				u.SetIgnore(order.FieldID)
-//			}),
 //		).
 //		Exec(ctx)
 //
@@ -1735,10 +1714,6 @@ func (u *OrderUpsertBulk) UpdateNewValues() *OrderUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		for _, b := range u.create.builders {
-			if _, exists := b.mutation.ID(); exists {
-				s.SetIgnore(order.FieldID)
-				return
-			}
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(order.FieldCreatedAt)
 			}
