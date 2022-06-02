@@ -518,10 +518,6 @@ func init() {
 	subscribeDescStatus := subscribeFields[2].Descriptor()
 	// subscribe.DefaultStatus holds the default value on creation for the status field.
 	subscribe.DefaultStatus = subscribeDescStatus.Default.(uint8)
-	// subscribeDescInitialDays is the schema descriptor for initial_days field.
-	subscribeDescInitialDays := subscribeFields[5].Descriptor()
-	// subscribe.DefaultInitialDays holds the default value on creation for the initial_days field.
-	subscribe.DefaultInitialDays = subscribeDescInitialDays.Default.(int)
 	// subscribeDescAlterDays is the schema descriptor for alter_days field.
 	subscribeDescAlterDays := subscribeFields[6].Descriptor()
 	// subscribe.DefaultAlterDays holds the default value on creation for the alter_days field.

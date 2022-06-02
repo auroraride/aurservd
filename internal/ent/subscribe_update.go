@@ -179,14 +179,6 @@ func (su *SubscribeUpdate) SetInitialDays(i int) *SubscribeUpdate {
 	return su
 }
 
-// SetNillableInitialDays sets the "initial_days" field if the given value is not nil.
-func (su *SubscribeUpdate) SetNillableInitialDays(i *int) *SubscribeUpdate {
-	if i != nil {
-		su.SetInitialDays(*i)
-	}
-	return su
-}
-
 // AddInitialDays adds i to the "initial_days" field.
 func (su *SubscribeUpdate) AddInitialDays(i int) *SubscribeUpdate {
 	su.mutation.AddInitialDays(i)
@@ -1368,14 +1360,6 @@ func (suo *SubscribeUpdateOne) AddVoltage(f float64) *SubscribeUpdateOne {
 func (suo *SubscribeUpdateOne) SetInitialDays(i int) *SubscribeUpdateOne {
 	suo.mutation.ResetInitialDays()
 	suo.mutation.SetInitialDays(i)
-	return suo
-}
-
-// SetNillableInitialDays sets the "initial_days" field if the given value is not nil.
-func (suo *SubscribeUpdateOne) SetNillableInitialDays(i *int) *SubscribeUpdateOne {
-	if i != nil {
-		suo.SetInitialDays(*i)
-	}
 	return suo
 }
 

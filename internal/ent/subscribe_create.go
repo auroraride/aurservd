@@ -168,14 +168,6 @@ func (sc *SubscribeCreate) SetInitialDays(i int) *SubscribeCreate {
 	return sc
 }
 
-// SetNillableInitialDays sets the "initial_days" field if the given value is not nil.
-func (sc *SubscribeCreate) SetNillableInitialDays(i *int) *SubscribeCreate {
-	if i != nil {
-		sc.SetInitialDays(*i)
-	}
-	return sc
-}
-
 // SetAlterDays sets the "alter_days" field.
 func (sc *SubscribeCreate) SetAlterDays(i int) *SubscribeCreate {
 	sc.mutation.SetAlterDays(i)
@@ -468,10 +460,6 @@ func (sc *SubscribeCreate) defaults() error {
 	if _, ok := sc.mutation.Status(); !ok {
 		v := subscribe.DefaultStatus
 		sc.mutation.SetStatus(v)
-	}
-	if _, ok := sc.mutation.InitialDays(); !ok {
-		v := subscribe.DefaultInitialDays
-		sc.mutation.SetInitialDays(v)
 	}
 	if _, ok := sc.mutation.AlterDays(); !ok {
 		v := subscribe.DefaultAlterDays

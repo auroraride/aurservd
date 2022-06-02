@@ -192,8 +192,6 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus uint8
-	// DefaultInitialDays holds the default value on creation for the "initial_days" field.
-	DefaultInitialDays int
 	// DefaultAlterDays holds the default value on creation for the "alter_days" field.
 	DefaultAlterDays int
 	// DefaultPauseDays holds the default value on creation for the "pause_days" field.

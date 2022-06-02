@@ -412,7 +412,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 
     // 续签
     if trade.OrderType == model.OrderTypeRenewal {
-        _, err = tx.Subscribe.UpdateOneID(*trade.SubscribeID).AddRenewalDays(int(trade.Days)).Save(ctx)
+        _, err = tx.Subscribe.UpdateOneID(*trade.SubscribeID).AddRenewalDays(int(trade.Days)).AddRemaining(int(trade.Days)).Save(ctx)
         if err != nil {
             log.Errorf("[ORDER PAID %s SUBSCRIBE(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
             _ = tx.Rollback()

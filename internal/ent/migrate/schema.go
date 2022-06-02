@@ -1028,7 +1028,7 @@ var (
 		{Name: "status", Type: field.TypeUint8, Comment: "当前订阅状态", Default: 0},
 		{Name: "type", Type: field.TypeUint, Comment: "订阅类型 1新签 2续签 3重签 4更改电池"},
 		{Name: "voltage", Type: field.TypeFloat64, Comment: "可用电压型号"},
-		{Name: "initial_days", Type: field.TypeInt, Comment: "初始骑士卡天数", Default: 0},
+		{Name: "initial_days", Type: field.TypeInt, Comment: "初始骑士卡天数"},
 		{Name: "alter_days", Type: field.TypeInt, Comment: "改动天数", Default: 0},
 		{Name: "pause_days", Type: field.TypeInt, Comment: "暂停天数", Default: 0},
 		{Name: "renewal_days", Type: field.TypeInt, Comment: "续期天数", Default: 0},
