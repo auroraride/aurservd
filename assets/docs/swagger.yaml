@@ -2176,7 +2176,7 @@ paths:
         in: query
         name: status
         type: integer
-      - description: '业务状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期(计算状态)'
+      - description: '业务状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期 99:未使用'
         enum:
         - 0
         - 1
@@ -2185,6 +2185,7 @@ paths:
         - 4
         - 5
         - 11
+        - 99
         in: query
         name: subscribeStatus
         type: integer

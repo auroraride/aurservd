@@ -70,10 +70,10 @@ type RiderListReq struct {
     Start    *string `json:"start"`    // 注册开始时间, 格式为: 2022-01-01
     End      *string `json:"end"`      // 注册结束时间, 格式为: 2022-01-01
 
-    Status          *uint8            `json:"status" enums:"0,1,2,3,4"`               // 用户状态 1:正常 2:已禁用 3:黑名单
-    SubscribeStatus *uint8            `json:"subscribeStatus" enums:"0,1,2,3,4,5,11"` // 业务状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期(计算状态)
-    AuthStatus      *PersonAuthStatus `json:"authStatus" enums:"0,1,2,3"`             // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
-    PlanID          *uint64           `json:"planId"`                                 // 骑士卡
+    Status          *uint8            `json:"status" enums:"0,1,2,3,4"`                  // 用户状态 1:正常 2:已禁用 3:黑名单
+    SubscribeStatus *uint8            `json:"subscribeStatus" enums:"0,1,2,3,4,5,11,99"` // 业务状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期 99:未使用
+    AuthStatus      *PersonAuthStatus `json:"authStatus" enums:"0,1,2,3"`                // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
+    PlanID          *uint64           `json:"planId"`                                    // 骑士卡
 }
 
 type RiderItemSubscribe struct {

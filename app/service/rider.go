@@ -402,6 +402,24 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
             break
         }
     }
+    if req.SubscribeStatus != nil {
+        rss := *req.SubscribeStatus
+        switch rss {
+        case 11:
+            // 即将到期
+            q.Where(rider.HasSubscribesWith(
+                subscribe.Status(model.SubscribeStatusUsing),
+                subscribe.RemainingLTE(3),
+            ))
+            break
+        case 99:
+            q.Where(rider.Not(rider.HasSubscribes()))
+            break
+        default:
+            q.Where(rider.HasSubscribesWith(subscribe.Status(rss)))
+            break
+        }
+    }
 
     return model.ParsePaginationResponse[model.RiderItem](
         q.PaginationResult(req.PaginationReq),
@@ -438,6 +456,9 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
                         Status:    sub.Status,
                         Remaining: sub.Remaining,
                         Voltage:   sub.Voltage,
+                    }
+                    if sub.Status == model.SubscribeStatusUsing && sub.Remaining <= 3 {
+                        ri.Subscribe.Status = 11
                     }
                 }
                 out[i] = ri
