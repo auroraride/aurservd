@@ -101,7 +101,7 @@ func Run() {
     )
 
     // 载入路由
-    loadRedocRoute()     // 文档
+    loadDocRoutes()      // 文档
     loadKaixinRoutes()   // 凯信
     loadCommonRoutes()   // 公共API
     loadRideRoutes()     // 骑手路由

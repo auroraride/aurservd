@@ -1252,6 +1252,18 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                        ],
+                        "type": "integer",
+                        "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
+                        "name": "authStatus",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
@@ -1294,9 +1306,31 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4
+                        ],
                         "type": "integer",
-                        "description": "用户状态 0:未使用 1:未开通 2:计费中 3:寄存中 4:已过期 5:暂停中 6:已退租 7:已欠费 8:未认证 9:未办理 10:即将到期 11:已禁用 12:黑名单",
+                        "description": "用户状态 1:正常 2:已禁用 3:黑名单",
                         "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4,
+                            5,
+                            11
+                        ],
+                        "type": "integer",
+                        "description": "业务状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期(计算状态)",
+                        "name": "subscribeStatus",
                         "in": "query"
                     }
                 ],
@@ -2811,7 +2845,11 @@ const docTemplate = `{
                 },
                 "city": {
                     "description": "城市",
-                    "$ref": "#/definitions/model.City"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
                 },
                 "contracts": {
                     "description": "合同",
@@ -3097,7 +3135,11 @@ const docTemplate = `{
                 },
                 "city": {
                     "description": "城市",
-                    "$ref": "#/definitions/model.City"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
                 },
                 "createdAt": {
                     "description": "创建时间",
@@ -3233,11 +3275,19 @@ const docTemplate = `{
                 },
                 "cabinet": {
                     "description": "电柜信息",
-                    "$ref": "#/definitions/model.CabinetFaultCabinet"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetFaultCabinet"
+                        }
+                    ]
                 },
                 "city": {
                     "description": "城市信息",
-                    "$ref": "#/definitions/model.City"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
                 },
                 "createdAt": {
                     "description": "提交时间",
@@ -3257,7 +3307,11 @@ const docTemplate = `{
                 },
                 "rider": {
                     "description": "骑手信息",
-                    "$ref": "#/definitions/model.RiderSampleInfo"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderSampleInfo"
+                        }
+                    ]
                 },
                 "status": {
                     "description": "故障状态 0未处理 1已处理",
@@ -3318,7 +3372,11 @@ const docTemplate = `{
                 },
                 "city": {
                     "description": "城市",
-                    "$ref": "#/definitions/model.City"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
                 },
                 "createdAt": {
                     "description": "创建时间",
@@ -3633,7 +3691,11 @@ const docTemplate = `{
                 },
                 "pagination": {
                     "description": "分页属性",
-                    "$ref": "#/definitions/model.Pagination"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Pagination"
+                        }
+                    ]
                 }
             }
         },
@@ -3773,7 +3835,11 @@ const docTemplate = `{
             "properties": {
                 "alternative": {
                     "description": "备选方案",
-                    "$ref": "#/definitions/model.CabinetBinBasicInfo"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetBinBasicInfo"
+                        }
+                    ]
                 },
                 "batteryFullNum": {
                     "description": "总满电电池数",
@@ -3793,7 +3859,11 @@ const docTemplate = `{
                 },
                 "emptyBin": {
                     "description": "空仓位",
-                    "$ref": "#/definitions/model.CabinetBinBasicInfo"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetBinBasicInfo"
+                        }
+                    ]
                 },
                 "full": {
                     "description": "是否有满电电池",
@@ -3801,7 +3871,11 @@ const docTemplate = `{
                 },
                 "fullBin": {
                     "description": "满电仓位",
-                    "$ref": "#/definitions/model.CabinetBinBasicInfo"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetBinBasicInfo"
+                        }
+                    ]
                 },
                 "health": {
                     "description": "电柜健康状态 0离线 1正常 2故障",
@@ -3887,13 +3961,21 @@ const docTemplate = `{
         "model.RiderItem": {
             "type": "object",
             "properties": {
+                "authStatus": {
+                    "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
+                    "type": "integer"
+                },
                 "deposit": {
                     "description": "押金",
                     "type": "number"
                 },
                 "enterprise": {
                     "description": "团签企业信息, 若无此字段则为个签用户",
-                    "$ref": "#/definitions/model.EnterpriseItem"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseItem"
+                        }
+                    ]
                 },
                 "id": {
                     "type": "integer"
@@ -3911,12 +3993,33 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "description": "用户状态 0:未使用 1:未开通 2:计费中 3:寄存中 4:已过期 5:暂停中 6:已退租 7:已欠费 8:未认证 9:未办理 10:即将到期 11:已禁用 12:黑名单",
+                    "description": "用户状态, 优先显示状态值大的 1:正常 2:已禁用 3:黑名单",
                     "type": "integer"
                 },
-                "userPlan": {
+                "subscribe": {
                     "description": "当前有效骑士卡, 若无此字段则代表当前无有效骑士卡",
-                    "$ref": "#/definitions/model.UserPlanItem"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderItemSubscribe"
+                        }
+                    ]
+                }
+            }
+        },
+        "model.RiderItemSubscribe": {
+            "type": "object",
+            "properties": {
+                "remaining": {
+                    "description": "剩余天数",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "订阅状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期(计算状态) 当 status = 1 且 remaining \u003c= 3 的时候是即将到期",
+                    "type": "integer"
+                },
+                "voltage": {
+                    "description": "骑士卡可用电压型号",
+                    "type": "number"
                 }
             }
         },
@@ -3929,7 +4032,11 @@ const docTemplate = `{
                 },
                 "city": {
                     "description": "城市",
-                    "$ref": "#/definitions/model.City"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
                 },
                 "id": {
                     "description": "订单ID",
@@ -3956,7 +4063,11 @@ const docTemplate = `{
                 },
                 "plan": {
                     "description": "骑士卡",
-                    "$ref": "#/definitions/model.Plan"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Plan"
+                        }
+                    ]
                 },
                 "status": {
                     "description": "订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝",
@@ -4018,7 +4129,11 @@ const docTemplate = `{
             "properties": {
                 "contact": {
                     "description": "联系人",
-                    "$ref": "#/definitions/model.RiderContact"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderContact"
+                        }
+                    ]
                 },
                 "deposit": {
                     "description": "需缴押金",
@@ -4049,7 +4164,11 @@ const docTemplate = `{
                 },
                 "subscribe": {
                     "description": "骑士卡",
-                    "$ref": "#/definitions/model.Subscribe"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Subscribe"
+                        }
+                    ]
                 },
                 "token": {
                     "description": "认证token",
@@ -4193,11 +4312,19 @@ const docTemplate = `{
             "properties": {
                 "city": {
                     "description": "城市",
-                    "$ref": "#/definitions/model.City"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
                 },
                 "employee": {
                     "description": "店员, 有可能不存在",
-                    "$ref": "#/definitions/model.Employee"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Employee"
+                        }
+                    ]
                 },
                 "id": {
                     "type": "integer"
@@ -4244,7 +4371,11 @@ const docTemplate = `{
                 },
                 "city": {
                     "description": "所属城市",
-                    "$ref": "#/definitions/model.City"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
                 },
                 "days": {
                     "description": "总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 已缴纳逾期滞纳金天数",
@@ -4267,7 +4398,11 @@ const docTemplate = `{
                 },
                 "order": {
                     "description": "订单信息",
-                    "$ref": "#/definitions/model.SubscribeOrderInfo"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.SubscribeOrderInfo"
+                        }
+                    ]
                 },
                 "pauseDays": {
                     "description": "暂停天数",
@@ -4275,7 +4410,11 @@ const docTemplate = `{
                 },
                 "plan": {
                     "description": "骑士卡信息",
-                    "$ref": "#/definitions/model.Plan"
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Plan"
+                        }
+                    ]
                 },
                 "planDays": {
                     "description": "骑士卡天数",
@@ -4290,7 +4429,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "description": "状态 0未激活 1计费中 2暂停中 3已逾期 4已归还(已过期) 5已取消/已退款",
+                    "description": "状态 0未激活 1计费中 2寄存中 3已逾期 4已退订 5已取消",
                     "type": "integer",
                     "enum": [
                         0,
@@ -4338,19 +4477,6 @@ const docTemplate = `{
                     "type": "number"
                 }
             }
-        },
-        "model.UserPlanItem": {
-            "type": "object",
-            "properties": {
-                "days": {
-                    "description": "剩余天数",
-                    "type": "integer"
-                },
-                "model": {
-                    "description": "电池型号",
-                    "$ref": "#/definitions/model.BatteryModel"
-                }
-            }
         }
     }
 }`
@@ -4362,7 +4488,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "极光出行API",
-	Description:      "### 说明\n接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。\n<br>\n接口返回说明查看 **[返回](#返回)**\n<br>\n图片/附件前缀 `https://cdn.auroraride.com/`\n\n### 调试工具\n- [paw](/docs/api.paw)\n\n### 认证\n项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`\n|  header   |  类型  |  接口  |\n| :-----: | :----: | :--: |\n|  X-Rider-Token   |  string   |  骑手API  |\n| X-Manager-Token | string |  后台API  |\n|  X-Employee-Token   | string |  员工API  |\n\n### 返回\n一个标准的返回应包含以下结构\n\n|  字段   |  类型  |  必填  |  说明  |\n| :-----: | :----: | :--: | :--: |\n|  code   |  int   |  是  |  返回代码  |\n| message | string |  是  |  返回消息  |\n|  data   | object |  是  |  返回数据  |\n\n`code`代码取值说明\n\n| 十进制 | 十六进制 | 说明 |\n| :----: | :------: | :--: |\n| 0  |  0x000  | 请求成功 |\n| 256 |  0x100  | 请求失败 |\n| 512 |  0x200  | *需要认证(跳转登录) |\n| 768 |  0x300  | *用户被封禁 |\n| 1024 |  0x400  | 资源未获 |\n| 1280 |  0x500  | 未知错误 |\n| 1536 |  0x600  | *需要实名 |\n| 1792 |  0x700  | *需要验证 (更换设备, 需要人脸验证) |\n| 2048 |  0x800  | *需要联系人 |\n| 2304 |  0x900  | 请求过期 |\n\n> 当返回值是`1792(0x700)需要人脸验证`或`1536(0x600)需要实名`的时候`data`返回值为`{\"url\": \"string\"}`, 直接跳转url\n\n\n比如：\n> 默认成功返回\n```json\n{\n  \"code\": 0,\n  \"message\": \"OK\",\n  \"data\": {\n    \"status\": true\n  }\n}\n```",
+	Description:      "极光出行所有API接口文档",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

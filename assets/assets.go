@@ -24,4 +24,10 @@ var (
 
     //go:embed api.paw
     Paw []byte
+
+    //go:embed changelog/manager.md
+    ChangelogManager []byte
+
+    //go:embed octicons.css
+    OcticonsCss []byte
 )

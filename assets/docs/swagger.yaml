@@ -166,7 +166,8 @@ definitions:
         description: 地址
         type: string
       city:
-        $ref: '#/definitions/model.City'
+        allOf:
+        - $ref: '#/definitions/model.City'
         description: 城市
       contracts:
         description: 合同
@@ -366,7 +367,8 @@ definitions:
         - YUNDONG
         type: string
       city:
-        $ref: '#/definitions/model.City'
+        allOf:
+        - $ref: '#/definitions/model.City'
         description: 城市
       createdAt:
         description: 创建时间
@@ -470,10 +472,12 @@ definitions:
           type: string
         type: array
       cabinet:
-        $ref: '#/definitions/model.CabinetFaultCabinet'
+        allOf:
+        - $ref: '#/definitions/model.CabinetFaultCabinet'
         description: 电柜信息
       city:
-        $ref: '#/definitions/model.City'
+        allOf:
+        - $ref: '#/definitions/model.City'
         description: 城市信息
       createdAt:
         description: 提交时间
@@ -488,7 +492,8 @@ definitions:
         description: 故障ID
         type: integer
       rider:
-        $ref: '#/definitions/model.RiderSampleInfo'
+        allOf:
+        - $ref: '#/definitions/model.RiderSampleInfo'
         description: 骑手信息
       status:
         description: 故障状态 0未处理 1已处理
@@ -528,7 +533,8 @@ definitions:
         - YUNDONG
         type: string
       city:
-        $ref: '#/definitions/model.City'
+        allOf:
+        - $ref: '#/definitions/model.City'
         description: 城市
       createdAt:
         description: 创建时间
@@ -755,7 +761,8 @@ definitions:
       items:
         description: 返回数据
       pagination:
-        $ref: '#/definitions/model.Pagination'
+        allOf:
+        - $ref: '#/definitions/model.Pagination'
         description: 分页属性
     type: object
   model.PersonBanReq:
@@ -854,7 +861,8 @@ definitions:
   model.RiderCabinetInfo:
     properties:
       alternative:
-        $ref: '#/definitions/model.CabinetBinBasicInfo'
+        allOf:
+        - $ref: '#/definitions/model.CabinetBinBasicInfo'
         description: 备选方案
       batteryFullNum:
         description: 总满电电池数
@@ -869,13 +877,15 @@ definitions:
         description: 总仓位
         type: integer
       emptyBin:
-        $ref: '#/definitions/model.CabinetBinBasicInfo'
+        allOf:
+        - $ref: '#/definitions/model.CabinetBinBasicInfo'
         description: 空仓位
       full:
         description: 是否有满电电池
         type: boolean
       fullBin:
-        $ref: '#/definitions/model.CabinetBinBasicInfo'
+        allOf:
+        - $ref: '#/definitions/model.CabinetBinBasicInfo'
         description: 满电仓位
       health:
         description: 电柜健康状态 0离线 1正常 2故障
@@ -937,11 +947,15 @@ definitions:
     type: object
   model.RiderItem:
     properties:
+      authStatus:
+        description: 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
+        type: integer
       deposit:
         description: 押金
         type: number
       enterprise:
-        $ref: '#/definitions/model.EnterpriseItem'
+        allOf:
+        - $ref: '#/definitions/model.EnterpriseItem'
         description: 团签企业信息, 若无此字段则为个签用户
       id:
         type: integer
@@ -955,12 +969,25 @@ definitions:
         description: 手机号
         type: string
       status:
-        description: 用户状态 0:未使用 1:未开通 2:计费中 3:寄存中 4:已过期 5:暂停中 6:已退租 7:已欠费 8:未认证 9:未办理
-          10:即将到期 11:已禁用 12:黑名单
+        description: 用户状态, 优先显示状态值大的 1:正常 2:已禁用 3:黑名单
         type: integer
-      userPlan:
-        $ref: '#/definitions/model.UserPlanItem'
+      subscribe:
+        allOf:
+        - $ref: '#/definitions/model.RiderItemSubscribe'
         description: 当前有效骑士卡, 若无此字段则代表当前无有效骑士卡
+    type: object
+  model.RiderItemSubscribe:
+    properties:
+      remaining:
+        description: 剩余天数
+        type: integer
+      status:
+        description: '订阅状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期(计算状态) 当 status
+          = 1 且 remaining <= 3 的时候是即将到期'
+        type: integer
+      voltage:
+        description: 骑士卡可用电压型号
+        type: number
     type: object
   model.RiderOrder:
     properties:
@@ -968,7 +995,8 @@ definitions:
         description: 支付金额
         type: number
       city:
-        $ref: '#/definitions/model.City'
+        allOf:
+        - $ref: '#/definitions/model.City'
         description: 城市
       id:
         description: 订单ID
@@ -988,7 +1016,8 @@ definitions:
         description: 支付方式 1支付宝 2微信
         type: integer
       plan:
-        $ref: '#/definitions/model.Plan'
+        allOf:
+        - $ref: '#/definitions/model.Plan'
         description: 骑士卡
       status:
         description: 订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝
@@ -1032,7 +1061,8 @@ definitions:
   model.RiderSigninRes:
     properties:
       contact:
-        $ref: '#/definitions/model.RiderContact'
+        allOf:
+        - $ref: '#/definitions/model.RiderContact'
         description: 联系人
       deposit:
         description: 需缴押金
@@ -1055,7 +1085,8 @@ definitions:
         description: 二维码
         type: string
       subscribe:
-        $ref: '#/definitions/model.Subscribe'
+        allOf:
+        - $ref: '#/definitions/model.Subscribe'
         description: 骑士卡
       token:
         description: 认证token
@@ -1156,10 +1187,12 @@ definitions:
   model.StoreItem:
     properties:
       city:
-        $ref: '#/definitions/model.City'
+        allOf:
+        - $ref: '#/definitions/model.City'
         description: 城市
       employee:
-        $ref: '#/definitions/model.Employee'
+        allOf:
+        - $ref: '#/definitions/model.Employee'
         description: 店员, 有可能不存在
       id:
         type: integer
@@ -1193,7 +1226,8 @@ definitions:
         description: 改动天数
         type: integer
       city:
-        $ref: '#/definitions/model.City'
+        allOf:
+        - $ref: '#/definitions/model.City'
         description: 所属城市
       days:
         description: 总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 已缴纳逾期滞纳金天数
@@ -1210,13 +1244,15 @@ definitions:
           $ref: '#/definitions/model.BatteryModel'
         type: array
       order:
-        $ref: '#/definitions/model.SubscribeOrderInfo'
+        allOf:
+        - $ref: '#/definitions/model.SubscribeOrderInfo'
         description: 订单信息
       pauseDays:
         description: 暂停天数
         type: integer
       plan:
-        $ref: '#/definitions/model.Plan'
+        allOf:
+        - $ref: '#/definitions/model.Plan'
         description: 骑士卡信息
       planDays:
         description: 骑士卡天数
@@ -1228,7 +1264,7 @@ definitions:
         description: 开始时间
         type: string
       status:
-        description: 状态 0未激活 1计费中 2暂停中 3已逾期 4已归还(已过期) 5已取消/已退款
+        description: 状态 0未激活 1计费中 2寄存中 3已逾期 4已退订 5已取消
         enum:
         - 0
         - 1
@@ -1264,74 +1300,9 @@ definitions:
         description: 总支付金额, 总金额为 amount + deposit
         type: number
     type: object
-  model.UserPlanItem:
-    properties:
-      days:
-        description: 剩余天数
-        type: integer
-      model:
-        $ref: '#/definitions/model.BatteryModel'
-        description: 电池型号
-    type: object
 info:
   contact: {}
-  description: |-
-    ### 说明
-    接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。
-    <br>
-    接口返回说明查看 **[返回](#返回)**
-    <br>
-    图片/附件前缀 `https://cdn.auroraride.com/`
-
-    ### 调试工具
-    - [paw](/docs/api.paw)
-
-    ### 认证
-    项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`
-    |  header   |  类型  |  接口  |
-    | :-----: | :----: | :--: |
-    |  X-Rider-Token   |  string   |  骑手API  |
-    | X-Manager-Token | string |  后台API  |
-    |  X-Employee-Token   | string |  员工API  |
-
-    ### 返回
-    一个标准的返回应包含以下结构
-
-    |  字段   |  类型  |  必填  |  说明  |
-    | :-----: | :----: | :--: | :--: |
-    |  code   |  int   |  是  |  返回代码  |
-    | message | string |  是  |  返回消息  |
-    |  data   | object |  是  |  返回数据  |
-
-    `code`代码取值说明
-
-    | 十进制 | 十六进制 | 说明 |
-    | :----: | :------: | :--: |
-    | 0  |  0x000  | 请求成功 |
-    | 256 |  0x100  | 请求失败 |
-    | 512 |  0x200  | *需要认证(跳转登录) |
-    | 768 |  0x300  | *用户被封禁 |
-    | 1024 |  0x400  | 资源未获 |
-    | 1280 |  0x500  | 未知错误 |
-    | 1536 |  0x600  | *需要实名 |
-    | 1792 |  0x700  | *需要验证 (更换设备, 需要人脸验证) |
-    | 2048 |  0x800  | *需要联系人 |
-    | 2304 |  0x900  | 请求过期 |
-
-    > 当返回值是`1792(0x700)需要人脸验证`或`1536(0x600)需要实名`的时候`data`返回值为`{"url": "string"}`, 直接跳转url
-
-
-    比如：
-    > 默认成功返回
-    ```json
-    {
-      "code": 0,
-      "message": "OK",
-      "data": {
-        "status": true
-      }
-    }
-    ```
+  description: 极光出行所有API接口文档
   title: 极光出行API
   version: "1.0"
 paths:
@@ -2158,6 +2129,15 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        in: query
+        name: authStatus
+        type: integer
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
@@ -2186,10 +2166,27 @@ paths:
         in: query
         name: start
         type: string
-      - description: 用户状态 0:未使用 1:未开通 2:计费中 3:寄存中 4:已过期 5:暂停中 6:已退租 7:已欠费 8:未认证 9:未办理
-          10:即将到期 11:已禁用 12:黑名单
+      - description: 用户状态 1:正常 2:已禁用 3:黑名单
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
         in: query
         name: status
+        type: integer
+      - description: '业务状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期(计算状态)'
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 11
+        in: query
+        name: subscribeStatus
         type: integer
       produces:
       - application/json

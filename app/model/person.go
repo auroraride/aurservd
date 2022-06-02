@@ -6,11 +6,29 @@
 package model
 
 const (
-    PersonAuthNot PersonAuthStatus = iota
-    PersonAuthPending
-    PersonAuthSuccess
-    PersonAuthFailed
+    PersonUnauthenticated      PersonAuthStatus = iota // 未认证
+    PersonAuthPending                                  // 认证中
+    PersonAuthenticated                                // 已认证
+    PersonAuthenticationFailed                         // 认证失败
 )
+
+type PersonAuthStatus uint8
+
+func (s PersonAuthStatus) String() string {
+    switch s {
+    case PersonUnauthenticated:
+        return "未认证"
+    case PersonAuthPending:
+        return "认证中"
+    case PersonAuthenticated:
+        return "已认证"
+    }
+    return "认证失败"
+}
+
+func (s PersonAuthStatus) Raw() uint8 {
+    return uint8(s)
+}
 
 type FaceVerifyResult struct {
     Birthday       string  `json:"birthday"`
@@ -27,28 +45,10 @@ type FaceVerifyResult struct {
     Spoofing       float64 `json:"spoofing"`
 }
 
-type PersonAuthStatus uint8
-
-func (s PersonAuthStatus) String() string {
-    switch s {
-    case PersonAuthNot:
-        return "未认证"
-    case PersonAuthPending:
-        return "认证中"
-    case PersonAuthSuccess:
-        return "已认证"
-    }
-    return "认证失败"
-}
-
-func (s PersonAuthStatus) Raw() uint8 {
-    return uint8(s)
-}
-
 // RequireAuth 是否需要认证
 func (s PersonAuthStatus) RequireAuth() bool {
     switch s {
-    case PersonAuthPending, PersonAuthNot, PersonAuthFailed:
+    case PersonAuthPending, PersonUnauthenticated, PersonAuthenticationFailed:
         return true
     }
     return false

@@ -14,6 +14,12 @@ const (
     RiderTokenPermissionNewDevice                             // 更换设备需要人脸验证
 )
 
+const (
+    RiderStatusNormal  uint8 = iota + 1 // 未认证
+    RiderStatusBlocked                  // 禁用
+    RiderStatusBanned                   // 黑名单
+)
+
 // RiderContext TODO 骑手上下文
 type RiderContext struct {
 }
@@ -64,20 +70,31 @@ type RiderListReq struct {
     Start    *string `json:"start"`    // 注册开始时间, 格式为: 2022-01-01
     End      *string `json:"end"`      // 注册结束时间, 格式为: 2022-01-01
 
-    Status *uint8  `json:"status"` // 用户状态 0:未使用 1:未开通 2:计费中 3:寄存中 4:已过期 5:暂停中 6:已退租 7:已欠费 8:未认证 9:未办理 10:即将到期 11:已禁用 12:黑名单
-    PlanID *uint64 `json:"planId"` // 骑士卡
+    Status          *uint8            `json:"status" enums:"0,1,2,3,4"`               // 用户状态 1:正常 2:已禁用 3:黑名单
+    SubscribeStatus *uint8            `json:"subscribeStatus" enums:"0,1,2,3,4,5,11"` // 业务状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期(计算状态)
+    AuthStatus      *PersonAuthStatus `json:"authStatus" enums:"0,1,2,3"`             // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
+    PlanID          *uint64           `json:"planId"`                                 // 骑士卡
+}
+
+type RiderItemSubscribe struct {
+    Status    uint8   `json:"status"`    // 订阅状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期(计算状态) 当 status = 1 且 remaining <= 3 的时候是即将到期
+    Remaining int     `json:"remaining"` // 剩余天数
+    Voltage   float64 `json:"voltage"`   // 骑士卡可用电压型号
 }
 
 // RiderItem 骑手信息
 type RiderItem struct {
-    ID           uint64          `json:"id"`
-    Name         string          `json:"name"`                 // 用户姓名
-    Phone        string          `json:"phone"`                // 手机号
-    Status       uint8           `json:"status"`               // 用户状态 0:未使用 1:未开通 2:计费中 3:寄存中 4:已过期 5:暂停中 6:已退租 7:已欠费 8:未认证 9:未办理 10:即将到期 11:已禁用 12:黑名单
-    IDCardNumber string          `json:"idCardNumber"`         // 身份证
-    Deposit      float64         `json:"deposit"`              // 押金
-    Enterprise   *EnterpriseItem `json:"enterprise,omitempty"` // 团签企业信息, 若无此字段则为个签用户
-    UserPlan     *UserPlanItem   `json:"userPlan,omitempty"`   // 当前有效骑士卡, 若无此字段则代表当前无有效骑士卡
+    ID           uint64           `json:"id"`
+    Name         string           `json:"name"`         // 用户姓名
+    Phone        string           `json:"phone"`        // 手机号
+    Status       uint8            `json:"status"`       // 用户状态, 优先显示状态值大的 1:正常 2:已禁用 3:黑名单
+    AuthStatus   PersonAuthStatus `json:"authStatus"`   // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
+    IDCardNumber string           `json:"idCardNumber"` // 身份证
+    Deposit      float64          `json:"deposit"`      // 押金
+    // 团签企业信息, 若无此字段则为个签用户
+    Enterprise *EnterpriseItem `json:"enterprise,omitempty"`
+    // 当前有效骑士卡, 若无此字段则代表当前无有效骑士卡
+    Subscribe *RiderItemSubscribe `json:"subscribe,omitempty"`
 }
 
 // RiderBlockReq 封禁或解封骑手账号

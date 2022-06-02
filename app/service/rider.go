@@ -18,6 +18,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
+    "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
@@ -216,7 +217,7 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
     icNum := vr.IdCardNumber
     id, err := ar.Ent.Person.
         Create().
-        SetStatus(model.PersonAuthSuccess.Raw()).
+        SetStatus(model.PersonAuthenticated.Raw()).
         SetIDCardNumber(icNum).
         SetName(vr.Name).
         SetAuthFace(fm).
@@ -317,7 +318,18 @@ func (*riderService) GetRiderSampleInfo(rider *ent.Rider) model.RiderSampleInfo 
 
 // List 骑手列表
 func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
-    q := ar.Ent.Rider.Query().WithPerson()
+    q := ar.Ent.Rider.
+        Query().
+        WithPerson().
+        WithOrders(func(oq *ent.OrderQuery) {
+            oq.Where(
+                order.Type(model.OrderTypeDeposit),
+                order.Status(model.OrderStatusPaid),
+            )
+        }).
+        WithSubscribes(func(sq *ent.SubscribeQuery) {
+            sq.Order(ent.Desc(subscribe.FieldCreatedAt)).Limit(1)
+        })
     if req.Keyword != nil {
         // 判定是否id字段
         if id, err := strconv.ParseUint(*req.Keyword, 10, 64); err == nil && id > 0 {
@@ -354,6 +366,42 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
             q.Where(rider.LastModifierIsNil())
         }
     }
+    if req.Status != nil {
+        rs := *req.Status
+        switch rs {
+        case model.RiderStatusNormal:
+            q.Where(
+                rider.Blocked(false),
+                rider.Or(
+                    rider.PersonIDIsNil(),
+                    rider.HasPersonWith(person.Banned(false)),
+                ),
+            )
+            break
+        case model.RiderStatusBlocked:
+            q.Where(rider.Blocked(true))
+            break
+        case model.RiderStatusBanned:
+            q.Where(rider.HasPersonWith(person.Banned(true)))
+            break
+        }
+    }
+    if req.AuthStatus != nil {
+        ra := *req.AuthStatus
+        switch ra {
+        case model.PersonUnauthenticated:
+            q.Where(
+                rider.Or(
+                    rider.PersonIDIsNil(),
+                    rider.HasPersonWith(person.Status(model.PersonUnauthenticated.Raw())),
+                ),
+            )
+            break
+        default:
+            q.Where(rider.HasPersonWith(person.Status(ra.Raw())))
+            break
+        }
+    }
 
     return model.ParsePaginationResponse[model.RiderItem](
         q.PaginationResult(req.PaginationReq),
@@ -362,22 +410,37 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
             out := make([]model.RiderItem, len(items))
             for i, item := range items {
                 p := item.Edges.Person
-                name := ""
-                idnum := ""
+                ri := model.RiderItem{
+                    ID:         item.ID,
+                    Enterprise: nil,
+                    Phone:      item.Phone,
+                    Status:     model.RiderStatusNormal,
+                    AuthStatus: model.PersonUnauthenticated,
+                }
+                if item.Blocked {
+                    ri.Status = model.RiderStatusBlocked
+                }
                 if p != nil {
-                    name = p.Name
-                    idnum = p.IDCardNumber
+                    ri.Name = p.Name
+                    ri.IDCardNumber = p.IDCardNumber
+                    ri.AuthStatus = model.PersonAuthStatus(p.Status)
+                    if p.Banned {
+                        ri.Status = model.RiderStatusBanned
+                    }
                 }
-                out[i] = model.RiderItem{
-                    ID:           item.ID,
-                    Enterprise:   nil,
-                    Name:         name,
-                    Phone:        item.Phone,
-                    Status:       0,
-                    IDCardNumber: idnum,
-                    UserPlan:     nil,
-                    Deposit:      0,
+
+                if item.Edges.Orders != nil && len(item.Edges.Orders) > 0 {
+                    ri.Deposit = item.Edges.Orders[0].Amount
                 }
+                if item.Edges.Subscribes != nil {
+                    sub := item.Edges.Subscribes[0]
+                    ri.Subscribe = &model.RiderItemSubscribe{
+                        Status:    sub.Status,
+                        Remaining: sub.Remaining,
+                        Voltage:   sub.Voltage,
+                    }
+                }
+                out[i] = ri
             }
             return out
         },

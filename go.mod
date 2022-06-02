@@ -34,6 +34,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.4.0
 	github.com/shopspring/decimal v1.3.1
+	github.com/shurcooL/github_flavored_markdown v0.0.0-20210228213109-c3a9aa474629
 	github.com/sirupsen/logrus v1.8.1
 	github.com/smartwalle/alipay/v3 v3.1.7
 	github.com/sony/sonyflake v1.0.0
@@ -59,6 +60,7 @@ require (
 	github.com/alibabacloud-go/tea-xml v1.1.2 // indirect
 	github.com/aliyun/credentials-go v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
+	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
@@ -77,6 +79,7 @@ require (
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
+	github.com/gorilla/css v1.0.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.12.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
@@ -96,6 +99,7 @@ require (
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
+	github.com/microcosm-cc/bluemonday v1.0.18 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
@@ -107,8 +111,17 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
+	github.com/russross/blackfriday v1.5.2 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
+	github.com/shurcooL/go v0.0.0-20200502201357-93f07166e636 // indirect
+	github.com/shurcooL/go-goon v0.0.0-20210110234559-7585751d9a17 // indirect
+	github.com/shurcooL/highlight_diff v0.0.0-20181222201841-111da2e7d480 // indirect
+	github.com/shurcooL/highlight_go v0.0.0-20191220051317-782971ddf21b // indirect
+	github.com/shurcooL/octicon v0.0.0-20191102190552-cbb32d6a785c // indirect
+	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/smartwalle/crypto4go v1.0.2 // indirect
+	github.com/sourcegraph/annotate v0.0.0-20160123013949-f4cad6c6324d // indirect
+	github.com/sourcegraph/syntaxhighlight v0.0.0-20170531221838-bd320f5d308e // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
@@ -136,6 +149,6 @@ require (
 
 //replace github.com/swaggo/swag => /Users/liasica/Downloads/swag
 
-replace github.com/swaggo/swag => github.com/liasica/swag v1.8.2-0.20220513063800-632ccd8046a2
+replace github.com/swaggo/swag => github.com/liasica/swag v1.8.2-0.20220602075652-74753c2fe45c
 
 replace entgo.io/ent => github.com/CharlesGe129/ent v0.10.2-0.20220520130033-5886b54e4875
