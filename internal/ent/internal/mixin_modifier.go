@@ -23,7 +23,7 @@ func (Modifier) Fields() []ent.Field {
     return []ent.Field{
         field.JSON("creator", &model.Modifier{}).Immutable().Optional().Comment("创建人"),
         field.JSON("last_modifier", &model.Modifier{}).Optional().Comment("最后修改人"),
-        field.String("remark").Optional().Comment("备注"),
+        field.String("remark").Optional().Comment("管理员改动原因/备注"),
     }
 }
 

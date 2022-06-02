@@ -26,7 +26,6 @@ func (SubscribeAlter) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("subscribe_id").Comment("订阅ID"),
         field.Int("days").Comment("更改天数"),
-        field.String("reason").Comment("更改原因"),
     }
 }
 

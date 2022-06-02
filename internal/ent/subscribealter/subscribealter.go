@@ -33,8 +33,6 @@ const (
 	FieldSubscribeID = "subscribe_id"
 	// FieldDays holds the string denoting the days field in the database.
 	FieldDays = "days"
-	// FieldReason holds the string denoting the reason field in the database.
-	FieldReason = "reason"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeManager holds the string denoting the manager edge name in mutations.
@@ -79,7 +77,6 @@ var Columns = []string{
 	FieldManagerID,
 	FieldSubscribeID,
 	FieldDays,
-	FieldReason,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

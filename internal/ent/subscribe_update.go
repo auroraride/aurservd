@@ -172,37 +172,24 @@ func (su *SubscribeUpdate) AddVoltage(f float64) *SubscribeUpdate {
 	return su
 }
 
-// SetDays sets the "days" field.
-func (su *SubscribeUpdate) SetDays(i int) *SubscribeUpdate {
-	su.mutation.ResetDays()
-	su.mutation.SetDays(i)
+// SetInitialDays sets the "initial_days" field.
+func (su *SubscribeUpdate) SetInitialDays(i int) *SubscribeUpdate {
+	su.mutation.ResetInitialDays()
+	su.mutation.SetInitialDays(i)
 	return su
 }
 
-// AddDays adds i to the "days" field.
-func (su *SubscribeUpdate) AddDays(i int) *SubscribeUpdate {
-	su.mutation.AddDays(i)
-	return su
-}
-
-// SetPlanDays sets the "plan_days" field.
-func (su *SubscribeUpdate) SetPlanDays(i int) *SubscribeUpdate {
-	su.mutation.ResetPlanDays()
-	su.mutation.SetPlanDays(i)
-	return su
-}
-
-// SetNillablePlanDays sets the "plan_days" field if the given value is not nil.
-func (su *SubscribeUpdate) SetNillablePlanDays(i *int) *SubscribeUpdate {
+// SetNillableInitialDays sets the "initial_days" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableInitialDays(i *int) *SubscribeUpdate {
 	if i != nil {
-		su.SetPlanDays(*i)
+		su.SetInitialDays(*i)
 	}
 	return su
 }
 
-// AddPlanDays adds i to the "plan_days" field.
-func (su *SubscribeUpdate) AddPlanDays(i int) *SubscribeUpdate {
-	su.mutation.AddPlanDays(i)
+// AddInitialDays adds i to the "initial_days" field.
+func (su *SubscribeUpdate) AddInitialDays(i int) *SubscribeUpdate {
+	su.mutation.AddInitialDays(i)
 	return su
 }
 
@@ -245,6 +232,48 @@ func (su *SubscribeUpdate) SetNillablePauseDays(i *int) *SubscribeUpdate {
 // AddPauseDays adds i to the "pause_days" field.
 func (su *SubscribeUpdate) AddPauseDays(i int) *SubscribeUpdate {
 	su.mutation.AddPauseDays(i)
+	return su
+}
+
+// SetRenewalDays sets the "renewal_days" field.
+func (su *SubscribeUpdate) SetRenewalDays(i int) *SubscribeUpdate {
+	su.mutation.ResetRenewalDays()
+	su.mutation.SetRenewalDays(i)
+	return su
+}
+
+// SetNillableRenewalDays sets the "renewal_days" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableRenewalDays(i *int) *SubscribeUpdate {
+	if i != nil {
+		su.SetRenewalDays(*i)
+	}
+	return su
+}
+
+// AddRenewalDays adds i to the "renewal_days" field.
+func (su *SubscribeUpdate) AddRenewalDays(i int) *SubscribeUpdate {
+	su.mutation.AddRenewalDays(i)
+	return su
+}
+
+// SetOverdueDays sets the "overdue_days" field.
+func (su *SubscribeUpdate) SetOverdueDays(i int) *SubscribeUpdate {
+	su.mutation.ResetOverdueDays()
+	su.mutation.SetOverdueDays(i)
+	return su
+}
+
+// SetNillableOverdueDays sets the "overdue_days" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableOverdueDays(i *int) *SubscribeUpdate {
+	if i != nil {
+		su.SetOverdueDays(*i)
+	}
+	return su
+}
+
+// AddOverdueDays adds i to the "overdue_days" field.
+func (su *SubscribeUpdate) AddOverdueDays(i int) *SubscribeUpdate {
+	su.mutation.AddOverdueDays(i)
 	return su
 }
 
@@ -707,32 +736,18 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: subscribe.FieldVoltage,
 		})
 	}
-	if value, ok := su.mutation.Days(); ok {
+	if value, ok := su.mutation.InitialDays(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Value:  value,
-			Column: subscribe.FieldDays,
+			Column: subscribe.FieldInitialDays,
 		})
 	}
-	if value, ok := su.mutation.AddedDays(); ok {
+	if value, ok := su.mutation.AddedInitialDays(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Value:  value,
-			Column: subscribe.FieldDays,
-		})
-	}
-	if value, ok := su.mutation.PlanDays(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldPlanDays,
-		})
-	}
-	if value, ok := su.mutation.AddedPlanDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldPlanDays,
+			Column: subscribe.FieldInitialDays,
 		})
 	}
 	if value, ok := su.mutation.AlterDays(); ok {
@@ -761,6 +776,34 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldPauseDays,
+		})
+	}
+	if value, ok := su.mutation.RenewalDays(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldRenewalDays,
+		})
+	}
+	if value, ok := su.mutation.AddedRenewalDays(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldRenewalDays,
+		})
+	}
+	if value, ok := su.mutation.OverdueDays(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldOverdueDays,
+		})
+	}
+	if value, ok := su.mutation.AddedOverdueDays(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldOverdueDays,
 		})
 	}
 	if value, ok := su.mutation.Remaining(); ok {
@@ -1321,37 +1364,24 @@ func (suo *SubscribeUpdateOne) AddVoltage(f float64) *SubscribeUpdateOne {
 	return suo
 }
 
-// SetDays sets the "days" field.
-func (suo *SubscribeUpdateOne) SetDays(i int) *SubscribeUpdateOne {
-	suo.mutation.ResetDays()
-	suo.mutation.SetDays(i)
+// SetInitialDays sets the "initial_days" field.
+func (suo *SubscribeUpdateOne) SetInitialDays(i int) *SubscribeUpdateOne {
+	suo.mutation.ResetInitialDays()
+	suo.mutation.SetInitialDays(i)
 	return suo
 }
 
-// AddDays adds i to the "days" field.
-func (suo *SubscribeUpdateOne) AddDays(i int) *SubscribeUpdateOne {
-	suo.mutation.AddDays(i)
-	return suo
-}
-
-// SetPlanDays sets the "plan_days" field.
-func (suo *SubscribeUpdateOne) SetPlanDays(i int) *SubscribeUpdateOne {
-	suo.mutation.ResetPlanDays()
-	suo.mutation.SetPlanDays(i)
-	return suo
-}
-
-// SetNillablePlanDays sets the "plan_days" field if the given value is not nil.
-func (suo *SubscribeUpdateOne) SetNillablePlanDays(i *int) *SubscribeUpdateOne {
+// SetNillableInitialDays sets the "initial_days" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableInitialDays(i *int) *SubscribeUpdateOne {
 	if i != nil {
-		suo.SetPlanDays(*i)
+		suo.SetInitialDays(*i)
 	}
 	return suo
 }
 
-// AddPlanDays adds i to the "plan_days" field.
-func (suo *SubscribeUpdateOne) AddPlanDays(i int) *SubscribeUpdateOne {
-	suo.mutation.AddPlanDays(i)
+// AddInitialDays adds i to the "initial_days" field.
+func (suo *SubscribeUpdateOne) AddInitialDays(i int) *SubscribeUpdateOne {
+	suo.mutation.AddInitialDays(i)
 	return suo
 }
 
@@ -1394,6 +1424,48 @@ func (suo *SubscribeUpdateOne) SetNillablePauseDays(i *int) *SubscribeUpdateOne 
 // AddPauseDays adds i to the "pause_days" field.
 func (suo *SubscribeUpdateOne) AddPauseDays(i int) *SubscribeUpdateOne {
 	suo.mutation.AddPauseDays(i)
+	return suo
+}
+
+// SetRenewalDays sets the "renewal_days" field.
+func (suo *SubscribeUpdateOne) SetRenewalDays(i int) *SubscribeUpdateOne {
+	suo.mutation.ResetRenewalDays()
+	suo.mutation.SetRenewalDays(i)
+	return suo
+}
+
+// SetNillableRenewalDays sets the "renewal_days" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableRenewalDays(i *int) *SubscribeUpdateOne {
+	if i != nil {
+		suo.SetRenewalDays(*i)
+	}
+	return suo
+}
+
+// AddRenewalDays adds i to the "renewal_days" field.
+func (suo *SubscribeUpdateOne) AddRenewalDays(i int) *SubscribeUpdateOne {
+	suo.mutation.AddRenewalDays(i)
+	return suo
+}
+
+// SetOverdueDays sets the "overdue_days" field.
+func (suo *SubscribeUpdateOne) SetOverdueDays(i int) *SubscribeUpdateOne {
+	suo.mutation.ResetOverdueDays()
+	suo.mutation.SetOverdueDays(i)
+	return suo
+}
+
+// SetNillableOverdueDays sets the "overdue_days" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableOverdueDays(i *int) *SubscribeUpdateOne {
+	if i != nil {
+		suo.SetOverdueDays(*i)
+	}
+	return suo
+}
+
+// AddOverdueDays adds i to the "overdue_days" field.
+func (suo *SubscribeUpdateOne) AddOverdueDays(i int) *SubscribeUpdateOne {
+	suo.mutation.AddOverdueDays(i)
 	return suo
 }
 
@@ -1886,32 +1958,18 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 			Column: subscribe.FieldVoltage,
 		})
 	}
-	if value, ok := suo.mutation.Days(); ok {
+	if value, ok := suo.mutation.InitialDays(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Value:  value,
-			Column: subscribe.FieldDays,
+			Column: subscribe.FieldInitialDays,
 		})
 	}
-	if value, ok := suo.mutation.AddedDays(); ok {
+	if value, ok := suo.mutation.AddedInitialDays(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Value:  value,
-			Column: subscribe.FieldDays,
-		})
-	}
-	if value, ok := suo.mutation.PlanDays(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldPlanDays,
-		})
-	}
-	if value, ok := suo.mutation.AddedPlanDays(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: subscribe.FieldPlanDays,
+			Column: subscribe.FieldInitialDays,
 		})
 	}
 	if value, ok := suo.mutation.AlterDays(); ok {
@@ -1940,6 +1998,34 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldPauseDays,
+		})
+	}
+	if value, ok := suo.mutation.RenewalDays(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldRenewalDays,
+		})
+	}
+	if value, ok := suo.mutation.AddedRenewalDays(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldRenewalDays,
+		})
+	}
+	if value, ok := suo.mutation.OverdueDays(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldOverdueDays,
+		})
+	}
+	if value, ok := suo.mutation.AddedOverdueDays(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldOverdueDays,
 		})
 	}
 	if value, ok := suo.mutation.Remaining(); ok {

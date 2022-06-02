@@ -121,12 +121,6 @@ func (sau *SubscribeAlterUpdate) AddDays(i int) *SubscribeAlterUpdate {
 	return sau
 }
 
-// SetReason sets the "reason" field.
-func (sau *SubscribeAlterUpdate) SetReason(s string) *SubscribeAlterUpdate {
-	sau.mutation.SetReason(s)
-	return sau
-}
-
 // SetRider sets the "rider" edge to the Rider entity.
 func (sau *SubscribeAlterUpdate) SetRider(r *Rider) *SubscribeAlterUpdate {
 	return sau.SetRiderID(r.ID)
@@ -336,13 +330,6 @@ func (sau *SubscribeAlterUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribealter.FieldDays,
-		})
-	}
-	if value, ok := sau.mutation.Reason(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribealter.FieldReason,
 		})
 	}
 	if sau.mutation.RiderCleared() {
@@ -555,12 +542,6 @@ func (sauo *SubscribeAlterUpdateOne) SetDays(i int) *SubscribeAlterUpdateOne {
 // AddDays adds i to the "days" field.
 func (sauo *SubscribeAlterUpdateOne) AddDays(i int) *SubscribeAlterUpdateOne {
 	sauo.mutation.AddDays(i)
-	return sauo
-}
-
-// SetReason sets the "reason" field.
-func (sauo *SubscribeAlterUpdateOne) SetReason(s string) *SubscribeAlterUpdateOne {
-	sauo.mutation.SetReason(s)
 	return sauo
 }
 
@@ -803,13 +784,6 @@ func (sauo *SubscribeAlterUpdateOne) sqlSave(ctx context.Context) (_node *Subscr
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribealter.FieldDays,
-		})
-	}
-	if value, ok := sauo.mutation.Reason(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribealter.FieldReason,
 		})
 	}
 	if sauo.mutation.RiderCleared() {

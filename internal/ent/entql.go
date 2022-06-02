@@ -552,10 +552,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldStatus:         {Type: field.TypeUint8, Column: subscribe.FieldStatus},
 			subscribe.FieldType:           {Type: field.TypeUint, Column: subscribe.FieldType},
 			subscribe.FieldVoltage:        {Type: field.TypeFloat64, Column: subscribe.FieldVoltage},
-			subscribe.FieldDays:           {Type: field.TypeInt, Column: subscribe.FieldDays},
-			subscribe.FieldPlanDays:       {Type: field.TypeInt, Column: subscribe.FieldPlanDays},
+			subscribe.FieldInitialDays:    {Type: field.TypeInt, Column: subscribe.FieldInitialDays},
 			subscribe.FieldAlterDays:      {Type: field.TypeInt, Column: subscribe.FieldAlterDays},
 			subscribe.FieldPauseDays:      {Type: field.TypeInt, Column: subscribe.FieldPauseDays},
+			subscribe.FieldRenewalDays:    {Type: field.TypeInt, Column: subscribe.FieldRenewalDays},
+			subscribe.FieldOverdueDays:    {Type: field.TypeInt, Column: subscribe.FieldOverdueDays},
 			subscribe.FieldRemaining:      {Type: field.TypeInt, Column: subscribe.FieldRemaining},
 			subscribe.FieldPausedAt:       {Type: field.TypeTime, Column: subscribe.FieldPausedAt},
 			subscribe.FieldStartAt:        {Type: field.TypeTime, Column: subscribe.FieldStartAt},
@@ -584,7 +585,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribealter.FieldManagerID:    {Type: field.TypeUint64, Column: subscribealter.FieldManagerID},
 			subscribealter.FieldSubscribeID:  {Type: field.TypeUint64, Column: subscribealter.FieldSubscribeID},
 			subscribealter.FieldDays:         {Type: field.TypeInt, Column: subscribealter.FieldDays},
-			subscribealter.FieldReason:       {Type: field.TypeString, Column: subscribealter.FieldReason},
 		},
 	}
 	graph.Nodes[21] = &sqlgraph.Node{
@@ -4023,14 +4023,9 @@ func (f *SubscribeFilter) WhereVoltage(p entql.Float64P) {
 	f.Where(p.Field(subscribe.FieldVoltage))
 }
 
-// WhereDays applies the entql int predicate on the days field.
-func (f *SubscribeFilter) WhereDays(p entql.IntP) {
-	f.Where(p.Field(subscribe.FieldDays))
-}
-
-// WherePlanDays applies the entql int predicate on the plan_days field.
-func (f *SubscribeFilter) WherePlanDays(p entql.IntP) {
-	f.Where(p.Field(subscribe.FieldPlanDays))
+// WhereInitialDays applies the entql int predicate on the initial_days field.
+func (f *SubscribeFilter) WhereInitialDays(p entql.IntP) {
+	f.Where(p.Field(subscribe.FieldInitialDays))
 }
 
 // WhereAlterDays applies the entql int predicate on the alter_days field.
@@ -4041,6 +4036,16 @@ func (f *SubscribeFilter) WhereAlterDays(p entql.IntP) {
 // WherePauseDays applies the entql int predicate on the pause_days field.
 func (f *SubscribeFilter) WherePauseDays(p entql.IntP) {
 	f.Where(p.Field(subscribe.FieldPauseDays))
+}
+
+// WhereRenewalDays applies the entql int predicate on the renewal_days field.
+func (f *SubscribeFilter) WhereRenewalDays(p entql.IntP) {
+	f.Where(p.Field(subscribe.FieldRenewalDays))
+}
+
+// WhereOverdueDays applies the entql int predicate on the overdue_days field.
+func (f *SubscribeFilter) WhereOverdueDays(p entql.IntP) {
+	f.Where(p.Field(subscribe.FieldOverdueDays))
 }
 
 // WhereRemaining applies the entql int predicate on the remaining field.
@@ -4268,11 +4273,6 @@ func (f *SubscribeAlterFilter) WhereSubscribeID(p entql.Uint64P) {
 // WhereDays applies the entql int predicate on the days field.
 func (f *SubscribeAlterFilter) WhereDays(p entql.IntP) {
 	f.Where(p.Field(subscribealter.FieldDays))
-}
-
-// WhereReason applies the entql string predicate on the reason field.
-func (f *SubscribeAlterFilter) WhereReason(p entql.StringP) {
-	f.Where(p.Field(subscribealter.FieldReason))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.

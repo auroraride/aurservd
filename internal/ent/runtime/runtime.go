@@ -518,20 +518,28 @@ func init() {
 	subscribeDescStatus := subscribeFields[2].Descriptor()
 	// subscribe.DefaultStatus holds the default value on creation for the status field.
 	subscribe.DefaultStatus = subscribeDescStatus.Default.(uint8)
-	// subscribeDescPlanDays is the schema descriptor for plan_days field.
-	subscribeDescPlanDays := subscribeFields[6].Descriptor()
-	// subscribe.DefaultPlanDays holds the default value on creation for the plan_days field.
-	subscribe.DefaultPlanDays = subscribeDescPlanDays.Default.(int)
+	// subscribeDescInitialDays is the schema descriptor for initial_days field.
+	subscribeDescInitialDays := subscribeFields[5].Descriptor()
+	// subscribe.DefaultInitialDays holds the default value on creation for the initial_days field.
+	subscribe.DefaultInitialDays = subscribeDescInitialDays.Default.(int)
 	// subscribeDescAlterDays is the schema descriptor for alter_days field.
-	subscribeDescAlterDays := subscribeFields[7].Descriptor()
+	subscribeDescAlterDays := subscribeFields[6].Descriptor()
 	// subscribe.DefaultAlterDays holds the default value on creation for the alter_days field.
 	subscribe.DefaultAlterDays = subscribeDescAlterDays.Default.(int)
 	// subscribeDescPauseDays is the schema descriptor for pause_days field.
-	subscribeDescPauseDays := subscribeFields[8].Descriptor()
+	subscribeDescPauseDays := subscribeFields[7].Descriptor()
 	// subscribe.DefaultPauseDays holds the default value on creation for the pause_days field.
 	subscribe.DefaultPauseDays = subscribeDescPauseDays.Default.(int)
+	// subscribeDescRenewalDays is the schema descriptor for renewal_days field.
+	subscribeDescRenewalDays := subscribeFields[8].Descriptor()
+	// subscribe.DefaultRenewalDays holds the default value on creation for the renewal_days field.
+	subscribe.DefaultRenewalDays = subscribeDescRenewalDays.Default.(int)
+	// subscribeDescOverdueDays is the schema descriptor for overdue_days field.
+	subscribeDescOverdueDays := subscribeFields[9].Descriptor()
+	// subscribe.DefaultOverdueDays holds the default value on creation for the overdue_days field.
+	subscribe.DefaultOverdueDays = subscribeDescOverdueDays.Default.(int)
 	// subscribeDescRemaining is the schema descriptor for remaining field.
-	subscribeDescRemaining := subscribeFields[9].Descriptor()
+	subscribeDescRemaining := subscribeFields[10].Descriptor()
 	// subscribe.DefaultRemaining holds the default value on creation for the remaining field.
 	subscribe.DefaultRemaining = subscribeDescRemaining.Default.(int)
 	subscribealterMixin := schema.SubscribeAlter{}.Mixin()

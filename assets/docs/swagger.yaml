@@ -974,10 +974,13 @@ definitions:
       subscribe:
         allOf:
         - $ref: '#/definitions/model.RiderItemSubscribe'
-        description: 当前有效骑士卡, 若无此字段则代表当前无有效骑士卡
+        description: 当前有效订阅信息, 若无此字段则代表当前无有效订阅(订阅 = 骑手骑士卡)
     type: object
   model.RiderItemSubscribe:
     properties:
+      id:
+        description: 订阅ID
+        type: integer
       remaining:
         description: 剩余天数
         type: integer
@@ -1230,7 +1233,7 @@ definitions:
         - $ref: '#/definitions/model.City'
         description: 所属城市
       days:
-        description: 总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 已缴纳逾期滞纳金天数
+        description: 总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 续费天数 + 已缴纳逾期滞纳金天数
         type: integer
       endAt:
         description: 结束时间 / 预计套餐结束时间
@@ -1247,6 +1250,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.SubscribeOrderInfo'
         description: 订单信息
+      overdueDays:
+        description: 已缴纳逾期滞纳金天数
+        type: integer
       pauseDays:
         description: 暂停天数
         type: integer
@@ -1258,7 +1264,7 @@ definitions:
         description: 骑士卡天数
         type: integer
       remaining:
-        description: 剩余天数
+        description: 剩余天数 = 总天数 - 已过时间
         type: integer
       startAt:
         description: 开始时间
@@ -1275,6 +1281,22 @@ definitions:
       voltage:
         description: 可用电压型号
         type: number
+    type: object
+  model.SubscribeAlter:
+    properties:
+      days:
+        description: 调整天数, 正加负减
+        type: integer
+      id:
+        description: 订阅ID
+        type: integer
+      reason:
+        description: 调整理由
+        type: string
+    required:
+    - days
+    - id
+    - reason
     type: object
   model.SubscribeOrderInfo:
     properties:
@@ -2444,6 +2466,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StoreItem'
       summary: M30008 修改门店
+      tags:
+      - '[M]管理接口'
+  /manager/v1/subscribe/alter:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerSubscribeAlter
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.SubscribeAlter'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M70004 修改订阅时间
       tags:
       - '[M]管理接口'
   /manager/v1/user:

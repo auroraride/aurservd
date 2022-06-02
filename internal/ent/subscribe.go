@@ -36,7 +36,7 @@ type Subscribe struct {
 	// 最后修改人
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// Remark holds the value of the "remark" field.
-	// 备注
+	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
 	// PlanID holds the value of the "plan_id" field.
 	// 骑士卡ID
@@ -62,20 +62,23 @@ type Subscribe struct {
 	// Voltage holds the value of the "voltage" field.
 	// 可用电压型号
 	Voltage float64 `json:"voltage,omitempty"`
-	// Days holds the value of the "days" field.
-	// 总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 已缴纳逾期滞纳金天数
-	Days int `json:"days,omitempty"`
-	// PlanDays holds the value of the "plan_days" field.
-	// 骑士卡天数
-	PlanDays int `json:"plan_days,omitempty"`
+	// InitialDays holds the value of the "initial_days" field.
+	// 初始骑士卡天数
+	InitialDays int `json:"initial_days,omitempty"`
 	// AlterDays holds the value of the "alter_days" field.
 	// 改动天数
 	AlterDays int `json:"alter_days,omitempty"`
 	// PauseDays holds the value of the "pause_days" field.
 	// 暂停天数
 	PauseDays int `json:"pause_days,omitempty"`
+	// RenewalDays holds the value of the "renewal_days" field.
+	// 续期天数
+	RenewalDays int `json:"renewal_days,omitempty"`
+	// OverdueDays holds the value of the "overdue_days" field.
+	// 已缴纳逾期滞纳金天数
+	OverdueDays int `json:"overdue_days,omitempty"`
 	// Remaining holds the value of the "remaining" field.
-	// 剩余天数, 复数为逾期
+	// 剩余天数, 负数为逾期
 	Remaining int `json:"remaining,omitempty"`
 	// PausedAt holds the value of the "paused_at" field.
 	// 当前是否暂停计费, 暂停计费时间
@@ -223,7 +226,7 @@ func (*Subscribe) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case subscribe.FieldVoltage:
 			values[i] = new(sql.NullFloat64)
-		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldDays, subscribe.FieldPlanDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldRemaining:
+		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining:
 			values[i] = new(sql.NullInt64)
 		case subscribe.FieldRemark:
 			values[i] = new(sql.NullString)
@@ -339,17 +342,11 @@ func (s *Subscribe) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.Voltage = value.Float64
 			}
-		case subscribe.FieldDays:
+		case subscribe.FieldInitialDays:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field days", values[i])
+				return fmt.Errorf("unexpected type %T for field initial_days", values[i])
 			} else if value.Valid {
-				s.Days = int(value.Int64)
-			}
-		case subscribe.FieldPlanDays:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field plan_days", values[i])
-			} else if value.Valid {
-				s.PlanDays = int(value.Int64)
+				s.InitialDays = int(value.Int64)
 			}
 		case subscribe.FieldAlterDays:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -362,6 +359,18 @@ func (s *Subscribe) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field pause_days", values[i])
 			} else if value.Valid {
 				s.PauseDays = int(value.Int64)
+			}
+		case subscribe.FieldRenewalDays:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field renewal_days", values[i])
+			} else if value.Valid {
+				s.RenewalDays = int(value.Int64)
+			}
+		case subscribe.FieldOverdueDays:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field overdue_days", values[i])
+			} else if value.Valid {
+				s.OverdueDays = int(value.Int64)
 			}
 		case subscribe.FieldRemaining:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -495,14 +504,16 @@ func (s *Subscribe) String() string {
 	builder.WriteString(fmt.Sprintf("%v", s.Type))
 	builder.WriteString(", voltage=")
 	builder.WriteString(fmt.Sprintf("%v", s.Voltage))
-	builder.WriteString(", days=")
-	builder.WriteString(fmt.Sprintf("%v", s.Days))
-	builder.WriteString(", plan_days=")
-	builder.WriteString(fmt.Sprintf("%v", s.PlanDays))
+	builder.WriteString(", initial_days=")
+	builder.WriteString(fmt.Sprintf("%v", s.InitialDays))
 	builder.WriteString(", alter_days=")
 	builder.WriteString(fmt.Sprintf("%v", s.AlterDays))
 	builder.WriteString(", pause_days=")
 	builder.WriteString(fmt.Sprintf("%v", s.PauseDays))
+	builder.WriteString(", renewal_days=")
+	builder.WriteString(fmt.Sprintf("%v", s.RenewalDays))
+	builder.WriteString(", overdue_days=")
+	builder.WriteString(fmt.Sprintf("%v", s.OverdueDays))
 	builder.WriteString(", remaining=")
 	builder.WriteString(fmt.Sprintf("%v", s.Remaining))
 	if v := s.PausedAt; v != nil {

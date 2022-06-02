@@ -1726,6 +1726,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/subscribe/alter": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M70004 修改订阅时间",
+                "operationId": "ManagerSubscribeAlter",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.SubscribeAlter"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/user": {
             "post": {
                 "consumes": [
@@ -3998,7 +4039,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "subscribe": {
-                    "description": "当前有效骑士卡, 若无此字段则代表当前无有效骑士卡",
+                    "description": "当前有效订阅信息, 若无此字段则代表当前无有效订阅(订阅 = 骑手骑士卡)",
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.RiderItemSubscribe"
@@ -4010,6 +4051,10 @@ const docTemplate = `{
         "model.RiderItemSubscribe": {
             "type": "object",
             "properties": {
+                "id": {
+                    "description": "订阅ID",
+                    "type": "integer"
+                },
                 "remaining": {
                     "description": "剩余天数",
                     "type": "integer"
@@ -4379,7 +4424,7 @@ const docTemplate = `{
                     ]
                 },
                 "days": {
-                    "description": "总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 已缴纳逾期滞纳金天数",
+                    "description": "总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 续费天数 + 已缴纳逾期滞纳金天数",
                     "type": "integer"
                 },
                 "endAt": {
@@ -4405,6 +4450,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "overdueDays": {
+                    "description": "已缴纳逾期滞纳金天数",
+                    "type": "integer"
+                },
                 "pauseDays": {
                     "description": "暂停天数",
                     "type": "integer"
@@ -4422,7 +4471,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "remaining": {
-                    "description": "剩余天数",
+                    "description": "剩余天数 = 总天数 - 已过时间",
                     "type": "integer"
                 },
                 "startAt": {
@@ -4443,6 +4492,28 @@ const docTemplate = `{
                 "voltage": {
                     "description": "可用电压型号",
                     "type": "number"
+                }
+            }
+        },
+        "model.SubscribeAlter": {
+            "type": "object",
+            "required": [
+                "days",
+                "id",
+                "reason"
+            ],
+            "properties": {
+                "days": {
+                    "description": "调整天数, 正加负减",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "订阅ID",
+                    "type": "integer"
+                },
+                "reason": {
+                    "description": "调整理由",
+                    "type": "string"
                 }
             }
         },

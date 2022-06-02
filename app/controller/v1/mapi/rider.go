@@ -62,8 +62,3 @@ func (*rider) Block(c echo.Context) (err error) {
     service.NewRiderWithModifier(ctx.Modifier).Block(req)
     return ctx.SendResponse()
 }
-
-func (*rider) Days(c echo.Context) (err error) {
-    ctx := app.Context(c)
-    return ctx.SendResponse()
-}

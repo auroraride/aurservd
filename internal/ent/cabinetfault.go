@@ -35,7 +35,7 @@ type CabinetFault struct {
 	// 最后修改人
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// Remark holds the value of the "remark" field.
-	// 备注
+	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
 	// CityID holds the value of the "city_id" field.
 	// 城市ID

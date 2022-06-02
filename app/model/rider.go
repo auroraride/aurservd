@@ -61,7 +61,6 @@ type RiderSampleInfo struct {
 }
 
 // RiderListReq 骑手列表请求
-// TODO status 以下还未做
 type RiderListReq struct {
     PaginationReq
 
@@ -76,7 +75,9 @@ type RiderListReq struct {
     PlanID          *uint64           `json:"planId"`                                    // 骑士卡
 }
 
+// RiderItemSubscribe 骑手骑士卡简单信息
 type RiderItemSubscribe struct {
+    ID        uint64  `json:"id"`        // 订阅ID
     Status    uint8   `json:"status"`    // 订阅状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期(计算状态) 当 status = 1 且 remaining <= 3 的时候是即将到期
     Remaining int     `json:"remaining"` // 剩余天数
     Voltage   float64 `json:"voltage"`   // 骑士卡可用电压型号
@@ -93,7 +94,7 @@ type RiderItem struct {
     Deposit      float64          `json:"deposit"`      // 押金
     // 团签企业信息, 若无此字段则为个签用户
     Enterprise *EnterpriseItem `json:"enterprise,omitempty"`
-    // 当前有效骑士卡, 若无此字段则代表当前无有效骑士卡
+    // 当前有效订阅信息, 若无此字段则代表当前无有效订阅(订阅 = 骑手骑士卡)
     Subscribe *RiderItemSubscribe `json:"subscribe,omitempty"`
 }
 

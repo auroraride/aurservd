@@ -34,7 +34,7 @@ type SubscribeAlter struct {
 	// 最后修改人
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// Remark holds the value of the "remark" field.
-	// 备注
+	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
 	// RiderID holds the value of the "rider_id" field.
 	// 骑手ID
@@ -48,9 +48,6 @@ type SubscribeAlter struct {
 	// Days holds the value of the "days" field.
 	// 更改天数
 	Days int `json:"days,omitempty"`
-	// Reason holds the value of the "reason" field.
-	// 更改原因
-	Reason string `json:"reason,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeAlterQuery when eager-loading is set.
 	Edges SubscribeAlterEdges `json:"edges"`
@@ -120,7 +117,7 @@ func (*SubscribeAlter) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case subscribealter.FieldID, subscribealter.FieldRiderID, subscribealter.FieldManagerID, subscribealter.FieldSubscribeID, subscribealter.FieldDays:
 			values[i] = new(sql.NullInt64)
-		case subscribealter.FieldRemark, subscribealter.FieldReason:
+		case subscribealter.FieldRemark:
 			values[i] = new(sql.NullString)
 		case subscribealter.FieldCreatedAt, subscribealter.FieldUpdatedAt, subscribealter.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -210,12 +207,6 @@ func (sa *SubscribeAlter) assignValues(columns []string, values []interface{}) e
 			} else if value.Valid {
 				sa.Days = int(value.Int64)
 			}
-		case subscribealter.FieldReason:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field reason", values[i])
-			} else if value.Valid {
-				sa.Reason = value.String
-			}
 		}
 	}
 	return nil
@@ -281,8 +272,6 @@ func (sa *SubscribeAlter) String() string {
 	builder.WriteString(fmt.Sprintf("%v", sa.SubscribeID))
 	builder.WriteString(", days=")
 	builder.WriteString(fmt.Sprintf("%v", sa.Days))
-	builder.WriteString(", reason=")
-	builder.WriteString(sa.Reason)
 	builder.WriteByte(')')
 	return builder.String()
 }

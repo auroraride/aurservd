@@ -41,14 +41,16 @@ const (
 	FieldType = "type"
 	// FieldVoltage holds the string denoting the voltage field in the database.
 	FieldVoltage = "voltage"
-	// FieldDays holds the string denoting the days field in the database.
-	FieldDays = "days"
-	// FieldPlanDays holds the string denoting the plan_days field in the database.
-	FieldPlanDays = "plan_days"
+	// FieldInitialDays holds the string denoting the initial_days field in the database.
+	FieldInitialDays = "initial_days"
 	// FieldAlterDays holds the string denoting the alter_days field in the database.
 	FieldAlterDays = "alter_days"
 	// FieldPauseDays holds the string denoting the pause_days field in the database.
 	FieldPauseDays = "pause_days"
+	// FieldRenewalDays holds the string denoting the renewal_days field in the database.
+	FieldRenewalDays = "renewal_days"
+	// FieldOverdueDays holds the string denoting the overdue_days field in the database.
+	FieldOverdueDays = "overdue_days"
 	// FieldRemaining holds the string denoting the remaining field in the database.
 	FieldRemaining = "remaining"
 	// FieldPausedAt holds the string denoting the paused_at field in the database.
@@ -152,10 +154,11 @@ var Columns = []string{
 	FieldStatus,
 	FieldType,
 	FieldVoltage,
-	FieldDays,
-	FieldPlanDays,
+	FieldInitialDays,
 	FieldAlterDays,
 	FieldPauseDays,
+	FieldRenewalDays,
+	FieldOverdueDays,
 	FieldRemaining,
 	FieldPausedAt,
 	FieldStartAt,
@@ -189,12 +192,16 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus uint8
-	// DefaultPlanDays holds the default value on creation for the "plan_days" field.
-	DefaultPlanDays int
+	// DefaultInitialDays holds the default value on creation for the "initial_days" field.
+	DefaultInitialDays int
 	// DefaultAlterDays holds the default value on creation for the "alter_days" field.
 	DefaultAlterDays int
 	// DefaultPauseDays holds the default value on creation for the "pause_days" field.
 	DefaultPauseDays int
+	// DefaultRenewalDays holds the default value on creation for the "renewal_days" field.
+	DefaultRenewalDays int
+	// DefaultOverdueDays holds the default value on creation for the "overdue_days" field.
+	DefaultOverdueDays int
 	// DefaultRemaining holds the default value on creation for the "remaining" field.
 	DefaultRemaining int
 )

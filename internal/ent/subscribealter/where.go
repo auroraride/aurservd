@@ -149,13 +149,6 @@ func Days(v int) predicate.SubscribeAlter {
 	})
 }
 
-// Reason applies equality check predicate on the "reason" field. It's identical to ReasonEQ.
-func Reason(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldReason), v))
-	})
-}
-
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(func(s *sql.Selector) {
@@ -768,117 +761,6 @@ func DaysLT(v int) predicate.SubscribeAlter {
 func DaysLTE(v int) predicate.SubscribeAlter {
 	return predicate.SubscribeAlter(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldDays), v))
-	})
-}
-
-// ReasonEQ applies the EQ predicate on the "reason" field.
-func ReasonEQ(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldReason), v))
-	})
-}
-
-// ReasonNEQ applies the NEQ predicate on the "reason" field.
-func ReasonNEQ(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldReason), v))
-	})
-}
-
-// ReasonIn applies the In predicate on the "reason" field.
-func ReasonIn(vs ...string) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldReason), v...))
-	})
-}
-
-// ReasonNotIn applies the NotIn predicate on the "reason" field.
-func ReasonNotIn(vs ...string) predicate.SubscribeAlter {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldReason), v...))
-	})
-}
-
-// ReasonGT applies the GT predicate on the "reason" field.
-func ReasonGT(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldReason), v))
-	})
-}
-
-// ReasonGTE applies the GTE predicate on the "reason" field.
-func ReasonGTE(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldReason), v))
-	})
-}
-
-// ReasonLT applies the LT predicate on the "reason" field.
-func ReasonLT(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldReason), v))
-	})
-}
-
-// ReasonLTE applies the LTE predicate on the "reason" field.
-func ReasonLTE(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldReason), v))
-	})
-}
-
-// ReasonContains applies the Contains predicate on the "reason" field.
-func ReasonContains(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldReason), v))
-	})
-}
-
-// ReasonHasPrefix applies the HasPrefix predicate on the "reason" field.
-func ReasonHasPrefix(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldReason), v))
-	})
-}
-
-// ReasonHasSuffix applies the HasSuffix predicate on the "reason" field.
-func ReasonHasSuffix(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldReason), v))
-	})
-}
-
-// ReasonEqualFold applies the EqualFold predicate on the "reason" field.
-func ReasonEqualFold(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldReason), v))
-	})
-}
-
-// ReasonContainsFold applies the ContainsFold predicate on the "reason" field.
-func ReasonContainsFold(v string) predicate.SubscribeAlter {
-	return predicate.SubscribeAlter(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldReason), v))
 	})
 }
 

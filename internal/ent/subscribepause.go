@@ -34,7 +34,7 @@ type SubscribePause struct {
 	// 最后修改人
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// Remark holds the value of the "remark" field.
-	// 备注
+	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
 	// RiderID holds the value of the "rider_id" field.
 	// 骑手ID

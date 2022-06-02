@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     log "github.com/sirupsen/logrus"
@@ -47,15 +48,6 @@ func NewSubscribeWithModifier(m *model.Modifier) *subscribeService {
     return s
 }
 
-// QueryRecentOnly 获取骑手最近的一次订阅
-func (s *subscribeService) QueryRecentOnly(riderID uint64) *ent.Subscribe {
-    sub, _ := s.orm.QueryNotDeleted().
-        Where(subscribe.RiderID(riderID)).
-        Order(ent.Desc(subscribe.FieldCreatedAt)).
-        Only(s.ctx)
-    return sub
-}
-
 // Recent 获取骑手最近订阅详情
 func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
     sub, err := s.orm.QueryNotDeleted().
@@ -83,13 +75,14 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
     }
 
     res := &model.Subscribe{
-        ID:        sub.ID,
-        Status:    sub.Status,
-        Voltage:   sub.Voltage,
-        Days:      sub.Days,
-        PauseDays: sub.PauseDays,
-        AlterDays: sub.AlterDays,
-        Remaining: sub.Remaining,
+        ID:          sub.ID,
+        Status:      sub.Status,
+        Voltage:     sub.Voltage,
+        Days:        sub.InitialDays + sub.PauseDays + sub.AlterDays + sub.OverdueDays,
+        PauseDays:   sub.PauseDays,
+        AlterDays:   sub.AlterDays,
+        Remaining:   sub.Remaining,
+        OverdueDays: sub.OverdueDays,
         City: &model.City{
             ID:   sub.Edges.City.ID,
             Name: sub.Edges.City.Name,
@@ -106,8 +99,9 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
         startAt = *sub.StartAt
         res.StartAt = sub.StartAt.Format(carbon.DateLayout)
     } else {
-        res.StartAt = ""
+        res.StartAt = "-"
     }
+
     if sub.EndAt != nil {
         res.EndAt = sub.EndAt.Format(carbon.DateLayout)
     } else {
@@ -165,17 +159,16 @@ func (s *subscribeService) QueryAllEffective() []*ent.Subscribe {
 func (s *subscribeService) UpdateStatus(item *ent.Subscribe) {
     tt := tools.NewTime()
     pauseDays := item.PauseDays
-    alterDays := item.AlterDays
-    days := item.Days
     pastDays := tt.SubDaysToNow(*item.StartAt)
     status := model.SubscribeStatusUsing
     // 寄存中
     if item.PausedAt != nil && item.Edges.Pauses != nil {
         p := item.Edges.Pauses[0]
-        pauseDays += tt.SubDaysToNow(p.StartAt)
+        diff := tt.SubDaysToNow(p.StartAt)
+        pauseDays += diff
     }
     // 剩余天数
-    remaining := days + alterDays + pauseDays - pastDays
+    remaining := item.InitialDays + item.AlterDays + item.OverdueDays + item.RenewalDays + pauseDays - pastDays
     if remaining < 0 {
         status = model.SubscribeStatusOverdue
     }
@@ -188,4 +181,56 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe) {
         log.Errorf("[SUBSCRIBE TASK] %d 更新失败: %v", item.ID, err)
     }
     log.Infof("[SUBSCRIBE TASK] %d 更新成功, 状态: %d, 剩余天数: %d", item.ID, status, remaining)
+}
+
+// AlterDays 修改骑手时间
+func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.RiderItemSubscribe) {
+    // if req.Days +
+    sub, _ := s.orm.QueryNotDeleted().Where(subscribe.ID(req.ID)).Only(s.ctx)
+    if sub == nil {
+        snag.Panic("订阅不存在")
+    }
+    if req.Days+sub.Remaining < 0 {
+        snag.Panic("不能将剩余时间调整为负值")
+    }
+
+    tx, err := ar.Ent.Tx(s.ctx)
+    if err != nil {
+        log.Error(err)
+        snag.Panic("时间修改失败")
+    }
+
+    // 插入时间修改
+    _, err = tx.SubscribeAlter.
+        Create().
+        SetRiderID(sub.RiderID).
+        SetManagerID(s.modifier.ID).
+        SetSubscribeID(sub.ID).
+        SetDays(req.Days).
+        SetRemark(req.Reason).
+        Save(s.ctx)
+    if err != nil {
+        log.Error(err)
+        snag.Panic("时间修改失败")
+    }
+
+    // 更新订阅
+    sub, err = tx.Subscribe.
+        UpdateOneID(sub.ID).
+        AddAlterDays(req.Days).
+        AddRemaining(req.Days).
+        Save(s.ctx)
+    if err != nil {
+        log.Error(err)
+        _ = tx.Rollback()
+        snag.Panic("时间修改失败")
+    }
+
+    _ = tx.Commit()
+    return model.RiderItemSubscribe{
+        ID:        sub.ID,
+        Status:    sub.Status,
+        Remaining: sub.Remaining,
+        Voltage:   sub.Voltage,
+    }
 }

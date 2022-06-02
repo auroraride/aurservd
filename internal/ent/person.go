@@ -31,7 +31,7 @@ type Person struct {
 	// 最后修改人
 	LastModifier *model.Modifier `json:"last_modifier,omitempty"`
 	// Remark holds the value of the "remark" field.
-	// 备注
+	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
 	// Status holds the value of the "status" field.
 	// 认证状态

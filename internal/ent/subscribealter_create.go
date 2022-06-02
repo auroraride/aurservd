@@ -118,12 +118,6 @@ func (sac *SubscribeAlterCreate) SetDays(i int) *SubscribeAlterCreate {
 	return sac
 }
 
-// SetReason sets the "reason" field.
-func (sac *SubscribeAlterCreate) SetReason(s string) *SubscribeAlterCreate {
-	sac.mutation.SetReason(s)
-	return sac
-}
-
 // SetRider sets the "rider" edge to the Rider entity.
 func (sac *SubscribeAlterCreate) SetRider(r *Rider) *SubscribeAlterCreate {
 	return sac.SetRiderID(r.ID)
@@ -255,9 +249,6 @@ func (sac *SubscribeAlterCreate) check() error {
 	if _, ok := sac.mutation.Days(); !ok {
 		return &ValidationError{Name: "days", err: errors.New(`ent: missing required field "SubscribeAlter.days"`)}
 	}
-	if _, ok := sac.mutation.Reason(); !ok {
-		return &ValidationError{Name: "reason", err: errors.New(`ent: missing required field "SubscribeAlter.reason"`)}
-	}
 	if _, ok := sac.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "SubscribeAlter.rider"`)}
 	}
@@ -350,14 +341,6 @@ func (sac *SubscribeAlterCreate) createSpec() (*SubscribeAlter, *sqlgraph.Create
 			Column: subscribealter.FieldDays,
 		})
 		_node.Days = value
-	}
-	if value, ok := sac.mutation.Reason(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: subscribealter.FieldReason,
-		})
-		_node.Reason = value
 	}
 	if nodes := sac.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -623,18 +606,6 @@ func (u *SubscribeAlterUpsert) AddDays(v int) *SubscribeAlterUpsert {
 	return u
 }
 
-// SetReason sets the "reason" field.
-func (u *SubscribeAlterUpsert) SetReason(v string) *SubscribeAlterUpsert {
-	u.Set(subscribealter.FieldReason, v)
-	return u
-}
-
-// UpdateReason sets the "reason" field to the value that was provided on create.
-func (u *SubscribeAlterUpsert) UpdateReason() *SubscribeAlterUpsert {
-	u.SetExcluded(subscribealter.FieldReason)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -857,20 +828,6 @@ func (u *SubscribeAlterUpsertOne) AddDays(v int) *SubscribeAlterUpsertOne {
 func (u *SubscribeAlterUpsertOne) UpdateDays() *SubscribeAlterUpsertOne {
 	return u.Update(func(s *SubscribeAlterUpsert) {
 		s.UpdateDays()
-	})
-}
-
-// SetReason sets the "reason" field.
-func (u *SubscribeAlterUpsertOne) SetReason(v string) *SubscribeAlterUpsertOne {
-	return u.Update(func(s *SubscribeAlterUpsert) {
-		s.SetReason(v)
-	})
-}
-
-// UpdateReason sets the "reason" field to the value that was provided on create.
-func (u *SubscribeAlterUpsertOne) UpdateReason() *SubscribeAlterUpsertOne {
-	return u.Update(func(s *SubscribeAlterUpsert) {
-		s.UpdateReason()
 	})
 }
 
@@ -1260,20 +1217,6 @@ func (u *SubscribeAlterUpsertBulk) AddDays(v int) *SubscribeAlterUpsertBulk {
 func (u *SubscribeAlterUpsertBulk) UpdateDays() *SubscribeAlterUpsertBulk {
 	return u.Update(func(s *SubscribeAlterUpsert) {
 		s.UpdateDays()
-	})
-}
-
-// SetReason sets the "reason" field.
-func (u *SubscribeAlterUpsertBulk) SetReason(v string) *SubscribeAlterUpsertBulk {
-	return u.Update(func(s *SubscribeAlterUpsert) {
-		s.SetReason(v)
-	})
-}
-
-// UpdateReason sets the "reason" field to the value that was provided on create.
-func (u *SubscribeAlterUpsertBulk) UpdateReason() *SubscribeAlterUpsertBulk {
-	return u.Update(func(s *SubscribeAlterUpsert) {
-		s.UpdateReason()
 	})
 }
 

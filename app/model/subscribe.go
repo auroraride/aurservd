@@ -26,16 +26,17 @@ type SubscribeOrderInfo struct {
 }
 
 type Subscribe struct {
-    ID        uint64  `json:"id"`                       // 订阅ID
-    Status    uint8   `json:"status" enums:"0,1,2,3,4"` // 状态 0未激活 1计费中 2寄存中 3已逾期 4已退订 5已取消
-    Voltage   float64 `json:"voltage"`                  // 可用电压型号
-    PlanDays  int     `json:"planDays"`                 // 骑士卡天数
-    Days      int     `json:"days"`                     // 总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 已缴纳逾期滞纳金天数
-    Remaining int     `json:"remaining"`                // 剩余天数
-    PauseDays int     `json:"pauseDays"`                // 暂停天数
-    AlterDays int     `json:"alterDays"`                // 改动天数
-    StartAt   string  `json:"startAt"`                  // 开始时间
-    EndAt     string  `json:"endAt"`                    // 结束时间 / 预计套餐结束时间
+    ID          uint64  `json:"id"`                       // 订阅ID
+    Status      uint8   `json:"status" enums:"0,1,2,3,4"` // 状态 0未激活 1计费中 2寄存中 3已逾期 4已退订 5已取消
+    Voltage     float64 `json:"voltage"`                  // 可用电压型号
+    Days        int     `json:"days"`                     // 总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 续费天数 + 已缴纳逾期滞纳金天数
+    PlanDays    int     `json:"planDays"`                 // 骑士卡天数
+    AlterDays   int     `json:"alterDays"`                // 改动天数
+    PauseDays   int     `json:"pauseDays"`                // 暂停天数
+    OverdueDays int     `json:"overdueDays"`              // 已缴纳逾期滞纳金天数
+    Remaining   int     `json:"remaining"`                // 剩余天数 = 总天数 - 已过时间
+    StartAt     string  `json:"startAt"`                  // 开始时间
+    EndAt       string  `json:"endAt"`                    // 结束时间 / 预计套餐结束时间
 
     City   *City               `json:"city,omitempty"`   // 所属城市
     Models []BatteryModel      `json:"models,omitempty"` // 可用电池型号, 显示为`72V30AH`即Voltage(V)+Capacity(AH), 逗号分隔
@@ -46,4 +47,11 @@ type Subscribe struct {
 // UnsubscribedDaysToNewly 退订多少天后视为有效重签并计算佣金
 func UnsubscribedDaysToNewly() int {
     return 15
+}
+
+// SubscribeAlter 订阅天数调整请求
+type SubscribeAlter struct {
+    ID     uint64 `json:"id" validate:"required"`     // 订阅ID
+    Days   int    `json:"days" validate:"required"`   // 调整天数, 正加负减
+    Reason string `json:"reason" validate:"required"` // 调整理由
 }

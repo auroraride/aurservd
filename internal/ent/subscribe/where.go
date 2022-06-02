@@ -177,17 +177,10 @@ func Voltage(v float64) predicate.Subscribe {
 	})
 }
 
-// Days applies equality check predicate on the "days" field. It's identical to DaysEQ.
-func Days(v int) predicate.Subscribe {
+// InitialDays applies equality check predicate on the "initial_days" field. It's identical to InitialDaysEQ.
+func InitialDays(v int) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDays), v))
-	})
-}
-
-// PlanDays applies equality check predicate on the "plan_days" field. It's identical to PlanDaysEQ.
-func PlanDays(v int) predicate.Subscribe {
-	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPlanDays), v))
+		s.Where(sql.EQ(s.C(FieldInitialDays), v))
 	})
 }
 
@@ -202,6 +195,20 @@ func AlterDays(v int) predicate.Subscribe {
 func PauseDays(v int) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldPauseDays), v))
+	})
+}
+
+// RenewalDays applies equality check predicate on the "renewal_days" field. It's identical to RenewalDaysEQ.
+func RenewalDays(v int) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRenewalDays), v))
+	})
+}
+
+// OverdueDays applies equality check predicate on the "overdue_days" field. It's identical to OverdueDaysEQ.
+func OverdueDays(v int) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldOverdueDays), v))
 	})
 }
 
@@ -1117,22 +1124,22 @@ func VoltageLTE(v float64) predicate.Subscribe {
 	})
 }
 
-// DaysEQ applies the EQ predicate on the "days" field.
-func DaysEQ(v int) predicate.Subscribe {
+// InitialDaysEQ applies the EQ predicate on the "initial_days" field.
+func InitialDaysEQ(v int) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldDays), v))
+		s.Where(sql.EQ(s.C(FieldInitialDays), v))
 	})
 }
 
-// DaysNEQ applies the NEQ predicate on the "days" field.
-func DaysNEQ(v int) predicate.Subscribe {
+// InitialDaysNEQ applies the NEQ predicate on the "initial_days" field.
+func InitialDaysNEQ(v int) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldDays), v))
+		s.Where(sql.NEQ(s.C(FieldInitialDays), v))
 	})
 }
 
-// DaysIn applies the In predicate on the "days" field.
-func DaysIn(vs ...int) predicate.Subscribe {
+// InitialDaysIn applies the In predicate on the "initial_days" field.
+func InitialDaysIn(vs ...int) predicate.Subscribe {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1144,12 +1151,12 @@ func DaysIn(vs ...int) predicate.Subscribe {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldDays), v...))
+		s.Where(sql.In(s.C(FieldInitialDays), v...))
 	})
 }
 
-// DaysNotIn applies the NotIn predicate on the "days" field.
-func DaysNotIn(vs ...int) predicate.Subscribe {
+// InitialDaysNotIn applies the NotIn predicate on the "initial_days" field.
+func InitialDaysNotIn(vs ...int) predicate.Subscribe {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1161,111 +1168,35 @@ func DaysNotIn(vs ...int) predicate.Subscribe {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldDays), v...))
+		s.Where(sql.NotIn(s.C(FieldInitialDays), v...))
 	})
 }
 
-// DaysGT applies the GT predicate on the "days" field.
-func DaysGT(v int) predicate.Subscribe {
+// InitialDaysGT applies the GT predicate on the "initial_days" field.
+func InitialDaysGT(v int) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldDays), v))
+		s.Where(sql.GT(s.C(FieldInitialDays), v))
 	})
 }
 
-// DaysGTE applies the GTE predicate on the "days" field.
-func DaysGTE(v int) predicate.Subscribe {
+// InitialDaysGTE applies the GTE predicate on the "initial_days" field.
+func InitialDaysGTE(v int) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldDays), v))
+		s.Where(sql.GTE(s.C(FieldInitialDays), v))
 	})
 }
 
-// DaysLT applies the LT predicate on the "days" field.
-func DaysLT(v int) predicate.Subscribe {
+// InitialDaysLT applies the LT predicate on the "initial_days" field.
+func InitialDaysLT(v int) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldDays), v))
+		s.Where(sql.LT(s.C(FieldInitialDays), v))
 	})
 }
 
-// DaysLTE applies the LTE predicate on the "days" field.
-func DaysLTE(v int) predicate.Subscribe {
+// InitialDaysLTE applies the LTE predicate on the "initial_days" field.
+func InitialDaysLTE(v int) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldDays), v))
-	})
-}
-
-// PlanDaysEQ applies the EQ predicate on the "plan_days" field.
-func PlanDaysEQ(v int) predicate.Subscribe {
-	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPlanDays), v))
-	})
-}
-
-// PlanDaysNEQ applies the NEQ predicate on the "plan_days" field.
-func PlanDaysNEQ(v int) predicate.Subscribe {
-	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPlanDays), v))
-	})
-}
-
-// PlanDaysIn applies the In predicate on the "plan_days" field.
-func PlanDaysIn(vs ...int) predicate.Subscribe {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Subscribe(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldPlanDays), v...))
-	})
-}
-
-// PlanDaysNotIn applies the NotIn predicate on the "plan_days" field.
-func PlanDaysNotIn(vs ...int) predicate.Subscribe {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Subscribe(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldPlanDays), v...))
-	})
-}
-
-// PlanDaysGT applies the GT predicate on the "plan_days" field.
-func PlanDaysGT(v int) predicate.Subscribe {
-	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPlanDays), v))
-	})
-}
-
-// PlanDaysGTE applies the GTE predicate on the "plan_days" field.
-func PlanDaysGTE(v int) predicate.Subscribe {
-	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPlanDays), v))
-	})
-}
-
-// PlanDaysLT applies the LT predicate on the "plan_days" field.
-func PlanDaysLT(v int) predicate.Subscribe {
-	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPlanDays), v))
-	})
-}
-
-// PlanDaysLTE applies the LTE predicate on the "plan_days" field.
-func PlanDaysLTE(v int) predicate.Subscribe {
-	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPlanDays), v))
+		s.Where(sql.LTE(s.C(FieldInitialDays), v))
 	})
 }
 
@@ -1418,6 +1349,158 @@ func PauseDaysLT(v int) predicate.Subscribe {
 func PauseDaysLTE(v int) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldPauseDays), v))
+	})
+}
+
+// RenewalDaysEQ applies the EQ predicate on the "renewal_days" field.
+func RenewalDaysEQ(v int) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRenewalDays), v))
+	})
+}
+
+// RenewalDaysNEQ applies the NEQ predicate on the "renewal_days" field.
+func RenewalDaysNEQ(v int) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRenewalDays), v))
+	})
+}
+
+// RenewalDaysIn applies the In predicate on the "renewal_days" field.
+func RenewalDaysIn(vs ...int) predicate.Subscribe {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldRenewalDays), v...))
+	})
+}
+
+// RenewalDaysNotIn applies the NotIn predicate on the "renewal_days" field.
+func RenewalDaysNotIn(vs ...int) predicate.Subscribe {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldRenewalDays), v...))
+	})
+}
+
+// RenewalDaysGT applies the GT predicate on the "renewal_days" field.
+func RenewalDaysGT(v int) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldRenewalDays), v))
+	})
+}
+
+// RenewalDaysGTE applies the GTE predicate on the "renewal_days" field.
+func RenewalDaysGTE(v int) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldRenewalDays), v))
+	})
+}
+
+// RenewalDaysLT applies the LT predicate on the "renewal_days" field.
+func RenewalDaysLT(v int) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldRenewalDays), v))
+	})
+}
+
+// RenewalDaysLTE applies the LTE predicate on the "renewal_days" field.
+func RenewalDaysLTE(v int) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldRenewalDays), v))
+	})
+}
+
+// OverdueDaysEQ applies the EQ predicate on the "overdue_days" field.
+func OverdueDaysEQ(v int) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldOverdueDays), v))
+	})
+}
+
+// OverdueDaysNEQ applies the NEQ predicate on the "overdue_days" field.
+func OverdueDaysNEQ(v int) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldOverdueDays), v))
+	})
+}
+
+// OverdueDaysIn applies the In predicate on the "overdue_days" field.
+func OverdueDaysIn(vs ...int) predicate.Subscribe {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldOverdueDays), v...))
+	})
+}
+
+// OverdueDaysNotIn applies the NotIn predicate on the "overdue_days" field.
+func OverdueDaysNotIn(vs ...int) predicate.Subscribe {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldOverdueDays), v...))
+	})
+}
+
+// OverdueDaysGT applies the GT predicate on the "overdue_days" field.
+func OverdueDaysGT(v int) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldOverdueDays), v))
+	})
+}
+
+// OverdueDaysGTE applies the GTE predicate on the "overdue_days" field.
+func OverdueDaysGTE(v int) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldOverdueDays), v))
+	})
+}
+
+// OverdueDaysLT applies the LT predicate on the "overdue_days" field.
+func OverdueDaysLT(v int) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldOverdueDays), v))
+	})
+}
+
+// OverdueDaysLTE applies the LTE predicate on the "overdue_days" field.
+func OverdueDaysLTE(v int) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldOverdueDays), v))
 	})
 }
 
