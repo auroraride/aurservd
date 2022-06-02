@@ -8,6 +8,7 @@ package script
 import (
     pvd "github.com/auroraride/aurservd/app/provider"
     "github.com/auroraride/aurservd/app/router"
+    "github.com/auroraride/aurservd/app/task"
     "github.com/spf13/cobra"
 )
 
@@ -20,7 +21,13 @@ func serverCommand() *cobra.Command {
         Use:   "server",
         Short: "启动API服务",
         Run: func(cmd *cobra.Command, args []string) {
-            pvd.Run(provider)
+
+            // 启动电柜服务
+            go pvd.Run(provider)
+
+            // 启动subscribe task
+            go task.NewSubscribe().Start()
+
             // 启动服务器
             router.Run()
         },

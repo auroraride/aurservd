@@ -35,16 +35,22 @@ const (
 	FieldRiderID = "rider_id"
 	// FieldInitialOrderID holds the string denoting the initial_order_id field in the database.
 	FieldInitialOrderID = "initial_order_id"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
 	// FieldVoltage holds the string denoting the voltage field in the database.
 	FieldVoltage = "voltage"
 	// FieldDays holds the string denoting the days field in the database.
 	FieldDays = "days"
+	// FieldPlanDays holds the string denoting the plan_days field in the database.
+	FieldPlanDays = "plan_days"
 	// FieldAlterDays holds the string denoting the alter_days field in the database.
 	FieldAlterDays = "alter_days"
 	// FieldPauseDays holds the string denoting the pause_days field in the database.
 	FieldPauseDays = "pause_days"
+	// FieldRemaining holds the string denoting the remaining field in the database.
+	FieldRemaining = "remaining"
 	// FieldPausedAt holds the string denoting the paused_at field in the database.
 	FieldPausedAt = "paused_at"
 	// FieldStartAt holds the string denoting the start_at field in the database.
@@ -143,11 +149,14 @@ var Columns = []string{
 	FieldCityID,
 	FieldRiderID,
 	FieldInitialOrderID,
+	FieldStatus,
 	FieldType,
 	FieldVoltage,
 	FieldDays,
+	FieldPlanDays,
 	FieldAlterDays,
 	FieldPauseDays,
+	FieldRemaining,
 	FieldPausedAt,
 	FieldStartAt,
 	FieldEndAt,
@@ -178,8 +187,14 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultStatus holds the default value on creation for the "status" field.
+	DefaultStatus uint8
+	// DefaultPlanDays holds the default value on creation for the "plan_days" field.
+	DefaultPlanDays int
 	// DefaultAlterDays holds the default value on creation for the "alter_days" field.
-	DefaultAlterDays uint
+	DefaultAlterDays int
 	// DefaultPauseDays holds the default value on creation for the "pause_days" field.
-	DefaultPauseDays uint
+	DefaultPauseDays int
+	// DefaultRemaining holds the default value on creation for the "remaining" field.
+	DefaultRemaining int
 )

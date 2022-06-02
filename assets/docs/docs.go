@@ -4247,7 +4247,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/model.City"
                 },
                 "days": {
-                    "description": "总天数",
+                    "description": "总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 已缴纳逾期滞纳金天数",
                     "type": "integer"
                 },
                 "endAt": {
@@ -4276,6 +4276,10 @@ const docTemplate = `{
                 "plan": {
                     "description": "骑士卡信息",
                     "$ref": "#/definitions/model.Plan"
+                },
+                "planDays": {
+                    "description": "骑士卡天数",
+                    "type": "integer"
                 },
                 "remaining": {
                     "description": "剩余天数",

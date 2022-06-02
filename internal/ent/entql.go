@@ -549,11 +549,14 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldCityID:         {Type: field.TypeUint64, Column: subscribe.FieldCityID},
 			subscribe.FieldRiderID:        {Type: field.TypeUint64, Column: subscribe.FieldRiderID},
 			subscribe.FieldInitialOrderID: {Type: field.TypeUint64, Column: subscribe.FieldInitialOrderID},
+			subscribe.FieldStatus:         {Type: field.TypeUint8, Column: subscribe.FieldStatus},
 			subscribe.FieldType:           {Type: field.TypeUint, Column: subscribe.FieldType},
 			subscribe.FieldVoltage:        {Type: field.TypeFloat64, Column: subscribe.FieldVoltage},
-			subscribe.FieldDays:           {Type: field.TypeUint, Column: subscribe.FieldDays},
-			subscribe.FieldAlterDays:      {Type: field.TypeUint, Column: subscribe.FieldAlterDays},
-			subscribe.FieldPauseDays:      {Type: field.TypeUint, Column: subscribe.FieldPauseDays},
+			subscribe.FieldDays:           {Type: field.TypeInt, Column: subscribe.FieldDays},
+			subscribe.FieldPlanDays:       {Type: field.TypeInt, Column: subscribe.FieldPlanDays},
+			subscribe.FieldAlterDays:      {Type: field.TypeInt, Column: subscribe.FieldAlterDays},
+			subscribe.FieldPauseDays:      {Type: field.TypeInt, Column: subscribe.FieldPauseDays},
+			subscribe.FieldRemaining:      {Type: field.TypeInt, Column: subscribe.FieldRemaining},
 			subscribe.FieldPausedAt:       {Type: field.TypeTime, Column: subscribe.FieldPausedAt},
 			subscribe.FieldStartAt:        {Type: field.TypeTime, Column: subscribe.FieldStartAt},
 			subscribe.FieldEndAt:          {Type: field.TypeTime, Column: subscribe.FieldEndAt},
@@ -4005,6 +4008,11 @@ func (f *SubscribeFilter) WhereInitialOrderID(p entql.Uint64P) {
 	f.Where(p.Field(subscribe.FieldInitialOrderID))
 }
 
+// WhereStatus applies the entql uint8 predicate on the status field.
+func (f *SubscribeFilter) WhereStatus(p entql.Uint8P) {
+	f.Where(p.Field(subscribe.FieldStatus))
+}
+
 // WhereType applies the entql uint predicate on the type field.
 func (f *SubscribeFilter) WhereType(p entql.UintP) {
 	f.Where(p.Field(subscribe.FieldType))
@@ -4015,19 +4023,29 @@ func (f *SubscribeFilter) WhereVoltage(p entql.Float64P) {
 	f.Where(p.Field(subscribe.FieldVoltage))
 }
 
-// WhereDays applies the entql uint predicate on the days field.
-func (f *SubscribeFilter) WhereDays(p entql.UintP) {
+// WhereDays applies the entql int predicate on the days field.
+func (f *SubscribeFilter) WhereDays(p entql.IntP) {
 	f.Where(p.Field(subscribe.FieldDays))
 }
 
-// WhereAlterDays applies the entql uint predicate on the alter_days field.
-func (f *SubscribeFilter) WhereAlterDays(p entql.UintP) {
+// WherePlanDays applies the entql int predicate on the plan_days field.
+func (f *SubscribeFilter) WherePlanDays(p entql.IntP) {
+	f.Where(p.Field(subscribe.FieldPlanDays))
+}
+
+// WhereAlterDays applies the entql int predicate on the alter_days field.
+func (f *SubscribeFilter) WhereAlterDays(p entql.IntP) {
 	f.Where(p.Field(subscribe.FieldAlterDays))
 }
 
-// WherePauseDays applies the entql uint predicate on the pause_days field.
-func (f *SubscribeFilter) WherePauseDays(p entql.UintP) {
+// WherePauseDays applies the entql int predicate on the pause_days field.
+func (f *SubscribeFilter) WherePauseDays(p entql.IntP) {
 	f.Where(p.Field(subscribe.FieldPauseDays))
+}
+
+// WhereRemaining applies the entql int predicate on the remaining field.
+func (f *SubscribeFilter) WhereRemaining(p entql.IntP) {
+	f.Where(p.Field(subscribe.FieldRemaining))
 }
 
 // WherePausedAt applies the entql time.Time predicate on the paused_at field.

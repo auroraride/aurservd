@@ -24558,16 +24558,22 @@ type SubscribeMutation struct {
 	creator              **model.Modifier
 	last_modifier        **model.Modifier
 	remark               *string
+	status               *uint8
+	addstatus            *int8
 	_type                *uint
 	add_type             *int
 	voltage              *float64
 	addvoltage           *float64
-	days                 *uint
+	days                 *int
 	adddays              *int
-	alter_days           *uint
+	plan_days            *int
+	addplan_days         *int
+	alter_days           *int
 	addalter_days        *int
-	pause_days           *uint
+	pause_days           *int
 	addpause_days        *int
+	remaining            *int
+	addremaining         *int
 	paused_at            *time.Time
 	start_at             *time.Time
 	end_at               *time.Time
@@ -25156,6 +25162,62 @@ func (m *SubscribeMutation) ResetInitialOrderID() {
 	m.initial_order = nil
 }
 
+// SetStatus sets the "status" field.
+func (m *SubscribeMutation) SetStatus(u uint8) {
+	m.status = &u
+	m.addstatus = nil
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *SubscribeMutation) Status() (r uint8, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldStatus(ctx context.Context) (v uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// AddStatus adds u to the "status" field.
+func (m *SubscribeMutation) AddStatus(u int8) {
+	if m.addstatus != nil {
+		*m.addstatus += u
+	} else {
+		m.addstatus = &u
+	}
+}
+
+// AddedStatus returns the value that was added to the "status" field in this mutation.
+func (m *SubscribeMutation) AddedStatus() (r int8, exists bool) {
+	v := m.addstatus
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *SubscribeMutation) ResetStatus() {
+	m.status = nil
+	m.addstatus = nil
+}
+
 // SetType sets the "type" field.
 func (m *SubscribeMutation) SetType(u uint) {
 	m._type = &u
@@ -25269,13 +25331,13 @@ func (m *SubscribeMutation) ResetVoltage() {
 }
 
 // SetDays sets the "days" field.
-func (m *SubscribeMutation) SetDays(u uint) {
-	m.days = &u
+func (m *SubscribeMutation) SetDays(i int) {
+	m.days = &i
 	m.adddays = nil
 }
 
 // Days returns the value of the "days" field in the mutation.
-func (m *SubscribeMutation) Days() (r uint, exists bool) {
+func (m *SubscribeMutation) Days() (r int, exists bool) {
 	v := m.days
 	if v == nil {
 		return
@@ -25286,7 +25348,7 @@ func (m *SubscribeMutation) Days() (r uint, exists bool) {
 // OldDays returns the old "days" field's value of the Subscribe entity.
 // If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SubscribeMutation) OldDays(ctx context.Context) (v uint, err error) {
+func (m *SubscribeMutation) OldDays(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDays is only allowed on UpdateOne operations")
 	}
@@ -25300,12 +25362,12 @@ func (m *SubscribeMutation) OldDays(ctx context.Context) (v uint, err error) {
 	return oldValue.Days, nil
 }
 
-// AddDays adds u to the "days" field.
-func (m *SubscribeMutation) AddDays(u int) {
+// AddDays adds i to the "days" field.
+func (m *SubscribeMutation) AddDays(i int) {
 	if m.adddays != nil {
-		*m.adddays += u
+		*m.adddays += i
 	} else {
-		m.adddays = &u
+		m.adddays = &i
 	}
 }
 
@@ -25324,14 +25386,70 @@ func (m *SubscribeMutation) ResetDays() {
 	m.adddays = nil
 }
 
+// SetPlanDays sets the "plan_days" field.
+func (m *SubscribeMutation) SetPlanDays(i int) {
+	m.plan_days = &i
+	m.addplan_days = nil
+}
+
+// PlanDays returns the value of the "plan_days" field in the mutation.
+func (m *SubscribeMutation) PlanDays() (r int, exists bool) {
+	v := m.plan_days
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlanDays returns the old "plan_days" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldPlanDays(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlanDays is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlanDays requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlanDays: %w", err)
+	}
+	return oldValue.PlanDays, nil
+}
+
+// AddPlanDays adds i to the "plan_days" field.
+func (m *SubscribeMutation) AddPlanDays(i int) {
+	if m.addplan_days != nil {
+		*m.addplan_days += i
+	} else {
+		m.addplan_days = &i
+	}
+}
+
+// AddedPlanDays returns the value that was added to the "plan_days" field in this mutation.
+func (m *SubscribeMutation) AddedPlanDays() (r int, exists bool) {
+	v := m.addplan_days
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPlanDays resets all changes to the "plan_days" field.
+func (m *SubscribeMutation) ResetPlanDays() {
+	m.plan_days = nil
+	m.addplan_days = nil
+}
+
 // SetAlterDays sets the "alter_days" field.
-func (m *SubscribeMutation) SetAlterDays(u uint) {
-	m.alter_days = &u
+func (m *SubscribeMutation) SetAlterDays(i int) {
+	m.alter_days = &i
 	m.addalter_days = nil
 }
 
 // AlterDays returns the value of the "alter_days" field in the mutation.
-func (m *SubscribeMutation) AlterDays() (r uint, exists bool) {
+func (m *SubscribeMutation) AlterDays() (r int, exists bool) {
 	v := m.alter_days
 	if v == nil {
 		return
@@ -25342,7 +25460,7 @@ func (m *SubscribeMutation) AlterDays() (r uint, exists bool) {
 // OldAlterDays returns the old "alter_days" field's value of the Subscribe entity.
 // If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SubscribeMutation) OldAlterDays(ctx context.Context) (v uint, err error) {
+func (m *SubscribeMutation) OldAlterDays(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldAlterDays is only allowed on UpdateOne operations")
 	}
@@ -25356,12 +25474,12 @@ func (m *SubscribeMutation) OldAlterDays(ctx context.Context) (v uint, err error
 	return oldValue.AlterDays, nil
 }
 
-// AddAlterDays adds u to the "alter_days" field.
-func (m *SubscribeMutation) AddAlterDays(u int) {
+// AddAlterDays adds i to the "alter_days" field.
+func (m *SubscribeMutation) AddAlterDays(i int) {
 	if m.addalter_days != nil {
-		*m.addalter_days += u
+		*m.addalter_days += i
 	} else {
-		m.addalter_days = &u
+		m.addalter_days = &i
 	}
 }
 
@@ -25381,13 +25499,13 @@ func (m *SubscribeMutation) ResetAlterDays() {
 }
 
 // SetPauseDays sets the "pause_days" field.
-func (m *SubscribeMutation) SetPauseDays(u uint) {
-	m.pause_days = &u
+func (m *SubscribeMutation) SetPauseDays(i int) {
+	m.pause_days = &i
 	m.addpause_days = nil
 }
 
 // PauseDays returns the value of the "pause_days" field in the mutation.
-func (m *SubscribeMutation) PauseDays() (r uint, exists bool) {
+func (m *SubscribeMutation) PauseDays() (r int, exists bool) {
 	v := m.pause_days
 	if v == nil {
 		return
@@ -25398,7 +25516,7 @@ func (m *SubscribeMutation) PauseDays() (r uint, exists bool) {
 // OldPauseDays returns the old "pause_days" field's value of the Subscribe entity.
 // If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SubscribeMutation) OldPauseDays(ctx context.Context) (v uint, err error) {
+func (m *SubscribeMutation) OldPauseDays(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPauseDays is only allowed on UpdateOne operations")
 	}
@@ -25412,12 +25530,12 @@ func (m *SubscribeMutation) OldPauseDays(ctx context.Context) (v uint, err error
 	return oldValue.PauseDays, nil
 }
 
-// AddPauseDays adds u to the "pause_days" field.
-func (m *SubscribeMutation) AddPauseDays(u int) {
+// AddPauseDays adds i to the "pause_days" field.
+func (m *SubscribeMutation) AddPauseDays(i int) {
 	if m.addpause_days != nil {
-		*m.addpause_days += u
+		*m.addpause_days += i
 	} else {
-		m.addpause_days = &u
+		m.addpause_days = &i
 	}
 }
 
@@ -25434,6 +25552,62 @@ func (m *SubscribeMutation) AddedPauseDays() (r int, exists bool) {
 func (m *SubscribeMutation) ResetPauseDays() {
 	m.pause_days = nil
 	m.addpause_days = nil
+}
+
+// SetRemaining sets the "remaining" field.
+func (m *SubscribeMutation) SetRemaining(i int) {
+	m.remaining = &i
+	m.addremaining = nil
+}
+
+// Remaining returns the value of the "remaining" field in the mutation.
+func (m *SubscribeMutation) Remaining() (r int, exists bool) {
+	v := m.remaining
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemaining returns the old "remaining" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldRemaining(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemaining is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemaining requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemaining: %w", err)
+	}
+	return oldValue.Remaining, nil
+}
+
+// AddRemaining adds i to the "remaining" field.
+func (m *SubscribeMutation) AddRemaining(i int) {
+	if m.addremaining != nil {
+		*m.addremaining += i
+	} else {
+		m.addremaining = &i
+	}
+}
+
+// AddedRemaining returns the value that was added to the "remaining" field in this mutation.
+func (m *SubscribeMutation) AddedRemaining() (r int, exists bool) {
+	v := m.addremaining
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRemaining resets all changes to the "remaining" field.
+func (m *SubscribeMutation) ResetRemaining() {
+	m.remaining = nil
+	m.addremaining = nil
 }
 
 // SetPausedAt sets the "paused_at" field.
@@ -25943,7 +26117,7 @@ func (m *SubscribeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeMutation) Fields() []string {
-	fields := make([]string, 0, 20)
+	fields := make([]string, 0, 23)
 	if m.created_at != nil {
 		fields = append(fields, subscribe.FieldCreatedAt)
 	}
@@ -25977,6 +26151,9 @@ func (m *SubscribeMutation) Fields() []string {
 	if m.initial_order != nil {
 		fields = append(fields, subscribe.FieldInitialOrderID)
 	}
+	if m.status != nil {
+		fields = append(fields, subscribe.FieldStatus)
+	}
 	if m._type != nil {
 		fields = append(fields, subscribe.FieldType)
 	}
@@ -25986,11 +26163,17 @@ func (m *SubscribeMutation) Fields() []string {
 	if m.days != nil {
 		fields = append(fields, subscribe.FieldDays)
 	}
+	if m.plan_days != nil {
+		fields = append(fields, subscribe.FieldPlanDays)
+	}
 	if m.alter_days != nil {
 		fields = append(fields, subscribe.FieldAlterDays)
 	}
 	if m.pause_days != nil {
 		fields = append(fields, subscribe.FieldPauseDays)
+	}
+	if m.remaining != nil {
+		fields = append(fields, subscribe.FieldRemaining)
 	}
 	if m.paused_at != nil {
 		fields = append(fields, subscribe.FieldPausedAt)
@@ -26034,16 +26217,22 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.RiderID()
 	case subscribe.FieldInitialOrderID:
 		return m.InitialOrderID()
+	case subscribe.FieldStatus:
+		return m.Status()
 	case subscribe.FieldType:
 		return m.GetType()
 	case subscribe.FieldVoltage:
 		return m.Voltage()
 	case subscribe.FieldDays:
 		return m.Days()
+	case subscribe.FieldPlanDays:
+		return m.PlanDays()
 	case subscribe.FieldAlterDays:
 		return m.AlterDays()
 	case subscribe.FieldPauseDays:
 		return m.PauseDays()
+	case subscribe.FieldRemaining:
+		return m.Remaining()
 	case subscribe.FieldPausedAt:
 		return m.PausedAt()
 	case subscribe.FieldStartAt:
@@ -26083,16 +26272,22 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldRiderID(ctx)
 	case subscribe.FieldInitialOrderID:
 		return m.OldInitialOrderID(ctx)
+	case subscribe.FieldStatus:
+		return m.OldStatus(ctx)
 	case subscribe.FieldType:
 		return m.OldType(ctx)
 	case subscribe.FieldVoltage:
 		return m.OldVoltage(ctx)
 	case subscribe.FieldDays:
 		return m.OldDays(ctx)
+	case subscribe.FieldPlanDays:
+		return m.OldPlanDays(ctx)
 	case subscribe.FieldAlterDays:
 		return m.OldAlterDays(ctx)
 	case subscribe.FieldPauseDays:
 		return m.OldPauseDays(ctx)
+	case subscribe.FieldRemaining:
+		return m.OldRemaining(ctx)
 	case subscribe.FieldPausedAt:
 		return m.OldPausedAt(ctx)
 	case subscribe.FieldStartAt:
@@ -26187,6 +26382,13 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetInitialOrderID(v)
 		return nil
+	case subscribe.FieldStatus:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
 	case subscribe.FieldType:
 		v, ok := value.(uint)
 		if !ok {
@@ -26202,25 +26404,39 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 		m.SetVoltage(v)
 		return nil
 	case subscribe.FieldDays:
-		v, ok := value.(uint)
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDays(v)
 		return nil
+	case subscribe.FieldPlanDays:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlanDays(v)
+		return nil
 	case subscribe.FieldAlterDays:
-		v, ok := value.(uint)
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAlterDays(v)
 		return nil
 	case subscribe.FieldPauseDays:
-		v, ok := value.(uint)
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPauseDays(v)
+		return nil
+	case subscribe.FieldRemaining:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemaining(v)
 		return nil
 	case subscribe.FieldPausedAt:
 		v, ok := value.(time.Time)
@@ -26258,6 +26474,9 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *SubscribeMutation) AddedFields() []string {
 	var fields []string
+	if m.addstatus != nil {
+		fields = append(fields, subscribe.FieldStatus)
+	}
 	if m.add_type != nil {
 		fields = append(fields, subscribe.FieldType)
 	}
@@ -26267,11 +26486,17 @@ func (m *SubscribeMutation) AddedFields() []string {
 	if m.adddays != nil {
 		fields = append(fields, subscribe.FieldDays)
 	}
+	if m.addplan_days != nil {
+		fields = append(fields, subscribe.FieldPlanDays)
+	}
 	if m.addalter_days != nil {
 		fields = append(fields, subscribe.FieldAlterDays)
 	}
 	if m.addpause_days != nil {
 		fields = append(fields, subscribe.FieldPauseDays)
+	}
+	if m.addremaining != nil {
+		fields = append(fields, subscribe.FieldRemaining)
 	}
 	return fields
 }
@@ -26281,16 +26506,22 @@ func (m *SubscribeMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *SubscribeMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case subscribe.FieldStatus:
+		return m.AddedStatus()
 	case subscribe.FieldType:
 		return m.AddedType()
 	case subscribe.FieldVoltage:
 		return m.AddedVoltage()
 	case subscribe.FieldDays:
 		return m.AddedDays()
+	case subscribe.FieldPlanDays:
+		return m.AddedPlanDays()
 	case subscribe.FieldAlterDays:
 		return m.AddedAlterDays()
 	case subscribe.FieldPauseDays:
 		return m.AddedPauseDays()
+	case subscribe.FieldRemaining:
+		return m.AddedRemaining()
 	}
 	return nil, false
 }
@@ -26300,6 +26531,13 @@ func (m *SubscribeMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *SubscribeMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case subscribe.FieldStatus:
+		v, ok := value.(int8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddStatus(v)
+		return nil
 	case subscribe.FieldType:
 		v, ok := value.(int)
 		if !ok {
@@ -26321,6 +26559,13 @@ func (m *SubscribeMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddDays(v)
 		return nil
+	case subscribe.FieldPlanDays:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPlanDays(v)
+		return nil
 	case subscribe.FieldAlterDays:
 		v, ok := value.(int)
 		if !ok {
@@ -26334,6 +26579,13 @@ func (m *SubscribeMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddPauseDays(v)
+		return nil
+	case subscribe.FieldRemaining:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRemaining(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe numeric field %s", name)
@@ -26452,6 +26704,9 @@ func (m *SubscribeMutation) ResetField(name string) error {
 	case subscribe.FieldInitialOrderID:
 		m.ResetInitialOrderID()
 		return nil
+	case subscribe.FieldStatus:
+		m.ResetStatus()
+		return nil
 	case subscribe.FieldType:
 		m.ResetType()
 		return nil
@@ -26461,11 +26716,17 @@ func (m *SubscribeMutation) ResetField(name string) error {
 	case subscribe.FieldDays:
 		m.ResetDays()
 		return nil
+	case subscribe.FieldPlanDays:
+		m.ResetPlanDays()
+		return nil
 	case subscribe.FieldAlterDays:
 		m.ResetAlterDays()
 		return nil
 	case subscribe.FieldPauseDays:
 		m.ResetPauseDays()
+		return nil
+	case subscribe.FieldRemaining:
+		m.ResetRemaining()
 		return nil
 	case subscribe.FieldPausedAt:
 		m.ResetPausedAt()

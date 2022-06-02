@@ -392,7 +392,10 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
             SetType(model.OrderTypeNewly).
             SetRiderID(trade.RiderID).
             SetVoltage(trade.Voltage).
-            SetDays(trade.Days).
+            SetDays(int(trade.Days)).
+            SetRemaining(int(trade.Days)).
+            SetPlanDays(int(trade.Days)).
+            SetStatus(model.SubscribeStatusInactive).
             SetPlanID(trade.PlanID).
             SetCityID(trade.CityID).
             SetInitialOrderID(o.ID).

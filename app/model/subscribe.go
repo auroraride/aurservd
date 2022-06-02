@@ -29,7 +29,8 @@ type Subscribe struct {
     ID        uint64  `json:"id"`                       // 订阅ID
     Status    uint8   `json:"status" enums:"0,1,2,3,4"` // 状态 0未激活 1计费中 2暂停中 3已逾期 4已归还(已过期) 5已取消/已退款
     Voltage   float64 `json:"voltage"`                  // 可用电压型号
-    Days      int     `json:"days"`                     // 总天数
+    PlanDays  int     `json:"planDays"`                 // 骑士卡天数
+    Days      int     `json:"days"`                     // 总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 已缴纳逾期滞纳金天数
     Remaining int     `json:"remaining"`                // 剩余天数
     PauseDays int     `json:"pauseDays"`                // 暂停天数
     AlterDays int     `json:"alterDays"`                // 改动天数

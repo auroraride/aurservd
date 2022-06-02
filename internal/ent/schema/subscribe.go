@@ -7,6 +7,7 @@ import (
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -29,11 +30,14 @@ func (Subscribe) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("rider_id").Comment("骑手ID"),
         field.Uint64("initial_order_id").Comment("初始订单ID(开通订阅的初始订单)"),
+        field.Uint8("status").Default(model.SubscribeStatusInactive).Comment("当前订阅状态"),
         field.Uint("type").Immutable().Comment("订阅类型 1新签 2续签 3重签 4更改电池"),
         field.Float("voltage").Comment("可用电压型号"),
-        field.Uint("days").Comment("骑士卡天数"),
-        field.Uint("alter_days").Default(0).Comment("改动天数"),
-        field.Uint("pause_days").Default(0).Comment("暂停天数"),
+        field.Int("days").Comment("总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 已缴纳逾期滞纳金天数"),
+        field.Int("plan_days").Default(0).Comment("骑士卡天数"),
+        field.Int("alter_days").Default(0).Comment("改动天数"),
+        field.Int("pause_days").Default(0).Comment("暂停天数"),
+        field.Int("remaining").Default(0).Comment("剩余天数, 复数为逾期"),
         field.Time("paused_at").Optional().Nillable().Comment("当前是否暂停计费, 暂停计费时间"),
         field.Time("start_at").Optional().Nillable().Comment("激活时间"),
         field.Time("end_at").Optional().Nillable().Comment("归还时间"),

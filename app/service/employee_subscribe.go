@@ -71,5 +71,9 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
     if sub.Edges.InitialOrder.Status == model.OrderStatusRefundPending {
         snag.Panic("骑士卡已申请退款")
     }
-    sub.Update().SetStartAt(time.Now()).SetEmployeeID(s.employee.ID).SaveX(s.ctx)
+    sub.Update().
+        SetStatus(model.SubscribeStatusUsing).
+        SetStartAt(time.Now()).
+        SetEmployeeID(s.employee.ID).
+        SaveX(s.ctx)
 }

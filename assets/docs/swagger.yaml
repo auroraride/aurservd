@@ -1196,7 +1196,7 @@ definitions:
         $ref: '#/definitions/model.City'
         description: 所属城市
       days:
-        description: 总天数
+        description: 总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 已缴纳逾期滞纳金天数
         type: integer
       endAt:
         description: 结束时间 / 预计套餐结束时间
@@ -1218,6 +1218,9 @@ definitions:
       plan:
         $ref: '#/definitions/model.Plan'
         description: 骑士卡信息
+      planDays:
+        description: 骑士卡天数
+        type: integer
       remaining:
         description: 剩余天数
         type: integer

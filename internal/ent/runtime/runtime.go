@@ -514,14 +514,26 @@ func init() {
 	subscribe.DefaultUpdatedAt = subscribeDescUpdatedAt.Default.(func() time.Time)
 	// subscribe.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	subscribe.UpdateDefaultUpdatedAt = subscribeDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// subscribeDescStatus is the schema descriptor for status field.
+	subscribeDescStatus := subscribeFields[2].Descriptor()
+	// subscribe.DefaultStatus holds the default value on creation for the status field.
+	subscribe.DefaultStatus = subscribeDescStatus.Default.(uint8)
+	// subscribeDescPlanDays is the schema descriptor for plan_days field.
+	subscribeDescPlanDays := subscribeFields[6].Descriptor()
+	// subscribe.DefaultPlanDays holds the default value on creation for the plan_days field.
+	subscribe.DefaultPlanDays = subscribeDescPlanDays.Default.(int)
 	// subscribeDescAlterDays is the schema descriptor for alter_days field.
-	subscribeDescAlterDays := subscribeFields[5].Descriptor()
+	subscribeDescAlterDays := subscribeFields[7].Descriptor()
 	// subscribe.DefaultAlterDays holds the default value on creation for the alter_days field.
-	subscribe.DefaultAlterDays = subscribeDescAlterDays.Default.(uint)
+	subscribe.DefaultAlterDays = subscribeDescAlterDays.Default.(int)
 	// subscribeDescPauseDays is the schema descriptor for pause_days field.
-	subscribeDescPauseDays := subscribeFields[6].Descriptor()
+	subscribeDescPauseDays := subscribeFields[8].Descriptor()
 	// subscribe.DefaultPauseDays holds the default value on creation for the pause_days field.
-	subscribe.DefaultPauseDays = subscribeDescPauseDays.Default.(uint)
+	subscribe.DefaultPauseDays = subscribeDescPauseDays.Default.(int)
+	// subscribeDescRemaining is the schema descriptor for remaining field.
+	subscribeDescRemaining := subscribeFields[9].Descriptor()
+	// subscribe.DefaultRemaining holds the default value on creation for the remaining field.
+	subscribe.DefaultRemaining = subscribeDescRemaining.Default.(int)
 	subscribealterMixin := schema.SubscribeAlter{}.Mixin()
 	subscribealterMixinHooks2 := subscribealterMixin[2].Hooks()
 	subscribealter.Hooks[0] = subscribealterMixinHooks2[0]

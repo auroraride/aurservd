@@ -136,6 +136,20 @@ func (sc *SubscribeCreate) SetInitialOrderID(u uint64) *SubscribeCreate {
 	return sc
 }
 
+// SetStatus sets the "status" field.
+func (sc *SubscribeCreate) SetStatus(u uint8) *SubscribeCreate {
+	sc.mutation.SetStatus(u)
+	return sc
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableStatus(u *uint8) *SubscribeCreate {
+	if u != nil {
+		sc.SetStatus(*u)
+	}
+	return sc
+}
+
 // SetType sets the "type" field.
 func (sc *SubscribeCreate) SetType(u uint) *SubscribeCreate {
 	sc.mutation.SetType(u)
@@ -149,35 +163,63 @@ func (sc *SubscribeCreate) SetVoltage(f float64) *SubscribeCreate {
 }
 
 // SetDays sets the "days" field.
-func (sc *SubscribeCreate) SetDays(u uint) *SubscribeCreate {
-	sc.mutation.SetDays(u)
+func (sc *SubscribeCreate) SetDays(i int) *SubscribeCreate {
+	sc.mutation.SetDays(i)
+	return sc
+}
+
+// SetPlanDays sets the "plan_days" field.
+func (sc *SubscribeCreate) SetPlanDays(i int) *SubscribeCreate {
+	sc.mutation.SetPlanDays(i)
+	return sc
+}
+
+// SetNillablePlanDays sets the "plan_days" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillablePlanDays(i *int) *SubscribeCreate {
+	if i != nil {
+		sc.SetPlanDays(*i)
+	}
 	return sc
 }
 
 // SetAlterDays sets the "alter_days" field.
-func (sc *SubscribeCreate) SetAlterDays(u uint) *SubscribeCreate {
-	sc.mutation.SetAlterDays(u)
+func (sc *SubscribeCreate) SetAlterDays(i int) *SubscribeCreate {
+	sc.mutation.SetAlterDays(i)
 	return sc
 }
 
 // SetNillableAlterDays sets the "alter_days" field if the given value is not nil.
-func (sc *SubscribeCreate) SetNillableAlterDays(u *uint) *SubscribeCreate {
-	if u != nil {
-		sc.SetAlterDays(*u)
+func (sc *SubscribeCreate) SetNillableAlterDays(i *int) *SubscribeCreate {
+	if i != nil {
+		sc.SetAlterDays(*i)
 	}
 	return sc
 }
 
 // SetPauseDays sets the "pause_days" field.
-func (sc *SubscribeCreate) SetPauseDays(u uint) *SubscribeCreate {
-	sc.mutation.SetPauseDays(u)
+func (sc *SubscribeCreate) SetPauseDays(i int) *SubscribeCreate {
+	sc.mutation.SetPauseDays(i)
 	return sc
 }
 
 // SetNillablePauseDays sets the "pause_days" field if the given value is not nil.
-func (sc *SubscribeCreate) SetNillablePauseDays(u *uint) *SubscribeCreate {
-	if u != nil {
-		sc.SetPauseDays(*u)
+func (sc *SubscribeCreate) SetNillablePauseDays(i *int) *SubscribeCreate {
+	if i != nil {
+		sc.SetPauseDays(*i)
+	}
+	return sc
+}
+
+// SetRemaining sets the "remaining" field.
+func (sc *SubscribeCreate) SetRemaining(i int) *SubscribeCreate {
+	sc.mutation.SetRemaining(i)
+	return sc
+}
+
+// SetNillableRemaining sets the "remaining" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableRemaining(i *int) *SubscribeCreate {
+	if i != nil {
+		sc.SetRemaining(*i)
 	}
 	return sc
 }
@@ -401,6 +443,14 @@ func (sc *SubscribeCreate) defaults() error {
 		v := subscribe.DefaultUpdatedAt()
 		sc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := sc.mutation.Status(); !ok {
+		v := subscribe.DefaultStatus
+		sc.mutation.SetStatus(v)
+	}
+	if _, ok := sc.mutation.PlanDays(); !ok {
+		v := subscribe.DefaultPlanDays
+		sc.mutation.SetPlanDays(v)
+	}
 	if _, ok := sc.mutation.AlterDays(); !ok {
 		v := subscribe.DefaultAlterDays
 		sc.mutation.SetAlterDays(v)
@@ -408,6 +458,10 @@ func (sc *SubscribeCreate) defaults() error {
 	if _, ok := sc.mutation.PauseDays(); !ok {
 		v := subscribe.DefaultPauseDays
 		sc.mutation.SetPauseDays(v)
+	}
+	if _, ok := sc.mutation.Remaining(); !ok {
+		v := subscribe.DefaultRemaining
+		sc.mutation.SetRemaining(v)
 	}
 	return nil
 }
@@ -432,6 +486,9 @@ func (sc *SubscribeCreate) check() error {
 	if _, ok := sc.mutation.InitialOrderID(); !ok {
 		return &ValidationError{Name: "initial_order_id", err: errors.New(`ent: missing required field "Subscribe.initial_order_id"`)}
 	}
+	if _, ok := sc.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Subscribe.status"`)}
+	}
 	if _, ok := sc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Subscribe.type"`)}
 	}
@@ -441,11 +498,17 @@ func (sc *SubscribeCreate) check() error {
 	if _, ok := sc.mutation.Days(); !ok {
 		return &ValidationError{Name: "days", err: errors.New(`ent: missing required field "Subscribe.days"`)}
 	}
+	if _, ok := sc.mutation.PlanDays(); !ok {
+		return &ValidationError{Name: "plan_days", err: errors.New(`ent: missing required field "Subscribe.plan_days"`)}
+	}
 	if _, ok := sc.mutation.AlterDays(); !ok {
 		return &ValidationError{Name: "alter_days", err: errors.New(`ent: missing required field "Subscribe.alter_days"`)}
 	}
 	if _, ok := sc.mutation.PauseDays(); !ok {
 		return &ValidationError{Name: "pause_days", err: errors.New(`ent: missing required field "Subscribe.pause_days"`)}
+	}
+	if _, ok := sc.mutation.Remaining(); !ok {
+		return &ValidationError{Name: "remaining", err: errors.New(`ent: missing required field "Subscribe.remaining"`)}
 	}
 	if _, ok := sc.mutation.PlanID(); !ok {
 		return &ValidationError{Name: "plan", err: errors.New(`ent: missing required edge "Subscribe.plan"`)}
@@ -535,6 +598,14 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		})
 		_node.Remark = value
 	}
+	if value, ok := sc.mutation.Status(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: subscribe.FieldStatus,
+		})
+		_node.Status = value
+	}
 	if value, ok := sc.mutation.GetType(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeUint,
@@ -553,15 +624,23 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := sc.mutation.Days(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldDays,
 		})
 		_node.Days = value
 	}
+	if value, ok := sc.mutation.PlanDays(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldPlanDays,
+		})
+		_node.PlanDays = value
+	}
 	if value, ok := sc.mutation.AlterDays(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldAlterDays,
 		})
@@ -569,11 +648,19 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := sc.mutation.PauseDays(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldPauseDays,
 		})
 		_node.PauseDays = value
+	}
+	if value, ok := sc.mutation.Remaining(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldRemaining,
+		})
+		_node.Remaining = value
 	}
 	if value, ok := sc.mutation.PausedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -980,6 +1067,24 @@ func (u *SubscribeUpsert) UpdateInitialOrderID() *SubscribeUpsert {
 	return u
 }
 
+// SetStatus sets the "status" field.
+func (u *SubscribeUpsert) SetStatus(v uint8) *SubscribeUpsert {
+	u.Set(subscribe.FieldStatus, v)
+	return u
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateStatus() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldStatus)
+	return u
+}
+
+// AddStatus adds v to the "status" field.
+func (u *SubscribeUpsert) AddStatus(v uint8) *SubscribeUpsert {
+	u.Add(subscribe.FieldStatus, v)
+	return u
+}
+
 // SetType sets the "type" field.
 func (u *SubscribeUpsert) SetType(v uint) *SubscribeUpsert {
 	u.Set(subscribe.FieldType, v)
@@ -1017,7 +1122,7 @@ func (u *SubscribeUpsert) AddVoltage(v float64) *SubscribeUpsert {
 }
 
 // SetDays sets the "days" field.
-func (u *SubscribeUpsert) SetDays(v uint) *SubscribeUpsert {
+func (u *SubscribeUpsert) SetDays(v int) *SubscribeUpsert {
 	u.Set(subscribe.FieldDays, v)
 	return u
 }
@@ -1029,13 +1134,31 @@ func (u *SubscribeUpsert) UpdateDays() *SubscribeUpsert {
 }
 
 // AddDays adds v to the "days" field.
-func (u *SubscribeUpsert) AddDays(v uint) *SubscribeUpsert {
+func (u *SubscribeUpsert) AddDays(v int) *SubscribeUpsert {
 	u.Add(subscribe.FieldDays, v)
 	return u
 }
 
+// SetPlanDays sets the "plan_days" field.
+func (u *SubscribeUpsert) SetPlanDays(v int) *SubscribeUpsert {
+	u.Set(subscribe.FieldPlanDays, v)
+	return u
+}
+
+// UpdatePlanDays sets the "plan_days" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdatePlanDays() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldPlanDays)
+	return u
+}
+
+// AddPlanDays adds v to the "plan_days" field.
+func (u *SubscribeUpsert) AddPlanDays(v int) *SubscribeUpsert {
+	u.Add(subscribe.FieldPlanDays, v)
+	return u
+}
+
 // SetAlterDays sets the "alter_days" field.
-func (u *SubscribeUpsert) SetAlterDays(v uint) *SubscribeUpsert {
+func (u *SubscribeUpsert) SetAlterDays(v int) *SubscribeUpsert {
 	u.Set(subscribe.FieldAlterDays, v)
 	return u
 }
@@ -1047,13 +1170,13 @@ func (u *SubscribeUpsert) UpdateAlterDays() *SubscribeUpsert {
 }
 
 // AddAlterDays adds v to the "alter_days" field.
-func (u *SubscribeUpsert) AddAlterDays(v uint) *SubscribeUpsert {
+func (u *SubscribeUpsert) AddAlterDays(v int) *SubscribeUpsert {
 	u.Add(subscribe.FieldAlterDays, v)
 	return u
 }
 
 // SetPauseDays sets the "pause_days" field.
-func (u *SubscribeUpsert) SetPauseDays(v uint) *SubscribeUpsert {
+func (u *SubscribeUpsert) SetPauseDays(v int) *SubscribeUpsert {
 	u.Set(subscribe.FieldPauseDays, v)
 	return u
 }
@@ -1065,8 +1188,26 @@ func (u *SubscribeUpsert) UpdatePauseDays() *SubscribeUpsert {
 }
 
 // AddPauseDays adds v to the "pause_days" field.
-func (u *SubscribeUpsert) AddPauseDays(v uint) *SubscribeUpsert {
+func (u *SubscribeUpsert) AddPauseDays(v int) *SubscribeUpsert {
 	u.Add(subscribe.FieldPauseDays, v)
+	return u
+}
+
+// SetRemaining sets the "remaining" field.
+func (u *SubscribeUpsert) SetRemaining(v int) *SubscribeUpsert {
+	u.Set(subscribe.FieldRemaining, v)
+	return u
+}
+
+// UpdateRemaining sets the "remaining" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateRemaining() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldRemaining)
+	return u
+}
+
+// AddRemaining adds v to the "remaining" field.
+func (u *SubscribeUpsert) AddRemaining(v int) *SubscribeUpsert {
+	u.Add(subscribe.FieldRemaining, v)
 	return u
 }
 
@@ -1384,6 +1525,27 @@ func (u *SubscribeUpsertOne) UpdateInitialOrderID() *SubscribeUpsertOne {
 	})
 }
 
+// SetStatus sets the "status" field.
+func (u *SubscribeUpsertOne) SetStatus(v uint8) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// AddStatus adds v to the "status" field.
+func (u *SubscribeUpsertOne) AddStatus(v uint8) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.AddStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateStatus() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateStatus()
+	})
+}
+
 // SetType sets the "type" field.
 func (u *SubscribeUpsertOne) SetType(v uint) *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
@@ -1427,14 +1589,14 @@ func (u *SubscribeUpsertOne) UpdateVoltage() *SubscribeUpsertOne {
 }
 
 // SetDays sets the "days" field.
-func (u *SubscribeUpsertOne) SetDays(v uint) *SubscribeUpsertOne {
+func (u *SubscribeUpsertOne) SetDays(v int) *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.SetDays(v)
 	})
 }
 
 // AddDays adds v to the "days" field.
-func (u *SubscribeUpsertOne) AddDays(v uint) *SubscribeUpsertOne {
+func (u *SubscribeUpsertOne) AddDays(v int) *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.AddDays(v)
 	})
@@ -1447,15 +1609,36 @@ func (u *SubscribeUpsertOne) UpdateDays() *SubscribeUpsertOne {
 	})
 }
 
+// SetPlanDays sets the "plan_days" field.
+func (u *SubscribeUpsertOne) SetPlanDays(v int) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetPlanDays(v)
+	})
+}
+
+// AddPlanDays adds v to the "plan_days" field.
+func (u *SubscribeUpsertOne) AddPlanDays(v int) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.AddPlanDays(v)
+	})
+}
+
+// UpdatePlanDays sets the "plan_days" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdatePlanDays() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdatePlanDays()
+	})
+}
+
 // SetAlterDays sets the "alter_days" field.
-func (u *SubscribeUpsertOne) SetAlterDays(v uint) *SubscribeUpsertOne {
+func (u *SubscribeUpsertOne) SetAlterDays(v int) *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.SetAlterDays(v)
 	})
 }
 
 // AddAlterDays adds v to the "alter_days" field.
-func (u *SubscribeUpsertOne) AddAlterDays(v uint) *SubscribeUpsertOne {
+func (u *SubscribeUpsertOne) AddAlterDays(v int) *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.AddAlterDays(v)
 	})
@@ -1469,14 +1652,14 @@ func (u *SubscribeUpsertOne) UpdateAlterDays() *SubscribeUpsertOne {
 }
 
 // SetPauseDays sets the "pause_days" field.
-func (u *SubscribeUpsertOne) SetPauseDays(v uint) *SubscribeUpsertOne {
+func (u *SubscribeUpsertOne) SetPauseDays(v int) *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.SetPauseDays(v)
 	})
 }
 
 // AddPauseDays adds v to the "pause_days" field.
-func (u *SubscribeUpsertOne) AddPauseDays(v uint) *SubscribeUpsertOne {
+func (u *SubscribeUpsertOne) AddPauseDays(v int) *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.AddPauseDays(v)
 	})
@@ -1486,6 +1669,27 @@ func (u *SubscribeUpsertOne) AddPauseDays(v uint) *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) UpdatePauseDays() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdatePauseDays()
+	})
+}
+
+// SetRemaining sets the "remaining" field.
+func (u *SubscribeUpsertOne) SetRemaining(v int) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetRemaining(v)
+	})
+}
+
+// AddRemaining adds v to the "remaining" field.
+func (u *SubscribeUpsertOne) AddRemaining(v int) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.AddRemaining(v)
+	})
+}
+
+// UpdateRemaining sets the "remaining" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateRemaining() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateRemaining()
 	})
 }
 
@@ -1979,6 +2183,27 @@ func (u *SubscribeUpsertBulk) UpdateInitialOrderID() *SubscribeUpsertBulk {
 	})
 }
 
+// SetStatus sets the "status" field.
+func (u *SubscribeUpsertBulk) SetStatus(v uint8) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// AddStatus adds v to the "status" field.
+func (u *SubscribeUpsertBulk) AddStatus(v uint8) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.AddStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateStatus() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateStatus()
+	})
+}
+
 // SetType sets the "type" field.
 func (u *SubscribeUpsertBulk) SetType(v uint) *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
@@ -2022,14 +2247,14 @@ func (u *SubscribeUpsertBulk) UpdateVoltage() *SubscribeUpsertBulk {
 }
 
 // SetDays sets the "days" field.
-func (u *SubscribeUpsertBulk) SetDays(v uint) *SubscribeUpsertBulk {
+func (u *SubscribeUpsertBulk) SetDays(v int) *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.SetDays(v)
 	})
 }
 
 // AddDays adds v to the "days" field.
-func (u *SubscribeUpsertBulk) AddDays(v uint) *SubscribeUpsertBulk {
+func (u *SubscribeUpsertBulk) AddDays(v int) *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.AddDays(v)
 	})
@@ -2042,15 +2267,36 @@ func (u *SubscribeUpsertBulk) UpdateDays() *SubscribeUpsertBulk {
 	})
 }
 
+// SetPlanDays sets the "plan_days" field.
+func (u *SubscribeUpsertBulk) SetPlanDays(v int) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetPlanDays(v)
+	})
+}
+
+// AddPlanDays adds v to the "plan_days" field.
+func (u *SubscribeUpsertBulk) AddPlanDays(v int) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.AddPlanDays(v)
+	})
+}
+
+// UpdatePlanDays sets the "plan_days" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdatePlanDays() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdatePlanDays()
+	})
+}
+
 // SetAlterDays sets the "alter_days" field.
-func (u *SubscribeUpsertBulk) SetAlterDays(v uint) *SubscribeUpsertBulk {
+func (u *SubscribeUpsertBulk) SetAlterDays(v int) *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.SetAlterDays(v)
 	})
 }
 
 // AddAlterDays adds v to the "alter_days" field.
-func (u *SubscribeUpsertBulk) AddAlterDays(v uint) *SubscribeUpsertBulk {
+func (u *SubscribeUpsertBulk) AddAlterDays(v int) *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.AddAlterDays(v)
 	})
@@ -2064,14 +2310,14 @@ func (u *SubscribeUpsertBulk) UpdateAlterDays() *SubscribeUpsertBulk {
 }
 
 // SetPauseDays sets the "pause_days" field.
-func (u *SubscribeUpsertBulk) SetPauseDays(v uint) *SubscribeUpsertBulk {
+func (u *SubscribeUpsertBulk) SetPauseDays(v int) *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.SetPauseDays(v)
 	})
 }
 
 // AddPauseDays adds v to the "pause_days" field.
-func (u *SubscribeUpsertBulk) AddPauseDays(v uint) *SubscribeUpsertBulk {
+func (u *SubscribeUpsertBulk) AddPauseDays(v int) *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.AddPauseDays(v)
 	})
@@ -2081,6 +2327,27 @@ func (u *SubscribeUpsertBulk) AddPauseDays(v uint) *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) UpdatePauseDays() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdatePauseDays()
+	})
+}
+
+// SetRemaining sets the "remaining" field.
+func (u *SubscribeUpsertBulk) SetRemaining(v int) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetRemaining(v)
+	})
+}
+
+// AddRemaining adds v to the "remaining" field.
+func (u *SubscribeUpsertBulk) AddRemaining(v int) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.AddRemaining(v)
+	})
+}
+
+// UpdateRemaining sets the "remaining" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateRemaining() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateRemaining()
 	})
 }
 

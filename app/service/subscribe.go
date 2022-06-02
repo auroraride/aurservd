@@ -47,44 +47,6 @@ func NewSubscribeWithModifier(m *model.Modifier) *subscribeService {
     return s
 }
 
-// GetStatus 获取订阅状态
-func (s *subscribeService) GetStatus(sub *ent.Subscribe) uint8 {
-    // 已退款
-    if sub.RefundAt != nil {
-        return model.SubscribeStatusCanceled
-    }
-
-    // 已退订
-    if sub.EndAt != nil {
-        return model.SubscribeStatusUnSubscribed
-    }
-
-    // 寄存中
-    if sub.PausedAt != nil {
-        return model.SubscribeStatusPaused
-    }
-
-    // 未激活
-    if sub.StartAt == nil {
-        return model.SubscribeStatusInactive
-    }
-
-    return model.SubscribeStatusUsing
-}
-
-// PausedDays 计算暂停天数
-func (s *subscribeService) PausedDays(sub *ent.Subscribe) int {
-    pause, _ := ar.Ent.SubscribePause.Query().Where(
-        subscribepause.EndAtIsNil(),
-        subscribepause.SubscribeID(sub.ID),
-    ).Only(s.ctx)
-    var dd int
-    if pause != nil {
-        dd = tools.NewTime().SubDaysToNow(pause.StartAt)
-    }
-    return int(sub.PauseDays) + dd
-}
-
 // QueryRecentOnly 获取骑手最近的一次订阅
 func (s *subscribeService) QueryRecentOnly(riderID uint64) *ent.Subscribe {
     sub, _ := s.orm.QueryNotDeleted().
@@ -122,11 +84,12 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
 
     res := &model.Subscribe{
         ID:        sub.ID,
-        Status:    s.GetStatus(sub),
+        Status:    sub.Status,
         Voltage:   sub.Voltage,
-        Days:      int(sub.Days),
-        PauseDays: s.PausedDays(sub),
-        AlterDays: int(sub.AlterDays),
+        Days:      sub.Days,
+        PauseDays: sub.PauseDays,
+        AlterDays: sub.AlterDays,
+        Remaining: sub.Remaining,
         City: &model.City{
             ID:   sub.Edges.City.ID,
             Name: sub.Edges.City.Name,
@@ -138,6 +101,19 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
         },
     }
 
+    startAt := time.Now()
+    if sub.StartAt != nil {
+        startAt = *sub.StartAt
+        res.StartAt = sub.StartAt.Format(carbon.DateLayout)
+    } else {
+        res.StartAt = ""
+    }
+    if sub.EndAt != nil {
+        res.EndAt = sub.EndAt.Format(carbon.DateLayout)
+    } else {
+        res.EndAt = startAt.AddDate(0, 0, sub.Remaining).Format(carbon.DateLayout)
+    }
+
     for _, pm := range sub.Edges.Plan.Edges.Pms {
         res.Models = append(res.Models, model.BatteryModel{
             ID:       pm.ID,
@@ -146,37 +122,9 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
         })
     }
 
-    start := sub.StartAt
-    if res.Status == model.SubscribeStatusInactive || res.Status == model.SubscribeStatusCanceled {
-        // 骑士卡未激活时, 剩余时间等于骑士卡初始时间
-        res.Remaining = res.Days
-        start = tools.NewPointer().Time(time.Now())
-    } else {
-        // 骑士卡已激活剩余时间
-        res.Remaining = res.Days + res.PauseDays + res.AlterDays - tools.NewTime().SubDaysToNow(*sub.StartAt)
-        res.StartAt = start.Format(carbon.DateLayout)
-    }
-
-    // 若已退订或已取消
-    if res.Status == model.SubscribeStatusUnSubscribed || res.Status == model.SubscribeStatusCanceled {
-        res.Remaining = 0
-    }
-
-    // 结束日期
-    if sub.EndAt == nil {
-        res.EndAt = start.AddDate(0, 0, res.Remaining).Format(carbon.DateLayout)
-    } else {
-        res.EndAt = sub.EndAt.Format(carbon.DateLayout)
-    }
-
     // 已取消(退款)不显示到期日期
     if res.Status == model.SubscribeStatusCanceled {
         res.EndAt = "-"
-    }
-
-    // 若剩余天数小于0 则为逾期状态
-    if res.Remaining < 0 {
-        res.Status = model.SubscribeStatusOverdue
     }
 
     // 如果是未激活则查询支付信息
@@ -196,4 +144,48 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
     }
 
     return res
+}
+
+// QueryAllEffective 获取所有生效的订阅
+func (s *subscribeService) QueryAllEffective() []*ent.Subscribe {
+    items, _ := ar.Ent.Subscribe.Query().
+        Where(
+            subscribe.RefundAtIsNil(),
+            subscribe.EndAtIsNil(),
+            subscribe.StartAtNotNil(),
+        ).
+        WithPauses(func(spq *ent.SubscribePauseQuery) {
+            spq.Where(subscribepause.EndAtIsNil())
+        }).
+        All(s.ctx)
+    return items
+}
+
+// UpdateStatus 更新订阅状态
+func (s *subscribeService) UpdateStatus(item *ent.Subscribe) {
+    tt := tools.NewTime()
+    pauseDays := item.PauseDays
+    alterDays := item.AlterDays
+    days := item.Days
+    pastDays := tt.SubDaysToNow(*item.StartAt)
+    status := model.SubscribeStatusUsing
+    // 寄存中
+    if item.PausedAt != nil && item.Edges.Pauses != nil {
+        p := item.Edges.Pauses[0]
+        pauseDays += tt.SubDaysToNow(p.StartAt)
+    }
+    // 剩余天数
+    remaining := days + alterDays + pauseDays - pastDays
+    if remaining < 0 {
+        status = model.SubscribeStatusOverdue
+    }
+    _, err := item.Update().
+        SetPauseDays(pauseDays).
+        SetStatus(status).
+        SetRemaining(remaining).
+        Save(context.Background())
+    if err != nil {
+        log.Errorf("[SUBSCRIBE TASK] %d 更新失败: %v", item.ID, err)
+    }
+    log.Infof("[SUBSCRIBE TASK] %d 更新成功, 状态: %d, 剩余天数: %d", item.ID, status, remaining)
 }

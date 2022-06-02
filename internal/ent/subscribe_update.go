@@ -138,6 +138,27 @@ func (su *SubscribeUpdate) SetInitialOrderID(u uint64) *SubscribeUpdate {
 	return su
 }
 
+// SetStatus sets the "status" field.
+func (su *SubscribeUpdate) SetStatus(u uint8) *SubscribeUpdate {
+	su.mutation.ResetStatus()
+	su.mutation.SetStatus(u)
+	return su
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableStatus(u *uint8) *SubscribeUpdate {
+	if u != nil {
+		su.SetStatus(*u)
+	}
+	return su
+}
+
+// AddStatus adds u to the "status" field.
+func (su *SubscribeUpdate) AddStatus(u int8) *SubscribeUpdate {
+	su.mutation.AddStatus(u)
+	return su
+}
+
 // SetVoltage sets the "voltage" field.
 func (su *SubscribeUpdate) SetVoltage(f float64) *SubscribeUpdate {
 	su.mutation.ResetVoltage()
@@ -152,57 +173,99 @@ func (su *SubscribeUpdate) AddVoltage(f float64) *SubscribeUpdate {
 }
 
 // SetDays sets the "days" field.
-func (su *SubscribeUpdate) SetDays(u uint) *SubscribeUpdate {
+func (su *SubscribeUpdate) SetDays(i int) *SubscribeUpdate {
 	su.mutation.ResetDays()
-	su.mutation.SetDays(u)
+	su.mutation.SetDays(i)
 	return su
 }
 
-// AddDays adds u to the "days" field.
-func (su *SubscribeUpdate) AddDays(u int) *SubscribeUpdate {
-	su.mutation.AddDays(u)
+// AddDays adds i to the "days" field.
+func (su *SubscribeUpdate) AddDays(i int) *SubscribeUpdate {
+	su.mutation.AddDays(i)
+	return su
+}
+
+// SetPlanDays sets the "plan_days" field.
+func (su *SubscribeUpdate) SetPlanDays(i int) *SubscribeUpdate {
+	su.mutation.ResetPlanDays()
+	su.mutation.SetPlanDays(i)
+	return su
+}
+
+// SetNillablePlanDays sets the "plan_days" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillablePlanDays(i *int) *SubscribeUpdate {
+	if i != nil {
+		su.SetPlanDays(*i)
+	}
+	return su
+}
+
+// AddPlanDays adds i to the "plan_days" field.
+func (su *SubscribeUpdate) AddPlanDays(i int) *SubscribeUpdate {
+	su.mutation.AddPlanDays(i)
 	return su
 }
 
 // SetAlterDays sets the "alter_days" field.
-func (su *SubscribeUpdate) SetAlterDays(u uint) *SubscribeUpdate {
+func (su *SubscribeUpdate) SetAlterDays(i int) *SubscribeUpdate {
 	su.mutation.ResetAlterDays()
-	su.mutation.SetAlterDays(u)
+	su.mutation.SetAlterDays(i)
 	return su
 }
 
 // SetNillableAlterDays sets the "alter_days" field if the given value is not nil.
-func (su *SubscribeUpdate) SetNillableAlterDays(u *uint) *SubscribeUpdate {
-	if u != nil {
-		su.SetAlterDays(*u)
+func (su *SubscribeUpdate) SetNillableAlterDays(i *int) *SubscribeUpdate {
+	if i != nil {
+		su.SetAlterDays(*i)
 	}
 	return su
 }
 
-// AddAlterDays adds u to the "alter_days" field.
-func (su *SubscribeUpdate) AddAlterDays(u int) *SubscribeUpdate {
-	su.mutation.AddAlterDays(u)
+// AddAlterDays adds i to the "alter_days" field.
+func (su *SubscribeUpdate) AddAlterDays(i int) *SubscribeUpdate {
+	su.mutation.AddAlterDays(i)
 	return su
 }
 
 // SetPauseDays sets the "pause_days" field.
-func (su *SubscribeUpdate) SetPauseDays(u uint) *SubscribeUpdate {
+func (su *SubscribeUpdate) SetPauseDays(i int) *SubscribeUpdate {
 	su.mutation.ResetPauseDays()
-	su.mutation.SetPauseDays(u)
+	su.mutation.SetPauseDays(i)
 	return su
 }
 
 // SetNillablePauseDays sets the "pause_days" field if the given value is not nil.
-func (su *SubscribeUpdate) SetNillablePauseDays(u *uint) *SubscribeUpdate {
-	if u != nil {
-		su.SetPauseDays(*u)
+func (su *SubscribeUpdate) SetNillablePauseDays(i *int) *SubscribeUpdate {
+	if i != nil {
+		su.SetPauseDays(*i)
 	}
 	return su
 }
 
-// AddPauseDays adds u to the "pause_days" field.
-func (su *SubscribeUpdate) AddPauseDays(u int) *SubscribeUpdate {
-	su.mutation.AddPauseDays(u)
+// AddPauseDays adds i to the "pause_days" field.
+func (su *SubscribeUpdate) AddPauseDays(i int) *SubscribeUpdate {
+	su.mutation.AddPauseDays(i)
+	return su
+}
+
+// SetRemaining sets the "remaining" field.
+func (su *SubscribeUpdate) SetRemaining(i int) *SubscribeUpdate {
+	su.mutation.ResetRemaining()
+	su.mutation.SetRemaining(i)
+	return su
+}
+
+// SetNillableRemaining sets the "remaining" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableRemaining(i *int) *SubscribeUpdate {
+	if i != nil {
+		su.SetRemaining(*i)
+	}
+	return su
+}
+
+// AddRemaining adds i to the "remaining" field.
+func (su *SubscribeUpdate) AddRemaining(i int) *SubscribeUpdate {
+	su.mutation.AddRemaining(i)
 	return su
 }
 
@@ -616,6 +679,20 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: subscribe.FieldRemark,
 		})
 	}
+	if value, ok := su.mutation.Status(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: subscribe.FieldStatus,
+		})
+	}
+	if value, ok := su.mutation.AddedStatus(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: subscribe.FieldStatus,
+		})
+	}
 	if value, ok := su.mutation.Voltage(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
@@ -632,44 +709,72 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := su.mutation.Days(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldDays,
 		})
 	}
 	if value, ok := su.mutation.AddedDays(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldDays,
 		})
 	}
+	if value, ok := su.mutation.PlanDays(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldPlanDays,
+		})
+	}
+	if value, ok := su.mutation.AddedPlanDays(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldPlanDays,
+		})
+	}
 	if value, ok := su.mutation.AlterDays(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldAlterDays,
 		})
 	}
 	if value, ok := su.mutation.AddedAlterDays(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldAlterDays,
 		})
 	}
 	if value, ok := su.mutation.PauseDays(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldPauseDays,
 		})
 	}
 	if value, ok := su.mutation.AddedPauseDays(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldPauseDays,
+		})
+	}
+	if value, ok := su.mutation.Remaining(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldRemaining,
+		})
+	}
+	if value, ok := su.mutation.AddedRemaining(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldRemaining,
 		})
 	}
 	if value, ok := su.mutation.PausedAt(); ok {
@@ -1182,6 +1287,27 @@ func (suo *SubscribeUpdateOne) SetInitialOrderID(u uint64) *SubscribeUpdateOne {
 	return suo
 }
 
+// SetStatus sets the "status" field.
+func (suo *SubscribeUpdateOne) SetStatus(u uint8) *SubscribeUpdateOne {
+	suo.mutation.ResetStatus()
+	suo.mutation.SetStatus(u)
+	return suo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableStatus(u *uint8) *SubscribeUpdateOne {
+	if u != nil {
+		suo.SetStatus(*u)
+	}
+	return suo
+}
+
+// AddStatus adds u to the "status" field.
+func (suo *SubscribeUpdateOne) AddStatus(u int8) *SubscribeUpdateOne {
+	suo.mutation.AddStatus(u)
+	return suo
+}
+
 // SetVoltage sets the "voltage" field.
 func (suo *SubscribeUpdateOne) SetVoltage(f float64) *SubscribeUpdateOne {
 	suo.mutation.ResetVoltage()
@@ -1196,57 +1322,99 @@ func (suo *SubscribeUpdateOne) AddVoltage(f float64) *SubscribeUpdateOne {
 }
 
 // SetDays sets the "days" field.
-func (suo *SubscribeUpdateOne) SetDays(u uint) *SubscribeUpdateOne {
+func (suo *SubscribeUpdateOne) SetDays(i int) *SubscribeUpdateOne {
 	suo.mutation.ResetDays()
-	suo.mutation.SetDays(u)
+	suo.mutation.SetDays(i)
 	return suo
 }
 
-// AddDays adds u to the "days" field.
-func (suo *SubscribeUpdateOne) AddDays(u int) *SubscribeUpdateOne {
-	suo.mutation.AddDays(u)
+// AddDays adds i to the "days" field.
+func (suo *SubscribeUpdateOne) AddDays(i int) *SubscribeUpdateOne {
+	suo.mutation.AddDays(i)
+	return suo
+}
+
+// SetPlanDays sets the "plan_days" field.
+func (suo *SubscribeUpdateOne) SetPlanDays(i int) *SubscribeUpdateOne {
+	suo.mutation.ResetPlanDays()
+	suo.mutation.SetPlanDays(i)
+	return suo
+}
+
+// SetNillablePlanDays sets the "plan_days" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillablePlanDays(i *int) *SubscribeUpdateOne {
+	if i != nil {
+		suo.SetPlanDays(*i)
+	}
+	return suo
+}
+
+// AddPlanDays adds i to the "plan_days" field.
+func (suo *SubscribeUpdateOne) AddPlanDays(i int) *SubscribeUpdateOne {
+	suo.mutation.AddPlanDays(i)
 	return suo
 }
 
 // SetAlterDays sets the "alter_days" field.
-func (suo *SubscribeUpdateOne) SetAlterDays(u uint) *SubscribeUpdateOne {
+func (suo *SubscribeUpdateOne) SetAlterDays(i int) *SubscribeUpdateOne {
 	suo.mutation.ResetAlterDays()
-	suo.mutation.SetAlterDays(u)
+	suo.mutation.SetAlterDays(i)
 	return suo
 }
 
 // SetNillableAlterDays sets the "alter_days" field if the given value is not nil.
-func (suo *SubscribeUpdateOne) SetNillableAlterDays(u *uint) *SubscribeUpdateOne {
-	if u != nil {
-		suo.SetAlterDays(*u)
+func (suo *SubscribeUpdateOne) SetNillableAlterDays(i *int) *SubscribeUpdateOne {
+	if i != nil {
+		suo.SetAlterDays(*i)
 	}
 	return suo
 }
 
-// AddAlterDays adds u to the "alter_days" field.
-func (suo *SubscribeUpdateOne) AddAlterDays(u int) *SubscribeUpdateOne {
-	suo.mutation.AddAlterDays(u)
+// AddAlterDays adds i to the "alter_days" field.
+func (suo *SubscribeUpdateOne) AddAlterDays(i int) *SubscribeUpdateOne {
+	suo.mutation.AddAlterDays(i)
 	return suo
 }
 
 // SetPauseDays sets the "pause_days" field.
-func (suo *SubscribeUpdateOne) SetPauseDays(u uint) *SubscribeUpdateOne {
+func (suo *SubscribeUpdateOne) SetPauseDays(i int) *SubscribeUpdateOne {
 	suo.mutation.ResetPauseDays()
-	suo.mutation.SetPauseDays(u)
+	suo.mutation.SetPauseDays(i)
 	return suo
 }
 
 // SetNillablePauseDays sets the "pause_days" field if the given value is not nil.
-func (suo *SubscribeUpdateOne) SetNillablePauseDays(u *uint) *SubscribeUpdateOne {
-	if u != nil {
-		suo.SetPauseDays(*u)
+func (suo *SubscribeUpdateOne) SetNillablePauseDays(i *int) *SubscribeUpdateOne {
+	if i != nil {
+		suo.SetPauseDays(*i)
 	}
 	return suo
 }
 
-// AddPauseDays adds u to the "pause_days" field.
-func (suo *SubscribeUpdateOne) AddPauseDays(u int) *SubscribeUpdateOne {
-	suo.mutation.AddPauseDays(u)
+// AddPauseDays adds i to the "pause_days" field.
+func (suo *SubscribeUpdateOne) AddPauseDays(i int) *SubscribeUpdateOne {
+	suo.mutation.AddPauseDays(i)
+	return suo
+}
+
+// SetRemaining sets the "remaining" field.
+func (suo *SubscribeUpdateOne) SetRemaining(i int) *SubscribeUpdateOne {
+	suo.mutation.ResetRemaining()
+	suo.mutation.SetRemaining(i)
+	return suo
+}
+
+// SetNillableRemaining sets the "remaining" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableRemaining(i *int) *SubscribeUpdateOne {
+	if i != nil {
+		suo.SetRemaining(*i)
+	}
+	return suo
+}
+
+// AddRemaining adds i to the "remaining" field.
+func (suo *SubscribeUpdateOne) AddRemaining(i int) *SubscribeUpdateOne {
+	suo.mutation.AddRemaining(i)
 	return suo
 }
 
@@ -1690,6 +1858,20 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 			Column: subscribe.FieldRemark,
 		})
 	}
+	if value, ok := suo.mutation.Status(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: subscribe.FieldStatus,
+		})
+	}
+	if value, ok := suo.mutation.AddedStatus(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: subscribe.FieldStatus,
+		})
+	}
 	if value, ok := suo.mutation.Voltage(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
@@ -1706,44 +1888,72 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 	}
 	if value, ok := suo.mutation.Days(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldDays,
 		})
 	}
 	if value, ok := suo.mutation.AddedDays(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldDays,
 		})
 	}
+	if value, ok := suo.mutation.PlanDays(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldPlanDays,
+		})
+	}
+	if value, ok := suo.mutation.AddedPlanDays(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldPlanDays,
+		})
+	}
 	if value, ok := suo.mutation.AlterDays(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldAlterDays,
 		})
 	}
 	if value, ok := suo.mutation.AddedAlterDays(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldAlterDays,
 		})
 	}
 	if value, ok := suo.mutation.PauseDays(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldPauseDays,
 		})
 	}
 	if value, ok := suo.mutation.AddedPauseDays(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: subscribe.FieldPauseDays,
+		})
+	}
+	if value, ok := suo.mutation.Remaining(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldRemaining,
+		})
+	}
+	if value, ok := suo.mutation.AddedRemaining(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: subscribe.FieldRemaining,
 		})
 	}
 	if value, ok := suo.mutation.PausedAt(); ok {
