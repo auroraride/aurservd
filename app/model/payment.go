@@ -43,12 +43,12 @@ type PaymentSubscribe struct {
     SubscribeID *uint64   `json:"subscribeId"`       // 续费订单携带订阅ID
 }
 
-func (oc *PaymentCache) MarshalBinary() ([]byte, error) {
-    return jsoniter.Marshal(oc)
+func (pc *PaymentCache) MarshalBinary() ([]byte, error) {
+    return jsoniter.Marshal(pc)
 }
 
-func (oc *PaymentCache) UnmarshalBinary(data []byte) error {
-    return jsoniter.Unmarshal(data, oc)
+func (pc *PaymentCache) UnmarshalBinary(data []byte) error {
+    return jsoniter.Unmarshal(data, pc)
 }
 
 // PaymentRefund 退款详情

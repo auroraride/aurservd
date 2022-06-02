@@ -34,8 +34,8 @@ func (*cabinet) Report(c echo.Context) (err error) {
     )
 }
 
-// Process
-// @ID           RiderCabinetProcess
+// GetProcess
+// @ID           RiderCabinetGetProcess
 // @Router       /rider/v1/cabinet/{serial} [GET]
 // @Summary      R40001 确认换电信息
 // @Tags         [R]骑手接口
@@ -43,8 +43,42 @@ func (*cabinet) Report(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
 // @Param        serial  path  string  true  "电柜二维码"
-// @Success      200  {object}  model.RiderCabinetOperateProcess  "请求成功"
+// @Success      200  {object}  model.RiderCabinetInfo  "请求成功"
+func (*cabinet) GetProcess(c echo.Context) (err error) {
+    ctx, req := app.RiderContextAndBinding[model.RiderCabinetOperateInfoReq](c)
+    return ctx.SendResponse(service.NewRiderCabinetWithRider(ctx.Rider).GetProcess(req))
+}
+
+// Process
+// @ID           RiderCabinetProcess
+// @Router       /rider/v1/cabinet/process [POST]
+// @Summary      R40002 操作换电
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        body  body  model.RiderCabinetOperateReq  true  "desc"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Process(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.RiderCabinetOperateReq](c)
-    return ctx.SendResponse(service.NewRiderCabinetWithRider(ctx.Rider).Process(req))
+    service.NewRiderCabinetWithRider(ctx.Rider).Process(req)
+    return ctx.SendResponse()
+}
+
+// ProcessStatus
+// @ID           RiderCabinetProcessStatus
+// @Router       /rider/v1/cabinet/process [GET]
+// @Summary      R40003 换电状态
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        query  query  model.RiderCabinetOperateStatusReq  true  "desc"
+// @Success      200  {object}  model.RiderCabinetOperateRes  "请求成功"
+func (*cabinet) ProcessStatus(c echo.Context) (err error) {
+    ctx, req := app.RiderContextAndBinding[model.RiderCabinetOperateStatusReq](c)
+
+    return ctx.SendResponse(
+        service.NewRiderCabinetWithRider(ctx.Rider).ProcessStatus(req),
+    )
 }

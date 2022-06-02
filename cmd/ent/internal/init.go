@@ -76,8 +76,8 @@ func InitCmd() *cobra.Command {
         Short: "initialize an environment with zero or more schemas",
         Example: examples(
             "ent init Example",
-            "ent init --target entv1/schema User Group",
-            "ent init --target entv1/schema --template tmpl/default.tmpl User Group",
+            "ent init --target entv1/schema OperatorName Group",
+            "ent init --target entv1/schema --template tmpl/default.tmpl OperatorName Group",
         ),
         Run: func(cmd *cobra.Command, names []string) {
             if err := initEnv(target, names); err != nil {

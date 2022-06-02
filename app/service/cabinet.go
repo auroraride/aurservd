@@ -7,6 +7,7 @@ package service
 
 import (
     "context"
+    "errors"
     "github.com/alibabacloud-go/tea/tea"
     sls "github.com/aliyun/aliyun-log-go-sdk"
     "github.com/auroraride/aurservd/app/logging"
@@ -188,6 +189,22 @@ func (s *cabinetService) UpdateStatus(item *ent.Cabinet) *ent.Cabinet {
     return up.SaveX(s.ctx)
 }
 
+// DoorOpenStatus 获取柜门状态
+func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int) model.CabinetBinDoorStatus {
+    item = s.UpdateStatus(item)
+    if len(item.Bin) < index {
+        return model.CabinetBinDoorStatusUnknown
+    }
+    bin := item.Bin[index]
+    if !bin.DoorHealth {
+        return model.CabinetBinDoorStatusFail
+    }
+    if bin.OpenStatus {
+        return model.CabinetBinDoorStatusOpen
+    }
+    return model.CabinetBinDoorStatusClose
+}
+
 // Detail 电柜详细信息
 func (s *cabinetService) Detail(id uint64) *model.CabinetDetailRes {
     item := s.orm.QueryNotDeleted().
@@ -203,23 +220,26 @@ func (s *cabinetService) Detail(id uint64) *model.CabinetDetailRes {
 }
 
 // DoorOperate 操作柜门
-func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq) (state bool) {
+func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator model.CabinetDoorOperator) (state bool, err error) {
     opId := shortuuid.New()
     now := time.Now()
     // 查找柜子和仓位
     item := s.QueryOne(*req.ID)
     if len(item.Bin) < *req.Index {
-        snag.Panic("该柜门未找到")
+        err = errors.New("该柜门未找到")
+        return
     }
 
     brand := model.CabinetBrand(item.Brand)
     op, ok := req.Operation.Value(brand)
     if !ok {
-        snag.Panic("操作方式错误")
+        err = errors.New("操作方式错误")
+        return
     }
     if *req.Operation == model.CabinetDoorOperateLock {
         if req.Remark == "" {
-            snag.Panic("该操作必须携带操作原因")
+            err = errors.New("该操作必须携带操作原因")
+            return
         } else {
             req.Remark = ""
         }
@@ -235,7 +255,7 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq) (state bo
         break
     }
     prov.PrepareRequest()
-    state = prov.DoorOperate(s.modifier.Name+"-"+opId, item.Serial, op, *req.Index)
+    state = prov.DoorOperate(operator.Name+"-"+opId, item.Serial, op, *req.Index)
     // 如果成功, 重新获取状态更新数据
     if state {
         // 更新仓位备注
@@ -251,24 +271,23 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq) (state bo
             Logs: []*sls.Log{{
                 Time: tea.Uint32(uint32(now.Unix())),
                 Contents: logging.GenerateLogContent(&logging.DoorOperateLog{
-                    ID:        opId,
-                    Brand:     brand.String(),
-                    User:      s.modifier.Name,
-                    UserID:    s.modifier.ID,
-                    Phone:     s.modifier.Phone,
-                    Serial:    item.Serial,
-                    Name:      item.Bin[*req.Index].Name,
-                    Operation: req.Operation.String(),
-                    Success:   state,
-                    Remark:    req.Remark,
-                    Time:      now.Format(carbon.DateTimeLayout),
+                    ID:            opId,
+                    Brand:         brand.String(),
+                    OperatorName:  operator.Name,
+                    OperatorID:    operator.ID,
+                    OperatorPhone: operator.Phone,
+                    Serial:        item.Serial,
+                    Name:          item.Bin[*req.Index].Name,
+                    Operation:     req.Operation.String(),
+                    Success:       state,
+                    Remark:        req.Remark,
+                    Time:          now.Format(carbon.DateTimeLayout),
                 }),
             }},
         }
-        err := ali.NewSls().PutLogs(slsCfg.Project, slsCfg.DoorLog, lg)
+        err = ali.NewSls().PutLogs(slsCfg.Project, slsCfg.DoorLog, lg)
         if err != nil {
             log.Error(err)
-            return
         }
     }()
     return
@@ -276,6 +295,9 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq) (state bo
 
 // Reboot 重启电柜
 func (s *cabinetService) Reboot(req *model.IDPostReq) bool {
+    if s.modifier == nil {
+        snag.Panic("请求不正确")
+    }
     now := time.Now()
     opId := shortuuid.New()
 
@@ -304,15 +326,16 @@ func (s *cabinetService) Reboot(req *model.IDPostReq) bool {
             Logs: []*sls.Log{{
                 Time: tea.Uint32(uint32(now.Unix())),
                 Contents: logging.GenerateLogContent(&logging.DoorOperateLog{
-                    ID:        opId,
-                    Brand:     brand.String(),
-                    User:      s.modifier.Name,
-                    UserID:    s.modifier.ID,
-                    Phone:     s.modifier.Phone,
-                    Serial:    item.Serial,
-                    Operation: "重启",
-                    Success:   state,
-                    Time:      now.Format(carbon.DateTimeLayout),
+                    ID:            opId,
+                    Brand:         brand.String(),
+                    OperatorName:  s.modifier.Name,
+                    OperatorID:    s.modifier.ID,
+                    OperatorPhone: s.modifier.Phone,
+                    OperatorRole:  model.CabinetDoorOperatorRoleManager,
+                    Serial:        item.Serial,
+                    Operation:     "重启",
+                    Success:       state,
+                    Time:          now.Format(carbon.DateTimeLayout),
                 }),
             }},
         }

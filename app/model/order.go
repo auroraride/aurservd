@@ -53,10 +53,6 @@ type OrderCreateRes struct {
     OutTradeNo string `json:"outTradeNo"` // 交易编码
 }
 
-// OrderSubordinate 从属订单信息
-type OrderSubordinate struct {
-}
-
 // OrderNotActived 骑手未激活订单信息
 type OrderNotActived struct {
     ID      uint64         `json:"id"`                 // 订单编号

@@ -105,6 +105,16 @@ type CabinetDeleteReq struct {
     ID uint64 `json:"id" param:"id"`
 }
 
+// CabinetBinDoorStatus 柜门状态(处理换电用)
+type CabinetBinDoorStatus uint8
+
+const (
+    CabinetBinDoorStatusUnknown CabinetBinDoorStatus = iota // 未知
+    CabinetBinDoorStatusClose                               // 关闭
+    CabinetBinDoorStatusOpen                                // 开启
+    CabinetBinDoorStatusFail                                // 故障
+)
+
 // CabinetBin 仓位详细信息
 // 1000mA = 1A
 // 1000mV = 1V
@@ -181,6 +191,31 @@ func (cdo CabinetDoorOperate) Value(brand CabinetBrand) (v string, ex bool) {
     return
 }
 
+type CabinetDoorOperatorRole uint8
+
+const (
+    CabinetDoorOperatorRoleManager CabinetDoorOperatorRole = iota + 1 // 后台人员
+    CabinetDoorOperatorRoleRider                                      // 骑手
+)
+
+func (cdor CabinetDoorOperatorRole) String() string {
+    switch cdor {
+    case CabinetDoorOperatorRoleManager:
+        return "后台人员"
+    case CabinetDoorOperatorRoleRider:
+        return "骑手"
+    }
+    return "未知"
+}
+
+// CabinetDoorOperator 柜门操作人
+type CabinetDoorOperator struct {
+    ID    uint64                  `json:"id"`    // 用户ID
+    Role  CabinetDoorOperatorRole `json:"role"`  // 角色
+    Name  string                  `json:"name"`  // 姓名
+    Phone string                  `json:"phone"` // 手机号
+}
+
 // CabinetDoorOperateReq 仓门操作
 // TODO 给用户开仓逻辑
 type CabinetDoorOperateReq struct {
@@ -188,7 +223,6 @@ type CabinetDoorOperateReq struct {
     Index     *int                `json:"index" validate:"required"`     // 仓门index
     Remark    string              `json:"remark"`                        // 操作原因
     Operation *CabinetDoorOperate `json:"operation" validate:"required"` // 操作方式 1:开仓 2:锁定(标记为故障) 3:解锁(取消标记故障)
-    Phone     *string             `json:"phone"`                         // 骑手手机号
 }
 
 // CabinetBinBasicInfo 电柜仓位基础属性

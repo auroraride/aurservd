@@ -255,11 +255,11 @@ func (tx *txDriver) Dialect() string { return tx.drv.Dialect() }
 func (*txDriver) Close() error { return nil }
 
 // Commit is a nop commit for the internal builders.
-// User must call `Tx.Commit` in order to commit the transaction.
+// OperatorName must call `Tx.Commit` in order to commit the transaction.
 func (*txDriver) Commit() error { return nil }
 
 // Rollback is a nop rollback for the internal builders.
-// User must call `Tx.Rollback` in order to rollback the transaction.
+// OperatorName must call `Tx.Rollback` in order to rollback the transaction.
 func (*txDriver) Rollback() error { return nil }
 
 // Exec calls tx.Exec.

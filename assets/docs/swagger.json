@@ -2007,6 +2007,83 @@
                 }
             }
         },
+        "/rider/v1/cabinet/process": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R40003 换电状态",
+                "operationId": "RiderCabinetProcessStatus",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "操作ID ",
+                        "name": "uuid",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderCabinetOperateRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R40002 操作换电",
+                "operationId": "RiderCabinetProcess",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderCabinetOperateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/cabinet/report": {
             "post": {
                 "consumes": [
@@ -2060,7 +2137,7 @@
                     "[R]骑手接口"
                 ],
                 "summary": "R40001 确认换电信息",
-                "operationId": "RiderCabinetProcess",
+                "operationId": "RiderCabinetGetProcess",
                 "parameters": [
                     {
                         "type": "string",
@@ -2081,7 +2158,7 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.RiderCabinetOperateProcess"
+                            "$ref": "#/definitions/model.RiderCabinetInfo"
                         }
                     }
                 }
@@ -3080,10 +3157,6 @@
                     "description": "操作方式 1:开仓 2:锁定(标记为故障) 3:解锁(取消标记故障)",
                     "type": "integer"
                 },
-                "phone": {
-                    "description": "骑手手机号",
-                    "type": "string"
-                },
                 "remark": {
                     "description": "操作原因",
                     "type": "string"
@@ -3687,20 +3760,97 @@
                 }
             }
         },
-        "model.RiderCabinetOperateProcess": {
+        "model.RiderCabinetInfo": {
             "type": "object",
             "properties": {
                 "alternative": {
                     "description": "备选方案",
                     "$ref": "#/definitions/model.CabinetBinBasicInfo"
                 },
+                "batteryFullNum": {
+                    "description": "总满电电池数",
+                    "type": "integer"
+                },
+                "batteryNum": {
+                    "description": "总电池数",
+                    "type": "integer"
+                },
+                "brand": {
+                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
+                    "type": "string"
+                },
+                "doors": {
+                    "description": "总仓位",
+                    "type": "integer"
+                },
                 "emptyBin": {
                     "description": "空仓位",
                     "$ref": "#/definitions/model.CabinetBinBasicInfo"
                 },
+                "full": {
+                    "description": "是否有满电电池",
+                    "type": "boolean"
+                },
                 "fullBin": {
                     "description": "满电仓位",
                     "$ref": "#/definitions/model.CabinetBinBasicInfo"
+                },
+                "health": {
+                    "description": "电柜健康状态 0离线 1正常 2故障",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "电柜名称",
+                    "type": "string"
+                },
+                "serial": {
+                    "description": "电柜编码",
+                    "type": "string"
+                },
+                "uuid": {
+                    "description": "操作ID",
+                    "type": "string"
+                }
+            }
+        },
+        "model.RiderCabinetOperateReq": {
+            "type": "object",
+            "required": [
+                "uuid"
+            ],
+            "properties": {
+                "alternative": {
+                    "description": "是否使用备选方案",
+                    "type": "boolean"
+                },
+                "uuid": {
+                    "description": "操作ID",
+                    "type": "string"
+                }
+            }
+        },
+        "model.RiderCabinetOperateRes": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "description": "消息",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态 1:处理中 2:成功 3:失败",
+                    "type": "integer"
+                },
+                "step": {
+                    "description": "操作步骤 1:开空电仓 2:放旧电池 3:开满电仓 4:取新电池",
+                    "type": "integer"
+                },
+                "stop": {
+                    "description": "步骤是否终止",
+                    "type": "boolean"
                 }
             }
         },

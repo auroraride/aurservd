@@ -110,8 +110,15 @@ func (*cabinet) Detail(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) DoorOperate(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetDoorOperateReq](c)
+    m := ctx.Modifier
+    status, err := service.NewCabinetWithModifier(ctx.Modifier).DoorOperate(req, model.CabinetDoorOperator{
+        ID:    m.ID,
+        Role:  model.CabinetDoorOperatorRoleManager,
+        Name:  m.Name,
+        Phone: m.Phone,
+    })
     return ctx.SendResponse(
-        model.StatusResponse{Status: service.NewCabinetWithModifier(ctx.Modifier).DoorOperate(req)},
+        model.StatusResponse{Status: status},
     )
 }
 

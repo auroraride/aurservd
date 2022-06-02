@@ -14,6 +14,7 @@ import (
     "github.com/getkin/kin-openapi/openapi2conv"
     jsoniter "github.com/json-iterator/go"
     "github.com/labstack/echo/v4"
+    echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 // @title                极光出行API
@@ -31,8 +32,10 @@ func loadRedocRoute() {
     })
 
     g.GET("/swagger.json", func(c echo.Context) error {
-        return c.Blob(200, "text/plain", assets.SwaggerSpecYaml)
+        return c.JSONBlob(200, assets.SwaggerSpec)
     })
+
+    g.GET("/swagger/*", echoSwagger.WrapHandler)
 
     g.GET("/oai3.json", func(c echo.Context) (err error) {
         var doc2 openapi2.T

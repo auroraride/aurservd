@@ -60,6 +60,8 @@ func loadRideRoutes() {
 
     // 电柜
     cabinet := g.Group("/cabinet")
-    cabinet.GET("/process/:serial", rapi.Cabinet.Process)
+    cabinet.GET("/process/:serial", rapi.Cabinet.GetProcess)
+    cabinet.POST("/process", rapi.Cabinet.Process)
+    cabinet.GET("/process/status", rapi.Cabinet.ProcessStatus)
     cabinet.POST("/report", rapi.Cabinet.Report)
 }

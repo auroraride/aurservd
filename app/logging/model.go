@@ -27,15 +27,16 @@ type CabinetLog struct {
 
 // DoorOperateLog 柜门操作日志
 type DoorOperateLog struct {
-    ID        string `json:"id" sls:"操作ID"`
-    Brand     string `json:"brand" sls:"品牌" index:"doc"`
-    Serial    string `json:"serial" sls:"编码"`
-    Name      string `json:"name" sls:"仓位" index:"doc"`
-    Operation string `json:"operation" sls:"操作" index:"doc"`
-    Success   bool   `json:"success" sls:"是否成功" index:"doc"`
-    Remark    string `json:"remark" sls:"备注"`
-    UserID    uint64 `json:"userID" sls:"操作人ID"`
-    Phone     string `json:"phone" sls:"操作人电话"`
-    User      string `json:"user" sls:"操作人" index:"doc"`
-    Time      string `json:"time" sls:"操作时间" index:""`
+    ID            string                        `json:"id" sls:"操作ID"`
+    Brand         string                        `json:"brand" sls:"品牌" index:"doc"`
+    Serial        string                        `json:"serial" sls:"编码"`
+    Name          string                        `json:"name" sls:"仓位" index:"doc"`
+    Operation     string                        `json:"operation" sls:"操作" index:"doc"`
+    Success       bool                          `json:"success" sls:"是否成功" index:"doc"`
+    Remark        string                        `json:"remark" sls:"备注"`
+    OperatorID    uint64                        `json:"operatorID" sls:"操作人ID" index:"doc"`
+    OperatorPhone string                        `json:"operatorPhone" sls:"操作人电话" index:"doc"`
+    OperatorName  string                        `json:"operatorName" sls:"操作者" index:"doc"`
+    OperatorRole  model.CabinetDoorOperatorRole `json:"operatorRole" sls:"操作人角色" index:"doc"`
+    Time          string                        `json:"time" sls:"操作时间"`
 }
