@@ -7,6 +7,8 @@ package service
 
 import (
     "context"
+    "fmt"
+    "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -186,13 +188,16 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe) {
 // AlterDays 修改骑手时间
 func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.RiderItemSubscribe) {
     // if req.Days +
-    sub, _ := s.orm.QueryNotDeleted().Where(subscribe.ID(req.ID)).Only(s.ctx)
+    sub, _ := s.orm.QueryNotDeleted().Where(subscribe.ID(req.ID)).WithRider().Only(s.ctx)
+    u := sub.Edges.Rider
     if sub == nil {
         snag.Panic("订阅不存在")
     }
     if req.Days+sub.Remaining < 0 {
         snag.Panic("不能将剩余时间调整为负值")
     }
+
+    before := sub.Remaining
 
     tx, err := ar.Ent.Tx(s.ctx)
     if err != nil {
@@ -227,6 +232,16 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
     }
 
     _ = tx.Commit()
+
+    // 记录日志
+    go logging.NewOperateLog().
+        SetRef(u).
+        SetModifier(s.modifier).
+        SetOperate(logging.OperateSubscribeAlter).
+        SetDiff(fmt.Sprintf("剩余%d天", before), fmt.Sprintf("剩余%d天", sub.Remaining)).
+        SetRemark(req.Reason).
+        PutOperateLog()
+
     return model.RiderItemSubscribe{
         ID:        sub.ID,
         Status:    sub.Status,

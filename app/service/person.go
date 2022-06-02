@@ -55,7 +55,7 @@ func (s *personService) Ban(req *model.PersonBanReq) {
     }
     nb := "未封禁"
     bd := "已封禁"
-    ol := logging.CreateOperateLog().SetRef(item).SetModifier(s.modifier)
+    ol := logging.NewOperateLog().SetRef(item).SetModifier(s.modifier)
     if req.Ban {
         // 封禁
         ol.SetOperate(logging.OperatePersonBan).SetDiff(nb, bd)

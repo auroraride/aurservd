@@ -279,6 +279,7 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
                     Serial:        item.Serial,
                     Name:          item.Bin[*req.Index].Name,
                     Operation:     req.Operation.String(),
+                    OperatorRole:  model.CabinetDoorOperatorRoleManager,
                     Success:       state,
                     Remark:        req.Remark,
                     Time:          now.Format(carbon.DateTimeLayout),

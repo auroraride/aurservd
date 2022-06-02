@@ -684,6 +684,27 @@ definitions:
     properties:
       item: {}
     type: object
+  model.LogOperate:
+    properties:
+      after:
+        description: 操作之后
+        type: string
+      before:
+        description: 操作之前
+        type: string
+      managerName:
+        description: 操作人姓名
+        type: string
+      operate:
+        description: 操作类别
+        type: string
+      phone:
+        description: 操作人电话
+        type: string
+      time:
+        description: 操作时间
+        type: string
+    type: object
   model.ManagerSigninRes:
     properties:
       id:
@@ -2280,6 +2301,38 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M70003 封禁/解除封禁骑手账户
+      tags:
+      - '[M]管理接口'
+  /manager/v1/rider/log:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerRiderLog
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: '骑手ID '
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: 查询偏移, 默认为0, 尝试上拉分页查询时加20, 当尝试分页请求返回空数组时代表无数据, 不用再上拉请求
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.LogOperate'
+            type: array
+      summary: M70005 查看骑手操作日志
       tags:
       - '[M]管理接口'
   /manager/v1/setting:

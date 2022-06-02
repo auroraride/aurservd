@@ -1442,6 +1442,54 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/rider/log": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M70005 查看骑手操作日志",
+                "operationId": "ManagerRiderLog",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑手ID ",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "查询偏移, 默认为0, 尝试上拉分页查询时加20, 当尝试分页请求返回空数组时代表无数据, 不用再上拉请求",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.LogOperate"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/setting": {
             "get": {
                 "consumes": [
@@ -3623,6 +3671,35 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "item": {}
+            }
+        },
+        "model.LogOperate": {
+            "type": "object",
+            "properties": {
+                "after": {
+                    "description": "操作之后",
+                    "type": "string"
+                },
+                "before": {
+                    "description": "操作之前",
+                    "type": "string"
+                },
+                "managerName": {
+                    "description": "操作人姓名",
+                    "type": "string"
+                },
+                "operate": {
+                    "description": "操作类别",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "操作人电话",
+                    "type": "string"
+                },
+                "time": {
+                    "description": "操作时间",
+                    "type": "string"
+                }
             }
         },
         "model.ManagerSigninRes": {

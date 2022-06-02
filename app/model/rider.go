@@ -103,3 +103,9 @@ type RiderBlockReq struct {
     ID    uint64 `json:"id" `   // 骑手ID
     Block bool   `json:"block"` // `true`封禁 `false`解封
 }
+
+// RiderLogReq 骑手操作日志
+type RiderLogReq struct {
+    ID     uint64 `json:"id" query:"id" validate:"required" trans:"骑手ID"`
+    Offset int64  `json:"offset" query:"offset"` // 查询偏移, 默认为0, 尝试上拉分页查询时加20, 当尝试分页请求返回空数组时代表无数据, 不用再上拉请求
+}

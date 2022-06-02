@@ -62,3 +62,18 @@ func (*rider) Block(c echo.Context) (err error) {
     service.NewRiderWithModifier(ctx.Modifier).Block(req)
     return ctx.SendResponse()
 }
+
+// Log
+// @ID           ManagerRiderLog
+// @Router       /manager/v1/rider/log [GET]
+// @Summary      M70005 查看骑手操作日志
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query  model.RiderLogReq  true  "desc"
+// @Success      200  {object}  []model.LogOperate  "请求成功"
+func (*rider) Log(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.RiderLogReq](c)
+    return ctx.SendResponse(service.NewRiderWithModifier(ctx.Modifier).GetLogs(req))
+}

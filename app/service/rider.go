@@ -23,6 +23,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/golang-module/carbon/v2"
+    jsoniter "github.com/json-iterator/go"
     "github.com/rs/xid"
     log "github.com/sirupsen/logrus"
     "strconv"
@@ -492,7 +493,7 @@ func (s *riderService) Block(req *model.RiderBlockReq) {
     }
     nb := "未封禁"
     bd := "已封禁"
-    ol := logging.CreateOperateLog().SetRef(item).SetModifier(s.modifier)
+    ol := logging.NewOperateLog().SetRef(item).SetModifier(s.modifier)
     if req.Block {
         // 封禁
         ol.SetOperate(logging.OperateRiderBLock).SetDiff(nb, bd)
@@ -540,4 +541,12 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device) *model.RiderS
         OrderNotActived: sub != nil && sub.Status == model.SubscribeStatusInactive,
     }
     return profile
+}
+
+// GetLogs 获取用户操作日志
+func (s *riderService) GetLogs(req *model.RiderLogReq) (items []model.LogOperate) {
+    u := s.Query(req.ID)
+    b, _ := jsoniter.Marshal(logging.NewOperateLog().GetLogs(u.CreatedAt, fmt.Sprintf(`refTable = 'rider' AND refId = %d`, u.ID), req.Offset))
+    _ = jsoniter.Unmarshal(b, &items)
+    return
 }

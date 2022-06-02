@@ -68,4 +68,5 @@ func loadManagerRoutes() {
     g.POST("/rider/ban", mapi.Rider.Ban)
     g.POST("/rider/block", mapi.Rider.Block)
     g.POST("/subscribe/alter", mapi.Subscribe.Alter)
+    g.GET("/rider/log", mapi.Rider.Log)
 }

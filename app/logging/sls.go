@@ -20,7 +20,8 @@ func GenerateLogContent(pointer any) (contents []*sls.LogContent) {
 
     contents = make([]*sls.LogContent, n)
     for i := 0; i < n; i++ {
-        tag, _ := t.Field(i).Tag.Lookup("sls")
+        // tag, _ := t.Field(i).Tag.Lookup("sls") // 使用中文字段名
+        tag, _ := t.Field(i).Tag.Lookup("json") // 使用英文字段名
         v := value.Field(i)
         cv := ""
         if v.Type().Kind() == reflect.Bool {

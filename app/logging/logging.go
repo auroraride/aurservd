@@ -25,6 +25,8 @@ func Boot() {
 }
 
 // bootLogStore 自动创建logstore
+// SDK 参考 https://help.aliyun.com/document_detail/286951.html
+// 查询语法: https://help.aliyun.com/document_detail/29060.htm?spm=a2c4g.11186623.0.0.4e902a73u4EmXO#concept-tnd-1jq-zdb
 func bootLogStore(project, logstore string, typ any) {
     var err error
     slsc := ali.NewSls()
@@ -51,9 +53,15 @@ func bootLogStore(project, logstore string, typ any) {
                 if !ok {
                     continue
                 }
-                tag := f.Tag.Get("sls")
+                // tag := f.Tag.Get("sls")
+                json := f.Tag.Get("json")
+                fk := f.Type.Kind()
+                if isString, ok := f.Tag.Lookup("string"); ok && isString == "true" {
+                    fk = reflect.String
+                }
+
                 var ik sls.IndexKey
-                switch f.Type.Kind() {
+                switch fk {
                 case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
                     reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
                     reflect.Uintptr:
@@ -70,17 +78,18 @@ func bootLogStore(project, logstore string, typ any) {
                     ik = sls.IndexKey{
                         Token: indexToken,
                         Type:  "text",
+                        Chn:   true,
                     }
                     break
                 }
                 if idx == "doc" {
                     ik.DocValue = true
                 }
-                ik.Alias = f.Tag.Get("json")
-                ikm[tag] = ik
+                ik.Alias = json
+                ikm[json] = ik
             }
             err = slsc.CreateIndex(project, logstore, sls.Index{
-                Line: &sls.IndexLine{Token: indexToken},
+                Line: &sls.IndexLine{Token: indexToken, Chn: true},
                 Keys: ikm,
             })
             if err != nil {
