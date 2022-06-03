@@ -83,6 +83,7 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
         Days:        sub.InitialDays + sub.PauseDays + sub.AlterDays + sub.OverdueDays,
         PauseDays:   sub.PauseDays,
         AlterDays:   sub.AlterDays,
+        InitialDays: sub.InitialDays,
         Remaining:   sub.Remaining,
         OverdueDays: sub.OverdueDays,
         City: &model.City{

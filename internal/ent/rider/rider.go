@@ -97,7 +97,7 @@ const (
 	FaultsColumn = "rider_id"
 	// OrdersTable is the table that holds the orders relation/edge.
 	OrdersTable = "order"
-	// OrdersInverseTable is the table name for the Order entity.
+	// OrdersInverseTable is the table name for the Detail entity.
 	// It exists in this package in order to avoid circular dependency with the "order" package.
 	OrdersInverseTable = "order"
 	// OrdersColumn is the table column denoting the orders relation/edge.

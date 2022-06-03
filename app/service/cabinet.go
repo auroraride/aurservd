@@ -114,20 +114,16 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
         q.Where(cabinet.Status(*req.Status))
     }
 
-    return model.ParsePaginationResponse[model.CabinetItem](q.PaginationResult(req.PaginationReq), func() []model.CabinetItem {
-        items := q.Pagination(req.PaginationReq).AllX(s.ctx)
-        out := make([]model.CabinetItem, len(items))
-        for i, item := range items {
-            _ = copier.Copy(&out[i], item)
-            if item.Edges.Branch != nil {
-                city := item.Edges.Branch.Edges.City
-                out[i].City = &model.City{
-                    ID:   city.ID,
-                    Name: city.Name,
-                }
+    return model.ParsePaginationResponse[model.CabinetItem, ent.Cabinet](q, req.PaginationReq, func(item *ent.Cabinet) (res model.CabinetItem) {
+        _ = copier.Copy(&res, item)
+        if item.Edges.Branch != nil {
+            city := item.Edges.Branch.Edges.City
+            res.City = &model.City{
+                ID:   city.ID,
+                Name: city.Name,
             }
         }
-        return out
+        return res
     })
 }
 

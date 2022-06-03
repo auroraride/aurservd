@@ -14,6 +14,11 @@ func (bmq *BatteryModelQuery) Pagination(req model.PaginationReq) *BatteryModelQ
 	return bmq
 }
 
+// PaginationItems returns pagination query builder for BatteryModelQuery.
+func (bmq *BatteryModelQuery) PaginationItemsX(req model.PaginationReq) any {
+	return bmq.Pagination(req).AllX(context.Background())
+}
+
 // PaginationResult returns pagination for BatteryModelQuery.
 func (bmq *BatteryModelQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	ids := bmq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
@@ -29,6 +34,11 @@ func (bmq *BatteryModelQuery) PaginationResult(req model.PaginationReq) model.Pa
 func (bq *BranchQuery) Pagination(req model.PaginationReq) *BranchQuery {
 	bq.Offset(req.GetOffset()).Limit(req.GetLimit())
 	return bq
+}
+
+// PaginationItems returns pagination query builder for BranchQuery.
+func (bq *BranchQuery) PaginationItemsX(req model.PaginationReq) any {
+	return bq.Pagination(req).AllX(context.Background())
 }
 
 // PaginationResult returns pagination for BranchQuery.
@@ -48,6 +58,11 @@ func (bcq *BranchContractQuery) Pagination(req model.PaginationReq) *BranchContr
 	return bcq
 }
 
+// PaginationItems returns pagination query builder for BranchContractQuery.
+func (bcq *BranchContractQuery) PaginationItemsX(req model.PaginationReq) any {
+	return bcq.Pagination(req).AllX(context.Background())
+}
+
 // PaginationResult returns pagination for BranchContractQuery.
 func (bcq *BranchContractQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	ids := bcq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
@@ -63,6 +78,11 @@ func (bcq *BranchContractQuery) PaginationResult(req model.PaginationReq) model.
 func (cq *CabinetQuery) Pagination(req model.PaginationReq) *CabinetQuery {
 	cq.Offset(req.GetOffset()).Limit(req.GetLimit())
 	return cq
+}
+
+// PaginationItems returns pagination query builder for CabinetQuery.
+func (cq *CabinetQuery) PaginationItemsX(req model.PaginationReq) any {
+	return cq.Pagination(req).AllX(context.Background())
 }
 
 // PaginationResult returns pagination for CabinetQuery.
@@ -82,6 +102,11 @@ func (ceq *CabinetExchangeQuery) Pagination(req model.PaginationReq) *CabinetExc
 	return ceq
 }
 
+// PaginationItems returns pagination query builder for CabinetExchangeQuery.
+func (ceq *CabinetExchangeQuery) PaginationItemsX(req model.PaginationReq) any {
+	return ceq.Pagination(req).AllX(context.Background())
+}
+
 // PaginationResult returns pagination for CabinetExchangeQuery.
 func (ceq *CabinetExchangeQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	ids := ceq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
@@ -97,6 +122,11 @@ func (ceq *CabinetExchangeQuery) PaginationResult(req model.PaginationReq) model
 func (cfq *CabinetFaultQuery) Pagination(req model.PaginationReq) *CabinetFaultQuery {
 	cfq.Offset(req.GetOffset()).Limit(req.GetLimit())
 	return cfq
+}
+
+// PaginationItems returns pagination query builder for CabinetFaultQuery.
+func (cfq *CabinetFaultQuery) PaginationItemsX(req model.PaginationReq) any {
+	return cfq.Pagination(req).AllX(context.Background())
 }
 
 // PaginationResult returns pagination for CabinetFaultQuery.
@@ -116,6 +146,11 @@ func (cq *CityQuery) Pagination(req model.PaginationReq) *CityQuery {
 	return cq
 }
 
+// PaginationItems returns pagination query builder for CityQuery.
+func (cq *CityQuery) PaginationItemsX(req model.PaginationReq) any {
+	return cq.Pagination(req).AllX(context.Background())
+}
+
 // PaginationResult returns pagination for CityQuery.
 func (cq *CityQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	ids := cq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
@@ -131,6 +166,11 @@ func (cq *CityQuery) PaginationResult(req model.PaginationReq) model.Pagination 
 func (cq *CommissionQuery) Pagination(req model.PaginationReq) *CommissionQuery {
 	cq.Offset(req.GetOffset()).Limit(req.GetLimit())
 	return cq
+}
+
+// PaginationItems returns pagination query builder for CommissionQuery.
+func (cq *CommissionQuery) PaginationItemsX(req model.PaginationReq) any {
+	return cq.Pagination(req).AllX(context.Background())
 }
 
 // PaginationResult returns pagination for CommissionQuery.
@@ -150,6 +190,11 @@ func (cq *ContractQuery) Pagination(req model.PaginationReq) *ContractQuery {
 	return cq
 }
 
+// PaginationItems returns pagination query builder for ContractQuery.
+func (cq *ContractQuery) PaginationItemsX(req model.PaginationReq) any {
+	return cq.Pagination(req).AllX(context.Background())
+}
+
 // PaginationResult returns pagination for ContractQuery.
 func (cq *ContractQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	ids := cq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
@@ -165,6 +210,11 @@ func (cq *ContractQuery) PaginationResult(req model.PaginationReq) model.Paginat
 func (eq *EmployeeQuery) Pagination(req model.PaginationReq) *EmployeeQuery {
 	eq.Offset(req.GetOffset()).Limit(req.GetLimit())
 	return eq
+}
+
+// PaginationItems returns pagination query builder for EmployeeQuery.
+func (eq *EmployeeQuery) PaginationItemsX(req model.PaginationReq) any {
+	return eq.Pagination(req).AllX(context.Background())
 }
 
 // PaginationResult returns pagination for EmployeeQuery.
@@ -184,6 +234,11 @@ func (eq *EnterpriseQuery) Pagination(req model.PaginationReq) *EnterpriseQuery 
 	return eq
 }
 
+// PaginationItems returns pagination query builder for EnterpriseQuery.
+func (eq *EnterpriseQuery) PaginationItemsX(req model.PaginationReq) any {
+	return eq.Pagination(req).AllX(context.Background())
+}
+
 // PaginationResult returns pagination for EnterpriseQuery.
 func (eq *EnterpriseQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	ids := eq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
@@ -199,6 +254,11 @@ func (eq *EnterpriseQuery) PaginationResult(req model.PaginationReq) model.Pagin
 func (mq *ManagerQuery) Pagination(req model.PaginationReq) *ManagerQuery {
 	mq.Offset(req.GetOffset()).Limit(req.GetLimit())
 	return mq
+}
+
+// PaginationItems returns pagination query builder for ManagerQuery.
+func (mq *ManagerQuery) PaginationItemsX(req model.PaginationReq) any {
+	return mq.Pagination(req).AllX(context.Background())
 }
 
 // PaginationResult returns pagination for ManagerQuery.
@@ -218,6 +278,11 @@ func (oq *OrderQuery) Pagination(req model.PaginationReq) *OrderQuery {
 	return oq
 }
 
+// PaginationItems returns pagination query builder for OrderQuery.
+func (oq *OrderQuery) PaginationItemsX(req model.PaginationReq) any {
+	return oq.Pagination(req).AllX(context.Background())
+}
+
 // PaginationResult returns pagination for OrderQuery.
 func (oq *OrderQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	ids := oq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
@@ -233,6 +298,11 @@ func (oq *OrderQuery) PaginationResult(req model.PaginationReq) model.Pagination
 func (orq *OrderRefundQuery) Pagination(req model.PaginationReq) *OrderRefundQuery {
 	orq.Offset(req.GetOffset()).Limit(req.GetLimit())
 	return orq
+}
+
+// PaginationItems returns pagination query builder for OrderRefundQuery.
+func (orq *OrderRefundQuery) PaginationItemsX(req model.PaginationReq) any {
+	return orq.Pagination(req).AllX(context.Background())
 }
 
 // PaginationResult returns pagination for OrderRefundQuery.
@@ -252,6 +322,11 @@ func (pq *PersonQuery) Pagination(req model.PaginationReq) *PersonQuery {
 	return pq
 }
 
+// PaginationItems returns pagination query builder for PersonQuery.
+func (pq *PersonQuery) PaginationItemsX(req model.PaginationReq) any {
+	return pq.Pagination(req).AllX(context.Background())
+}
+
 // PaginationResult returns pagination for PersonQuery.
 func (pq *PersonQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	ids := pq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
@@ -267,6 +342,11 @@ func (pq *PersonQuery) PaginationResult(req model.PaginationReq) model.Paginatio
 func (pq *PlanQuery) Pagination(req model.PaginationReq) *PlanQuery {
 	pq.Offset(req.GetOffset()).Limit(req.GetLimit())
 	return pq
+}
+
+// PaginationItems returns pagination query builder for PlanQuery.
+func (pq *PlanQuery) PaginationItemsX(req model.PaginationReq) any {
+	return pq.Pagination(req).AllX(context.Background())
 }
 
 // PaginationResult returns pagination for PlanQuery.
@@ -286,6 +366,11 @@ func (rq *RiderQuery) Pagination(req model.PaginationReq) *RiderQuery {
 	return rq
 }
 
+// PaginationItems returns pagination query builder for RiderQuery.
+func (rq *RiderQuery) PaginationItemsX(req model.PaginationReq) any {
+	return rq.Pagination(req).AllX(context.Background())
+}
+
 // PaginationResult returns pagination for RiderQuery.
 func (rq *RiderQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	ids := rq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
@@ -301,6 +386,11 @@ func (rq *RiderQuery) PaginationResult(req model.PaginationReq) model.Pagination
 func (sq *SettingQuery) Pagination(req model.PaginationReq) *SettingQuery {
 	sq.Offset(req.GetOffset()).Limit(req.GetLimit())
 	return sq
+}
+
+// PaginationItems returns pagination query builder for SettingQuery.
+func (sq *SettingQuery) PaginationItemsX(req model.PaginationReq) any {
+	return sq.Pagination(req).AllX(context.Background())
 }
 
 // PaginationResult returns pagination for SettingQuery.
@@ -320,6 +410,11 @@ func (sq *StoreQuery) Pagination(req model.PaginationReq) *StoreQuery {
 	return sq
 }
 
+// PaginationItems returns pagination query builder for StoreQuery.
+func (sq *StoreQuery) PaginationItemsX(req model.PaginationReq) any {
+	return sq.Pagination(req).AllX(context.Background())
+}
+
 // PaginationResult returns pagination for StoreQuery.
 func (sq *StoreQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	ids := sq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
@@ -335,6 +430,11 @@ func (sq *StoreQuery) PaginationResult(req model.PaginationReq) model.Pagination
 func (sq *SubscribeQuery) Pagination(req model.PaginationReq) *SubscribeQuery {
 	sq.Offset(req.GetOffset()).Limit(req.GetLimit())
 	return sq
+}
+
+// PaginationItems returns pagination query builder for SubscribeQuery.
+func (sq *SubscribeQuery) PaginationItemsX(req model.PaginationReq) any {
+	return sq.Pagination(req).AllX(context.Background())
 }
 
 // PaginationResult returns pagination for SubscribeQuery.
@@ -354,6 +454,11 @@ func (saq *SubscribeAlterQuery) Pagination(req model.PaginationReq) *SubscribeAl
 	return saq
 }
 
+// PaginationItems returns pagination query builder for SubscribeAlterQuery.
+func (saq *SubscribeAlterQuery) PaginationItemsX(req model.PaginationReq) any {
+	return saq.Pagination(req).AllX(context.Background())
+}
+
 // PaginationResult returns pagination for SubscribeAlterQuery.
 func (saq *SubscribeAlterQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	ids := saq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
@@ -369,6 +474,11 @@ func (saq *SubscribeAlterQuery) PaginationResult(req model.PaginationReq) model.
 func (spq *SubscribePauseQuery) Pagination(req model.PaginationReq) *SubscribePauseQuery {
 	spq.Offset(req.GetOffset()).Limit(req.GetLimit())
 	return spq
+}
+
+// PaginationItems returns pagination query builder for SubscribePauseQuery.
+func (spq *SubscribePauseQuery) PaginationItemsX(req model.PaginationReq) any {
+	return spq.Pagination(req).AllX(context.Background())
 }
 
 // PaginationResult returns pagination for SubscribePauseQuery.

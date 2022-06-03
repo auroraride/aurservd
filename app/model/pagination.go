@@ -25,14 +25,25 @@ type PaginationRes struct {
     Items      interface{} `json:"items"`      // 返回数据
 }
 
+type PaginationQuery interface {
+    PaginationItemsX(req PaginationReq) any
+    PaginationResult(req PaginationReq) Pagination
+}
+
 // ParsePaginationResponse 处理分页数据
-func ParsePaginationResponse[T any](p Pagination, dataFunc func() []T) (res *PaginationRes) {
+func ParsePaginationResponse[T any, K any](pq PaginationQuery, req PaginationReq, itemFunc func(item *K) T) (res *PaginationRes) {
     res = new(PaginationRes)
-    items := dataFunc()
+    res.Pagination = pq.PaginationResult(req)
+
+    res = new(PaginationRes)
+    qr := pq.PaginationItemsX(req)
+    items := make([]*K, 0)
+    if qr != nil {
+        items = qr.([]*K)
+    }
     out := make([]T, len(items))
-    res.Pagination = p
     for i, item := range items {
-        out[i] = item
+        out[i] = itemFunc(item)
     }
     res.Items = out
     return

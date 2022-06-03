@@ -124,8 +124,7 @@ func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (
         s.SetNewDevice(u, device)
     }
 
-    res = s.Profile(u, device)
-    res.Token = token
+    res = s.Profile(u, device, token)
 
     // 设置登录token
     s.ExtendTokenTime(u.ID, token)
@@ -422,49 +421,48 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
         }
     }
 
-    return model.ParsePaginationResponse[model.RiderItem](
-        q.PaginationResult(req.PaginationReq),
-        func() []model.RiderItem {
-            items := q.Pagination(req.PaginationReq).AllX(s.ctx)
-            out := make([]model.RiderItem, len(items))
-            for i, item := range items {
-                p := item.Edges.Person
-                ri := model.RiderItem{
-                    ID:         item.ID,
-                    Enterprise: nil,
-                    Phone:      item.Phone,
-                    Status:     model.RiderStatusNormal,
-                    AuthStatus: model.PersonUnauthenticated,
-                }
-                if item.Blocked {
-                    ri.Status = model.RiderStatusBlocked
-                }
-                if p != nil {
-                    ri.Name = p.Name
-                    ri.IDCardNumber = p.IDCardNumber
-                    ri.AuthStatus = model.PersonAuthStatus(p.Status)
-                    if p.Banned {
-                        ri.Status = model.RiderStatusBanned
-                    }
-                }
-
-                if item.Edges.Orders != nil && len(item.Edges.Orders) > 0 {
-                    ri.Deposit = item.Edges.Orders[0].Amount
-                }
-                if item.Edges.Subscribes != nil {
-                    sub := item.Edges.Subscribes[0]
-                    ri.Subscribe = &model.RiderItemSubscribe{
-                        Status:    sub.Status,
-                        Remaining: sub.Remaining,
-                        Voltage:   sub.Voltage,
-                    }
-                    if sub.Status == model.SubscribeStatusUsing && sub.Remaining <= 3 {
-                        ri.Subscribe.Status = 11
-                    }
-                }
-                out[i] = ri
+    return model.ParsePaginationResponse[model.RiderItem, ent.Rider](
+        q,
+        req.PaginationReq,
+        func(item *ent.Rider) model.RiderItem {
+            p := item.Edges.Person
+            ri := model.RiderItem{
+                ID:         item.ID,
+                Enterprise: nil,
+                Phone:      item.Phone,
+                Status:     model.RiderStatusNormal,
+                AuthStatus: model.PersonUnauthenticated,
             }
-            return out
+            if item.Blocked {
+                ri.Status = model.RiderStatusBlocked
+            }
+            if p != nil {
+                ri.Name = p.Name
+                ri.IDCardNumber = p.IDCardNumber
+                ri.AuthStatus = model.PersonAuthStatus(p.Status)
+                if p.Banned {
+                    ri.Status = model.RiderStatusBanned
+                }
+                if p.AuthResult != nil {
+                    ri.Address = p.AuthResult.Address
+                }
+            }
+
+            if item.Edges.Orders != nil && len(item.Edges.Orders) > 0 {
+                ri.Deposit = item.Edges.Orders[0].Amount
+            }
+            if item.Edges.Subscribes != nil {
+                sub := item.Edges.Subscribes[0]
+                ri.Subscribe = &model.RiderItemSubscribe{
+                    Status:    sub.Status,
+                    Remaining: sub.Remaining,
+                    Voltage:   sub.Voltage,
+                }
+                if sub.Status == model.SubscribeStatusUsing && sub.Remaining <= 3 {
+                    ri.Subscribe.Status = 11
+                }
+            }
+            return ri
         },
     )
 }
@@ -527,7 +525,7 @@ func (s *riderService) Deposit(riderID uint64) float64 {
 }
 
 // Profile 获取用户资料
-func (s *riderService) Profile(u *ent.Rider, device *model.Device) *model.RiderSigninRes {
+func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string) *model.RiderSigninRes {
     sub := NewSubscribe().Recent(u.ID)
     profile := &model.RiderSigninRes{
         ID:              u.ID,
@@ -539,6 +537,7 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device) *model.RiderS
         Deposit:         s.Deposit(u.ID),
         Subscribe:       sub,
         OrderNotActived: sub != nil && sub.Status == model.SubscribeStatusInactive,
+        Token:           token,
     }
     return profile
 }

@@ -58,7 +58,7 @@ const (
 	TypeEmployee        = "Employee"
 	TypeEnterprise      = "Enterprise"
 	TypeManager         = "Manager"
-	TypeOrder           = "Order"
+	TypeOrder           = "Detail"
 	TypeOrderRefund     = "OrderRefund"
 	TypePerson          = "Person"
 	TypePlan            = "Plan"
@@ -16153,7 +16153,7 @@ func (m *OrderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 	case order.FieldRefundAt:
 		return m.OldRefundAt(ctx)
 	}
-	return nil, fmt.Errorf("unknown Order field %s", name)
+	return nil, fmt.Errorf("unknown Detail field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
@@ -16295,7 +16295,7 @@ func (m *OrderMutation) SetField(name string, value ent.Value) error {
 		m.SetRefundAt(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Order field %s", name)
+	return fmt.Errorf("unknown Detail field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
@@ -16380,7 +16380,7 @@ func (m *OrderMutation) AddField(name string, value ent.Value) error {
 		m.AddTotal(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Order numeric field %s", name)
+	return fmt.Errorf("unknown Detail numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
@@ -16456,7 +16456,7 @@ func (m *OrderMutation) ClearField(name string) error {
 		m.ClearRefundAt()
 		return nil
 	}
-	return fmt.Errorf("unknown Order nullable field %s", name)
+	return fmt.Errorf("unknown Detail nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
@@ -16521,7 +16521,7 @@ func (m *OrderMutation) ResetField(name string) error {
 		m.ResetRefundAt()
 		return nil
 	}
-	return fmt.Errorf("unknown Order field %s", name)
+	return fmt.Errorf("unknown Detail field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
@@ -16707,7 +16707,7 @@ func (m *OrderMutation) ClearEdge(name string) error {
 		m.ClearParent()
 		return nil
 	}
-	return fmt.Errorf("unknown Order unique edge %s", name)
+	return fmt.Errorf("unknown Detail unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
@@ -16739,7 +16739,7 @@ func (m *OrderMutation) ResetEdge(name string) error {
 		m.ResetRefunds()
 		return nil
 	}
-	return fmt.Errorf("unknown Order edge %s", name)
+	return fmt.Errorf("unknown Detail edge %s", name)
 }
 
 // OrderRefundMutation represents an operation that mutates the OrderRefund nodes in the graph.

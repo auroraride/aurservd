@@ -71,3 +71,15 @@ type OrderRefundReq struct {
     SubscribeID *uint64 `json:"subscribeId"` // 骑士卡ID, 和deposit不能同时存在, 也不能同时为空
     Deposit     *bool   `json:"deposit"`     // 是否退押金, 押金退款条件: 1. 无最近订单; 2. 存在订单且状态为已退款或已退租
 }
+
+// OrderListReq 订单列表请求
+type OrderListReq struct {
+    PaginationReq
+
+    Type       *uint   `json:"type" query:"type"`             // 订单类型 1:新签 2:续签 3:重签 4:更改电池 5:救援 6:滞纳金 7:押金
+    CityID     *uint64 `json:"cityId" query:"cityID"`         // 城市ID
+    RiderName  *string `json:"riderName" query:"riderName"`   // 骑手姓名
+    RiderPhone *string `json:"riderPhone" query:"riderPhone"` // 骑手电话
+    Start      *string `json:"start" query:"start"`           // 时间起始, 格式为: 2022-01-01
+    End        *string `json:"end" query:"end"`               // 时间结束, 格式为: 2022-01-01
+}

@@ -118,19 +118,15 @@ func (s *storeService) List(req *model.StoreListReq) *model.PaginationRes {
         q.Where(store.Status(*req.Status))
     }
 
-    return model.ParsePaginationResponse[model.StoreItem](q.PaginationResult(req.PaginationReq), func() []model.StoreItem {
-        items := q.Pagination(req.PaginationReq).AllX(s.ctx)
-        out := make([]model.StoreItem, len(items))
-        for i, item := range items {
-            _ = copier.Copy(&out[i], item)
-            if item.Edges.Branch != nil {
-                city := item.Edges.Branch.Edges.City
-                out[i].City = model.City{
-                    ID:   city.ID,
-                    Name: city.Name,
-                }
+    return model.ParsePaginationResponse[model.StoreItem, ent.Cabinet](q, req.PaginationReq, func(item *ent.Cabinet) (res model.StoreItem) {
+        _ = copier.Copy(&res, item)
+        if item.Edges.Branch != nil {
+            city := item.Edges.Branch.Edges.City
+            res.City = model.City{
+                ID:   city.ID,
+                Name: city.Name,
             }
         }
-        return out
+        return
     })
 }

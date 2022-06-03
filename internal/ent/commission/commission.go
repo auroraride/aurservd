@@ -39,7 +39,7 @@ const (
 	Table = "commission"
 	// OrderTable is the table that holds the order relation/edge.
 	OrderTable = "commission"
-	// OrderInverseTable is the table name for the Order entity.
+	// OrderInverseTable is the table name for the Detail entity.
 	// It exists in this package in order to avoid circular dependency with the "order" package.
 	OrderInverseTable = "order"
 	// OrderColumn is the table column denoting the order relation/edge.

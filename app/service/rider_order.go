@@ -60,50 +60,52 @@ func (s *riderOrderService) List(riderID uint64, req *model.PaginationReq) *mode
     }
     q := s.orm.QueryNotDeleted().
         WithCity().
-        WithPlan(
-            func(pq *ent.PlanQuery) {
-                pq.WithPms()
-            },
-        ).
+        WithPlan(func(pq *ent.PlanQuery) {
+            pq.WithPms()
+        }).
         Order(ent.Desc(order.FieldCreatedAt)).
         Where(
             order.RiderID(riderID),
             order.TypeIn(model.OrderSubscribeTypes...),
         )
-    return model.ParsePaginationResponse[model.RiderOrder](
-        q.PaginationResult(*req),
-        func() []model.RiderOrder {
-            items := q.Pagination(*req).AllX(s.ctx)
-            out := make([]model.RiderOrder, len(items))
-            for i, item := range items {
-                rp := item.Edges.Plan
-                rc := item.Edges.City
-                out[i] = model.RiderOrder{
-                    ID:     item.ID,
-                    Type:   item.Type,
-                    Status: item.Status,
-                    Payway: item.Payway,
-                    PayAt:  item.CreatedAt.Format(carbon.DateTimeLayout),
-                    Amount: item.Amount,
-                    Plan: model.Plan{
-                        ID:   rp.ID,
-                        Name: rp.Name,
-                        Days: rp.Days,
-                    },
-                    City: model.City{
-                        ID:   rc.ID,
-                        Name: rc.Name,
-                    },
-                }
-                for _, pm := range item.Edges.Plan.Edges.Pms {
-                    out[i].Models = append(out[i].Models, model.BatteryModel{
-                        ID:       pm.ID,
-                        Voltage:  pm.Voltage,
-                        Capacity: pm.Capacity,
-                    })
-                }
-            }
-            return out
-        },
+    return model.ParsePaginationResponse[model.RiderOrder, ent.Order](
+        q,
+        *req,
+        s.Detail,
     )
+}
+
+// Detail 订单详情
+func (s *riderOrderService) Detail(item *ent.Order) model.RiderOrder {
+    rc := item.Edges.City
+    res := model.RiderOrder{
+        ID:         item.ID,
+        Type:       item.Type,
+        Status:     item.Status,
+        Payway:     item.Payway,
+        PayAt:      item.CreatedAt.Format(carbon.DateTimeLayout),
+        Amount:     item.Amount,
+        OutTradeNo: item.OutTradeNo,
+        City: model.City{
+            ID:   rc.ID,
+            Name: rc.Name,
+        },
+    }
+    // 骑士卡订阅订单
+    rp := item.Edges.Plan
+    if rp != nil {
+        res.Plan = &model.Plan{
+            ID:   rp.ID,
+            Name: rp.Name,
+            Days: rp.Days,
+        }
+        for _, pm := range rp.Edges.Pms {
+            res.Models = append(res.Models, model.BatteryModel{
+                ID:       pm.ID,
+                Voltage:  pm.Voltage,
+                Capacity: pm.Capacity,
+            })
+        }
+    }
+    return res
 }

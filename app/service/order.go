@@ -245,69 +245,6 @@ func (s *orderService) Refund(riderID uint64, req *model.OrderRefundReq) {
     if err != nil {
         snag.Panic("押金退还申请失败")
     }
-
-    // q := s.orm.QueryNotDeleted().
-    //     Where(
-    //         order.RiderID(riderID),
-    //         order.Status(model.OrderStatusPaid),
-    //     )
-    // if req.OrderID != nil {
-    //     q.Where(order.ID(*req.OrderID))
-    // }
-    // if req.Deposit != nil && *req.Deposit {
-    //     // 是否满足退押金条件
-    //     if exist, _ := s.orm.QueryNotDeleted().Where(
-    //         order.RiderID(riderID),
-    //         order.EndAtIsNil(),
-    //         order.StatusIn(model.OrderStatusPaid, model.OrderStatusRefundPending),
-    //         order.TypeIn(model.OrderSubscribeTypes...),
-    //     ).Exist(s.ctx); exist {
-    //         snag.Panic("当前无法退押金")
-    //     }
-    //     q.Where(order.Type(model.OrderTypeDeposit))
-    // }
-    //
-    // o, _ := q.Only(s.ctx)
-    //
-    // if o == nil {
-    //     snag.Panic("未找到有效订单")
-    // }
-    // no := tools.NewUnique().NewSN28()
-    // refund := &model.PaymentRefund{
-    //     OrderID:      o.ID,
-    //     TradeNo:      o.TradeNo,
-    //     Total:        o.Total,
-    //     RefundAmount: o.Amount,
-    //     OutRefundNo:  no,
-    //     Reason:       "用户申请",
-    // }
-    // // 缓存
-    // cache.Set(s.ctx, no, &model.PaymentCache{CacheType: model.PaymentCacheTypeRefund, Refund: refund}, 0)
-    //
-    // switch o.Payway {
-    // case model.OrderPaywayAlipay:
-    //     payment.NewAlipay().Refund(refund)
-    //     break
-    // case model.OrderPaywayWechat:
-    //     payment.NewWechat().Refund(refund)
-    //     break
-    // }
-    //
-    // if refund.Request {
-    //     o.Update().SetStatus(model.OrderStatusRefundPending).SaveX(s.ctx)
-    //     // 保存订单
-    //     ar.Ent.OrderRefund.Create().
-    //         SetOrder(o).
-    //         SetAmount(refund.RefundAmount).
-    //         SetOutRefundNo(no).
-    //         SetReason(refund.Reason).
-    //         SetStatus(model.OrderRefundStatusPending).
-    //         SaveX(s.ctx)
-    //
-    //     if refund.Success {
-    //         s.RefundSuccess(refund)
-    //     }
-    // }
 }
 
 // DoPayment 处理支付
@@ -442,7 +379,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 func (s *orderService) RefundSuccess(req *model.PaymentRefund) {
     // ctx := context.Background()
     // tx, _ := ar.Ent.Tx(ctx)
-    // tx.Order.UpdateOneID(req.OrderID).
+    // tx.Detail.UpdateOneID(req.OrderID).
     //     SetStatus(model.OrderStatusRefundSuccess).
     //     SetEndAt(req.Time).
     //     SaveX(ctx)
@@ -460,4 +397,30 @@ func (s *orderService) RefundSuccess(req *model.PaymentRefund) {
     //
     // // 删除缓存
     // cache.Del(ctx, req.OutRefundNo)
+}
+
+// List 获取订单列表
+func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
+    tt := tools.NewTime()
+    q := s.orm.QueryNotDeleted().
+        Order(ent.Desc(order.FieldCreatedAt)).
+        WithCity().
+        WithPlan(func(pq *ent.PlanQuery) {
+            pq.WithPms()
+        }).
+        WithCity()
+    if req.Start != nil {
+        q.Where(order.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
+    }
+    if req.End != nil {
+        q.Where(order.CreatedAtLTE(tt.ParseDateStringX(*req.End)))
+    }
+    if req.Type != nil {
+        q.Where(order.Type(*req.Type))
+    }
+    return model.ParsePaginationResponse[model.RiderOrder, ent.Order](
+        q,
+        req.PaginationReq,
+        NewRiderOrder().Detail,
+    )
 }

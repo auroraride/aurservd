@@ -30,6 +30,11 @@ func ({{ $receiver }} *{{ $builder }}) Pagination(req model.PaginationReq) *{{ $
 	return {{ $receiver }}
 }
 
+// PaginationItems returns pagination query builder for {{ $builder }}.
+func ({{ $receiver }} *{{ $builder }}) PaginationItemsX(req model.PaginationReq) any {
+    return {{ $receiver }}.Pagination(req).AllX(context.Background())
+}
+
 // PaginationResult returns pagination for {{ $builder }}.
 func ({{ $receiver }} *{{ $builder }}) PaginationResult(req model.PaginationReq) model.Pagination {
     ids := {{ $receiver }}.Clone().Select("{{ $n.ID.Name }}").GroupBy("{{ $n.ID.Name }}").IntsX(context.Background())

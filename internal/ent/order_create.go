@@ -412,37 +412,37 @@ func (oc *OrderCreate) defaults() error {
 // check runs all checks and user-defined validators on the builder.
 func (oc *OrderCreate) check() error {
 	if _, ok := oc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Order.created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Detail.created_at"`)}
 	}
 	if _, ok := oc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Order.updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Detail.updated_at"`)}
 	}
 	if _, ok := oc.mutation.RiderID(); !ok {
-		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "Order.rider_id"`)}
+		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "Detail.rider_id"`)}
 	}
 	if _, ok := oc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Order.status"`)}
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Detail.status"`)}
 	}
 	if _, ok := oc.mutation.Payway(); !ok {
-		return &ValidationError{Name: "payway", err: errors.New(`ent: missing required field "Order.payway"`)}
+		return &ValidationError{Name: "payway", err: errors.New(`ent: missing required field "Detail.payway"`)}
 	}
 	if _, ok := oc.mutation.GetType(); !ok {
-		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Order.type"`)}
+		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Detail.type"`)}
 	}
 	if _, ok := oc.mutation.OutTradeNo(); !ok {
-		return &ValidationError{Name: "out_trade_no", err: errors.New(`ent: missing required field "Order.out_trade_no"`)}
+		return &ValidationError{Name: "out_trade_no", err: errors.New(`ent: missing required field "Detail.out_trade_no"`)}
 	}
 	if _, ok := oc.mutation.TradeNo(); !ok {
-		return &ValidationError{Name: "trade_no", err: errors.New(`ent: missing required field "Order.trade_no"`)}
+		return &ValidationError{Name: "trade_no", err: errors.New(`ent: missing required field "Detail.trade_no"`)}
 	}
 	if _, ok := oc.mutation.Amount(); !ok {
-		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "Order.amount"`)}
+		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "Detail.amount"`)}
 	}
 	if _, ok := oc.mutation.Total(); !ok {
-		return &ValidationError{Name: "total", err: errors.New(`ent: missing required field "Order.total"`)}
+		return &ValidationError{Name: "total", err: errors.New(`ent: missing required field "Detail.total"`)}
 	}
 	if _, ok := oc.mutation.RiderID(); !ok {
-		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Order.rider"`)}
+		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Detail.rider"`)}
 	}
 	return nil
 }
@@ -747,7 +747,7 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 // OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
 // of the `INSERT` statement. For example:
 //
-//	client.Order.Create().
+//	client.Detail.Create().
 //		SetCreatedAt(v).
 //		OnConflict(
 //			// Update the row with the new values
@@ -771,7 +771,7 @@ func (oc *OrderCreate) OnConflict(opts ...sql.ConflictOption) *OrderUpsertOne {
 // OnConflictColumns calls `OnConflict` and configures the columns
 // as conflict target. Using this option is equivalent to using:
 //
-//	client.Order.Create().
+//	client.Detail.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
 //
@@ -1110,7 +1110,7 @@ func (u *OrderUpsert) ClearRefundAt() *OrderUpsert {
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
-//	client.Order.Create().
+//	client.Detail.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
 //		).
@@ -1150,7 +1150,7 @@ func (u *OrderUpsertOne) UpdateNewValues() *OrderUpsertOne {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//  client.Order.Create().
+//  client.Detail.Create().
 //      OnConflict(sql.ResolveWithIgnore()).
 //      Exec(ctx)
 //
@@ -1661,7 +1661,7 @@ func (ocb *OrderCreateBulk) ExecX(ctx context.Context) {
 // OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
 // of the `INSERT` statement. For example:
 //
-//	client.Order.CreateBulk(builders...).
+//	client.Detail.CreateBulk(builders...).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -1684,7 +1684,7 @@ func (ocb *OrderCreateBulk) OnConflict(opts ...sql.ConflictOption) *OrderUpsertB
 // OnConflictColumns calls `OnConflict` and configures the columns
 // as conflict target. Using this option is equivalent to using:
 //
-//	client.Order.Create().
+//	client.Detail.Create().
 //		OnConflict(sql.ConflictColumns(columns...)).
 //		Exec(ctx)
 //
@@ -1704,7 +1704,7 @@ type OrderUpsertBulk struct {
 // UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
-//	client.Order.Create().
+//	client.Detail.Create().
 //		OnConflict(
 //			sql.ResolveWithNewValues(),
 //		).
@@ -1746,7 +1746,7 @@ func (u *OrderUpsertBulk) UpdateNewValues() *OrderUpsertBulk {
 // Ignore sets each column to itself in case of conflict.
 // Using this option is equivalent to using:
 //
-//	client.Order.Create().
+//	client.Detail.Create().
 //		OnConflict(sql.ResolveWithIgnore()).
 //		Exec(ctx)
 //

@@ -1038,6 +1038,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/order": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M80001 订单列表",
+                "operationId": "ManagerOrderList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/plan": {
             "get": {
                 "consumes": [
@@ -4080,6 +4112,10 @@ const docTemplate = `{
         "model.RiderItem": {
             "type": "object",
             "properties": {
+                "address": {
+                    "description": "户籍地址",
+                    "type": "string"
+                },
                 "authStatus": {
                     "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
                     "type": "integer"
@@ -4166,7 +4202,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "models": {
-                    "description": "可用型号",
+                    "description": "可用型号, 非骑士卡订阅订单无此字段",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.BatteryModel"
@@ -4185,7 +4221,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "plan": {
-                    "description": "骑士卡",
+                    "description": "骑士卡, 非骑士卡订阅订单无此字段",
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.Plan"
@@ -4512,6 +4548,10 @@ const docTemplate = `{
                     "description": "订阅ID",
                     "type": "integer"
                 },
+                "initialDays": {
+                    "description": "初始购买骑士卡天数",
+                    "type": "integer"
+                },
                 "models": {
                     "description": "可用电池型号, 显示为` + "`" + `72V30AH` + "`" + `即Voltage(V)+Capacity(AH), 逗号分隔",
                     "type": "array",
@@ -4542,10 +4582,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.Plan"
                         }
                     ]
-                },
-                "planDays": {
-                    "description": "骑士卡天数",
-                    "type": "integer"
                 },
                 "remaining": {
                     "description": "剩余天数 = 总天数 - 已过时间",
@@ -4637,7 +4673,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "极光出行API",
-	Description:      "极光出行所有API接口文档",
+	Description:      "### 说明\n接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。\n<br>\n接口返回说明查看 **[返回](#返回)**\n<br>\n图片/附件前缀 `https://cdn.auroraride.com/`\n\n### 调试工具\n- [paw](/docs/api.paw)\n\n### 认证\n项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`\n|  header   |  类型  |  接口  |\n| :-----: | :----: | :--: |\n|  X-Rider-Token   |  string   |  骑手API  |\n| X-Manager-Token | string |  后台API  |\n|  X-Employee-Token   | string |  员工API  |\n\n### 返回\n一个标准的返回应包含以下结构\n\n|  字段   |  类型  |  必填  |  说明  |\n| :-----: | :----: | :--: | :--: |\n|  code   |  int   |  是  |  返回代码  |\n| message | string |  是  |  返回消息  |\n|  data   | object |  是  |  返回数据  |\n\n`code`代码取值说明\n\n| 十进制 | 十六进制 | 说明 |\n| :----: | :------: | :--: |\n| 0  |  0x000  | 请求成功 |\n| 256 |  0x100  | 请求失败 |\n| 512 |  0x200  | *需要认证(跳转登录) |\n| 768 |  0x300  | *用户被封禁 |\n| 1024 |  0x400  | 资源未获 |\n| 1280 |  0x500  | 未知错误 |\n| 1536 |  0x600  | *需要实名 |\n| 1792 |  0x700  | *需要验证 (更换设备, 需要人脸验证) |\n| 2048 |  0x800  | *需要联系人 |\n| 2304 |  0x900  | 请求过期 |\n\n> 当返回值是`1792(0x700)需要人脸验证`或`1536(0x600)需要实名`的时候`data`返回值为`{\"url\": \"string\"}`, 直接跳转url\n\n\n比如：\n> 默认成功返回\n```json\n{\n  \"code\": 0,\n  \"message\": \"OK\",\n  \"data\": {\n    \"status\": true\n  }\n}\n```",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

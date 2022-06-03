@@ -346,7 +346,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 				Column: order.FieldID,
 			},
 		},
-		Type: "Order",
+		Type: "Detail",
 		Fields: map[string]*sqlgraph.FieldSpec{
 			order.FieldCreatedAt:    {Type: field.TypeTime, Column: order.FieldCreatedAt},
 			order.FieldUpdatedAt:    {Type: field.TypeTime, Column: order.FieldUpdatedAt},
@@ -874,7 +874,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"Commission",
-		"Order",
+		"Detail",
 	)
 	graph.MustAddE(
 		"rider",
@@ -909,7 +909,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: []string{order.PlanColumn},
 			Bidi:    false,
 		},
-		"Order",
+		"Detail",
 		"Plan",
 	)
 	graph.MustAddE(
@@ -921,7 +921,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: []string{order.CityColumn},
 			Bidi:    false,
 		},
-		"Order",
+		"Detail",
 		"City",
 	)
 	graph.MustAddE(
@@ -933,7 +933,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: []string{order.RiderColumn},
 			Bidi:    false,
 		},
-		"Order",
+		"Detail",
 		"Rider",
 	)
 	graph.MustAddE(
@@ -945,7 +945,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: []string{order.SubscribeColumn},
 			Bidi:    false,
 		},
-		"Order",
+		"Detail",
 		"Subscribe",
 	)
 	graph.MustAddE(
@@ -957,7 +957,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: []string{order.CommissionColumn},
 			Bidi:    false,
 		},
-		"Order",
+		"Detail",
 		"Commission",
 	)
 	graph.MustAddE(
@@ -969,8 +969,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: []string{order.ParentColumn},
 			Bidi:    false,
 		},
-		"Order",
-		"Order",
+		"Detail",
+		"Detail",
 	)
 	graph.MustAddE(
 		"children",
@@ -981,8 +981,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: []string{order.ChildrenColumn},
 			Bidi:    false,
 		},
-		"Order",
-		"Order",
+		"Detail",
+		"Detail",
 	)
 	graph.MustAddE(
 		"refunds",
@@ -993,7 +993,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: []string{order.RefundsColumn},
 			Bidi:    false,
 		},
-		"Order",
+		"Detail",
 		"OrderRefund",
 	)
 	graph.MustAddE(
@@ -1006,7 +1006,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"OrderRefund",
-		"Order",
+		"Detail",
 	)
 	graph.MustAddE(
 		"rider",
@@ -1102,7 +1102,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"Rider",
-		"Order",
+		"Detail",
 	)
 	graph.MustAddE(
 		"exchanges",
@@ -1222,7 +1222,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"Subscribe",
-		"Order",
+		"Detail",
 	)
 	graph.MustAddE(
 		"initial_order",
@@ -1234,7 +1234,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"Subscribe",
-		"Order",
+		"Detail",
 	)
 	graph.MustAddE(
 		"rider",

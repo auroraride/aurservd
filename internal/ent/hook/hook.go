@@ -166,7 +166,7 @@ func (f ManagerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 }
 
 // The OrderFunc type is an adapter to allow the use of ordinary
-// function as Order mutator.
+// function as Detail mutator.
 type OrderFunc func(context.Context, *ent.OrderMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).

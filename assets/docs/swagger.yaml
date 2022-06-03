@@ -968,6 +968,9 @@ definitions:
     type: object
   model.RiderItem:
     properties:
+      address:
+        description: 户籍地址
+        type: string
       authStatus:
         description: 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
         type: integer
@@ -1026,7 +1029,7 @@ definitions:
         description: 订单ID
         type: integer
       models:
-        description: 可用型号
+        description: 可用型号, 非骑士卡订阅订单无此字段
         items:
           $ref: '#/definitions/model.BatteryModel'
         type: array
@@ -1042,7 +1045,7 @@ definitions:
       plan:
         allOf:
         - $ref: '#/definitions/model.Plan'
-        description: 骑士卡
+        description: 骑士卡, 非骑士卡订阅订单无此字段
       status:
         description: 订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝
         type: integer
@@ -1262,6 +1265,9 @@ definitions:
       id:
         description: 订阅ID
         type: integer
+      initialDays:
+        description: 初始购买骑士卡天数
+        type: integer
       models:
         description: 可用电池型号, 显示为`72V30AH`即Voltage(V)+Capacity(AH), 逗号分隔
         items:
@@ -1281,9 +1287,6 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Plan'
         description: 骑士卡信息
-      planDays:
-        description: 骑士卡天数
-        type: integer
       remaining:
         description: 剩余天数 = 总天数 - 已过时间
         type: integer
@@ -1345,7 +1348,63 @@ definitions:
     type: object
 info:
   contact: {}
-  description: 极光出行所有API接口文档
+  description: |-
+    ### 说明
+    接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。
+    <br>
+    接口返回说明查看 **[返回](#返回)**
+    <br>
+    图片/附件前缀 `https://cdn.auroraride.com/`
+
+    ### 调试工具
+    - [paw](/docs/api.paw)
+
+    ### 认证
+    项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`
+    |  header   |  类型  |  接口  |
+    | :-----: | :----: | :--: |
+    |  X-Rider-Token   |  string   |  骑手API  |
+    | X-Manager-Token | string |  后台API  |
+    |  X-Employee-Token   | string |  员工API  |
+
+    ### 返回
+    一个标准的返回应包含以下结构
+
+    |  字段   |  类型  |  必填  |  说明  |
+    | :-----: | :----: | :--: | :--: |
+    |  code   |  int   |  是  |  返回代码  |
+    | message | string |  是  |  返回消息  |
+    |  data   | object |  是  |  返回数据  |
+
+    `code`代码取值说明
+
+    | 十进制 | 十六进制 | 说明 |
+    | :----: | :------: | :--: |
+    | 0  |  0x000  | 请求成功 |
+    | 256 |  0x100  | 请求失败 |
+    | 512 |  0x200  | *需要认证(跳转登录) |
+    | 768 |  0x300  | *用户被封禁 |
+    | 1024 |  0x400  | 资源未获 |
+    | 1280 |  0x500  | 未知错误 |
+    | 1536 |  0x600  | *需要实名 |
+    | 1792 |  0x700  | *需要验证 (更换设备, 需要人脸验证) |
+    | 2048 |  0x800  | *需要联系人 |
+    | 2304 |  0x900  | 请求过期 |
+
+    > 当返回值是`1792(0x700)需要人脸验证`或`1536(0x600)需要实名`的时候`data`返回值为`{"url": "string"}`, 直接跳转url
+
+
+    比如：
+    > 默认成功返回
+    ```json
+    {
+      "code": 0,
+      "message": "OK",
+      "data": {
+        "status": true
+      }
+    }
+    ```
   title: 极光出行API
   version: "1.0"
 paths:
@@ -2034,6 +2093,27 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M50009 处理故障
+      tags:
+      - '[M]管理接口'
+  /manager/v1/order:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerOrderList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M80001 订单列表
       tags:
       - '[M]管理接口'
   /manager/v1/plan:

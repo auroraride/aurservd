@@ -24,9 +24,9 @@ import (
 
 // @title                极光出行API
 // @version              1.0
-// @description          极光出行所有API接口文档
 // @BasePath             /
-// doc https://github.com/swaggo/swag/issues/386 https://github.com/swaggo/swag/issues/548 https://github.com/go-openapi/runtime/blob/master/middleware/redoc.go
+// @description.markdown
+// @doc https://github.com/swaggo/swag/issues/386 https://github.com/swaggo/swag/issues/548 https://github.com/go-openapi/runtime/blob/master/middleware/redoc.go
 func loadDocRoutes() {
     g := e.Group("/docs")
 

@@ -133,7 +133,7 @@ func (r *rider) Demo(c echo.Context) error {
 // @Success      200  {object}  model.RiderSigninRes  "请求成功"
 func (r *rider) Profile(c echo.Context) error {
     ctx := c.(*app.RiderContext)
-    profile := service.NewRider().Profile(ctx.Rider, ctx.Device)
+    profile := service.NewRider().Profile(ctx.Rider, ctx.Device, ctx.Token)
     profile.Token = ctx.Token
     return ctx.SendResponse(profile)
 }

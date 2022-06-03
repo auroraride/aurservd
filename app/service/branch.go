@@ -112,17 +112,17 @@ func (s *branchService) List(req *model.BranchListReq) *model.PaginationRes {
         q.Where(branch.CityID(*req.CityID))
     }
 
-    return model.ParsePaginationResponse[model.BranchItem](q.PaginationResult(req.PaginationReq), func() []model.BranchItem {
-        items := q.WithCity().WithStores().WithCabinets().
-            WithContracts(func(query *ent.BranchContractQuery) {
-                query.Order(ent.Desc(branchcontract.FieldID))
-            }).
-            Pagination(req.PaginationReq).
-            AllX(s.ctx)
+    q.WithCity().
+        WithStores().
+        WithCabinets().
+        WithContracts(func(query *ent.BranchContractQuery) {
+            query.Order(ent.Desc(branchcontract.FieldID))
+        })
 
-        rs := make([]model.BranchItem, len(items))
-
-        for m, item := range items {
+    return model.ParsePaginationResponse[model.BranchItem, ent.Branch](
+        q,
+        req.PaginationReq,
+        func(item *ent.Branch) model.BranchItem {
             var r model.BranchItem
             _ = copier.Copy(&r, item)
 
@@ -147,12 +147,8 @@ func (s *branchService) List(req *model.BranchListReq) *model.PaginationRes {
                     r.V72Total += 1
                 }
             }
-
-            rs[m] = r
-        }
-
-        return rs
-    })
+            return r
+        })
 }
 
 // Modify 修改网点

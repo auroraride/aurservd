@@ -84,6 +84,7 @@ type RiderItemSubscribe struct {
 }
 
 // RiderItem 骑手信息
+// {"name":"虞章君","score":96.472916,"gender":"男","nation":"汉","address":"安徽省马鞍山市和县白桥镇七成村委会虞志旺自然村76号","birthday":"19900120","spoofing":0,"issueTime":"20220510","expireTime":"20420510","idCardNumber":"342626199001200176","livenessScore":0.99900466,"issueAuthority":"和县公安局"}
 type RiderItem struct {
     ID           uint64           `json:"id"`
     Name         string           `json:"name"`         // 用户姓名
@@ -92,6 +93,7 @@ type RiderItem struct {
     AuthStatus   PersonAuthStatus `json:"authStatus"`   // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
     IDCardNumber string           `json:"idCardNumber"` // 身份证
     Deposit      float64          `json:"deposit"`      // 押金
+    Address      string           `json:"address"`      // 户籍地址
     // 团签企业信息, 若无此字段则为个签用户
     Enterprise *EnterpriseItem `json:"enterprise,omitempty"`
     // 当前有效订阅信息, 若无此字段则代表当前无有效订阅(订阅 = 骑手骑士卡)
