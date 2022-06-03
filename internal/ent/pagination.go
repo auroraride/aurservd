@@ -96,28 +96,6 @@ func (cq *CabinetQuery) PaginationResult(req model.PaginationReq) model.Paginati
 	}
 }
 
-// Pagination returns pagination query builder for CabinetExchangeQuery.
-func (ceq *CabinetExchangeQuery) Pagination(req model.PaginationReq) *CabinetExchangeQuery {
-	ceq.Offset(req.GetOffset()).Limit(req.GetLimit())
-	return ceq
-}
-
-// PaginationItems returns pagination query builder for CabinetExchangeQuery.
-func (ceq *CabinetExchangeQuery) PaginationItemsX(req model.PaginationReq) any {
-	return ceq.Pagination(req).AllX(context.Background())
-}
-
-// PaginationResult returns pagination for CabinetExchangeQuery.
-func (ceq *CabinetExchangeQuery) PaginationResult(req model.PaginationReq) model.Pagination {
-	ids := ceq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
-	total := len(ids)
-	return model.Pagination{
-		Current: req.GetCurrent(),
-		Pages:   req.GetPages(total),
-		Total:   total,
-	}
-}
-
 // Pagination returns pagination query builder for CabinetFaultQuery.
 func (cfq *CabinetFaultQuery) Pagination(req model.PaginationReq) *CabinetFaultQuery {
 	cfq.Offset(req.GetOffset()).Limit(req.GetLimit())
@@ -241,6 +219,28 @@ func (eq *EnterpriseQuery) PaginationItemsX(req model.PaginationReq) any {
 
 // PaginationResult returns pagination for EnterpriseQuery.
 func (eq *EnterpriseQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := eq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for ExchangeQuery.
+func (eq *ExchangeQuery) Pagination(req model.PaginationReq) *ExchangeQuery {
+	eq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return eq
+}
+
+// PaginationItems returns pagination query builder for ExchangeQuery.
+func (eq *ExchangeQuery) PaginationItemsX(req model.PaginationReq) any {
+	return eq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for ExchangeQuery.
+func (eq *ExchangeQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	ids := eq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
 	total := len(ids)
 	return model.Pagination{

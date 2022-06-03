@@ -13,13 +13,13 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
-	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
@@ -50,8 +50,6 @@ type Client struct {
 	BranchContract *BranchContractClient
 	// Cabinet is the client for interacting with the Cabinet builders.
 	Cabinet *CabinetClient
-	// CabinetExchange is the client for interacting with the CabinetExchange builders.
-	CabinetExchange *CabinetExchangeClient
 	// CabinetFault is the client for interacting with the CabinetFault builders.
 	CabinetFault *CabinetFaultClient
 	// City is the client for interacting with the City builders.
@@ -64,6 +62,8 @@ type Client struct {
 	Employee *EmployeeClient
 	// Enterprise is the client for interacting with the Enterprise builders.
 	Enterprise *EnterpriseClient
+	// Exchange is the client for interacting with the Exchange builders.
+	Exchange *ExchangeClient
 	// Manager is the client for interacting with the Manager builders.
 	Manager *ManagerClient
 	// Order is the client for interacting with the Order builders.
@@ -103,13 +103,13 @@ func (c *Client) init() {
 	c.Branch = NewBranchClient(c.config)
 	c.BranchContract = NewBranchContractClient(c.config)
 	c.Cabinet = NewCabinetClient(c.config)
-	c.CabinetExchange = NewCabinetExchangeClient(c.config)
 	c.CabinetFault = NewCabinetFaultClient(c.config)
 	c.City = NewCityClient(c.config)
 	c.Commission = NewCommissionClient(c.config)
 	c.Contract = NewContractClient(c.config)
 	c.Employee = NewEmployeeClient(c.config)
 	c.Enterprise = NewEnterpriseClient(c.config)
+	c.Exchange = NewExchangeClient(c.config)
 	c.Manager = NewManagerClient(c.config)
 	c.Order = NewOrderClient(c.config)
 	c.OrderRefund = NewOrderRefundClient(c.config)
@@ -152,30 +152,30 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:             ctx,
-		config:          cfg,
-		BatteryModel:    NewBatteryModelClient(cfg),
-		Branch:          NewBranchClient(cfg),
-		BranchContract:  NewBranchContractClient(cfg),
-		Cabinet:         NewCabinetClient(cfg),
-		CabinetExchange: NewCabinetExchangeClient(cfg),
-		CabinetFault:    NewCabinetFaultClient(cfg),
-		City:            NewCityClient(cfg),
-		Commission:      NewCommissionClient(cfg),
-		Contract:        NewContractClient(cfg),
-		Employee:        NewEmployeeClient(cfg),
-		Enterprise:      NewEnterpriseClient(cfg),
-		Manager:         NewManagerClient(cfg),
-		Order:           NewOrderClient(cfg),
-		OrderRefund:     NewOrderRefundClient(cfg),
-		Person:          NewPersonClient(cfg),
-		Plan:            NewPlanClient(cfg),
-		Rider:           NewRiderClient(cfg),
-		Setting:         NewSettingClient(cfg),
-		Store:           NewStoreClient(cfg),
-		Subscribe:       NewSubscribeClient(cfg),
-		SubscribeAlter:  NewSubscribeAlterClient(cfg),
-		SubscribePause:  NewSubscribePauseClient(cfg),
+		ctx:            ctx,
+		config:         cfg,
+		BatteryModel:   NewBatteryModelClient(cfg),
+		Branch:         NewBranchClient(cfg),
+		BranchContract: NewBranchContractClient(cfg),
+		Cabinet:        NewCabinetClient(cfg),
+		CabinetFault:   NewCabinetFaultClient(cfg),
+		City:           NewCityClient(cfg),
+		Commission:     NewCommissionClient(cfg),
+		Contract:       NewContractClient(cfg),
+		Employee:       NewEmployeeClient(cfg),
+		Enterprise:     NewEnterpriseClient(cfg),
+		Exchange:       NewExchangeClient(cfg),
+		Manager:        NewManagerClient(cfg),
+		Order:          NewOrderClient(cfg),
+		OrderRefund:    NewOrderRefundClient(cfg),
+		Person:         NewPersonClient(cfg),
+		Plan:           NewPlanClient(cfg),
+		Rider:          NewRiderClient(cfg),
+		Setting:        NewSettingClient(cfg),
+		Store:          NewStoreClient(cfg),
+		Subscribe:      NewSubscribeClient(cfg),
+		SubscribeAlter: NewSubscribeAlterClient(cfg),
+		SubscribePause: NewSubscribePauseClient(cfg),
 	}, nil
 }
 
@@ -193,30 +193,30 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:             ctx,
-		config:          cfg,
-		BatteryModel:    NewBatteryModelClient(cfg),
-		Branch:          NewBranchClient(cfg),
-		BranchContract:  NewBranchContractClient(cfg),
-		Cabinet:         NewCabinetClient(cfg),
-		CabinetExchange: NewCabinetExchangeClient(cfg),
-		CabinetFault:    NewCabinetFaultClient(cfg),
-		City:            NewCityClient(cfg),
-		Commission:      NewCommissionClient(cfg),
-		Contract:        NewContractClient(cfg),
-		Employee:        NewEmployeeClient(cfg),
-		Enterprise:      NewEnterpriseClient(cfg),
-		Manager:         NewManagerClient(cfg),
-		Order:           NewOrderClient(cfg),
-		OrderRefund:     NewOrderRefundClient(cfg),
-		Person:          NewPersonClient(cfg),
-		Plan:            NewPlanClient(cfg),
-		Rider:           NewRiderClient(cfg),
-		Setting:         NewSettingClient(cfg),
-		Store:           NewStoreClient(cfg),
-		Subscribe:       NewSubscribeClient(cfg),
-		SubscribeAlter:  NewSubscribeAlterClient(cfg),
-		SubscribePause:  NewSubscribePauseClient(cfg),
+		ctx:            ctx,
+		config:         cfg,
+		BatteryModel:   NewBatteryModelClient(cfg),
+		Branch:         NewBranchClient(cfg),
+		BranchContract: NewBranchContractClient(cfg),
+		Cabinet:        NewCabinetClient(cfg),
+		CabinetFault:   NewCabinetFaultClient(cfg),
+		City:           NewCityClient(cfg),
+		Commission:     NewCommissionClient(cfg),
+		Contract:       NewContractClient(cfg),
+		Employee:       NewEmployeeClient(cfg),
+		Enterprise:     NewEnterpriseClient(cfg),
+		Exchange:       NewExchangeClient(cfg),
+		Manager:        NewManagerClient(cfg),
+		Order:          NewOrderClient(cfg),
+		OrderRefund:    NewOrderRefundClient(cfg),
+		Person:         NewPersonClient(cfg),
+		Plan:           NewPlanClient(cfg),
+		Rider:          NewRiderClient(cfg),
+		Setting:        NewSettingClient(cfg),
+		Store:          NewStoreClient(cfg),
+		Subscribe:      NewSubscribeClient(cfg),
+		SubscribeAlter: NewSubscribeAlterClient(cfg),
+		SubscribePause: NewSubscribePauseClient(cfg),
 	}, nil
 }
 
@@ -250,13 +250,13 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Branch.Use(hooks...)
 	c.BranchContract.Use(hooks...)
 	c.Cabinet.Use(hooks...)
-	c.CabinetExchange.Use(hooks...)
 	c.CabinetFault.Use(hooks...)
 	c.City.Use(hooks...)
 	c.Commission.Use(hooks...)
 	c.Contract.Use(hooks...)
 	c.Employee.Use(hooks...)
 	c.Enterprise.Use(hooks...)
+	c.Exchange.Use(hooks...)
 	c.Manager.Use(hooks...)
 	c.Order.Use(hooks...)
 	c.OrderRefund.Use(hooks...)
@@ -805,13 +805,13 @@ func (c *CabinetClient) QueryFaults(ca *Cabinet) *CabinetFaultQuery {
 }
 
 // QueryExchanges queries the exchanges edge of a Cabinet.
-func (c *CabinetClient) QueryExchanges(ca *Cabinet) *CabinetExchangeQuery {
-	query := &CabinetExchangeQuery{config: c.config}
+func (c *CabinetClient) QueryExchanges(ca *Cabinet) *ExchangeQuery {
+	query := &ExchangeQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := ca.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
-			sqlgraph.To(cabinetexchange.Table, cabinetexchange.FieldID),
+			sqlgraph.To(exchange.Table, exchange.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, cabinet.ExchangesTable, cabinet.ExchangesColumn),
 		)
 		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
@@ -824,129 +824,6 @@ func (c *CabinetClient) QueryExchanges(ca *Cabinet) *CabinetExchangeQuery {
 func (c *CabinetClient) Hooks() []Hook {
 	hooks := c.hooks.Cabinet
 	return append(hooks[:len(hooks):len(hooks)], cabinet.Hooks[:]...)
-}
-
-// CabinetExchangeClient is a client for the CabinetExchange schema.
-type CabinetExchangeClient struct {
-	config
-}
-
-// NewCabinetExchangeClient returns a client for the CabinetExchange from the given config.
-func NewCabinetExchangeClient(c config) *CabinetExchangeClient {
-	return &CabinetExchangeClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `cabinetexchange.Hooks(f(g(h())))`.
-func (c *CabinetExchangeClient) Use(hooks ...Hook) {
-	c.hooks.CabinetExchange = append(c.hooks.CabinetExchange, hooks...)
-}
-
-// Create returns a create builder for CabinetExchange.
-func (c *CabinetExchangeClient) Create() *CabinetExchangeCreate {
-	mutation := newCabinetExchangeMutation(c.config, OpCreate)
-	return &CabinetExchangeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of CabinetExchange entities.
-func (c *CabinetExchangeClient) CreateBulk(builders ...*CabinetExchangeCreate) *CabinetExchangeCreateBulk {
-	return &CabinetExchangeCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for CabinetExchange.
-func (c *CabinetExchangeClient) Update() *CabinetExchangeUpdate {
-	mutation := newCabinetExchangeMutation(c.config, OpUpdate)
-	return &CabinetExchangeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *CabinetExchangeClient) UpdateOne(ce *CabinetExchange) *CabinetExchangeUpdateOne {
-	mutation := newCabinetExchangeMutation(c.config, OpUpdateOne, withCabinetExchange(ce))
-	return &CabinetExchangeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *CabinetExchangeClient) UpdateOneID(id uint64) *CabinetExchangeUpdateOne {
-	mutation := newCabinetExchangeMutation(c.config, OpUpdateOne, withCabinetExchangeID(id))
-	return &CabinetExchangeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for CabinetExchange.
-func (c *CabinetExchangeClient) Delete() *CabinetExchangeDelete {
-	mutation := newCabinetExchangeMutation(c.config, OpDelete)
-	return &CabinetExchangeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a delete builder for the given entity.
-func (c *CabinetExchangeClient) DeleteOne(ce *CabinetExchange) *CabinetExchangeDeleteOne {
-	return c.DeleteOneID(ce.ID)
-}
-
-// DeleteOneID returns a delete builder for the given id.
-func (c *CabinetExchangeClient) DeleteOneID(id uint64) *CabinetExchangeDeleteOne {
-	builder := c.Delete().Where(cabinetexchange.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &CabinetExchangeDeleteOne{builder}
-}
-
-// Query returns a query builder for CabinetExchange.
-func (c *CabinetExchangeClient) Query() *CabinetExchangeQuery {
-	return &CabinetExchangeQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a CabinetExchange entity by its id.
-func (c *CabinetExchangeClient) Get(ctx context.Context, id uint64) (*CabinetExchange, error) {
-	return c.Query().Where(cabinetexchange.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *CabinetExchangeClient) GetX(ctx context.Context, id uint64) *CabinetExchange {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryRider queries the rider edge of a CabinetExchange.
-func (c *CabinetExchangeClient) QueryRider(ce *CabinetExchange) *RiderQuery {
-	query := &RiderQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := ce.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(cabinetexchange.Table, cabinetexchange.FieldID, id),
-			sqlgraph.To(rider.Table, rider.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, cabinetexchange.RiderTable, cabinetexchange.RiderColumn),
-		)
-		fromV = sqlgraph.Neighbors(ce.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryCabinet queries the cabinet edge of a CabinetExchange.
-func (c *CabinetExchangeClient) QueryCabinet(ce *CabinetExchange) *CabinetQuery {
-	query := &CabinetQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := ce.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(cabinetexchange.Table, cabinetexchange.FieldID, id),
-			sqlgraph.To(cabinet.Table, cabinet.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, cabinetexchange.CabinetTable, cabinetexchange.CabinetColumn),
-		)
-		fromV = sqlgraph.Neighbors(ce.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *CabinetExchangeClient) Hooks() []Hook {
-	hooks := c.hooks.CabinetExchange
-	return append(hooks[:len(hooks):len(hooks)], cabinetexchange.Hooks[:]...)
 }
 
 // CabinetFaultClient is a client for the CabinetFault schema.
@@ -1653,6 +1530,177 @@ func (c *EnterpriseClient) QueryRiders(e *Enterprise) *RiderQuery {
 func (c *EnterpriseClient) Hooks() []Hook {
 	hooks := c.hooks.Enterprise
 	return append(hooks[:len(hooks):len(hooks)], enterprise.Hooks[:]...)
+}
+
+// ExchangeClient is a client for the Exchange schema.
+type ExchangeClient struct {
+	config
+}
+
+// NewExchangeClient returns a client for the Exchange from the given config.
+func NewExchangeClient(c config) *ExchangeClient {
+	return &ExchangeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `exchange.Hooks(f(g(h())))`.
+func (c *ExchangeClient) Use(hooks ...Hook) {
+	c.hooks.Exchange = append(c.hooks.Exchange, hooks...)
+}
+
+// Create returns a create builder for Exchange.
+func (c *ExchangeClient) Create() *ExchangeCreate {
+	mutation := newExchangeMutation(c.config, OpCreate)
+	return &ExchangeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Exchange entities.
+func (c *ExchangeClient) CreateBulk(builders ...*ExchangeCreate) *ExchangeCreateBulk {
+	return &ExchangeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Exchange.
+func (c *ExchangeClient) Update() *ExchangeUpdate {
+	mutation := newExchangeMutation(c.config, OpUpdate)
+	return &ExchangeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ExchangeClient) UpdateOne(e *Exchange) *ExchangeUpdateOne {
+	mutation := newExchangeMutation(c.config, OpUpdateOne, withExchange(e))
+	return &ExchangeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ExchangeClient) UpdateOneID(id uint64) *ExchangeUpdateOne {
+	mutation := newExchangeMutation(c.config, OpUpdateOne, withExchangeID(id))
+	return &ExchangeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Exchange.
+func (c *ExchangeClient) Delete() *ExchangeDelete {
+	mutation := newExchangeMutation(c.config, OpDelete)
+	return &ExchangeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ExchangeClient) DeleteOne(e *Exchange) *ExchangeDeleteOne {
+	return c.DeleteOneID(e.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ExchangeClient) DeleteOneID(id uint64) *ExchangeDeleteOne {
+	builder := c.Delete().Where(exchange.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ExchangeDeleteOne{builder}
+}
+
+// Query returns a query builder for Exchange.
+func (c *ExchangeClient) Query() *ExchangeQuery {
+	return &ExchangeQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Exchange entity by its id.
+func (c *ExchangeClient) Get(ctx context.Context, id uint64) (*Exchange, error) {
+	return c.Query().Where(exchange.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ExchangeClient) GetX(ctx context.Context, id uint64) *Exchange {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCity queries the city edge of a Exchange.
+func (c *ExchangeClient) QueryCity(e *Exchange) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(exchange.Table, exchange.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, exchange.CityTable, exchange.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEmployee queries the employee edge of a Exchange.
+func (c *ExchangeClient) QueryEmployee(e *Exchange) *EmployeeQuery {
+	query := &EmployeeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(exchange.Table, exchange.FieldID, id),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, exchange.EmployeeTable, exchange.EmployeeColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStore queries the store edge of a Exchange.
+func (c *ExchangeClient) QueryStore(e *Exchange) *StoreQuery {
+	query := &StoreQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(exchange.Table, exchange.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, exchange.StoreTable, exchange.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCabinet queries the cabinet edge of a Exchange.
+func (c *ExchangeClient) QueryCabinet(e *Exchange) *CabinetQuery {
+	query := &CabinetQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(exchange.Table, exchange.FieldID, id),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, exchange.CabinetTable, exchange.CabinetColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRider queries the rider edge of a Exchange.
+func (c *ExchangeClient) QueryRider(e *Exchange) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(exchange.Table, exchange.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, exchange.RiderTable, exchange.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ExchangeClient) Hooks() []Hook {
+	hooks := c.hooks.Exchange
+	return append(hooks[:len(hooks):len(hooks)], exchange.Hooks[:]...)
 }
 
 // ManagerClient is a client for the Manager schema.
@@ -2468,13 +2516,13 @@ func (c *RiderClient) QueryOrders(r *Rider) *OrderQuery {
 }
 
 // QueryExchanges queries the exchanges edge of a Rider.
-func (c *RiderClient) QueryExchanges(r *Rider) *CabinetExchangeQuery {
-	query := &CabinetExchangeQuery{config: c.config}
+func (c *RiderClient) QueryExchanges(r *Rider) *ExchangeQuery {
+	query := &ExchangeQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, id),
-			sqlgraph.To(cabinetexchange.Table, cabinetexchange.FieldID),
+			sqlgraph.To(exchange.Table, exchange.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, rider.ExchangesTable, rider.ExchangesColumn),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)

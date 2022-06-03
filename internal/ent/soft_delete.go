@@ -10,13 +10,13 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
-	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
@@ -182,46 +182,6 @@ func (c *CabinetClient) GetNotDeleted(ctx context.Context, id uint64) (*Cabinet,
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *CabinetClient) GetNotDeletedX(ctx context.Context, id uint64) *Cabinet {
-	obj, err := c.GetNotDeleted(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// SoftDelete returns an soft delete builder for CabinetExchange.
-func (c *CabinetExchangeClient) SoftDelete() *CabinetExchangeUpdate {
-	mutation := newCabinetExchangeMutation(c.config, OpUpdate)
-	mutation.SetDeletedAt(time.Now())
-	return &CabinetExchangeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOne returns an soft delete builder for the given entity.
-func (c *CabinetExchangeClient) SoftDeleteOne(ce *CabinetExchange) *CabinetExchangeUpdateOne {
-	mutation := newCabinetExchangeMutation(c.config, OpUpdateOne, withCabinetExchange(ce))
-	mutation.SetDeletedAt(time.Now())
-	return &CabinetExchangeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOneID returns an soft delete builder for the given id.
-func (c *CabinetExchangeClient) SoftDeleteOneID(id uint64) *CabinetExchangeUpdateOne {
-	mutation := newCabinetExchangeMutation(c.config, OpUpdateOne, withCabinetExchangeID(id))
-	mutation.SetDeletedAt(time.Now())
-	return &CabinetExchangeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// QueryNotDeleted returns a query not deleted builder for CabinetExchange.
-func (c *CabinetExchangeClient) QueryNotDeleted() *CabinetExchangeQuery {
-	return c.Query().Where(cabinetexchange.DeletedAtIsNil())
-}
-
-// GetNotDeleted returns a CabinetExchange not deleted entity by its id.
-func (c *CabinetExchangeClient) GetNotDeleted(ctx context.Context, id uint64) (*CabinetExchange, error) {
-	return c.Query().Where(cabinetexchange.ID(id), cabinetexchange.DeletedAtIsNil()).Only(ctx)
-}
-
-// GetNotDeletedX is like Get, but panics if an error occurs.
-func (c *CabinetExchangeClient) GetNotDeletedX(ctx context.Context, id uint64) *CabinetExchange {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)
@@ -462,6 +422,46 @@ func (c *EnterpriseClient) GetNotDeleted(ctx context.Context, id uint64) (*Enter
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *EnterpriseClient) GetNotDeletedX(ctx context.Context, id uint64) *Enterprise {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for Exchange.
+func (c *ExchangeClient) SoftDelete() *ExchangeUpdate {
+	mutation := newExchangeMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &ExchangeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *ExchangeClient) SoftDeleteOne(e *Exchange) *ExchangeUpdateOne {
+	mutation := newExchangeMutation(c.config, OpUpdateOne, withExchange(e))
+	mutation.SetDeletedAt(time.Now())
+	return &ExchangeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *ExchangeClient) SoftDeleteOneID(id uint64) *ExchangeUpdateOne {
+	mutation := newExchangeMutation(c.config, OpUpdateOne, withExchangeID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &ExchangeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Exchange.
+func (c *ExchangeClient) QueryNotDeleted() *ExchangeQuery {
+	return c.Query().Where(exchange.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Exchange not deleted entity by its id.
+func (c *ExchangeClient) GetNotDeleted(ctx context.Context, id uint64) (*Exchange, error) {
+	return c.Query().Where(exchange.ID(id), exchange.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *ExchangeClient) GetNotDeletedX(ctx context.Context, id uint64) *Exchange {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

@@ -231,70 +231,6 @@ var (
 			},
 		},
 	}
-	// CabinetExchangeColumns holds the columns for the "cabinet_exchange" table.
-	CabinetExchangeColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
-		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
-		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
-		{Name: "alternative", Type: field.TypeBool, Comment: "是否备无满电选方案", Default: false},
-		{Name: "step", Type: field.TypeUint, Comment: "步骤"},
-		{Name: "status", Type: field.TypeUint, Comment: "状态"},
-		{Name: "bin_index", Type: field.TypeUint, Comment: "仓位Index"},
-		{Name: "bin", Type: field.TypeJSON, Comment: "仓位详情"},
-		{Name: "cabinet_id", Type: field.TypeUint64},
-		{Name: "rider_id", Type: field.TypeUint64},
-	}
-	// CabinetExchangeTable holds the schema information for the "cabinet_exchange" table.
-	CabinetExchangeTable = &schema.Table{
-		Name:       "cabinet_exchange",
-		Columns:    CabinetExchangeColumns,
-		PrimaryKey: []*schema.Column{CabinetExchangeColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "cabinet_exchange_cabinet_exchanges",
-				Columns:    []*schema.Column{CabinetExchangeColumns[12]},
-				RefColumns: []*schema.Column{CabinetColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
-				Symbol:     "cabinet_exchange_rider_exchanges",
-				Columns:    []*schema.Column{CabinetExchangeColumns[13]},
-				RefColumns: []*schema.Column{RiderColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "cabinetexchange_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{CabinetExchangeColumns[1]},
-			},
-			{
-				Name:    "cabinetexchange_deleted_at",
-				Unique:  false,
-				Columns: []*schema.Column{CabinetExchangeColumns[3]},
-			},
-			{
-				Name:    "cabinetexchange_bin_index",
-				Unique:  false,
-				Columns: []*schema.Column{CabinetExchangeColumns[10]},
-			},
-			{
-				Name:    "cabinetexchange_status",
-				Unique:  false,
-				Columns: []*schema.Column{CabinetExchangeColumns[9]},
-			},
-			{
-				Name:    "cabinetexchange_step",
-				Unique:  false,
-				Columns: []*schema.Column{CabinetExchangeColumns[8]},
-			},
-		},
-	}
 	// CabinetFaultColumns holds the columns for the "cabinet_fault" table.
 	CabinetFaultColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -571,6 +507,79 @@ var (
 						"postgres": "GIN",
 					},
 				},
+			},
+		},
+	}
+	// ExchangeColumns holds the columns for the "exchange" table.
+	ExchangeColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "uuid", Type: field.TypeString, Unique: true},
+		{Name: "success", Type: field.TypeBool, Comment: "是否成功", Default: true},
+		{Name: "detail", Type: field.TypeJSON, Comment: "电柜换电信息", Nullable: true},
+		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "city_id", Type: field.TypeUint64},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "rider_id", Type: field.TypeUint64},
+	}
+	// ExchangeTable holds the schema information for the "exchange" table.
+	ExchangeTable = &schema.Table{
+		Name:       "exchange",
+		Columns:    ExchangeColumns,
+		PrimaryKey: []*schema.Column{ExchangeColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "exchange_cabinet_exchanges",
+				Columns:    []*schema.Column{ExchangeColumns[10]},
+				RefColumns: []*schema.Column{CabinetColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "exchange_city_city",
+				Columns:    []*schema.Column{ExchangeColumns[11]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "exchange_employee_employee",
+				Columns:    []*schema.Column{ExchangeColumns[12]},
+				RefColumns: []*schema.Column{EmployeeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "exchange_store_store",
+				Columns:    []*schema.Column{ExchangeColumns[13]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "exchange_rider_exchanges",
+				Columns:    []*schema.Column{ExchangeColumns[14]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "exchange_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{ExchangeColumns[1]},
+			},
+			{
+				Name:    "exchange_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{ExchangeColumns[3]},
+			},
+			{
+				Name:    "exchange_success",
+				Unique:  false,
+				Columns: []*schema.Column{ExchangeColumns[8]},
 			},
 		},
 	}
@@ -1291,13 +1300,13 @@ var (
 		BranchTable,
 		BranchContractTable,
 		CabinetTable,
-		CabinetExchangeTable,
 		CabinetFaultTable,
 		CityTable,
 		CommissionTable,
 		ContractTable,
 		EmployeeTable,
 		EnterpriseTable,
+		ExchangeTable,
 		ManagerTable,
 		OrderTable,
 		OrderRefundTable,
@@ -1331,11 +1340,6 @@ func init() {
 	CabinetTable.Annotation = &entsql.Annotation{
 		Table: "cabinet",
 	}
-	CabinetExchangeTable.ForeignKeys[0].RefTable = CabinetTable
-	CabinetExchangeTable.ForeignKeys[1].RefTable = RiderTable
-	CabinetExchangeTable.Annotation = &entsql.Annotation{
-		Table: "cabinet_exchange",
-	}
 	CabinetFaultTable.ForeignKeys[0].RefTable = BranchTable
 	CabinetFaultTable.ForeignKeys[1].RefTable = CabinetTable
 	CabinetFaultTable.ForeignKeys[2].RefTable = CityTable
@@ -1360,6 +1364,14 @@ func init() {
 	}
 	EnterpriseTable.Annotation = &entsql.Annotation{
 		Table: "enterprise",
+	}
+	ExchangeTable.ForeignKeys[0].RefTable = CabinetTable
+	ExchangeTable.ForeignKeys[1].RefTable = CityTable
+	ExchangeTable.ForeignKeys[2].RefTable = EmployeeTable
+	ExchangeTable.ForeignKeys[3].RefTable = StoreTable
+	ExchangeTable.ForeignKeys[4].RefTable = RiderTable
+	ExchangeTable.Annotation = &entsql.Annotation{
+		Table: "exchange",
 	}
 	ManagerTable.Annotation = &entsql.Annotation{
 		Table: "manager",

@@ -4004,6 +4004,10 @@ const docTemplate = `{
                     "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
                     "type": "string"
                 },
+                "cityId": {
+                    "description": "城市ID",
+                    "type": "integer"
+                },
                 "doors": {
                     "description": "总仓位",
                     "type": "integer"
@@ -4047,6 +4051,10 @@ const docTemplate = `{
                 "uuid": {
                     "description": "操作ID",
                     "type": "string"
+                },
+                "voltage": {
+                    "description": "电池电压",
+                    "type": "number"
                 }
             }
         },

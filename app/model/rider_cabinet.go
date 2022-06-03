@@ -62,6 +62,8 @@ type RiderCabinetInfo struct {
     BatteryNum     uint         `json:"batteryNum"`     // 总电池数
     BatteryFullNum uint         `json:"batteryFullNum"` // 总满电电池数
     Brand          CabinetBrand `json:"brand"`          // 电柜型号
+    Voltage        float64      `json:"voltage"`        // 电池电压
+    CityID         uint64       `json:"cityId"`         // 城市ID
     RiderCabinetOperateProcess
 }
 

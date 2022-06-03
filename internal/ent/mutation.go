@@ -14,13 +14,13 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
-	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
@@ -46,28 +46,28 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeBatteryModel    = "BatteryModel"
-	TypeBranch          = "Branch"
-	TypeBranchContract  = "BranchContract"
-	TypeCabinet         = "Cabinet"
-	TypeCabinetExchange = "CabinetExchange"
-	TypeCabinetFault    = "CabinetFault"
-	TypeCity            = "City"
-	TypeCommission      = "Commission"
-	TypeContract        = "Contract"
-	TypeEmployee        = "Employee"
-	TypeEnterprise      = "Enterprise"
-	TypeManager         = "Manager"
-	TypeOrder           = "Detail"
-	TypeOrderRefund     = "OrderRefund"
-	TypePerson          = "Person"
-	TypePlan            = "Plan"
-	TypeRider           = "Rider"
-	TypeSetting         = "Setting"
-	TypeStore           = "Store"
-	TypeSubscribe       = "Subscribe"
-	TypeSubscribeAlter  = "SubscribeAlter"
-	TypeSubscribePause  = "SubscribePause"
+	TypeBatteryModel   = "BatteryModel"
+	TypeBranch         = "Branch"
+	TypeBranchContract = "BranchContract"
+	TypeCabinet        = "Cabinet"
+	TypeCabinetFault   = "CabinetFault"
+	TypeCity           = "City"
+	TypeCommission     = "Commission"
+	TypeContract       = "Contract"
+	TypeEmployee       = "Employee"
+	TypeEnterprise     = "Enterprise"
+	TypeExchange       = "Exchange"
+	TypeManager        = "Manager"
+	TypeOrder          = "Order"
+	TypeOrderRefund    = "OrderRefund"
+	TypePerson         = "Person"
+	TypePlan           = "Plan"
+	TypeRider          = "Rider"
+	TypeSetting        = "Setting"
+	TypeStore          = "Store"
+	TypeSubscribe      = "Subscribe"
+	TypeSubscribeAlter = "SubscribeAlter"
+	TypeSubscribePause = "SubscribePause"
 )
 
 // BatteryModelMutation represents an operation that mutates the BatteryModel nodes in the graph.
@@ -5406,7 +5406,7 @@ func (m *CabinetMutation) ResetFaults() {
 	m.removedfaults = nil
 }
 
-// AddExchangeIDs adds the "exchanges" edge to the CabinetExchange entity by ids.
+// AddExchangeIDs adds the "exchanges" edge to the Exchange entity by ids.
 func (m *CabinetMutation) AddExchangeIDs(ids ...uint64) {
 	if m.exchanges == nil {
 		m.exchanges = make(map[uint64]struct{})
@@ -5416,17 +5416,17 @@ func (m *CabinetMutation) AddExchangeIDs(ids ...uint64) {
 	}
 }
 
-// ClearExchanges clears the "exchanges" edge to the CabinetExchange entity.
+// ClearExchanges clears the "exchanges" edge to the Exchange entity.
 func (m *CabinetMutation) ClearExchanges() {
 	m.clearedexchanges = true
 }
 
-// ExchangesCleared reports if the "exchanges" edge to the CabinetExchange entity was cleared.
+// ExchangesCleared reports if the "exchanges" edge to the Exchange entity was cleared.
 func (m *CabinetMutation) ExchangesCleared() bool {
 	return m.clearedexchanges
 }
 
-// RemoveExchangeIDs removes the "exchanges" edge to the CabinetExchange entity by IDs.
+// RemoveExchangeIDs removes the "exchanges" edge to the Exchange entity by IDs.
 func (m *CabinetMutation) RemoveExchangeIDs(ids ...uint64) {
 	if m.removedexchanges == nil {
 		m.removedexchanges = make(map[uint64]struct{})
@@ -5437,7 +5437,7 @@ func (m *CabinetMutation) RemoveExchangeIDs(ids ...uint64) {
 	}
 }
 
-// RemovedExchanges returns the removed IDs of the "exchanges" edge to the CabinetExchange entity.
+// RemovedExchanges returns the removed IDs of the "exchanges" edge to the Exchange entity.
 func (m *CabinetMutation) RemovedExchangesIDs() (ids []uint64) {
 	for id := range m.removedexchanges {
 		ids = append(ids, id)
@@ -6119,1246 +6119,6 @@ func (m *CabinetMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Cabinet edge %s", name)
-}
-
-// CabinetExchangeMutation represents an operation that mutates the CabinetExchange nodes in the graph.
-type CabinetExchangeMutation struct {
-	config
-	op             Op
-	typ            string
-	id             *uint64
-	created_at     *time.Time
-	updated_at     *time.Time
-	deleted_at     *time.Time
-	creator        **model.Modifier
-	last_modifier  **model.Modifier
-	remark         *string
-	alternative    *bool
-	step           *uint
-	addstep        *int
-	status         *uint
-	addstatus      *int
-	bin_index      *uint
-	addbin_index   *int
-	bin            *model.CabinetBin
-	clearedFields  map[string]struct{}
-	rider          *uint64
-	clearedrider   bool
-	cabinet        *uint64
-	clearedcabinet bool
-	done           bool
-	oldValue       func(context.Context) (*CabinetExchange, error)
-	predicates     []predicate.CabinetExchange
-}
-
-var _ ent.Mutation = (*CabinetExchangeMutation)(nil)
-
-// cabinetexchangeOption allows management of the mutation configuration using functional options.
-type cabinetexchangeOption func(*CabinetExchangeMutation)
-
-// newCabinetExchangeMutation creates new mutation for the CabinetExchange entity.
-func newCabinetExchangeMutation(c config, op Op, opts ...cabinetexchangeOption) *CabinetExchangeMutation {
-	m := &CabinetExchangeMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeCabinetExchange,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withCabinetExchangeID sets the ID field of the mutation.
-func withCabinetExchangeID(id uint64) cabinetexchangeOption {
-	return func(m *CabinetExchangeMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *CabinetExchange
-		)
-		m.oldValue = func(ctx context.Context) (*CabinetExchange, error) {
-			once.Do(func() {
-				if m.done {
-					err = errors.New("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().CabinetExchange.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withCabinetExchange sets the old CabinetExchange of the mutation.
-func withCabinetExchange(node *CabinetExchange) cabinetexchangeOption {
-	return func(m *CabinetExchangeMutation) {
-		m.oldValue = func(context.Context) (*CabinetExchange, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m CabinetExchangeMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m CabinetExchangeMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, errors.New("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *CabinetExchangeMutation) ID() (id uint64, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// IDs queries the database and returns the entity ids that match the mutation's predicate.
-// That means, if the mutation is applied within a transaction with an isolation level such
-// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
-// or updated by the mutation.
-func (m *CabinetExchangeMutation) IDs(ctx context.Context) ([]uint64, error) {
-	switch {
-	case m.op.Is(OpUpdateOne | OpDeleteOne):
-		id, exists := m.ID()
-		if exists {
-			return []uint64{id}, nil
-		}
-		fallthrough
-	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().CabinetExchange.Query().Where(m.predicates...).IDs(ctx)
-	default:
-		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
-	}
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (m *CabinetExchangeMutation) SetCreatedAt(t time.Time) {
-	m.created_at = &t
-}
-
-// CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *CabinetExchangeMutation) CreatedAt() (r time.Time, exists bool) {
-	v := m.created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreatedAt returns the old "created_at" field's value of the CabinetExchange entity.
-// If the CabinetExchange object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetExchangeMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
-	}
-	return oldValue.CreatedAt, nil
-}
-
-// ResetCreatedAt resets all changes to the "created_at" field.
-func (m *CabinetExchangeMutation) ResetCreatedAt() {
-	m.created_at = nil
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (m *CabinetExchangeMutation) SetUpdatedAt(t time.Time) {
-	m.updated_at = &t
-}
-
-// UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *CabinetExchangeMutation) UpdatedAt() (r time.Time, exists bool) {
-	v := m.updated_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdatedAt returns the old "updated_at" field's value of the CabinetExchange entity.
-// If the CabinetExchange object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetExchangeMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
-	}
-	return oldValue.UpdatedAt, nil
-}
-
-// ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *CabinetExchangeMutation) ResetUpdatedAt() {
-	m.updated_at = nil
-}
-
-// SetDeletedAt sets the "deleted_at" field.
-func (m *CabinetExchangeMutation) SetDeletedAt(t time.Time) {
-	m.deleted_at = &t
-}
-
-// DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *CabinetExchangeMutation) DeletedAt() (r time.Time, exists bool) {
-	v := m.deleted_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDeletedAt returns the old "deleted_at" field's value of the CabinetExchange entity.
-// If the CabinetExchange object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetExchangeMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
-	}
-	return oldValue.DeletedAt, nil
-}
-
-// ClearDeletedAt clears the value of the "deleted_at" field.
-func (m *CabinetExchangeMutation) ClearDeletedAt() {
-	m.deleted_at = nil
-	m.clearedFields[cabinetexchange.FieldDeletedAt] = struct{}{}
-}
-
-// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
-func (m *CabinetExchangeMutation) DeletedAtCleared() bool {
-	_, ok := m.clearedFields[cabinetexchange.FieldDeletedAt]
-	return ok
-}
-
-// ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *CabinetExchangeMutation) ResetDeletedAt() {
-	m.deleted_at = nil
-	delete(m.clearedFields, cabinetexchange.FieldDeletedAt)
-}
-
-// SetCreator sets the "creator" field.
-func (m *CabinetExchangeMutation) SetCreator(value *model.Modifier) {
-	m.creator = &value
-}
-
-// Creator returns the value of the "creator" field in the mutation.
-func (m *CabinetExchangeMutation) Creator() (r *model.Modifier, exists bool) {
-	v := m.creator
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreator returns the old "creator" field's value of the CabinetExchange entity.
-// If the CabinetExchange object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetExchangeMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreator requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
-	}
-	return oldValue.Creator, nil
-}
-
-// ClearCreator clears the value of the "creator" field.
-func (m *CabinetExchangeMutation) ClearCreator() {
-	m.creator = nil
-	m.clearedFields[cabinetexchange.FieldCreator] = struct{}{}
-}
-
-// CreatorCleared returns if the "creator" field was cleared in this mutation.
-func (m *CabinetExchangeMutation) CreatorCleared() bool {
-	_, ok := m.clearedFields[cabinetexchange.FieldCreator]
-	return ok
-}
-
-// ResetCreator resets all changes to the "creator" field.
-func (m *CabinetExchangeMutation) ResetCreator() {
-	m.creator = nil
-	delete(m.clearedFields, cabinetexchange.FieldCreator)
-}
-
-// SetLastModifier sets the "last_modifier" field.
-func (m *CabinetExchangeMutation) SetLastModifier(value *model.Modifier) {
-	m.last_modifier = &value
-}
-
-// LastModifier returns the value of the "last_modifier" field in the mutation.
-func (m *CabinetExchangeMutation) LastModifier() (r *model.Modifier, exists bool) {
-	v := m.last_modifier
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldLastModifier returns the old "last_modifier" field's value of the CabinetExchange entity.
-// If the CabinetExchange object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetExchangeMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldLastModifier requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
-	}
-	return oldValue.LastModifier, nil
-}
-
-// ClearLastModifier clears the value of the "last_modifier" field.
-func (m *CabinetExchangeMutation) ClearLastModifier() {
-	m.last_modifier = nil
-	m.clearedFields[cabinetexchange.FieldLastModifier] = struct{}{}
-}
-
-// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
-func (m *CabinetExchangeMutation) LastModifierCleared() bool {
-	_, ok := m.clearedFields[cabinetexchange.FieldLastModifier]
-	return ok
-}
-
-// ResetLastModifier resets all changes to the "last_modifier" field.
-func (m *CabinetExchangeMutation) ResetLastModifier() {
-	m.last_modifier = nil
-	delete(m.clearedFields, cabinetexchange.FieldLastModifier)
-}
-
-// SetRemark sets the "remark" field.
-func (m *CabinetExchangeMutation) SetRemark(s string) {
-	m.remark = &s
-}
-
-// Remark returns the value of the "remark" field in the mutation.
-func (m *CabinetExchangeMutation) Remark() (r string, exists bool) {
-	v := m.remark
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRemark returns the old "remark" field's value of the CabinetExchange entity.
-// If the CabinetExchange object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetExchangeMutation) OldRemark(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRemark requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
-	}
-	return oldValue.Remark, nil
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (m *CabinetExchangeMutation) ClearRemark() {
-	m.remark = nil
-	m.clearedFields[cabinetexchange.FieldRemark] = struct{}{}
-}
-
-// RemarkCleared returns if the "remark" field was cleared in this mutation.
-func (m *CabinetExchangeMutation) RemarkCleared() bool {
-	_, ok := m.clearedFields[cabinetexchange.FieldRemark]
-	return ok
-}
-
-// ResetRemark resets all changes to the "remark" field.
-func (m *CabinetExchangeMutation) ResetRemark() {
-	m.remark = nil
-	delete(m.clearedFields, cabinetexchange.FieldRemark)
-}
-
-// SetRiderID sets the "rider_id" field.
-func (m *CabinetExchangeMutation) SetRiderID(u uint64) {
-	m.rider = &u
-}
-
-// RiderID returns the value of the "rider_id" field in the mutation.
-func (m *CabinetExchangeMutation) RiderID() (r uint64, exists bool) {
-	v := m.rider
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRiderID returns the old "rider_id" field's value of the CabinetExchange entity.
-// If the CabinetExchange object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetExchangeMutation) OldRiderID(ctx context.Context) (v uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRiderID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRiderID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRiderID: %w", err)
-	}
-	return oldValue.RiderID, nil
-}
-
-// ResetRiderID resets all changes to the "rider_id" field.
-func (m *CabinetExchangeMutation) ResetRiderID() {
-	m.rider = nil
-}
-
-// SetCabinetID sets the "cabinet_id" field.
-func (m *CabinetExchangeMutation) SetCabinetID(u uint64) {
-	m.cabinet = &u
-}
-
-// CabinetID returns the value of the "cabinet_id" field in the mutation.
-func (m *CabinetExchangeMutation) CabinetID() (r uint64, exists bool) {
-	v := m.cabinet
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCabinetID returns the old "cabinet_id" field's value of the CabinetExchange entity.
-// If the CabinetExchange object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetExchangeMutation) OldCabinetID(ctx context.Context) (v uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCabinetID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCabinetID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCabinetID: %w", err)
-	}
-	return oldValue.CabinetID, nil
-}
-
-// ResetCabinetID resets all changes to the "cabinet_id" field.
-func (m *CabinetExchangeMutation) ResetCabinetID() {
-	m.cabinet = nil
-}
-
-// SetAlternative sets the "alternative" field.
-func (m *CabinetExchangeMutation) SetAlternative(b bool) {
-	m.alternative = &b
-}
-
-// Alternative returns the value of the "alternative" field in the mutation.
-func (m *CabinetExchangeMutation) Alternative() (r bool, exists bool) {
-	v := m.alternative
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldAlternative returns the old "alternative" field's value of the CabinetExchange entity.
-// If the CabinetExchange object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetExchangeMutation) OldAlternative(ctx context.Context) (v bool, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAlternative is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAlternative requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAlternative: %w", err)
-	}
-	return oldValue.Alternative, nil
-}
-
-// ResetAlternative resets all changes to the "alternative" field.
-func (m *CabinetExchangeMutation) ResetAlternative() {
-	m.alternative = nil
-}
-
-// SetStep sets the "step" field.
-func (m *CabinetExchangeMutation) SetStep(u uint) {
-	m.step = &u
-	m.addstep = nil
-}
-
-// Step returns the value of the "step" field in the mutation.
-func (m *CabinetExchangeMutation) Step() (r uint, exists bool) {
-	v := m.step
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldStep returns the old "step" field's value of the CabinetExchange entity.
-// If the CabinetExchange object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetExchangeMutation) OldStep(ctx context.Context) (v uint, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldStep is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldStep requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldStep: %w", err)
-	}
-	return oldValue.Step, nil
-}
-
-// AddStep adds u to the "step" field.
-func (m *CabinetExchangeMutation) AddStep(u int) {
-	if m.addstep != nil {
-		*m.addstep += u
-	} else {
-		m.addstep = &u
-	}
-}
-
-// AddedStep returns the value that was added to the "step" field in this mutation.
-func (m *CabinetExchangeMutation) AddedStep() (r int, exists bool) {
-	v := m.addstep
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetStep resets all changes to the "step" field.
-func (m *CabinetExchangeMutation) ResetStep() {
-	m.step = nil
-	m.addstep = nil
-}
-
-// SetStatus sets the "status" field.
-func (m *CabinetExchangeMutation) SetStatus(u uint) {
-	m.status = &u
-	m.addstatus = nil
-}
-
-// Status returns the value of the "status" field in the mutation.
-func (m *CabinetExchangeMutation) Status() (r uint, exists bool) {
-	v := m.status
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldStatus returns the old "status" field's value of the CabinetExchange entity.
-// If the CabinetExchange object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetExchangeMutation) OldStatus(ctx context.Context) (v uint, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldStatus requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
-	}
-	return oldValue.Status, nil
-}
-
-// AddStatus adds u to the "status" field.
-func (m *CabinetExchangeMutation) AddStatus(u int) {
-	if m.addstatus != nil {
-		*m.addstatus += u
-	} else {
-		m.addstatus = &u
-	}
-}
-
-// AddedStatus returns the value that was added to the "status" field in this mutation.
-func (m *CabinetExchangeMutation) AddedStatus() (r int, exists bool) {
-	v := m.addstatus
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetStatus resets all changes to the "status" field.
-func (m *CabinetExchangeMutation) ResetStatus() {
-	m.status = nil
-	m.addstatus = nil
-}
-
-// SetBinIndex sets the "bin_index" field.
-func (m *CabinetExchangeMutation) SetBinIndex(u uint) {
-	m.bin_index = &u
-	m.addbin_index = nil
-}
-
-// BinIndex returns the value of the "bin_index" field in the mutation.
-func (m *CabinetExchangeMutation) BinIndex() (r uint, exists bool) {
-	v := m.bin_index
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldBinIndex returns the old "bin_index" field's value of the CabinetExchange entity.
-// If the CabinetExchange object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetExchangeMutation) OldBinIndex(ctx context.Context) (v uint, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBinIndex is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBinIndex requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBinIndex: %w", err)
-	}
-	return oldValue.BinIndex, nil
-}
-
-// AddBinIndex adds u to the "bin_index" field.
-func (m *CabinetExchangeMutation) AddBinIndex(u int) {
-	if m.addbin_index != nil {
-		*m.addbin_index += u
-	} else {
-		m.addbin_index = &u
-	}
-}
-
-// AddedBinIndex returns the value that was added to the "bin_index" field in this mutation.
-func (m *CabinetExchangeMutation) AddedBinIndex() (r int, exists bool) {
-	v := m.addbin_index
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetBinIndex resets all changes to the "bin_index" field.
-func (m *CabinetExchangeMutation) ResetBinIndex() {
-	m.bin_index = nil
-	m.addbin_index = nil
-}
-
-// SetBin sets the "bin" field.
-func (m *CabinetExchangeMutation) SetBin(mb model.CabinetBin) {
-	m.bin = &mb
-}
-
-// Bin returns the value of the "bin" field in the mutation.
-func (m *CabinetExchangeMutation) Bin() (r model.CabinetBin, exists bool) {
-	v := m.bin
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldBin returns the old "bin" field's value of the CabinetExchange entity.
-// If the CabinetExchange object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetExchangeMutation) OldBin(ctx context.Context) (v model.CabinetBin, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBin is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBin requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBin: %w", err)
-	}
-	return oldValue.Bin, nil
-}
-
-// ResetBin resets all changes to the "bin" field.
-func (m *CabinetExchangeMutation) ResetBin() {
-	m.bin = nil
-}
-
-// ClearRider clears the "rider" edge to the Rider entity.
-func (m *CabinetExchangeMutation) ClearRider() {
-	m.clearedrider = true
-}
-
-// RiderCleared reports if the "rider" edge to the Rider entity was cleared.
-func (m *CabinetExchangeMutation) RiderCleared() bool {
-	return m.clearedrider
-}
-
-// RiderIDs returns the "rider" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// RiderID instead. It exists only for internal usage by the builders.
-func (m *CabinetExchangeMutation) RiderIDs() (ids []uint64) {
-	if id := m.rider; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetRider resets all changes to the "rider" edge.
-func (m *CabinetExchangeMutation) ResetRider() {
-	m.rider = nil
-	m.clearedrider = false
-}
-
-// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
-func (m *CabinetExchangeMutation) ClearCabinet() {
-	m.clearedcabinet = true
-}
-
-// CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
-func (m *CabinetExchangeMutation) CabinetCleared() bool {
-	return m.clearedcabinet
-}
-
-// CabinetIDs returns the "cabinet" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// CabinetID instead. It exists only for internal usage by the builders.
-func (m *CabinetExchangeMutation) CabinetIDs() (ids []uint64) {
-	if id := m.cabinet; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetCabinet resets all changes to the "cabinet" edge.
-func (m *CabinetExchangeMutation) ResetCabinet() {
-	m.cabinet = nil
-	m.clearedcabinet = false
-}
-
-// Where appends a list predicates to the CabinetExchangeMutation builder.
-func (m *CabinetExchangeMutation) Where(ps ...predicate.CabinetExchange) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// Op returns the operation name.
-func (m *CabinetExchangeMutation) Op() Op {
-	return m.op
-}
-
-// Type returns the node type of this mutation (CabinetExchange).
-func (m *CabinetExchangeMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *CabinetExchangeMutation) Fields() []string {
-	fields := make([]string, 0, 13)
-	if m.created_at != nil {
-		fields = append(fields, cabinetexchange.FieldCreatedAt)
-	}
-	if m.updated_at != nil {
-		fields = append(fields, cabinetexchange.FieldUpdatedAt)
-	}
-	if m.deleted_at != nil {
-		fields = append(fields, cabinetexchange.FieldDeletedAt)
-	}
-	if m.creator != nil {
-		fields = append(fields, cabinetexchange.FieldCreator)
-	}
-	if m.last_modifier != nil {
-		fields = append(fields, cabinetexchange.FieldLastModifier)
-	}
-	if m.remark != nil {
-		fields = append(fields, cabinetexchange.FieldRemark)
-	}
-	if m.rider != nil {
-		fields = append(fields, cabinetexchange.FieldRiderID)
-	}
-	if m.cabinet != nil {
-		fields = append(fields, cabinetexchange.FieldCabinetID)
-	}
-	if m.alternative != nil {
-		fields = append(fields, cabinetexchange.FieldAlternative)
-	}
-	if m.step != nil {
-		fields = append(fields, cabinetexchange.FieldStep)
-	}
-	if m.status != nil {
-		fields = append(fields, cabinetexchange.FieldStatus)
-	}
-	if m.bin_index != nil {
-		fields = append(fields, cabinetexchange.FieldBinIndex)
-	}
-	if m.bin != nil {
-		fields = append(fields, cabinetexchange.FieldBin)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *CabinetExchangeMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case cabinetexchange.FieldCreatedAt:
-		return m.CreatedAt()
-	case cabinetexchange.FieldUpdatedAt:
-		return m.UpdatedAt()
-	case cabinetexchange.FieldDeletedAt:
-		return m.DeletedAt()
-	case cabinetexchange.FieldCreator:
-		return m.Creator()
-	case cabinetexchange.FieldLastModifier:
-		return m.LastModifier()
-	case cabinetexchange.FieldRemark:
-		return m.Remark()
-	case cabinetexchange.FieldRiderID:
-		return m.RiderID()
-	case cabinetexchange.FieldCabinetID:
-		return m.CabinetID()
-	case cabinetexchange.FieldAlternative:
-		return m.Alternative()
-	case cabinetexchange.FieldStep:
-		return m.Step()
-	case cabinetexchange.FieldStatus:
-		return m.Status()
-	case cabinetexchange.FieldBinIndex:
-		return m.BinIndex()
-	case cabinetexchange.FieldBin:
-		return m.Bin()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *CabinetExchangeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case cabinetexchange.FieldCreatedAt:
-		return m.OldCreatedAt(ctx)
-	case cabinetexchange.FieldUpdatedAt:
-		return m.OldUpdatedAt(ctx)
-	case cabinetexchange.FieldDeletedAt:
-		return m.OldDeletedAt(ctx)
-	case cabinetexchange.FieldCreator:
-		return m.OldCreator(ctx)
-	case cabinetexchange.FieldLastModifier:
-		return m.OldLastModifier(ctx)
-	case cabinetexchange.FieldRemark:
-		return m.OldRemark(ctx)
-	case cabinetexchange.FieldRiderID:
-		return m.OldRiderID(ctx)
-	case cabinetexchange.FieldCabinetID:
-		return m.OldCabinetID(ctx)
-	case cabinetexchange.FieldAlternative:
-		return m.OldAlternative(ctx)
-	case cabinetexchange.FieldStep:
-		return m.OldStep(ctx)
-	case cabinetexchange.FieldStatus:
-		return m.OldStatus(ctx)
-	case cabinetexchange.FieldBinIndex:
-		return m.OldBinIndex(ctx)
-	case cabinetexchange.FieldBin:
-		return m.OldBin(ctx)
-	}
-	return nil, fmt.Errorf("unknown CabinetExchange field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *CabinetExchangeMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case cabinetexchange.FieldCreatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreatedAt(v)
-		return nil
-	case cabinetexchange.FieldUpdatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdatedAt(v)
-		return nil
-	case cabinetexchange.FieldDeletedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDeletedAt(v)
-		return nil
-	case cabinetexchange.FieldCreator:
-		v, ok := value.(*model.Modifier)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreator(v)
-		return nil
-	case cabinetexchange.FieldLastModifier:
-		v, ok := value.(*model.Modifier)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetLastModifier(v)
-		return nil
-	case cabinetexchange.FieldRemark:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRemark(v)
-		return nil
-	case cabinetexchange.FieldRiderID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRiderID(v)
-		return nil
-	case cabinetexchange.FieldCabinetID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCabinetID(v)
-		return nil
-	case cabinetexchange.FieldAlternative:
-		v, ok := value.(bool)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetAlternative(v)
-		return nil
-	case cabinetexchange.FieldStep:
-		v, ok := value.(uint)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetStep(v)
-		return nil
-	case cabinetexchange.FieldStatus:
-		v, ok := value.(uint)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetStatus(v)
-		return nil
-	case cabinetexchange.FieldBinIndex:
-		v, ok := value.(uint)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetBinIndex(v)
-		return nil
-	case cabinetexchange.FieldBin:
-		v, ok := value.(model.CabinetBin)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetBin(v)
-		return nil
-	}
-	return fmt.Errorf("unknown CabinetExchange field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *CabinetExchangeMutation) AddedFields() []string {
-	var fields []string
-	if m.addstep != nil {
-		fields = append(fields, cabinetexchange.FieldStep)
-	}
-	if m.addstatus != nil {
-		fields = append(fields, cabinetexchange.FieldStatus)
-	}
-	if m.addbin_index != nil {
-		fields = append(fields, cabinetexchange.FieldBinIndex)
-	}
-	return fields
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *CabinetExchangeMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case cabinetexchange.FieldStep:
-		return m.AddedStep()
-	case cabinetexchange.FieldStatus:
-		return m.AddedStatus()
-	case cabinetexchange.FieldBinIndex:
-		return m.AddedBinIndex()
-	}
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *CabinetExchangeMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	case cabinetexchange.FieldStep:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddStep(v)
-		return nil
-	case cabinetexchange.FieldStatus:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddStatus(v)
-		return nil
-	case cabinetexchange.FieldBinIndex:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddBinIndex(v)
-		return nil
-	}
-	return fmt.Errorf("unknown CabinetExchange numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *CabinetExchangeMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(cabinetexchange.FieldDeletedAt) {
-		fields = append(fields, cabinetexchange.FieldDeletedAt)
-	}
-	if m.FieldCleared(cabinetexchange.FieldCreator) {
-		fields = append(fields, cabinetexchange.FieldCreator)
-	}
-	if m.FieldCleared(cabinetexchange.FieldLastModifier) {
-		fields = append(fields, cabinetexchange.FieldLastModifier)
-	}
-	if m.FieldCleared(cabinetexchange.FieldRemark) {
-		fields = append(fields, cabinetexchange.FieldRemark)
-	}
-	return fields
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *CabinetExchangeMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *CabinetExchangeMutation) ClearField(name string) error {
-	switch name {
-	case cabinetexchange.FieldDeletedAt:
-		m.ClearDeletedAt()
-		return nil
-	case cabinetexchange.FieldCreator:
-		m.ClearCreator()
-		return nil
-	case cabinetexchange.FieldLastModifier:
-		m.ClearLastModifier()
-		return nil
-	case cabinetexchange.FieldRemark:
-		m.ClearRemark()
-		return nil
-	}
-	return fmt.Errorf("unknown CabinetExchange nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *CabinetExchangeMutation) ResetField(name string) error {
-	switch name {
-	case cabinetexchange.FieldCreatedAt:
-		m.ResetCreatedAt()
-		return nil
-	case cabinetexchange.FieldUpdatedAt:
-		m.ResetUpdatedAt()
-		return nil
-	case cabinetexchange.FieldDeletedAt:
-		m.ResetDeletedAt()
-		return nil
-	case cabinetexchange.FieldCreator:
-		m.ResetCreator()
-		return nil
-	case cabinetexchange.FieldLastModifier:
-		m.ResetLastModifier()
-		return nil
-	case cabinetexchange.FieldRemark:
-		m.ResetRemark()
-		return nil
-	case cabinetexchange.FieldRiderID:
-		m.ResetRiderID()
-		return nil
-	case cabinetexchange.FieldCabinetID:
-		m.ResetCabinetID()
-		return nil
-	case cabinetexchange.FieldAlternative:
-		m.ResetAlternative()
-		return nil
-	case cabinetexchange.FieldStep:
-		m.ResetStep()
-		return nil
-	case cabinetexchange.FieldStatus:
-		m.ResetStatus()
-		return nil
-	case cabinetexchange.FieldBinIndex:
-		m.ResetBinIndex()
-		return nil
-	case cabinetexchange.FieldBin:
-		m.ResetBin()
-		return nil
-	}
-	return fmt.Errorf("unknown CabinetExchange field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *CabinetExchangeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.rider != nil {
-		edges = append(edges, cabinetexchange.EdgeRider)
-	}
-	if m.cabinet != nil {
-		edges = append(edges, cabinetexchange.EdgeCabinet)
-	}
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *CabinetExchangeMutation) AddedIDs(name string) []ent.Value {
-	switch name {
-	case cabinetexchange.EdgeRider:
-		if id := m.rider; id != nil {
-			return []ent.Value{*id}
-		}
-	case cabinetexchange.EdgeCabinet:
-		if id := m.cabinet; id != nil {
-			return []ent.Value{*id}
-		}
-	}
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *CabinetExchangeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *CabinetExchangeMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	}
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *CabinetExchangeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.clearedrider {
-		edges = append(edges, cabinetexchange.EdgeRider)
-	}
-	if m.clearedcabinet {
-		edges = append(edges, cabinetexchange.EdgeCabinet)
-	}
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *CabinetExchangeMutation) EdgeCleared(name string) bool {
-	switch name {
-	case cabinetexchange.EdgeRider:
-		return m.clearedrider
-	case cabinetexchange.EdgeCabinet:
-		return m.clearedcabinet
-	}
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *CabinetExchangeMutation) ClearEdge(name string) error {
-	switch name {
-	case cabinetexchange.EdgeRider:
-		m.ClearRider()
-		return nil
-	case cabinetexchange.EdgeCabinet:
-		m.ClearCabinet()
-		return nil
-	}
-	return fmt.Errorf("unknown CabinetExchange unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *CabinetExchangeMutation) ResetEdge(name string) error {
-	switch name {
-	case cabinetexchange.EdgeRider:
-		m.ResetRider()
-		return nil
-	case cabinetexchange.EdgeCabinet:
-		m.ResetCabinet()
-		return nil
-	}
-	return fmt.Errorf("unknown CabinetExchange edge %s", name)
 }
 
 // CabinetFaultMutation represents an operation that mutates the CabinetFault nodes in the graph.
@@ -13762,6 +12522,1412 @@ func (m *EnterpriseMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Enterprise edge %s", name)
 }
 
+// ExchangeMutation represents an operation that mutates the Exchange nodes in the graph.
+type ExchangeMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *uint64
+	created_at      *time.Time
+	updated_at      *time.Time
+	deleted_at      *time.Time
+	creator         **model.Modifier
+	last_modifier   **model.Modifier
+	remark          *string
+	uuid            *string
+	success         *bool
+	detail          **model.ExchangeCabinet
+	clearedFields   map[string]struct{}
+	city            *uint64
+	clearedcity     bool
+	employee        *uint64
+	clearedemployee bool
+	store           *uint64
+	clearedstore    bool
+	cabinet         *uint64
+	clearedcabinet  bool
+	rider           *uint64
+	clearedrider    bool
+	done            bool
+	oldValue        func(context.Context) (*Exchange, error)
+	predicates      []predicate.Exchange
+}
+
+var _ ent.Mutation = (*ExchangeMutation)(nil)
+
+// exchangeOption allows management of the mutation configuration using functional options.
+type exchangeOption func(*ExchangeMutation)
+
+// newExchangeMutation creates new mutation for the Exchange entity.
+func newExchangeMutation(c config, op Op, opts ...exchangeOption) *ExchangeMutation {
+	m := &ExchangeMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeExchange,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withExchangeID sets the ID field of the mutation.
+func withExchangeID(id uint64) exchangeOption {
+	return func(m *ExchangeMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Exchange
+		)
+		m.oldValue = func(ctx context.Context) (*Exchange, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Exchange.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withExchange sets the old Exchange of the mutation.
+func withExchange(node *Exchange) exchangeOption {
+	return func(m *ExchangeMutation) {
+		m.oldValue = func(context.Context) (*Exchange, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ExchangeMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ExchangeMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ExchangeMutation) ID() (id uint64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ExchangeMutation) IDs(ctx context.Context) ([]uint64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Exchange.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ExchangeMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ExchangeMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ExchangeMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ExchangeMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ExchangeMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ExchangeMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *ExchangeMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *ExchangeMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *ExchangeMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[exchange.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *ExchangeMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *ExchangeMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, exchange.FieldDeletedAt)
+}
+
+// SetCreator sets the "creator" field.
+func (m *ExchangeMutation) SetCreator(value *model.Modifier) {
+	m.creator = &value
+}
+
+// Creator returns the value of the "creator" field in the mutation.
+func (m *ExchangeMutation) Creator() (r *model.Modifier, exists bool) {
+	v := m.creator
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreator returns the old "creator" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreator requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
+	}
+	return oldValue.Creator, nil
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (m *ExchangeMutation) ClearCreator() {
+	m.creator = nil
+	m.clearedFields[exchange.FieldCreator] = struct{}{}
+}
+
+// CreatorCleared returns if the "creator" field was cleared in this mutation.
+func (m *ExchangeMutation) CreatorCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldCreator]
+	return ok
+}
+
+// ResetCreator resets all changes to the "creator" field.
+func (m *ExchangeMutation) ResetCreator() {
+	m.creator = nil
+	delete(m.clearedFields, exchange.FieldCreator)
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (m *ExchangeMutation) SetLastModifier(value *model.Modifier) {
+	m.last_modifier = &value
+}
+
+// LastModifier returns the value of the "last_modifier" field in the mutation.
+func (m *ExchangeMutation) LastModifier() (r *model.Modifier, exists bool) {
+	v := m.last_modifier
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastModifier returns the old "last_modifier" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastModifier requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
+	}
+	return oldValue.LastModifier, nil
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (m *ExchangeMutation) ClearLastModifier() {
+	m.last_modifier = nil
+	m.clearedFields[exchange.FieldLastModifier] = struct{}{}
+}
+
+// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
+func (m *ExchangeMutation) LastModifierCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldLastModifier]
+	return ok
+}
+
+// ResetLastModifier resets all changes to the "last_modifier" field.
+func (m *ExchangeMutation) ResetLastModifier() {
+	m.last_modifier = nil
+	delete(m.clearedFields, exchange.FieldLastModifier)
+}
+
+// SetRemark sets the "remark" field.
+func (m *ExchangeMutation) SetRemark(s string) {
+	m.remark = &s
+}
+
+// Remark returns the value of the "remark" field in the mutation.
+func (m *ExchangeMutation) Remark() (r string, exists bool) {
+	v := m.remark
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemark returns the old "remark" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldRemark(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemark requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
+	}
+	return oldValue.Remark, nil
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (m *ExchangeMutation) ClearRemark() {
+	m.remark = nil
+	m.clearedFields[exchange.FieldRemark] = struct{}{}
+}
+
+// RemarkCleared returns if the "remark" field was cleared in this mutation.
+func (m *ExchangeMutation) RemarkCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldRemark]
+	return ok
+}
+
+// ResetRemark resets all changes to the "remark" field.
+func (m *ExchangeMutation) ResetRemark() {
+	m.remark = nil
+	delete(m.clearedFields, exchange.FieldRemark)
+}
+
+// SetCityID sets the "city_id" field.
+func (m *ExchangeMutation) SetCityID(u uint64) {
+	m.city = &u
+}
+
+// CityID returns the value of the "city_id" field in the mutation.
+func (m *ExchangeMutation) CityID() (r uint64, exists bool) {
+	v := m.city
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCityID returns the old "city_id" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldCityID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCityID: %w", err)
+	}
+	return oldValue.CityID, nil
+}
+
+// ResetCityID resets all changes to the "city_id" field.
+func (m *ExchangeMutation) ResetCityID() {
+	m.city = nil
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (m *ExchangeMutation) SetEmployeeID(u uint64) {
+	m.employee = &u
+}
+
+// EmployeeID returns the value of the "employee_id" field in the mutation.
+func (m *ExchangeMutation) EmployeeID() (r uint64, exists bool) {
+	v := m.employee
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmployeeID returns the old "employee_id" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldEmployeeID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmployeeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmployeeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmployeeID: %w", err)
+	}
+	return oldValue.EmployeeID, nil
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (m *ExchangeMutation) ClearEmployeeID() {
+	m.employee = nil
+	m.clearedFields[exchange.FieldEmployeeID] = struct{}{}
+}
+
+// EmployeeIDCleared returns if the "employee_id" field was cleared in this mutation.
+func (m *ExchangeMutation) EmployeeIDCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldEmployeeID]
+	return ok
+}
+
+// ResetEmployeeID resets all changes to the "employee_id" field.
+func (m *ExchangeMutation) ResetEmployeeID() {
+	m.employee = nil
+	delete(m.clearedFields, exchange.FieldEmployeeID)
+}
+
+// SetStoreID sets the "store_id" field.
+func (m *ExchangeMutation) SetStoreID(u uint64) {
+	m.store = &u
+}
+
+// StoreID returns the value of the "store_id" field in the mutation.
+func (m *ExchangeMutation) StoreID() (r uint64, exists bool) {
+	v := m.store
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStoreID returns the old "store_id" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldStoreID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStoreID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStoreID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStoreID: %w", err)
+	}
+	return oldValue.StoreID, nil
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (m *ExchangeMutation) ClearStoreID() {
+	m.store = nil
+	m.clearedFields[exchange.FieldStoreID] = struct{}{}
+}
+
+// StoreIDCleared returns if the "store_id" field was cleared in this mutation.
+func (m *ExchangeMutation) StoreIDCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldStoreID]
+	return ok
+}
+
+// ResetStoreID resets all changes to the "store_id" field.
+func (m *ExchangeMutation) ResetStoreID() {
+	m.store = nil
+	delete(m.clearedFields, exchange.FieldStoreID)
+}
+
+// SetRiderID sets the "rider_id" field.
+func (m *ExchangeMutation) SetRiderID(u uint64) {
+	m.rider = &u
+}
+
+// RiderID returns the value of the "rider_id" field in the mutation.
+func (m *ExchangeMutation) RiderID() (r uint64, exists bool) {
+	v := m.rider
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRiderID returns the old "rider_id" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldRiderID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRiderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRiderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRiderID: %w", err)
+	}
+	return oldValue.RiderID, nil
+}
+
+// ResetRiderID resets all changes to the "rider_id" field.
+func (m *ExchangeMutation) ResetRiderID() {
+	m.rider = nil
+}
+
+// SetUUID sets the "uuid" field.
+func (m *ExchangeMutation) SetUUID(s string) {
+	m.uuid = &s
+}
+
+// UUID returns the value of the "uuid" field in the mutation.
+func (m *ExchangeMutation) UUID() (r string, exists bool) {
+	v := m.uuid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUUID returns the old "uuid" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldUUID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUUID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUUID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
+	}
+	return oldValue.UUID, nil
+}
+
+// ResetUUID resets all changes to the "uuid" field.
+func (m *ExchangeMutation) ResetUUID() {
+	m.uuid = nil
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (m *ExchangeMutation) SetCabinetID(u uint64) {
+	m.cabinet = &u
+}
+
+// CabinetID returns the value of the "cabinet_id" field in the mutation.
+func (m *ExchangeMutation) CabinetID() (r uint64, exists bool) {
+	v := m.cabinet
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCabinetID returns the old "cabinet_id" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldCabinetID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCabinetID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCabinetID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCabinetID: %w", err)
+	}
+	return oldValue.CabinetID, nil
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (m *ExchangeMutation) ClearCabinetID() {
+	m.cabinet = nil
+	m.clearedFields[exchange.FieldCabinetID] = struct{}{}
+}
+
+// CabinetIDCleared returns if the "cabinet_id" field was cleared in this mutation.
+func (m *ExchangeMutation) CabinetIDCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldCabinetID]
+	return ok
+}
+
+// ResetCabinetID resets all changes to the "cabinet_id" field.
+func (m *ExchangeMutation) ResetCabinetID() {
+	m.cabinet = nil
+	delete(m.clearedFields, exchange.FieldCabinetID)
+}
+
+// SetSuccess sets the "success" field.
+func (m *ExchangeMutation) SetSuccess(b bool) {
+	m.success = &b
+}
+
+// Success returns the value of the "success" field in the mutation.
+func (m *ExchangeMutation) Success() (r bool, exists bool) {
+	v := m.success
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSuccess returns the old "success" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldSuccess(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSuccess is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSuccess requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSuccess: %w", err)
+	}
+	return oldValue.Success, nil
+}
+
+// ResetSuccess resets all changes to the "success" field.
+func (m *ExchangeMutation) ResetSuccess() {
+	m.success = nil
+}
+
+// SetDetail sets the "detail" field.
+func (m *ExchangeMutation) SetDetail(mc *model.ExchangeCabinet) {
+	m.detail = &mc
+}
+
+// Detail returns the value of the "detail" field in the mutation.
+func (m *ExchangeMutation) Detail() (r *model.ExchangeCabinet, exists bool) {
+	v := m.detail
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDetail returns the old "detail" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldDetail(ctx context.Context) (v *model.ExchangeCabinet, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDetail is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDetail requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDetail: %w", err)
+	}
+	return oldValue.Detail, nil
+}
+
+// ClearDetail clears the value of the "detail" field.
+func (m *ExchangeMutation) ClearDetail() {
+	m.detail = nil
+	m.clearedFields[exchange.FieldDetail] = struct{}{}
+}
+
+// DetailCleared returns if the "detail" field was cleared in this mutation.
+func (m *ExchangeMutation) DetailCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldDetail]
+	return ok
+}
+
+// ResetDetail resets all changes to the "detail" field.
+func (m *ExchangeMutation) ResetDetail() {
+	m.detail = nil
+	delete(m.clearedFields, exchange.FieldDetail)
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (m *ExchangeMutation) ClearCity() {
+	m.clearedcity = true
+}
+
+// CityCleared reports if the "city" edge to the City entity was cleared.
+func (m *ExchangeMutation) CityCleared() bool {
+	return m.clearedcity
+}
+
+// CityIDs returns the "city" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CityID instead. It exists only for internal usage by the builders.
+func (m *ExchangeMutation) CityIDs() (ids []uint64) {
+	if id := m.city; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCity resets all changes to the "city" edge.
+func (m *ExchangeMutation) ResetCity() {
+	m.city = nil
+	m.clearedcity = false
+}
+
+// ClearEmployee clears the "employee" edge to the Employee entity.
+func (m *ExchangeMutation) ClearEmployee() {
+	m.clearedemployee = true
+}
+
+// EmployeeCleared reports if the "employee" edge to the Employee entity was cleared.
+func (m *ExchangeMutation) EmployeeCleared() bool {
+	return m.EmployeeIDCleared() || m.clearedemployee
+}
+
+// EmployeeIDs returns the "employee" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EmployeeID instead. It exists only for internal usage by the builders.
+func (m *ExchangeMutation) EmployeeIDs() (ids []uint64) {
+	if id := m.employee; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEmployee resets all changes to the "employee" edge.
+func (m *ExchangeMutation) ResetEmployee() {
+	m.employee = nil
+	m.clearedemployee = false
+}
+
+// ClearStore clears the "store" edge to the Store entity.
+func (m *ExchangeMutation) ClearStore() {
+	m.clearedstore = true
+}
+
+// StoreCleared reports if the "store" edge to the Store entity was cleared.
+func (m *ExchangeMutation) StoreCleared() bool {
+	return m.StoreIDCleared() || m.clearedstore
+}
+
+// StoreIDs returns the "store" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// StoreID instead. It exists only for internal usage by the builders.
+func (m *ExchangeMutation) StoreIDs() (ids []uint64) {
+	if id := m.store; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetStore resets all changes to the "store" edge.
+func (m *ExchangeMutation) ResetStore() {
+	m.store = nil
+	m.clearedstore = false
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (m *ExchangeMutation) ClearCabinet() {
+	m.clearedcabinet = true
+}
+
+// CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
+func (m *ExchangeMutation) CabinetCleared() bool {
+	return m.CabinetIDCleared() || m.clearedcabinet
+}
+
+// CabinetIDs returns the "cabinet" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CabinetID instead. It exists only for internal usage by the builders.
+func (m *ExchangeMutation) CabinetIDs() (ids []uint64) {
+	if id := m.cabinet; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCabinet resets all changes to the "cabinet" edge.
+func (m *ExchangeMutation) ResetCabinet() {
+	m.cabinet = nil
+	m.clearedcabinet = false
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (m *ExchangeMutation) ClearRider() {
+	m.clearedrider = true
+}
+
+// RiderCleared reports if the "rider" edge to the Rider entity was cleared.
+func (m *ExchangeMutation) RiderCleared() bool {
+	return m.clearedrider
+}
+
+// RiderIDs returns the "rider" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RiderID instead. It exists only for internal usage by the builders.
+func (m *ExchangeMutation) RiderIDs() (ids []uint64) {
+	if id := m.rider; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetRider resets all changes to the "rider" edge.
+func (m *ExchangeMutation) ResetRider() {
+	m.rider = nil
+	m.clearedrider = false
+}
+
+// Where appends a list predicates to the ExchangeMutation builder.
+func (m *ExchangeMutation) Where(ps ...predicate.Exchange) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *ExchangeMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Exchange).
+func (m *ExchangeMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ExchangeMutation) Fields() []string {
+	fields := make([]string, 0, 14)
+	if m.created_at != nil {
+		fields = append(fields, exchange.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, exchange.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, exchange.FieldDeletedAt)
+	}
+	if m.creator != nil {
+		fields = append(fields, exchange.FieldCreator)
+	}
+	if m.last_modifier != nil {
+		fields = append(fields, exchange.FieldLastModifier)
+	}
+	if m.remark != nil {
+		fields = append(fields, exchange.FieldRemark)
+	}
+	if m.city != nil {
+		fields = append(fields, exchange.FieldCityID)
+	}
+	if m.employee != nil {
+		fields = append(fields, exchange.FieldEmployeeID)
+	}
+	if m.store != nil {
+		fields = append(fields, exchange.FieldStoreID)
+	}
+	if m.rider != nil {
+		fields = append(fields, exchange.FieldRiderID)
+	}
+	if m.uuid != nil {
+		fields = append(fields, exchange.FieldUUID)
+	}
+	if m.cabinet != nil {
+		fields = append(fields, exchange.FieldCabinetID)
+	}
+	if m.success != nil {
+		fields = append(fields, exchange.FieldSuccess)
+	}
+	if m.detail != nil {
+		fields = append(fields, exchange.FieldDetail)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ExchangeMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case exchange.FieldCreatedAt:
+		return m.CreatedAt()
+	case exchange.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case exchange.FieldDeletedAt:
+		return m.DeletedAt()
+	case exchange.FieldCreator:
+		return m.Creator()
+	case exchange.FieldLastModifier:
+		return m.LastModifier()
+	case exchange.FieldRemark:
+		return m.Remark()
+	case exchange.FieldCityID:
+		return m.CityID()
+	case exchange.FieldEmployeeID:
+		return m.EmployeeID()
+	case exchange.FieldStoreID:
+		return m.StoreID()
+	case exchange.FieldRiderID:
+		return m.RiderID()
+	case exchange.FieldUUID:
+		return m.UUID()
+	case exchange.FieldCabinetID:
+		return m.CabinetID()
+	case exchange.FieldSuccess:
+		return m.Success()
+	case exchange.FieldDetail:
+		return m.Detail()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ExchangeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case exchange.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case exchange.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case exchange.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case exchange.FieldCreator:
+		return m.OldCreator(ctx)
+	case exchange.FieldLastModifier:
+		return m.OldLastModifier(ctx)
+	case exchange.FieldRemark:
+		return m.OldRemark(ctx)
+	case exchange.FieldCityID:
+		return m.OldCityID(ctx)
+	case exchange.FieldEmployeeID:
+		return m.OldEmployeeID(ctx)
+	case exchange.FieldStoreID:
+		return m.OldStoreID(ctx)
+	case exchange.FieldRiderID:
+		return m.OldRiderID(ctx)
+	case exchange.FieldUUID:
+		return m.OldUUID(ctx)
+	case exchange.FieldCabinetID:
+		return m.OldCabinetID(ctx)
+	case exchange.FieldSuccess:
+		return m.OldSuccess(ctx)
+	case exchange.FieldDetail:
+		return m.OldDetail(ctx)
+	}
+	return nil, fmt.Errorf("unknown Exchange field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ExchangeMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case exchange.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case exchange.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case exchange.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case exchange.FieldCreator:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreator(v)
+		return nil
+	case exchange.FieldLastModifier:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastModifier(v)
+		return nil
+	case exchange.FieldRemark:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemark(v)
+		return nil
+	case exchange.FieldCityID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCityID(v)
+		return nil
+	case exchange.FieldEmployeeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmployeeID(v)
+		return nil
+	case exchange.FieldStoreID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStoreID(v)
+		return nil
+	case exchange.FieldRiderID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRiderID(v)
+		return nil
+	case exchange.FieldUUID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUUID(v)
+		return nil
+	case exchange.FieldCabinetID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCabinetID(v)
+		return nil
+	case exchange.FieldSuccess:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSuccess(v)
+		return nil
+	case exchange.FieldDetail:
+		v, ok := value.(*model.ExchangeCabinet)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDetail(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Exchange field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ExchangeMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ExchangeMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ExchangeMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Exchange numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ExchangeMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(exchange.FieldDeletedAt) {
+		fields = append(fields, exchange.FieldDeletedAt)
+	}
+	if m.FieldCleared(exchange.FieldCreator) {
+		fields = append(fields, exchange.FieldCreator)
+	}
+	if m.FieldCleared(exchange.FieldLastModifier) {
+		fields = append(fields, exchange.FieldLastModifier)
+	}
+	if m.FieldCleared(exchange.FieldRemark) {
+		fields = append(fields, exchange.FieldRemark)
+	}
+	if m.FieldCleared(exchange.FieldEmployeeID) {
+		fields = append(fields, exchange.FieldEmployeeID)
+	}
+	if m.FieldCleared(exchange.FieldStoreID) {
+		fields = append(fields, exchange.FieldStoreID)
+	}
+	if m.FieldCleared(exchange.FieldCabinetID) {
+		fields = append(fields, exchange.FieldCabinetID)
+	}
+	if m.FieldCleared(exchange.FieldDetail) {
+		fields = append(fields, exchange.FieldDetail)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ExchangeMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ExchangeMutation) ClearField(name string) error {
+	switch name {
+	case exchange.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case exchange.FieldCreator:
+		m.ClearCreator()
+		return nil
+	case exchange.FieldLastModifier:
+		m.ClearLastModifier()
+		return nil
+	case exchange.FieldRemark:
+		m.ClearRemark()
+		return nil
+	case exchange.FieldEmployeeID:
+		m.ClearEmployeeID()
+		return nil
+	case exchange.FieldStoreID:
+		m.ClearStoreID()
+		return nil
+	case exchange.FieldCabinetID:
+		m.ClearCabinetID()
+		return nil
+	case exchange.FieldDetail:
+		m.ClearDetail()
+		return nil
+	}
+	return fmt.Errorf("unknown Exchange nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ExchangeMutation) ResetField(name string) error {
+	switch name {
+	case exchange.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case exchange.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case exchange.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case exchange.FieldCreator:
+		m.ResetCreator()
+		return nil
+	case exchange.FieldLastModifier:
+		m.ResetLastModifier()
+		return nil
+	case exchange.FieldRemark:
+		m.ResetRemark()
+		return nil
+	case exchange.FieldCityID:
+		m.ResetCityID()
+		return nil
+	case exchange.FieldEmployeeID:
+		m.ResetEmployeeID()
+		return nil
+	case exchange.FieldStoreID:
+		m.ResetStoreID()
+		return nil
+	case exchange.FieldRiderID:
+		m.ResetRiderID()
+		return nil
+	case exchange.FieldUUID:
+		m.ResetUUID()
+		return nil
+	case exchange.FieldCabinetID:
+		m.ResetCabinetID()
+		return nil
+	case exchange.FieldSuccess:
+		m.ResetSuccess()
+		return nil
+	case exchange.FieldDetail:
+		m.ResetDetail()
+		return nil
+	}
+	return fmt.Errorf("unknown Exchange field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ExchangeMutation) AddedEdges() []string {
+	edges := make([]string, 0, 5)
+	if m.city != nil {
+		edges = append(edges, exchange.EdgeCity)
+	}
+	if m.employee != nil {
+		edges = append(edges, exchange.EdgeEmployee)
+	}
+	if m.store != nil {
+		edges = append(edges, exchange.EdgeStore)
+	}
+	if m.cabinet != nil {
+		edges = append(edges, exchange.EdgeCabinet)
+	}
+	if m.rider != nil {
+		edges = append(edges, exchange.EdgeRider)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ExchangeMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case exchange.EdgeCity:
+		if id := m.city; id != nil {
+			return []ent.Value{*id}
+		}
+	case exchange.EdgeEmployee:
+		if id := m.employee; id != nil {
+			return []ent.Value{*id}
+		}
+	case exchange.EdgeStore:
+		if id := m.store; id != nil {
+			return []ent.Value{*id}
+		}
+	case exchange.EdgeCabinet:
+		if id := m.cabinet; id != nil {
+			return []ent.Value{*id}
+		}
+	case exchange.EdgeRider:
+		if id := m.rider; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ExchangeMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 5)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ExchangeMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ExchangeMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 5)
+	if m.clearedcity {
+		edges = append(edges, exchange.EdgeCity)
+	}
+	if m.clearedemployee {
+		edges = append(edges, exchange.EdgeEmployee)
+	}
+	if m.clearedstore {
+		edges = append(edges, exchange.EdgeStore)
+	}
+	if m.clearedcabinet {
+		edges = append(edges, exchange.EdgeCabinet)
+	}
+	if m.clearedrider {
+		edges = append(edges, exchange.EdgeRider)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ExchangeMutation) EdgeCleared(name string) bool {
+	switch name {
+	case exchange.EdgeCity:
+		return m.clearedcity
+	case exchange.EdgeEmployee:
+		return m.clearedemployee
+	case exchange.EdgeStore:
+		return m.clearedstore
+	case exchange.EdgeCabinet:
+		return m.clearedcabinet
+	case exchange.EdgeRider:
+		return m.clearedrider
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ExchangeMutation) ClearEdge(name string) error {
+	switch name {
+	case exchange.EdgeCity:
+		m.ClearCity()
+		return nil
+	case exchange.EdgeEmployee:
+		m.ClearEmployee()
+		return nil
+	case exchange.EdgeStore:
+		m.ClearStore()
+		return nil
+	case exchange.EdgeCabinet:
+		m.ClearCabinet()
+		return nil
+	case exchange.EdgeRider:
+		m.ClearRider()
+		return nil
+	}
+	return fmt.Errorf("unknown Exchange unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ExchangeMutation) ResetEdge(name string) error {
+	switch name {
+	case exchange.EdgeCity:
+		m.ResetCity()
+		return nil
+	case exchange.EdgeEmployee:
+		m.ResetEmployee()
+		return nil
+	case exchange.EdgeStore:
+		m.ResetStore()
+		return nil
+	case exchange.EdgeCabinet:
+		m.ResetCabinet()
+		return nil
+	case exchange.EdgeRider:
+		m.ResetRider()
+		return nil
+	}
+	return fmt.Errorf("unknown Exchange edge %s", name)
+}
+
 // ManagerMutation represents an operation that mutates the Manager nodes in the graph.
 type ManagerMutation struct {
 	config
@@ -16153,7 +16319,7 @@ func (m *OrderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 	case order.FieldRefundAt:
 		return m.OldRefundAt(ctx)
 	}
-	return nil, fmt.Errorf("unknown Detail field %s", name)
+	return nil, fmt.Errorf("unknown Order field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
@@ -16295,7 +16461,7 @@ func (m *OrderMutation) SetField(name string, value ent.Value) error {
 		m.SetRefundAt(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Detail field %s", name)
+	return fmt.Errorf("unknown Order field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
@@ -16380,7 +16546,7 @@ func (m *OrderMutation) AddField(name string, value ent.Value) error {
 		m.AddTotal(v)
 		return nil
 	}
-	return fmt.Errorf("unknown Detail numeric field %s", name)
+	return fmt.Errorf("unknown Order numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
@@ -16456,7 +16622,7 @@ func (m *OrderMutation) ClearField(name string) error {
 		m.ClearRefundAt()
 		return nil
 	}
-	return fmt.Errorf("unknown Detail nullable field %s", name)
+	return fmt.Errorf("unknown Order nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
@@ -16521,7 +16687,7 @@ func (m *OrderMutation) ResetField(name string) error {
 		m.ResetRefundAt()
 		return nil
 	}
-	return fmt.Errorf("unknown Detail field %s", name)
+	return fmt.Errorf("unknown Order field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
@@ -16707,7 +16873,7 @@ func (m *OrderMutation) ClearEdge(name string) error {
 		m.ClearParent()
 		return nil
 	}
-	return fmt.Errorf("unknown Detail unique edge %s", name)
+	return fmt.Errorf("unknown Order unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
@@ -16739,7 +16905,7 @@ func (m *OrderMutation) ResetEdge(name string) error {
 		m.ResetRefunds()
 		return nil
 	}
-	return fmt.Errorf("unknown Detail edge %s", name)
+	return fmt.Errorf("unknown Order edge %s", name)
 }
 
 // OrderRefundMutation represents an operation that mutates the OrderRefund nodes in the graph.
@@ -21986,7 +22152,7 @@ func (m *RiderMutation) ResetOrders() {
 	m.removedorders = nil
 }
 
-// AddExchangeIDs adds the "exchanges" edge to the CabinetExchange entity by ids.
+// AddExchangeIDs adds the "exchanges" edge to the Exchange entity by ids.
 func (m *RiderMutation) AddExchangeIDs(ids ...uint64) {
 	if m.exchanges == nil {
 		m.exchanges = make(map[uint64]struct{})
@@ -21996,17 +22162,17 @@ func (m *RiderMutation) AddExchangeIDs(ids ...uint64) {
 	}
 }
 
-// ClearExchanges clears the "exchanges" edge to the CabinetExchange entity.
+// ClearExchanges clears the "exchanges" edge to the Exchange entity.
 func (m *RiderMutation) ClearExchanges() {
 	m.clearedexchanges = true
 }
 
-// ExchangesCleared reports if the "exchanges" edge to the CabinetExchange entity was cleared.
+// ExchangesCleared reports if the "exchanges" edge to the Exchange entity was cleared.
 func (m *RiderMutation) ExchangesCleared() bool {
 	return m.clearedexchanges
 }
 
-// RemoveExchangeIDs removes the "exchanges" edge to the CabinetExchange entity by IDs.
+// RemoveExchangeIDs removes the "exchanges" edge to the Exchange entity by IDs.
 func (m *RiderMutation) RemoveExchangeIDs(ids ...uint64) {
 	if m.removedexchanges == nil {
 		m.removedexchanges = make(map[uint64]struct{})
@@ -22017,7 +22183,7 @@ func (m *RiderMutation) RemoveExchangeIDs(ids ...uint64) {
 	}
 }
 
-// RemovedExchanges returns the removed IDs of the "exchanges" edge to the CabinetExchange entity.
+// RemovedExchanges returns the removed IDs of the "exchanges" edge to the Exchange entity.
 func (m *RiderMutation) RemovedExchangesIDs() (ids []uint64) {
 	for id := range m.removedexchanges {
 		ids = append(ids, id)

@@ -9,13 +9,13 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
-	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
@@ -114,27 +114,6 @@ func init() {
 	cabinetDescBatteryFullNum := cabinetFields[11].Descriptor()
 	// cabinet.DefaultBatteryFullNum holds the default value on creation for the battery_full_num field.
 	cabinet.DefaultBatteryFullNum = cabinetDescBatteryFullNum.Default.(uint)
-	cabinetexchangeMixin := schema.CabinetExchange{}.Mixin()
-	cabinetexchangeMixinHooks2 := cabinetexchangeMixin[2].Hooks()
-	cabinetexchange.Hooks[0] = cabinetexchangeMixinHooks2[0]
-	cabinetexchangeMixinFields0 := cabinetexchangeMixin[0].Fields()
-	_ = cabinetexchangeMixinFields0
-	cabinetexchangeFields := schema.CabinetExchange{}.Fields()
-	_ = cabinetexchangeFields
-	// cabinetexchangeDescCreatedAt is the schema descriptor for created_at field.
-	cabinetexchangeDescCreatedAt := cabinetexchangeMixinFields0[0].Descriptor()
-	// cabinetexchange.DefaultCreatedAt holds the default value on creation for the created_at field.
-	cabinetexchange.DefaultCreatedAt = cabinetexchangeDescCreatedAt.Default.(func() time.Time)
-	// cabinetexchangeDescUpdatedAt is the schema descriptor for updated_at field.
-	cabinetexchangeDescUpdatedAt := cabinetexchangeMixinFields0[1].Descriptor()
-	// cabinetexchange.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	cabinetexchange.DefaultUpdatedAt = cabinetexchangeDescUpdatedAt.Default.(func() time.Time)
-	// cabinetexchange.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	cabinetexchange.UpdateDefaultUpdatedAt = cabinetexchangeDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// cabinetexchangeDescAlternative is the schema descriptor for alternative field.
-	cabinetexchangeDescAlternative := cabinetexchangeFields[2].Descriptor()
-	// cabinetexchange.DefaultAlternative holds the default value on creation for the alternative field.
-	cabinetexchange.DefaultAlternative = cabinetexchangeDescAlternative.Default.(bool)
 	cabinetfaultMixin := schema.CabinetFault{}.Mixin()
 	cabinetfaultMixinHooks2 := cabinetfaultMixin[2].Hooks()
 	cabinetfault.Hooks[0] = cabinetfaultMixinHooks2[0]
@@ -297,6 +276,27 @@ func init() {
 	enterprise.DefaultUpdatedAt = enterpriseDescUpdatedAt.Default.(func() time.Time)
 	// enterprise.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	enterprise.UpdateDefaultUpdatedAt = enterpriseDescUpdatedAt.UpdateDefault.(func() time.Time)
+	exchangeMixin := schema.Exchange{}.Mixin()
+	exchangeMixinHooks2 := exchangeMixin[2].Hooks()
+	exchange.Hooks[0] = exchangeMixinHooks2[0]
+	exchangeMixinFields0 := exchangeMixin[0].Fields()
+	_ = exchangeMixinFields0
+	exchangeFields := schema.Exchange{}.Fields()
+	_ = exchangeFields
+	// exchangeDescCreatedAt is the schema descriptor for created_at field.
+	exchangeDescCreatedAt := exchangeMixinFields0[0].Descriptor()
+	// exchange.DefaultCreatedAt holds the default value on creation for the created_at field.
+	exchange.DefaultCreatedAt = exchangeDescCreatedAt.Default.(func() time.Time)
+	// exchangeDescUpdatedAt is the schema descriptor for updated_at field.
+	exchangeDescUpdatedAt := exchangeMixinFields0[1].Descriptor()
+	// exchange.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	exchange.DefaultUpdatedAt = exchangeDescUpdatedAt.Default.(func() time.Time)
+	// exchange.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	exchange.UpdateDefaultUpdatedAt = exchangeDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// exchangeDescSuccess is the schema descriptor for success field.
+	exchangeDescSuccess := exchangeFields[3].Descriptor()
+	// exchange.DefaultSuccess holds the default value on creation for the success field.
+	exchange.DefaultSuccess = exchangeDescSuccess.Default.(bool)
 	managerMixin := schema.Manager{}.Mixin()
 	managerMixinHooks2 := managerMixin[2].Hooks()
 	manager.Hooks[0] = managerMixinHooks2[0]

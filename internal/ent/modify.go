@@ -79,13 +79,6 @@ func (c *CabinetClient) ModifyOne(old *Cabinet, data any) *CabinetUpdateOne {
 	return CallModifyMethod[CabinetUpdateOne, Cabinet](up, old, data)
 }
 
-// ModifyOne returns an update with pointer struct builder for CabinetExchange.
-func (c *CabinetExchangeClient) ModifyOne(old *CabinetExchange, data any) *CabinetExchangeUpdateOne {
-	mutation := newCabinetExchangeMutation(c.config, OpUpdateOne, withCabinetExchange(old))
-	up := &CabinetExchangeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-	return CallModifyMethod[CabinetExchangeUpdateOne, CabinetExchange](up, old, data)
-}
-
 // ModifyOne returns an update with pointer struct builder for CabinetFault.
 func (c *CabinetFaultClient) ModifyOne(old *CabinetFault, data any) *CabinetFaultUpdateOne {
 	mutation := newCabinetFaultMutation(c.config, OpUpdateOne, withCabinetFault(old))
@@ -126,6 +119,13 @@ func (c *EnterpriseClient) ModifyOne(old *Enterprise, data any) *EnterpriseUpdat
 	mutation := newEnterpriseMutation(c.config, OpUpdateOne, withEnterprise(old))
 	up := &EnterpriseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 	return CallModifyMethod[EnterpriseUpdateOne, Enterprise](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for Exchange.
+func (c *ExchangeClient) ModifyOne(old *Exchange, data any) *ExchangeUpdateOne {
+	mutation := newExchangeMutation(c.config, OpUpdateOne, withExchange(old))
+	up := &ExchangeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return CallModifyMethod[ExchangeUpdateOne, Exchange](up, old, data)
 }
 
 // ModifyOne returns an update with pointer struct builder for Manager.

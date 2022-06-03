@@ -84,7 +84,7 @@ type CabinetEdges struct {
 	// Faults holds the value of the faults edge.
 	Faults []*CabinetFault `json:"faults,omitempty"`
 	// Exchanges holds the value of the exchanges edge.
-	Exchanges []*CabinetExchange `json:"exchanges,omitempty"`
+	Exchanges []*Exchange `json:"exchanges,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [4]bool
@@ -124,7 +124,7 @@ func (e CabinetEdges) FaultsOrErr() ([]*CabinetFault, error) {
 
 // ExchangesOrErr returns the Exchanges value or an error if the edge
 // was not loaded in eager-loading.
-func (e CabinetEdges) ExchangesOrErr() ([]*CabinetExchange, error) {
+func (e CabinetEdges) ExchangesOrErr() ([]*Exchange, error) {
 	if e.loadedTypes[3] {
 		return e.Exchanges, nil
 	}
@@ -303,7 +303,7 @@ func (c *Cabinet) QueryFaults() *CabinetFaultQuery {
 }
 
 // QueryExchanges queries the "exchanges" edge of the Cabinet entity.
-func (c *Cabinet) QueryExchanges() *CabinetExchangeQuery {
+func (c *Cabinet) QueryExchanges() *ExchangeQuery {
 	return (&CabinetClient{config: c.config}).QueryExchanges(c)
 }
 

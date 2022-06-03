@@ -42,16 +42,6 @@ func (c *Cabinet) GetID() uint64 {
 	return c.ID
 }
 
-// GetTableName returns table name for CabinetExchange.
-func (ce *CabinetExchange) GetTableName() string {
-	return "cabinet_exchange"
-}
-
-// GetID returns id for CabinetExchange.
-func (ce *CabinetExchange) GetID() uint64 {
-	return ce.ID
-}
-
 // GetTableName returns table name for CabinetFault.
 func (cf *CabinetFault) GetTableName() string {
 	return "cabinet_fault"
@@ -109,6 +99,16 @@ func (e *Enterprise) GetTableName() string {
 
 // GetID returns id for Enterprise.
 func (e *Enterprise) GetID() uint64 {
+	return e.ID
+}
+
+// GetTableName returns table name for Exchange.
+func (e *Exchange) GetTableName() string {
+	return "exchange"
+}
+
+// GetID returns id for Exchange.
+func (e *Exchange) GetID() uint64 {
 	return e.ID
 }
 

@@ -8,9 +8,26 @@ import (
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
+    "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
+
+type CabinetMixin struct {
+    mixin.Schema
+}
+
+func (CabinetMixin) Fields() []ent.Field {
+    return []ent.Field{
+        field.Uint64("cabinet_id").Optional(),
+    }
+}
+
+func (CabinetMixin) Edges() []ent.Edge {
+    return []ent.Edge{
+        edge.To("cabinet", Cabinet.Type).Unique().Field("cabinet_id"),
+    }
+}
 
 // Cabinet holds the schema definition for the Cabinet entity.
 type Cabinet struct {
@@ -51,7 +68,7 @@ func (Cabinet) Edges() []ent.Edge {
             Field("branch_id"),
         edge.To("bms", BatteryModel.Type),
         edge.To("faults", CabinetFault.Type),
-        edge.To("exchanges", CabinetExchange.Type),
+        edge.To("exchanges", Exchange.Type),
     }
 }
 

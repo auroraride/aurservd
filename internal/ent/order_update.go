@@ -455,7 +455,7 @@ func (ou *OrderUpdate) defaults() error {
 // check runs all checks and user-defined validators on the builder.
 func (ou *OrderUpdate) check() error {
 	if _, ok := ou.mutation.RiderID(); ou.mutation.RiderCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Detail.rider"`)
+		return errors.New(`ent: clearing a required unique edge "Order.rider"`)
 	}
 	return nil
 }
@@ -1327,7 +1327,7 @@ func (ouo *OrderUpdateOne) defaults() error {
 // check runs all checks and user-defined validators on the builder.
 func (ouo *OrderUpdateOne) check() error {
 	if _, ok := ouo.mutation.RiderID(); ouo.mutation.RiderCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Detail.rider"`)
+		return errors.New(`ent: clearing a required unique edge "Order.rider"`)
 	}
 	return nil
 }
@@ -1345,7 +1345,7 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 	}
 	id, ok := ouo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Detail.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Order.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ouo.fields; len(fields) > 0 {

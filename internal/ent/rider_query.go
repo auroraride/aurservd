@@ -11,10 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -37,7 +37,7 @@ type RiderQuery struct {
 	withContract   *ContractQuery
 	withFaults     *CabinetFaultQuery
 	withOrders     *OrderQuery
-	withExchanges  *CabinetExchangeQuery
+	withExchanges  *ExchangeQuery
 	withSubscribes *SubscribeQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -187,8 +187,8 @@ func (rq *RiderQuery) QueryOrders() *OrderQuery {
 }
 
 // QueryExchanges chains the current query on the "exchanges" edge.
-func (rq *RiderQuery) QueryExchanges() *CabinetExchangeQuery {
-	query := &CabinetExchangeQuery{config: rq.config}
+func (rq *RiderQuery) QueryExchanges() *ExchangeQuery {
+	query := &ExchangeQuery{config: rq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -199,7 +199,7 @@ func (rq *RiderQuery) QueryExchanges() *CabinetExchangeQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, selector),
-			sqlgraph.To(cabinetexchange.Table, cabinetexchange.FieldID),
+			sqlgraph.To(exchange.Table, exchange.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, rider.ExchangesTable, rider.ExchangesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
@@ -482,8 +482,8 @@ func (rq *RiderQuery) WithOrders(opts ...func(*OrderQuery)) *RiderQuery {
 
 // WithExchanges tells the query-builder to eager-load the nodes that are connected to
 // the "exchanges" edge. The optional arguments are used to configure the query builder of the edge.
-func (rq *RiderQuery) WithExchanges(opts ...func(*CabinetExchangeQuery)) *RiderQuery {
-	query := &CabinetExchangeQuery{config: rq.config}
+func (rq *RiderQuery) WithExchanges(opts ...func(*ExchangeQuery)) *RiderQuery {
+	query := &ExchangeQuery{config: rq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -743,9 +743,9 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Exchanges = []*CabinetExchange{}
+			nodes[i].Edges.Exchanges = []*Exchange{}
 		}
-		query.Where(predicate.CabinetExchange(func(s *sql.Selector) {
+		query.Where(predicate.Exchange(func(s *sql.Selector) {
 			s.Where(sql.InValues(rider.ExchangesColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)

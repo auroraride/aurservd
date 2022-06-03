@@ -61,19 +61,6 @@ func (f CabinetFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return f(ctx, mv)
 }
 
-// The CabinetExchangeFunc type is an adapter to allow the use of ordinary
-// function as CabinetExchange mutator.
-type CabinetExchangeFunc func(context.Context, *ent.CabinetExchangeMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f CabinetExchangeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.CabinetExchangeMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CabinetExchangeMutation", m)
-	}
-	return f(ctx, mv)
-}
-
 // The CabinetFaultFunc type is an adapter to allow the use of ordinary
 // function as CabinetFault mutator.
 type CabinetFaultFunc func(context.Context, *ent.CabinetFaultMutation) (ent.Value, error)
@@ -152,6 +139,19 @@ func (f EnterpriseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return f(ctx, mv)
 }
 
+// The ExchangeFunc type is an adapter to allow the use of ordinary
+// function as Exchange mutator.
+type ExchangeFunc func(context.Context, *ent.ExchangeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ExchangeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ExchangeMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ExchangeMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The ManagerFunc type is an adapter to allow the use of ordinary
 // function as Manager mutator.
 type ManagerFunc func(context.Context, *ent.ManagerMutation) (ent.Value, error)
@@ -166,7 +166,7 @@ func (f ManagerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 }
 
 // The OrderFunc type is an adapter to allow the use of ordinary
-// function as Detail mutator.
+// function as Order mutator.
 type OrderFunc func(context.Context, *ent.OrderMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).

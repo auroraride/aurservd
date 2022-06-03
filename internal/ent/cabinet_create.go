@@ -15,8 +15,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
-	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
+	"github.com/auroraride/aurservd/internal/ent/exchange"
 )
 
 // CabinetCreate is the builder for creating a Cabinet entity.
@@ -234,17 +234,17 @@ func (cc *CabinetCreate) AddFaults(c ...*CabinetFault) *CabinetCreate {
 	return cc.AddFaultIDs(ids...)
 }
 
-// AddExchangeIDs adds the "exchanges" edge to the CabinetExchange entity by IDs.
+// AddExchangeIDs adds the "exchanges" edge to the Exchange entity by IDs.
 func (cc *CabinetCreate) AddExchangeIDs(ids ...uint64) *CabinetCreate {
 	cc.mutation.AddExchangeIDs(ids...)
 	return cc
 }
 
-// AddExchanges adds the "exchanges" edges to the CabinetExchange entity.
-func (cc *CabinetCreate) AddExchanges(c ...*CabinetExchange) *CabinetCreate {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+// AddExchanges adds the "exchanges" edges to the Exchange entity.
+func (cc *CabinetCreate) AddExchanges(e ...*Exchange) *CabinetCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
 	}
 	return cc.AddExchangeIDs(ids...)
 }
@@ -627,7 +627,7 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: cabinetexchange.FieldID,
+					Column: exchange.FieldID,
 				},
 			},
 		}

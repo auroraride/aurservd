@@ -546,7 +546,7 @@ func (oq *OrderQuery) WithRefunds(opts ...func(*OrderRefundQuery)) *OrderQuery {
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.Detail.Query().
+//	client.Order.Query().
 //		GroupBy(order.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
@@ -574,7 +574,7 @@ func (oq *OrderQuery) GroupBy(field string, fields ...string) *OrderGroupBy {
 //		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
-//	client.Detail.Query().
+//	client.Order.Query().
 //		Select(order.FieldCreatedAt).
 //		Scan(ctx, &v)
 //

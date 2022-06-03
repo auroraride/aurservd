@@ -12,10 +12,10 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -303,17 +303,17 @@ func (rc *RiderCreate) AddOrders(o ...*Order) *RiderCreate {
 	return rc.AddOrderIDs(ids...)
 }
 
-// AddExchangeIDs adds the "exchanges" edge to the CabinetExchange entity by IDs.
+// AddExchangeIDs adds the "exchanges" edge to the Exchange entity by IDs.
 func (rc *RiderCreate) AddExchangeIDs(ids ...uint64) *RiderCreate {
 	rc.mutation.AddExchangeIDs(ids...)
 	return rc
 }
 
-// AddExchanges adds the "exchanges" edges to the CabinetExchange entity.
-func (rc *RiderCreate) AddExchanges(c ...*CabinetExchange) *RiderCreate {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+// AddExchanges adds the "exchanges" edges to the Exchange entity.
+func (rc *RiderCreate) AddExchanges(e ...*Exchange) *RiderCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
 	}
 	return rc.AddExchangeIDs(ids...)
 }
@@ -746,7 +746,7 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: cabinetexchange.FieldID,
+					Column: exchange.FieldID,
 				},
 			},
 		}

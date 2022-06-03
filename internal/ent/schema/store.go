@@ -8,8 +8,25 @@ import (
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
+    "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
+
+type StoreMixin struct {
+    mixin.Schema
+}
+
+func (StoreMixin) Fields() []ent.Field {
+    return []ent.Field{
+        field.Uint64("store_id").Optional(),
+    }
+}
+
+func (StoreMixin) Edges() []ent.Edge {
+    return []ent.Edge{
+        edge.To("store", Store.Type).Unique().Field("store_id"),
+    }
+}
 
 // Store holds the schema definition for the Store entity.
 type Store struct {

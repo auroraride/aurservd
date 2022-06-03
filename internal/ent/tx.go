@@ -22,8 +22,6 @@ type Tx struct {
 	BranchContract *BranchContractClient
 	// Cabinet is the client for interacting with the Cabinet builders.
 	Cabinet *CabinetClient
-	// CabinetExchange is the client for interacting with the CabinetExchange builders.
-	CabinetExchange *CabinetExchangeClient
 	// CabinetFault is the client for interacting with the CabinetFault builders.
 	CabinetFault *CabinetFaultClient
 	// City is the client for interacting with the City builders.
@@ -36,6 +34,8 @@ type Tx struct {
 	Employee *EmployeeClient
 	// Enterprise is the client for interacting with the Enterprise builders.
 	Enterprise *EnterpriseClient
+	// Exchange is the client for interacting with the Exchange builders.
+	Exchange *ExchangeClient
 	// Manager is the client for interacting with the Manager builders.
 	Manager *ManagerClient
 	// Order is the client for interacting with the Order builders.
@@ -197,13 +197,13 @@ func (tx *Tx) init() {
 	tx.Branch = NewBranchClient(tx.config)
 	tx.BranchContract = NewBranchContractClient(tx.config)
 	tx.Cabinet = NewCabinetClient(tx.config)
-	tx.CabinetExchange = NewCabinetExchangeClient(tx.config)
 	tx.CabinetFault = NewCabinetFaultClient(tx.config)
 	tx.City = NewCityClient(tx.config)
 	tx.Commission = NewCommissionClient(tx.config)
 	tx.Contract = NewContractClient(tx.config)
 	tx.Employee = NewEmployeeClient(tx.config)
 	tx.Enterprise = NewEnterpriseClient(tx.config)
+	tx.Exchange = NewExchangeClient(tx.config)
 	tx.Manager = NewManagerClient(tx.config)
 	tx.Order = NewOrderClient(tx.config)
 	tx.OrderRefund = NewOrderRefundClient(tx.config)

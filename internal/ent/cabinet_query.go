@@ -14,8 +14,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
-	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
+	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -32,7 +32,7 @@ type CabinetQuery struct {
 	withBranch    *BranchQuery
 	withBms       *BatteryModelQuery
 	withFaults    *CabinetFaultQuery
-	withExchanges *CabinetExchangeQuery
+	withExchanges *ExchangeQuery
 	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -137,8 +137,8 @@ func (cq *CabinetQuery) QueryFaults() *CabinetFaultQuery {
 }
 
 // QueryExchanges chains the current query on the "exchanges" edge.
-func (cq *CabinetQuery) QueryExchanges() *CabinetExchangeQuery {
-	query := &CabinetExchangeQuery{config: cq.config}
+func (cq *CabinetQuery) QueryExchanges() *ExchangeQuery {
+	query := &ExchangeQuery{config: cq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -149,7 +149,7 @@ func (cq *CabinetQuery) QueryExchanges() *CabinetExchangeQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
-			sqlgraph.To(cabinetexchange.Table, cabinetexchange.FieldID),
+			sqlgraph.To(exchange.Table, exchange.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, cabinet.ExchangesTable, cabinet.ExchangesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
@@ -385,8 +385,8 @@ func (cq *CabinetQuery) WithFaults(opts ...func(*CabinetFaultQuery)) *CabinetQue
 
 // WithExchanges tells the query-builder to eager-load the nodes that are connected to
 // the "exchanges" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *CabinetQuery) WithExchanges(opts ...func(*CabinetExchangeQuery)) *CabinetQuery {
-	query := &CabinetExchangeQuery{config: cq.config}
+func (cq *CabinetQuery) WithExchanges(opts ...func(*ExchangeQuery)) *CabinetQuery {
+	query := &ExchangeQuery{config: cq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -603,9 +603,9 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Exchanges = []*CabinetExchange{}
+			nodes[i].Edges.Exchanges = []*Exchange{}
 		}
-		query.Where(predicate.CabinetExchange(func(s *sql.Selector) {
+		query.Where(predicate.Exchange(func(s *sql.Selector) {
 			s.Where(sql.InValues(cabinet.ExchangesColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)

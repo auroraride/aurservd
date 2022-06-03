@@ -12,10 +12,10 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
-	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -354,17 +354,17 @@ func (ru *RiderUpdate) AddOrders(o ...*Order) *RiderUpdate {
 	return ru.AddOrderIDs(ids...)
 }
 
-// AddExchangeIDs adds the "exchanges" edge to the CabinetExchange entity by IDs.
+// AddExchangeIDs adds the "exchanges" edge to the Exchange entity by IDs.
 func (ru *RiderUpdate) AddExchangeIDs(ids ...uint64) *RiderUpdate {
 	ru.mutation.AddExchangeIDs(ids...)
 	return ru
 }
 
-// AddExchanges adds the "exchanges" edges to the CabinetExchange entity.
-func (ru *RiderUpdate) AddExchanges(c ...*CabinetExchange) *RiderUpdate {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+// AddExchanges adds the "exchanges" edges to the Exchange entity.
+func (ru *RiderUpdate) AddExchanges(e ...*Exchange) *RiderUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
 	}
 	return ru.AddExchangeIDs(ids...)
 }
@@ -464,23 +464,23 @@ func (ru *RiderUpdate) RemoveOrders(o ...*Order) *RiderUpdate {
 	return ru.RemoveOrderIDs(ids...)
 }
 
-// ClearExchanges clears all "exchanges" edges to the CabinetExchange entity.
+// ClearExchanges clears all "exchanges" edges to the Exchange entity.
 func (ru *RiderUpdate) ClearExchanges() *RiderUpdate {
 	ru.mutation.ClearExchanges()
 	return ru
 }
 
-// RemoveExchangeIDs removes the "exchanges" edge to CabinetExchange entities by IDs.
+// RemoveExchangeIDs removes the "exchanges" edge to Exchange entities by IDs.
 func (ru *RiderUpdate) RemoveExchangeIDs(ids ...uint64) *RiderUpdate {
 	ru.mutation.RemoveExchangeIDs(ids...)
 	return ru
 }
 
-// RemoveExchanges removes "exchanges" edges to CabinetExchange entities.
-func (ru *RiderUpdate) RemoveExchanges(c ...*CabinetExchange) *RiderUpdate {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+// RemoveExchanges removes "exchanges" edges to Exchange entities.
+func (ru *RiderUpdate) RemoveExchanges(e ...*Exchange) *RiderUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
 	}
 	return ru.RemoveExchangeIDs(ids...)
 }
@@ -1033,7 +1033,7 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: cabinetexchange.FieldID,
+					Column: exchange.FieldID,
 				},
 			},
 		}
@@ -1049,7 +1049,7 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: cabinetexchange.FieldID,
+					Column: exchange.FieldID,
 				},
 			},
 		}
@@ -1068,7 +1068,7 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: cabinetexchange.FieldID,
+					Column: exchange.FieldID,
 				},
 			},
 		}
@@ -1468,17 +1468,17 @@ func (ruo *RiderUpdateOne) AddOrders(o ...*Order) *RiderUpdateOne {
 	return ruo.AddOrderIDs(ids...)
 }
 
-// AddExchangeIDs adds the "exchanges" edge to the CabinetExchange entity by IDs.
+// AddExchangeIDs adds the "exchanges" edge to the Exchange entity by IDs.
 func (ruo *RiderUpdateOne) AddExchangeIDs(ids ...uint64) *RiderUpdateOne {
 	ruo.mutation.AddExchangeIDs(ids...)
 	return ruo
 }
 
-// AddExchanges adds the "exchanges" edges to the CabinetExchange entity.
-func (ruo *RiderUpdateOne) AddExchanges(c ...*CabinetExchange) *RiderUpdateOne {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+// AddExchanges adds the "exchanges" edges to the Exchange entity.
+func (ruo *RiderUpdateOne) AddExchanges(e ...*Exchange) *RiderUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
 	}
 	return ruo.AddExchangeIDs(ids...)
 }
@@ -1578,23 +1578,23 @@ func (ruo *RiderUpdateOne) RemoveOrders(o ...*Order) *RiderUpdateOne {
 	return ruo.RemoveOrderIDs(ids...)
 }
 
-// ClearExchanges clears all "exchanges" edges to the CabinetExchange entity.
+// ClearExchanges clears all "exchanges" edges to the Exchange entity.
 func (ruo *RiderUpdateOne) ClearExchanges() *RiderUpdateOne {
 	ruo.mutation.ClearExchanges()
 	return ruo
 }
 
-// RemoveExchangeIDs removes the "exchanges" edge to CabinetExchange entities by IDs.
+// RemoveExchangeIDs removes the "exchanges" edge to Exchange entities by IDs.
 func (ruo *RiderUpdateOne) RemoveExchangeIDs(ids ...uint64) *RiderUpdateOne {
 	ruo.mutation.RemoveExchangeIDs(ids...)
 	return ruo
 }
 
-// RemoveExchanges removes "exchanges" edges to CabinetExchange entities.
-func (ruo *RiderUpdateOne) RemoveExchanges(c ...*CabinetExchange) *RiderUpdateOne {
-	ids := make([]uint64, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+// RemoveExchanges removes "exchanges" edges to Exchange entities.
+func (ruo *RiderUpdateOne) RemoveExchanges(e ...*Exchange) *RiderUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
 	}
 	return ruo.RemoveExchangeIDs(ids...)
 }
@@ -2177,7 +2177,7 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: cabinetexchange.FieldID,
+					Column: exchange.FieldID,
 				},
 			},
 		}
@@ -2193,7 +2193,7 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: cabinetexchange.FieldID,
+					Column: exchange.FieldID,
 				},
 			},
 		}
@@ -2212,7 +2212,7 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: cabinetexchange.FieldID,
+					Column: exchange.FieldID,
 				},
 			},
 		}

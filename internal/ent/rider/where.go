@@ -1772,7 +1772,7 @@ func HasExchanges() predicate.Rider {
 }
 
 // HasExchangesWith applies the HasEdge predicate on the "exchanges" edge with a given conditions (other predicates).
-func HasExchangesWith(preds ...predicate.CabinetExchange) predicate.Rider {
+func HasExchangesWith(preds ...predicate.Exchange) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),

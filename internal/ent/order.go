@@ -223,7 +223,7 @@ func (*Order) scanValues(columns []string) ([]interface{}, error) {
 		case order.FieldCreatedAt, order.FieldUpdatedAt, order.FieldDeletedAt, order.FieldRefundAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Detail", columns[i])
+			return nil, fmt.Errorf("unexpected column %q for type Order", columns[i])
 		}
 	}
 	return values, nil
@@ -420,7 +420,7 @@ func (o *Order) Update() *OrderUpdateOne {
 func (o *Order) Unwrap() *Order {
 	tx, ok := o.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Detail is not a transactional entity")
+		panic("ent: Order is not a transactional entity")
 	}
 	o.config.driver = tx.drv
 	return o
@@ -429,7 +429,7 @@ func (o *Order) Unwrap() *Order {
 // String implements the fmt.Stringer.
 func (o *Order) String() string {
 	var builder strings.Builder
-	builder.WriteString("Detail(")
+	builder.WriteString("Order(")
 	builder.WriteString(fmt.Sprintf("id=%v", o.ID))
 	builder.WriteString(", created_at=")
 	builder.WriteString(o.CreatedAt.Format(time.ANSIC))

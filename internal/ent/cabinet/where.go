@@ -1583,7 +1583,7 @@ func HasExchanges() predicate.Cabinet {
 }
 
 // HasExchangesWith applies the HasEdge predicate on the "exchanges" edge with a given conditions (other predicates).
-func HasExchangesWith(preds ...predicate.CabinetExchange) predicate.Cabinet {
+func HasExchangesWith(preds ...predicate.Exchange) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),

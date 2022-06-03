@@ -79,7 +79,7 @@ func (Rider) Edges() []ent.Edge {
         edge.To("faults", CabinetFault.Type),
         edge.To("orders", Order.Type),
 
-        edge.To("exchanges", CabinetExchange.Type).Comment("换电记录"),
+        edge.To("exchanges", Exchange.Type).Comment("换电记录"),
         edge.To("subscribes", Subscribe.Type).Comment("订阅"),
     }
 }

@@ -92,7 +92,7 @@ type RiderEdges struct {
 	// Orders holds the value of the orders edge.
 	Orders []*Order `json:"orders,omitempty"`
 	// Exchanges holds the value of the exchanges edge.
-	Exchanges []*CabinetExchange `json:"exchanges,omitempty"`
+	Exchanges []*Exchange `json:"exchanges,omitempty"`
 	// Subscribes holds the value of the subscribes edge.
 	Subscribes []*Subscribe `json:"subscribes,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -157,7 +157,7 @@ func (e RiderEdges) OrdersOrErr() ([]*Order, error) {
 
 // ExchangesOrErr returns the Exchanges value or an error if the edge
 // was not loaded in eager-loading.
-func (e RiderEdges) ExchangesOrErr() ([]*CabinetExchange, error) {
+func (e RiderEdges) ExchangesOrErr() ([]*Exchange, error) {
 	if e.loadedTypes[5] {
 		return e.Exchanges, nil
 	}
@@ -365,7 +365,7 @@ func (r *Rider) QueryOrders() *OrderQuery {
 }
 
 // QueryExchanges queries the "exchanges" edge of the Rider entity.
-func (r *Rider) QueryExchanges() *CabinetExchangeQuery {
+func (r *Rider) QueryExchanges() *ExchangeQuery {
 	return (&RiderClient{config: r.config}).QueryExchanges(r)
 }
 

@@ -7,13 +7,13 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
-	"github.com/auroraride/aurservd/internal/ent/cabinetexchange"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
@@ -150,32 +150,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[4] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
-			Table:   cabinetexchange.Table,
-			Columns: cabinetexchange.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint64,
-				Column: cabinetexchange.FieldID,
-			},
-		},
-		Type: "CabinetExchange",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			cabinetexchange.FieldCreatedAt:    {Type: field.TypeTime, Column: cabinetexchange.FieldCreatedAt},
-			cabinetexchange.FieldUpdatedAt:    {Type: field.TypeTime, Column: cabinetexchange.FieldUpdatedAt},
-			cabinetexchange.FieldDeletedAt:    {Type: field.TypeTime, Column: cabinetexchange.FieldDeletedAt},
-			cabinetexchange.FieldCreator:      {Type: field.TypeJSON, Column: cabinetexchange.FieldCreator},
-			cabinetexchange.FieldLastModifier: {Type: field.TypeJSON, Column: cabinetexchange.FieldLastModifier},
-			cabinetexchange.FieldRemark:       {Type: field.TypeString, Column: cabinetexchange.FieldRemark},
-			cabinetexchange.FieldRiderID:      {Type: field.TypeUint64, Column: cabinetexchange.FieldRiderID},
-			cabinetexchange.FieldCabinetID:    {Type: field.TypeUint64, Column: cabinetexchange.FieldCabinetID},
-			cabinetexchange.FieldAlternative:  {Type: field.TypeBool, Column: cabinetexchange.FieldAlternative},
-			cabinetexchange.FieldStep:         {Type: field.TypeUint, Column: cabinetexchange.FieldStep},
-			cabinetexchange.FieldStatus:       {Type: field.TypeUint, Column: cabinetexchange.FieldStatus},
-			cabinetexchange.FieldBinIndex:     {Type: field.TypeUint, Column: cabinetexchange.FieldBinIndex},
-			cabinetexchange.FieldBin:          {Type: field.TypeJSON, Column: cabinetexchange.FieldBin},
-		},
-	}
-	graph.Nodes[5] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
 			Table:   cabinetfault.Table,
 			Columns: cabinetfault.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -201,7 +175,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			cabinetfault.FieldDescription:  {Type: field.TypeString, Column: cabinetfault.FieldDescription},
 		},
 	}
-	graph.Nodes[6] = &sqlgraph.Node{
+	graph.Nodes[5] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   city.Table,
 			Columns: city.Columns,
@@ -226,7 +200,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			city.FieldLat:          {Type: field.TypeFloat64, Column: city.FieldLat},
 		},
 	}
-	graph.Nodes[7] = &sqlgraph.Node{
+	graph.Nodes[6] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   commission.Table,
 			Columns: commission.Columns,
@@ -249,7 +223,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			commission.FieldEmployeeID:   {Type: field.TypeUint64, Column: commission.FieldEmployeeID},
 		},
 	}
-	graph.Nodes[8] = &sqlgraph.Node{
+	graph.Nodes[7] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   contract.Table,
 			Columns: contract.Columns,
@@ -274,7 +248,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			contract.FieldEffective:    {Type: field.TypeBool, Column: contract.FieldEffective},
 		},
 	}
-	graph.Nodes[9] = &sqlgraph.Node{
+	graph.Nodes[8] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   employee.Table,
 			Columns: employee.Columns,
@@ -294,7 +268,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			employee.FieldName:         {Type: field.TypeString, Column: employee.FieldName},
 		},
 	}
-	graph.Nodes[10] = &sqlgraph.Node{
+	graph.Nodes[9] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   enterprise.Table,
 			Columns: enterprise.Columns,
@@ -312,6 +286,33 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterprise.FieldLastModifier: {Type: field.TypeJSON, Column: enterprise.FieldLastModifier},
 			enterprise.FieldRemark:       {Type: field.TypeString, Column: enterprise.FieldRemark},
 			enterprise.FieldName:         {Type: field.TypeString, Column: enterprise.FieldName},
+		},
+	}
+	graph.Nodes[10] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
+			Table:   exchange.Table,
+			Columns: exchange.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: exchange.FieldID,
+			},
+		},
+		Type: "Exchange",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			exchange.FieldCreatedAt:    {Type: field.TypeTime, Column: exchange.FieldCreatedAt},
+			exchange.FieldUpdatedAt:    {Type: field.TypeTime, Column: exchange.FieldUpdatedAt},
+			exchange.FieldDeletedAt:    {Type: field.TypeTime, Column: exchange.FieldDeletedAt},
+			exchange.FieldCreator:      {Type: field.TypeJSON, Column: exchange.FieldCreator},
+			exchange.FieldLastModifier: {Type: field.TypeJSON, Column: exchange.FieldLastModifier},
+			exchange.FieldRemark:       {Type: field.TypeString, Column: exchange.FieldRemark},
+			exchange.FieldCityID:       {Type: field.TypeUint64, Column: exchange.FieldCityID},
+			exchange.FieldEmployeeID:   {Type: field.TypeUint64, Column: exchange.FieldEmployeeID},
+			exchange.FieldStoreID:      {Type: field.TypeUint64, Column: exchange.FieldStoreID},
+			exchange.FieldRiderID:      {Type: field.TypeUint64, Column: exchange.FieldRiderID},
+			exchange.FieldUUID:         {Type: field.TypeString, Column: exchange.FieldUUID},
+			exchange.FieldCabinetID:    {Type: field.TypeUint64, Column: exchange.FieldCabinetID},
+			exchange.FieldSuccess:      {Type: field.TypeBool, Column: exchange.FieldSuccess},
+			exchange.FieldDetail:       {Type: field.TypeJSON, Column: exchange.FieldDetail},
 		},
 	}
 	graph.Nodes[11] = &sqlgraph.Node{
@@ -346,7 +347,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 				Column: order.FieldID,
 			},
 		},
-		Type: "Detail",
+		Type: "Order",
 		Fields: map[string]*sqlgraph.FieldSpec{
 			order.FieldCreatedAt:    {Type: field.TypeTime, Column: order.FieldCreatedAt},
 			order.FieldUpdatedAt:    {Type: field.TypeTime, Column: order.FieldUpdatedAt},
@@ -754,31 +755,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"Cabinet",
-		"CabinetExchange",
-	)
-	graph.MustAddE(
-		"rider",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   cabinetexchange.RiderTable,
-			Columns: []string{cabinetexchange.RiderColumn},
-			Bidi:    false,
-		},
-		"CabinetExchange",
-		"Rider",
-	)
-	graph.MustAddE(
-		"cabinet",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   cabinetexchange.CabinetTable,
-			Columns: []string{cabinetexchange.CabinetColumn},
-			Bidi:    false,
-		},
-		"CabinetExchange",
-		"Cabinet",
+		"Exchange",
 	)
 	graph.MustAddE(
 		"city",
@@ -874,7 +851,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"Commission",
-		"Detail",
+		"Order",
 	)
 	graph.MustAddE(
 		"rider",
@@ -901,6 +878,66 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Rider",
 	)
 	graph.MustAddE(
+		"city",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.CityTable,
+			Columns: []string{exchange.CityColumn},
+			Bidi:    false,
+		},
+		"Exchange",
+		"City",
+	)
+	graph.MustAddE(
+		"employee",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.EmployeeTable,
+			Columns: []string{exchange.EmployeeColumn},
+			Bidi:    false,
+		},
+		"Exchange",
+		"Employee",
+	)
+	graph.MustAddE(
+		"store",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.StoreTable,
+			Columns: []string{exchange.StoreColumn},
+			Bidi:    false,
+		},
+		"Exchange",
+		"Store",
+	)
+	graph.MustAddE(
+		"cabinet",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   exchange.CabinetTable,
+			Columns: []string{exchange.CabinetColumn},
+			Bidi:    false,
+		},
+		"Exchange",
+		"Cabinet",
+	)
+	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   exchange.RiderTable,
+			Columns: []string{exchange.RiderColumn},
+			Bidi:    false,
+		},
+		"Exchange",
+		"Rider",
+	)
+	graph.MustAddE(
 		"plan",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -909,7 +946,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: []string{order.PlanColumn},
 			Bidi:    false,
 		},
-		"Detail",
+		"Order",
 		"Plan",
 	)
 	graph.MustAddE(
@@ -921,7 +958,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: []string{order.CityColumn},
 			Bidi:    false,
 		},
-		"Detail",
+		"Order",
 		"City",
 	)
 	graph.MustAddE(
@@ -933,7 +970,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: []string{order.RiderColumn},
 			Bidi:    false,
 		},
-		"Detail",
+		"Order",
 		"Rider",
 	)
 	graph.MustAddE(
@@ -945,7 +982,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: []string{order.SubscribeColumn},
 			Bidi:    false,
 		},
-		"Detail",
+		"Order",
 		"Subscribe",
 	)
 	graph.MustAddE(
@@ -957,7 +994,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: []string{order.CommissionColumn},
 			Bidi:    false,
 		},
-		"Detail",
+		"Order",
 		"Commission",
 	)
 	graph.MustAddE(
@@ -969,8 +1006,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: []string{order.ParentColumn},
 			Bidi:    false,
 		},
-		"Detail",
-		"Detail",
+		"Order",
+		"Order",
 	)
 	graph.MustAddE(
 		"children",
@@ -981,8 +1018,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: []string{order.ChildrenColumn},
 			Bidi:    false,
 		},
-		"Detail",
-		"Detail",
+		"Order",
+		"Order",
 	)
 	graph.MustAddE(
 		"refunds",
@@ -993,7 +1030,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Columns: []string{order.RefundsColumn},
 			Bidi:    false,
 		},
-		"Detail",
+		"Order",
 		"OrderRefund",
 	)
 	graph.MustAddE(
@@ -1006,7 +1043,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"OrderRefund",
-		"Detail",
+		"Order",
 	)
 	graph.MustAddE(
 		"rider",
@@ -1102,7 +1139,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"Rider",
-		"Detail",
+		"Order",
 	)
 	graph.MustAddE(
 		"exchanges",
@@ -1114,7 +1151,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"Rider",
-		"CabinetExchange",
+		"Exchange",
 	)
 	graph.MustAddE(
 		"subscribes",
@@ -1222,7 +1259,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"Subscribe",
-		"Detail",
+		"Order",
 	)
 	graph.MustAddE(
 		"initial_order",
@@ -1234,7 +1271,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			Bidi:    false,
 		},
 		"Subscribe",
-		"Detail",
+		"Order",
 	)
 	graph.MustAddE(
 		"rider",
@@ -1937,141 +1974,8 @@ func (f *CabinetFilter) WhereHasExchanges() {
 }
 
 // WhereHasExchangesWith applies a predicate to check if query has an edge exchanges with a given conditions (other predicates).
-func (f *CabinetFilter) WhereHasExchangesWith(preds ...predicate.CabinetExchange) {
+func (f *CabinetFilter) WhereHasExchangesWith(preds ...predicate.Exchange) {
 	f.Where(entql.HasEdgeWith("exchanges", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (ceq *CabinetExchangeQuery) addPredicate(pred func(s *sql.Selector)) {
-	ceq.predicates = append(ceq.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the CabinetExchangeQuery builder.
-func (ceq *CabinetExchangeQuery) Filter() *CabinetExchangeFilter {
-	return &CabinetExchangeFilter{ceq.config, ceq}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *CabinetExchangeMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the CabinetExchangeMutation builder.
-func (m *CabinetExchangeMutation) Filter() *CabinetExchangeFilter {
-	return &CabinetExchangeFilter{m.config, m}
-}
-
-// CabinetExchangeFilter provides a generic filtering capability at runtime for CabinetExchangeQuery.
-type CabinetExchangeFilter struct {
-	config
-	predicateAdder
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *CabinetExchangeFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint64 predicate on the id field.
-func (f *CabinetExchangeFilter) WhereID(p entql.Uint64P) {
-	f.Where(p.Field(cabinetexchange.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *CabinetExchangeFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(cabinetexchange.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *CabinetExchangeFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(cabinetexchange.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *CabinetExchangeFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(cabinetexchange.FieldDeletedAt))
-}
-
-// WhereCreator applies the entql json.RawMessage predicate on the creator field.
-func (f *CabinetExchangeFilter) WhereCreator(p entql.BytesP) {
-	f.Where(p.Field(cabinetexchange.FieldCreator))
-}
-
-// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
-func (f *CabinetExchangeFilter) WhereLastModifier(p entql.BytesP) {
-	f.Where(p.Field(cabinetexchange.FieldLastModifier))
-}
-
-// WhereRemark applies the entql string predicate on the remark field.
-func (f *CabinetExchangeFilter) WhereRemark(p entql.StringP) {
-	f.Where(p.Field(cabinetexchange.FieldRemark))
-}
-
-// WhereRiderID applies the entql uint64 predicate on the rider_id field.
-func (f *CabinetExchangeFilter) WhereRiderID(p entql.Uint64P) {
-	f.Where(p.Field(cabinetexchange.FieldRiderID))
-}
-
-// WhereCabinetID applies the entql uint64 predicate on the cabinet_id field.
-func (f *CabinetExchangeFilter) WhereCabinetID(p entql.Uint64P) {
-	f.Where(p.Field(cabinetexchange.FieldCabinetID))
-}
-
-// WhereAlternative applies the entql bool predicate on the alternative field.
-func (f *CabinetExchangeFilter) WhereAlternative(p entql.BoolP) {
-	f.Where(p.Field(cabinetexchange.FieldAlternative))
-}
-
-// WhereStep applies the entql uint predicate on the step field.
-func (f *CabinetExchangeFilter) WhereStep(p entql.UintP) {
-	f.Where(p.Field(cabinetexchange.FieldStep))
-}
-
-// WhereStatus applies the entql uint predicate on the status field.
-func (f *CabinetExchangeFilter) WhereStatus(p entql.UintP) {
-	f.Where(p.Field(cabinetexchange.FieldStatus))
-}
-
-// WhereBinIndex applies the entql uint predicate on the bin_index field.
-func (f *CabinetExchangeFilter) WhereBinIndex(p entql.UintP) {
-	f.Where(p.Field(cabinetexchange.FieldBinIndex))
-}
-
-// WhereBin applies the entql json.RawMessage predicate on the bin field.
-func (f *CabinetExchangeFilter) WhereBin(p entql.BytesP) {
-	f.Where(p.Field(cabinetexchange.FieldBin))
-}
-
-// WhereHasRider applies a predicate to check if query has an edge rider.
-func (f *CabinetExchangeFilter) WhereHasRider() {
-	f.Where(entql.HasEdge("rider"))
-}
-
-// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
-func (f *CabinetExchangeFilter) WhereHasRiderWith(preds ...predicate.Rider) {
-	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasCabinet applies a predicate to check if query has an edge cabinet.
-func (f *CabinetExchangeFilter) WhereHasCabinet() {
-	f.Where(entql.HasEdge("cabinet"))
-}
-
-// WhereHasCabinetWith applies a predicate to check if query has an edge cabinet with a given conditions (other predicates).
-func (f *CabinetExchangeFilter) WhereHasCabinetWith(preds ...predicate.Cabinet) {
-	f.Where(entql.HasEdgeWith("cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -2107,7 +2011,7 @@ type CabinetFaultFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *CabinetFaultFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[4].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2273,7 +2177,7 @@ type CityFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *CityFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[5].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2415,7 +2319,7 @@ type CommissionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *CommissionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[6].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2519,7 +2423,7 @@ type ContractFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *ContractFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[7].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2633,7 +2537,7 @@ type EmployeeFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *EmployeeFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[8].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2708,7 +2612,7 @@ type EnterpriseFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *EnterpriseFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[9].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -2762,6 +2666,186 @@ func (f *EnterpriseFilter) WhereHasRiders() {
 // WhereHasRidersWith applies a predicate to check if query has an edge riders with a given conditions (other predicates).
 func (f *EnterpriseFilter) WhereHasRidersWith(preds ...predicate.Rider) {
 	f.Where(entql.HasEdgeWith("riders", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (eq *ExchangeQuery) addPredicate(pred func(s *sql.Selector)) {
+	eq.predicates = append(eq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the ExchangeQuery builder.
+func (eq *ExchangeQuery) Filter() *ExchangeFilter {
+	return &ExchangeFilter{eq.config, eq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *ExchangeMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the ExchangeMutation builder.
+func (m *ExchangeMutation) Filter() *ExchangeFilter {
+	return &ExchangeFilter{m.config, m}
+}
+
+// ExchangeFilter provides a generic filtering capability at runtime for ExchangeQuery.
+type ExchangeFilter struct {
+	config
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *ExchangeFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[10].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *ExchangeFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(exchange.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *ExchangeFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(exchange.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *ExchangeFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(exchange.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *ExchangeFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(exchange.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *ExchangeFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(exchange.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *ExchangeFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(exchange.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *ExchangeFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(exchange.FieldRemark))
+}
+
+// WhereCityID applies the entql uint64 predicate on the city_id field.
+func (f *ExchangeFilter) WhereCityID(p entql.Uint64P) {
+	f.Where(p.Field(exchange.FieldCityID))
+}
+
+// WhereEmployeeID applies the entql uint64 predicate on the employee_id field.
+func (f *ExchangeFilter) WhereEmployeeID(p entql.Uint64P) {
+	f.Where(p.Field(exchange.FieldEmployeeID))
+}
+
+// WhereStoreID applies the entql uint64 predicate on the store_id field.
+func (f *ExchangeFilter) WhereStoreID(p entql.Uint64P) {
+	f.Where(p.Field(exchange.FieldStoreID))
+}
+
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *ExchangeFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(exchange.FieldRiderID))
+}
+
+// WhereUUID applies the entql string predicate on the uuid field.
+func (f *ExchangeFilter) WhereUUID(p entql.StringP) {
+	f.Where(p.Field(exchange.FieldUUID))
+}
+
+// WhereCabinetID applies the entql uint64 predicate on the cabinet_id field.
+func (f *ExchangeFilter) WhereCabinetID(p entql.Uint64P) {
+	f.Where(p.Field(exchange.FieldCabinetID))
+}
+
+// WhereSuccess applies the entql bool predicate on the success field.
+func (f *ExchangeFilter) WhereSuccess(p entql.BoolP) {
+	f.Where(p.Field(exchange.FieldSuccess))
+}
+
+// WhereDetail applies the entql json.RawMessage predicate on the detail field.
+func (f *ExchangeFilter) WhereDetail(p entql.BytesP) {
+	f.Where(p.Field(exchange.FieldDetail))
+}
+
+// WhereHasCity applies a predicate to check if query has an edge city.
+func (f *ExchangeFilter) WhereHasCity() {
+	f.Where(entql.HasEdge("city"))
+}
+
+// WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
+func (f *ExchangeFilter) WhereHasCityWith(preds ...predicate.City) {
+	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasEmployee applies a predicate to check if query has an edge employee.
+func (f *ExchangeFilter) WhereHasEmployee() {
+	f.Where(entql.HasEdge("employee"))
+}
+
+// WhereHasEmployeeWith applies a predicate to check if query has an edge employee with a given conditions (other predicates).
+func (f *ExchangeFilter) WhereHasEmployeeWith(preds ...predicate.Employee) {
+	f.Where(entql.HasEdgeWith("employee", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasStore applies a predicate to check if query has an edge store.
+func (f *ExchangeFilter) WhereHasStore() {
+	f.Where(entql.HasEdge("store"))
+}
+
+// WhereHasStoreWith applies a predicate to check if query has an edge store with a given conditions (other predicates).
+func (f *ExchangeFilter) WhereHasStoreWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("store", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCabinet applies a predicate to check if query has an edge cabinet.
+func (f *ExchangeFilter) WhereHasCabinet() {
+	f.Where(entql.HasEdge("cabinet"))
+}
+
+// WhereHasCabinetWith applies a predicate to check if query has an edge cabinet with a given conditions (other predicates).
+func (f *ExchangeFilter) WhereHasCabinetWith(preds ...predicate.Cabinet) {
+	f.Where(entql.HasEdgeWith("cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *ExchangeFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *ExchangeFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -3707,7 +3791,7 @@ func (f *RiderFilter) WhereHasExchanges() {
 }
 
 // WhereHasExchangesWith applies a predicate to check if query has an edge exchanges with a given conditions (other predicates).
-func (f *RiderFilter) WhereHasExchangesWith(preds ...predicate.CabinetExchange) {
+func (f *RiderFilter) WhereHasExchangesWith(preds ...predicate.Exchange) {
 	f.Where(entql.HasEdgeWith("exchanges", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)

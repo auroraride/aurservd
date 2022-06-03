@@ -18,9 +18,6 @@ type BranchContract func(*sql.Selector)
 // Cabinet is the predicate function for cabinet builders.
 type Cabinet func(*sql.Selector)
 
-// CabinetExchange is the predicate function for cabinetexchange builders.
-type CabinetExchange func(*sql.Selector)
-
 // CabinetFault is the predicate function for cabinetfault builders.
 type CabinetFault func(*sql.Selector)
 
@@ -38,6 +35,9 @@ type Employee func(*sql.Selector)
 
 // Enterprise is the predicate function for enterprise builders.
 type Enterprise func(*sql.Selector)
+
+// Exchange is the predicate function for exchange builders.
+type Exchange func(*sql.Selector)
 
 // Manager is the predicate function for manager builders.
 type Manager func(*sql.Selector)

@@ -9,6 +9,7 @@ import (
     "context"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -16,6 +17,8 @@ import (
     log "github.com/sirupsen/logrus"
     "time"
 )
+
+// TODO 服务器崩溃后自动启动继续换电进程
 
 type riderCabinetService struct {
     ctx      context.Context
@@ -27,6 +30,8 @@ type riderCabinetService struct {
     Step             model.RiderCabinetOperateStep
     Cabinet          *ent.Cabinet
     PutInElectricity model.BatteryElectricity
+    Alternative      bool
+    Info             *model.RiderCabinetInfo
 }
 
 func NewRiderCabinet() *riderCabinetService {
@@ -57,9 +62,16 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
     if o == nil || o.Status != model.SubscribeStatusUsing {
         snag.Panic("无生效中的骑行卡")
     }
+
     // 查询电柜
     cs := NewCabinet()
     cab := cs.QueryWithSerial(req.Serial)
+
+    // 检查可用电池型号
+    if !cs.VoltageInclude(cab, o.Voltage) {
+        snag.Panic("电池型号不兼容")
+    }
+
     // 查询套餐
     if !cs.Health(cab) {
         snag.Panic("电柜目前不可用")
@@ -68,6 +80,7 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
     if info.EmptyBin == nil {
         snag.Panic("电柜目前不可用")
     }
+
     uid := uuid.New().String()
     res := &model.RiderCabinetInfo{
         ID:                         cab.ID,
@@ -80,6 +93,8 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
         BatteryNum:                 cab.BatteryNum,
         BatteryFullNum:             cab.BatteryFullNum,
         RiderCabinetOperateProcess: info,
+        Voltage:                    o.Voltage,
+        CityID:                     o.City.ID,
     }
     err := cache.Set(s.ctx, uid, res, s.maxTime).Err()
     if err != nil {
@@ -102,9 +117,10 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
     index := -1
     var be model.BatteryElectricity
     if info.FullBin == nil {
-        if *req.Alternative {
+        if req.Alternative != nil && *req.Alternative {
             index = info.Alternative.Index
             be = info.Alternative.Electricity
+            s.Alternative = true
         } else {
             snag.Panic("用户取消")
         }
@@ -130,6 +146,7 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
     s.logger = logging.NewExchangeLog(s.rider.ID, uid, info.Serial, s.rider.Phone, be.IsBatteryFull())
     s.Step = model.RiderCabinetOperateStepOpenEmpty
     s.Cabinet = cab
+    s.Info = info
 
     // 处理换电流程
     go s.ProcessByStep(&model.RiderCabinetOperating{
@@ -152,9 +169,31 @@ func (s *riderCabinetService) ProcessStepStart(req *model.RiderCabinetOperating)
     }, s.maxTime)
 }
 
+// ProcessStepEnd 结束换电流程
+func (s *riderCabinetService) ProcessStepEnd(req *model.RiderCabinetOperating) {
+    // 释放占用
+    cache.Del(s.ctx, req.Serial)
+
+    res := new(model.RiderCabinetOperateRes)
+    _ = cache.Get(s.ctx, req.UUID).Scan(res)
+
+    // 保存数据库
+    _, _ = ar.Ent.Exchange.Create().
+        SetRiderID(s.rider.ID).
+        SetCityID(s.Info.CityID).
+        SetDetail(&model.ExchangeCabinet{
+            Alternative: s.Alternative,
+            Info:        req,
+            Result:      res,
+        }).
+        SetUUID(req.UUID).
+        SetSuccess(res.Status == model.RiderCabinetOperateStatusSuccess && res.Step == model.RiderCabinetOperateStepClose).
+        Save(s.ctx)
+}
+
 // ProcessByStep 按步骤换电操作
 func (s *riderCabinetService) ProcessByStep(req *model.RiderCabinetOperating) {
-    defer cache.Del(s.ctx, req.Serial)
+    defer s.ProcessStepEnd(req)
 
     // 第一步: 开启空电仓
     if !s.ProcessLog(req, s.ProcessOpenBin(req)) {
@@ -228,7 +267,7 @@ func (s *riderCabinetService) ProcessDoor(req *model.RiderCabinetOperating) (res
     // TODO DEBUG START
     ds := model.CabinetBinDoorStatusUnknown
     for {
-        if time.Now().Sub(start).Seconds() > 5 {
+        if time.Now().Sub(start).Seconds() > 2 {
             ds = model.CabinetBinDoorStatusClose
             break
         }
@@ -301,7 +340,7 @@ func (s *riderCabinetService) ProcessOpenBin(req *model.RiderCabinetOperating) (
     var status bool
     var err error
     for {
-        if time.Now().Sub(debug).Seconds() > 5 {
+        if time.Now().Sub(debug).Seconds() > 2 {
             status = true
             err = nil
             break

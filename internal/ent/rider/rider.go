@@ -97,16 +97,16 @@ const (
 	FaultsColumn = "rider_id"
 	// OrdersTable is the table that holds the orders relation/edge.
 	OrdersTable = "order"
-	// OrdersInverseTable is the table name for the Detail entity.
+	// OrdersInverseTable is the table name for the Order entity.
 	// It exists in this package in order to avoid circular dependency with the "order" package.
 	OrdersInverseTable = "order"
 	// OrdersColumn is the table column denoting the orders relation/edge.
 	OrdersColumn = "rider_id"
 	// ExchangesTable is the table that holds the exchanges relation/edge.
-	ExchangesTable = "cabinet_exchange"
-	// ExchangesInverseTable is the table name for the CabinetExchange entity.
-	// It exists in this package in order to avoid circular dependency with the "cabinetexchange" package.
-	ExchangesInverseTable = "cabinet_exchange"
+	ExchangesTable = "exchange"
+	// ExchangesInverseTable is the table name for the Exchange entity.
+	// It exists in this package in order to avoid circular dependency with the "exchange" package.
+	ExchangesInverseTable = "exchange"
 	// ExchangesColumn is the table column denoting the exchanges relation/edge.
 	ExchangesColumn = "rider_id"
 	// SubscribesTable is the table that holds the subscribes relation/edge.

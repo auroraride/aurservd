@@ -261,30 +261,6 @@ func (f CabinetMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutatio
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.CabinetMutation", m)
 }
 
-// The CabinetExchangeQueryRuleFunc type is an adapter to allow the use of ordinary
-// functions as a query rule.
-type CabinetExchangeQueryRuleFunc func(context.Context, *ent.CabinetExchangeQuery) error
-
-// EvalQuery return f(ctx, q).
-func (f CabinetExchangeQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.CabinetExchangeQuery); ok {
-		return f(ctx, q)
-	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.CabinetExchangeQuery", q)
-}
-
-// The CabinetExchangeMutationRuleFunc type is an adapter to allow the use of ordinary
-// functions as a mutation rule.
-type CabinetExchangeMutationRuleFunc func(context.Context, *ent.CabinetExchangeMutation) error
-
-// EvalMutation calls f(ctx, m).
-func (f CabinetExchangeMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.CabinetExchangeMutation); ok {
-		return f(ctx, m)
-	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.CabinetExchangeMutation", m)
-}
-
 // The CabinetFaultQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type CabinetFaultQueryRuleFunc func(context.Context, *ent.CabinetFaultQuery) error
@@ -427,6 +403,30 @@ func (f EnterpriseMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Muta
 		return f(ctx, m)
 	}
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.EnterpriseMutation", m)
+}
+
+// The ExchangeQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type ExchangeQueryRuleFunc func(context.Context, *ent.ExchangeQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f ExchangeQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.ExchangeQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.ExchangeQuery", q)
+}
+
+// The ExchangeMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type ExchangeMutationRuleFunc func(context.Context, *ent.ExchangeMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f ExchangeMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.ExchangeMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.ExchangeMutation", m)
 }
 
 // The ManagerQueryRuleFunc type is an adapter to allow the use of ordinary
@@ -736,8 +736,6 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.CabinetQuery:
 		return q.Filter(), nil
-	case *ent.CabinetExchangeQuery:
-		return q.Filter(), nil
 	case *ent.CabinetFaultQuery:
 		return q.Filter(), nil
 	case *ent.CityQuery:
@@ -749,6 +747,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 	case *ent.EmployeeQuery:
 		return q.Filter(), nil
 	case *ent.EnterpriseQuery:
+		return q.Filter(), nil
+	case *ent.ExchangeQuery:
 		return q.Filter(), nil
 	case *ent.ManagerQuery:
 		return q.Filter(), nil
@@ -787,8 +787,6 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 		return m.Filter(), nil
 	case *ent.CabinetMutation:
 		return m.Filter(), nil
-	case *ent.CabinetExchangeMutation:
-		return m.Filter(), nil
 	case *ent.CabinetFaultMutation:
 		return m.Filter(), nil
 	case *ent.CityMutation:
@@ -800,6 +798,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.EmployeeMutation:
 		return m.Filter(), nil
 	case *ent.EnterpriseMutation:
+		return m.Filter(), nil
+	case *ent.ExchangeMutation:
 		return m.Filter(), nil
 	case *ent.ManagerMutation:
 		return m.Filter(), nil

@@ -348,11 +348,25 @@ func (s *cabinetService) Reboot(req *model.IDPostReq) bool {
 
 // QueryWithSerial 根据序列号查找电柜
 func (s *cabinetService) QueryWithSerial(serial string) *ent.Cabinet {
-    cab, _ := s.orm.QueryNotDeleted().Where(cabinet.Serial(serial)).Only(s.ctx)
+    cab, _ := s.orm.QueryNotDeleted().Where(cabinet.Serial(serial)).WithBms().Only(s.ctx)
     if cab == nil {
         snag.Panic("未找到电柜")
     }
     return cab
+}
+
+// VoltageInclude 电柜可用型号是否包含电压
+func (s *cabinetService) VoltageInclude(item *ent.Cabinet, voltage float64) bool {
+    bms := item.Edges.Bms
+    if bms == nil {
+        return false
+    }
+    for _, bm := range bms {
+        if bm.Voltage == voltage {
+            return true
+        }
+    }
+    return false
 }
 
 // Usable 获取换电可用仓位信息
