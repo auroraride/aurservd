@@ -2912,7 +2912,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R4000X 电柜故障上报
+      summary: R40004 电柜故障上报
       tags:
       - '[R]骑手接口'
   /rider/v1/city:

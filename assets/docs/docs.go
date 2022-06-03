@@ -2298,7 +2298,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R4000X 电柜故障上报",
+                "summary": "R40004 电柜故障上报",
                 "operationId": "CabinetReport",
                 "parameters": [
                     {

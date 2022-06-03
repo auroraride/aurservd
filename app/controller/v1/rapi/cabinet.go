@@ -16,24 +16,6 @@ type cabinet struct{}
 
 var Cabinet = new(cabinet)
 
-// Report
-// @ID           CabinetReport
-// @Router       /rider/v1/cabinet/report [POST]
-// @Summary      R4000X 电柜故障上报
-// @Tags         [R]骑手接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        body  body  model.CabinetFaultReportReq  true  "desc"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
-func (*cabinet) Report(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.CabinetFaultReportReq](c)
-
-    return ctx.SendResponse(
-        model.StatusResponse{Status: service.NewCabinetFault().Report(ctx.Rider, req)},
-    )
-}
-
 // GetProcess
 // @ID           RiderCabinetGetProcess
 // @Router       /rider/v1/cabinet/process/{serial} [GET]
@@ -80,5 +62,22 @@ func (*cabinet) ProcessStatus(c echo.Context) (err error) {
 
     return ctx.SendResponse(
         service.NewRiderCabinetWithRider(ctx.Rider).ProcessStatus(req),
+    )
+}
+
+// Report
+// @ID           CabinetReport
+// @Router       /rider/v1/cabinet/report [POST]
+// @Summary      R40004 电柜故障上报
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        body  body  model.CabinetFaultReportReq  true  "desc"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*cabinet) Report(c echo.Context) (err error) {
+    ctx, req := app.RiderContextAndBinding[model.CabinetFaultReportReq](c)
+    return ctx.SendResponse(
+        model.StatusResponse{Status: service.NewCabinetFault().Report(ctx.Rider, req)},
     )
 }
