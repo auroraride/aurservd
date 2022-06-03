@@ -37,7 +37,15 @@ func NewStoreWithModifier(m *model.Modifier) *storeService {
 }
 
 func (s *storeService) Query(id uint64) *ent.Store {
-    item, err := s.orm.QueryNotDeleted().Where(store.ID(id)).Only(s.ctx)
+    item, err := s.orm.QueryNotDeleted().WithEmployee().Where(store.ID(id)).Only(s.ctx)
+    if err != nil {
+        snag.Panic("未找到有效门店")
+    }
+    return item
+}
+
+func (s *storeService) QuerySn(sn string) *ent.Store {
+    item, err := s.orm.QueryNotDeleted().WithEmployee().Where(store.Sn(sn)).Only(s.ctx)
     if err != nil {
         snag.Panic("未找到有效门店")
     }
@@ -81,12 +89,13 @@ func (s *storeService) Detail(id uint64) model.StoreItem {
         WithBranch(func(bq *ent.BranchQuery) {
             bq.WithCity()
         }).
+        WithEmployee().
         Only(s.ctx)
     if err != nil {
         snag.Panic("未找到有效门店")
     }
     city := item.Edges.Branch.Edges.City
-    return model.StoreItem{
+    res := model.StoreItem{
         ID:     item.ID,
         Name:   item.Name,
         Status: item.Status,
@@ -95,6 +104,15 @@ func (s *storeService) Detail(id uint64) model.StoreItem {
             Name: city.Name,
         },
     }
+    if item.Edges.Employee != nil {
+        ee := item.Edges.Employee
+        res.Employee = &model.Employee{
+            ID:    ee.ID,
+            Name:  ee.Name,
+            Phone: ee.Phone,
+        }
+    }
+    return res
 }
 
 // Delete 删除门店

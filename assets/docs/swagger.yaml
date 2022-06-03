@@ -661,6 +661,29 @@ definitions:
         description: 企业名称
         type: string
     type: object
+  model.ExchangeStoreReq:
+    properties:
+      code:
+        description: 二维码
+        type: string
+    required:
+    - code
+    type: object
+  model.ExchangeStoreRes:
+    properties:
+      storeName:
+        description: 门店名称
+        type: string
+      time:
+        description: 时间戳
+        type: integer
+      uuid:
+        description: 编码
+        type: string
+      voltage:
+        description: 电池电压
+        type: number
+    type: object
   model.FaceAuthUrlResponse:
     properties:
       url:
@@ -3187,6 +3210,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: R10001 登录或注册
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/store/exchange:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderExchangeStore
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ExchangeStoreReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.ExchangeStoreRes'
+      summary: R40005 门店换电
       tags:
       - '[R]骑手接口'
 swagger: "2.0"

@@ -2729,6 +2729,22 @@ func (c *StoreClient) GetX(ctx context.Context, id uint64) *Store {
 	return obj
 }
 
+// QueryEmployee queries the employee edge of a Store.
+func (c *StoreClient) QueryEmployee(s *Store) *EmployeeQuery {
+	query := &EmployeeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, id),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, store.EmployeeTable, store.EmployeeColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryBranch queries the branch edge of a Store.
 func (c *StoreClient) QueryBranch(s *Store) *BranchQuery {
 	query := &BranchQuery{config: c.config}

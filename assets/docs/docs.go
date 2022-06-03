@@ -2737,6 +2737,47 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/rider/v1/store/exchange": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R40005 门店换电",
+                "operationId": "RiderExchangeStore",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ExchangeStoreReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExchangeStoreRes"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -3667,6 +3708,39 @@ const docTemplate = `{
                 "name": {
                     "description": "企业名称",
                     "type": "string"
+                }
+            }
+        },
+        "model.ExchangeStoreReq": {
+            "type": "object",
+            "required": [
+                "code"
+            ],
+            "properties": {
+                "code": {
+                    "description": "二维码",
+                    "type": "string"
+                }
+            }
+        },
+        "model.ExchangeStoreRes": {
+            "type": "object",
+            "properties": {
+                "storeName": {
+                    "description": "门店名称",
+                    "type": "string"
+                },
+                "time": {
+                    "description": "时间戳",
+                    "type": "integer"
+                },
+                "uuid": {
+                    "description": "编码",
+                    "type": "string"
+                },
+                "voltage": {
+                    "description": "电池电压",
+                    "type": "number"
                 }
             }
         },

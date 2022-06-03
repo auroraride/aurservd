@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/branch"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
@@ -92,6 +93,20 @@ func (sc *StoreCreate) SetNillableRemark(s *string) *StoreCreate {
 	return sc
 }
 
+// SetEmployeeID sets the "employee_id" field.
+func (sc *StoreCreate) SetEmployeeID(u uint64) *StoreCreate {
+	sc.mutation.SetEmployeeID(u)
+	return sc
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (sc *StoreCreate) SetNillableEmployeeID(u *uint64) *StoreCreate {
+	if u != nil {
+		sc.SetEmployeeID(*u)
+	}
+	return sc
+}
+
 // SetBranchID sets the "branch_id" field.
 func (sc *StoreCreate) SetBranchID(u uint64) *StoreCreate {
 	sc.mutation.SetBranchID(u)
@@ -122,6 +137,11 @@ func (sc *StoreCreate) SetNillableStatus(u *uint8) *StoreCreate {
 		sc.SetStatus(*u)
 	}
 	return sc
+}
+
+// SetEmployee sets the "employee" edge to the Employee entity.
+func (sc *StoreCreate) SetEmployee(e *Employee) *StoreCreate {
+	return sc.SetEmployeeID(e.ID)
 }
 
 // SetBranch sets the "branch" edge to the Branch entity.
@@ -352,6 +372,26 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 		})
 		_node.Status = value
 	}
+	if nodes := sc.mutation.EmployeeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   store.EmployeeTable,
+			Columns: []string{store.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EmployeeID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := sc.mutation.BranchIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -519,6 +559,24 @@ func (u *StoreUpsert) UpdateRemark() *StoreUpsert {
 // ClearRemark clears the value of the "remark" field.
 func (u *StoreUpsert) ClearRemark() *StoreUpsert {
 	u.SetNull(store.FieldRemark)
+	return u
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (u *StoreUpsert) SetEmployeeID(v uint64) *StoreUpsert {
+	u.Set(store.FieldEmployeeID, v)
+	return u
+}
+
+// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
+func (u *StoreUpsert) UpdateEmployeeID() *StoreUpsert {
+	u.SetExcluded(store.FieldEmployeeID)
+	return u
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (u *StoreUpsert) ClearEmployeeID() *StoreUpsert {
+	u.SetNull(store.FieldEmployeeID)
 	return u
 }
 
@@ -738,6 +796,27 @@ func (u *StoreUpsertOne) UpdateRemark() *StoreUpsertOne {
 func (u *StoreUpsertOne) ClearRemark() *StoreUpsertOne {
 	return u.Update(func(s *StoreUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (u *StoreUpsertOne) SetEmployeeID(v uint64) *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetEmployeeID(v)
+	})
+}
+
+// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
+func (u *StoreUpsertOne) UpdateEmployeeID() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateEmployeeID()
+	})
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (u *StoreUpsertOne) ClearEmployeeID() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.ClearEmployeeID()
 	})
 }
 
@@ -1130,6 +1209,27 @@ func (u *StoreUpsertBulk) UpdateRemark() *StoreUpsertBulk {
 func (u *StoreUpsertBulk) ClearRemark() *StoreUpsertBulk {
 	return u.Update(func(s *StoreUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (u *StoreUpsertBulk) SetEmployeeID(v uint64) *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetEmployeeID(v)
+	})
+}
+
+// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
+func (u *StoreUpsertBulk) UpdateEmployeeID() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateEmployeeID()
+	})
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (u *StoreUpsertBulk) ClearEmployeeID() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.ClearEmployeeID()
 	})
 }
 

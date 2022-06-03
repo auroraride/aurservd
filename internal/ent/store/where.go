@@ -121,6 +121,13 @@ func Remark(v string) predicate.Store {
 	})
 }
 
+// EmployeeID applies equality check predicate on the "employee_id" field. It's identical to EmployeeIDEQ.
+func EmployeeID(v uint64) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
+	})
+}
+
 // BranchID applies equality check predicate on the "branch_id" field. It's identical to BranchIDEQ.
 func BranchID(v uint64) predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
@@ -544,6 +551,68 @@ func RemarkContainsFold(v string) predicate.Store {
 	})
 }
 
+// EmployeeIDEQ applies the EQ predicate on the "employee_id" field.
+func EmployeeIDEQ(v uint64) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEmployeeID), v))
+	})
+}
+
+// EmployeeIDNEQ applies the NEQ predicate on the "employee_id" field.
+func EmployeeIDNEQ(v uint64) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEmployeeID), v))
+	})
+}
+
+// EmployeeIDIn applies the In predicate on the "employee_id" field.
+func EmployeeIDIn(vs ...uint64) predicate.Store {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Store(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldEmployeeID), v...))
+	})
+}
+
+// EmployeeIDNotIn applies the NotIn predicate on the "employee_id" field.
+func EmployeeIDNotIn(vs ...uint64) predicate.Store {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Store(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldEmployeeID), v...))
+	})
+}
+
+// EmployeeIDIsNil applies the IsNil predicate on the "employee_id" field.
+func EmployeeIDIsNil() predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEmployeeID)))
+	})
+}
+
+// EmployeeIDNotNil applies the NotNil predicate on the "employee_id" field.
+func EmployeeIDNotNil() predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEmployeeID)))
+	})
+}
+
 // BranchIDEQ applies the EQ predicate on the "branch_id" field.
 func BranchIDEQ(v uint64) predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
@@ -887,6 +956,34 @@ func StatusLT(v uint8) predicate.Store {
 func StatusLTE(v uint8) predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldStatus), v))
+	})
+}
+
+// HasEmployee applies the HasEdge predicate on the "employee" edge.
+func HasEmployee() predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EmployeeTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EmployeeTable, EmployeeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEmployeeWith applies the HasEdge predicate on the "employee" edge with a given conditions (other predicates).
+func HasEmployeeWith(preds ...predicate.Employee) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EmployeeInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EmployeeTable, EmployeeColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

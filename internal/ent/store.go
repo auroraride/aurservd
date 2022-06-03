@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/branch"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
@@ -34,6 +35,9 @@ type Store struct {
 	// Remark holds the value of the "remark" field.
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
+	// EmployeeID holds the value of the "employee_id" field.
+	// 操作店员ID
+	EmployeeID uint64 `json:"employee_id,omitempty"`
 	// BranchID holds the value of the "branch_id" field.
 	// 网点ID
 	BranchID uint64 `json:"branch_id,omitempty"`
@@ -53,17 +57,33 @@ type Store struct {
 
 // StoreEdges holds the relations/edges for other nodes in the graph.
 type StoreEdges struct {
+	// Employee holds the value of the employee edge.
+	Employee *Employee `json:"employee,omitempty"`
 	// Branch holds the value of the branch edge.
 	Branch *Branch `json:"branch,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
+}
+
+// EmployeeOrErr returns the Employee value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e StoreEdges) EmployeeOrErr() (*Employee, error) {
+	if e.loadedTypes[0] {
+		if e.Employee == nil {
+			// The edge employee was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: employee.Label}
+		}
+		return e.Employee, nil
+	}
+	return nil, &NotLoadedError{edge: "employee"}
 }
 
 // BranchOrErr returns the Branch value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StoreEdges) BranchOrErr() (*Branch, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		if e.Branch == nil {
 			// The edge branch was loaded in eager-loading,
 			// but was not found.
@@ -81,7 +101,7 @@ func (*Store) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case store.FieldCreator, store.FieldLastModifier:
 			values[i] = new([]byte)
-		case store.FieldID, store.FieldBranchID, store.FieldStatus:
+		case store.FieldID, store.FieldEmployeeID, store.FieldBranchID, store.FieldStatus:
 			values[i] = new(sql.NullInt64)
 		case store.FieldRemark, store.FieldSn, store.FieldName:
 			values[i] = new(sql.NullString)
@@ -149,6 +169,12 @@ func (s *Store) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.Remark = value.String
 			}
+		case store.FieldEmployeeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field employee_id", values[i])
+			} else if value.Valid {
+				s.EmployeeID = uint64(value.Int64)
+			}
 		case store.FieldBranchID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field branch_id", values[i])
@@ -176,6 +202,11 @@ func (s *Store) assignValues(columns []string, values []interface{}) error {
 		}
 	}
 	return nil
+}
+
+// QueryEmployee queries the "employee" edge of the Store entity.
+func (s *Store) QueryEmployee() *EmployeeQuery {
+	return (&StoreClient{config: s.config}).QueryEmployee(s)
 }
 
 // QueryBranch queries the "branch" edge of the Store entity.
@@ -220,6 +251,8 @@ func (s *Store) String() string {
 	builder.WriteString(fmt.Sprintf("%v", s.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(s.Remark)
+	builder.WriteString(", employee_id=")
+	builder.WriteString(fmt.Sprintf("%v", s.EmployeeID))
 	builder.WriteString(", branch_id=")
 	builder.WriteString(fmt.Sprintf("%v", s.BranchID))
 	builder.WriteString(", sn=")

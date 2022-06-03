@@ -11014,6 +11014,7 @@ type EmployeeMutation struct {
 	last_modifier **model.Modifier
 	remark        *string
 	name          *string
+	phone         *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Employee, error)
@@ -11422,6 +11423,42 @@ func (m *EmployeeMutation) ResetName() {
 	m.name = nil
 }
 
+// SetPhone sets the "phone" field.
+func (m *EmployeeMutation) SetPhone(s string) {
+	m.phone = &s
+}
+
+// Phone returns the value of the "phone" field in the mutation.
+func (m *EmployeeMutation) Phone() (r string, exists bool) {
+	v := m.phone
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPhone returns the old "phone" field's value of the Employee entity.
+// If the Employee object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EmployeeMutation) OldPhone(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPhone is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPhone requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPhone: %w", err)
+	}
+	return oldValue.Phone, nil
+}
+
+// ResetPhone resets all changes to the "phone" field.
+func (m *EmployeeMutation) ResetPhone() {
+	m.phone = nil
+}
+
 // Where appends a list predicates to the EmployeeMutation builder.
 func (m *EmployeeMutation) Where(ps ...predicate.Employee) {
 	m.predicates = append(m.predicates, ps...)
@@ -11441,7 +11478,7 @@ func (m *EmployeeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EmployeeMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, employee.FieldCreatedAt)
 	}
@@ -11462,6 +11499,9 @@ func (m *EmployeeMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, employee.FieldName)
+	}
+	if m.phone != nil {
+		fields = append(fields, employee.FieldPhone)
 	}
 	return fields
 }
@@ -11485,6 +11525,8 @@ func (m *EmployeeMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case employee.FieldName:
 		return m.Name()
+	case employee.FieldPhone:
+		return m.Phone()
 	}
 	return nil, false
 }
@@ -11508,6 +11550,8 @@ func (m *EmployeeMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldRemark(ctx)
 	case employee.FieldName:
 		return m.OldName(ctx)
+	case employee.FieldPhone:
+		return m.OldPhone(ctx)
 	}
 	return nil, fmt.Errorf("unknown Employee field %s", name)
 }
@@ -11565,6 +11609,13 @@ func (m *EmployeeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case employee.FieldPhone:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPhone(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Employee field %s", name)
@@ -11662,6 +11713,9 @@ func (m *EmployeeMutation) ResetField(name string) error {
 		return nil
 	case employee.FieldName:
 		m.ResetName()
+		return nil
+	case employee.FieldPhone:
+		m.ResetPhone()
 		return nil
 	}
 	return fmt.Errorf("unknown Employee field %s", name)
@@ -23748,25 +23802,27 @@ func (m *SettingMutation) ResetEdge(name string) error {
 // StoreMutation represents an operation that mutates the Store nodes in the graph.
 type StoreMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint64
-	created_at    *time.Time
-	updated_at    *time.Time
-	deleted_at    *time.Time
-	creator       **model.Modifier
-	last_modifier **model.Modifier
-	remark        *string
-	sn            *string
-	name          *string
-	status        *uint8
-	addstatus     *int8
-	clearedFields map[string]struct{}
-	branch        *uint64
-	clearedbranch bool
-	done          bool
-	oldValue      func(context.Context) (*Store, error)
-	predicates    []predicate.Store
+	op              Op
+	typ             string
+	id              *uint64
+	created_at      *time.Time
+	updated_at      *time.Time
+	deleted_at      *time.Time
+	creator         **model.Modifier
+	last_modifier   **model.Modifier
+	remark          *string
+	sn              *string
+	name            *string
+	status          *uint8
+	addstatus       *int8
+	clearedFields   map[string]struct{}
+	employee        *uint64
+	clearedemployee bool
+	branch          *uint64
+	clearedbranch   bool
+	done            bool
+	oldValue        func(context.Context) (*Store, error)
+	predicates      []predicate.Store
 }
 
 var _ ent.Mutation = (*StoreMutation)(nil)
@@ -24135,6 +24191,55 @@ func (m *StoreMutation) ResetRemark() {
 	delete(m.clearedFields, store.FieldRemark)
 }
 
+// SetEmployeeID sets the "employee_id" field.
+func (m *StoreMutation) SetEmployeeID(u uint64) {
+	m.employee = &u
+}
+
+// EmployeeID returns the value of the "employee_id" field in the mutation.
+func (m *StoreMutation) EmployeeID() (r uint64, exists bool) {
+	v := m.employee
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmployeeID returns the old "employee_id" field's value of the Store entity.
+// If the Store object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StoreMutation) OldEmployeeID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmployeeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmployeeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmployeeID: %w", err)
+	}
+	return oldValue.EmployeeID, nil
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (m *StoreMutation) ClearEmployeeID() {
+	m.employee = nil
+	m.clearedFields[store.FieldEmployeeID] = struct{}{}
+}
+
+// EmployeeIDCleared returns if the "employee_id" field was cleared in this mutation.
+func (m *StoreMutation) EmployeeIDCleared() bool {
+	_, ok := m.clearedFields[store.FieldEmployeeID]
+	return ok
+}
+
+// ResetEmployeeID resets all changes to the "employee_id" field.
+func (m *StoreMutation) ResetEmployeeID() {
+	m.employee = nil
+	delete(m.clearedFields, store.FieldEmployeeID)
+}
+
 // SetBranchID sets the "branch_id" field.
 func (m *StoreMutation) SetBranchID(u uint64) {
 	m.branch = &u
@@ -24299,6 +24404,32 @@ func (m *StoreMutation) ResetStatus() {
 	m.addstatus = nil
 }
 
+// ClearEmployee clears the "employee" edge to the Employee entity.
+func (m *StoreMutation) ClearEmployee() {
+	m.clearedemployee = true
+}
+
+// EmployeeCleared reports if the "employee" edge to the Employee entity was cleared.
+func (m *StoreMutation) EmployeeCleared() bool {
+	return m.EmployeeIDCleared() || m.clearedemployee
+}
+
+// EmployeeIDs returns the "employee" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EmployeeID instead. It exists only for internal usage by the builders.
+func (m *StoreMutation) EmployeeIDs() (ids []uint64) {
+	if id := m.employee; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEmployee resets all changes to the "employee" edge.
+func (m *StoreMutation) ResetEmployee() {
+	m.employee = nil
+	m.clearedemployee = false
+}
+
 // ClearBranch clears the "branch" edge to the Branch entity.
 func (m *StoreMutation) ClearBranch() {
 	m.clearedbranch = true
@@ -24344,7 +24475,7 @@ func (m *StoreMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StoreMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, store.FieldCreatedAt)
 	}
@@ -24362,6 +24493,9 @@ func (m *StoreMutation) Fields() []string {
 	}
 	if m.remark != nil {
 		fields = append(fields, store.FieldRemark)
+	}
+	if m.employee != nil {
+		fields = append(fields, store.FieldEmployeeID)
 	}
 	if m.branch != nil {
 		fields = append(fields, store.FieldBranchID)
@@ -24395,6 +24529,8 @@ func (m *StoreMutation) Field(name string) (ent.Value, bool) {
 		return m.LastModifier()
 	case store.FieldRemark:
 		return m.Remark()
+	case store.FieldEmployeeID:
+		return m.EmployeeID()
 	case store.FieldBranchID:
 		return m.BranchID()
 	case store.FieldSn:
@@ -24424,6 +24560,8 @@ func (m *StoreMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldLastModifier(ctx)
 	case store.FieldRemark:
 		return m.OldRemark(ctx)
+	case store.FieldEmployeeID:
+		return m.OldEmployeeID(ctx)
 	case store.FieldBranchID:
 		return m.OldBranchID(ctx)
 	case store.FieldSn:
@@ -24482,6 +24620,13 @@ func (m *StoreMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRemark(v)
+		return nil
+	case store.FieldEmployeeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmployeeID(v)
 		return nil
 	case store.FieldBranchID:
 		v, ok := value.(uint64)
@@ -24568,6 +24713,9 @@ func (m *StoreMutation) ClearedFields() []string {
 	if m.FieldCleared(store.FieldRemark) {
 		fields = append(fields, store.FieldRemark)
 	}
+	if m.FieldCleared(store.FieldEmployeeID) {
+		fields = append(fields, store.FieldEmployeeID)
+	}
 	return fields
 }
 
@@ -24593,6 +24741,9 @@ func (m *StoreMutation) ClearField(name string) error {
 		return nil
 	case store.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case store.FieldEmployeeID:
+		m.ClearEmployeeID()
 		return nil
 	}
 	return fmt.Errorf("unknown Store nullable field %s", name)
@@ -24620,6 +24771,9 @@ func (m *StoreMutation) ResetField(name string) error {
 	case store.FieldRemark:
 		m.ResetRemark()
 		return nil
+	case store.FieldEmployeeID:
+		m.ResetEmployeeID()
+		return nil
 	case store.FieldBranchID:
 		m.ResetBranchID()
 		return nil
@@ -24638,7 +24792,10 @@ func (m *StoreMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *StoreMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.employee != nil {
+		edges = append(edges, store.EdgeEmployee)
+	}
 	if m.branch != nil {
 		edges = append(edges, store.EdgeBranch)
 	}
@@ -24649,6 +24806,10 @@ func (m *StoreMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *StoreMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case store.EdgeEmployee:
+		if id := m.employee; id != nil {
+			return []ent.Value{*id}
+		}
 	case store.EdgeBranch:
 		if id := m.branch; id != nil {
 			return []ent.Value{*id}
@@ -24659,7 +24820,7 @@ func (m *StoreMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *StoreMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	return edges
 }
 
@@ -24673,7 +24834,10 @@ func (m *StoreMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *StoreMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.clearedemployee {
+		edges = append(edges, store.EdgeEmployee)
+	}
 	if m.clearedbranch {
 		edges = append(edges, store.EdgeBranch)
 	}
@@ -24684,6 +24848,8 @@ func (m *StoreMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *StoreMutation) EdgeCleared(name string) bool {
 	switch name {
+	case store.EdgeEmployee:
+		return m.clearedemployee
 	case store.EdgeBranch:
 		return m.clearedbranch
 	}
@@ -24694,6 +24860,9 @@ func (m *StoreMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *StoreMutation) ClearEdge(name string) error {
 	switch name {
+	case store.EdgeEmployee:
+		m.ClearEmployee()
+		return nil
 	case store.EdgeBranch:
 		m.ClearBranch()
 		return nil
@@ -24705,6 +24874,9 @@ func (m *StoreMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *StoreMutation) ResetEdge(name string) error {
 	switch name {
+	case store.EdgeEmployee:
+		m.ResetEmployee()
+		return nil
 	case store.EdgeBranch:
 		m.ResetBranch()
 		return nil

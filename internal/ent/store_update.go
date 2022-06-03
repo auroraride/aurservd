@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/branch"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
@@ -88,6 +89,26 @@ func (su *StoreUpdate) ClearRemark() *StoreUpdate {
 	return su
 }
 
+// SetEmployeeID sets the "employee_id" field.
+func (su *StoreUpdate) SetEmployeeID(u uint64) *StoreUpdate {
+	su.mutation.SetEmployeeID(u)
+	return su
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableEmployeeID(u *uint64) *StoreUpdate {
+	if u != nil {
+		su.SetEmployeeID(*u)
+	}
+	return su
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (su *StoreUpdate) ClearEmployeeID() *StoreUpdate {
+	su.mutation.ClearEmployeeID()
+	return su
+}
+
 // SetBranchID sets the "branch_id" field.
 func (su *StoreUpdate) SetBranchID(u uint64) *StoreUpdate {
 	su.mutation.SetBranchID(u)
@@ -121,6 +142,11 @@ func (su *StoreUpdate) AddStatus(u int8) *StoreUpdate {
 	return su
 }
 
+// SetEmployee sets the "employee" edge to the Employee entity.
+func (su *StoreUpdate) SetEmployee(e *Employee) *StoreUpdate {
+	return su.SetEmployeeID(e.ID)
+}
+
 // SetBranch sets the "branch" edge to the Branch entity.
 func (su *StoreUpdate) SetBranch(b *Branch) *StoreUpdate {
 	return su.SetBranchID(b.ID)
@@ -129,6 +155,12 @@ func (su *StoreUpdate) SetBranch(b *Branch) *StoreUpdate {
 // Mutation returns the StoreMutation object of the builder.
 func (su *StoreUpdate) Mutation() *StoreMutation {
 	return su.mutation
+}
+
+// ClearEmployee clears the "employee" edge to the Employee entity.
+func (su *StoreUpdate) ClearEmployee() *StoreUpdate {
+	su.mutation.ClearEmployee()
+	return su
 }
 
 // ClearBranch clears the "branch" edge to the Branch entity.
@@ -311,6 +343,41 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: store.FieldStatus,
 		})
 	}
+	if su.mutation.EmployeeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   store.EmployeeTable,
+			Columns: []string{store.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.EmployeeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   store.EmployeeTable,
+			Columns: []string{store.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if su.mutation.BranchCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -423,6 +490,26 @@ func (suo *StoreUpdateOne) ClearRemark() *StoreUpdateOne {
 	return suo
 }
 
+// SetEmployeeID sets the "employee_id" field.
+func (suo *StoreUpdateOne) SetEmployeeID(u uint64) *StoreUpdateOne {
+	suo.mutation.SetEmployeeID(u)
+	return suo
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableEmployeeID(u *uint64) *StoreUpdateOne {
+	if u != nil {
+		suo.SetEmployeeID(*u)
+	}
+	return suo
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (suo *StoreUpdateOne) ClearEmployeeID() *StoreUpdateOne {
+	suo.mutation.ClearEmployeeID()
+	return suo
+}
+
 // SetBranchID sets the "branch_id" field.
 func (suo *StoreUpdateOne) SetBranchID(u uint64) *StoreUpdateOne {
 	suo.mutation.SetBranchID(u)
@@ -456,6 +543,11 @@ func (suo *StoreUpdateOne) AddStatus(u int8) *StoreUpdateOne {
 	return suo
 }
 
+// SetEmployee sets the "employee" edge to the Employee entity.
+func (suo *StoreUpdateOne) SetEmployee(e *Employee) *StoreUpdateOne {
+	return suo.SetEmployeeID(e.ID)
+}
+
 // SetBranch sets the "branch" edge to the Branch entity.
 func (suo *StoreUpdateOne) SetBranch(b *Branch) *StoreUpdateOne {
 	return suo.SetBranchID(b.ID)
@@ -464,6 +556,12 @@ func (suo *StoreUpdateOne) SetBranch(b *Branch) *StoreUpdateOne {
 // Mutation returns the StoreMutation object of the builder.
 func (suo *StoreUpdateOne) Mutation() *StoreMutation {
 	return suo.mutation
+}
+
+// ClearEmployee clears the "employee" edge to the Employee entity.
+func (suo *StoreUpdateOne) ClearEmployee() *StoreUpdateOne {
+	suo.mutation.ClearEmployee()
+	return suo
 }
 
 // ClearBranch clears the "branch" edge to the Branch entity.
@@ -675,6 +773,41 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 			Value:  value,
 			Column: store.FieldStatus,
 		})
+	}
+	if suo.mutation.EmployeeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   store.EmployeeTable,
+			Columns: []string{store.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.EmployeeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   store.EmployeeTable,
+			Columns: []string{store.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if suo.mutation.BranchCleared() {
 		edge := &sqlgraph.EdgeSpec{

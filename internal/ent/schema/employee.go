@@ -42,6 +42,7 @@ func (Employee) Annotations() []schema.Annotation {
 func (Employee) Fields() []ent.Field {
     return []ent.Field{
         field.String("name").Comment("姓名"),
+        field.String("phone").Comment("电话"),
     }
 }
 

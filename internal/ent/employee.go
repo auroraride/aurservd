@@ -36,6 +36,9 @@ type Employee struct {
 	// Name holds the value of the "name" field.
 	// 姓名
 	Name string `json:"name,omitempty"`
+	// Phone holds the value of the "phone" field.
+	// 电话
+	Phone string `json:"phone,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -47,7 +50,7 @@ func (*Employee) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case employee.FieldID:
 			values[i] = new(sql.NullInt64)
-		case employee.FieldRemark, employee.FieldName:
+		case employee.FieldRemark, employee.FieldName, employee.FieldPhone:
 			values[i] = new(sql.NullString)
 		case employee.FieldCreatedAt, employee.FieldUpdatedAt, employee.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -119,6 +122,12 @@ func (e *Employee) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				e.Name = value.String
 			}
+		case employee.FieldPhone:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field phone", values[i])
+			} else if value.Valid {
+				e.Phone = value.String
+			}
 		}
 	}
 	return nil
@@ -163,6 +172,8 @@ func (e *Employee) String() string {
 	builder.WriteString(e.Remark)
 	builder.WriteString(", name=")
 	builder.WriteString(e.Name)
+	builder.WriteString(", phone=")
+	builder.WriteString(e.Phone)
 	builder.WriteByte(')')
 	return builder.String()
 }

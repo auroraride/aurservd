@@ -93,6 +93,12 @@ func (eu *EmployeeUpdate) SetName(s string) *EmployeeUpdate {
 	return eu
 }
 
+// SetPhone sets the "phone" field.
+func (eu *EmployeeUpdate) SetPhone(s string) *EmployeeUpdate {
+	eu.mutation.SetPhone(s)
+	return eu
+}
+
 // Mutation returns the EmployeeMutation object of the builder.
 func (eu *EmployeeUpdate) Mutation() *EmployeeMutation {
 	return eu.mutation
@@ -244,6 +250,13 @@ func (eu *EmployeeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: employee.FieldName,
 		})
 	}
+	if value, ok := eu.mutation.Phone(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: employee.FieldPhone,
+		})
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{employee.Label}
@@ -324,6 +337,12 @@ func (euo *EmployeeUpdateOne) ClearRemark() *EmployeeUpdateOne {
 // SetName sets the "name" field.
 func (euo *EmployeeUpdateOne) SetName(s string) *EmployeeUpdateOne {
 	euo.mutation.SetName(s)
+	return euo
+}
+
+// SetPhone sets the "phone" field.
+func (euo *EmployeeUpdateOne) SetPhone(s string) *EmployeeUpdateOne {
+	euo.mutation.SetPhone(s)
 	return euo
 }
 
@@ -506,6 +525,13 @@ func (euo *EmployeeUpdateOne) sqlSave(ctx context.Context) (_node *Employee, err
 			Type:   field.TypeString,
 			Value:  value,
 			Column: employee.FieldName,
+		})
+	}
+	if value, ok := euo.mutation.Phone(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: employee.FieldPhone,
 		})
 	}
 	_node = &Employee{config: euo.config}

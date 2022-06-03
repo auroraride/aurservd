@@ -452,6 +452,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "name", Type: field.TypeString, Comment: "姓名"},
+		{Name: "phone", Type: field.TypeString, Comment: "电话"},
 	}
 	// EmployeeTable holds the schema information for the "employee" table.
 	EmployeeTable = &schema.Table{
@@ -983,6 +984,7 @@ var (
 		{Name: "name", Type: field.TypeString, Comment: "门店名称"},
 		{Name: "status", Type: field.TypeUint8, Comment: "门店状态 0维护 1营业 2休息 3隐藏", Default: 0},
 		{Name: "branch_id", Type: field.TypeUint64},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// StoreTable holds the schema information for the "store" table.
 	StoreTable = &schema.Table{
@@ -995,6 +997,12 @@ var (
 				Columns:    []*schema.Column{StoreColumns[10]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "store_employee_employee",
+				Columns:    []*schema.Column{StoreColumns[11]},
+				RefColumns: []*schema.Column{EmployeeColumns[0]},
+				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -1403,6 +1411,7 @@ func init() {
 		Table: "setting",
 	}
 	StoreTable.ForeignKeys[0].RefTable = BranchTable
+	StoreTable.ForeignKeys[1].RefTable = EmployeeTable
 	StoreTable.Annotation = &entsql.Annotation{
 		Table: "store",
 	}

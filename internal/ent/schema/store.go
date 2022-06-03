@@ -62,6 +62,8 @@ func (Store) Mixin() []ent.Mixin {
         internal.TimeMixin{},
         internal.DeleteMixin{},
         internal.Modifier{},
+
+        EmployeeMixin{},
     }
 }
 

@@ -25,6 +25,8 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
+	// FieldEmployeeID holds the string denoting the employee_id field in the database.
+	FieldEmployeeID = "employee_id"
 	// FieldBranchID holds the string denoting the branch_id field in the database.
 	FieldBranchID = "branch_id"
 	// FieldSn holds the string denoting the sn field in the database.
@@ -33,10 +35,19 @@ const (
 	FieldName = "name"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// EdgeEmployee holds the string denoting the employee edge name in mutations.
+	EdgeEmployee = "employee"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
 	EdgeBranch = "branch"
 	// Table holds the table name of the store in the database.
 	Table = "store"
+	// EmployeeTable is the table that holds the employee relation/edge.
+	EmployeeTable = "store"
+	// EmployeeInverseTable is the table name for the Employee entity.
+	// It exists in this package in order to avoid circular dependency with the "employee" package.
+	EmployeeInverseTable = "employee"
+	// EmployeeColumn is the table column denoting the employee relation/edge.
+	EmployeeColumn = "employee_id"
 	// BranchTable is the table that holds the branch relation/edge.
 	BranchTable = "store"
 	// BranchInverseTable is the table name for the Branch entity.
@@ -55,6 +66,7 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
+	FieldEmployeeID,
 	FieldBranchID,
 	FieldSn,
 	FieldName,

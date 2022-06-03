@@ -7,8 +7,8 @@ package model
 
 const (
     StoreStatusMaintain uint8 = iota // 维护中
-    StoreStatusNormal                // 营业中
-    StoreStatusRest                  // 休息中
+    StoreStatusOpen                  // 营业中
+    StoreStatusClose                 // 休息中
     StoreStatusHidden                // 隐藏
 )
 

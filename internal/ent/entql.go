@@ -266,6 +266,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			employee.FieldLastModifier: {Type: field.TypeJSON, Column: employee.FieldLastModifier},
 			employee.FieldRemark:       {Type: field.TypeString, Column: employee.FieldRemark},
 			employee.FieldName:         {Type: field.TypeString, Column: employee.FieldName},
+			employee.FieldPhone:        {Type: field.TypeString, Column: employee.FieldPhone},
 		},
 	}
 	graph.Nodes[9] = &sqlgraph.Node{
@@ -522,6 +523,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			store.FieldCreator:      {Type: field.TypeJSON, Column: store.FieldCreator},
 			store.FieldLastModifier: {Type: field.TypeJSON, Column: store.FieldLastModifier},
 			store.FieldRemark:       {Type: field.TypeString, Column: store.FieldRemark},
+			store.FieldEmployeeID:   {Type: field.TypeUint64, Column: store.FieldEmployeeID},
 			store.FieldBranchID:     {Type: field.TypeUint64, Column: store.FieldBranchID},
 			store.FieldSn:           {Type: field.TypeString, Column: store.FieldSn},
 			store.FieldName:         {Type: field.TypeString, Column: store.FieldName},
@@ -1164,6 +1166,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Rider",
 		"Subscribe",
+	)
+	graph.MustAddE(
+		"employee",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   store.EmployeeTable,
+			Columns: []string{store.EmployeeColumn},
+			Bidi:    false,
+		},
+		"Store",
+		"Employee",
 	)
 	graph.MustAddE(
 		"branch",
@@ -2583,6 +2597,11 @@ func (f *EmployeeFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(employee.FieldName))
 }
 
+// WherePhone applies the entql string predicate on the phone field.
+func (f *EmployeeFilter) WherePhone(p entql.StringP) {
+	f.Where(p.Field(employee.FieldPhone))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (eq *EnterpriseQuery) addPredicate(pred func(s *sql.Selector)) {
 	eq.predicates = append(eq.predicates, pred)
@@ -3963,6 +3982,11 @@ func (f *StoreFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(store.FieldRemark))
 }
 
+// WhereEmployeeID applies the entql uint64 predicate on the employee_id field.
+func (f *StoreFilter) WhereEmployeeID(p entql.Uint64P) {
+	f.Where(p.Field(store.FieldEmployeeID))
+}
+
 // WhereBranchID applies the entql uint64 predicate on the branch_id field.
 func (f *StoreFilter) WhereBranchID(p entql.Uint64P) {
 	f.Where(p.Field(store.FieldBranchID))
@@ -3981,6 +4005,20 @@ func (f *StoreFilter) WhereName(p entql.StringP) {
 // WhereStatus applies the entql uint8 predicate on the status field.
 func (f *StoreFilter) WhereStatus(p entql.Uint8P) {
 	f.Where(p.Field(store.FieldStatus))
+}
+
+// WhereHasEmployee applies a predicate to check if query has an edge employee.
+func (f *StoreFilter) WhereHasEmployee() {
+	f.Where(entql.HasEdge("employee"))
+}
+
+// WhereHasEmployeeWith applies a predicate to check if query has an edge employee with a given conditions (other predicates).
+func (f *StoreFilter) WhereHasEmployeeWith(preds ...predicate.Employee) {
+	f.Where(entql.HasEdgeWith("employee", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // WhereHasBranch applies a predicate to check if query has an edge branch.

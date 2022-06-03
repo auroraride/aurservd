@@ -64,4 +64,6 @@ func loadRideRoutes() {
     cabinet.POST("/process", rapi.Cabinet.Process)
     cabinet.GET("/process/status", rapi.Cabinet.ProcessStatus)
     cabinet.POST("/report", rapi.Cabinet.Report)
+
+    g.POST("/store/exchange", rapi.Exchange.Store)
 }

@@ -97,6 +97,12 @@ func (ec *EmployeeCreate) SetName(s string) *EmployeeCreate {
 	return ec
 }
 
+// SetPhone sets the "phone" field.
+func (ec *EmployeeCreate) SetPhone(s string) *EmployeeCreate {
+	ec.mutation.SetPhone(s)
+	return ec
+}
+
 // Mutation returns the EmployeeMutation object of the builder.
 func (ec *EmployeeCreate) Mutation() *EmployeeMutation {
 	return ec.mutation
@@ -204,6 +210,9 @@ func (ec *EmployeeCreate) check() error {
 	if _, ok := ec.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Employee.name"`)}
 	}
+	if _, ok := ec.mutation.Phone(); !ok {
+		return &ValidationError{Name: "phone", err: errors.New(`ent: missing required field "Employee.phone"`)}
+	}
 	return nil
 }
 
@@ -287,6 +296,14 @@ func (ec *EmployeeCreate) createSpec() (*Employee, *sqlgraph.CreateSpec) {
 			Column: employee.FieldName,
 		})
 		_node.Name = value
+	}
+	if value, ok := ec.mutation.Phone(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: employee.FieldPhone,
+		})
+		_node.Phone = value
 	}
 	return _node, _spec
 }
@@ -447,6 +464,18 @@ func (u *EmployeeUpsert) SetName(v string) *EmployeeUpsert {
 // UpdateName sets the "name" field to the value that was provided on create.
 func (u *EmployeeUpsert) UpdateName() *EmployeeUpsert {
 	u.SetExcluded(employee.FieldName)
+	return u
+}
+
+// SetPhone sets the "phone" field.
+func (u *EmployeeUpsert) SetPhone(v string) *EmployeeUpsert {
+	u.Set(employee.FieldPhone, v)
+	return u
+}
+
+// UpdatePhone sets the "phone" field to the value that was provided on create.
+func (u *EmployeeUpsert) UpdatePhone() *EmployeeUpsert {
+	u.SetExcluded(employee.FieldPhone)
 	return u
 }
 
@@ -623,6 +652,20 @@ func (u *EmployeeUpsertOne) SetName(v string) *EmployeeUpsertOne {
 func (u *EmployeeUpsertOne) UpdateName() *EmployeeUpsertOne {
 	return u.Update(func(s *EmployeeUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetPhone sets the "phone" field.
+func (u *EmployeeUpsertOne) SetPhone(v string) *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetPhone(v)
+	})
+}
+
+// UpdatePhone sets the "phone" field to the value that was provided on create.
+func (u *EmployeeUpsertOne) UpdatePhone() *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdatePhone()
 	})
 }
 
@@ -963,6 +1006,20 @@ func (u *EmployeeUpsertBulk) SetName(v string) *EmployeeUpsertBulk {
 func (u *EmployeeUpsertBulk) UpdateName() *EmployeeUpsertBulk {
 	return u.Update(func(s *EmployeeUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetPhone sets the "phone" field.
+func (u *EmployeeUpsertBulk) SetPhone(v string) *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetPhone(v)
+	})
+}
+
+// UpdatePhone sets the "phone" field to the value that was provided on create.
+func (u *EmployeeUpsertBulk) UpdatePhone() *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdatePhone()
 	})
 }
 

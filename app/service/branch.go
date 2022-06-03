@@ -246,7 +246,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
     // 门店
     stores := ar.Ent.Store.QueryNotDeleted().Where(store.BranchIDIn(ids...)).AllX(s.ctx)
     for _, es := range stores {
-        if es.Status == model.StoreStatusNormal {
+        if es.Status == model.StoreStatusOpen {
             itemsMap[es.BranchID].Facility = append(itemsMap[es.BranchID].Facility, model.BranchFacility{
                 ID:    es.ID,
                 Type:  model.BranchFacilityTypeStore,

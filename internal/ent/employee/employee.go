@@ -27,6 +27,8 @@ const (
 	FieldRemark = "remark"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldPhone holds the string denoting the phone field in the database.
+	FieldPhone = "phone"
 	// Table holds the table name of the employee in the database.
 	Table = "employee"
 )
@@ -41,6 +43,7 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldName,
+	FieldPhone,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
