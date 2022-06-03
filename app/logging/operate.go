@@ -6,14 +6,11 @@
 package logging
 
 import (
-    "github.com/alibabacloud-go/tea/tea"
     sls "github.com/aliyun/aliyun-log-go-sdk"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
-    "github.com/golang-module/carbon/v2"
     "github.com/lithammer/shortuuid/v4"
-    log "github.com/sirupsen/logrus"
     "time"
 )
 
@@ -63,6 +60,10 @@ type OperateLog struct {
     Time string `json:"time" sls:"时间" index:"doc"`
 }
 
+func (o *OperateLog) GetLogstoreName() string {
+    return ar.Config.Aliyun.Sls.OperateLog
+}
+
 func NewOperateLog() *OperateLog {
     return &OperateLog{
         ID: shortuuid.New(),
@@ -98,25 +99,8 @@ func (o *OperateLog) SetModifier(m *model.Modifier) *OperateLog {
     return o
 }
 
-// PutOperateLog 提交操作日志
-func (o *OperateLog) PutOperateLog() {
-    go func() {
-        now := time.Now()
-        if o.Time == "" {
-            o.Time = now.Format(carbon.DateTimeLayout)
-        }
-        cfg := ar.Config.Aliyun.Sls
-        err := ali.NewSls().PutLogs(cfg.Project, cfg.OperateLog, &sls.LogGroup{
-            Logs: []*sls.Log{{
-                Time:     tea.Uint32(uint32(now.Unix())),
-                Contents: GenerateLogContent(o),
-            }},
-        })
-        if err != nil {
-            log.Error(err)
-            return
-        }
-    }()
+func (o *OperateLog) Send() {
+    PutLog(o)
 }
 
 // GetLogs 获取日志

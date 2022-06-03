@@ -62,5 +62,5 @@ func (s *personService) Ban(req *model.PersonBanReq) {
     } else {
         ol.SetOperate(logging.OperatePersonUnBan).SetDiff(bd, nb)
     }
-    ol.PutOperateLog()
+    ol.Send()
 }

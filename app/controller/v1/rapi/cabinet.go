@@ -36,8 +36,8 @@ func (*cabinet) Report(c echo.Context) (err error) {
 
 // GetProcess
 // @ID           RiderCabinetGetProcess
-// @Router       /rider/v1/cabinet/{serial} [GET]
-// @Summary      R40001 确认换电信息
+// @Router       /rider/v1/cabinet/process/{serial} [GET]
+// @Summary      R40001 获取换电信息
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json

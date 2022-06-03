@@ -9,7 +9,9 @@ import (
     "fmt"
     "github.com/alibabacloud-go/tea/tea"
     sls "github.com/aliyun/aliyun-log-go-sdk"
+    "github.com/golang-module/carbon/v2"
     "reflect"
+    "time"
 )
 
 // GenerateLogContent 转换为sls日志
@@ -21,7 +23,7 @@ func GenerateLogContent(pointer any) (contents []*sls.LogContent) {
     contents = make([]*sls.LogContent, n)
     for i := 0; i < n; i++ {
         // tag, _ := t.Field(i).Tag.Lookup("sls") // 使用中文字段名
-        tag, _ := t.Field(i).Tag.Lookup("json") // 使用英文字段名
+        json, _ := t.Field(i).Tag.Lookup("json") // 使用英文字段名
         v := value.Field(i)
         cv := ""
         if v.Type().Kind() == reflect.Bool {
@@ -32,10 +34,14 @@ func GenerateLogContent(pointer any) (contents []*sls.LogContent) {
         } else {
             cv = fmt.Sprintf("%v", v.Interface())
         }
+        if json == "time" && v.Type().Kind() == reflect.String && v.String() == "" {
+            cv = time.Now().Format(carbon.DateTimeLayout)
+        }
         contents[i] = &sls.LogContent{
-            Key:   tea.String(tag),
+            Key:   tea.String(json),
             Value: tea.String(cv),
         }
     }
+
     return
 }

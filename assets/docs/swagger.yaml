@@ -2811,32 +2811,6 @@ paths:
       summary: R20002 网点骑行规划时间
       tags:
       - '[R]骑手接口'
-  /rider/v1/cabinet/{serial}:
-    get:
-      consumes:
-      - application/json
-      operationId: RiderCabinetGetProcess
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      - description: 电柜二维码
-        in: path
-        name: serial
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.RiderCabinetInfo'
-      summary: R40001 确认换电信息
-      tags:
-      - '[R]骑手接口'
   /rider/v1/cabinet/process:
     get:
       consumes:
@@ -2886,6 +2860,32 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: R40002 操作换电
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/cabinet/process/{serial}:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderCabinetGetProcess
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 电柜二维码
+        in: path
+        name: serial
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderCabinetInfo'
+      summary: R40001 获取换电信息
       tags:
       - '[R]骑手接口'
   /rider/v1/cabinet/report:

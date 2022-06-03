@@ -109,11 +109,20 @@ type CabinetDeleteReq struct {
 type CabinetBinDoorStatus uint8
 
 const (
-    CabinetBinDoorStatusUnknown CabinetBinDoorStatus = iota // 未知
-    CabinetBinDoorStatusClose                               // 关闭
-    CabinetBinDoorStatusOpen                                // 开启
-    CabinetBinDoorStatusFail                                // 故障
+    CabinetBinDoorStatusUnknown      CabinetBinDoorStatus = iota // 未知
+    CabinetBinDoorStatusClose                                    // 关闭
+    CabinetBinDoorStatusOpen                                     // 开启
+    CabinetBinDoorStatusFail                                     // 故障
+    CabinetBinDoorStatusBatteryFull                              // 电池未取出
+    CabinetBinDoorStatusBatteryEmpty                             // 电池未放入
 )
+
+var CabinetBinDoorError = map[CabinetBinDoorStatus]string{
+    CabinetBinDoorStatusUnknown:      "仓门状态未知",
+    CabinetBinDoorStatusFail:         "仓门故障",
+    CabinetBinDoorStatusBatteryFull:  "电池未取出",
+    CabinetBinDoorStatusBatteryEmpty: "电池未放入",
+}
 
 // CabinetBin 仓位详细信息
 // 1000mA = 1A

@@ -498,7 +498,7 @@ func (s *riderService) Block(req *model.RiderBlockReq) {
     } else {
         ol.SetOperate(logging.OperateRiderUnBLock).SetDiff(bd, nb)
     }
-    ol.PutOperateLog()
+    ol.Send()
 }
 
 // DepositOrder 获取骑手押金订单

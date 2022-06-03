@@ -6,22 +6,30 @@
 package logging
 
 import (
+    "github.com/alibabacloud-go/tea/tea"
     sls "github.com/aliyun/aliyun-log-go-sdk"
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
     log "github.com/sirupsen/logrus"
     "reflect"
+    "time"
 )
 
 var (
     indexToken = []string{`,`, ` `, `'`, `"`, `;`, `=`, `(`, `)`, `[`, `]`, `{`, `}`, `?`, `@`, `&`, `<`, `>`, `/`, `:`, `\n`, `\t`, `\r`}
 )
 
+type Logger interface {
+    GetLogstoreName() string
+    Send()
+}
+
 func Boot() {
     cfg := ar.Config.Aliyun.Sls
     bootLogStore(cfg.Project, cfg.CabinetLog, CabinetLog{})
     bootLogStore(cfg.Project, cfg.DoorLog, DoorOperateLog{})
     bootLogStore(cfg.Project, cfg.OperateLog, OperateLog{})
+    bootLogStore(cfg.Project, cfg.ExchangeLog, ExchangeLog{})
 }
 
 // bootLogStore 自动创建logstore
@@ -97,4 +105,20 @@ func bootLogStore(project, logstore string, typ any) {
             }
         }
     }
+}
+
+// PutLog 提交日志
+func PutLog(ptr Logger) {
+    go func() {
+        err := ali.NewSls().PutLogs(ar.Config.Aliyun.Sls.Project, ptr.GetLogstoreName(), &sls.LogGroup{
+            Logs: []*sls.Log{{
+                Time:     tea.Uint32(uint32(time.Now().Unix())),
+                Contents: GenerateLogContent(ptr),
+            }},
+        })
+        if err != nil {
+            log.Error(err)
+            return
+        }
+    }()
 }

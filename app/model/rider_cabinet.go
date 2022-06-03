@@ -5,7 +5,9 @@
 
 package model
 
-import jsoniter "github.com/json-iterator/go"
+import (
+    jsoniter "github.com/json-iterator/go"
+)
 
 // RiderCabinetOperateStep 换电步骤
 type RiderCabinetOperateStep uint8
@@ -16,6 +18,20 @@ const (
     RiderCabinetOperateStepOpenFull                                     // 第三步, 开启满电仓
     RiderCabinetOperateStepClose                                        // 第四步, 取出新电池并关闭仓门
 )
+
+func (ros RiderCabinetOperateStep) String() string {
+    switch ros {
+    case RiderCabinetOperateStepOpenEmpty:
+        return "第一步, 开启空电仓"
+    case RiderCabinetOperateStepPutInto:
+        return "第二步, 放入旧电池并关闭仓门"
+    case RiderCabinetOperateStepOpenFull:
+        return "第三步, 开启满电仓"
+    case RiderCabinetOperateStepClose:
+        return "第四步, 取出新电池并关闭仓门"
+    }
+    return "未知"
+}
 
 const (
     RiderCabinetOperateReasonEmpty = "开空电仓"
@@ -65,11 +81,12 @@ type RiderCabinetOperateReq struct {
 
 // RiderCabinetOperating 电柜处理
 type RiderCabinetOperating struct {
-    UUID       string `json:"uuid"`
-    Serial     string `json:"serial"`
-    ID         uint64 `json:"id"`         // 电柜ID
-    EmptyIndex int    `json:"emptyIndex"` // 空店仓
-    FullIndex  int    `json:"fullIndex"`  // 满电仓
+    UUID        string             `json:"uuid"`
+    Serial      string             `json:"serial"`
+    ID          uint64             `json:"id"`          // 电柜ID
+    EmptyIndex  int                `json:"emptyIndex"`  // 空店仓
+    FullIndex   int                `json:"fullIndex"`   // 满电仓
+    Electricity BatteryElectricity `json:"electricity"` // 满电电池电量
 }
 
 type RiderCabinetOperateStatus uint8
