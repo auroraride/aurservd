@@ -171,7 +171,7 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe) {
         pauseDays += diff
     }
     // 剩余天数
-    remaining := item.InitialDays + item.AlterDays + item.OverdueDays + item.RenewalDays + pauseDays - pastDays
+    remaining := item.InitialDays + item.AlterDays + item.OverdueDays + item.RenewalDays + pauseDays - pastDays - 1 // 实际天数 -1 才是剩余天数
     if remaining < 0 {
         status = model.SubscribeStatusOverdue
     }
