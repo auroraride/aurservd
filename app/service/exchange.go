@@ -121,7 +121,7 @@ func (s *exchangeService) Log(riderID uint64, req *model.PaginationReq) *model.P
         *req,
         func(item *ent.Exchange) (res model.ExchangeLogRes) {
             res = model.ExchangeLogRes{
-                UUID:    item.UUID,
+                ID:      item.ID,
                 Time:    item.CreatedAt.Format(carbon.DateTimeLayout),
                 Success: item.Success,
                 City: model.City{

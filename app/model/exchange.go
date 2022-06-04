@@ -38,7 +38,7 @@ type ExchangeLogBinInfo struct {
 }
 
 type ExchangeLogRes struct {
-    UUID    string             `json:"uuid"`    // 换电编号
+    ID      uint64             `json:"id"`
     Name    string             `json:"name"`    // 门店或电柜名称
     Type    string             `json:"type"`    // 门店或电柜
     Time    string             `json:"time"`    // 换电时间
