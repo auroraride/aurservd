@@ -49,7 +49,7 @@ func (*cabinet) Process(c echo.Context) (err error) {
 
 // ProcessStatus
 // @ID           RiderCabinetProcessStatus
-// @Router       /rider/v1/cabinet/process [GET]
+// @Router       /rider/v1/cabinet/process/status [GET]
 // @Summary      R40003 换电状态
 // @Tags         [R]骑手接口
 // @Accept       json

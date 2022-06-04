@@ -22,3 +22,27 @@ type ExchangeStoreRes struct {
     Time      int64   `json:"time"`      // 时间戳
     UUID      string  `json:"uuid"`      // 编码
 }
+
+type ExchangeOverview struct {
+    Times int `json:"times"` // 换电次数
+    Days  int `json:"days"`  // 换电天数
+}
+
+type ExchangeLogReq struct {
+    PaginationReq
+}
+
+type ExchangeLogBinInfo struct {
+    EmptyIndex int `json:"emptyIndex"` // 空电仓位
+    FullIndex  int `json:"fullIndex"`  // 满电仓位
+}
+
+type ExchangeLogRes struct {
+    UUID    string             `json:"uuid"`    // 换电编号
+    Name    string             `json:"name"`    // 门店或电柜名称
+    Type    string             `json:"type"`    // 门店或电柜
+    Time    string             `json:"time"`    // 换电时间
+    Success bool               `json:"success"` // 是否成功
+    City    City               `json:"city"`    // 城市
+    BinInfo ExchangeLogBinInfo `json:"binInfo"` // 仓位信息
+}

@@ -35,7 +35,6 @@ func ParsePaginationResponse[T any, K any](pq PaginationQuery, req PaginationReq
     res = new(PaginationRes)
     res.Pagination = pq.PaginationResult(req)
 
-    res = new(PaginationRes)
     qr := pq.PaginationItemsX(req)
     items := make([]*K, 0)
     if qr != nil {

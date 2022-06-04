@@ -20,6 +20,7 @@ type TimeMixin struct {
 
 func (TimeMixin) Fields() []ent.Field {
     return []ent.Field{
+        // .SchemaType(map[string]string{dialect.Postgres: "timestamp without time zone"})
         field.Time("created_at").Immutable().Default(time.Now),
         field.Time("updated_at").Default(time.Now).UpdateDefault(time.Now),
     }

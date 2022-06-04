@@ -187,6 +187,7 @@ func (s *riderCabinetService) ProcessStepEnd(req *model.RiderCabinetOperating) {
             Result:      res,
         }).
         SetUUID(req.UUID).
+        SetCabinetID(req.ID).
         SetSuccess(res.Status == model.RiderCabinetOperateStatusSuccess && res.Step == model.RiderCabinetOperateStepClose).
         Save(s.ctx)
 }

@@ -2841,30 +2841,6 @@ paths:
       tags:
       - '[R]骑手接口'
   /rider/v1/cabinet/process:
-    get:
-      consumes:
-      - application/json
-      operationId: RiderCabinetProcessStatus
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      - description: '操作ID '
-        in: query
-        name: uuid
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.RiderCabinetOperateRes'
-      summary: R40003 换电状态
-      tags:
-      - '[R]骑手接口'
     post:
       consumes:
       - application/json
@@ -2915,6 +2891,31 @@ paths:
           schema:
             $ref: '#/definitions/model.RiderCabinetInfo'
       summary: R40001 获取换电信息
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/cabinet/process/status:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderCabinetProcessStatus
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: '操作ID '
+        in: query
+        name: uuid
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderCabinetOperateRes'
+      summary: R40003 换电状态
       tags:
       - '[R]骑手接口'
   /rider/v1/cabinet/report:
@@ -3019,6 +3020,75 @@ paths:
           schema:
             $ref: '#/definitions/model.ContractSignRes'
       summary: R30005 签署合同
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/exchange/log:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderExchangeLog
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R40006 换电记录
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/exchange/overview:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderExchangeOverview
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R40006 换电概览
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/exchange/store:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderExchangeStore
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ExchangeStoreReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.ExchangeStoreRes'
+      summary: R40005 门店换电
       tags:
       - '[R]骑手接口'
   /rider/v1/face/{token}:
@@ -3210,33 +3280,6 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: R10001 登录或注册
-      tags:
-      - '[R]骑手接口'
-  /rider/v1/store/exchange:
-    post:
-      consumes:
-      - application/json
-      operationId: RiderExchangeStore
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      - description: desc
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.ExchangeStoreReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.ExchangeStoreRes'
-      summary: R40005 门店换电
       tags:
       - '[R]骑手接口'
 swagger: "2.0"
