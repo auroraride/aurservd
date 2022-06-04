@@ -92,6 +92,16 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
     if !NewContract().Effective(s.rider) {
         snag.Panic("请先签约")
     }
+
+    // 查询是否有退款中的押金
+    if exists, _ := ar.Ent.Order.QueryNotDeleted().Where(
+        order.RiderID(s.rider.ID),
+        // order.Type(model.OrderTypeDeposit),
+        order.Status(model.OrderStatusRefundPending),
+    ).Exist(s.ctx); exists {
+        snag.Panic("当前有退款中的订单")
+    }
+
     sub := NewSubscribe().Recent(s.rider.ID)
     // 判定类型条件
     var subID, orderID *uint64
