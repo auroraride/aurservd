@@ -67,3 +67,19 @@ func (*order) List(c echo.Context) (err error) {
         service.NewRiderOrder().List(ctx.Rider.ID, req),
     )
 }
+
+// Detail
+// @ID           RiderOrderDetail
+// @Router       /rider/v1/order/{id} [GET]
+// @Summary      R30009 订单详情
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        id  path  int  true  "订单ID"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*order) Detail(c echo.Context) (err error) {
+    ctx, req := app.RiderContextAndBinding[model.IDParamReq](c)
+    srv := service.NewRiderOrderWithRider(ctx.Rider)
+    return ctx.SendResponse(srv.Detail(srv.Query(ctx.Rider.ID, req.ID)))
+}

@@ -2730,6 +2730,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/order/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R30009 订单详情",
+                "operationId": "RiderOrderDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "订单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/plan": {
             "get": {
                 "consumes": [

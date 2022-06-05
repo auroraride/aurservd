@@ -3179,6 +3179,32 @@ paths:
       summary: R30006 支付请求
       tags:
       - '[R]骑手接口'
+  /rider/v1/order/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderOrderDetail
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 订单ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R30009 订单详情
+      tags:
+      - '[R]骑手接口'
   /rider/v1/order/refund:
     post:
       consumes:

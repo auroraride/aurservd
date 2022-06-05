@@ -11,6 +11,7 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/order"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
 )
 
@@ -39,8 +40,8 @@ func NewRiderOrder() *riderOrderService {
     }
 }
 
-func NewRiderOrderWithRider(rider *ent.Rider) *orderService {
-    s := NewOrder()
+func NewRiderOrderWithRider(rider *ent.Rider) *riderOrderService {
+    s := NewRiderOrder()
     s.ctx = context.WithValue(s.ctx, "rider", rider)
     s.rider = rider
     return s
@@ -108,4 +109,14 @@ func (s *riderOrderService) Detail(item *ent.Order) model.RiderOrder {
         }
     }
     return res
+}
+
+func (s *riderOrderService) Query(riderID, orderID uint64) *ent.Order {
+    item, _ := s.orm.QueryNotDeleted().Where(order.RiderID(riderID), order.ID(orderID)).WithCity().WithPlan(func(pq *ent.PlanQuery) {
+        pq.WithPms()
+    }).First(s.ctx)
+    if item == nil {
+        snag.Panic("未找到订单")
+    }
+    return item
 }
