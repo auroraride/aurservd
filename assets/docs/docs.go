@@ -990,6 +990,88 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/enterprise": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M90001 创建企业",
+                "operationId": "ManagerEnterpriseCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterprisePostReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M90002 修改企业",
+                "operationId": "ManagerEnterpriseModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterpriseModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/fault/{id}": {
             "put": {
                 "consumes": [
@@ -3803,7 +3885,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.EnterpriseItem": {
+        "model.Enterprise": {
             "type": "object",
             "properties": {
                 "id": {
@@ -3813,6 +3895,217 @@ const docTemplate = `{
                 "name": {
                     "description": "企业名称",
                     "type": "string"
+                }
+            }
+        },
+        "model.EnterpriseContract": {
+            "type": "object",
+            "required": [
+                "end",
+                "file",
+                "start"
+            ],
+            "properties": {
+                "end": {
+                    "type": "string"
+                },
+                "file": {
+                    "type": "string"
+                },
+                "start": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EnterpriseModifyReq": {
+            "type": "object",
+            "required": [
+                "address",
+                "cityId",
+                "contactName",
+                "contactPhone",
+                "contracts",
+                "deposit",
+                "idcardNumber",
+                "name",
+                "payment",
+                "prices",
+                "status"
+            ],
+            "properties": {
+                "address": {
+                    "description": "企业地址 ",
+                    "type": "string"
+                },
+                "cityId": {
+                    "description": "所在城市 ",
+                    "type": "integer"
+                },
+                "contactName": {
+                    "description": "联系人 ",
+                    "type": "string"
+                },
+                "contactPhone": {
+                    "description": "联系电话 ",
+                    "type": "string"
+                },
+                "contracts": {
+                    "description": "合同 ",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/model.EnterpriseContract"
+                    }
+                },
+                "deposit": {
+                    "description": "押金 ",
+                    "type": "number"
+                },
+                "idcardNumber": {
+                    "description": "身份证号 ",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "企业名称 ",
+                    "type": "string"
+                },
+                "payment": {
+                    "description": "付费方式 1:预付费 2:后付费",
+                    "type": "integer",
+                    "maximum": 2,
+                    "minimum": 1,
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "prices": {
+                    "description": "价格列表 ",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/model.EnterprisePrice"
+                    }
+                },
+                "status": {
+                    "description": "合作状态 0:未合作 1:已合作 2:已暂停",
+                    "type": "integer",
+                    "maximum": 2,
+                    "minimum": 0,
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
+        "model.EnterprisePostReq": {
+            "type": "object",
+            "required": [
+                "address",
+                "cityId",
+                "contactName",
+                "contactPhone",
+                "contracts",
+                "deposit",
+                "idcardNumber",
+                "name",
+                "payment",
+                "prices",
+                "status"
+            ],
+            "properties": {
+                "address": {
+                    "description": "企业地址 ",
+                    "type": "string"
+                },
+                "cityId": {
+                    "description": "所在城市 ",
+                    "type": "integer"
+                },
+                "contactName": {
+                    "description": "联系人 ",
+                    "type": "string"
+                },
+                "contactPhone": {
+                    "description": "联系电话 ",
+                    "type": "string"
+                },
+                "contracts": {
+                    "description": "合同 ",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/model.EnterpriseContract"
+                    }
+                },
+                "deposit": {
+                    "description": "押金 ",
+                    "type": "number"
+                },
+                "idcardNumber": {
+                    "description": "身份证号 ",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "企业名称 ",
+                    "type": "string"
+                },
+                "payment": {
+                    "description": "付费方式 1:预付费 2:后付费",
+                    "type": "integer",
+                    "maximum": 2,
+                    "minimum": 1,
+                    "enum": [
+                        1,
+                        2
+                    ]
+                },
+                "prices": {
+                    "description": "价格列表 ",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/model.EnterprisePrice"
+                    }
+                },
+                "status": {
+                    "description": "合作状态 0:未合作 1:已合作 2:已暂停",
+                    "type": "integer",
+                    "maximum": 2,
+                    "minimum": 0,
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
+        "model.EnterprisePrice": {
+            "type": "object",
+            "required": [
+                "cityId",
+                "price",
+                "voltage"
+            ],
+            "properties": {
+                "cityId": {
+                    "description": "城市 ",
+                    "type": "integer"
+                },
+                "price": {
+                    "description": "单价(元/天) ",
+                    "type": "number"
+                },
+                "voltage": {
+                    "description": "电压型号 暂时固定为 60 或 72",
+                    "type": "number",
+                    "enum": [
+                        60,
+                        72
+                    ]
                 }
             }
         },
@@ -4307,6 +4600,10 @@ const docTemplate = `{
                     "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
                     "type": "integer"
                 },
+                "deleteAt": {
+                    "description": "账户删除时间",
+                    "type": "string"
+                },
                 "deposit": {
                     "description": "押金",
                     "type": "number"
@@ -4315,7 +4612,7 @@ const docTemplate = `{
                     "description": "团签企业信息, 若无此字段则为个签用户",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.EnterpriseItem"
+                            "$ref": "#/definitions/model.Enterprise"
                         }
                     ]
                 },
@@ -4332,6 +4629,10 @@ const docTemplate = `{
                 },
                 "phone": {
                     "description": "手机号",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "账户备注",
                     "type": "string"
                 },
                 "status": {

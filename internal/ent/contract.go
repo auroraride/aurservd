@@ -50,7 +50,7 @@ type Contract struct {
 	// 合同链接
 	Files []string `json:"files,omitempty"`
 	// Effective holds the value of the "effective" field.
-	// 是否有效, 当用户退租之后触发合同失效, 需要重新签订
+	// 是否有效
 	Effective bool `json:"effective,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ContractQuery when eager-loading is set.

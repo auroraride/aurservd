@@ -35,6 +35,8 @@ const (
 	FieldRiderID = "rider_id"
 	// FieldInitialOrderID holds the string denoting the initial_order_id field in the database.
 	FieldInitialOrderID = "initial_order_id"
+	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
+	FieldEnterpriseID = "enterprise_id"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldType holds the string denoting the type field in the database.
@@ -69,6 +71,8 @@ const (
 	EdgeCity = "city"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
+	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
+	EdgeEnterprise = "enterprise"
 	// EdgePauses holds the string denoting the pauses edge name in mutations.
 	EdgePauses = "pauses"
 	// EdgeAlters holds the string denoting the alters edge name in mutations.
@@ -107,6 +111,13 @@ const (
 	RiderInverseTable = "rider"
 	// RiderColumn is the table column denoting the rider relation/edge.
 	RiderColumn = "rider_id"
+	// EnterpriseTable is the table that holds the enterprise relation/edge.
+	EnterpriseTable = "subscribe"
+	// EnterpriseInverseTable is the table name for the Enterprise entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprise" package.
+	EnterpriseInverseTable = "enterprise"
+	// EnterpriseColumn is the table column denoting the enterprise relation/edge.
+	EnterpriseColumn = "enterprise_id"
 	// PausesTable is the table that holds the pauses relation/edge.
 	PausesTable = "subscribe_pause"
 	// PausesInverseTable is the table name for the SubscribePause entity.
@@ -151,6 +162,7 @@ var Columns = []string{
 	FieldCityID,
 	FieldRiderID,
 	FieldInitialOrderID,
+	FieldEnterpriseID,
 	FieldStatus,
 	FieldType,
 	FieldVoltage,

@@ -36,6 +36,12 @@ type Employee func(*sql.Selector)
 // Enterprise is the predicate function for enterprise builders.
 type Enterprise func(*sql.Selector)
 
+// EnterpriseContract is the predicate function for enterprisecontract builders.
+type EnterpriseContract func(*sql.Selector)
+
+// EnterprisePrice is the predicate function for enterpriseprice builders.
+type EnterprisePrice func(*sql.Selector)
+
 // Exchange is the predicate function for exchange builders.
 type Exchange func(*sql.Selector)
 

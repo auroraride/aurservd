@@ -228,6 +228,50 @@ func (eq *EnterpriseQuery) PaginationResult(req model.PaginationReq) model.Pagin
 	}
 }
 
+// Pagination returns pagination query builder for EnterpriseContractQuery.
+func (ecq *EnterpriseContractQuery) Pagination(req model.PaginationReq) *EnterpriseContractQuery {
+	ecq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return ecq
+}
+
+// PaginationItems returns pagination query builder for EnterpriseContractQuery.
+func (ecq *EnterpriseContractQuery) PaginationItemsX(req model.PaginationReq) any {
+	return ecq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for EnterpriseContractQuery.
+func (ecq *EnterpriseContractQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := ecq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for EnterprisePriceQuery.
+func (epq *EnterprisePriceQuery) Pagination(req model.PaginationReq) *EnterprisePriceQuery {
+	epq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return epq
+}
+
+// PaginationItems returns pagination query builder for EnterprisePriceQuery.
+func (epq *EnterprisePriceQuery) PaginationItemsX(req model.PaginationReq) any {
+	return epq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for EnterprisePriceQuery.
+func (epq *EnterprisePriceQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := epq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for ExchangeQuery.
 func (eq *ExchangeQuery) Pagination(req model.PaginationReq) *ExchangeQuery {
 	eq.Offset(req.GetOffset()).Limit(req.GetLimit())

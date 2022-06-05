@@ -57,6 +57,11 @@ func NewRiderCabinetWithModifier(m *model.Modifier) *riderCabinetService {
 
 // GetProcess 获取待换电信息
 func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) *model.RiderCabinetInfo {
+    // 是否企业用户
+    if s.rider.Edges.Enterprise != nil {
+        // TODO 企业状态是否可以换电
+    }
+
     // 是否有生效中套餐
     o := NewSubscribe().Recent(s.rider.ID)
     if o == nil || o.Status != model.SubscribeStatusUsing {

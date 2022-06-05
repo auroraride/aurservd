@@ -147,8 +147,11 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
 func (s *subscribeService) QueryAllEffective() []*ent.Subscribe {
     items, _ := ar.Ent.Subscribe.Query().
         Where(
+            // 未退款
             subscribe.RefundAtIsNil(),
+            // 未结束
             subscribe.EndAtIsNil(),
+            // 已开始
             subscribe.StartAtNotNil(),
         ).
         WithPauses(func(spq *ent.SubscribePauseQuery) {

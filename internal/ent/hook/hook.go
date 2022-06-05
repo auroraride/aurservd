@@ -139,6 +139,32 @@ func (f EnterpriseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return f(ctx, mv)
 }
 
+// The EnterpriseContractFunc type is an adapter to allow the use of ordinary
+// function as EnterpriseContract mutator.
+type EnterpriseContractFunc func(context.Context, *ent.EnterpriseContractMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EnterpriseContractFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.EnterpriseContractMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EnterpriseContractMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The EnterprisePriceFunc type is an adapter to allow the use of ordinary
+// function as EnterprisePrice mutator.
+type EnterprisePriceFunc func(context.Context, *ent.EnterprisePriceMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EnterprisePriceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.EnterprisePriceMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EnterprisePriceMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The ExchangeFunc type is an adapter to allow the use of ordinary
 // function as Exchange mutator.
 type ExchangeFunc func(context.Context, *ent.ExchangeMutation) (ent.Value, error)

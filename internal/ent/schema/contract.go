@@ -30,8 +30,7 @@ func (Contract) Fields() []ent.Field {
         field.String("flow_id").MaxLen(64).Unique().NotEmpty().Comment("E签宝流程ID"),
         field.String("sn").MaxLen(64).Unique().NotEmpty().Comment("合同编码"),
         field.JSON("files", []string{}).Optional().Comment("合同链接"),
-        field.Bool("effective").Default(true).Comment("是否有效, 当用户退租之后触发合同失效, 需要重新签订"), // TODO 需要实现逻辑
-        // TODO 其他诸如电池型号、ID、团签ID之类的信息字段
+        field.Bool("effective").Default(true).Comment("是否有效"), // TODO 需要实现逻辑, 当用户退租之后触发合同失效, 需要重新签订?
     }
 }
 

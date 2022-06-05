@@ -7,11 +7,11 @@ package service
 
 import (
     "context"
-    "entgo.io/ent/dialect/sql"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/exchange"
+    "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
     "github.com/google/uuid"
@@ -96,19 +96,17 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
 
 // Overview 换电概览
 func (s *exchangeService) Overview(riderID uint64) (res model.ExchangeOverview) {
-    var result []struct {
-        Count int    `json:"count"`
-        Date  string `json:"date"`
-    }
-    s.orm.QueryNotDeleted().Where(exchange.RiderID(riderID), exchange.Success(true)).Modify(func(s *sql.Selector) {
-        s.Select(
-            sql.As(sql.Count(exchange.FieldID), "count"),
-        ).AppendSelectExprAs(sql.Raw(`created_at::DATE`), "date").GroupBy("date")
-    }).ScanX(s.ctx, &result)
-
-    res.Days = len(result)
-    for _, r := range result {
-        res.Times += r.Count
+    res.Times, _ = s.orm.QueryNotDeleted().Where(exchange.RiderID(riderID), exchange.Success(true)).Count(s.ctx)
+    // 总使用天数
+    items, _ := ar.Ent.Subscribe.QueryNotDeleted().Where(subscribe.RiderID(riderID)).All(s.ctx)
+    for _, item := range items {
+        switch item.Status {
+        case model.SubscribeStatusInactive:
+            break
+        default:
+            res.Days += item.InitialDays + item.AlterDays + item.OverdueDays + item.RenewalDays + item.PauseDays - item.Remaining + 1 // 已用天数(+1代表当前天数算作1天)
+            break
+        }
     }
     return
 }

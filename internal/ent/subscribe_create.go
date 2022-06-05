@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -133,6 +134,28 @@ func (sc *SubscribeCreate) SetRiderID(u uint64) *SubscribeCreate {
 // SetInitialOrderID sets the "initial_order_id" field.
 func (sc *SubscribeCreate) SetInitialOrderID(u uint64) *SubscribeCreate {
 	sc.mutation.SetInitialOrderID(u)
+	return sc
+}
+
+// SetNillableInitialOrderID sets the "initial_order_id" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableInitialOrderID(u *uint64) *SubscribeCreate {
+	if u != nil {
+		sc.SetInitialOrderID(*u)
+	}
+	return sc
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (sc *SubscribeCreate) SetEnterpriseID(u uint64) *SubscribeCreate {
+	sc.mutation.SetEnterpriseID(u)
+	return sc
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableEnterpriseID(u *uint64) *SubscribeCreate {
+	if u != nil {
+		sc.SetEnterpriseID(*u)
+	}
 	return sc
 }
 
@@ -312,6 +335,11 @@ func (sc *SubscribeCreate) SetCity(c *City) *SubscribeCreate {
 // SetRider sets the "rider" edge to the Rider entity.
 func (sc *SubscribeCreate) SetRider(r *Rider) *SubscribeCreate {
 	return sc.SetRiderID(r.ID)
+}
+
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (sc *SubscribeCreate) SetEnterprise(e *Enterprise) *SubscribeCreate {
+	return sc.SetEnterpriseID(e.ID)
 }
 
 // AddPauseIDs adds the "pauses" edge to the SubscribePause entity by IDs.
@@ -501,9 +529,6 @@ func (sc *SubscribeCreate) check() error {
 	if _, ok := sc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "Subscribe.rider_id"`)}
 	}
-	if _, ok := sc.mutation.InitialOrderID(); !ok {
-		return &ValidationError{Name: "initial_order_id", err: errors.New(`ent: missing required field "Subscribe.initial_order_id"`)}
-	}
 	if _, ok := sc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Subscribe.status"`)}
 	}
@@ -539,9 +564,6 @@ func (sc *SubscribeCreate) check() error {
 	}
 	if _, ok := sc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Subscribe.rider"`)}
-	}
-	if _, ok := sc.mutation.InitialOrderID(); !ok {
-		return &ValidationError{Name: "initial_order", err: errors.New(`ent: missing required edge "Subscribe.initial_order"`)}
 	}
 	return nil
 }
@@ -801,6 +823,26 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.RiderID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   subscribe.EnterpriseTable,
+			Columns: []string{subscribe.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprise.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EnterpriseID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := sc.mutation.PausesIDs(); len(nodes) > 0 {
@@ -1093,6 +1135,30 @@ func (u *SubscribeUpsert) SetInitialOrderID(v uint64) *SubscribeUpsert {
 // UpdateInitialOrderID sets the "initial_order_id" field to the value that was provided on create.
 func (u *SubscribeUpsert) UpdateInitialOrderID() *SubscribeUpsert {
 	u.SetExcluded(subscribe.FieldInitialOrderID)
+	return u
+}
+
+// ClearInitialOrderID clears the value of the "initial_order_id" field.
+func (u *SubscribeUpsert) ClearInitialOrderID() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldInitialOrderID)
+	return u
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (u *SubscribeUpsert) SetEnterpriseID(v uint64) *SubscribeUpsert {
+	u.Set(subscribe.FieldEnterpriseID, v)
+	return u
+}
+
+// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateEnterpriseID() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldEnterpriseID)
+	return u
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (u *SubscribeUpsert) ClearEnterpriseID() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldEnterpriseID)
 	return u
 }
 
@@ -1569,6 +1635,34 @@ func (u *SubscribeUpsertOne) SetInitialOrderID(v uint64) *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) UpdateInitialOrderID() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdateInitialOrderID()
+	})
+}
+
+// ClearInitialOrderID clears the value of the "initial_order_id" field.
+func (u *SubscribeUpsertOne) ClearInitialOrderID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearInitialOrderID()
+	})
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (u *SubscribeUpsertOne) SetEnterpriseID(v uint64) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetEnterpriseID(v)
+	})
+}
+
+// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateEnterpriseID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateEnterpriseID()
+	})
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (u *SubscribeUpsertOne) ClearEnterpriseID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearEnterpriseID()
 	})
 }
 
@@ -2248,6 +2342,34 @@ func (u *SubscribeUpsertBulk) SetInitialOrderID(v uint64) *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) UpdateInitialOrderID() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdateInitialOrderID()
+	})
+}
+
+// ClearInitialOrderID clears the value of the "initial_order_id" field.
+func (u *SubscribeUpsertBulk) ClearInitialOrderID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearInitialOrderID()
+	})
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (u *SubscribeUpsertBulk) SetEnterpriseID(v uint64) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetEnterpriseID(v)
+	})
+}
+
+// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateEnterpriseID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateEnterpriseID()
+	})
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (u *SubscribeUpsertBulk) ClearEnterpriseID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearEnterpriseID()
 	})
 }
 

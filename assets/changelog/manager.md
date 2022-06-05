@@ -1,3 +1,22 @@
+## 2022-06-05
+
+#### 字段调整
+
+- 骑手列表新增字段
+  - `deletedAt`账户删除时间（已删除账户会有此字段，团签骑手退租后会自动软删除账户，下次使用骑手会重新注册）
+  - `remark`备注
+
+
+
+#### 接口新增
+
+- [M90001 创建企业](/docs#tag/M/operation/ManagerEnterpriseCreate)
+- [M90002 更新企业](/docs#tag/M/operation/ManagerEnterpriseModify)
+
+
+
+<br />
+
 ## 2022-06-03
 
 #### 字段调整
@@ -12,6 +31,8 @@
 
 
 
+<br />
+
 ## 2022-06-02
 
 #### 接口新增
@@ -21,12 +42,12 @@
 
 
 
-#### 用户属性
+#### 骑手属性
 
-原型单一用户状态拆分为
+原型单一骑手状态拆分为
 
 - 业务状态 `subscribe.status`  若`subscribe`对象字段不存在则代表用户从未使用过
-- 用户状态 `status` 
+- 骑手状态 `status` 
 - 认证状态 `authStatus`
 
 详细见接口文档 [M70001列举骑手](/docs#tag/M/operation/RiderList)解释，筛选亦如是。

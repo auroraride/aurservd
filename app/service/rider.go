@@ -66,6 +66,7 @@ func (s *riderService) GetRiderById(id uint64) (u *ent.Rider, err error) {
     return ar.Ent.Rider.
         QueryNotDeleted().
         WithPerson().
+        WithEnterprise().
         Where(rider.ID(id)).
         Only(context.Background())
 }
@@ -461,6 +462,10 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
                 if sub.Status == model.SubscribeStatusUsing && sub.Remaining <= 3 {
                     ri.Subscribe.Status = 11
                 }
+            }
+            if item.DeletedAt != nil {
+                ri.DeletedAt = item.DeletedAt.Format(carbon.DateTimeLayout)
+                ri.Remark = item.Remark
             }
             return ri
         },

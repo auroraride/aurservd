@@ -16,8 +16,9 @@ import (
     "reflect"
 )
 
-// CallModifyMethod call set field value for the given entity
-func CallModifyMethod[T, O any](up *T, old *O, data any) *T {
+
+// EntitySetAttributes call set field value for the given entity
+func EntitySetAttributes[T, O any](client *T, entity *O, data any) *T {
     nd := reflect.TypeOf(data)
     ptr := nd.Kind() == reflect.Pointer
     if !ptr {
@@ -27,9 +28,9 @@ func CallModifyMethod[T, O any](up *T, old *O, data any) *T {
     nd = nd.Elem()
     ndv := reflect.ValueOf(data).Elem()
 
-    od := reflect.TypeOf(old).Elem()
+    od := reflect.TypeOf(entity).Elem()
 
-    uper := reflect.ValueOf(up)
+    uper := reflect.ValueOf(client)
     for i := 0; i < ndv.NumField(); i++ {
         nf := nd.Field(i)
         nfp := nf.Type.Kind() == reflect.Pointer
@@ -57,7 +58,7 @@ func CallModifyMethod[T, O any](up *T, old *O, data any) *T {
             }
         }
     }
-    return up
+    return client
 }
 
 {{ range $n := $.Nodes }}
@@ -69,7 +70,7 @@ func CallModifyMethod[T, O any](up *T, old *O, data any) *T {
 func (c *{{ $client }}) ModifyOne(old *{{ $n.Name }}, data any) *{{ $n.UpdateOneName }} {
 	mutation := new{{ $n.MutationName }}(c.config, OpUpdateOne, {{ print "with" $n.Name }}(old))
     up := &{{ $n.UpdateOneName }}{config: c.config, hooks: c.Hooks(), mutation: mutation}
-    return CallModifyMethod[{{ $n.UpdateOneName }}, {{ $n.Name }}](up, old, data)
+    return EntitySetAttributes[{{ $n.UpdateOneName }}, {{ $n.Name }}](up, old, data)
 }
 
 {{ end }}

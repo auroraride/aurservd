@@ -22,7 +22,6 @@ import (
     "time"
 )
 
-// TODO 维护一个全局的token
 type yundong struct {
     logger            *Logger
     url               string
@@ -239,7 +238,7 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
 }
 
 // DoorOperate 云动柜门操作
-// TODO user携带操作ID，比对操作日志实时获取状态
+// user携带操作ID，比对操作日志实时获取状态
 func (p *yundong) DoorOperate(code, serial, operation string, door int) (state bool) {
     type params struct {
         Doorno []int `json:"doorno"`

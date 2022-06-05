@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 )
 
@@ -33,9 +34,39 @@ type Enterprise struct {
 	// Remark holds the value of the "remark" field.
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
+	// CityID holds the value of the "city_id" field.
+	// 城市ID
+	CityID uint64 `json:"city_id,omitempty"`
 	// Name holds the value of the "name" field.
 	// 企业名称
 	Name string `json:"name,omitempty"`
+	// Status holds the value of the "status" field.
+	// 合作状态 0未合作 1合作中 2暂停合作
+	Status uint8 `json:"status,omitempty"`
+	// ContactName holds the value of the "contact_name" field.
+	// 联系人姓名
+	ContactName string `json:"contact_name,omitempty"`
+	// ContactPhone holds the value of the "contact_phone" field.
+	// 联系人电话
+	ContactPhone string `json:"contact_phone,omitempty"`
+	// IdcardNumber holds the value of the "idcard_number" field.
+	// 身份证号码
+	IdcardNumber string `json:"idcard_number,omitempty"`
+	// Address holds the value of the "address" field.
+	// 地址
+	Address string `json:"address,omitempty"`
+	// Payment holds the value of the "payment" field.
+	// 付费方式 1预付费 2后付费
+	Payment uint8 `json:"payment,omitempty"`
+	// Deposit holds the value of the "deposit" field.
+	// 押金
+	Deposit float64 `json:"deposit,omitempty"`
+	// Balance holds the value of the "balance" field.
+	// 账户余额
+	Balance float64 `json:"balance,omitempty"`
+	// Arrearage holds the value of the "arrearage" field.
+	// 欠费金额
+	Arrearage float64 `json:"arrearage,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterpriseQuery when eager-loading is set.
 	Edges EnterpriseEdges `json:"edges"`
@@ -43,20 +74,69 @@ type Enterprise struct {
 
 // EnterpriseEdges holds the relations/edges for other nodes in the graph.
 type EnterpriseEdges struct {
+	// City holds the value of the city edge.
+	City *City `json:"city,omitempty"`
 	// Riders holds the value of the riders edge.
 	Riders []*Rider `json:"riders,omitempty"`
+	// Contracts holds the value of the contracts edge.
+	Contracts []*EnterpriseContract `json:"contracts,omitempty"`
+	// Prices holds the value of the prices edge.
+	Prices []*EnterprisePrice `json:"prices,omitempty"`
+	// Subscribes holds the value of the subscribes edge.
+	Subscribes []*Subscribe `json:"subscribes,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [5]bool
+}
+
+// CityOrErr returns the City value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EnterpriseEdges) CityOrErr() (*City, error) {
+	if e.loadedTypes[0] {
+		if e.City == nil {
+			// The edge city was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: city.Label}
+		}
+		return e.City, nil
+	}
+	return nil, &NotLoadedError{edge: "city"}
 }
 
 // RidersOrErr returns the Riders value or an error if the edge
 // was not loaded in eager-loading.
 func (e EnterpriseEdges) RidersOrErr() ([]*Rider, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		return e.Riders, nil
 	}
 	return nil, &NotLoadedError{edge: "riders"}
+}
+
+// ContractsOrErr returns the Contracts value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseEdges) ContractsOrErr() ([]*EnterpriseContract, error) {
+	if e.loadedTypes[2] {
+		return e.Contracts, nil
+	}
+	return nil, &NotLoadedError{edge: "contracts"}
+}
+
+// PricesOrErr returns the Prices value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseEdges) PricesOrErr() ([]*EnterprisePrice, error) {
+	if e.loadedTypes[3] {
+		return e.Prices, nil
+	}
+	return nil, &NotLoadedError{edge: "prices"}
+}
+
+// SubscribesOrErr returns the Subscribes value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseEdges) SubscribesOrErr() ([]*Subscribe, error) {
+	if e.loadedTypes[4] {
+		return e.Subscribes, nil
+	}
+	return nil, &NotLoadedError{edge: "subscribes"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -66,9 +146,11 @@ func (*Enterprise) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case enterprise.FieldCreator, enterprise.FieldLastModifier:
 			values[i] = new([]byte)
-		case enterprise.FieldID:
+		case enterprise.FieldDeposit, enterprise.FieldBalance, enterprise.FieldArrearage:
+			values[i] = new(sql.NullFloat64)
+		case enterprise.FieldID, enterprise.FieldCityID, enterprise.FieldStatus, enterprise.FieldPayment:
 			values[i] = new(sql.NullInt64)
-		case enterprise.FieldRemark, enterprise.FieldName:
+		case enterprise.FieldRemark, enterprise.FieldName, enterprise.FieldContactName, enterprise.FieldContactPhone, enterprise.FieldIdcardNumber, enterprise.FieldAddress:
 			values[i] = new(sql.NullString)
 		case enterprise.FieldCreatedAt, enterprise.FieldUpdatedAt, enterprise.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -134,20 +216,100 @@ func (e *Enterprise) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				e.Remark = value.String
 			}
+		case enterprise.FieldCityID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field city_id", values[i])
+			} else if value.Valid {
+				e.CityID = uint64(value.Int64)
+			}
 		case enterprise.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				e.Name = value.String
 			}
+		case enterprise.FieldStatus:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				e.Status = uint8(value.Int64)
+			}
+		case enterprise.FieldContactName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field contact_name", values[i])
+			} else if value.Valid {
+				e.ContactName = value.String
+			}
+		case enterprise.FieldContactPhone:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field contact_phone", values[i])
+			} else if value.Valid {
+				e.ContactPhone = value.String
+			}
+		case enterprise.FieldIdcardNumber:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field idcard_number", values[i])
+			} else if value.Valid {
+				e.IdcardNumber = value.String
+			}
+		case enterprise.FieldAddress:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field address", values[i])
+			} else if value.Valid {
+				e.Address = value.String
+			}
+		case enterprise.FieldPayment:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field payment", values[i])
+			} else if value.Valid {
+				e.Payment = uint8(value.Int64)
+			}
+		case enterprise.FieldDeposit:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field deposit", values[i])
+			} else if value.Valid {
+				e.Deposit = value.Float64
+			}
+		case enterprise.FieldBalance:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field balance", values[i])
+			} else if value.Valid {
+				e.Balance = value.Float64
+			}
+		case enterprise.FieldArrearage:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field arrearage", values[i])
+			} else if value.Valid {
+				e.Arrearage = value.Float64
+			}
 		}
 	}
 	return nil
 }
 
+// QueryCity queries the "city" edge of the Enterprise entity.
+func (e *Enterprise) QueryCity() *CityQuery {
+	return (&EnterpriseClient{config: e.config}).QueryCity(e)
+}
+
 // QueryRiders queries the "riders" edge of the Enterprise entity.
 func (e *Enterprise) QueryRiders() *RiderQuery {
 	return (&EnterpriseClient{config: e.config}).QueryRiders(e)
+}
+
+// QueryContracts queries the "contracts" edge of the Enterprise entity.
+func (e *Enterprise) QueryContracts() *EnterpriseContractQuery {
+	return (&EnterpriseClient{config: e.config}).QueryContracts(e)
+}
+
+// QueryPrices queries the "prices" edge of the Enterprise entity.
+func (e *Enterprise) QueryPrices() *EnterprisePriceQuery {
+	return (&EnterpriseClient{config: e.config}).QueryPrices(e)
+}
+
+// QuerySubscribes queries the "subscribes" edge of the Enterprise entity.
+func (e *Enterprise) QuerySubscribes() *SubscribeQuery {
+	return (&EnterpriseClient{config: e.config}).QuerySubscribes(e)
 }
 
 // Update returns a builder for updating this Enterprise.
@@ -187,8 +349,28 @@ func (e *Enterprise) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(e.Remark)
+	builder.WriteString(", city_id=")
+	builder.WriteString(fmt.Sprintf("%v", e.CityID))
 	builder.WriteString(", name=")
 	builder.WriteString(e.Name)
+	builder.WriteString(", status=")
+	builder.WriteString(fmt.Sprintf("%v", e.Status))
+	builder.WriteString(", contact_name=")
+	builder.WriteString(e.ContactName)
+	builder.WriteString(", contact_phone=")
+	builder.WriteString(e.ContactPhone)
+	builder.WriteString(", idcard_number=")
+	builder.WriteString(e.IdcardNumber)
+	builder.WriteString(", address=")
+	builder.WriteString(e.Address)
+	builder.WriteString(", payment=")
+	builder.WriteString(fmt.Sprintf("%v", e.Payment))
+	builder.WriteString(", deposit=")
+	builder.WriteString(fmt.Sprintf("%v", e.Deposit))
+	builder.WriteString(", balance=")
+	builder.WriteString(fmt.Sprintf("%v", e.Balance))
+	builder.WriteString(", arrearage=")
+	builder.WriteString(fmt.Sprintf("%v", e.Arrearage))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -226,7 +226,6 @@ type CabinetDoorOperator struct {
 }
 
 // CabinetDoorOperateReq 仓门操作
-// TODO 给用户开仓逻辑
 type CabinetDoorOperateReq struct {
     ID        *uint64             `json:"id" validate:"required"`        // 电柜ID
     Index     *int                `json:"index" validate:"required"`     // 仓门index

@@ -29,7 +29,8 @@ func (Subscribe) Annotations() []schema.Annotation {
 func (Subscribe) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("rider_id").Comment("骑手ID"),
-        field.Uint64("initial_order_id").Comment("初始订单ID(开通订阅的初始订单)"),
+        field.Uint64("initial_order_id").Optional().Comment("初始订单ID(开通订阅的初始订单), 团签用户无此字段"),
+        field.Uint64("enterprise_id").Optional().Comment("企业ID"),
         field.Uint8("status").Default(model.SubscribeStatusInactive).Comment("当前订阅状态"),
         field.Uint("type").Immutable().Comment("订阅类型 1新签 2续签 3重签 4更改电池"),
         field.Float("voltage").Comment("可用电压型号"),
@@ -50,13 +51,14 @@ func (Subscribe) Fields() []ent.Field {
 // Edges of the Subscribe.
 func (Subscribe) Edges() []ent.Edge {
     return []ent.Edge{
-        edge.From("rider", Rider.Type).Ref("subscribes").Required().Unique().Field("rider_id").Comment("骑手"),
+        edge.From("rider", Rider.Type).Ref("subscribes").Required().Unique().Field("rider_id"),
+        edge.From("enterprise", Enterprise.Type).Ref("subscribes").Unique().Field("enterprise_id"),
 
         edge.To("pauses", SubscribePause.Type),
         edge.To("alters", SubscribeAlter.Type),
         edge.To("orders", Order.Type),
 
-        edge.To("initial_order", Order.Type).Unique().Required().Field("initial_order_id").Comment("对应初始订单"),
+        edge.To("initial_order", Order.Type).Unique().Field("initial_order_id").Comment("对应初始订单"),
     }
 }
 

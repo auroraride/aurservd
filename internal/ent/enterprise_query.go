@@ -11,9 +11,13 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // EnterpriseQuery is the builder for querying Enterprise entities.
@@ -26,8 +30,12 @@ type EnterpriseQuery struct {
 	fields     []string
 	predicates []predicate.Enterprise
 	// eager-loading edges.
-	withRiders *RiderQuery
-	modifiers  []func(*sql.Selector)
+	withCity       *CityQuery
+	withRiders     *RiderQuery
+	withContracts  *EnterpriseContractQuery
+	withPrices     *EnterprisePriceQuery
+	withSubscribes *SubscribeQuery
+	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -64,6 +72,28 @@ func (eq *EnterpriseQuery) Order(o ...OrderFunc) *EnterpriseQuery {
 	return eq
 }
 
+// QueryCity chains the current query on the "city" edge.
+func (eq *EnterpriseQuery) QueryCity() *CityQuery {
+	query := &CityQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, selector),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterprise.CityTable, enterprise.CityColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // QueryRiders chains the current query on the "riders" edge.
 func (eq *EnterpriseQuery) QueryRiders() *RiderQuery {
 	query := &RiderQuery{config: eq.config}
@@ -79,6 +109,72 @@ func (eq *EnterpriseQuery) QueryRiders() *RiderQuery {
 			sqlgraph.From(enterprise.Table, enterprise.FieldID, selector),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.RidersTable, enterprise.RidersColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryContracts chains the current query on the "contracts" edge.
+func (eq *EnterpriseQuery) QueryContracts() *EnterpriseContractQuery {
+	query := &EnterpriseContractQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, selector),
+			sqlgraph.To(enterprisecontract.Table, enterprisecontract.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.ContractsTable, enterprise.ContractsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPrices chains the current query on the "prices" edge.
+func (eq *EnterpriseQuery) QueryPrices() *EnterprisePriceQuery {
+	query := &EnterprisePriceQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, selector),
+			sqlgraph.To(enterpriseprice.Table, enterpriseprice.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.PricesTable, enterprise.PricesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySubscribes chains the current query on the "subscribes" edge.
+func (eq *EnterpriseQuery) QuerySubscribes() *SubscribeQuery {
+	query := &SubscribeQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, selector),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.SubscribesTable, enterprise.SubscribesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -262,17 +358,32 @@ func (eq *EnterpriseQuery) Clone() *EnterpriseQuery {
 		return nil
 	}
 	return &EnterpriseQuery{
-		config:     eq.config,
-		limit:      eq.limit,
-		offset:     eq.offset,
-		order:      append([]OrderFunc{}, eq.order...),
-		predicates: append([]predicate.Enterprise{}, eq.predicates...),
-		withRiders: eq.withRiders.Clone(),
+		config:         eq.config,
+		limit:          eq.limit,
+		offset:         eq.offset,
+		order:          append([]OrderFunc{}, eq.order...),
+		predicates:     append([]predicate.Enterprise{}, eq.predicates...),
+		withCity:       eq.withCity.Clone(),
+		withRiders:     eq.withRiders.Clone(),
+		withContracts:  eq.withContracts.Clone(),
+		withPrices:     eq.withPrices.Clone(),
+		withSubscribes: eq.withSubscribes.Clone(),
 		// clone intermediate query.
 		sql:    eq.sql.Clone(),
 		path:   eq.path,
 		unique: eq.unique,
 	}
+}
+
+// WithCity tells the query-builder to eager-load the nodes that are connected to
+// the "city" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EnterpriseQuery) WithCity(opts ...func(*CityQuery)) *EnterpriseQuery {
+	query := &CityQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withCity = query
+	return eq
 }
 
 // WithRiders tells the query-builder to eager-load the nodes that are connected to
@@ -283,6 +394,39 @@ func (eq *EnterpriseQuery) WithRiders(opts ...func(*RiderQuery)) *EnterpriseQuer
 		opt(query)
 	}
 	eq.withRiders = query
+	return eq
+}
+
+// WithContracts tells the query-builder to eager-load the nodes that are connected to
+// the "contracts" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EnterpriseQuery) WithContracts(opts ...func(*EnterpriseContractQuery)) *EnterpriseQuery {
+	query := &EnterpriseContractQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withContracts = query
+	return eq
+}
+
+// WithPrices tells the query-builder to eager-load the nodes that are connected to
+// the "prices" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EnterpriseQuery) WithPrices(opts ...func(*EnterprisePriceQuery)) *EnterpriseQuery {
+	query := &EnterprisePriceQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withPrices = query
+	return eq
+}
+
+// WithSubscribes tells the query-builder to eager-load the nodes that are connected to
+// the "subscribes" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EnterpriseQuery) WithSubscribes(opts ...func(*SubscribeQuery)) *EnterpriseQuery {
+	query := &SubscribeQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withSubscribes = query
 	return eq
 }
 
@@ -356,8 +500,12 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 	var (
 		nodes       = []*Enterprise{}
 		_spec       = eq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [5]bool{
+			eq.withCity != nil,
 			eq.withRiders != nil,
+			eq.withContracts != nil,
+			eq.withPrices != nil,
+			eq.withSubscribes != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -380,6 +528,32 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+
+	if query := eq.withCity; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Enterprise)
+		for i := range nodes {
+			fk := nodes[i].CityID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(city.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.City = n
+			}
+		}
 	}
 
 	if query := eq.withRiders; query != nil {
@@ -407,6 +581,81 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 				return nil, fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v for node %v`, *fk, n.ID)
 			}
 			node.Edges.Riders = append(node.Edges.Riders, n)
+		}
+	}
+
+	if query := eq.withContracts; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Enterprise)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Contracts = []*EnterpriseContract{}
+		}
+		query.Where(predicate.EnterpriseContract(func(s *sql.Selector) {
+			s.Where(sql.InValues(enterprise.ContractsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.EnterpriseID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Contracts = append(node.Edges.Contracts, n)
+		}
+	}
+
+	if query := eq.withPrices; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Enterprise)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Prices = []*EnterprisePrice{}
+		}
+		query.Where(predicate.EnterprisePrice(func(s *sql.Selector) {
+			s.Where(sql.InValues(enterprise.PricesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.EnterpriseID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Prices = append(node.Edges.Prices, n)
+		}
+	}
+
+	if query := eq.withSubscribes; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Enterprise)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Subscribes = []*Subscribe{}
+		}
+		query.Where(predicate.Subscribe(func(s *sql.Selector) {
+			s.Where(sql.InValues(enterprise.SubscribesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.EnterpriseID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Subscribes = append(node.Edges.Subscribes, n)
 		}
 	}
 

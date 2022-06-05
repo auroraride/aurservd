@@ -50,7 +50,6 @@ func (s *branchService) Query(id uint64) *ent.Branch {
 }
 
 // Create 新增网点
-// TODO 从结构体新增
 func (s *branchService) Create(req *model.BranchCreateReq) {
     tx, _ := ar.Ent.Tx(s.ctx)
 

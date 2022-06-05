@@ -272,7 +272,6 @@ func (s *orderService) DoPayment(pc *model.PaymentCache) {
 }
 
 // OrderPaid 订单成功支付
-// TODO 重构
 // TODO 业绩提成逻辑
 // TODO 2续签 3重签 4更改电池 5救援 6滞纳金 逻辑
 func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {

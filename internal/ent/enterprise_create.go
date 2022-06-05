@@ -12,8 +12,12 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // EnterpriseCreate is the builder for creating a Enterprise entity.
@@ -92,10 +96,99 @@ func (ec *EnterpriseCreate) SetNillableRemark(s *string) *EnterpriseCreate {
 	return ec
 }
 
+// SetCityID sets the "city_id" field.
+func (ec *EnterpriseCreate) SetCityID(u uint64) *EnterpriseCreate {
+	ec.mutation.SetCityID(u)
+	return ec
+}
+
 // SetName sets the "name" field.
 func (ec *EnterpriseCreate) SetName(s string) *EnterpriseCreate {
 	ec.mutation.SetName(s)
 	return ec
+}
+
+// SetStatus sets the "status" field.
+func (ec *EnterpriseCreate) SetStatus(u uint8) *EnterpriseCreate {
+	ec.mutation.SetStatus(u)
+	return ec
+}
+
+// SetContactName sets the "contact_name" field.
+func (ec *EnterpriseCreate) SetContactName(s string) *EnterpriseCreate {
+	ec.mutation.SetContactName(s)
+	return ec
+}
+
+// SetContactPhone sets the "contact_phone" field.
+func (ec *EnterpriseCreate) SetContactPhone(s string) *EnterpriseCreate {
+	ec.mutation.SetContactPhone(s)
+	return ec
+}
+
+// SetIdcardNumber sets the "idcard_number" field.
+func (ec *EnterpriseCreate) SetIdcardNumber(s string) *EnterpriseCreate {
+	ec.mutation.SetIdcardNumber(s)
+	return ec
+}
+
+// SetAddress sets the "address" field.
+func (ec *EnterpriseCreate) SetAddress(s string) *EnterpriseCreate {
+	ec.mutation.SetAddress(s)
+	return ec
+}
+
+// SetPayment sets the "payment" field.
+func (ec *EnterpriseCreate) SetPayment(u uint8) *EnterpriseCreate {
+	ec.mutation.SetPayment(u)
+	return ec
+}
+
+// SetDeposit sets the "deposit" field.
+func (ec *EnterpriseCreate) SetDeposit(f float64) *EnterpriseCreate {
+	ec.mutation.SetDeposit(f)
+	return ec
+}
+
+// SetNillableDeposit sets the "deposit" field if the given value is not nil.
+func (ec *EnterpriseCreate) SetNillableDeposit(f *float64) *EnterpriseCreate {
+	if f != nil {
+		ec.SetDeposit(*f)
+	}
+	return ec
+}
+
+// SetBalance sets the "balance" field.
+func (ec *EnterpriseCreate) SetBalance(f float64) *EnterpriseCreate {
+	ec.mutation.SetBalance(f)
+	return ec
+}
+
+// SetNillableBalance sets the "balance" field if the given value is not nil.
+func (ec *EnterpriseCreate) SetNillableBalance(f *float64) *EnterpriseCreate {
+	if f != nil {
+		ec.SetBalance(*f)
+	}
+	return ec
+}
+
+// SetArrearage sets the "arrearage" field.
+func (ec *EnterpriseCreate) SetArrearage(f float64) *EnterpriseCreate {
+	ec.mutation.SetArrearage(f)
+	return ec
+}
+
+// SetNillableArrearage sets the "arrearage" field if the given value is not nil.
+func (ec *EnterpriseCreate) SetNillableArrearage(f *float64) *EnterpriseCreate {
+	if f != nil {
+		ec.SetArrearage(*f)
+	}
+	return ec
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (ec *EnterpriseCreate) SetCity(c *City) *EnterpriseCreate {
+	return ec.SetCityID(c.ID)
 }
 
 // AddRiderIDs adds the "riders" edge to the Rider entity by IDs.
@@ -111,6 +204,51 @@ func (ec *EnterpriseCreate) AddRiders(r ...*Rider) *EnterpriseCreate {
 		ids[i] = r[i].ID
 	}
 	return ec.AddRiderIDs(ids...)
+}
+
+// AddContractIDs adds the "contracts" edge to the EnterpriseContract entity by IDs.
+func (ec *EnterpriseCreate) AddContractIDs(ids ...uint64) *EnterpriseCreate {
+	ec.mutation.AddContractIDs(ids...)
+	return ec
+}
+
+// AddContracts adds the "contracts" edges to the EnterpriseContract entity.
+func (ec *EnterpriseCreate) AddContracts(e ...*EnterpriseContract) *EnterpriseCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return ec.AddContractIDs(ids...)
+}
+
+// AddPriceIDs adds the "prices" edge to the EnterprisePrice entity by IDs.
+func (ec *EnterpriseCreate) AddPriceIDs(ids ...uint64) *EnterpriseCreate {
+	ec.mutation.AddPriceIDs(ids...)
+	return ec
+}
+
+// AddPrices adds the "prices" edges to the EnterprisePrice entity.
+func (ec *EnterpriseCreate) AddPrices(e ...*EnterprisePrice) *EnterpriseCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return ec.AddPriceIDs(ids...)
+}
+
+// AddSubscribeIDs adds the "subscribes" edge to the Subscribe entity by IDs.
+func (ec *EnterpriseCreate) AddSubscribeIDs(ids ...uint64) *EnterpriseCreate {
+	ec.mutation.AddSubscribeIDs(ids...)
+	return ec
+}
+
+// AddSubscribes adds the "subscribes" edges to the Subscribe entity.
+func (ec *EnterpriseCreate) AddSubscribes(s ...*Subscribe) *EnterpriseCreate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return ec.AddSubscribeIDs(ids...)
 }
 
 // Mutation returns the EnterpriseMutation object of the builder.
@@ -206,6 +344,18 @@ func (ec *EnterpriseCreate) defaults() error {
 		v := enterprise.DefaultUpdatedAt()
 		ec.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := ec.mutation.Deposit(); !ok {
+		v := enterprise.DefaultDeposit
+		ec.mutation.SetDeposit(v)
+	}
+	if _, ok := ec.mutation.Balance(); !ok {
+		v := enterprise.DefaultBalance
+		ec.mutation.SetBalance(v)
+	}
+	if _, ok := ec.mutation.Arrearage(); !ok {
+		v := enterprise.DefaultArrearage
+		ec.mutation.SetArrearage(v)
+	}
 	return nil
 }
 
@@ -217,8 +367,41 @@ func (ec *EnterpriseCreate) check() error {
 	if _, ok := ec.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Enterprise.updated_at"`)}
 	}
+	if _, ok := ec.mutation.CityID(); !ok {
+		return &ValidationError{Name: "city_id", err: errors.New(`ent: missing required field "Enterprise.city_id"`)}
+	}
 	if _, ok := ec.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Enterprise.name"`)}
+	}
+	if _, ok := ec.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Enterprise.status"`)}
+	}
+	if _, ok := ec.mutation.ContactName(); !ok {
+		return &ValidationError{Name: "contact_name", err: errors.New(`ent: missing required field "Enterprise.contact_name"`)}
+	}
+	if _, ok := ec.mutation.ContactPhone(); !ok {
+		return &ValidationError{Name: "contact_phone", err: errors.New(`ent: missing required field "Enterprise.contact_phone"`)}
+	}
+	if _, ok := ec.mutation.IdcardNumber(); !ok {
+		return &ValidationError{Name: "idcard_number", err: errors.New(`ent: missing required field "Enterprise.idcard_number"`)}
+	}
+	if _, ok := ec.mutation.Address(); !ok {
+		return &ValidationError{Name: "address", err: errors.New(`ent: missing required field "Enterprise.address"`)}
+	}
+	if _, ok := ec.mutation.Payment(); !ok {
+		return &ValidationError{Name: "payment", err: errors.New(`ent: missing required field "Enterprise.payment"`)}
+	}
+	if _, ok := ec.mutation.Deposit(); !ok {
+		return &ValidationError{Name: "deposit", err: errors.New(`ent: missing required field "Enterprise.deposit"`)}
+	}
+	if _, ok := ec.mutation.Balance(); !ok {
+		return &ValidationError{Name: "balance", err: errors.New(`ent: missing required field "Enterprise.balance"`)}
+	}
+	if _, ok := ec.mutation.Arrearage(); !ok {
+		return &ValidationError{Name: "arrearage", err: errors.New(`ent: missing required field "Enterprise.arrearage"`)}
+	}
+	if _, ok := ec.mutation.CityID(); !ok {
+		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Enterprise.city"`)}
 	}
 	return nil
 }
@@ -304,6 +487,98 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 		})
 		_node.Name = value
 	}
+	if value, ok := ec.mutation.Status(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: enterprise.FieldStatus,
+		})
+		_node.Status = value
+	}
+	if value, ok := ec.mutation.ContactName(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: enterprise.FieldContactName,
+		})
+		_node.ContactName = value
+	}
+	if value, ok := ec.mutation.ContactPhone(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: enterprise.FieldContactPhone,
+		})
+		_node.ContactPhone = value
+	}
+	if value, ok := ec.mutation.IdcardNumber(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: enterprise.FieldIdcardNumber,
+		})
+		_node.IdcardNumber = value
+	}
+	if value, ok := ec.mutation.Address(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: enterprise.FieldAddress,
+		})
+		_node.Address = value
+	}
+	if value, ok := ec.mutation.Payment(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: enterprise.FieldPayment,
+		})
+		_node.Payment = value
+	}
+	if value, ok := ec.mutation.Deposit(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldDeposit,
+		})
+		_node.Deposit = value
+	}
+	if value, ok := ec.mutation.Balance(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldBalance,
+		})
+		_node.Balance = value
+	}
+	if value, ok := ec.mutation.Arrearage(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldArrearage,
+		})
+		_node.Arrearage = value
+	}
+	if nodes := ec.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterprise.CityTable,
+			Columns: []string{enterprise.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CityID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := ec.mutation.RidersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -315,6 +590,63 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: rider.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.ContractsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.ContractsTable,
+			Columns: []string{enterprise.ContractsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisecontract.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.PricesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.PricesTable,
+			Columns: []string{enterprise.PricesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterpriseprice.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.SubscribesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.SubscribesTable,
+			Columns: []string{enterprise.SubscribesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
 				},
 			},
 		}
@@ -473,6 +805,18 @@ func (u *EnterpriseUpsert) ClearRemark() *EnterpriseUpsert {
 	return u
 }
 
+// SetCityID sets the "city_id" field.
+func (u *EnterpriseUpsert) SetCityID(v uint64) *EnterpriseUpsert {
+	u.Set(enterprise.FieldCityID, v)
+	return u
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdateCityID() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldCityID)
+	return u
+}
+
 // SetName sets the "name" field.
 func (u *EnterpriseUpsert) SetName(v string) *EnterpriseUpsert {
 	u.Set(enterprise.FieldName, v)
@@ -482,6 +826,144 @@ func (u *EnterpriseUpsert) SetName(v string) *EnterpriseUpsert {
 // UpdateName sets the "name" field to the value that was provided on create.
 func (u *EnterpriseUpsert) UpdateName() *EnterpriseUpsert {
 	u.SetExcluded(enterprise.FieldName)
+	return u
+}
+
+// SetStatus sets the "status" field.
+func (u *EnterpriseUpsert) SetStatus(v uint8) *EnterpriseUpsert {
+	u.Set(enterprise.FieldStatus, v)
+	return u
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdateStatus() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldStatus)
+	return u
+}
+
+// AddStatus adds v to the "status" field.
+func (u *EnterpriseUpsert) AddStatus(v uint8) *EnterpriseUpsert {
+	u.Add(enterprise.FieldStatus, v)
+	return u
+}
+
+// SetContactName sets the "contact_name" field.
+func (u *EnterpriseUpsert) SetContactName(v string) *EnterpriseUpsert {
+	u.Set(enterprise.FieldContactName, v)
+	return u
+}
+
+// UpdateContactName sets the "contact_name" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdateContactName() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldContactName)
+	return u
+}
+
+// SetContactPhone sets the "contact_phone" field.
+func (u *EnterpriseUpsert) SetContactPhone(v string) *EnterpriseUpsert {
+	u.Set(enterprise.FieldContactPhone, v)
+	return u
+}
+
+// UpdateContactPhone sets the "contact_phone" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdateContactPhone() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldContactPhone)
+	return u
+}
+
+// SetIdcardNumber sets the "idcard_number" field.
+func (u *EnterpriseUpsert) SetIdcardNumber(v string) *EnterpriseUpsert {
+	u.Set(enterprise.FieldIdcardNumber, v)
+	return u
+}
+
+// UpdateIdcardNumber sets the "idcard_number" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdateIdcardNumber() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldIdcardNumber)
+	return u
+}
+
+// SetAddress sets the "address" field.
+func (u *EnterpriseUpsert) SetAddress(v string) *EnterpriseUpsert {
+	u.Set(enterprise.FieldAddress, v)
+	return u
+}
+
+// UpdateAddress sets the "address" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdateAddress() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldAddress)
+	return u
+}
+
+// SetPayment sets the "payment" field.
+func (u *EnterpriseUpsert) SetPayment(v uint8) *EnterpriseUpsert {
+	u.Set(enterprise.FieldPayment, v)
+	return u
+}
+
+// UpdatePayment sets the "payment" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdatePayment() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldPayment)
+	return u
+}
+
+// AddPayment adds v to the "payment" field.
+func (u *EnterpriseUpsert) AddPayment(v uint8) *EnterpriseUpsert {
+	u.Add(enterprise.FieldPayment, v)
+	return u
+}
+
+// SetDeposit sets the "deposit" field.
+func (u *EnterpriseUpsert) SetDeposit(v float64) *EnterpriseUpsert {
+	u.Set(enterprise.FieldDeposit, v)
+	return u
+}
+
+// UpdateDeposit sets the "deposit" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdateDeposit() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldDeposit)
+	return u
+}
+
+// AddDeposit adds v to the "deposit" field.
+func (u *EnterpriseUpsert) AddDeposit(v float64) *EnterpriseUpsert {
+	u.Add(enterprise.FieldDeposit, v)
+	return u
+}
+
+// SetBalance sets the "balance" field.
+func (u *EnterpriseUpsert) SetBalance(v float64) *EnterpriseUpsert {
+	u.Set(enterprise.FieldBalance, v)
+	return u
+}
+
+// UpdateBalance sets the "balance" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdateBalance() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldBalance)
+	return u
+}
+
+// AddBalance adds v to the "balance" field.
+func (u *EnterpriseUpsert) AddBalance(v float64) *EnterpriseUpsert {
+	u.Add(enterprise.FieldBalance, v)
+	return u
+}
+
+// SetArrearage sets the "arrearage" field.
+func (u *EnterpriseUpsert) SetArrearage(v float64) *EnterpriseUpsert {
+	u.Set(enterprise.FieldArrearage, v)
+	return u
+}
+
+// UpdateArrearage sets the "arrearage" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdateArrearage() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldArrearage)
+	return u
+}
+
+// AddArrearage adds v to the "arrearage" field.
+func (u *EnterpriseUpsert) AddArrearage(v float64) *EnterpriseUpsert {
+	u.Add(enterprise.FieldArrearage, v)
 	return u
 }
 
@@ -647,6 +1129,20 @@ func (u *EnterpriseUpsertOne) ClearRemark() *EnterpriseUpsertOne {
 	})
 }
 
+// SetCityID sets the "city_id" field.
+func (u *EnterpriseUpsertOne) SetCityID(v uint64) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdateCityID() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateCityID()
+	})
+}
+
 // SetName sets the "name" field.
 func (u *EnterpriseUpsertOne) SetName(v string) *EnterpriseUpsertOne {
 	return u.Update(func(s *EnterpriseUpsert) {
@@ -658,6 +1154,167 @@ func (u *EnterpriseUpsertOne) SetName(v string) *EnterpriseUpsertOne {
 func (u *EnterpriseUpsertOne) UpdateName() *EnterpriseUpsertOne {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *EnterpriseUpsertOne) SetStatus(v uint8) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// AddStatus adds v to the "status" field.
+func (u *EnterpriseUpsertOne) AddStatus(v uint8) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.AddStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdateStatus() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// SetContactName sets the "contact_name" field.
+func (u *EnterpriseUpsertOne) SetContactName(v string) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetContactName(v)
+	})
+}
+
+// UpdateContactName sets the "contact_name" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdateContactName() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateContactName()
+	})
+}
+
+// SetContactPhone sets the "contact_phone" field.
+func (u *EnterpriseUpsertOne) SetContactPhone(v string) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetContactPhone(v)
+	})
+}
+
+// UpdateContactPhone sets the "contact_phone" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdateContactPhone() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateContactPhone()
+	})
+}
+
+// SetIdcardNumber sets the "idcard_number" field.
+func (u *EnterpriseUpsertOne) SetIdcardNumber(v string) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetIdcardNumber(v)
+	})
+}
+
+// UpdateIdcardNumber sets the "idcard_number" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdateIdcardNumber() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateIdcardNumber()
+	})
+}
+
+// SetAddress sets the "address" field.
+func (u *EnterpriseUpsertOne) SetAddress(v string) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetAddress(v)
+	})
+}
+
+// UpdateAddress sets the "address" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdateAddress() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateAddress()
+	})
+}
+
+// SetPayment sets the "payment" field.
+func (u *EnterpriseUpsertOne) SetPayment(v uint8) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetPayment(v)
+	})
+}
+
+// AddPayment adds v to the "payment" field.
+func (u *EnterpriseUpsertOne) AddPayment(v uint8) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.AddPayment(v)
+	})
+}
+
+// UpdatePayment sets the "payment" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdatePayment() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdatePayment()
+	})
+}
+
+// SetDeposit sets the "deposit" field.
+func (u *EnterpriseUpsertOne) SetDeposit(v float64) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetDeposit(v)
+	})
+}
+
+// AddDeposit adds v to the "deposit" field.
+func (u *EnterpriseUpsertOne) AddDeposit(v float64) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.AddDeposit(v)
+	})
+}
+
+// UpdateDeposit sets the "deposit" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdateDeposit() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateDeposit()
+	})
+}
+
+// SetBalance sets the "balance" field.
+func (u *EnterpriseUpsertOne) SetBalance(v float64) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetBalance(v)
+	})
+}
+
+// AddBalance adds v to the "balance" field.
+func (u *EnterpriseUpsertOne) AddBalance(v float64) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.AddBalance(v)
+	})
+}
+
+// UpdateBalance sets the "balance" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdateBalance() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateBalance()
+	})
+}
+
+// SetArrearage sets the "arrearage" field.
+func (u *EnterpriseUpsertOne) SetArrearage(v float64) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetArrearage(v)
+	})
+}
+
+// AddArrearage adds v to the "arrearage" field.
+func (u *EnterpriseUpsertOne) AddArrearage(v float64) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.AddArrearage(v)
+	})
+}
+
+// UpdateArrearage sets the "arrearage" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdateArrearage() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateArrearage()
 	})
 }
 
@@ -987,6 +1644,20 @@ func (u *EnterpriseUpsertBulk) ClearRemark() *EnterpriseUpsertBulk {
 	})
 }
 
+// SetCityID sets the "city_id" field.
+func (u *EnterpriseUpsertBulk) SetCityID(v uint64) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdateCityID() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateCityID()
+	})
+}
+
 // SetName sets the "name" field.
 func (u *EnterpriseUpsertBulk) SetName(v string) *EnterpriseUpsertBulk {
 	return u.Update(func(s *EnterpriseUpsert) {
@@ -998,6 +1669,167 @@ func (u *EnterpriseUpsertBulk) SetName(v string) *EnterpriseUpsertBulk {
 func (u *EnterpriseUpsertBulk) UpdateName() *EnterpriseUpsertBulk {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *EnterpriseUpsertBulk) SetStatus(v uint8) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// AddStatus adds v to the "status" field.
+func (u *EnterpriseUpsertBulk) AddStatus(v uint8) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.AddStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdateStatus() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// SetContactName sets the "contact_name" field.
+func (u *EnterpriseUpsertBulk) SetContactName(v string) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetContactName(v)
+	})
+}
+
+// UpdateContactName sets the "contact_name" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdateContactName() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateContactName()
+	})
+}
+
+// SetContactPhone sets the "contact_phone" field.
+func (u *EnterpriseUpsertBulk) SetContactPhone(v string) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetContactPhone(v)
+	})
+}
+
+// UpdateContactPhone sets the "contact_phone" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdateContactPhone() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateContactPhone()
+	})
+}
+
+// SetIdcardNumber sets the "idcard_number" field.
+func (u *EnterpriseUpsertBulk) SetIdcardNumber(v string) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetIdcardNumber(v)
+	})
+}
+
+// UpdateIdcardNumber sets the "idcard_number" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdateIdcardNumber() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateIdcardNumber()
+	})
+}
+
+// SetAddress sets the "address" field.
+func (u *EnterpriseUpsertBulk) SetAddress(v string) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetAddress(v)
+	})
+}
+
+// UpdateAddress sets the "address" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdateAddress() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateAddress()
+	})
+}
+
+// SetPayment sets the "payment" field.
+func (u *EnterpriseUpsertBulk) SetPayment(v uint8) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetPayment(v)
+	})
+}
+
+// AddPayment adds v to the "payment" field.
+func (u *EnterpriseUpsertBulk) AddPayment(v uint8) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.AddPayment(v)
+	})
+}
+
+// UpdatePayment sets the "payment" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdatePayment() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdatePayment()
+	})
+}
+
+// SetDeposit sets the "deposit" field.
+func (u *EnterpriseUpsertBulk) SetDeposit(v float64) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetDeposit(v)
+	})
+}
+
+// AddDeposit adds v to the "deposit" field.
+func (u *EnterpriseUpsertBulk) AddDeposit(v float64) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.AddDeposit(v)
+	})
+}
+
+// UpdateDeposit sets the "deposit" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdateDeposit() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateDeposit()
+	})
+}
+
+// SetBalance sets the "balance" field.
+func (u *EnterpriseUpsertBulk) SetBalance(v float64) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetBalance(v)
+	})
+}
+
+// AddBalance adds v to the "balance" field.
+func (u *EnterpriseUpsertBulk) AddBalance(v float64) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.AddBalance(v)
+	})
+}
+
+// UpdateBalance sets the "balance" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdateBalance() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateBalance()
+	})
+}
+
+// SetArrearage sets the "arrearage" field.
+func (u *EnterpriseUpsertBulk) SetArrearage(v float64) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetArrearage(v)
+	})
+}
+
+// AddArrearage adds v to the "arrearage" field.
+func (u *EnterpriseUpsertBulk) AddArrearage(v float64) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.AddArrearage(v)
+	})
+}
+
+// UpdateArrearage sets the "arrearage" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdateArrearage() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateArrearage()
 	})
 }
 

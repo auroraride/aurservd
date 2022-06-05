@@ -25,12 +25,47 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
+	// FieldCityID holds the string denoting the city_id field in the database.
+	FieldCityID = "city_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
+	// FieldContactName holds the string denoting the contact_name field in the database.
+	FieldContactName = "contact_name"
+	// FieldContactPhone holds the string denoting the contact_phone field in the database.
+	FieldContactPhone = "contact_phone"
+	// FieldIdcardNumber holds the string denoting the idcard_number field in the database.
+	FieldIdcardNumber = "idcard_number"
+	// FieldAddress holds the string denoting the address field in the database.
+	FieldAddress = "address"
+	// FieldPayment holds the string denoting the payment field in the database.
+	FieldPayment = "payment"
+	// FieldDeposit holds the string denoting the deposit field in the database.
+	FieldDeposit = "deposit"
+	// FieldBalance holds the string denoting the balance field in the database.
+	FieldBalance = "balance"
+	// FieldArrearage holds the string denoting the arrearage field in the database.
+	FieldArrearage = "arrearage"
+	// EdgeCity holds the string denoting the city edge name in mutations.
+	EdgeCity = "city"
 	// EdgeRiders holds the string denoting the riders edge name in mutations.
 	EdgeRiders = "riders"
+	// EdgeContracts holds the string denoting the contracts edge name in mutations.
+	EdgeContracts = "contracts"
+	// EdgePrices holds the string denoting the prices edge name in mutations.
+	EdgePrices = "prices"
+	// EdgeSubscribes holds the string denoting the subscribes edge name in mutations.
+	EdgeSubscribes = "subscribes"
 	// Table holds the table name of the enterprise in the database.
 	Table = "enterprise"
+	// CityTable is the table that holds the city relation/edge.
+	CityTable = "enterprise"
+	// CityInverseTable is the table name for the City entity.
+	// It exists in this package in order to avoid circular dependency with the "city" package.
+	CityInverseTable = "city"
+	// CityColumn is the table column denoting the city relation/edge.
+	CityColumn = "city_id"
 	// RidersTable is the table that holds the riders relation/edge.
 	RidersTable = "rider"
 	// RidersInverseTable is the table name for the Rider entity.
@@ -38,6 +73,27 @@ const (
 	RidersInverseTable = "rider"
 	// RidersColumn is the table column denoting the riders relation/edge.
 	RidersColumn = "enterprise_id"
+	// ContractsTable is the table that holds the contracts relation/edge.
+	ContractsTable = "enterprise_contract"
+	// ContractsInverseTable is the table name for the EnterpriseContract entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisecontract" package.
+	ContractsInverseTable = "enterprise_contract"
+	// ContractsColumn is the table column denoting the contracts relation/edge.
+	ContractsColumn = "enterprise_id"
+	// PricesTable is the table that holds the prices relation/edge.
+	PricesTable = "enterprise_price"
+	// PricesInverseTable is the table name for the EnterprisePrice entity.
+	// It exists in this package in order to avoid circular dependency with the "enterpriseprice" package.
+	PricesInverseTable = "enterprise_price"
+	// PricesColumn is the table column denoting the prices relation/edge.
+	PricesColumn = "enterprise_id"
+	// SubscribesTable is the table that holds the subscribes relation/edge.
+	SubscribesTable = "subscribe"
+	// SubscribesInverseTable is the table name for the Subscribe entity.
+	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
+	SubscribesInverseTable = "subscribe"
+	// SubscribesColumn is the table column denoting the subscribes relation/edge.
+	SubscribesColumn = "enterprise_id"
 )
 
 // Columns holds all SQL columns for enterprise fields.
@@ -49,7 +105,17 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
+	FieldCityID,
 	FieldName,
+	FieldStatus,
+	FieldContactName,
+	FieldContactPhone,
+	FieldIdcardNumber,
+	FieldAddress,
+	FieldPayment,
+	FieldDeposit,
+	FieldBalance,
+	FieldArrearage,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -76,4 +142,10 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultDeposit holds the default value on creation for the "deposit" field.
+	DefaultDeposit float64
+	// DefaultBalance holds the default value on creation for the "balance" field.
+	DefaultBalance float64
+	// DefaultArrearage holds the default value on creation for the "arrearage" field.
+	DefaultArrearage float64
 )

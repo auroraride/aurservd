@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -135,6 +136,40 @@ func (su *SubscribeUpdate) SetRiderID(u uint64) *SubscribeUpdate {
 // SetInitialOrderID sets the "initial_order_id" field.
 func (su *SubscribeUpdate) SetInitialOrderID(u uint64) *SubscribeUpdate {
 	su.mutation.SetInitialOrderID(u)
+	return su
+}
+
+// SetNillableInitialOrderID sets the "initial_order_id" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableInitialOrderID(u *uint64) *SubscribeUpdate {
+	if u != nil {
+		su.SetInitialOrderID(*u)
+	}
+	return su
+}
+
+// ClearInitialOrderID clears the value of the "initial_order_id" field.
+func (su *SubscribeUpdate) ClearInitialOrderID() *SubscribeUpdate {
+	su.mutation.ClearInitialOrderID()
+	return su
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (su *SubscribeUpdate) SetEnterpriseID(u uint64) *SubscribeUpdate {
+	su.mutation.SetEnterpriseID(u)
+	return su
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableEnterpriseID(u *uint64) *SubscribeUpdate {
+	if u != nil {
+		su.SetEnterpriseID(*u)
+	}
+	return su
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (su *SubscribeUpdate) ClearEnterpriseID() *SubscribeUpdate {
+	su.mutation.ClearEnterpriseID()
 	return su
 }
 
@@ -390,6 +425,11 @@ func (su *SubscribeUpdate) SetRider(r *Rider) *SubscribeUpdate {
 	return su.SetRiderID(r.ID)
 }
 
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (su *SubscribeUpdate) SetEnterprise(e *Enterprise) *SubscribeUpdate {
+	return su.SetEnterpriseID(e.ID)
+}
+
 // AddPauseIDs adds the "pauses" edge to the SubscribePause entity by IDs.
 func (su *SubscribeUpdate) AddPauseIDs(ids ...uint64) *SubscribeUpdate {
 	su.mutation.AddPauseIDs(ids...)
@@ -466,6 +506,12 @@ func (su *SubscribeUpdate) ClearCity() *SubscribeUpdate {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (su *SubscribeUpdate) ClearRider() *SubscribeUpdate {
 	su.mutation.ClearRider()
+	return su
+}
+
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (su *SubscribeUpdate) ClearEnterprise() *SubscribeUpdate {
+	su.mutation.ClearEnterprise()
 	return su
 }
 
@@ -623,9 +669,6 @@ func (su *SubscribeUpdate) check() error {
 	}
 	if _, ok := su.mutation.RiderID(); su.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Subscribe.rider"`)
-	}
-	if _, ok := su.mutation.InitialOrderID(); su.mutation.InitialOrderCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Subscribe.initial_order"`)
 	}
 	return nil
 }
@@ -1004,6 +1047,41 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if su.mutation.EnterpriseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   subscribe.EnterpriseTable,
+			Columns: []string{subscribe.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprise.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   subscribe.EnterpriseTable,
+			Columns: []string{subscribe.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprise.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if su.mutation.PausesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -1322,6 +1400,40 @@ func (suo *SubscribeUpdateOne) SetInitialOrderID(u uint64) *SubscribeUpdateOne {
 	return suo
 }
 
+// SetNillableInitialOrderID sets the "initial_order_id" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableInitialOrderID(u *uint64) *SubscribeUpdateOne {
+	if u != nil {
+		suo.SetInitialOrderID(*u)
+	}
+	return suo
+}
+
+// ClearInitialOrderID clears the value of the "initial_order_id" field.
+func (suo *SubscribeUpdateOne) ClearInitialOrderID() *SubscribeUpdateOne {
+	suo.mutation.ClearInitialOrderID()
+	return suo
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (suo *SubscribeUpdateOne) SetEnterpriseID(u uint64) *SubscribeUpdateOne {
+	suo.mutation.SetEnterpriseID(u)
+	return suo
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableEnterpriseID(u *uint64) *SubscribeUpdateOne {
+	if u != nil {
+		suo.SetEnterpriseID(*u)
+	}
+	return suo
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (suo *SubscribeUpdateOne) ClearEnterpriseID() *SubscribeUpdateOne {
+	suo.mutation.ClearEnterpriseID()
+	return suo
+}
+
 // SetStatus sets the "status" field.
 func (suo *SubscribeUpdateOne) SetStatus(u uint8) *SubscribeUpdateOne {
 	suo.mutation.ResetStatus()
@@ -1574,6 +1686,11 @@ func (suo *SubscribeUpdateOne) SetRider(r *Rider) *SubscribeUpdateOne {
 	return suo.SetRiderID(r.ID)
 }
 
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (suo *SubscribeUpdateOne) SetEnterprise(e *Enterprise) *SubscribeUpdateOne {
+	return suo.SetEnterpriseID(e.ID)
+}
+
 // AddPauseIDs adds the "pauses" edge to the SubscribePause entity by IDs.
 func (suo *SubscribeUpdateOne) AddPauseIDs(ids ...uint64) *SubscribeUpdateOne {
 	suo.mutation.AddPauseIDs(ids...)
@@ -1650,6 +1767,12 @@ func (suo *SubscribeUpdateOne) ClearCity() *SubscribeUpdateOne {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (suo *SubscribeUpdateOne) ClearRider() *SubscribeUpdateOne {
 	suo.mutation.ClearRider()
+	return suo
+}
+
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (suo *SubscribeUpdateOne) ClearEnterprise() *SubscribeUpdateOne {
+	suo.mutation.ClearEnterprise()
 	return suo
 }
 
@@ -1820,9 +1943,6 @@ func (suo *SubscribeUpdateOne) check() error {
 	}
 	if _, ok := suo.mutation.RiderID(); suo.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Subscribe.rider"`)
-	}
-	if _, ok := suo.mutation.InitialOrderID(); suo.mutation.InitialOrderCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Subscribe.initial_order"`)
 	}
 	return nil
 }
@@ -2210,6 +2330,41 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: rider.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.EnterpriseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   subscribe.EnterpriseTable,
+			Columns: []string{subscribe.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprise.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   subscribe.EnterpriseTable,
+			Columns: []string{subscribe.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprise.FieldID,
 				},
 			},
 		}

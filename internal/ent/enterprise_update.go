@@ -12,9 +12,13 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // EnterpriseUpdate is the builder for updating Enterprise entities.
@@ -88,10 +92,134 @@ func (eu *EnterpriseUpdate) ClearRemark() *EnterpriseUpdate {
 	return eu
 }
 
+// SetCityID sets the "city_id" field.
+func (eu *EnterpriseUpdate) SetCityID(u uint64) *EnterpriseUpdate {
+	eu.mutation.SetCityID(u)
+	return eu
+}
+
 // SetName sets the "name" field.
 func (eu *EnterpriseUpdate) SetName(s string) *EnterpriseUpdate {
 	eu.mutation.SetName(s)
 	return eu
+}
+
+// SetStatus sets the "status" field.
+func (eu *EnterpriseUpdate) SetStatus(u uint8) *EnterpriseUpdate {
+	eu.mutation.ResetStatus()
+	eu.mutation.SetStatus(u)
+	return eu
+}
+
+// AddStatus adds u to the "status" field.
+func (eu *EnterpriseUpdate) AddStatus(u int8) *EnterpriseUpdate {
+	eu.mutation.AddStatus(u)
+	return eu
+}
+
+// SetContactName sets the "contact_name" field.
+func (eu *EnterpriseUpdate) SetContactName(s string) *EnterpriseUpdate {
+	eu.mutation.SetContactName(s)
+	return eu
+}
+
+// SetContactPhone sets the "contact_phone" field.
+func (eu *EnterpriseUpdate) SetContactPhone(s string) *EnterpriseUpdate {
+	eu.mutation.SetContactPhone(s)
+	return eu
+}
+
+// SetIdcardNumber sets the "idcard_number" field.
+func (eu *EnterpriseUpdate) SetIdcardNumber(s string) *EnterpriseUpdate {
+	eu.mutation.SetIdcardNumber(s)
+	return eu
+}
+
+// SetAddress sets the "address" field.
+func (eu *EnterpriseUpdate) SetAddress(s string) *EnterpriseUpdate {
+	eu.mutation.SetAddress(s)
+	return eu
+}
+
+// SetPayment sets the "payment" field.
+func (eu *EnterpriseUpdate) SetPayment(u uint8) *EnterpriseUpdate {
+	eu.mutation.ResetPayment()
+	eu.mutation.SetPayment(u)
+	return eu
+}
+
+// AddPayment adds u to the "payment" field.
+func (eu *EnterpriseUpdate) AddPayment(u int8) *EnterpriseUpdate {
+	eu.mutation.AddPayment(u)
+	return eu
+}
+
+// SetDeposit sets the "deposit" field.
+func (eu *EnterpriseUpdate) SetDeposit(f float64) *EnterpriseUpdate {
+	eu.mutation.ResetDeposit()
+	eu.mutation.SetDeposit(f)
+	return eu
+}
+
+// SetNillableDeposit sets the "deposit" field if the given value is not nil.
+func (eu *EnterpriseUpdate) SetNillableDeposit(f *float64) *EnterpriseUpdate {
+	if f != nil {
+		eu.SetDeposit(*f)
+	}
+	return eu
+}
+
+// AddDeposit adds f to the "deposit" field.
+func (eu *EnterpriseUpdate) AddDeposit(f float64) *EnterpriseUpdate {
+	eu.mutation.AddDeposit(f)
+	return eu
+}
+
+// SetBalance sets the "balance" field.
+func (eu *EnterpriseUpdate) SetBalance(f float64) *EnterpriseUpdate {
+	eu.mutation.ResetBalance()
+	eu.mutation.SetBalance(f)
+	return eu
+}
+
+// SetNillableBalance sets the "balance" field if the given value is not nil.
+func (eu *EnterpriseUpdate) SetNillableBalance(f *float64) *EnterpriseUpdate {
+	if f != nil {
+		eu.SetBalance(*f)
+	}
+	return eu
+}
+
+// AddBalance adds f to the "balance" field.
+func (eu *EnterpriseUpdate) AddBalance(f float64) *EnterpriseUpdate {
+	eu.mutation.AddBalance(f)
+	return eu
+}
+
+// SetArrearage sets the "arrearage" field.
+func (eu *EnterpriseUpdate) SetArrearage(f float64) *EnterpriseUpdate {
+	eu.mutation.ResetArrearage()
+	eu.mutation.SetArrearage(f)
+	return eu
+}
+
+// SetNillableArrearage sets the "arrearage" field if the given value is not nil.
+func (eu *EnterpriseUpdate) SetNillableArrearage(f *float64) *EnterpriseUpdate {
+	if f != nil {
+		eu.SetArrearage(*f)
+	}
+	return eu
+}
+
+// AddArrearage adds f to the "arrearage" field.
+func (eu *EnterpriseUpdate) AddArrearage(f float64) *EnterpriseUpdate {
+	eu.mutation.AddArrearage(f)
+	return eu
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (eu *EnterpriseUpdate) SetCity(c *City) *EnterpriseUpdate {
+	return eu.SetCityID(c.ID)
 }
 
 // AddRiderIDs adds the "riders" edge to the Rider entity by IDs.
@@ -109,9 +237,60 @@ func (eu *EnterpriseUpdate) AddRiders(r ...*Rider) *EnterpriseUpdate {
 	return eu.AddRiderIDs(ids...)
 }
 
+// AddContractIDs adds the "contracts" edge to the EnterpriseContract entity by IDs.
+func (eu *EnterpriseUpdate) AddContractIDs(ids ...uint64) *EnterpriseUpdate {
+	eu.mutation.AddContractIDs(ids...)
+	return eu
+}
+
+// AddContracts adds the "contracts" edges to the EnterpriseContract entity.
+func (eu *EnterpriseUpdate) AddContracts(e ...*EnterpriseContract) *EnterpriseUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return eu.AddContractIDs(ids...)
+}
+
+// AddPriceIDs adds the "prices" edge to the EnterprisePrice entity by IDs.
+func (eu *EnterpriseUpdate) AddPriceIDs(ids ...uint64) *EnterpriseUpdate {
+	eu.mutation.AddPriceIDs(ids...)
+	return eu
+}
+
+// AddPrices adds the "prices" edges to the EnterprisePrice entity.
+func (eu *EnterpriseUpdate) AddPrices(e ...*EnterprisePrice) *EnterpriseUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return eu.AddPriceIDs(ids...)
+}
+
+// AddSubscribeIDs adds the "subscribes" edge to the Subscribe entity by IDs.
+func (eu *EnterpriseUpdate) AddSubscribeIDs(ids ...uint64) *EnterpriseUpdate {
+	eu.mutation.AddSubscribeIDs(ids...)
+	return eu
+}
+
+// AddSubscribes adds the "subscribes" edges to the Subscribe entity.
+func (eu *EnterpriseUpdate) AddSubscribes(s ...*Subscribe) *EnterpriseUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return eu.AddSubscribeIDs(ids...)
+}
+
 // Mutation returns the EnterpriseMutation object of the builder.
 func (eu *EnterpriseUpdate) Mutation() *EnterpriseMutation {
 	return eu.mutation
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (eu *EnterpriseUpdate) ClearCity() *EnterpriseUpdate {
+	eu.mutation.ClearCity()
+	return eu
 }
 
 // ClearRiders clears all "riders" edges to the Rider entity.
@@ -135,6 +314,69 @@ func (eu *EnterpriseUpdate) RemoveRiders(r ...*Rider) *EnterpriseUpdate {
 	return eu.RemoveRiderIDs(ids...)
 }
 
+// ClearContracts clears all "contracts" edges to the EnterpriseContract entity.
+func (eu *EnterpriseUpdate) ClearContracts() *EnterpriseUpdate {
+	eu.mutation.ClearContracts()
+	return eu
+}
+
+// RemoveContractIDs removes the "contracts" edge to EnterpriseContract entities by IDs.
+func (eu *EnterpriseUpdate) RemoveContractIDs(ids ...uint64) *EnterpriseUpdate {
+	eu.mutation.RemoveContractIDs(ids...)
+	return eu
+}
+
+// RemoveContracts removes "contracts" edges to EnterpriseContract entities.
+func (eu *EnterpriseUpdate) RemoveContracts(e ...*EnterpriseContract) *EnterpriseUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return eu.RemoveContractIDs(ids...)
+}
+
+// ClearPrices clears all "prices" edges to the EnterprisePrice entity.
+func (eu *EnterpriseUpdate) ClearPrices() *EnterpriseUpdate {
+	eu.mutation.ClearPrices()
+	return eu
+}
+
+// RemovePriceIDs removes the "prices" edge to EnterprisePrice entities by IDs.
+func (eu *EnterpriseUpdate) RemovePriceIDs(ids ...uint64) *EnterpriseUpdate {
+	eu.mutation.RemovePriceIDs(ids...)
+	return eu
+}
+
+// RemovePrices removes "prices" edges to EnterprisePrice entities.
+func (eu *EnterpriseUpdate) RemovePrices(e ...*EnterprisePrice) *EnterpriseUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return eu.RemovePriceIDs(ids...)
+}
+
+// ClearSubscribes clears all "subscribes" edges to the Subscribe entity.
+func (eu *EnterpriseUpdate) ClearSubscribes() *EnterpriseUpdate {
+	eu.mutation.ClearSubscribes()
+	return eu
+}
+
+// RemoveSubscribeIDs removes the "subscribes" edge to Subscribe entities by IDs.
+func (eu *EnterpriseUpdate) RemoveSubscribeIDs(ids ...uint64) *EnterpriseUpdate {
+	eu.mutation.RemoveSubscribeIDs(ids...)
+	return eu
+}
+
+// RemoveSubscribes removes "subscribes" edges to Subscribe entities.
+func (eu *EnterpriseUpdate) RemoveSubscribes(s ...*Subscribe) *EnterpriseUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return eu.RemoveSubscribeIDs(ids...)
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (eu *EnterpriseUpdate) Save(ctx context.Context) (int, error) {
 	var (
@@ -145,12 +387,18 @@ func (eu *EnterpriseUpdate) Save(ctx context.Context) (int, error) {
 		return 0, err
 	}
 	if len(eu.hooks) == 0 {
+		if err = eu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = eu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*EnterpriseMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = eu.check(); err != nil {
+				return 0, err
 			}
 			eu.mutation = mutation
 			affected, err = eu.sqlSave(ctx)
@@ -200,6 +448,14 @@ func (eu *EnterpriseUpdate) defaults() error {
 		}
 		v := enterprise.UpdateDefaultUpdatedAt()
 		eu.mutation.SetUpdatedAt(v)
+	}
+	return nil
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (eu *EnterpriseUpdate) check() error {
+	if _, ok := eu.mutation.CityID(); eu.mutation.CityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Enterprise.city"`)
 	}
 	return nil
 }
@@ -281,6 +537,139 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: enterprise.FieldName,
 		})
 	}
+	if value, ok := eu.mutation.Status(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: enterprise.FieldStatus,
+		})
+	}
+	if value, ok := eu.mutation.AddedStatus(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: enterprise.FieldStatus,
+		})
+	}
+	if value, ok := eu.mutation.ContactName(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: enterprise.FieldContactName,
+		})
+	}
+	if value, ok := eu.mutation.ContactPhone(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: enterprise.FieldContactPhone,
+		})
+	}
+	if value, ok := eu.mutation.IdcardNumber(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: enterprise.FieldIdcardNumber,
+		})
+	}
+	if value, ok := eu.mutation.Address(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: enterprise.FieldAddress,
+		})
+	}
+	if value, ok := eu.mutation.Payment(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: enterprise.FieldPayment,
+		})
+	}
+	if value, ok := eu.mutation.AddedPayment(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: enterprise.FieldPayment,
+		})
+	}
+	if value, ok := eu.mutation.Deposit(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldDeposit,
+		})
+	}
+	if value, ok := eu.mutation.AddedDeposit(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldDeposit,
+		})
+	}
+	if value, ok := eu.mutation.Balance(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldBalance,
+		})
+	}
+	if value, ok := eu.mutation.AddedBalance(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldBalance,
+		})
+	}
+	if value, ok := eu.mutation.Arrearage(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldArrearage,
+		})
+	}
+	if value, ok := eu.mutation.AddedArrearage(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldArrearage,
+		})
+	}
+	if eu.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterprise.CityTable,
+			Columns: []string{enterprise.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterprise.CityTable,
+			Columns: []string{enterprise.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if eu.mutation.RidersCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -327,6 +716,168 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: rider.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.ContractsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.ContractsTable,
+			Columns: []string{enterprise.ContractsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisecontract.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedContractsIDs(); len(nodes) > 0 && !eu.mutation.ContractsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.ContractsTable,
+			Columns: []string{enterprise.ContractsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisecontract.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.ContractsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.ContractsTable,
+			Columns: []string{enterprise.ContractsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisecontract.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.PricesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.PricesTable,
+			Columns: []string{enterprise.PricesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterpriseprice.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedPricesIDs(); len(nodes) > 0 && !eu.mutation.PricesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.PricesTable,
+			Columns: []string{enterprise.PricesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterpriseprice.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.PricesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.PricesTable,
+			Columns: []string{enterprise.PricesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterpriseprice.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.SubscribesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.SubscribesTable,
+			Columns: []string{enterprise.SubscribesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedSubscribesIDs(); len(nodes) > 0 && !eu.mutation.SubscribesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.SubscribesTable,
+			Columns: []string{enterprise.SubscribesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.SubscribesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.SubscribesTable,
+			Columns: []string{enterprise.SubscribesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
 				},
 			},
 		}
@@ -412,10 +963,134 @@ func (euo *EnterpriseUpdateOne) ClearRemark() *EnterpriseUpdateOne {
 	return euo
 }
 
+// SetCityID sets the "city_id" field.
+func (euo *EnterpriseUpdateOne) SetCityID(u uint64) *EnterpriseUpdateOne {
+	euo.mutation.SetCityID(u)
+	return euo
+}
+
 // SetName sets the "name" field.
 func (euo *EnterpriseUpdateOne) SetName(s string) *EnterpriseUpdateOne {
 	euo.mutation.SetName(s)
 	return euo
+}
+
+// SetStatus sets the "status" field.
+func (euo *EnterpriseUpdateOne) SetStatus(u uint8) *EnterpriseUpdateOne {
+	euo.mutation.ResetStatus()
+	euo.mutation.SetStatus(u)
+	return euo
+}
+
+// AddStatus adds u to the "status" field.
+func (euo *EnterpriseUpdateOne) AddStatus(u int8) *EnterpriseUpdateOne {
+	euo.mutation.AddStatus(u)
+	return euo
+}
+
+// SetContactName sets the "contact_name" field.
+func (euo *EnterpriseUpdateOne) SetContactName(s string) *EnterpriseUpdateOne {
+	euo.mutation.SetContactName(s)
+	return euo
+}
+
+// SetContactPhone sets the "contact_phone" field.
+func (euo *EnterpriseUpdateOne) SetContactPhone(s string) *EnterpriseUpdateOne {
+	euo.mutation.SetContactPhone(s)
+	return euo
+}
+
+// SetIdcardNumber sets the "idcard_number" field.
+func (euo *EnterpriseUpdateOne) SetIdcardNumber(s string) *EnterpriseUpdateOne {
+	euo.mutation.SetIdcardNumber(s)
+	return euo
+}
+
+// SetAddress sets the "address" field.
+func (euo *EnterpriseUpdateOne) SetAddress(s string) *EnterpriseUpdateOne {
+	euo.mutation.SetAddress(s)
+	return euo
+}
+
+// SetPayment sets the "payment" field.
+func (euo *EnterpriseUpdateOne) SetPayment(u uint8) *EnterpriseUpdateOne {
+	euo.mutation.ResetPayment()
+	euo.mutation.SetPayment(u)
+	return euo
+}
+
+// AddPayment adds u to the "payment" field.
+func (euo *EnterpriseUpdateOne) AddPayment(u int8) *EnterpriseUpdateOne {
+	euo.mutation.AddPayment(u)
+	return euo
+}
+
+// SetDeposit sets the "deposit" field.
+func (euo *EnterpriseUpdateOne) SetDeposit(f float64) *EnterpriseUpdateOne {
+	euo.mutation.ResetDeposit()
+	euo.mutation.SetDeposit(f)
+	return euo
+}
+
+// SetNillableDeposit sets the "deposit" field if the given value is not nil.
+func (euo *EnterpriseUpdateOne) SetNillableDeposit(f *float64) *EnterpriseUpdateOne {
+	if f != nil {
+		euo.SetDeposit(*f)
+	}
+	return euo
+}
+
+// AddDeposit adds f to the "deposit" field.
+func (euo *EnterpriseUpdateOne) AddDeposit(f float64) *EnterpriseUpdateOne {
+	euo.mutation.AddDeposit(f)
+	return euo
+}
+
+// SetBalance sets the "balance" field.
+func (euo *EnterpriseUpdateOne) SetBalance(f float64) *EnterpriseUpdateOne {
+	euo.mutation.ResetBalance()
+	euo.mutation.SetBalance(f)
+	return euo
+}
+
+// SetNillableBalance sets the "balance" field if the given value is not nil.
+func (euo *EnterpriseUpdateOne) SetNillableBalance(f *float64) *EnterpriseUpdateOne {
+	if f != nil {
+		euo.SetBalance(*f)
+	}
+	return euo
+}
+
+// AddBalance adds f to the "balance" field.
+func (euo *EnterpriseUpdateOne) AddBalance(f float64) *EnterpriseUpdateOne {
+	euo.mutation.AddBalance(f)
+	return euo
+}
+
+// SetArrearage sets the "arrearage" field.
+func (euo *EnterpriseUpdateOne) SetArrearage(f float64) *EnterpriseUpdateOne {
+	euo.mutation.ResetArrearage()
+	euo.mutation.SetArrearage(f)
+	return euo
+}
+
+// SetNillableArrearage sets the "arrearage" field if the given value is not nil.
+func (euo *EnterpriseUpdateOne) SetNillableArrearage(f *float64) *EnterpriseUpdateOne {
+	if f != nil {
+		euo.SetArrearage(*f)
+	}
+	return euo
+}
+
+// AddArrearage adds f to the "arrearage" field.
+func (euo *EnterpriseUpdateOne) AddArrearage(f float64) *EnterpriseUpdateOne {
+	euo.mutation.AddArrearage(f)
+	return euo
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (euo *EnterpriseUpdateOne) SetCity(c *City) *EnterpriseUpdateOne {
+	return euo.SetCityID(c.ID)
 }
 
 // AddRiderIDs adds the "riders" edge to the Rider entity by IDs.
@@ -433,9 +1108,60 @@ func (euo *EnterpriseUpdateOne) AddRiders(r ...*Rider) *EnterpriseUpdateOne {
 	return euo.AddRiderIDs(ids...)
 }
 
+// AddContractIDs adds the "contracts" edge to the EnterpriseContract entity by IDs.
+func (euo *EnterpriseUpdateOne) AddContractIDs(ids ...uint64) *EnterpriseUpdateOne {
+	euo.mutation.AddContractIDs(ids...)
+	return euo
+}
+
+// AddContracts adds the "contracts" edges to the EnterpriseContract entity.
+func (euo *EnterpriseUpdateOne) AddContracts(e ...*EnterpriseContract) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return euo.AddContractIDs(ids...)
+}
+
+// AddPriceIDs adds the "prices" edge to the EnterprisePrice entity by IDs.
+func (euo *EnterpriseUpdateOne) AddPriceIDs(ids ...uint64) *EnterpriseUpdateOne {
+	euo.mutation.AddPriceIDs(ids...)
+	return euo
+}
+
+// AddPrices adds the "prices" edges to the EnterprisePrice entity.
+func (euo *EnterpriseUpdateOne) AddPrices(e ...*EnterprisePrice) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return euo.AddPriceIDs(ids...)
+}
+
+// AddSubscribeIDs adds the "subscribes" edge to the Subscribe entity by IDs.
+func (euo *EnterpriseUpdateOne) AddSubscribeIDs(ids ...uint64) *EnterpriseUpdateOne {
+	euo.mutation.AddSubscribeIDs(ids...)
+	return euo
+}
+
+// AddSubscribes adds the "subscribes" edges to the Subscribe entity.
+func (euo *EnterpriseUpdateOne) AddSubscribes(s ...*Subscribe) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return euo.AddSubscribeIDs(ids...)
+}
+
 // Mutation returns the EnterpriseMutation object of the builder.
 func (euo *EnterpriseUpdateOne) Mutation() *EnterpriseMutation {
 	return euo.mutation
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (euo *EnterpriseUpdateOne) ClearCity() *EnterpriseUpdateOne {
+	euo.mutation.ClearCity()
+	return euo
 }
 
 // ClearRiders clears all "riders" edges to the Rider entity.
@@ -459,6 +1185,69 @@ func (euo *EnterpriseUpdateOne) RemoveRiders(r ...*Rider) *EnterpriseUpdateOne {
 	return euo.RemoveRiderIDs(ids...)
 }
 
+// ClearContracts clears all "contracts" edges to the EnterpriseContract entity.
+func (euo *EnterpriseUpdateOne) ClearContracts() *EnterpriseUpdateOne {
+	euo.mutation.ClearContracts()
+	return euo
+}
+
+// RemoveContractIDs removes the "contracts" edge to EnterpriseContract entities by IDs.
+func (euo *EnterpriseUpdateOne) RemoveContractIDs(ids ...uint64) *EnterpriseUpdateOne {
+	euo.mutation.RemoveContractIDs(ids...)
+	return euo
+}
+
+// RemoveContracts removes "contracts" edges to EnterpriseContract entities.
+func (euo *EnterpriseUpdateOne) RemoveContracts(e ...*EnterpriseContract) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return euo.RemoveContractIDs(ids...)
+}
+
+// ClearPrices clears all "prices" edges to the EnterprisePrice entity.
+func (euo *EnterpriseUpdateOne) ClearPrices() *EnterpriseUpdateOne {
+	euo.mutation.ClearPrices()
+	return euo
+}
+
+// RemovePriceIDs removes the "prices" edge to EnterprisePrice entities by IDs.
+func (euo *EnterpriseUpdateOne) RemovePriceIDs(ids ...uint64) *EnterpriseUpdateOne {
+	euo.mutation.RemovePriceIDs(ids...)
+	return euo
+}
+
+// RemovePrices removes "prices" edges to EnterprisePrice entities.
+func (euo *EnterpriseUpdateOne) RemovePrices(e ...*EnterprisePrice) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return euo.RemovePriceIDs(ids...)
+}
+
+// ClearSubscribes clears all "subscribes" edges to the Subscribe entity.
+func (euo *EnterpriseUpdateOne) ClearSubscribes() *EnterpriseUpdateOne {
+	euo.mutation.ClearSubscribes()
+	return euo
+}
+
+// RemoveSubscribeIDs removes the "subscribes" edge to Subscribe entities by IDs.
+func (euo *EnterpriseUpdateOne) RemoveSubscribeIDs(ids ...uint64) *EnterpriseUpdateOne {
+	euo.mutation.RemoveSubscribeIDs(ids...)
+	return euo
+}
+
+// RemoveSubscribes removes "subscribes" edges to Subscribe entities.
+func (euo *EnterpriseUpdateOne) RemoveSubscribes(s ...*Subscribe) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return euo.RemoveSubscribeIDs(ids...)
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (euo *EnterpriseUpdateOne) Select(field string, fields ...string) *EnterpriseUpdateOne {
@@ -476,12 +1265,18 @@ func (euo *EnterpriseUpdateOne) Save(ctx context.Context) (*Enterprise, error) {
 		return nil, err
 	}
 	if len(euo.hooks) == 0 {
+		if err = euo.check(); err != nil {
+			return nil, err
+		}
 		node, err = euo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*EnterpriseMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = euo.check(); err != nil {
+				return nil, err
 			}
 			euo.mutation = mutation
 			node, err = euo.sqlSave(ctx)
@@ -537,6 +1332,14 @@ func (euo *EnterpriseUpdateOne) defaults() error {
 		}
 		v := enterprise.UpdateDefaultUpdatedAt()
 		euo.mutation.SetUpdatedAt(v)
+	}
+	return nil
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (euo *EnterpriseUpdateOne) check() error {
+	if _, ok := euo.mutation.CityID(); euo.mutation.CityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Enterprise.city"`)
 	}
 	return nil
 }
@@ -635,6 +1438,139 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 			Column: enterprise.FieldName,
 		})
 	}
+	if value, ok := euo.mutation.Status(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: enterprise.FieldStatus,
+		})
+	}
+	if value, ok := euo.mutation.AddedStatus(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: enterprise.FieldStatus,
+		})
+	}
+	if value, ok := euo.mutation.ContactName(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: enterprise.FieldContactName,
+		})
+	}
+	if value, ok := euo.mutation.ContactPhone(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: enterprise.FieldContactPhone,
+		})
+	}
+	if value, ok := euo.mutation.IdcardNumber(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: enterprise.FieldIdcardNumber,
+		})
+	}
+	if value, ok := euo.mutation.Address(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: enterprise.FieldAddress,
+		})
+	}
+	if value, ok := euo.mutation.Payment(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: enterprise.FieldPayment,
+		})
+	}
+	if value, ok := euo.mutation.AddedPayment(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: enterprise.FieldPayment,
+		})
+	}
+	if value, ok := euo.mutation.Deposit(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldDeposit,
+		})
+	}
+	if value, ok := euo.mutation.AddedDeposit(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldDeposit,
+		})
+	}
+	if value, ok := euo.mutation.Balance(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldBalance,
+		})
+	}
+	if value, ok := euo.mutation.AddedBalance(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldBalance,
+		})
+	}
+	if value, ok := euo.mutation.Arrearage(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldArrearage,
+		})
+	}
+	if value, ok := euo.mutation.AddedArrearage(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldArrearage,
+		})
+	}
+	if euo.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterprise.CityTable,
+			Columns: []string{enterprise.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterprise.CityTable,
+			Columns: []string{enterprise.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if euo.mutation.RidersCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -681,6 +1617,168 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: rider.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.ContractsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.ContractsTable,
+			Columns: []string{enterprise.ContractsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisecontract.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedContractsIDs(); len(nodes) > 0 && !euo.mutation.ContractsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.ContractsTable,
+			Columns: []string{enterprise.ContractsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisecontract.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.ContractsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.ContractsTable,
+			Columns: []string{enterprise.ContractsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisecontract.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.PricesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.PricesTable,
+			Columns: []string{enterprise.PricesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterpriseprice.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedPricesIDs(); len(nodes) > 0 && !euo.mutation.PricesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.PricesTable,
+			Columns: []string{enterprise.PricesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterpriseprice.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.PricesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.PricesTable,
+			Columns: []string{enterprise.PricesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterpriseprice.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.SubscribesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.SubscribesTable,
+			Columns: []string{enterprise.SubscribesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedSubscribesIDs(); len(nodes) > 0 && !euo.mutation.SubscribesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.SubscribesTable,
+			Columns: []string{enterprise.SubscribesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.SubscribesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.SubscribesTable,
+			Columns: []string{enterprise.SubscribesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
 				},
 			},
 		}

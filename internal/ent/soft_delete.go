@@ -16,6 +16,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -422,6 +424,86 @@ func (c *EnterpriseClient) GetNotDeleted(ctx context.Context, id uint64) (*Enter
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *EnterpriseClient) GetNotDeletedX(ctx context.Context, id uint64) *Enterprise {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for EnterpriseContract.
+func (c *EnterpriseContractClient) SoftDelete() *EnterpriseContractUpdate {
+	mutation := newEnterpriseContractMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &EnterpriseContractUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *EnterpriseContractClient) SoftDeleteOne(ec *EnterpriseContract) *EnterpriseContractUpdateOne {
+	mutation := newEnterpriseContractMutation(c.config, OpUpdateOne, withEnterpriseContract(ec))
+	mutation.SetDeletedAt(time.Now())
+	return &EnterpriseContractUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *EnterpriseContractClient) SoftDeleteOneID(id uint64) *EnterpriseContractUpdateOne {
+	mutation := newEnterpriseContractMutation(c.config, OpUpdateOne, withEnterpriseContractID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &EnterpriseContractUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for EnterpriseContract.
+func (c *EnterpriseContractClient) QueryNotDeleted() *EnterpriseContractQuery {
+	return c.Query().Where(enterprisecontract.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a EnterpriseContract not deleted entity by its id.
+func (c *EnterpriseContractClient) GetNotDeleted(ctx context.Context, id uint64) (*EnterpriseContract, error) {
+	return c.Query().Where(enterprisecontract.ID(id), enterprisecontract.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *EnterpriseContractClient) GetNotDeletedX(ctx context.Context, id uint64) *EnterpriseContract {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for EnterprisePrice.
+func (c *EnterprisePriceClient) SoftDelete() *EnterprisePriceUpdate {
+	mutation := newEnterprisePriceMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &EnterprisePriceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *EnterprisePriceClient) SoftDeleteOne(ep *EnterprisePrice) *EnterprisePriceUpdateOne {
+	mutation := newEnterprisePriceMutation(c.config, OpUpdateOne, withEnterprisePrice(ep))
+	mutation.SetDeletedAt(time.Now())
+	return &EnterprisePriceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *EnterprisePriceClient) SoftDeleteOneID(id uint64) *EnterprisePriceUpdateOne {
+	mutation := newEnterprisePriceMutation(c.config, OpUpdateOne, withEnterprisePriceID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &EnterprisePriceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for EnterprisePrice.
+func (c *EnterprisePriceClient) QueryNotDeleted() *EnterprisePriceQuery {
+	return c.Query().Where(enterpriseprice.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a EnterprisePrice not deleted entity by its id.
+func (c *EnterprisePriceClient) GetNotDeleted(ctx context.Context, id uint64) (*EnterprisePrice, error) {
+	return c.Query().Where(enterpriseprice.ID(id), enterpriseprice.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *EnterprisePriceClient) GetNotDeletedX(ctx context.Context, id uint64) *EnterprisePrice {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

@@ -19,6 +19,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -62,6 +64,10 @@ type Client struct {
 	Employee *EmployeeClient
 	// Enterprise is the client for interacting with the Enterprise builders.
 	Enterprise *EnterpriseClient
+	// EnterpriseContract is the client for interacting with the EnterpriseContract builders.
+	EnterpriseContract *EnterpriseContractClient
+	// EnterprisePrice is the client for interacting with the EnterprisePrice builders.
+	EnterprisePrice *EnterprisePriceClient
 	// Exchange is the client for interacting with the Exchange builders.
 	Exchange *ExchangeClient
 	// Manager is the client for interacting with the Manager builders.
@@ -109,6 +115,8 @@ func (c *Client) init() {
 	c.Contract = NewContractClient(c.config)
 	c.Employee = NewEmployeeClient(c.config)
 	c.Enterprise = NewEnterpriseClient(c.config)
+	c.EnterpriseContract = NewEnterpriseContractClient(c.config)
+	c.EnterprisePrice = NewEnterprisePriceClient(c.config)
 	c.Exchange = NewExchangeClient(c.config)
 	c.Manager = NewManagerClient(c.config)
 	c.Order = NewOrderClient(c.config)
@@ -152,30 +160,32 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:            ctx,
-		config:         cfg,
-		BatteryModel:   NewBatteryModelClient(cfg),
-		Branch:         NewBranchClient(cfg),
-		BranchContract: NewBranchContractClient(cfg),
-		Cabinet:        NewCabinetClient(cfg),
-		CabinetFault:   NewCabinetFaultClient(cfg),
-		City:           NewCityClient(cfg),
-		Commission:     NewCommissionClient(cfg),
-		Contract:       NewContractClient(cfg),
-		Employee:       NewEmployeeClient(cfg),
-		Enterprise:     NewEnterpriseClient(cfg),
-		Exchange:       NewExchangeClient(cfg),
-		Manager:        NewManagerClient(cfg),
-		Order:          NewOrderClient(cfg),
-		OrderRefund:    NewOrderRefundClient(cfg),
-		Person:         NewPersonClient(cfg),
-		Plan:           NewPlanClient(cfg),
-		Rider:          NewRiderClient(cfg),
-		Setting:        NewSettingClient(cfg),
-		Store:          NewStoreClient(cfg),
-		Subscribe:      NewSubscribeClient(cfg),
-		SubscribeAlter: NewSubscribeAlterClient(cfg),
-		SubscribePause: NewSubscribePauseClient(cfg),
+		ctx:                ctx,
+		config:             cfg,
+		BatteryModel:       NewBatteryModelClient(cfg),
+		Branch:             NewBranchClient(cfg),
+		BranchContract:     NewBranchContractClient(cfg),
+		Cabinet:            NewCabinetClient(cfg),
+		CabinetFault:       NewCabinetFaultClient(cfg),
+		City:               NewCityClient(cfg),
+		Commission:         NewCommissionClient(cfg),
+		Contract:           NewContractClient(cfg),
+		Employee:           NewEmployeeClient(cfg),
+		Enterprise:         NewEnterpriseClient(cfg),
+		EnterpriseContract: NewEnterpriseContractClient(cfg),
+		EnterprisePrice:    NewEnterprisePriceClient(cfg),
+		Exchange:           NewExchangeClient(cfg),
+		Manager:            NewManagerClient(cfg),
+		Order:              NewOrderClient(cfg),
+		OrderRefund:        NewOrderRefundClient(cfg),
+		Person:             NewPersonClient(cfg),
+		Plan:               NewPlanClient(cfg),
+		Rider:              NewRiderClient(cfg),
+		Setting:            NewSettingClient(cfg),
+		Store:              NewStoreClient(cfg),
+		Subscribe:          NewSubscribeClient(cfg),
+		SubscribeAlter:     NewSubscribeAlterClient(cfg),
+		SubscribePause:     NewSubscribePauseClient(cfg),
 	}, nil
 }
 
@@ -193,30 +203,32 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:            ctx,
-		config:         cfg,
-		BatteryModel:   NewBatteryModelClient(cfg),
-		Branch:         NewBranchClient(cfg),
-		BranchContract: NewBranchContractClient(cfg),
-		Cabinet:        NewCabinetClient(cfg),
-		CabinetFault:   NewCabinetFaultClient(cfg),
-		City:           NewCityClient(cfg),
-		Commission:     NewCommissionClient(cfg),
-		Contract:       NewContractClient(cfg),
-		Employee:       NewEmployeeClient(cfg),
-		Enterprise:     NewEnterpriseClient(cfg),
-		Exchange:       NewExchangeClient(cfg),
-		Manager:        NewManagerClient(cfg),
-		Order:          NewOrderClient(cfg),
-		OrderRefund:    NewOrderRefundClient(cfg),
-		Person:         NewPersonClient(cfg),
-		Plan:           NewPlanClient(cfg),
-		Rider:          NewRiderClient(cfg),
-		Setting:        NewSettingClient(cfg),
-		Store:          NewStoreClient(cfg),
-		Subscribe:      NewSubscribeClient(cfg),
-		SubscribeAlter: NewSubscribeAlterClient(cfg),
-		SubscribePause: NewSubscribePauseClient(cfg),
+		ctx:                ctx,
+		config:             cfg,
+		BatteryModel:       NewBatteryModelClient(cfg),
+		Branch:             NewBranchClient(cfg),
+		BranchContract:     NewBranchContractClient(cfg),
+		Cabinet:            NewCabinetClient(cfg),
+		CabinetFault:       NewCabinetFaultClient(cfg),
+		City:               NewCityClient(cfg),
+		Commission:         NewCommissionClient(cfg),
+		Contract:           NewContractClient(cfg),
+		Employee:           NewEmployeeClient(cfg),
+		Enterprise:         NewEnterpriseClient(cfg),
+		EnterpriseContract: NewEnterpriseContractClient(cfg),
+		EnterprisePrice:    NewEnterprisePriceClient(cfg),
+		Exchange:           NewExchangeClient(cfg),
+		Manager:            NewManagerClient(cfg),
+		Order:              NewOrderClient(cfg),
+		OrderRefund:        NewOrderRefundClient(cfg),
+		Person:             NewPersonClient(cfg),
+		Plan:               NewPlanClient(cfg),
+		Rider:              NewRiderClient(cfg),
+		Setting:            NewSettingClient(cfg),
+		Store:              NewStoreClient(cfg),
+		Subscribe:          NewSubscribeClient(cfg),
+		SubscribeAlter:     NewSubscribeAlterClient(cfg),
+		SubscribePause:     NewSubscribePauseClient(cfg),
 	}, nil
 }
 
@@ -256,6 +268,8 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Contract.Use(hooks...)
 	c.Employee.Use(hooks...)
 	c.Enterprise.Use(hooks...)
+	c.EnterpriseContract.Use(hooks...)
+	c.EnterprisePrice.Use(hooks...)
 	c.Exchange.Use(hooks...)
 	c.Manager.Use(hooks...)
 	c.Order.Use(hooks...)
@@ -1510,6 +1524,22 @@ func (c *EnterpriseClient) GetX(ctx context.Context, id uint64) *Enterprise {
 	return obj
 }
 
+// QueryCity queries the city edge of a Enterprise.
+func (c *EnterpriseClient) QueryCity(e *Enterprise) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterprise.CityTable, enterprise.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryRiders queries the riders edge of a Enterprise.
 func (c *EnterpriseClient) QueryRiders(e *Enterprise) *RiderQuery {
 	query := &RiderQuery{config: c.config}
@@ -1526,10 +1556,288 @@ func (c *EnterpriseClient) QueryRiders(e *Enterprise) *RiderQuery {
 	return query
 }
 
+// QueryContracts queries the contracts edge of a Enterprise.
+func (c *EnterpriseClient) QueryContracts(e *Enterprise) *EnterpriseContractQuery {
+	query := &EnterpriseContractQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
+			sqlgraph.To(enterprisecontract.Table, enterprisecontract.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.ContractsTable, enterprise.ContractsColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPrices queries the prices edge of a Enterprise.
+func (c *EnterpriseClient) QueryPrices(e *Enterprise) *EnterprisePriceQuery {
+	query := &EnterprisePriceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
+			sqlgraph.To(enterpriseprice.Table, enterpriseprice.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.PricesTable, enterprise.PricesColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySubscribes queries the subscribes edge of a Enterprise.
+func (c *EnterpriseClient) QuerySubscribes(e *Enterprise) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.SubscribesTable, enterprise.SubscribesColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EnterpriseClient) Hooks() []Hook {
 	hooks := c.hooks.Enterprise
 	return append(hooks[:len(hooks):len(hooks)], enterprise.Hooks[:]...)
+}
+
+// EnterpriseContractClient is a client for the EnterpriseContract schema.
+type EnterpriseContractClient struct {
+	config
+}
+
+// NewEnterpriseContractClient returns a client for the EnterpriseContract from the given config.
+func NewEnterpriseContractClient(c config) *EnterpriseContractClient {
+	return &EnterpriseContractClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `enterprisecontract.Hooks(f(g(h())))`.
+func (c *EnterpriseContractClient) Use(hooks ...Hook) {
+	c.hooks.EnterpriseContract = append(c.hooks.EnterpriseContract, hooks...)
+}
+
+// Create returns a create builder for EnterpriseContract.
+func (c *EnterpriseContractClient) Create() *EnterpriseContractCreate {
+	mutation := newEnterpriseContractMutation(c.config, OpCreate)
+	return &EnterpriseContractCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EnterpriseContract entities.
+func (c *EnterpriseContractClient) CreateBulk(builders ...*EnterpriseContractCreate) *EnterpriseContractCreateBulk {
+	return &EnterpriseContractCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EnterpriseContract.
+func (c *EnterpriseContractClient) Update() *EnterpriseContractUpdate {
+	mutation := newEnterpriseContractMutation(c.config, OpUpdate)
+	return &EnterpriseContractUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EnterpriseContractClient) UpdateOne(ec *EnterpriseContract) *EnterpriseContractUpdateOne {
+	mutation := newEnterpriseContractMutation(c.config, OpUpdateOne, withEnterpriseContract(ec))
+	return &EnterpriseContractUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EnterpriseContractClient) UpdateOneID(id uint64) *EnterpriseContractUpdateOne {
+	mutation := newEnterpriseContractMutation(c.config, OpUpdateOne, withEnterpriseContractID(id))
+	return &EnterpriseContractUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EnterpriseContract.
+func (c *EnterpriseContractClient) Delete() *EnterpriseContractDelete {
+	mutation := newEnterpriseContractMutation(c.config, OpDelete)
+	return &EnterpriseContractDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *EnterpriseContractClient) DeleteOne(ec *EnterpriseContract) *EnterpriseContractDeleteOne {
+	return c.DeleteOneID(ec.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *EnterpriseContractClient) DeleteOneID(id uint64) *EnterpriseContractDeleteOne {
+	builder := c.Delete().Where(enterprisecontract.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EnterpriseContractDeleteOne{builder}
+}
+
+// Query returns a query builder for EnterpriseContract.
+func (c *EnterpriseContractClient) Query() *EnterpriseContractQuery {
+	return &EnterpriseContractQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a EnterpriseContract entity by its id.
+func (c *EnterpriseContractClient) Get(ctx context.Context, id uint64) (*EnterpriseContract, error) {
+	return c.Query().Where(enterprisecontract.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EnterpriseContractClient) GetX(ctx context.Context, id uint64) *EnterpriseContract {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEnterprise queries the enterprise edge of a EnterpriseContract.
+func (c *EnterpriseContractClient) QueryEnterprise(ec *EnterpriseContract) *EnterpriseQuery {
+	query := &EnterpriseQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ec.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisecontract.Table, enterprisecontract.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, enterprisecontract.EnterpriseTable, enterprisecontract.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(ec.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EnterpriseContractClient) Hooks() []Hook {
+	hooks := c.hooks.EnterpriseContract
+	return append(hooks[:len(hooks):len(hooks)], enterprisecontract.Hooks[:]...)
+}
+
+// EnterprisePriceClient is a client for the EnterprisePrice schema.
+type EnterprisePriceClient struct {
+	config
+}
+
+// NewEnterprisePriceClient returns a client for the EnterprisePrice from the given config.
+func NewEnterprisePriceClient(c config) *EnterprisePriceClient {
+	return &EnterprisePriceClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `enterpriseprice.Hooks(f(g(h())))`.
+func (c *EnterprisePriceClient) Use(hooks ...Hook) {
+	c.hooks.EnterprisePrice = append(c.hooks.EnterprisePrice, hooks...)
+}
+
+// Create returns a create builder for EnterprisePrice.
+func (c *EnterprisePriceClient) Create() *EnterprisePriceCreate {
+	mutation := newEnterprisePriceMutation(c.config, OpCreate)
+	return &EnterprisePriceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EnterprisePrice entities.
+func (c *EnterprisePriceClient) CreateBulk(builders ...*EnterprisePriceCreate) *EnterprisePriceCreateBulk {
+	return &EnterprisePriceCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EnterprisePrice.
+func (c *EnterprisePriceClient) Update() *EnterprisePriceUpdate {
+	mutation := newEnterprisePriceMutation(c.config, OpUpdate)
+	return &EnterprisePriceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EnterprisePriceClient) UpdateOne(ep *EnterprisePrice) *EnterprisePriceUpdateOne {
+	mutation := newEnterprisePriceMutation(c.config, OpUpdateOne, withEnterprisePrice(ep))
+	return &EnterprisePriceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EnterprisePriceClient) UpdateOneID(id uint64) *EnterprisePriceUpdateOne {
+	mutation := newEnterprisePriceMutation(c.config, OpUpdateOne, withEnterprisePriceID(id))
+	return &EnterprisePriceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EnterprisePrice.
+func (c *EnterprisePriceClient) Delete() *EnterprisePriceDelete {
+	mutation := newEnterprisePriceMutation(c.config, OpDelete)
+	return &EnterprisePriceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *EnterprisePriceClient) DeleteOne(ep *EnterprisePrice) *EnterprisePriceDeleteOne {
+	return c.DeleteOneID(ep.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *EnterprisePriceClient) DeleteOneID(id uint64) *EnterprisePriceDeleteOne {
+	builder := c.Delete().Where(enterpriseprice.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EnterprisePriceDeleteOne{builder}
+}
+
+// Query returns a query builder for EnterprisePrice.
+func (c *EnterprisePriceClient) Query() *EnterprisePriceQuery {
+	return &EnterprisePriceQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a EnterprisePrice entity by its id.
+func (c *EnterprisePriceClient) Get(ctx context.Context, id uint64) (*EnterprisePrice, error) {
+	return c.Query().Where(enterpriseprice.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EnterprisePriceClient) GetX(ctx context.Context, id uint64) *EnterprisePrice {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCity queries the city edge of a EnterprisePrice.
+func (c *EnterprisePriceClient) QueryCity(ep *EnterprisePrice) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ep.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterpriseprice.Table, enterpriseprice.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterpriseprice.CityTable, enterpriseprice.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(ep.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEnterprise queries the enterprise edge of a EnterprisePrice.
+func (c *EnterprisePriceClient) QueryEnterprise(ep *EnterprisePrice) *EnterpriseQuery {
+	query := &EnterpriseQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ep.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterpriseprice.Table, enterpriseprice.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, enterpriseprice.EnterpriseTable, enterpriseprice.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(ep.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EnterprisePriceClient) Hooks() []Hook {
+	hooks := c.hooks.EnterprisePrice
+	return append(hooks[:len(hooks):len(hooks)], enterpriseprice.Hooks[:]...)
 }
 
 // ExchangeClient is a client for the Exchange schema.
@@ -2909,6 +3217,22 @@ func (c *SubscribeClient) QueryRider(s *Subscribe) *RiderQuery {
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, subscribe.RiderTable, subscribe.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEnterprise queries the enterprise edge of a Subscribe.
+func (c *SubscribeClient) QueryEnterprise(s *Subscribe) *EnterpriseQuery {
+	query := &EnterpriseQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, subscribe.EnterpriseTable, subscribe.EnterpriseColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

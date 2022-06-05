@@ -408,7 +408,7 @@ var (
 		{Name: "flow_id", Type: field.TypeString, Unique: true, Comment: "E签宝流程ID", Size: 64},
 		{Name: "sn", Type: field.TypeString, Unique: true, Comment: "合同编码", Size: 64},
 		{Name: "files", Type: field.TypeJSON, Comment: "合同链接", Nullable: true},
-		{Name: "effective", Type: field.TypeBool, Comment: "是否有效, 当用户退租之后触发合同失效, 需要重新签订", Default: true},
+		{Name: "effective", Type: field.TypeBool, Comment: "是否有效", Default: true},
 		{Name: "rider_id", Type: field.TypeUint64},
 	}
 	// ContractTable holds the schema information for the "contract" table.
@@ -482,12 +482,30 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "name", Type: field.TypeString, Comment: "企业名称"},
+		{Name: "status", Type: field.TypeUint8, Comment: "合作状态 0未合作 1合作中 2暂停合作"},
+		{Name: "contact_name", Type: field.TypeString, Comment: "联系人姓名"},
+		{Name: "contact_phone", Type: field.TypeString, Comment: "联系人电话"},
+		{Name: "idcard_number", Type: field.TypeString, Comment: "身份证号码"},
+		{Name: "address", Type: field.TypeString, Comment: "地址"},
+		{Name: "payment", Type: field.TypeUint8, Comment: "付费方式 1预付费 2后付费"},
+		{Name: "deposit", Type: field.TypeFloat64, Comment: "押金", Default: 0},
+		{Name: "balance", Type: field.TypeFloat64, Comment: "账户余额", Default: 0},
+		{Name: "arrearage", Type: field.TypeFloat64, Comment: "欠费金额", Default: 0},
+		{Name: "city_id", Type: field.TypeUint64},
 	}
 	// EnterpriseTable holds the schema information for the "enterprise" table.
 	EnterpriseTable = &schema.Table{
 		Name:       "enterprise",
 		Columns:    EnterpriseColumns,
 		PrimaryKey: []*schema.Column{EnterpriseColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "enterprise_city_city",
+				Columns:    []*schema.Column{EnterpriseColumns[17]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "enterprise_created_at",
@@ -508,6 +526,92 @@ var (
 						"postgres": "GIN",
 					},
 				},
+			},
+		},
+	}
+	// EnterpriseContractColumns holds the columns for the "enterprise_contract" table.
+	EnterpriseContractColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "start", Type: field.TypeTime, Comment: "合同开始时间", SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "end", Type: field.TypeTime, Comment: "合同结束时间", SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "file", Type: field.TypeString, Comment: "合同文件"},
+		{Name: "enterprise_id", Type: field.TypeUint64},
+	}
+	// EnterpriseContractTable holds the schema information for the "enterprise_contract" table.
+	EnterpriseContractTable = &schema.Table{
+		Name:       "enterprise_contract",
+		Columns:    EnterpriseContractColumns,
+		PrimaryKey: []*schema.Column{EnterpriseContractColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "enterprise_contract_enterprise_contracts",
+				Columns:    []*schema.Column{EnterpriseContractColumns[10]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "enterprisecontract_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseContractColumns[1]},
+			},
+			{
+				Name:    "enterprisecontract_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseContractColumns[3]},
+			},
+		},
+	}
+	// EnterprisePriceColumns holds the columns for the "enterprise_price" table.
+	EnterprisePriceColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "price", Type: field.TypeFloat64, Comment: "单价 元/天"},
+		{Name: "voltage", Type: field.TypeFloat64, Comment: "可用电池电压型号"},
+		{Name: "enterprise_id", Type: field.TypeUint64},
+		{Name: "city_id", Type: field.TypeUint64},
+	}
+	// EnterprisePriceTable holds the schema information for the "enterprise_price" table.
+	EnterprisePriceTable = &schema.Table{
+		Name:       "enterprise_price",
+		Columns:    EnterprisePriceColumns,
+		PrimaryKey: []*schema.Column{EnterprisePriceColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "enterprise_price_enterprise_prices",
+				Columns:    []*schema.Column{EnterprisePriceColumns[9]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "enterprise_price_city_city",
+				Columns:    []*schema.Column{EnterprisePriceColumns[10]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "enterpriseprice_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EnterprisePriceColumns[1]},
+			},
+			{
+				Name:    "enterpriseprice_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{EnterprisePriceColumns[3]},
 			},
 		},
 	}
@@ -1055,11 +1159,12 @@ var (
 		{Name: "start_at", Type: field.TypeTime, Comment: "激活时间", Nullable: true},
 		{Name: "end_at", Type: field.TypeTime, Comment: "归还时间", Nullable: true},
 		{Name: "refund_at", Type: field.TypeTime, Comment: "退款时间", Nullable: true},
+		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64},
 		{Name: "plan_id", Type: field.TypeUint64},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64},
-		{Name: "initial_order_id", Type: field.TypeUint64},
+		{Name: "initial_order_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// SubscribeTable holds the schema information for the "subscribe" table.
 	SubscribeTable = &schema.Table{
@@ -1068,34 +1173,40 @@ var (
 		PrimaryKey: []*schema.Column{SubscribeColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "subscribe_rider_subscribes",
+				Symbol:     "subscribe_enterprise_subscribes",
 				Columns:    []*schema.Column{SubscribeColumns[20]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscribe_rider_subscribes",
+				Columns:    []*schema.Column{SubscribeColumns[21]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscribe_plan_plan",
-				Columns:    []*schema.Column{SubscribeColumns[21]},
+				Columns:    []*schema.Column{SubscribeColumns[22]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscribe_employee_employee",
-				Columns:    []*schema.Column{SubscribeColumns[22]},
+				Columns:    []*schema.Column{SubscribeColumns[23]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_city_city",
-				Columns:    []*schema.Column{SubscribeColumns[23]},
+				Columns:    []*schema.Column{SubscribeColumns[24]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscribe_order_initial_order",
-				Columns:    []*schema.Column{SubscribeColumns[24]},
+				Columns:    []*schema.Column{SubscribeColumns[25]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -1314,6 +1425,8 @@ var (
 		ContractTable,
 		EmployeeTable,
 		EnterpriseTable,
+		EnterpriseContractTable,
+		EnterprisePriceTable,
 		ExchangeTable,
 		ManagerTable,
 		OrderTable,
@@ -1370,8 +1483,18 @@ func init() {
 	EmployeeTable.Annotation = &entsql.Annotation{
 		Table: "employee",
 	}
+	EnterpriseTable.ForeignKeys[0].RefTable = CityTable
 	EnterpriseTable.Annotation = &entsql.Annotation{
 		Table: "enterprise",
+	}
+	EnterpriseContractTable.ForeignKeys[0].RefTable = EnterpriseTable
+	EnterpriseContractTable.Annotation = &entsql.Annotation{
+		Table: "enterprise_contract",
+	}
+	EnterprisePriceTable.ForeignKeys[0].RefTable = EnterpriseTable
+	EnterprisePriceTable.ForeignKeys[1].RefTable = CityTable
+	EnterprisePriceTable.Annotation = &entsql.Annotation{
+		Table: "enterprise_price",
 	}
 	ExchangeTable.ForeignKeys[0].RefTable = CabinetTable
 	ExchangeTable.ForeignKeys[1].RefTable = CityTable
@@ -1415,11 +1538,12 @@ func init() {
 	StoreTable.Annotation = &entsql.Annotation{
 		Table: "store",
 	}
-	SubscribeTable.ForeignKeys[0].RefTable = RiderTable
-	SubscribeTable.ForeignKeys[1].RefTable = PlanTable
-	SubscribeTable.ForeignKeys[2].RefTable = EmployeeTable
-	SubscribeTable.ForeignKeys[3].RefTable = CityTable
-	SubscribeTable.ForeignKeys[4].RefTable = OrderTable
+	SubscribeTable.ForeignKeys[0].RefTable = EnterpriseTable
+	SubscribeTable.ForeignKeys[1].RefTable = RiderTable
+	SubscribeTable.ForeignKeys[2].RefTable = PlanTable
+	SubscribeTable.ForeignKeys[3].RefTable = EmployeeTable
+	SubscribeTable.ForeignKeys[4].RefTable = CityTable
+	SubscribeTable.ForeignKeys[5].RefTable = OrderTable
 	SubscribeTable.Annotation = &entsql.Annotation{
 		Table: "subscribe",
 	}
