@@ -39,6 +39,8 @@ const (
 	FieldDays = "days"
 	// FieldRiderNumber holds the string denoting the rider_number field in the database.
 	FieldRiderNumber = "rider_number"
+	// FieldBillTime holds the string denoting the bill_time field in the database.
+	FieldBillTime = "bill_time"
 	// EdgeSubscribes holds the string denoting the subscribes edge name in mutations.
 	EdgeSubscribes = "subscribes"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
@@ -77,6 +79,7 @@ var Columns = []string{
 	FieldSettledAt,
 	FieldDays,
 	FieldRiderNumber,
+	FieldBillTime,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

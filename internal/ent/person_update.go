@@ -135,6 +135,20 @@ func (pu *PersonUpdate) SetIDCardNumber(s string) *PersonUpdate {
 	return pu
 }
 
+// SetNillableIDCardNumber sets the "id_card_number" field if the given value is not nil.
+func (pu *PersonUpdate) SetNillableIDCardNumber(s *string) *PersonUpdate {
+	if s != nil {
+		pu.SetIDCardNumber(*s)
+	}
+	return pu
+}
+
+// ClearIDCardNumber clears the value of the "id_card_number" field.
+func (pu *PersonUpdate) ClearIDCardNumber() *PersonUpdate {
+	pu.mutation.ClearIDCardNumber()
+	return pu
+}
+
 // SetIDCardType sets the "id_card_type" field.
 func (pu *PersonUpdate) SetIDCardType(u uint8) *PersonUpdate {
 	pu.mutation.ResetIDCardType()
@@ -162,15 +176,57 @@ func (pu *PersonUpdate) SetIDCardPortrait(s string) *PersonUpdate {
 	return pu
 }
 
+// SetNillableIDCardPortrait sets the "id_card_portrait" field if the given value is not nil.
+func (pu *PersonUpdate) SetNillableIDCardPortrait(s *string) *PersonUpdate {
+	if s != nil {
+		pu.SetIDCardPortrait(*s)
+	}
+	return pu
+}
+
+// ClearIDCardPortrait clears the value of the "id_card_portrait" field.
+func (pu *PersonUpdate) ClearIDCardPortrait() *PersonUpdate {
+	pu.mutation.ClearIDCardPortrait()
+	return pu
+}
+
 // SetIDCardNational sets the "id_card_national" field.
 func (pu *PersonUpdate) SetIDCardNational(s string) *PersonUpdate {
 	pu.mutation.SetIDCardNational(s)
 	return pu
 }
 
+// SetNillableIDCardNational sets the "id_card_national" field if the given value is not nil.
+func (pu *PersonUpdate) SetNillableIDCardNational(s *string) *PersonUpdate {
+	if s != nil {
+		pu.SetIDCardNational(*s)
+	}
+	return pu
+}
+
+// ClearIDCardNational clears the value of the "id_card_national" field.
+func (pu *PersonUpdate) ClearIDCardNational() *PersonUpdate {
+	pu.mutation.ClearIDCardNational()
+	return pu
+}
+
 // SetAuthFace sets the "auth_face" field.
 func (pu *PersonUpdate) SetAuthFace(s string) *PersonUpdate {
 	pu.mutation.SetAuthFace(s)
+	return pu
+}
+
+// SetNillableAuthFace sets the "auth_face" field if the given value is not nil.
+func (pu *PersonUpdate) SetNillableAuthFace(s *string) *PersonUpdate {
+	if s != nil {
+		pu.SetAuthFace(*s)
+	}
+	return pu
+}
+
+// ClearAuthFace clears the value of the "auth_face" field.
+func (pu *PersonUpdate) ClearAuthFace() *PersonUpdate {
+	pu.mutation.ClearAuthFace()
 	return pu
 }
 
@@ -442,6 +498,12 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: person.FieldIDCardNumber,
 		})
 	}
+	if pu.mutation.IDCardNumberCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: person.FieldIDCardNumber,
+		})
+	}
 	if value, ok := pu.mutation.IDCardType(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeUint8,
@@ -463,6 +525,12 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: person.FieldIDCardPortrait,
 		})
 	}
+	if pu.mutation.IDCardPortraitCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: person.FieldIDCardPortrait,
+		})
+	}
 	if value, ok := pu.mutation.IDCardNational(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -470,10 +538,22 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: person.FieldIDCardNational,
 		})
 	}
+	if pu.mutation.IDCardNationalCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: person.FieldIDCardNational,
+		})
+	}
 	if value, ok := pu.mutation.AuthFace(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: person.FieldAuthFace,
+		})
+	}
+	if pu.mutation.AuthFaceCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: person.FieldAuthFace,
 		})
 	}
@@ -681,6 +761,20 @@ func (puo *PersonUpdateOne) SetIDCardNumber(s string) *PersonUpdateOne {
 	return puo
 }
 
+// SetNillableIDCardNumber sets the "id_card_number" field if the given value is not nil.
+func (puo *PersonUpdateOne) SetNillableIDCardNumber(s *string) *PersonUpdateOne {
+	if s != nil {
+		puo.SetIDCardNumber(*s)
+	}
+	return puo
+}
+
+// ClearIDCardNumber clears the value of the "id_card_number" field.
+func (puo *PersonUpdateOne) ClearIDCardNumber() *PersonUpdateOne {
+	puo.mutation.ClearIDCardNumber()
+	return puo
+}
+
 // SetIDCardType sets the "id_card_type" field.
 func (puo *PersonUpdateOne) SetIDCardType(u uint8) *PersonUpdateOne {
 	puo.mutation.ResetIDCardType()
@@ -708,15 +802,57 @@ func (puo *PersonUpdateOne) SetIDCardPortrait(s string) *PersonUpdateOne {
 	return puo
 }
 
+// SetNillableIDCardPortrait sets the "id_card_portrait" field if the given value is not nil.
+func (puo *PersonUpdateOne) SetNillableIDCardPortrait(s *string) *PersonUpdateOne {
+	if s != nil {
+		puo.SetIDCardPortrait(*s)
+	}
+	return puo
+}
+
+// ClearIDCardPortrait clears the value of the "id_card_portrait" field.
+func (puo *PersonUpdateOne) ClearIDCardPortrait() *PersonUpdateOne {
+	puo.mutation.ClearIDCardPortrait()
+	return puo
+}
+
 // SetIDCardNational sets the "id_card_national" field.
 func (puo *PersonUpdateOne) SetIDCardNational(s string) *PersonUpdateOne {
 	puo.mutation.SetIDCardNational(s)
 	return puo
 }
 
+// SetNillableIDCardNational sets the "id_card_national" field if the given value is not nil.
+func (puo *PersonUpdateOne) SetNillableIDCardNational(s *string) *PersonUpdateOne {
+	if s != nil {
+		puo.SetIDCardNational(*s)
+	}
+	return puo
+}
+
+// ClearIDCardNational clears the value of the "id_card_national" field.
+func (puo *PersonUpdateOne) ClearIDCardNational() *PersonUpdateOne {
+	puo.mutation.ClearIDCardNational()
+	return puo
+}
+
 // SetAuthFace sets the "auth_face" field.
 func (puo *PersonUpdateOne) SetAuthFace(s string) *PersonUpdateOne {
 	puo.mutation.SetAuthFace(s)
+	return puo
+}
+
+// SetNillableAuthFace sets the "auth_face" field if the given value is not nil.
+func (puo *PersonUpdateOne) SetNillableAuthFace(s *string) *PersonUpdateOne {
+	if s != nil {
+		puo.SetAuthFace(*s)
+	}
+	return puo
+}
+
+// ClearAuthFace clears the value of the "auth_face" field.
+func (puo *PersonUpdateOne) ClearAuthFace() *PersonUpdateOne {
+	puo.mutation.ClearAuthFace()
 	return puo
 }
 
@@ -1018,6 +1154,12 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 			Column: person.FieldIDCardNumber,
 		})
 	}
+	if puo.mutation.IDCardNumberCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: person.FieldIDCardNumber,
+		})
+	}
 	if value, ok := puo.mutation.IDCardType(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeUint8,
@@ -1039,6 +1181,12 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 			Column: person.FieldIDCardPortrait,
 		})
 	}
+	if puo.mutation.IDCardPortraitCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: person.FieldIDCardPortrait,
+		})
+	}
 	if value, ok := puo.mutation.IDCardNational(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -1046,10 +1194,22 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 			Column: person.FieldIDCardNational,
 		})
 	}
+	if puo.mutation.IDCardNationalCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: person.FieldIDCardNational,
+		})
+	}
 	if value, ok := puo.mutation.AuthFace(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: person.FieldAuthFace,
+		})
+	}
+	if puo.mutation.AuthFaceCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: person.FieldAuthFace,
 		})
 	}

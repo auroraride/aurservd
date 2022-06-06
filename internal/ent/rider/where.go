@@ -925,6 +925,20 @@ func DeviceTypeLTE(v uint8) predicate.Rider {
 	})
 }
 
+// DeviceTypeIsNil applies the IsNil predicate on the "device_type" field.
+func DeviceTypeIsNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldDeviceType)))
+	})
+}
+
+// DeviceTypeNotNil applies the NotNil predicate on the "device_type" field.
+func DeviceTypeNotNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldDeviceType)))
+	})
+}
+
 // LastDeviceEQ applies the EQ predicate on the "last_device" field.
 func LastDeviceEQ(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
@@ -1019,6 +1033,20 @@ func LastDeviceHasPrefix(v string) predicate.Rider {
 func LastDeviceHasSuffix(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		s.Where(sql.HasSuffix(s.C(FieldLastDevice), v))
+	})
+}
+
+// LastDeviceIsNil applies the IsNil predicate on the "last_device" field.
+func LastDeviceIsNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldLastDevice)))
+	})
+}
+
+// LastDeviceNotNil applies the NotNil predicate on the "last_device" field.
+func LastDeviceNotNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldLastDevice)))
 	})
 }
 

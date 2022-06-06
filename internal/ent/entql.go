@@ -611,6 +611,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			statement.FieldSettledAt:    {Type: field.TypeTime, Column: statement.FieldSettledAt},
 			statement.FieldDays:         {Type: field.TypeInt, Column: statement.FieldDays},
 			statement.FieldRiderNumber:  {Type: field.TypeInt, Column: statement.FieldRiderNumber},
+			statement.FieldBillTime:     {Type: field.TypeTime, Column: statement.FieldBillTime},
 		},
 	}
 	graph.Nodes[22] = &sqlgraph.Node{
@@ -4716,6 +4717,11 @@ func (f *StatementFilter) WhereDays(p entql.IntP) {
 // WhereRiderNumber applies the entql int predicate on the rider_number field.
 func (f *StatementFilter) WhereRiderNumber(p entql.IntP) {
 	f.Where(p.Field(statement.FieldRiderNumber))
+}
+
+// WhereBillTime applies the entql time.Time predicate on the bill_time field.
+func (f *StatementFilter) WhereBillTime(p entql.TimeP) {
+	f.Where(p.Field(statement.FieldBillTime))
 }
 
 // WhereHasSubscribes applies a predicate to check if query has an edge subscribes.

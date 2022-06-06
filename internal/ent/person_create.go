@@ -132,6 +132,14 @@ func (pc *PersonCreate) SetIDCardNumber(s string) *PersonCreate {
 	return pc
 }
 
+// SetNillableIDCardNumber sets the "id_card_number" field if the given value is not nil.
+func (pc *PersonCreate) SetNillableIDCardNumber(s *string) *PersonCreate {
+	if s != nil {
+		pc.SetIDCardNumber(*s)
+	}
+	return pc
+}
+
 // SetIDCardType sets the "id_card_type" field.
 func (pc *PersonCreate) SetIDCardType(u uint8) *PersonCreate {
 	pc.mutation.SetIDCardType(u)
@@ -152,15 +160,39 @@ func (pc *PersonCreate) SetIDCardPortrait(s string) *PersonCreate {
 	return pc
 }
 
+// SetNillableIDCardPortrait sets the "id_card_portrait" field if the given value is not nil.
+func (pc *PersonCreate) SetNillableIDCardPortrait(s *string) *PersonCreate {
+	if s != nil {
+		pc.SetIDCardPortrait(*s)
+	}
+	return pc
+}
+
 // SetIDCardNational sets the "id_card_national" field.
 func (pc *PersonCreate) SetIDCardNational(s string) *PersonCreate {
 	pc.mutation.SetIDCardNational(s)
 	return pc
 }
 
+// SetNillableIDCardNational sets the "id_card_national" field if the given value is not nil.
+func (pc *PersonCreate) SetNillableIDCardNational(s *string) *PersonCreate {
+	if s != nil {
+		pc.SetIDCardNational(*s)
+	}
+	return pc
+}
+
 // SetAuthFace sets the "auth_face" field.
 func (pc *PersonCreate) SetAuthFace(s string) *PersonCreate {
 	pc.mutation.SetAuthFace(s)
+	return pc
+}
+
+// SetNillableAuthFace sets the "auth_face" field if the given value is not nil.
+func (pc *PersonCreate) SetNillableAuthFace(s *string) *PersonCreate {
+	if s != nil {
+		pc.SetAuthFace(*s)
+	}
 	return pc
 }
 
@@ -329,9 +361,6 @@ func (pc *PersonCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Person.name": %w`, err)}
 		}
 	}
-	if _, ok := pc.mutation.IDCardNumber(); !ok {
-		return &ValidationError{Name: "id_card_number", err: errors.New(`ent: missing required field "Person.id_card_number"`)}
-	}
 	if v, ok := pc.mutation.IDCardNumber(); ok {
 		if err := person.IDCardNumberValidator(v); err != nil {
 			return &ValidationError{Name: "id_card_number", err: fmt.Errorf(`ent: validator failed for field "Person.id_card_number": %w`, err)}
@@ -339,15 +368,6 @@ func (pc *PersonCreate) check() error {
 	}
 	if _, ok := pc.mutation.IDCardType(); !ok {
 		return &ValidationError{Name: "id_card_type", err: errors.New(`ent: missing required field "Person.id_card_type"`)}
-	}
-	if _, ok := pc.mutation.IDCardPortrait(); !ok {
-		return &ValidationError{Name: "id_card_portrait", err: errors.New(`ent: missing required field "Person.id_card_portrait"`)}
-	}
-	if _, ok := pc.mutation.IDCardNational(); !ok {
-		return &ValidationError{Name: "id_card_national", err: errors.New(`ent: missing required field "Person.id_card_national"`)}
-	}
-	if _, ok := pc.mutation.AuthFace(); !ok {
-		return &ValidationError{Name: "auth_face", err: errors.New(`ent: missing required field "Person.auth_face"`)}
 	}
 	return nil
 }
@@ -728,6 +748,12 @@ func (u *PersonUpsert) UpdateIDCardNumber() *PersonUpsert {
 	return u
 }
 
+// ClearIDCardNumber clears the value of the "id_card_number" field.
+func (u *PersonUpsert) ClearIDCardNumber() *PersonUpsert {
+	u.SetNull(person.FieldIDCardNumber)
+	return u
+}
+
 // SetIDCardType sets the "id_card_type" field.
 func (u *PersonUpsert) SetIDCardType(v uint8) *PersonUpsert {
 	u.Set(person.FieldIDCardType, v)
@@ -758,6 +784,12 @@ func (u *PersonUpsert) UpdateIDCardPortrait() *PersonUpsert {
 	return u
 }
 
+// ClearIDCardPortrait clears the value of the "id_card_portrait" field.
+func (u *PersonUpsert) ClearIDCardPortrait() *PersonUpsert {
+	u.SetNull(person.FieldIDCardPortrait)
+	return u
+}
+
 // SetIDCardNational sets the "id_card_national" field.
 func (u *PersonUpsert) SetIDCardNational(v string) *PersonUpsert {
 	u.Set(person.FieldIDCardNational, v)
@@ -770,6 +802,12 @@ func (u *PersonUpsert) UpdateIDCardNational() *PersonUpsert {
 	return u
 }
 
+// ClearIDCardNational clears the value of the "id_card_national" field.
+func (u *PersonUpsert) ClearIDCardNational() *PersonUpsert {
+	u.SetNull(person.FieldIDCardNational)
+	return u
+}
+
 // SetAuthFace sets the "auth_face" field.
 func (u *PersonUpsert) SetAuthFace(v string) *PersonUpsert {
 	u.Set(person.FieldAuthFace, v)
@@ -779,6 +817,12 @@ func (u *PersonUpsert) SetAuthFace(v string) *PersonUpsert {
 // UpdateAuthFace sets the "auth_face" field to the value that was provided on create.
 func (u *PersonUpsert) UpdateAuthFace() *PersonUpsert {
 	u.SetExcluded(person.FieldAuthFace)
+	return u
+}
+
+// ClearAuthFace clears the value of the "auth_face" field.
+func (u *PersonUpsert) ClearAuthFace() *PersonUpsert {
+	u.SetNull(person.FieldAuthFace)
 	return u
 }
 
@@ -1043,6 +1087,13 @@ func (u *PersonUpsertOne) UpdateIDCardNumber() *PersonUpsertOne {
 	})
 }
 
+// ClearIDCardNumber clears the value of the "id_card_number" field.
+func (u *PersonUpsertOne) ClearIDCardNumber() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearIDCardNumber()
+	})
+}
+
 // SetIDCardType sets the "id_card_type" field.
 func (u *PersonUpsertOne) SetIDCardType(v uint8) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
@@ -1078,6 +1129,13 @@ func (u *PersonUpsertOne) UpdateIDCardPortrait() *PersonUpsertOne {
 	})
 }
 
+// ClearIDCardPortrait clears the value of the "id_card_portrait" field.
+func (u *PersonUpsertOne) ClearIDCardPortrait() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearIDCardPortrait()
+	})
+}
+
 // SetIDCardNational sets the "id_card_national" field.
 func (u *PersonUpsertOne) SetIDCardNational(v string) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
@@ -1092,6 +1150,13 @@ func (u *PersonUpsertOne) UpdateIDCardNational() *PersonUpsertOne {
 	})
 }
 
+// ClearIDCardNational clears the value of the "id_card_national" field.
+func (u *PersonUpsertOne) ClearIDCardNational() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearIDCardNational()
+	})
+}
+
 // SetAuthFace sets the "auth_face" field.
 func (u *PersonUpsertOne) SetAuthFace(v string) *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
@@ -1103,6 +1168,13 @@ func (u *PersonUpsertOne) SetAuthFace(v string) *PersonUpsertOne {
 func (u *PersonUpsertOne) UpdateAuthFace() *PersonUpsertOne {
 	return u.Update(func(s *PersonUpsert) {
 		s.UpdateAuthFace()
+	})
+}
+
+// ClearAuthFace clears the value of the "auth_face" field.
+func (u *PersonUpsertOne) ClearAuthFace() *PersonUpsertOne {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearAuthFace()
 	})
 }
 
@@ -1537,6 +1609,13 @@ func (u *PersonUpsertBulk) UpdateIDCardNumber() *PersonUpsertBulk {
 	})
 }
 
+// ClearIDCardNumber clears the value of the "id_card_number" field.
+func (u *PersonUpsertBulk) ClearIDCardNumber() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearIDCardNumber()
+	})
+}
+
 // SetIDCardType sets the "id_card_type" field.
 func (u *PersonUpsertBulk) SetIDCardType(v uint8) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
@@ -1572,6 +1651,13 @@ func (u *PersonUpsertBulk) UpdateIDCardPortrait() *PersonUpsertBulk {
 	})
 }
 
+// ClearIDCardPortrait clears the value of the "id_card_portrait" field.
+func (u *PersonUpsertBulk) ClearIDCardPortrait() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearIDCardPortrait()
+	})
+}
+
 // SetIDCardNational sets the "id_card_national" field.
 func (u *PersonUpsertBulk) SetIDCardNational(v string) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
@@ -1586,6 +1672,13 @@ func (u *PersonUpsertBulk) UpdateIDCardNational() *PersonUpsertBulk {
 	})
 }
 
+// ClearIDCardNational clears the value of the "id_card_national" field.
+func (u *PersonUpsertBulk) ClearIDCardNational() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearIDCardNational()
+	})
+}
+
 // SetAuthFace sets the "auth_face" field.
 func (u *PersonUpsertBulk) SetAuthFace(v string) *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
@@ -1597,6 +1690,13 @@ func (u *PersonUpsertBulk) SetAuthFace(v string) *PersonUpsertBulk {
 func (u *PersonUpsertBulk) UpdateAuthFace() *PersonUpsertBulk {
 	return u.Update(func(s *PersonUpsert) {
 		s.UpdateAuthFace()
+	})
+}
+
+// ClearAuthFace clears the value of the "auth_face" field.
+func (u *PersonUpsertBulk) ClearAuthFace() *PersonUpsertBulk {
+	return u.Update(func(s *PersonUpsert) {
+		s.ClearAuthFace()
 	})
 }
 

@@ -183,6 +183,12 @@ func (sc *StatementCreate) SetNillableRiderNumber(i *int) *StatementCreate {
 	return sc
 }
 
+// SetBillTime sets the "bill_time" field.
+func (sc *StatementCreate) SetBillTime(t time.Time) *StatementCreate {
+	sc.mutation.SetBillTime(t)
+	return sc
+}
+
 // AddSubscribeIDs adds the "subscribes" edge to the Subscribe entity by IDs.
 func (sc *StatementCreate) AddSubscribeIDs(ids ...uint64) *StatementCreate {
 	sc.mutation.AddSubscribeIDs(ids...)
@@ -345,6 +351,9 @@ func (sc *StatementCreate) check() error {
 	if _, ok := sc.mutation.RiderNumber(); !ok {
 		return &ValidationError{Name: "rider_number", err: errors.New(`ent: missing required field "Statement.rider_number"`)}
 	}
+	if _, ok := sc.mutation.BillTime(); !ok {
+		return &ValidationError{Name: "bill_time", err: errors.New(`ent: missing required field "Statement.bill_time"`)}
+	}
 	if _, ok := sc.mutation.EnterpriseID(); !ok {
 		return &ValidationError{Name: "enterprise", err: errors.New(`ent: missing required edge "Statement.enterprise"`)}
 	}
@@ -471,6 +480,14 @@ func (sc *StatementCreate) createSpec() (*Statement, *sqlgraph.CreateSpec) {
 			Column: statement.FieldRiderNumber,
 		})
 		_node.RiderNumber = value
+	}
+	if value, ok := sc.mutation.BillTime(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: statement.FieldBillTime,
+		})
+		_node.BillTime = value
 	}
 	if nodes := sc.mutation.SubscribesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -781,6 +798,18 @@ func (u *StatementUpsert) AddRiderNumber(v int) *StatementUpsert {
 	return u
 }
 
+// SetBillTime sets the "bill_time" field.
+func (u *StatementUpsert) SetBillTime(v time.Time) *StatementUpsert {
+	u.Set(statement.FieldBillTime, v)
+	return u
+}
+
+// UpdateBillTime sets the "bill_time" field to the value that was provided on create.
+func (u *StatementUpsert) UpdateBillTime() *StatementUpsert {
+	u.SetExcluded(statement.FieldBillTime)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1080,6 +1109,20 @@ func (u *StatementUpsertOne) AddRiderNumber(v int) *StatementUpsertOne {
 func (u *StatementUpsertOne) UpdateRiderNumber() *StatementUpsertOne {
 	return u.Update(func(s *StatementUpsert) {
 		s.UpdateRiderNumber()
+	})
+}
+
+// SetBillTime sets the "bill_time" field.
+func (u *StatementUpsertOne) SetBillTime(v time.Time) *StatementUpsertOne {
+	return u.Update(func(s *StatementUpsert) {
+		s.SetBillTime(v)
+	})
+}
+
+// UpdateBillTime sets the "bill_time" field to the value that was provided on create.
+func (u *StatementUpsertOne) UpdateBillTime() *StatementUpsertOne {
+	return u.Update(func(s *StatementUpsert) {
+		s.UpdateBillTime()
 	})
 }
 
@@ -1546,6 +1589,20 @@ func (u *StatementUpsertBulk) AddRiderNumber(v int) *StatementUpsertBulk {
 func (u *StatementUpsertBulk) UpdateRiderNumber() *StatementUpsertBulk {
 	return u.Update(func(s *StatementUpsert) {
 		s.UpdateRiderNumber()
+	})
+}
+
+// SetBillTime sets the "bill_time" field.
+func (u *StatementUpsertBulk) SetBillTime(v time.Time) *StatementUpsertBulk {
+	return u.Update(func(s *StatementUpsert) {
+		s.SetBillTime(v)
+	})
+}
+
+// UpdateBillTime sets the "bill_time" field to the value that was provided on create.
+func (u *StatementUpsertBulk) UpdateBillTime() *StatementUpsertBulk {
+	return u.Update(func(s *StatementUpsert) {
+		s.UpdateBillTime()
 	})
 }
 

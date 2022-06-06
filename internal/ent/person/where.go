@@ -877,6 +877,20 @@ func IDCardNumberHasSuffix(v string) predicate.Person {
 	})
 }
 
+// IDCardNumberIsNil applies the IsNil predicate on the "id_card_number" field.
+func IDCardNumberIsNil() predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldIDCardNumber)))
+	})
+}
+
+// IDCardNumberNotNil applies the NotNil predicate on the "id_card_number" field.
+func IDCardNumberNotNil() predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldIDCardNumber)))
+	})
+}
+
 // IDCardNumberEqualFold applies the EqualFold predicate on the "id_card_number" field.
 func IDCardNumberEqualFold(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
@@ -1064,6 +1078,20 @@ func IDCardPortraitHasSuffix(v string) predicate.Person {
 	})
 }
 
+// IDCardPortraitIsNil applies the IsNil predicate on the "id_card_portrait" field.
+func IDCardPortraitIsNil() predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldIDCardPortrait)))
+	})
+}
+
+// IDCardPortraitNotNil applies the NotNil predicate on the "id_card_portrait" field.
+func IDCardPortraitNotNil() predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldIDCardPortrait)))
+	})
+}
+
 // IDCardPortraitEqualFold applies the EqualFold predicate on the "id_card_portrait" field.
 func IDCardPortraitEqualFold(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
@@ -1175,6 +1203,20 @@ func IDCardNationalHasSuffix(v string) predicate.Person {
 	})
 }
 
+// IDCardNationalIsNil applies the IsNil predicate on the "id_card_national" field.
+func IDCardNationalIsNil() predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldIDCardNational)))
+	})
+}
+
+// IDCardNationalNotNil applies the NotNil predicate on the "id_card_national" field.
+func IDCardNationalNotNil() predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldIDCardNational)))
+	})
+}
+
 // IDCardNationalEqualFold applies the EqualFold predicate on the "id_card_national" field.
 func IDCardNationalEqualFold(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
@@ -1283,6 +1325,20 @@ func AuthFaceHasPrefix(v string) predicate.Person {
 func AuthFaceHasSuffix(v string) predicate.Person {
 	return predicate.Person(func(s *sql.Selector) {
 		s.Where(sql.HasSuffix(s.C(FieldAuthFace), v))
+	})
+}
+
+// AuthFaceIsNil applies the IsNil predicate on the "auth_face" field.
+func AuthFaceIsNil() predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAuthFace)))
+	})
+}
+
+// AuthFaceNotNil applies the NotNil predicate on the "auth_face" field.
+func AuthFaceNotNil() predicate.Person {
+	return predicate.Person(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAuthFace)))
 	})
 }
 

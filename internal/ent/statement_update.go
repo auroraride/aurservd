@@ -220,6 +220,12 @@ func (su *StatementUpdate) AddRiderNumber(i int) *StatementUpdate {
 	return su
 }
 
+// SetBillTime sets the "bill_time" field.
+func (su *StatementUpdate) SetBillTime(t time.Time) *StatementUpdate {
+	su.mutation.SetBillTime(t)
+	return su
+}
+
 // AddSubscribeIDs adds the "subscribes" edge to the Subscribe entity by IDs.
 func (su *StatementUpdate) AddSubscribeIDs(ids ...uint64) *StatementUpdate {
 	su.mutation.AddSubscribeIDs(ids...)
@@ -506,6 +512,13 @@ func (su *StatementUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: statement.FieldRiderNumber,
+		})
+	}
+	if value, ok := su.mutation.BillTime(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: statement.FieldBillTime,
 		})
 	}
 	if su.mutation.SubscribesCleared() {
@@ -802,6 +815,12 @@ func (suo *StatementUpdateOne) SetNillableRiderNumber(i *int) *StatementUpdateOn
 // AddRiderNumber adds i to the "rider_number" field.
 func (suo *StatementUpdateOne) AddRiderNumber(i int) *StatementUpdateOne {
 	suo.mutation.AddRiderNumber(i)
+	return suo
+}
+
+// SetBillTime sets the "bill_time" field.
+func (suo *StatementUpdateOne) SetBillTime(t time.Time) *StatementUpdateOne {
+	suo.mutation.SetBillTime(t)
 	return suo
 }
 
@@ -1121,6 +1140,13 @@ func (suo *StatementUpdateOne) sqlSave(ctx context.Context) (_node *Statement, e
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: statement.FieldRiderNumber,
+		})
+	}
+	if value, ok := suo.mutation.BillTime(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: statement.FieldBillTime,
 		})
 	}
 	if suo.mutation.SubscribesCleared() {

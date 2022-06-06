@@ -170,6 +170,13 @@ func RiderNumber(v int) predicate.Statement {
 	})
 }
 
+// BillTime applies equality check predicate on the "bill_time" field. It's identical to BillTimeEQ.
+func BillTime(v time.Time) predicate.Statement {
+	return predicate.Statement(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBillTime), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
@@ -1080,6 +1087,82 @@ func RiderNumberLT(v int) predicate.Statement {
 func RiderNumberLTE(v int) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldRiderNumber), v))
+	})
+}
+
+// BillTimeEQ applies the EQ predicate on the "bill_time" field.
+func BillTimeEQ(v time.Time) predicate.Statement {
+	return predicate.Statement(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBillTime), v))
+	})
+}
+
+// BillTimeNEQ applies the NEQ predicate on the "bill_time" field.
+func BillTimeNEQ(v time.Time) predicate.Statement {
+	return predicate.Statement(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldBillTime), v))
+	})
+}
+
+// BillTimeIn applies the In predicate on the "bill_time" field.
+func BillTimeIn(vs ...time.Time) predicate.Statement {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Statement(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldBillTime), v...))
+	})
+}
+
+// BillTimeNotIn applies the NotIn predicate on the "bill_time" field.
+func BillTimeNotIn(vs ...time.Time) predicate.Statement {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Statement(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldBillTime), v...))
+	})
+}
+
+// BillTimeGT applies the GT predicate on the "bill_time" field.
+func BillTimeGT(v time.Time) predicate.Statement {
+	return predicate.Statement(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldBillTime), v))
+	})
+}
+
+// BillTimeGTE applies the GTE predicate on the "bill_time" field.
+func BillTimeGTE(v time.Time) predicate.Statement {
+	return predicate.Statement(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldBillTime), v))
+	})
+}
+
+// BillTimeLT applies the LT predicate on the "bill_time" field.
+func BillTimeLT(v time.Time) predicate.Statement {
+	return predicate.Statement(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldBillTime), v))
+	})
+}
+
+// BillTimeLTE applies the LTE predicate on the "bill_time" field.
+func BillTimeLTE(v time.Time) predicate.Statement {
+	return predicate.Statement(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldBillTime), v))
 	})
 }
 

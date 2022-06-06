@@ -965,11 +965,11 @@ var (
 		{Name: "status", Type: field.TypeUint8, Comment: "认证状态", Default: 0},
 		{Name: "banned", Type: field.TypeBool, Comment: "是否封禁身份", Default: false},
 		{Name: "name", Type: field.TypeString, Comment: "真实姓名", Size: 40},
-		{Name: "id_card_number", Type: field.TypeString, Unique: true, Comment: "证件号码", Size: 40},
+		{Name: "id_card_number", Type: field.TypeString, Unique: true, Comment: "证件号码", Nullable: true, Size: 40},
 		{Name: "id_card_type", Type: field.TypeUint8, Comment: "证件类别", Default: 1},
-		{Name: "id_card_portrait", Type: field.TypeString, Comment: "证件人像面"},
-		{Name: "id_card_national", Type: field.TypeString, Comment: "证件国徽面"},
-		{Name: "auth_face", Type: field.TypeString, Comment: "实名认证人脸照片"},
+		{Name: "id_card_portrait", Type: field.TypeString, Comment: "证件人像面", Nullable: true},
+		{Name: "id_card_national", Type: field.TypeString, Comment: "证件国徽面", Nullable: true},
+		{Name: "auth_face", Type: field.TypeString, Comment: "实名认证人脸照片", Nullable: true},
 		{Name: "auth_result", Type: field.TypeJSON, Comment: "实名认证结果详情", Nullable: true},
 		{Name: "auth_at", Type: field.TypeTime, Comment: "实名认证结果获取时间", Nullable: true},
 	}
@@ -1079,8 +1079,8 @@ var (
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "phone", Type: field.TypeString, Comment: "手机号", Size: 11},
 		{Name: "contact", Type: field.TypeJSON, Comment: "紧急联系人", Nullable: true},
-		{Name: "device_type", Type: field.TypeUint8, Comment: "登录设备类型: 1iOS 2Android"},
-		{Name: "last_device", Type: field.TypeString, Comment: "最近登录设备", Size: 60},
+		{Name: "device_type", Type: field.TypeUint8, Comment: "登录设备类型: 1iOS 2Android", Nullable: true},
+		{Name: "last_device", Type: field.TypeString, Comment: "最近登录设备", Nullable: true, Size: 60},
 		{Name: "is_new_device", Type: field.TypeBool, Comment: "是否新设备", Default: false},
 		{Name: "last_face", Type: field.TypeString, Comment: "上次登录人脸", Nullable: true},
 		{Name: "push_id", Type: field.TypeString, Comment: "推送ID", Nullable: true, Size: 60},
@@ -1183,6 +1183,7 @@ var (
 		{Name: "settled_at", Type: field.TypeTime, Comment: "清账时间", Nullable: true},
 		{Name: "days", Type: field.TypeInt, Comment: "账期内使用总天数", Default: 0},
 		{Name: "rider_number", Type: field.TypeInt, Comment: "账期内使用总人数", Default: 0},
+		{Name: "bill_time", Type: field.TypeTime, Comment: "对账单计算截止日", SchemaType: map[string]string{"postgres": "date"}},
 		{Name: "enterprise_id", Type: field.TypeUint64},
 	}
 	// StatementTable holds the schema information for the "statement" table.
@@ -1193,7 +1194,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "statement_enterprise_statements",
-				Columns:    []*schema.Column{StatementColumns[13]},
+				Columns:    []*schema.Column{StatementColumns[14]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

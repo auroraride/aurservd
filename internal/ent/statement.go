@@ -55,6 +55,9 @@ type Statement struct {
 	// RiderNumber holds the value of the "rider_number" field.
 	// 账期内使用总人数
 	RiderNumber int `json:"rider_number,omitempty"`
+	// BillTime holds the value of the "bill_time" field.
+	// 对账单计算截止日
+	BillTime time.Time `json:"bill_time,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the StatementQuery when eager-loading is set.
 	Edges StatementEdges `json:"edges"`
@@ -107,7 +110,7 @@ func (*Statement) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case statement.FieldRemark:
 			values[i] = new(sql.NullString)
-		case statement.FieldCreatedAt, statement.FieldUpdatedAt, statement.FieldDeletedAt, statement.FieldSettledAt:
+		case statement.FieldCreatedAt, statement.FieldUpdatedAt, statement.FieldDeletedAt, statement.FieldSettledAt, statement.FieldBillTime:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Statement", columns[i])
@@ -214,6 +217,12 @@ func (s *Statement) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.RiderNumber = int(value.Int64)
 			}
+		case statement.FieldBillTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field bill_time", values[i])
+			} else if value.Valid {
+				s.BillTime = value.Time
+			}
 		}
 	}
 	return nil
@@ -282,6 +291,8 @@ func (s *Statement) String() string {
 	builder.WriteString(fmt.Sprintf("%v", s.Days))
 	builder.WriteString(", rider_number=")
 	builder.WriteString(fmt.Sprintf("%v", s.RiderNumber))
+	builder.WriteString(", bill_time=")
+	builder.WriteString(s.BillTime.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

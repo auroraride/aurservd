@@ -144,9 +144,25 @@ func (rc *RiderCreate) SetDeviceType(u uint8) *RiderCreate {
 	return rc
 }
 
+// SetNillableDeviceType sets the "device_type" field if the given value is not nil.
+func (rc *RiderCreate) SetNillableDeviceType(u *uint8) *RiderCreate {
+	if u != nil {
+		rc.SetDeviceType(*u)
+	}
+	return rc
+}
+
 // SetLastDevice sets the "last_device" field.
 func (rc *RiderCreate) SetLastDevice(s string) *RiderCreate {
 	rc.mutation.SetLastDevice(s)
+	return rc
+}
+
+// SetNillableLastDevice sets the "last_device" field if the given value is not nil.
+func (rc *RiderCreate) SetNillableLastDevice(s *string) *RiderCreate {
+	if s != nil {
+		rc.SetLastDevice(*s)
+	}
 	return rc
 }
 
@@ -452,12 +468,6 @@ func (rc *RiderCreate) check() error {
 		if err := rider.PhoneValidator(v); err != nil {
 			return &ValidationError{Name: "phone", err: fmt.Errorf(`ent: validator failed for field "Rider.phone": %w`, err)}
 		}
-	}
-	if _, ok := rc.mutation.DeviceType(); !ok {
-		return &ValidationError{Name: "device_type", err: errors.New(`ent: missing required field "Rider.device_type"`)}
-	}
-	if _, ok := rc.mutation.LastDevice(); !ok {
-		return &ValidationError{Name: "last_device", err: errors.New(`ent: missing required field "Rider.last_device"`)}
 	}
 	if v, ok := rc.mutation.LastDevice(); ok {
 		if err := rider.LastDeviceValidator(v); err != nil {
@@ -1008,6 +1018,12 @@ func (u *RiderUpsert) AddDeviceType(v uint8) *RiderUpsert {
 	return u
 }
 
+// ClearDeviceType clears the value of the "device_type" field.
+func (u *RiderUpsert) ClearDeviceType() *RiderUpsert {
+	u.SetNull(rider.FieldDeviceType)
+	return u
+}
+
 // SetLastDevice sets the "last_device" field.
 func (u *RiderUpsert) SetLastDevice(v string) *RiderUpsert {
 	u.Set(rider.FieldLastDevice, v)
@@ -1017,6 +1033,12 @@ func (u *RiderUpsert) SetLastDevice(v string) *RiderUpsert {
 // UpdateLastDevice sets the "last_device" field to the value that was provided on create.
 func (u *RiderUpsert) UpdateLastDevice() *RiderUpsert {
 	u.SetExcluded(rider.FieldLastDevice)
+	return u
+}
+
+// ClearLastDevice clears the value of the "last_device" field.
+func (u *RiderUpsert) ClearLastDevice() *RiderUpsert {
+	u.SetNull(rider.FieldLastDevice)
 	return u
 }
 
@@ -1394,6 +1416,13 @@ func (u *RiderUpsertOne) UpdateDeviceType() *RiderUpsertOne {
 	})
 }
 
+// ClearDeviceType clears the value of the "device_type" field.
+func (u *RiderUpsertOne) ClearDeviceType() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearDeviceType()
+	})
+}
+
 // SetLastDevice sets the "last_device" field.
 func (u *RiderUpsertOne) SetLastDevice(v string) *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
@@ -1405,6 +1434,13 @@ func (u *RiderUpsertOne) SetLastDevice(v string) *RiderUpsertOne {
 func (u *RiderUpsertOne) UpdateLastDevice() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.UpdateLastDevice()
+	})
+}
+
+// ClearLastDevice clears the value of the "last_device" field.
+func (u *RiderUpsertOne) ClearLastDevice() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearLastDevice()
 	})
 }
 
@@ -1965,6 +2001,13 @@ func (u *RiderUpsertBulk) UpdateDeviceType() *RiderUpsertBulk {
 	})
 }
 
+// ClearDeviceType clears the value of the "device_type" field.
+func (u *RiderUpsertBulk) ClearDeviceType() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearDeviceType()
+	})
+}
+
 // SetLastDevice sets the "last_device" field.
 func (u *RiderUpsertBulk) SetLastDevice(v string) *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
@@ -1976,6 +2019,13 @@ func (u *RiderUpsertBulk) SetLastDevice(v string) *RiderUpsertBulk {
 func (u *RiderUpsertBulk) UpdateLastDevice() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.UpdateLastDevice()
+	})
+}
+
+// ClearLastDevice clears the value of the "last_device" field.
+func (u *RiderUpsertBulk) ClearLastDevice() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearLastDevice()
 	})
 }
 

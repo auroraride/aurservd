@@ -159,15 +159,43 @@ func (ru *RiderUpdate) SetDeviceType(u uint8) *RiderUpdate {
 	return ru
 }
 
+// SetNillableDeviceType sets the "device_type" field if the given value is not nil.
+func (ru *RiderUpdate) SetNillableDeviceType(u *uint8) *RiderUpdate {
+	if u != nil {
+		ru.SetDeviceType(*u)
+	}
+	return ru
+}
+
 // AddDeviceType adds u to the "device_type" field.
 func (ru *RiderUpdate) AddDeviceType(u int8) *RiderUpdate {
 	ru.mutation.AddDeviceType(u)
 	return ru
 }
 
+// ClearDeviceType clears the value of the "device_type" field.
+func (ru *RiderUpdate) ClearDeviceType() *RiderUpdate {
+	ru.mutation.ClearDeviceType()
+	return ru
+}
+
 // SetLastDevice sets the "last_device" field.
 func (ru *RiderUpdate) SetLastDevice(s string) *RiderUpdate {
 	ru.mutation.SetLastDevice(s)
+	return ru
+}
+
+// SetNillableLastDevice sets the "last_device" field if the given value is not nil.
+func (ru *RiderUpdate) SetNillableLastDevice(s *string) *RiderUpdate {
+	if s != nil {
+		ru.SetLastDevice(*s)
+	}
+	return ru
+}
+
+// ClearLastDevice clears the value of the "last_device" field.
+func (ru *RiderUpdate) ClearLastDevice() *RiderUpdate {
+	ru.mutation.ClearLastDevice()
 	return ru
 }
 
@@ -705,10 +733,22 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: rider.FieldDeviceType,
 		})
 	}
+	if ru.mutation.DeviceTypeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Column: rider.FieldDeviceType,
+		})
+	}
 	if value, ok := ru.mutation.LastDevice(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: rider.FieldLastDevice,
+		})
+	}
+	if ru.mutation.LastDeviceCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: rider.FieldLastDevice,
 		})
 	}
@@ -1273,15 +1313,43 @@ func (ruo *RiderUpdateOne) SetDeviceType(u uint8) *RiderUpdateOne {
 	return ruo
 }
 
+// SetNillableDeviceType sets the "device_type" field if the given value is not nil.
+func (ruo *RiderUpdateOne) SetNillableDeviceType(u *uint8) *RiderUpdateOne {
+	if u != nil {
+		ruo.SetDeviceType(*u)
+	}
+	return ruo
+}
+
 // AddDeviceType adds u to the "device_type" field.
 func (ruo *RiderUpdateOne) AddDeviceType(u int8) *RiderUpdateOne {
 	ruo.mutation.AddDeviceType(u)
 	return ruo
 }
 
+// ClearDeviceType clears the value of the "device_type" field.
+func (ruo *RiderUpdateOne) ClearDeviceType() *RiderUpdateOne {
+	ruo.mutation.ClearDeviceType()
+	return ruo
+}
+
 // SetLastDevice sets the "last_device" field.
 func (ruo *RiderUpdateOne) SetLastDevice(s string) *RiderUpdateOne {
 	ruo.mutation.SetLastDevice(s)
+	return ruo
+}
+
+// SetNillableLastDevice sets the "last_device" field if the given value is not nil.
+func (ruo *RiderUpdateOne) SetNillableLastDevice(s *string) *RiderUpdateOne {
+	if s != nil {
+		ruo.SetLastDevice(*s)
+	}
+	return ruo
+}
+
+// ClearLastDevice clears the value of the "last_device" field.
+func (ruo *RiderUpdateOne) ClearLastDevice() *RiderUpdateOne {
+	ruo.mutation.ClearLastDevice()
 	return ruo
 }
 
@@ -1849,10 +1917,22 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 			Column: rider.FieldDeviceType,
 		})
 	}
+	if ruo.mutation.DeviceTypeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Column: rider.FieldDeviceType,
+		})
+	}
 	if value, ok := ruo.mutation.LastDevice(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: rider.FieldLastDevice,
+		})
+	}
+	if ruo.mutation.LastDeviceCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: rider.FieldLastDevice,
 		})
 	}

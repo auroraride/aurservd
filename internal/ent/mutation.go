@@ -22564,9 +22564,22 @@ func (m *PersonMutation) OldIDCardNumber(ctx context.Context) (v string, err err
 	return oldValue.IDCardNumber, nil
 }
 
+// ClearIDCardNumber clears the value of the "id_card_number" field.
+func (m *PersonMutation) ClearIDCardNumber() {
+	m.id_card_number = nil
+	m.clearedFields[person.FieldIDCardNumber] = struct{}{}
+}
+
+// IDCardNumberCleared returns if the "id_card_number" field was cleared in this mutation.
+func (m *PersonMutation) IDCardNumberCleared() bool {
+	_, ok := m.clearedFields[person.FieldIDCardNumber]
+	return ok
+}
+
 // ResetIDCardNumber resets all changes to the "id_card_number" field.
 func (m *PersonMutation) ResetIDCardNumber() {
 	m.id_card_number = nil
+	delete(m.clearedFields, person.FieldIDCardNumber)
 }
 
 // SetIDCardType sets the "id_card_type" field.
@@ -22656,9 +22669,22 @@ func (m *PersonMutation) OldIDCardPortrait(ctx context.Context) (v string, err e
 	return oldValue.IDCardPortrait, nil
 }
 
+// ClearIDCardPortrait clears the value of the "id_card_portrait" field.
+func (m *PersonMutation) ClearIDCardPortrait() {
+	m.id_card_portrait = nil
+	m.clearedFields[person.FieldIDCardPortrait] = struct{}{}
+}
+
+// IDCardPortraitCleared returns if the "id_card_portrait" field was cleared in this mutation.
+func (m *PersonMutation) IDCardPortraitCleared() bool {
+	_, ok := m.clearedFields[person.FieldIDCardPortrait]
+	return ok
+}
+
 // ResetIDCardPortrait resets all changes to the "id_card_portrait" field.
 func (m *PersonMutation) ResetIDCardPortrait() {
 	m.id_card_portrait = nil
+	delete(m.clearedFields, person.FieldIDCardPortrait)
 }
 
 // SetIDCardNational sets the "id_card_national" field.
@@ -22692,9 +22718,22 @@ func (m *PersonMutation) OldIDCardNational(ctx context.Context) (v string, err e
 	return oldValue.IDCardNational, nil
 }
 
+// ClearIDCardNational clears the value of the "id_card_national" field.
+func (m *PersonMutation) ClearIDCardNational() {
+	m.id_card_national = nil
+	m.clearedFields[person.FieldIDCardNational] = struct{}{}
+}
+
+// IDCardNationalCleared returns if the "id_card_national" field was cleared in this mutation.
+func (m *PersonMutation) IDCardNationalCleared() bool {
+	_, ok := m.clearedFields[person.FieldIDCardNational]
+	return ok
+}
+
 // ResetIDCardNational resets all changes to the "id_card_national" field.
 func (m *PersonMutation) ResetIDCardNational() {
 	m.id_card_national = nil
+	delete(m.clearedFields, person.FieldIDCardNational)
 }
 
 // SetAuthFace sets the "auth_face" field.
@@ -22728,9 +22767,22 @@ func (m *PersonMutation) OldAuthFace(ctx context.Context) (v string, err error) 
 	return oldValue.AuthFace, nil
 }
 
+// ClearAuthFace clears the value of the "auth_face" field.
+func (m *PersonMutation) ClearAuthFace() {
+	m.auth_face = nil
+	m.clearedFields[person.FieldAuthFace] = struct{}{}
+}
+
+// AuthFaceCleared returns if the "auth_face" field was cleared in this mutation.
+func (m *PersonMutation) AuthFaceCleared() bool {
+	_, ok := m.clearedFields[person.FieldAuthFace]
+	return ok
+}
+
 // ResetAuthFace resets all changes to the "auth_face" field.
 func (m *PersonMutation) ResetAuthFace() {
 	m.auth_face = nil
+	delete(m.clearedFields, person.FieldAuthFace)
 }
 
 // SetAuthResult sets the "auth_result" field.
@@ -23224,6 +23276,18 @@ func (m *PersonMutation) ClearedFields() []string {
 	if m.FieldCleared(person.FieldRemark) {
 		fields = append(fields, person.FieldRemark)
 	}
+	if m.FieldCleared(person.FieldIDCardNumber) {
+		fields = append(fields, person.FieldIDCardNumber)
+	}
+	if m.FieldCleared(person.FieldIDCardPortrait) {
+		fields = append(fields, person.FieldIDCardPortrait)
+	}
+	if m.FieldCleared(person.FieldIDCardNational) {
+		fields = append(fields, person.FieldIDCardNational)
+	}
+	if m.FieldCleared(person.FieldAuthFace) {
+		fields = append(fields, person.FieldAuthFace)
+	}
 	if m.FieldCleared(person.FieldAuthResult) {
 		fields = append(fields, person.FieldAuthResult)
 	}
@@ -23255,6 +23319,18 @@ func (m *PersonMutation) ClearField(name string) error {
 		return nil
 	case person.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case person.FieldIDCardNumber:
+		m.ClearIDCardNumber()
+		return nil
+	case person.FieldIDCardPortrait:
+		m.ClearIDCardPortrait()
+		return nil
+	case person.FieldIDCardNational:
+		m.ClearIDCardNational()
+		return nil
+	case person.FieldAuthFace:
+		m.ClearAuthFace()
 		return nil
 	case person.FieldAuthResult:
 		m.ClearAuthResult()
@@ -25550,10 +25626,24 @@ func (m *RiderMutation) AddedDeviceType() (r int8, exists bool) {
 	return *v, true
 }
 
+// ClearDeviceType clears the value of the "device_type" field.
+func (m *RiderMutation) ClearDeviceType() {
+	m.device_type = nil
+	m.adddevice_type = nil
+	m.clearedFields[rider.FieldDeviceType] = struct{}{}
+}
+
+// DeviceTypeCleared returns if the "device_type" field was cleared in this mutation.
+func (m *RiderMutation) DeviceTypeCleared() bool {
+	_, ok := m.clearedFields[rider.FieldDeviceType]
+	return ok
+}
+
 // ResetDeviceType resets all changes to the "device_type" field.
 func (m *RiderMutation) ResetDeviceType() {
 	m.device_type = nil
 	m.adddevice_type = nil
+	delete(m.clearedFields, rider.FieldDeviceType)
 }
 
 // SetLastDevice sets the "last_device" field.
@@ -25587,9 +25677,22 @@ func (m *RiderMutation) OldLastDevice(ctx context.Context) (v string, err error)
 	return oldValue.LastDevice, nil
 }
 
+// ClearLastDevice clears the value of the "last_device" field.
+func (m *RiderMutation) ClearLastDevice() {
+	m.last_device = nil
+	m.clearedFields[rider.FieldLastDevice] = struct{}{}
+}
+
+// LastDeviceCleared returns if the "last_device" field was cleared in this mutation.
+func (m *RiderMutation) LastDeviceCleared() bool {
+	_, ok := m.clearedFields[rider.FieldLastDevice]
+	return ok
+}
+
 // ResetLastDevice resets all changes to the "last_device" field.
 func (m *RiderMutation) ResetLastDevice() {
 	m.last_device = nil
+	delete(m.clearedFields, rider.FieldLastDevice)
 }
 
 // SetIsNewDevice sets the "is_new_device" field.
@@ -26609,6 +26712,12 @@ func (m *RiderMutation) ClearedFields() []string {
 	if m.FieldCleared(rider.FieldContact) {
 		fields = append(fields, rider.FieldContact)
 	}
+	if m.FieldCleared(rider.FieldDeviceType) {
+		fields = append(fields, rider.FieldDeviceType)
+	}
+	if m.FieldCleared(rider.FieldLastDevice) {
+		fields = append(fields, rider.FieldLastDevice)
+	}
 	if m.FieldCleared(rider.FieldLastFace) {
 		fields = append(fields, rider.FieldLastFace)
 	}
@@ -26658,6 +26767,12 @@ func (m *RiderMutation) ClearField(name string) error {
 		return nil
 	case rider.FieldContact:
 		m.ClearContact()
+		return nil
+	case rider.FieldDeviceType:
+		m.ClearDeviceType()
+		return nil
+	case rider.FieldLastDevice:
+		m.ClearLastDevice()
 		return nil
 	case rider.FieldLastFace:
 		m.ClearLastFace()
@@ -27739,6 +27854,7 @@ type StatementMutation struct {
 	adddays           *int
 	rider_number      *int
 	addrider_number   *int
+	bill_time         *time.Time
 	clearedFields     map[string]struct{}
 	subscribes        map[uint64]struct{}
 	removedsubscribes map[uint64]struct{}
@@ -28481,6 +28597,42 @@ func (m *StatementMutation) ResetRiderNumber() {
 	m.addrider_number = nil
 }
 
+// SetBillTime sets the "bill_time" field.
+func (m *StatementMutation) SetBillTime(t time.Time) {
+	m.bill_time = &t
+}
+
+// BillTime returns the value of the "bill_time" field in the mutation.
+func (m *StatementMutation) BillTime() (r time.Time, exists bool) {
+	v := m.bill_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBillTime returns the old "bill_time" field's value of the Statement entity.
+// If the Statement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StatementMutation) OldBillTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBillTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBillTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBillTime: %w", err)
+	}
+	return oldValue.BillTime, nil
+}
+
+// ResetBillTime resets all changes to the "bill_time" field.
+func (m *StatementMutation) ResetBillTime() {
+	m.bill_time = nil
+}
+
 // AddSubscribeIDs adds the "subscribes" edge to the Subscribe entity by ids.
 func (m *StatementMutation) AddSubscribeIDs(ids ...uint64) {
 	if m.subscribes == nil {
@@ -28580,7 +28732,7 @@ func (m *StatementMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StatementMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, statement.FieldCreatedAt)
 	}
@@ -28620,6 +28772,9 @@ func (m *StatementMutation) Fields() []string {
 	if m.rider_number != nil {
 		fields = append(fields, statement.FieldRiderNumber)
 	}
+	if m.bill_time != nil {
+		fields = append(fields, statement.FieldBillTime)
+	}
 	return fields
 }
 
@@ -28654,6 +28809,8 @@ func (m *StatementMutation) Field(name string) (ent.Value, bool) {
 		return m.Days()
 	case statement.FieldRiderNumber:
 		return m.RiderNumber()
+	case statement.FieldBillTime:
+		return m.BillTime()
 	}
 	return nil, false
 }
@@ -28689,6 +28846,8 @@ func (m *StatementMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldDays(ctx)
 	case statement.FieldRiderNumber:
 		return m.OldRiderNumber(ctx)
+	case statement.FieldBillTime:
+		return m.OldBillTime(ctx)
 	}
 	return nil, fmt.Errorf("unknown Statement field %s", name)
 }
@@ -28788,6 +28947,13 @@ func (m *StatementMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRiderNumber(v)
+		return nil
+	case statement.FieldBillTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBillTime(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Statement field %s", name)
@@ -28972,6 +29138,9 @@ func (m *StatementMutation) ResetField(name string) error {
 		return nil
 	case statement.FieldRiderNumber:
 		m.ResetRiderNumber()
+		return nil
+	case statement.FieldBillTime:
+		m.ResetBillTime()
 		return nil
 	}
 	return fmt.Errorf("unknown Statement field %s", name)
