@@ -191,6 +191,13 @@ func Balance(v float64) predicate.Enterprise {
 	})
 }
 
+// SuspensedAt applies equality check predicate on the "suspensed_at" field. It's identical to SuspensedAtEQ.
+func SuspensedAt(v time.Time) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSuspensedAt), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
@@ -1490,6 +1497,96 @@ func BalanceLT(v float64) predicate.Enterprise {
 func BalanceLTE(v float64) predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldBalance), v))
+	})
+}
+
+// SuspensedAtEQ applies the EQ predicate on the "suspensed_at" field.
+func SuspensedAtEQ(v time.Time) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSuspensedAt), v))
+	})
+}
+
+// SuspensedAtNEQ applies the NEQ predicate on the "suspensed_at" field.
+func SuspensedAtNEQ(v time.Time) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldSuspensedAt), v))
+	})
+}
+
+// SuspensedAtIn applies the In predicate on the "suspensed_at" field.
+func SuspensedAtIn(vs ...time.Time) predicate.Enterprise {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Enterprise(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldSuspensedAt), v...))
+	})
+}
+
+// SuspensedAtNotIn applies the NotIn predicate on the "suspensed_at" field.
+func SuspensedAtNotIn(vs ...time.Time) predicate.Enterprise {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Enterprise(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldSuspensedAt), v...))
+	})
+}
+
+// SuspensedAtGT applies the GT predicate on the "suspensed_at" field.
+func SuspensedAtGT(v time.Time) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldSuspensedAt), v))
+	})
+}
+
+// SuspensedAtGTE applies the GTE predicate on the "suspensed_at" field.
+func SuspensedAtGTE(v time.Time) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldSuspensedAt), v))
+	})
+}
+
+// SuspensedAtLT applies the LT predicate on the "suspensed_at" field.
+func SuspensedAtLT(v time.Time) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldSuspensedAt), v))
+	})
+}
+
+// SuspensedAtLTE applies the LTE predicate on the "suspensed_at" field.
+func SuspensedAtLTE(v time.Time) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldSuspensedAt), v))
+	})
+}
+
+// SuspensedAtIsNil applies the IsNil predicate on the "suspensed_at" field.
+func SuspensedAtIsNil() predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldSuspensedAt)))
+	})
+}
+
+// SuspensedAtNotNil applies the NotNil predicate on the "suspensed_at" field.
+func SuspensedAtNotNil() predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldSuspensedAt)))
 	})
 }
 

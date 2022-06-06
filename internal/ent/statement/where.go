@@ -128,10 +128,10 @@ func EnterpriseID(v uint64) predicate.Statement {
 	})
 }
 
-// Arrearage applies equality check predicate on the "arrearage" field. It's identical to ArrearageEQ.
-func Arrearage(v float64) predicate.Statement {
+// Cost applies equality check predicate on the "cost" field. It's identical to CostEQ.
+func Cost(v float64) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldArrearage), v))
+		s.Where(sql.EQ(s.C(FieldCost), v))
 	})
 }
 
@@ -139,6 +139,13 @@ func Arrearage(v float64) predicate.Statement {
 func Amount(v float64) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldAmount), v))
+	})
+}
+
+// Balance applies equality check predicate on the "balance" field. It's identical to BalanceEQ.
+func Balance(v float64) predicate.Statement {
+	return predicate.Statement(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBalance), v))
 	})
 }
 
@@ -150,14 +157,14 @@ func SettledAt(v time.Time) predicate.Statement {
 }
 
 // Days applies equality check predicate on the "days" field. It's identical to DaysEQ.
-func Days(v uint) predicate.Statement {
+func Days(v int) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldDays), v))
 	})
 }
 
 // RiderNumber applies equality check predicate on the "rider_number" field. It's identical to RiderNumberEQ.
-func RiderNumber(v uint) predicate.Statement {
+func RiderNumber(v int) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldRiderNumber), v))
 	})
@@ -606,22 +613,22 @@ func EnterpriseIDNotIn(vs ...uint64) predicate.Statement {
 	})
 }
 
-// ArrearageEQ applies the EQ predicate on the "arrearage" field.
-func ArrearageEQ(v float64) predicate.Statement {
+// CostEQ applies the EQ predicate on the "cost" field.
+func CostEQ(v float64) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldArrearage), v))
+		s.Where(sql.EQ(s.C(FieldCost), v))
 	})
 }
 
-// ArrearageNEQ applies the NEQ predicate on the "arrearage" field.
-func ArrearageNEQ(v float64) predicate.Statement {
+// CostNEQ applies the NEQ predicate on the "cost" field.
+func CostNEQ(v float64) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldArrearage), v))
+		s.Where(sql.NEQ(s.C(FieldCost), v))
 	})
 }
 
-// ArrearageIn applies the In predicate on the "arrearage" field.
-func ArrearageIn(vs ...float64) predicate.Statement {
+// CostIn applies the In predicate on the "cost" field.
+func CostIn(vs ...float64) predicate.Statement {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -633,12 +640,12 @@ func ArrearageIn(vs ...float64) predicate.Statement {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldArrearage), v...))
+		s.Where(sql.In(s.C(FieldCost), v...))
 	})
 }
 
-// ArrearageNotIn applies the NotIn predicate on the "arrearage" field.
-func ArrearageNotIn(vs ...float64) predicate.Statement {
+// CostNotIn applies the NotIn predicate on the "cost" field.
+func CostNotIn(vs ...float64) predicate.Statement {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -650,35 +657,35 @@ func ArrearageNotIn(vs ...float64) predicate.Statement {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldArrearage), v...))
+		s.Where(sql.NotIn(s.C(FieldCost), v...))
 	})
 }
 
-// ArrearageGT applies the GT predicate on the "arrearage" field.
-func ArrearageGT(v float64) predicate.Statement {
+// CostGT applies the GT predicate on the "cost" field.
+func CostGT(v float64) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldArrearage), v))
+		s.Where(sql.GT(s.C(FieldCost), v))
 	})
 }
 
-// ArrearageGTE applies the GTE predicate on the "arrearage" field.
-func ArrearageGTE(v float64) predicate.Statement {
+// CostGTE applies the GTE predicate on the "cost" field.
+func CostGTE(v float64) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldArrearage), v))
+		s.Where(sql.GTE(s.C(FieldCost), v))
 	})
 }
 
-// ArrearageLT applies the LT predicate on the "arrearage" field.
-func ArrearageLT(v float64) predicate.Statement {
+// CostLT applies the LT predicate on the "cost" field.
+func CostLT(v float64) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldArrearage), v))
+		s.Where(sql.LT(s.C(FieldCost), v))
 	})
 }
 
-// ArrearageLTE applies the LTE predicate on the "arrearage" field.
-func ArrearageLTE(v float64) predicate.Statement {
+// CostLTE applies the LTE predicate on the "cost" field.
+func CostLTE(v float64) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldArrearage), v))
+		s.Where(sql.LTE(s.C(FieldCost), v))
 	})
 }
 
@@ -755,6 +762,82 @@ func AmountLT(v float64) predicate.Statement {
 func AmountLTE(v float64) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldAmount), v))
+	})
+}
+
+// BalanceEQ applies the EQ predicate on the "balance" field.
+func BalanceEQ(v float64) predicate.Statement {
+	return predicate.Statement(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldBalance), v))
+	})
+}
+
+// BalanceNEQ applies the NEQ predicate on the "balance" field.
+func BalanceNEQ(v float64) predicate.Statement {
+	return predicate.Statement(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldBalance), v))
+	})
+}
+
+// BalanceIn applies the In predicate on the "balance" field.
+func BalanceIn(vs ...float64) predicate.Statement {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Statement(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldBalance), v...))
+	})
+}
+
+// BalanceNotIn applies the NotIn predicate on the "balance" field.
+func BalanceNotIn(vs ...float64) predicate.Statement {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Statement(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldBalance), v...))
+	})
+}
+
+// BalanceGT applies the GT predicate on the "balance" field.
+func BalanceGT(v float64) predicate.Statement {
+	return predicate.Statement(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldBalance), v))
+	})
+}
+
+// BalanceGTE applies the GTE predicate on the "balance" field.
+func BalanceGTE(v float64) predicate.Statement {
+	return predicate.Statement(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldBalance), v))
+	})
+}
+
+// BalanceLT applies the LT predicate on the "balance" field.
+func BalanceLT(v float64) predicate.Statement {
+	return predicate.Statement(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldBalance), v))
+	})
+}
+
+// BalanceLTE applies the LTE predicate on the "balance" field.
+func BalanceLTE(v float64) predicate.Statement {
+	return predicate.Statement(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldBalance), v))
 	})
 }
 
@@ -849,21 +932,21 @@ func SettledAtNotNil() predicate.Statement {
 }
 
 // DaysEQ applies the EQ predicate on the "days" field.
-func DaysEQ(v uint) predicate.Statement {
+func DaysEQ(v int) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldDays), v))
 	})
 }
 
 // DaysNEQ applies the NEQ predicate on the "days" field.
-func DaysNEQ(v uint) predicate.Statement {
+func DaysNEQ(v int) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldDays), v))
 	})
 }
 
 // DaysIn applies the In predicate on the "days" field.
-func DaysIn(vs ...uint) predicate.Statement {
+func DaysIn(vs ...int) predicate.Statement {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -880,7 +963,7 @@ func DaysIn(vs ...uint) predicate.Statement {
 }
 
 // DaysNotIn applies the NotIn predicate on the "days" field.
-func DaysNotIn(vs ...uint) predicate.Statement {
+func DaysNotIn(vs ...int) predicate.Statement {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -897,49 +980,49 @@ func DaysNotIn(vs ...uint) predicate.Statement {
 }
 
 // DaysGT applies the GT predicate on the "days" field.
-func DaysGT(v uint) predicate.Statement {
+func DaysGT(v int) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldDays), v))
 	})
 }
 
 // DaysGTE applies the GTE predicate on the "days" field.
-func DaysGTE(v uint) predicate.Statement {
+func DaysGTE(v int) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldDays), v))
 	})
 }
 
 // DaysLT applies the LT predicate on the "days" field.
-func DaysLT(v uint) predicate.Statement {
+func DaysLT(v int) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldDays), v))
 	})
 }
 
 // DaysLTE applies the LTE predicate on the "days" field.
-func DaysLTE(v uint) predicate.Statement {
+func DaysLTE(v int) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldDays), v))
 	})
 }
 
 // RiderNumberEQ applies the EQ predicate on the "rider_number" field.
-func RiderNumberEQ(v uint) predicate.Statement {
+func RiderNumberEQ(v int) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldRiderNumber), v))
 	})
 }
 
 // RiderNumberNEQ applies the NEQ predicate on the "rider_number" field.
-func RiderNumberNEQ(v uint) predicate.Statement {
+func RiderNumberNEQ(v int) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldRiderNumber), v))
 	})
 }
 
 // RiderNumberIn applies the In predicate on the "rider_number" field.
-func RiderNumberIn(vs ...uint) predicate.Statement {
+func RiderNumberIn(vs ...int) predicate.Statement {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -956,7 +1039,7 @@ func RiderNumberIn(vs ...uint) predicate.Statement {
 }
 
 // RiderNumberNotIn applies the NotIn predicate on the "rider_number" field.
-func RiderNumberNotIn(vs ...uint) predicate.Statement {
+func RiderNumberNotIn(vs ...int) predicate.Statement {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -973,28 +1056,28 @@ func RiderNumberNotIn(vs ...uint) predicate.Statement {
 }
 
 // RiderNumberGT applies the GT predicate on the "rider_number" field.
-func RiderNumberGT(v uint) predicate.Statement {
+func RiderNumberGT(v int) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldRiderNumber), v))
 	})
 }
 
 // RiderNumberGTE applies the GTE predicate on the "rider_number" field.
-func RiderNumberGTE(v uint) predicate.Statement {
+func RiderNumberGTE(v int) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldRiderNumber), v))
 	})
 }
 
 // RiderNumberLT applies the LT predicate on the "rider_number" field.
-func RiderNumberLT(v uint) predicate.Statement {
+func RiderNumberLT(v int) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldRiderNumber), v))
 	})
 }
 
 // RiderNumberLTE applies the LTE predicate on the "rider_number" field.
-func RiderNumberLTE(v uint) predicate.Statement {
+func RiderNumberLTE(v int) predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldRiderNumber), v))
 	})

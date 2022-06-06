@@ -490,6 +490,7 @@ var (
 		{Name: "payment", Type: field.TypeUint8, Comment: "付费方式 1预付费 2后付费"},
 		{Name: "deposit", Type: field.TypeFloat64, Comment: "押金", Default: 0},
 		{Name: "balance", Type: field.TypeFloat64, Comment: "账户余额", Default: 0},
+		{Name: "suspensed_at", Type: field.TypeTime, Comment: "暂停合作时间", Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64},
 	}
 	// EnterpriseTable holds the schema information for the "enterprise" table.
@@ -500,7 +501,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "enterprise_city_city",
-				Columns:    []*schema.Column{EnterpriseColumns[16]},
+				Columns:    []*schema.Column{EnterpriseColumns[17]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -1076,13 +1077,13 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
-		{Name: "phone", Type: field.TypeString, Unique: true, Comment: "手机号", Size: 11},
+		{Name: "phone", Type: field.TypeString, Comment: "手机号", Size: 11},
 		{Name: "contact", Type: field.TypeJSON, Comment: "紧急联系人", Nullable: true},
 		{Name: "device_type", Type: field.TypeUint8, Comment: "登录设备类型: 1iOS 2Android"},
 		{Name: "last_device", Type: field.TypeString, Comment: "最近登录设备", Size: 60},
 		{Name: "is_new_device", Type: field.TypeBool, Comment: "是否新设备", Default: false},
 		{Name: "last_face", Type: field.TypeString, Comment: "上次登录人脸", Nullable: true},
-		{Name: "push_id", Type: field.TypeString, Unique: true, Comment: "推送ID", Nullable: true, Size: 60},
+		{Name: "push_id", Type: field.TypeString, Comment: "推送ID", Nullable: true, Size: 60},
 		{Name: "last_signin_at", Type: field.TypeTime, Comment: "最后登录时间", Nullable: true},
 		{Name: "esign_account_id", Type: field.TypeString, Comment: "E签宝账户ID", Nullable: true},
 		{Name: "plan_at", Type: field.TypeTime, Comment: "骑行卡到期日期", Nullable: true, SchemaType: map[string]string{"postgres": "date"}},
@@ -1124,16 +1125,21 @@ var (
 				Name:    "rider_phone",
 				Unique:  false,
 				Columns: []*schema.Column{RiderColumns[7]},
-				Annotation: &entsql.IndexAnnotation{
-					Types: map[string]string{
-						"postgres": "GIN",
-					},
-				},
 			},
 			{
 				Name:    "rider_last_device",
 				Unique:  false,
 				Columns: []*schema.Column{RiderColumns[10]},
+			},
+			{
+				Name:    "rider_phone",
+				Unique:  false,
+				Columns: []*schema.Column{RiderColumns[7]},
+			},
+			{
+				Name:    "rider_push_id",
+				Unique:  false,
+				Columns: []*schema.Column{RiderColumns[13]},
 			},
 		},
 	}
@@ -1171,11 +1177,12 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
-		{Name: "arrearage", Type: field.TypeFloat64, Comment: "欠费金额", Default: 0},
-		{Name: "amount", Type: field.TypeFloat64, Comment: "账单金额", Default: 0},
+		{Name: "cost", Type: field.TypeFloat64, Comment: "账单金额", Default: 0},
+		{Name: "amount", Type: field.TypeFloat64, Comment: "预付金额", Default: 0},
+		{Name: "balance", Type: field.TypeFloat64, Comment: "预付剩余, 负数是欠费", Default: 0},
 		{Name: "settled_at", Type: field.TypeTime, Comment: "清账时间", Nullable: true},
-		{Name: "days", Type: field.TypeUint, Comment: "账期内使用总天数", Default: 0},
-		{Name: "rider_number", Type: field.TypeUint, Comment: "账期内使用总人数", Default: 0},
+		{Name: "days", Type: field.TypeInt, Comment: "账期内使用总天数", Default: 0},
+		{Name: "rider_number", Type: field.TypeInt, Comment: "账期内使用总人数", Default: 0},
 		{Name: "enterprise_id", Type: field.TypeUint64},
 	}
 	// StatementTable holds the schema information for the "statement" table.
@@ -1186,7 +1193,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "statement_enterprise_statements",
-				Columns:    []*schema.Column{StatementColumns[12]},
+				Columns:    []*schema.Column{StatementColumns[13]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

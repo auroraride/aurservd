@@ -116,7 +116,7 @@ func (o *OperateLog) GetLogs(from time.Time, query string, params ...int64) []ma
         To:      time.Now().Unix(),
         Reverse: true,
         Query:   query,
-        Lines:   50,
+        Lines:   100,
         Offset:  offset,
     })
     if err != nil {

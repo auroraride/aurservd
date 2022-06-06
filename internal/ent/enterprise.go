@@ -64,6 +64,9 @@ type Enterprise struct {
 	// Balance holds the value of the "balance" field.
 	// 账户余额
 	Balance float64 `json:"balance,omitempty"`
+	// SuspensedAt holds the value of the "suspensed_at" field.
+	// 暂停合作时间
+	SuspensedAt *time.Time `json:"suspensed_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterpriseQuery when eager-loading is set.
 	Edges EnterpriseEdges `json:"edges"`
@@ -160,7 +163,7 @@ func (*Enterprise) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case enterprise.FieldRemark, enterprise.FieldName, enterprise.FieldContactName, enterprise.FieldContactPhone, enterprise.FieldIdcardNumber, enterprise.FieldAddress:
 			values[i] = new(sql.NullString)
-		case enterprise.FieldCreatedAt, enterprise.FieldUpdatedAt, enterprise.FieldDeletedAt:
+		case enterprise.FieldCreatedAt, enterprise.FieldUpdatedAt, enterprise.FieldDeletedAt, enterprise.FieldSuspensedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Enterprise", columns[i])
@@ -284,6 +287,13 @@ func (e *Enterprise) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				e.Balance = value.Float64
 			}
+		case enterprise.FieldSuspensedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field suspensed_at", values[i])
+			} else if value.Valid {
+				e.SuspensedAt = new(time.Time)
+				*e.SuspensedAt = value.Time
+			}
 		}
 	}
 	return nil
@@ -376,6 +386,10 @@ func (e *Enterprise) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.Deposit))
 	builder.WriteString(", balance=")
 	builder.WriteString(fmt.Sprintf("%v", e.Balance))
+	if v := e.SuspensedAt; v != nil {
+		builder.WriteString(", suspensed_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

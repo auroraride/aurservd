@@ -2,6 +2,7 @@ package schema
 
 import (
     "entgo.io/ent"
+    "entgo.io/ent/dialect"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
@@ -25,11 +26,13 @@ func (Statement) Annotations() []schema.Annotation {
 func (Statement) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("enterprise_id").Comment("企业ID"),
-        field.Float("arrearage").Default(0).Comment("欠费金额"),
-        field.Float("amount").Default(0).Comment("账单金额"),
+        field.Float("cost").Default(0).Comment("账单金额"),
+        field.Float("amount").Default(0).Comment("预付金额"),
+        field.Float("balance").Default(0).Comment("预付剩余, 负数是欠费"),
         field.Time("settled_at").Optional().Nillable().Comment("清账时间"),
-        field.Uint("days").Default(0).Comment("账期内使用总天数"),
-        field.Uint("rider_number").Default(0).Comment("账期内使用总人数"),
+        field.Int("days").Default(0).Comment("账期内使用总天数"),
+        field.Int("rider_number").Default(0).Comment("账期内使用总人数"),
+        field.Time("bill_time").SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("对账单计算截止日"),
     }
 }
 

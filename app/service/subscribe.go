@@ -167,16 +167,16 @@ func (s *subscribeService) QueryAllRidersEffective() []*ent.Subscribe {
 func (s *subscribeService) UpdateStatus(item *ent.Subscribe) {
     tt := tools.NewTime()
     pauseDays := item.PauseDays
-    pastDays := tt.SubDaysToNow(*item.StartAt)
+    pastDays := tt.DiffDaysOfNextDayToNow(*item.StartAt)
     status := model.SubscribeStatusUsing
     // 寄存中
     if item.PausedAt != nil && item.Edges.Pauses != nil {
         p := item.Edges.Pauses[0]
-        diff := tt.SubDaysToNow(p.StartAt)
+        diff := tt.DiffDaysOfNextDayToNow(p.StartAt)
         pauseDays += diff
     }
     // 剩余天数
-    remaining := item.InitialDays + item.AlterDays + item.OverdueDays + item.RenewalDays + pauseDays - pastDays - 1 // 实际天数 -1 才是剩余天数
+    remaining := item.InitialDays + item.AlterDays + item.OverdueDays + item.RenewalDays + pauseDays - pastDays
     if remaining < 0 {
         status = model.SubscribeStatusOverdue
     }

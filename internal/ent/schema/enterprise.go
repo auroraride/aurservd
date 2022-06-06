@@ -57,6 +57,7 @@ func (Enterprise) Fields() []ent.Field {
         field.Uint8("payment").Comment("付费方式 1预付费 2后付费"),
         field.Float("deposit").Default(0).Comment("押金"),
         field.Float("balance").Default(0).Comment("账户余额"),
+        field.Time("suspensed_at").Nillable().Optional().Comment("暂停合作时间"),
     }
 }
 

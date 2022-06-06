@@ -37,21 +37,24 @@ type Statement struct {
 	// EnterpriseID holds the value of the "enterprise_id" field.
 	// 企业ID
 	EnterpriseID uint64 `json:"enterprise_id,omitempty"`
-	// Arrearage holds the value of the "arrearage" field.
-	// 欠费金额
-	Arrearage float64 `json:"arrearage,omitempty"`
-	// Amount holds the value of the "amount" field.
+	// Cost holds the value of the "cost" field.
 	// 账单金额
+	Cost float64 `json:"cost,omitempty"`
+	// Amount holds the value of the "amount" field.
+	// 预付金额
 	Amount float64 `json:"amount,omitempty"`
+	// Balance holds the value of the "balance" field.
+	// 预付剩余, 负数是欠费
+	Balance float64 `json:"balance,omitempty"`
 	// SettledAt holds the value of the "settled_at" field.
 	// 清账时间
 	SettledAt *time.Time `json:"settled_at,omitempty"`
 	// Days holds the value of the "days" field.
 	// 账期内使用总天数
-	Days uint `json:"days,omitempty"`
+	Days int `json:"days,omitempty"`
 	// RiderNumber holds the value of the "rider_number" field.
 	// 账期内使用总人数
-	RiderNumber uint `json:"rider_number,omitempty"`
+	RiderNumber int `json:"rider_number,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the StatementQuery when eager-loading is set.
 	Edges StatementEdges `json:"edges"`
@@ -98,7 +101,7 @@ func (*Statement) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case statement.FieldCreator, statement.FieldLastModifier:
 			values[i] = new([]byte)
-		case statement.FieldArrearage, statement.FieldAmount:
+		case statement.FieldCost, statement.FieldAmount, statement.FieldBalance:
 			values[i] = new(sql.NullFloat64)
 		case statement.FieldID, statement.FieldEnterpriseID, statement.FieldDays, statement.FieldRiderNumber:
 			values[i] = new(sql.NullInt64)
@@ -174,17 +177,23 @@ func (s *Statement) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.EnterpriseID = uint64(value.Int64)
 			}
-		case statement.FieldArrearage:
+		case statement.FieldCost:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field arrearage", values[i])
+				return fmt.Errorf("unexpected type %T for field cost", values[i])
 			} else if value.Valid {
-				s.Arrearage = value.Float64
+				s.Cost = value.Float64
 			}
 		case statement.FieldAmount:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field amount", values[i])
 			} else if value.Valid {
 				s.Amount = value.Float64
+			}
+		case statement.FieldBalance:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field balance", values[i])
+			} else if value.Valid {
+				s.Balance = value.Float64
 			}
 		case statement.FieldSettledAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -197,13 +206,13 @@ func (s *Statement) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field days", values[i])
 			} else if value.Valid {
-				s.Days = uint(value.Int64)
+				s.Days = int(value.Int64)
 			}
 		case statement.FieldRiderNumber:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field rider_number", values[i])
 			} else if value.Valid {
-				s.RiderNumber = uint(value.Int64)
+				s.RiderNumber = int(value.Int64)
 			}
 		}
 	}
@@ -259,10 +268,12 @@ func (s *Statement) String() string {
 	builder.WriteString(s.Remark)
 	builder.WriteString(", enterprise_id=")
 	builder.WriteString(fmt.Sprintf("%v", s.EnterpriseID))
-	builder.WriteString(", arrearage=")
-	builder.WriteString(fmt.Sprintf("%v", s.Arrearage))
+	builder.WriteString(", cost=")
+	builder.WriteString(fmt.Sprintf("%v", s.Cost))
 	builder.WriteString(", amount=")
 	builder.WriteString(fmt.Sprintf("%v", s.Amount))
+	builder.WriteString(", balance=")
+	builder.WriteString(fmt.Sprintf("%v", s.Balance))
 	if v := s.SettledAt; v != nil {
 		builder.WriteString(", settled_at=")
 		builder.WriteString(v.Format(time.ANSIC))

@@ -718,7 +718,7 @@ definitions:
         minItems: 1
         type: array
       status:
-        description: 合作状态 0:未合作 1:已合作 2:已暂停
+        description: 合作状态 0:未合作 1:合作中 2:已暂停
         enum:
         - 0
         - 1
@@ -783,7 +783,7 @@ definitions:
         minItems: 1
         type: array
       status:
-        description: 合作状态 0:未合作 1:已合作 2:已暂停
+        description: 合作状态 0:未合作 1:合作中 2:已暂停
         enum:
         - 0
         - 1
@@ -2496,7 +2496,14 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.StatusResponse'
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.RiderOrder'
+                  type: array
+              type: object
       summary: M80001 订单列表
       tags:
       - '[M]管理接口'
@@ -2783,7 +2790,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: 查询偏移, 默认为0, 尝试上拉分页查询时加20, 当尝试分页请求返回空数组时代表无数据, 不用再上拉请求
+      - description: 查询偏移, 默认为0, 尝试上拉分页查询时加100, 当尝试分页请求返回空数组时代表无数据, 不用再上拉请求
         in: query
         name: offset
         type: integer

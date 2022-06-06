@@ -28,6 +28,9 @@ func serverCommand() *cobra.Command {
             // 启动subscribe task
             go task.NewSubscribe().Start()
 
+            // 启动enterprise task
+            go task.NewEnterprise().Start()
+
             // 启动服务器
             router.Run()
         },

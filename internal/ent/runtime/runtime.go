@@ -556,22 +556,26 @@ func init() {
 	statement.DefaultUpdatedAt = statementDescUpdatedAt.Default.(func() time.Time)
 	// statement.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	statement.UpdateDefaultUpdatedAt = statementDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// statementDescArrearage is the schema descriptor for arrearage field.
-	statementDescArrearage := statementFields[1].Descriptor()
-	// statement.DefaultArrearage holds the default value on creation for the arrearage field.
-	statement.DefaultArrearage = statementDescArrearage.Default.(float64)
+	// statementDescCost is the schema descriptor for cost field.
+	statementDescCost := statementFields[1].Descriptor()
+	// statement.DefaultCost holds the default value on creation for the cost field.
+	statement.DefaultCost = statementDescCost.Default.(float64)
 	// statementDescAmount is the schema descriptor for amount field.
 	statementDescAmount := statementFields[2].Descriptor()
 	// statement.DefaultAmount holds the default value on creation for the amount field.
 	statement.DefaultAmount = statementDescAmount.Default.(float64)
+	// statementDescBalance is the schema descriptor for balance field.
+	statementDescBalance := statementFields[3].Descriptor()
+	// statement.DefaultBalance holds the default value on creation for the balance field.
+	statement.DefaultBalance = statementDescBalance.Default.(float64)
 	// statementDescDays is the schema descriptor for days field.
-	statementDescDays := statementFields[4].Descriptor()
+	statementDescDays := statementFields[5].Descriptor()
 	// statement.DefaultDays holds the default value on creation for the days field.
-	statement.DefaultDays = statementDescDays.Default.(uint)
+	statement.DefaultDays = statementDescDays.Default.(int)
 	// statementDescRiderNumber is the schema descriptor for rider_number field.
-	statementDescRiderNumber := statementFields[5].Descriptor()
+	statementDescRiderNumber := statementFields[6].Descriptor()
 	// statement.DefaultRiderNumber holds the default value on creation for the rider_number field.
-	statement.DefaultRiderNumber = statementDescRiderNumber.Default.(uint)
+	statement.DefaultRiderNumber = statementDescRiderNumber.Default.(int)
 	storeMixin := schema.Store{}.Mixin()
 	storeMixinHooks2 := storeMixin[2].Hooks()
 	store.Hooks[0] = storeMixinHooks2[0]

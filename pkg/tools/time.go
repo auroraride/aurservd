@@ -9,7 +9,6 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
     log "github.com/sirupsen/logrus"
-    "math"
     "time"
 )
 
@@ -20,19 +19,30 @@ func NewTime() *timeTool {
     return &timeTool{}
 }
 
-// SubDays 计算天数差 after - before
-// TODO 计算天数规则: 现行进一法
-func (*timeTool) SubDays(after, before time.Time) int {
-    return int(math.Ceil(after.Sub(before).Hours() / 24))
+// DiffDaysOfStart 获取两个日期相差天数(a - b), 计算方式为a / b都转换为当日的0天(不将当日计算在内)
+func (t *timeTool) DiffDaysOfStart(after, before time.Time) int {
+    return int(carbon.Time2Carbon(before).StartOfDay().DiffInDays(carbon.Time2Carbon(after).StartOfDay()))
 }
 
-// SubDaysToNow 距离现在多少天
-func (t *timeTool) SubDaysToNow(before time.Time) int {
-    return t.SubDays(time.Now(), before)
+func (t *timeTool) DiffDaysOfStartToNow(before time.Time) int {
+    return int(carbon.Time2Carbon(before).StartOfDay().DiffInDays(carbon.Now().StartOfDay()))
 }
 
-func (t *timeTool) SubDaysToNowString(before string) int {
-    return t.SubDaysToNow(carbon.Parse(before).Carbon2Time())
+func (t *timeTool) DiffDaysOfStartToNowString(before string) int {
+    return int(carbon.Parse(before).StartOfDay().DiffInDays(carbon.Now().StartOfDay()))
+}
+
+// DiffDaysOfNextDay 获取两个日期相差天数(a - b), 计算方式为a转换为当日的0天, b转换为第二天的0天(将当日计算在内)
+func (t *timeTool) DiffDaysOfNextDay(after, before time.Time) int {
+    return int(carbon.Time2Carbon(before).StartOfDay().DiffInDays(carbon.Time2Carbon(after).StartOfDay().AddDay()))
+}
+
+func (t *timeTool) DiffDaysOfNextDayToNow(before time.Time) int {
+    return int(carbon.Time2Carbon(before).StartOfDay().DiffInDays(carbon.Now().StartOfDay().AddDay()))
+}
+
+func (t *timeTool) DiffDaysOfNextDayToNowString(before string) int {
+    return int(carbon.Parse(before).StartOfDay().DiffInDays(carbon.Now().StartOfDay().AddDay()))
 }
 
 // ParseDateString 格式化日期字符串

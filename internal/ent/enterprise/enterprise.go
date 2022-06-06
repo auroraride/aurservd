@@ -45,6 +45,8 @@ const (
 	FieldDeposit = "deposit"
 	// FieldBalance holds the string denoting the balance field in the database.
 	FieldBalance = "balance"
+	// FieldSuspensedAt holds the string denoting the suspensed_at field in the database.
+	FieldSuspensedAt = "suspensed_at"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeRiders holds the string denoting the riders edge name in mutations.
@@ -122,6 +124,7 @@ var Columns = []string{
 	FieldPayment,
 	FieldDeposit,
 	FieldBalance,
+	FieldSuspensedAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

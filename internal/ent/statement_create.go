@@ -99,16 +99,16 @@ func (sc *StatementCreate) SetEnterpriseID(u uint64) *StatementCreate {
 	return sc
 }
 
-// SetArrearage sets the "arrearage" field.
-func (sc *StatementCreate) SetArrearage(f float64) *StatementCreate {
-	sc.mutation.SetArrearage(f)
+// SetCost sets the "cost" field.
+func (sc *StatementCreate) SetCost(f float64) *StatementCreate {
+	sc.mutation.SetCost(f)
 	return sc
 }
 
-// SetNillableArrearage sets the "arrearage" field if the given value is not nil.
-func (sc *StatementCreate) SetNillableArrearage(f *float64) *StatementCreate {
+// SetNillableCost sets the "cost" field if the given value is not nil.
+func (sc *StatementCreate) SetNillableCost(f *float64) *StatementCreate {
 	if f != nil {
-		sc.SetArrearage(*f)
+		sc.SetCost(*f)
 	}
 	return sc
 }
@@ -123,6 +123,20 @@ func (sc *StatementCreate) SetAmount(f float64) *StatementCreate {
 func (sc *StatementCreate) SetNillableAmount(f *float64) *StatementCreate {
 	if f != nil {
 		sc.SetAmount(*f)
+	}
+	return sc
+}
+
+// SetBalance sets the "balance" field.
+func (sc *StatementCreate) SetBalance(f float64) *StatementCreate {
+	sc.mutation.SetBalance(f)
+	return sc
+}
+
+// SetNillableBalance sets the "balance" field if the given value is not nil.
+func (sc *StatementCreate) SetNillableBalance(f *float64) *StatementCreate {
+	if f != nil {
+		sc.SetBalance(*f)
 	}
 	return sc
 }
@@ -142,29 +156,29 @@ func (sc *StatementCreate) SetNillableSettledAt(t *time.Time) *StatementCreate {
 }
 
 // SetDays sets the "days" field.
-func (sc *StatementCreate) SetDays(u uint) *StatementCreate {
-	sc.mutation.SetDays(u)
+func (sc *StatementCreate) SetDays(i int) *StatementCreate {
+	sc.mutation.SetDays(i)
 	return sc
 }
 
 // SetNillableDays sets the "days" field if the given value is not nil.
-func (sc *StatementCreate) SetNillableDays(u *uint) *StatementCreate {
-	if u != nil {
-		sc.SetDays(*u)
+func (sc *StatementCreate) SetNillableDays(i *int) *StatementCreate {
+	if i != nil {
+		sc.SetDays(*i)
 	}
 	return sc
 }
 
 // SetRiderNumber sets the "rider_number" field.
-func (sc *StatementCreate) SetRiderNumber(u uint) *StatementCreate {
-	sc.mutation.SetRiderNumber(u)
+func (sc *StatementCreate) SetRiderNumber(i int) *StatementCreate {
+	sc.mutation.SetRiderNumber(i)
 	return sc
 }
 
 // SetNillableRiderNumber sets the "rider_number" field if the given value is not nil.
-func (sc *StatementCreate) SetNillableRiderNumber(u *uint) *StatementCreate {
-	if u != nil {
-		sc.SetRiderNumber(*u)
+func (sc *StatementCreate) SetNillableRiderNumber(i *int) *StatementCreate {
+	if i != nil {
+		sc.SetRiderNumber(*i)
 	}
 	return sc
 }
@@ -282,13 +296,17 @@ func (sc *StatementCreate) defaults() error {
 		v := statement.DefaultUpdatedAt()
 		sc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := sc.mutation.Arrearage(); !ok {
-		v := statement.DefaultArrearage
-		sc.mutation.SetArrearage(v)
+	if _, ok := sc.mutation.Cost(); !ok {
+		v := statement.DefaultCost
+		sc.mutation.SetCost(v)
 	}
 	if _, ok := sc.mutation.Amount(); !ok {
 		v := statement.DefaultAmount
 		sc.mutation.SetAmount(v)
+	}
+	if _, ok := sc.mutation.Balance(); !ok {
+		v := statement.DefaultBalance
+		sc.mutation.SetBalance(v)
 	}
 	if _, ok := sc.mutation.Days(); !ok {
 		v := statement.DefaultDays
@@ -312,11 +330,14 @@ func (sc *StatementCreate) check() error {
 	if _, ok := sc.mutation.EnterpriseID(); !ok {
 		return &ValidationError{Name: "enterprise_id", err: errors.New(`ent: missing required field "Statement.enterprise_id"`)}
 	}
-	if _, ok := sc.mutation.Arrearage(); !ok {
-		return &ValidationError{Name: "arrearage", err: errors.New(`ent: missing required field "Statement.arrearage"`)}
+	if _, ok := sc.mutation.Cost(); !ok {
+		return &ValidationError{Name: "cost", err: errors.New(`ent: missing required field "Statement.cost"`)}
 	}
 	if _, ok := sc.mutation.Amount(); !ok {
 		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "Statement.amount"`)}
+	}
+	if _, ok := sc.mutation.Balance(); !ok {
+		return &ValidationError{Name: "balance", err: errors.New(`ent: missing required field "Statement.balance"`)}
 	}
 	if _, ok := sc.mutation.Days(); !ok {
 		return &ValidationError{Name: "days", err: errors.New(`ent: missing required field "Statement.days"`)}
@@ -403,13 +424,13 @@ func (sc *StatementCreate) createSpec() (*Statement, *sqlgraph.CreateSpec) {
 		})
 		_node.Remark = value
 	}
-	if value, ok := sc.mutation.Arrearage(); ok {
+	if value, ok := sc.mutation.Cost(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Value:  value,
-			Column: statement.FieldArrearage,
+			Column: statement.FieldCost,
 		})
-		_node.Arrearage = value
+		_node.Cost = value
 	}
 	if value, ok := sc.mutation.Amount(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -418,6 +439,14 @@ func (sc *StatementCreate) createSpec() (*Statement, *sqlgraph.CreateSpec) {
 			Column: statement.FieldAmount,
 		})
 		_node.Amount = value
+	}
+	if value, ok := sc.mutation.Balance(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: statement.FieldBalance,
+		})
+		_node.Balance = value
 	}
 	if value, ok := sc.mutation.SettledAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -429,7 +458,7 @@ func (sc *StatementCreate) createSpec() (*Statement, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := sc.mutation.Days(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: statement.FieldDays,
 		})
@@ -437,7 +466,7 @@ func (sc *StatementCreate) createSpec() (*Statement, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := sc.mutation.RiderNumber(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: statement.FieldRiderNumber,
 		})
@@ -644,21 +673,21 @@ func (u *StatementUpsert) UpdateEnterpriseID() *StatementUpsert {
 	return u
 }
 
-// SetArrearage sets the "arrearage" field.
-func (u *StatementUpsert) SetArrearage(v float64) *StatementUpsert {
-	u.Set(statement.FieldArrearage, v)
+// SetCost sets the "cost" field.
+func (u *StatementUpsert) SetCost(v float64) *StatementUpsert {
+	u.Set(statement.FieldCost, v)
 	return u
 }
 
-// UpdateArrearage sets the "arrearage" field to the value that was provided on create.
-func (u *StatementUpsert) UpdateArrearage() *StatementUpsert {
-	u.SetExcluded(statement.FieldArrearage)
+// UpdateCost sets the "cost" field to the value that was provided on create.
+func (u *StatementUpsert) UpdateCost() *StatementUpsert {
+	u.SetExcluded(statement.FieldCost)
 	return u
 }
 
-// AddArrearage adds v to the "arrearage" field.
-func (u *StatementUpsert) AddArrearage(v float64) *StatementUpsert {
-	u.Add(statement.FieldArrearage, v)
+// AddCost adds v to the "cost" field.
+func (u *StatementUpsert) AddCost(v float64) *StatementUpsert {
+	u.Add(statement.FieldCost, v)
 	return u
 }
 
@@ -677,6 +706,24 @@ func (u *StatementUpsert) UpdateAmount() *StatementUpsert {
 // AddAmount adds v to the "amount" field.
 func (u *StatementUpsert) AddAmount(v float64) *StatementUpsert {
 	u.Add(statement.FieldAmount, v)
+	return u
+}
+
+// SetBalance sets the "balance" field.
+func (u *StatementUpsert) SetBalance(v float64) *StatementUpsert {
+	u.Set(statement.FieldBalance, v)
+	return u
+}
+
+// UpdateBalance sets the "balance" field to the value that was provided on create.
+func (u *StatementUpsert) UpdateBalance() *StatementUpsert {
+	u.SetExcluded(statement.FieldBalance)
+	return u
+}
+
+// AddBalance adds v to the "balance" field.
+func (u *StatementUpsert) AddBalance(v float64) *StatementUpsert {
+	u.Add(statement.FieldBalance, v)
 	return u
 }
 
@@ -699,7 +746,7 @@ func (u *StatementUpsert) ClearSettledAt() *StatementUpsert {
 }
 
 // SetDays sets the "days" field.
-func (u *StatementUpsert) SetDays(v uint) *StatementUpsert {
+func (u *StatementUpsert) SetDays(v int) *StatementUpsert {
 	u.Set(statement.FieldDays, v)
 	return u
 }
@@ -711,13 +758,13 @@ func (u *StatementUpsert) UpdateDays() *StatementUpsert {
 }
 
 // AddDays adds v to the "days" field.
-func (u *StatementUpsert) AddDays(v uint) *StatementUpsert {
+func (u *StatementUpsert) AddDays(v int) *StatementUpsert {
 	u.Add(statement.FieldDays, v)
 	return u
 }
 
 // SetRiderNumber sets the "rider_number" field.
-func (u *StatementUpsert) SetRiderNumber(v uint) *StatementUpsert {
+func (u *StatementUpsert) SetRiderNumber(v int) *StatementUpsert {
 	u.Set(statement.FieldRiderNumber, v)
 	return u
 }
@@ -729,7 +776,7 @@ func (u *StatementUpsert) UpdateRiderNumber() *StatementUpsert {
 }
 
 // AddRiderNumber adds v to the "rider_number" field.
-func (u *StatementUpsert) AddRiderNumber(v uint) *StatementUpsert {
+func (u *StatementUpsert) AddRiderNumber(v int) *StatementUpsert {
 	u.Add(statement.FieldRiderNumber, v)
 	return u
 }
@@ -910,24 +957,24 @@ func (u *StatementUpsertOne) UpdateEnterpriseID() *StatementUpsertOne {
 	})
 }
 
-// SetArrearage sets the "arrearage" field.
-func (u *StatementUpsertOne) SetArrearage(v float64) *StatementUpsertOne {
+// SetCost sets the "cost" field.
+func (u *StatementUpsertOne) SetCost(v float64) *StatementUpsertOne {
 	return u.Update(func(s *StatementUpsert) {
-		s.SetArrearage(v)
+		s.SetCost(v)
 	})
 }
 
-// AddArrearage adds v to the "arrearage" field.
-func (u *StatementUpsertOne) AddArrearage(v float64) *StatementUpsertOne {
+// AddCost adds v to the "cost" field.
+func (u *StatementUpsertOne) AddCost(v float64) *StatementUpsertOne {
 	return u.Update(func(s *StatementUpsert) {
-		s.AddArrearage(v)
+		s.AddCost(v)
 	})
 }
 
-// UpdateArrearage sets the "arrearage" field to the value that was provided on create.
-func (u *StatementUpsertOne) UpdateArrearage() *StatementUpsertOne {
+// UpdateCost sets the "cost" field to the value that was provided on create.
+func (u *StatementUpsertOne) UpdateCost() *StatementUpsertOne {
 	return u.Update(func(s *StatementUpsert) {
-		s.UpdateArrearage()
+		s.UpdateCost()
 	})
 }
 
@@ -949,6 +996,27 @@ func (u *StatementUpsertOne) AddAmount(v float64) *StatementUpsertOne {
 func (u *StatementUpsertOne) UpdateAmount() *StatementUpsertOne {
 	return u.Update(func(s *StatementUpsert) {
 		s.UpdateAmount()
+	})
+}
+
+// SetBalance sets the "balance" field.
+func (u *StatementUpsertOne) SetBalance(v float64) *StatementUpsertOne {
+	return u.Update(func(s *StatementUpsert) {
+		s.SetBalance(v)
+	})
+}
+
+// AddBalance adds v to the "balance" field.
+func (u *StatementUpsertOne) AddBalance(v float64) *StatementUpsertOne {
+	return u.Update(func(s *StatementUpsert) {
+		s.AddBalance(v)
+	})
+}
+
+// UpdateBalance sets the "balance" field to the value that was provided on create.
+func (u *StatementUpsertOne) UpdateBalance() *StatementUpsertOne {
+	return u.Update(func(s *StatementUpsert) {
+		s.UpdateBalance()
 	})
 }
 
@@ -974,14 +1042,14 @@ func (u *StatementUpsertOne) ClearSettledAt() *StatementUpsertOne {
 }
 
 // SetDays sets the "days" field.
-func (u *StatementUpsertOne) SetDays(v uint) *StatementUpsertOne {
+func (u *StatementUpsertOne) SetDays(v int) *StatementUpsertOne {
 	return u.Update(func(s *StatementUpsert) {
 		s.SetDays(v)
 	})
 }
 
 // AddDays adds v to the "days" field.
-func (u *StatementUpsertOne) AddDays(v uint) *StatementUpsertOne {
+func (u *StatementUpsertOne) AddDays(v int) *StatementUpsertOne {
 	return u.Update(func(s *StatementUpsert) {
 		s.AddDays(v)
 	})
@@ -995,14 +1063,14 @@ func (u *StatementUpsertOne) UpdateDays() *StatementUpsertOne {
 }
 
 // SetRiderNumber sets the "rider_number" field.
-func (u *StatementUpsertOne) SetRiderNumber(v uint) *StatementUpsertOne {
+func (u *StatementUpsertOne) SetRiderNumber(v int) *StatementUpsertOne {
 	return u.Update(func(s *StatementUpsert) {
 		s.SetRiderNumber(v)
 	})
 }
 
 // AddRiderNumber adds v to the "rider_number" field.
-func (u *StatementUpsertOne) AddRiderNumber(v uint) *StatementUpsertOne {
+func (u *StatementUpsertOne) AddRiderNumber(v int) *StatementUpsertOne {
 	return u.Update(func(s *StatementUpsert) {
 		s.AddRiderNumber(v)
 	})
@@ -1355,24 +1423,24 @@ func (u *StatementUpsertBulk) UpdateEnterpriseID() *StatementUpsertBulk {
 	})
 }
 
-// SetArrearage sets the "arrearage" field.
-func (u *StatementUpsertBulk) SetArrearage(v float64) *StatementUpsertBulk {
+// SetCost sets the "cost" field.
+func (u *StatementUpsertBulk) SetCost(v float64) *StatementUpsertBulk {
 	return u.Update(func(s *StatementUpsert) {
-		s.SetArrearage(v)
+		s.SetCost(v)
 	})
 }
 
-// AddArrearage adds v to the "arrearage" field.
-func (u *StatementUpsertBulk) AddArrearage(v float64) *StatementUpsertBulk {
+// AddCost adds v to the "cost" field.
+func (u *StatementUpsertBulk) AddCost(v float64) *StatementUpsertBulk {
 	return u.Update(func(s *StatementUpsert) {
-		s.AddArrearage(v)
+		s.AddCost(v)
 	})
 }
 
-// UpdateArrearage sets the "arrearage" field to the value that was provided on create.
-func (u *StatementUpsertBulk) UpdateArrearage() *StatementUpsertBulk {
+// UpdateCost sets the "cost" field to the value that was provided on create.
+func (u *StatementUpsertBulk) UpdateCost() *StatementUpsertBulk {
 	return u.Update(func(s *StatementUpsert) {
-		s.UpdateArrearage()
+		s.UpdateCost()
 	})
 }
 
@@ -1394,6 +1462,27 @@ func (u *StatementUpsertBulk) AddAmount(v float64) *StatementUpsertBulk {
 func (u *StatementUpsertBulk) UpdateAmount() *StatementUpsertBulk {
 	return u.Update(func(s *StatementUpsert) {
 		s.UpdateAmount()
+	})
+}
+
+// SetBalance sets the "balance" field.
+func (u *StatementUpsertBulk) SetBalance(v float64) *StatementUpsertBulk {
+	return u.Update(func(s *StatementUpsert) {
+		s.SetBalance(v)
+	})
+}
+
+// AddBalance adds v to the "balance" field.
+func (u *StatementUpsertBulk) AddBalance(v float64) *StatementUpsertBulk {
+	return u.Update(func(s *StatementUpsert) {
+		s.AddBalance(v)
+	})
+}
+
+// UpdateBalance sets the "balance" field to the value that was provided on create.
+func (u *StatementUpsertBulk) UpdateBalance() *StatementUpsertBulk {
+	return u.Update(func(s *StatementUpsert) {
+		s.UpdateBalance()
 	})
 }
 
@@ -1419,14 +1508,14 @@ func (u *StatementUpsertBulk) ClearSettledAt() *StatementUpsertBulk {
 }
 
 // SetDays sets the "days" field.
-func (u *StatementUpsertBulk) SetDays(v uint) *StatementUpsertBulk {
+func (u *StatementUpsertBulk) SetDays(v int) *StatementUpsertBulk {
 	return u.Update(func(s *StatementUpsert) {
 		s.SetDays(v)
 	})
 }
 
 // AddDays adds v to the "days" field.
-func (u *StatementUpsertBulk) AddDays(v uint) *StatementUpsertBulk {
+func (u *StatementUpsertBulk) AddDays(v int) *StatementUpsertBulk {
 	return u.Update(func(s *StatementUpsert) {
 		s.AddDays(v)
 	})
@@ -1440,14 +1529,14 @@ func (u *StatementUpsertBulk) UpdateDays() *StatementUpsertBulk {
 }
 
 // SetRiderNumber sets the "rider_number" field.
-func (u *StatementUpsertBulk) SetRiderNumber(v uint) *StatementUpsertBulk {
+func (u *StatementUpsertBulk) SetRiderNumber(v int) *StatementUpsertBulk {
 	return u.Update(func(s *StatementUpsert) {
 		s.SetRiderNumber(v)
 	})
 }
 
 // AddRiderNumber adds v to the "rider_number" field.
-func (u *StatementUpsertBulk) AddRiderNumber(v uint) *StatementUpsertBulk {
+func (u *StatementUpsertBulk) AddRiderNumber(v int) *StatementUpsertBulk {
 	return u.Update(func(s *StatementUpsert) {
 		s.AddRiderNumber(v)
 	})

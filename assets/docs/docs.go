@@ -1249,7 +1249,22 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.RiderOrder"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -1689,7 +1704,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "查询偏移, 默认为0, 尝试上拉分页查询时加20, 当尝试分页请求返回空数组时代表无数据, 不用再上拉请求",
+                        "description": "查询偏移, 默认为0, 尝试上拉分页查询时加100, 当尝试分页请求返回空数组时代表无数据, 不用再上拉请求",
                         "name": "offset",
                         "in": "query"
                     }
@@ -4091,7 +4106,7 @@ const docTemplate = `{
                     }
                 },
                 "status": {
-                    "description": "合作状态 0:未合作 1:已合作 2:已暂停",
+                    "description": "合作状态 0:未合作 1:合作中 2:已暂停",
                     "type": "integer",
                     "maximum": 2,
                     "minimum": 0,
@@ -4174,7 +4189,7 @@ const docTemplate = `{
                     }
                 },
                 "status": {
-                    "description": "合作状态 0:未合作 1:已合作 2:已暂停",
+                    "description": "合作状态 0:未合作 1:合作中 2:已暂停",
                     "type": "integer",
                     "maximum": 2,
                     "minimum": 0,

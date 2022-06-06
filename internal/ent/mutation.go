@@ -11802,6 +11802,7 @@ type EnterpriseMutation struct {
 	adddeposit        *float64
 	balance           *float64
 	addbalance        *float64
+	suspensed_at      *time.Time
 	clearedFields     map[string]struct{}
 	city              *uint64
 	clearedcity       bool
@@ -12631,6 +12632,55 @@ func (m *EnterpriseMutation) ResetBalance() {
 	m.addbalance = nil
 }
 
+// SetSuspensedAt sets the "suspensed_at" field.
+func (m *EnterpriseMutation) SetSuspensedAt(t time.Time) {
+	m.suspensed_at = &t
+}
+
+// SuspensedAt returns the value of the "suspensed_at" field in the mutation.
+func (m *EnterpriseMutation) SuspensedAt() (r time.Time, exists bool) {
+	v := m.suspensed_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSuspensedAt returns the old "suspensed_at" field's value of the Enterprise entity.
+// If the Enterprise object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseMutation) OldSuspensedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSuspensedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSuspensedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSuspensedAt: %w", err)
+	}
+	return oldValue.SuspensedAt, nil
+}
+
+// ClearSuspensedAt clears the value of the "suspensed_at" field.
+func (m *EnterpriseMutation) ClearSuspensedAt() {
+	m.suspensed_at = nil
+	m.clearedFields[enterprise.FieldSuspensedAt] = struct{}{}
+}
+
+// SuspensedAtCleared returns if the "suspensed_at" field was cleared in this mutation.
+func (m *EnterpriseMutation) SuspensedAtCleared() bool {
+	_, ok := m.clearedFields[enterprise.FieldSuspensedAt]
+	return ok
+}
+
+// ResetSuspensedAt resets all changes to the "suspensed_at" field.
+func (m *EnterpriseMutation) ResetSuspensedAt() {
+	m.suspensed_at = nil
+	delete(m.clearedFields, enterprise.FieldSuspensedAt)
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *EnterpriseMutation) ClearCity() {
 	m.clearedcity = true
@@ -12946,7 +12996,7 @@ func (m *EnterpriseMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterpriseMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 17)
 	if m.created_at != nil {
 		fields = append(fields, enterprise.FieldCreatedAt)
 	}
@@ -12995,6 +13045,9 @@ func (m *EnterpriseMutation) Fields() []string {
 	if m.balance != nil {
 		fields = append(fields, enterprise.FieldBalance)
 	}
+	if m.suspensed_at != nil {
+		fields = append(fields, enterprise.FieldSuspensedAt)
+	}
 	return fields
 }
 
@@ -13035,6 +13088,8 @@ func (m *EnterpriseMutation) Field(name string) (ent.Value, bool) {
 		return m.Deposit()
 	case enterprise.FieldBalance:
 		return m.Balance()
+	case enterprise.FieldSuspensedAt:
+		return m.SuspensedAt()
 	}
 	return nil, false
 }
@@ -13076,6 +13131,8 @@ func (m *EnterpriseMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldDeposit(ctx)
 	case enterprise.FieldBalance:
 		return m.OldBalance(ctx)
+	case enterprise.FieldSuspensedAt:
+		return m.OldSuspensedAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Enterprise field %s", name)
 }
@@ -13197,6 +13254,13 @@ func (m *EnterpriseMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetBalance(v)
 		return nil
+	case enterprise.FieldSuspensedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSuspensedAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Enterprise field %s", name)
 }
@@ -13290,6 +13354,9 @@ func (m *EnterpriseMutation) ClearedFields() []string {
 	if m.FieldCleared(enterprise.FieldRemark) {
 		fields = append(fields, enterprise.FieldRemark)
 	}
+	if m.FieldCleared(enterprise.FieldSuspensedAt) {
+		fields = append(fields, enterprise.FieldSuspensedAt)
+	}
 	return fields
 }
 
@@ -13315,6 +13382,9 @@ func (m *EnterpriseMutation) ClearField(name string) error {
 		return nil
 	case enterprise.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case enterprise.FieldSuspensedAt:
+		m.ClearSuspensedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Enterprise nullable field %s", name)
@@ -13371,6 +13441,9 @@ func (m *EnterpriseMutation) ResetField(name string) error {
 		return nil
 	case enterprise.FieldBalance:
 		m.ResetBalance()
+		return nil
+	case enterprise.FieldSuspensedAt:
+		m.ResetSuspensedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Enterprise field %s", name)
@@ -27655,14 +27728,16 @@ type StatementMutation struct {
 	creator           **model.Modifier
 	last_modifier     **model.Modifier
 	remark            *string
-	arrearage         *float64
-	addarrearage      *float64
+	cost              *float64
+	addcost           *float64
 	amount            *float64
 	addamount         *float64
+	balance           *float64
+	addbalance        *float64
 	settled_at        *time.Time
-	days              *uint
+	days              *int
 	adddays           *int
-	rider_number      *uint
+	rider_number      *int
 	addrider_number   *int
 	clearedFields     map[string]struct{}
 	subscribes        map[uint64]struct{}
@@ -28077,60 +28152,60 @@ func (m *StatementMutation) ResetEnterpriseID() {
 	m.enterprise = nil
 }
 
-// SetArrearage sets the "arrearage" field.
-func (m *StatementMutation) SetArrearage(f float64) {
-	m.arrearage = &f
-	m.addarrearage = nil
+// SetCost sets the "cost" field.
+func (m *StatementMutation) SetCost(f float64) {
+	m.cost = &f
+	m.addcost = nil
 }
 
-// Arrearage returns the value of the "arrearage" field in the mutation.
-func (m *StatementMutation) Arrearage() (r float64, exists bool) {
-	v := m.arrearage
+// Cost returns the value of the "cost" field in the mutation.
+func (m *StatementMutation) Cost() (r float64, exists bool) {
+	v := m.cost
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldArrearage returns the old "arrearage" field's value of the Statement entity.
+// OldCost returns the old "cost" field's value of the Statement entity.
 // If the Statement object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StatementMutation) OldArrearage(ctx context.Context) (v float64, err error) {
+func (m *StatementMutation) OldCost(ctx context.Context) (v float64, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldArrearage is only allowed on UpdateOne operations")
+		return v, errors.New("OldCost is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldArrearage requires an ID field in the mutation")
+		return v, errors.New("OldCost requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldArrearage: %w", err)
+		return v, fmt.Errorf("querying old value for OldCost: %w", err)
 	}
-	return oldValue.Arrearage, nil
+	return oldValue.Cost, nil
 }
 
-// AddArrearage adds f to the "arrearage" field.
-func (m *StatementMutation) AddArrearage(f float64) {
-	if m.addarrearage != nil {
-		*m.addarrearage += f
+// AddCost adds f to the "cost" field.
+func (m *StatementMutation) AddCost(f float64) {
+	if m.addcost != nil {
+		*m.addcost += f
 	} else {
-		m.addarrearage = &f
+		m.addcost = &f
 	}
 }
 
-// AddedArrearage returns the value that was added to the "arrearage" field in this mutation.
-func (m *StatementMutation) AddedArrearage() (r float64, exists bool) {
-	v := m.addarrearage
+// AddedCost returns the value that was added to the "cost" field in this mutation.
+func (m *StatementMutation) AddedCost() (r float64, exists bool) {
+	v := m.addcost
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetArrearage resets all changes to the "arrearage" field.
-func (m *StatementMutation) ResetArrearage() {
-	m.arrearage = nil
-	m.addarrearage = nil
+// ResetCost resets all changes to the "cost" field.
+func (m *StatementMutation) ResetCost() {
+	m.cost = nil
+	m.addcost = nil
 }
 
 // SetAmount sets the "amount" field.
@@ -28189,6 +28264,62 @@ func (m *StatementMutation) ResetAmount() {
 	m.addamount = nil
 }
 
+// SetBalance sets the "balance" field.
+func (m *StatementMutation) SetBalance(f float64) {
+	m.balance = &f
+	m.addbalance = nil
+}
+
+// Balance returns the value of the "balance" field in the mutation.
+func (m *StatementMutation) Balance() (r float64, exists bool) {
+	v := m.balance
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBalance returns the old "balance" field's value of the Statement entity.
+// If the Statement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StatementMutation) OldBalance(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBalance is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBalance requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBalance: %w", err)
+	}
+	return oldValue.Balance, nil
+}
+
+// AddBalance adds f to the "balance" field.
+func (m *StatementMutation) AddBalance(f float64) {
+	if m.addbalance != nil {
+		*m.addbalance += f
+	} else {
+		m.addbalance = &f
+	}
+}
+
+// AddedBalance returns the value that was added to the "balance" field in this mutation.
+func (m *StatementMutation) AddedBalance() (r float64, exists bool) {
+	v := m.addbalance
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBalance resets all changes to the "balance" field.
+func (m *StatementMutation) ResetBalance() {
+	m.balance = nil
+	m.addbalance = nil
+}
+
 // SetSettledAt sets the "settled_at" field.
 func (m *StatementMutation) SetSettledAt(t time.Time) {
 	m.settled_at = &t
@@ -28239,13 +28370,13 @@ func (m *StatementMutation) ResetSettledAt() {
 }
 
 // SetDays sets the "days" field.
-func (m *StatementMutation) SetDays(u uint) {
-	m.days = &u
+func (m *StatementMutation) SetDays(i int) {
+	m.days = &i
 	m.adddays = nil
 }
 
 // Days returns the value of the "days" field in the mutation.
-func (m *StatementMutation) Days() (r uint, exists bool) {
+func (m *StatementMutation) Days() (r int, exists bool) {
 	v := m.days
 	if v == nil {
 		return
@@ -28256,7 +28387,7 @@ func (m *StatementMutation) Days() (r uint, exists bool) {
 // OldDays returns the old "days" field's value of the Statement entity.
 // If the Statement object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StatementMutation) OldDays(ctx context.Context) (v uint, err error) {
+func (m *StatementMutation) OldDays(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDays is only allowed on UpdateOne operations")
 	}
@@ -28270,12 +28401,12 @@ func (m *StatementMutation) OldDays(ctx context.Context) (v uint, err error) {
 	return oldValue.Days, nil
 }
 
-// AddDays adds u to the "days" field.
-func (m *StatementMutation) AddDays(u int) {
+// AddDays adds i to the "days" field.
+func (m *StatementMutation) AddDays(i int) {
 	if m.adddays != nil {
-		*m.adddays += u
+		*m.adddays += i
 	} else {
-		m.adddays = &u
+		m.adddays = &i
 	}
 }
 
@@ -28295,13 +28426,13 @@ func (m *StatementMutation) ResetDays() {
 }
 
 // SetRiderNumber sets the "rider_number" field.
-func (m *StatementMutation) SetRiderNumber(u uint) {
-	m.rider_number = &u
+func (m *StatementMutation) SetRiderNumber(i int) {
+	m.rider_number = &i
 	m.addrider_number = nil
 }
 
 // RiderNumber returns the value of the "rider_number" field in the mutation.
-func (m *StatementMutation) RiderNumber() (r uint, exists bool) {
+func (m *StatementMutation) RiderNumber() (r int, exists bool) {
 	v := m.rider_number
 	if v == nil {
 		return
@@ -28312,7 +28443,7 @@ func (m *StatementMutation) RiderNumber() (r uint, exists bool) {
 // OldRiderNumber returns the old "rider_number" field's value of the Statement entity.
 // If the Statement object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StatementMutation) OldRiderNumber(ctx context.Context) (v uint, err error) {
+func (m *StatementMutation) OldRiderNumber(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRiderNumber is only allowed on UpdateOne operations")
 	}
@@ -28326,12 +28457,12 @@ func (m *StatementMutation) OldRiderNumber(ctx context.Context) (v uint, err err
 	return oldValue.RiderNumber, nil
 }
 
-// AddRiderNumber adds u to the "rider_number" field.
-func (m *StatementMutation) AddRiderNumber(u int) {
+// AddRiderNumber adds i to the "rider_number" field.
+func (m *StatementMutation) AddRiderNumber(i int) {
 	if m.addrider_number != nil {
-		*m.addrider_number += u
+		*m.addrider_number += i
 	} else {
-		m.addrider_number = &u
+		m.addrider_number = &i
 	}
 }
 
@@ -28449,7 +28580,7 @@ func (m *StatementMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StatementMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, statement.FieldCreatedAt)
 	}
@@ -28471,11 +28602,14 @@ func (m *StatementMutation) Fields() []string {
 	if m.enterprise != nil {
 		fields = append(fields, statement.FieldEnterpriseID)
 	}
-	if m.arrearage != nil {
-		fields = append(fields, statement.FieldArrearage)
+	if m.cost != nil {
+		fields = append(fields, statement.FieldCost)
 	}
 	if m.amount != nil {
 		fields = append(fields, statement.FieldAmount)
+	}
+	if m.balance != nil {
+		fields = append(fields, statement.FieldBalance)
 	}
 	if m.settled_at != nil {
 		fields = append(fields, statement.FieldSettledAt)
@@ -28508,10 +28642,12 @@ func (m *StatementMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case statement.FieldEnterpriseID:
 		return m.EnterpriseID()
-	case statement.FieldArrearage:
-		return m.Arrearage()
+	case statement.FieldCost:
+		return m.Cost()
 	case statement.FieldAmount:
 		return m.Amount()
+	case statement.FieldBalance:
+		return m.Balance()
 	case statement.FieldSettledAt:
 		return m.SettledAt()
 	case statement.FieldDays:
@@ -28541,10 +28677,12 @@ func (m *StatementMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldRemark(ctx)
 	case statement.FieldEnterpriseID:
 		return m.OldEnterpriseID(ctx)
-	case statement.FieldArrearage:
-		return m.OldArrearage(ctx)
+	case statement.FieldCost:
+		return m.OldCost(ctx)
 	case statement.FieldAmount:
 		return m.OldAmount(ctx)
+	case statement.FieldBalance:
+		return m.OldBalance(ctx)
 	case statement.FieldSettledAt:
 		return m.OldSettledAt(ctx)
 	case statement.FieldDays:
@@ -28609,12 +28747,12 @@ func (m *StatementMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetEnterpriseID(v)
 		return nil
-	case statement.FieldArrearage:
+	case statement.FieldCost:
 		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetArrearage(v)
+		m.SetCost(v)
 		return nil
 	case statement.FieldAmount:
 		v, ok := value.(float64)
@@ -28622,6 +28760,13 @@ func (m *StatementMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAmount(v)
+		return nil
+	case statement.FieldBalance:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBalance(v)
 		return nil
 	case statement.FieldSettledAt:
 		v, ok := value.(time.Time)
@@ -28631,14 +28776,14 @@ func (m *StatementMutation) SetField(name string, value ent.Value) error {
 		m.SetSettledAt(v)
 		return nil
 	case statement.FieldDays:
-		v, ok := value.(uint)
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDays(v)
 		return nil
 	case statement.FieldRiderNumber:
-		v, ok := value.(uint)
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -28652,11 +28797,14 @@ func (m *StatementMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *StatementMutation) AddedFields() []string {
 	var fields []string
-	if m.addarrearage != nil {
-		fields = append(fields, statement.FieldArrearage)
+	if m.addcost != nil {
+		fields = append(fields, statement.FieldCost)
 	}
 	if m.addamount != nil {
 		fields = append(fields, statement.FieldAmount)
+	}
+	if m.addbalance != nil {
+		fields = append(fields, statement.FieldBalance)
 	}
 	if m.adddays != nil {
 		fields = append(fields, statement.FieldDays)
@@ -28672,10 +28820,12 @@ func (m *StatementMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *StatementMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case statement.FieldArrearage:
-		return m.AddedArrearage()
+	case statement.FieldCost:
+		return m.AddedCost()
 	case statement.FieldAmount:
 		return m.AddedAmount()
+	case statement.FieldBalance:
+		return m.AddedBalance()
 	case statement.FieldDays:
 		return m.AddedDays()
 	case statement.FieldRiderNumber:
@@ -28689,12 +28839,12 @@ func (m *StatementMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *StatementMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case statement.FieldArrearage:
+	case statement.FieldCost:
 		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddArrearage(v)
+		m.AddCost(v)
 		return nil
 	case statement.FieldAmount:
 		v, ok := value.(float64)
@@ -28702,6 +28852,13 @@ func (m *StatementMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddAmount(v)
+		return nil
+	case statement.FieldBalance:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBalance(v)
 		return nil
 	case statement.FieldDays:
 		v, ok := value.(int)
@@ -28798,11 +28955,14 @@ func (m *StatementMutation) ResetField(name string) error {
 	case statement.FieldEnterpriseID:
 		m.ResetEnterpriseID()
 		return nil
-	case statement.FieldArrearage:
-		m.ResetArrearage()
+	case statement.FieldCost:
+		m.ResetCost()
 		return nil
 	case statement.FieldAmount:
 		m.ResetAmount()
+		return nil
+	case statement.FieldBalance:
+		m.ResetBalance()
 		return nil
 	case statement.FieldSettledAt:
 		m.ResetSettledAt()

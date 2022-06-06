@@ -95,24 +95,24 @@ func (su *StatementUpdate) SetEnterpriseID(u uint64) *StatementUpdate {
 	return su
 }
 
-// SetArrearage sets the "arrearage" field.
-func (su *StatementUpdate) SetArrearage(f float64) *StatementUpdate {
-	su.mutation.ResetArrearage()
-	su.mutation.SetArrearage(f)
+// SetCost sets the "cost" field.
+func (su *StatementUpdate) SetCost(f float64) *StatementUpdate {
+	su.mutation.ResetCost()
+	su.mutation.SetCost(f)
 	return su
 }
 
-// SetNillableArrearage sets the "arrearage" field if the given value is not nil.
-func (su *StatementUpdate) SetNillableArrearage(f *float64) *StatementUpdate {
+// SetNillableCost sets the "cost" field if the given value is not nil.
+func (su *StatementUpdate) SetNillableCost(f *float64) *StatementUpdate {
 	if f != nil {
-		su.SetArrearage(*f)
+		su.SetCost(*f)
 	}
 	return su
 }
 
-// AddArrearage adds f to the "arrearage" field.
-func (su *StatementUpdate) AddArrearage(f float64) *StatementUpdate {
-	su.mutation.AddArrearage(f)
+// AddCost adds f to the "cost" field.
+func (su *StatementUpdate) AddCost(f float64) *StatementUpdate {
+	su.mutation.AddCost(f)
 	return su
 }
 
@@ -137,6 +137,27 @@ func (su *StatementUpdate) AddAmount(f float64) *StatementUpdate {
 	return su
 }
 
+// SetBalance sets the "balance" field.
+func (su *StatementUpdate) SetBalance(f float64) *StatementUpdate {
+	su.mutation.ResetBalance()
+	su.mutation.SetBalance(f)
+	return su
+}
+
+// SetNillableBalance sets the "balance" field if the given value is not nil.
+func (su *StatementUpdate) SetNillableBalance(f *float64) *StatementUpdate {
+	if f != nil {
+		su.SetBalance(*f)
+	}
+	return su
+}
+
+// AddBalance adds f to the "balance" field.
+func (su *StatementUpdate) AddBalance(f float64) *StatementUpdate {
+	su.mutation.AddBalance(f)
+	return su
+}
+
 // SetSettledAt sets the "settled_at" field.
 func (su *StatementUpdate) SetSettledAt(t time.Time) *StatementUpdate {
 	su.mutation.SetSettledAt(t)
@@ -158,44 +179,44 @@ func (su *StatementUpdate) ClearSettledAt() *StatementUpdate {
 }
 
 // SetDays sets the "days" field.
-func (su *StatementUpdate) SetDays(u uint) *StatementUpdate {
+func (su *StatementUpdate) SetDays(i int) *StatementUpdate {
 	su.mutation.ResetDays()
-	su.mutation.SetDays(u)
+	su.mutation.SetDays(i)
 	return su
 }
 
 // SetNillableDays sets the "days" field if the given value is not nil.
-func (su *StatementUpdate) SetNillableDays(u *uint) *StatementUpdate {
-	if u != nil {
-		su.SetDays(*u)
+func (su *StatementUpdate) SetNillableDays(i *int) *StatementUpdate {
+	if i != nil {
+		su.SetDays(*i)
 	}
 	return su
 }
 
-// AddDays adds u to the "days" field.
-func (su *StatementUpdate) AddDays(u int) *StatementUpdate {
-	su.mutation.AddDays(u)
+// AddDays adds i to the "days" field.
+func (su *StatementUpdate) AddDays(i int) *StatementUpdate {
+	su.mutation.AddDays(i)
 	return su
 }
 
 // SetRiderNumber sets the "rider_number" field.
-func (su *StatementUpdate) SetRiderNumber(u uint) *StatementUpdate {
+func (su *StatementUpdate) SetRiderNumber(i int) *StatementUpdate {
 	su.mutation.ResetRiderNumber()
-	su.mutation.SetRiderNumber(u)
+	su.mutation.SetRiderNumber(i)
 	return su
 }
 
 // SetNillableRiderNumber sets the "rider_number" field if the given value is not nil.
-func (su *StatementUpdate) SetNillableRiderNumber(u *uint) *StatementUpdate {
-	if u != nil {
-		su.SetRiderNumber(*u)
+func (su *StatementUpdate) SetNillableRiderNumber(i *int) *StatementUpdate {
+	if i != nil {
+		su.SetRiderNumber(*i)
 	}
 	return su
 }
 
-// AddRiderNumber adds u to the "rider_number" field.
-func (su *StatementUpdate) AddRiderNumber(u int) *StatementUpdate {
-	su.mutation.AddRiderNumber(u)
+// AddRiderNumber adds i to the "rider_number" field.
+func (su *StatementUpdate) AddRiderNumber(i int) *StatementUpdate {
+	su.mutation.AddRiderNumber(i)
 	return su
 }
 
@@ -404,18 +425,18 @@ func (su *StatementUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: statement.FieldRemark,
 		})
 	}
-	if value, ok := su.mutation.Arrearage(); ok {
+	if value, ok := su.mutation.Cost(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Value:  value,
-			Column: statement.FieldArrearage,
+			Column: statement.FieldCost,
 		})
 	}
-	if value, ok := su.mutation.AddedArrearage(); ok {
+	if value, ok := su.mutation.AddedCost(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Value:  value,
-			Column: statement.FieldArrearage,
+			Column: statement.FieldCost,
 		})
 	}
 	if value, ok := su.mutation.Amount(); ok {
@@ -430,6 +451,20 @@ func (su *StatementUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: statement.FieldAmount,
+		})
+	}
+	if value, ok := su.mutation.Balance(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: statement.FieldBalance,
+		})
+	}
+	if value, ok := su.mutation.AddedBalance(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: statement.FieldBalance,
 		})
 	}
 	if value, ok := su.mutation.SettledAt(); ok {
@@ -447,28 +482,28 @@ func (su *StatementUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := su.mutation.Days(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: statement.FieldDays,
 		})
 	}
 	if value, ok := su.mutation.AddedDays(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: statement.FieldDays,
 		})
 	}
 	if value, ok := su.mutation.RiderNumber(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: statement.FieldRiderNumber,
 		})
 	}
 	if value, ok := su.mutation.AddedRiderNumber(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: statement.FieldRiderNumber,
 		})
@@ -645,24 +680,24 @@ func (suo *StatementUpdateOne) SetEnterpriseID(u uint64) *StatementUpdateOne {
 	return suo
 }
 
-// SetArrearage sets the "arrearage" field.
-func (suo *StatementUpdateOne) SetArrearage(f float64) *StatementUpdateOne {
-	suo.mutation.ResetArrearage()
-	suo.mutation.SetArrearage(f)
+// SetCost sets the "cost" field.
+func (suo *StatementUpdateOne) SetCost(f float64) *StatementUpdateOne {
+	suo.mutation.ResetCost()
+	suo.mutation.SetCost(f)
 	return suo
 }
 
-// SetNillableArrearage sets the "arrearage" field if the given value is not nil.
-func (suo *StatementUpdateOne) SetNillableArrearage(f *float64) *StatementUpdateOne {
+// SetNillableCost sets the "cost" field if the given value is not nil.
+func (suo *StatementUpdateOne) SetNillableCost(f *float64) *StatementUpdateOne {
 	if f != nil {
-		suo.SetArrearage(*f)
+		suo.SetCost(*f)
 	}
 	return suo
 }
 
-// AddArrearage adds f to the "arrearage" field.
-func (suo *StatementUpdateOne) AddArrearage(f float64) *StatementUpdateOne {
-	suo.mutation.AddArrearage(f)
+// AddCost adds f to the "cost" field.
+func (suo *StatementUpdateOne) AddCost(f float64) *StatementUpdateOne {
+	suo.mutation.AddCost(f)
 	return suo
 }
 
@@ -687,6 +722,27 @@ func (suo *StatementUpdateOne) AddAmount(f float64) *StatementUpdateOne {
 	return suo
 }
 
+// SetBalance sets the "balance" field.
+func (suo *StatementUpdateOne) SetBalance(f float64) *StatementUpdateOne {
+	suo.mutation.ResetBalance()
+	suo.mutation.SetBalance(f)
+	return suo
+}
+
+// SetNillableBalance sets the "balance" field if the given value is not nil.
+func (suo *StatementUpdateOne) SetNillableBalance(f *float64) *StatementUpdateOne {
+	if f != nil {
+		suo.SetBalance(*f)
+	}
+	return suo
+}
+
+// AddBalance adds f to the "balance" field.
+func (suo *StatementUpdateOne) AddBalance(f float64) *StatementUpdateOne {
+	suo.mutation.AddBalance(f)
+	return suo
+}
+
 // SetSettledAt sets the "settled_at" field.
 func (suo *StatementUpdateOne) SetSettledAt(t time.Time) *StatementUpdateOne {
 	suo.mutation.SetSettledAt(t)
@@ -708,44 +764,44 @@ func (suo *StatementUpdateOne) ClearSettledAt() *StatementUpdateOne {
 }
 
 // SetDays sets the "days" field.
-func (suo *StatementUpdateOne) SetDays(u uint) *StatementUpdateOne {
+func (suo *StatementUpdateOne) SetDays(i int) *StatementUpdateOne {
 	suo.mutation.ResetDays()
-	suo.mutation.SetDays(u)
+	suo.mutation.SetDays(i)
 	return suo
 }
 
 // SetNillableDays sets the "days" field if the given value is not nil.
-func (suo *StatementUpdateOne) SetNillableDays(u *uint) *StatementUpdateOne {
-	if u != nil {
-		suo.SetDays(*u)
+func (suo *StatementUpdateOne) SetNillableDays(i *int) *StatementUpdateOne {
+	if i != nil {
+		suo.SetDays(*i)
 	}
 	return suo
 }
 
-// AddDays adds u to the "days" field.
-func (suo *StatementUpdateOne) AddDays(u int) *StatementUpdateOne {
-	suo.mutation.AddDays(u)
+// AddDays adds i to the "days" field.
+func (suo *StatementUpdateOne) AddDays(i int) *StatementUpdateOne {
+	suo.mutation.AddDays(i)
 	return suo
 }
 
 // SetRiderNumber sets the "rider_number" field.
-func (suo *StatementUpdateOne) SetRiderNumber(u uint) *StatementUpdateOne {
+func (suo *StatementUpdateOne) SetRiderNumber(i int) *StatementUpdateOne {
 	suo.mutation.ResetRiderNumber()
-	suo.mutation.SetRiderNumber(u)
+	suo.mutation.SetRiderNumber(i)
 	return suo
 }
 
 // SetNillableRiderNumber sets the "rider_number" field if the given value is not nil.
-func (suo *StatementUpdateOne) SetNillableRiderNumber(u *uint) *StatementUpdateOne {
-	if u != nil {
-		suo.SetRiderNumber(*u)
+func (suo *StatementUpdateOne) SetNillableRiderNumber(i *int) *StatementUpdateOne {
+	if i != nil {
+		suo.SetRiderNumber(*i)
 	}
 	return suo
 }
 
-// AddRiderNumber adds u to the "rider_number" field.
-func (suo *StatementUpdateOne) AddRiderNumber(u int) *StatementUpdateOne {
-	suo.mutation.AddRiderNumber(u)
+// AddRiderNumber adds i to the "rider_number" field.
+func (suo *StatementUpdateOne) AddRiderNumber(i int) *StatementUpdateOne {
+	suo.mutation.AddRiderNumber(i)
 	return suo
 }
 
@@ -984,18 +1040,18 @@ func (suo *StatementUpdateOne) sqlSave(ctx context.Context) (_node *Statement, e
 			Column: statement.FieldRemark,
 		})
 	}
-	if value, ok := suo.mutation.Arrearage(); ok {
+	if value, ok := suo.mutation.Cost(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Value:  value,
-			Column: statement.FieldArrearage,
+			Column: statement.FieldCost,
 		})
 	}
-	if value, ok := suo.mutation.AddedArrearage(); ok {
+	if value, ok := suo.mutation.AddedCost(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Value:  value,
-			Column: statement.FieldArrearage,
+			Column: statement.FieldCost,
 		})
 	}
 	if value, ok := suo.mutation.Amount(); ok {
@@ -1010,6 +1066,20 @@ func (suo *StatementUpdateOne) sqlSave(ctx context.Context) (_node *Statement, e
 			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: statement.FieldAmount,
+		})
+	}
+	if value, ok := suo.mutation.Balance(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: statement.FieldBalance,
+		})
+	}
+	if value, ok := suo.mutation.AddedBalance(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: statement.FieldBalance,
 		})
 	}
 	if value, ok := suo.mutation.SettledAt(); ok {
@@ -1027,28 +1097,28 @@ func (suo *StatementUpdateOne) sqlSave(ctx context.Context) (_node *Statement, e
 	}
 	if value, ok := suo.mutation.Days(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: statement.FieldDays,
 		})
 	}
 	if value, ok := suo.mutation.AddedDays(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: statement.FieldDays,
 		})
 	}
 	if value, ok := suo.mutation.RiderNumber(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: statement.FieldRiderNumber,
 		})
 	}
 	if value, ok := suo.mutation.AddedRiderNumber(); ok {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint,
+			Type:   field.TypeInt,
 			Value:  value,
 			Column: statement.FieldRiderNumber,
 		})

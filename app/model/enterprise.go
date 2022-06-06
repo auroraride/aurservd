@@ -7,7 +7,7 @@ package model
 
 const (
     EnterpriseStatusLack         uint8 = iota // 未合作
-    EnterpriseStatusCollaborated              // 已合作
+    EnterpriseStatusCollaborated              // 合作中
     EnterpriseStatusSuspensed                 // 已暂停
 )
 
@@ -43,7 +43,7 @@ type EnterpriseBasic struct {
 // EnterpriseDetail 企业详细字段
 type EnterpriseDetail struct {
     Name         *string              `json:"name" validate:"required" trans:"企业名称"`
-    Status       *uint8               `json:"status" enums:"0,1,2" validate:"required,min=0,max=2" trans:"合作状态"` // 0:未合作 1:已合作 2:已暂停
+    Status       *uint8               `json:"status" enums:"0,1,2" validate:"required,min=0,max=2" trans:"合作状态"` // 0:未合作 1:合作中 2:已暂停
     ContactName  *string              `json:"contactName" validate:"required" trans:"联系人"`
     ContactPhone *string              `json:"contactPhone" validate:"required" trans:"联系电话"`
     IdcardNumber *string              `json:"idcardNumber" validate:"required" trans:"身份证号"`

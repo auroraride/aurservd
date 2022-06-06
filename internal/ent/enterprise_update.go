@@ -197,6 +197,26 @@ func (eu *EnterpriseUpdate) AddBalance(f float64) *EnterpriseUpdate {
 	return eu
 }
 
+// SetSuspensedAt sets the "suspensed_at" field.
+func (eu *EnterpriseUpdate) SetSuspensedAt(t time.Time) *EnterpriseUpdate {
+	eu.mutation.SetSuspensedAt(t)
+	return eu
+}
+
+// SetNillableSuspensedAt sets the "suspensed_at" field if the given value is not nil.
+func (eu *EnterpriseUpdate) SetNillableSuspensedAt(t *time.Time) *EnterpriseUpdate {
+	if t != nil {
+		eu.SetSuspensedAt(*t)
+	}
+	return eu
+}
+
+// ClearSuspensedAt clears the value of the "suspensed_at" field.
+func (eu *EnterpriseUpdate) ClearSuspensedAt() *EnterpriseUpdate {
+	eu.mutation.ClearSuspensedAt()
+	return eu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (eu *EnterpriseUpdate) SetCity(c *City) *EnterpriseUpdate {
 	return eu.SetCityID(c.ID)
@@ -635,6 +655,19 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: enterprise.FieldBalance,
+		})
+	}
+	if value, ok := eu.mutation.SuspensedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: enterprise.FieldSuspensedAt,
+		})
+	}
+	if eu.mutation.SuspensedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: enterprise.FieldSuspensedAt,
 		})
 	}
 	if eu.mutation.CityCleared() {
@@ -1123,6 +1156,26 @@ func (euo *EnterpriseUpdateOne) AddBalance(f float64) *EnterpriseUpdateOne {
 	return euo
 }
 
+// SetSuspensedAt sets the "suspensed_at" field.
+func (euo *EnterpriseUpdateOne) SetSuspensedAt(t time.Time) *EnterpriseUpdateOne {
+	euo.mutation.SetSuspensedAt(t)
+	return euo
+}
+
+// SetNillableSuspensedAt sets the "suspensed_at" field if the given value is not nil.
+func (euo *EnterpriseUpdateOne) SetNillableSuspensedAt(t *time.Time) *EnterpriseUpdateOne {
+	if t != nil {
+		euo.SetSuspensedAt(*t)
+	}
+	return euo
+}
+
+// ClearSuspensedAt clears the value of the "suspensed_at" field.
+func (euo *EnterpriseUpdateOne) ClearSuspensedAt() *EnterpriseUpdateOne {
+	euo.mutation.ClearSuspensedAt()
+	return euo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (euo *EnterpriseUpdateOne) SetCity(c *City) *EnterpriseUpdateOne {
 	return euo.SetCityID(c.ID)
@@ -1591,6 +1644,19 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: enterprise.FieldBalance,
+		})
+	}
+	if value, ok := euo.mutation.SuspensedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: enterprise.FieldSuspensedAt,
+		})
+	}
+	if euo.mutation.SuspensedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: enterprise.FieldSuspensedAt,
 		})
 	}
 	if euo.mutation.CityCleared() {

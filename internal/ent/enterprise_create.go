@@ -173,6 +173,20 @@ func (ec *EnterpriseCreate) SetNillableBalance(f *float64) *EnterpriseCreate {
 	return ec
 }
 
+// SetSuspensedAt sets the "suspensed_at" field.
+func (ec *EnterpriseCreate) SetSuspensedAt(t time.Time) *EnterpriseCreate {
+	ec.mutation.SetSuspensedAt(t)
+	return ec
+}
+
+// SetNillableSuspensedAt sets the "suspensed_at" field if the given value is not nil.
+func (ec *EnterpriseCreate) SetNillableSuspensedAt(t *time.Time) *EnterpriseCreate {
+	if t != nil {
+		ec.SetSuspensedAt(*t)
+	}
+	return ec
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (ec *EnterpriseCreate) SetCity(c *City) *EnterpriseCreate {
 	return ec.SetCityID(c.ID)
@@ -545,6 +559,14 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 			Column: enterprise.FieldBalance,
 		})
 		_node.Balance = value
+	}
+	if value, ok := ec.mutation.SuspensedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: enterprise.FieldSuspensedAt,
+		})
+		_node.SuspensedAt = &value
 	}
 	if nodes := ec.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -955,6 +977,24 @@ func (u *EnterpriseUpsert) AddBalance(v float64) *EnterpriseUpsert {
 	return u
 }
 
+// SetSuspensedAt sets the "suspensed_at" field.
+func (u *EnterpriseUpsert) SetSuspensedAt(v time.Time) *EnterpriseUpsert {
+	u.Set(enterprise.FieldSuspensedAt, v)
+	return u
+}
+
+// UpdateSuspensedAt sets the "suspensed_at" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdateSuspensedAt() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldSuspensedAt)
+	return u
+}
+
+// ClearSuspensedAt clears the value of the "suspensed_at" field.
+func (u *EnterpriseUpsert) ClearSuspensedAt() *EnterpriseUpsert {
+	u.SetNull(enterprise.FieldSuspensedAt)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1282,6 +1322,27 @@ func (u *EnterpriseUpsertOne) AddBalance(v float64) *EnterpriseUpsertOne {
 func (u *EnterpriseUpsertOne) UpdateBalance() *EnterpriseUpsertOne {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.UpdateBalance()
+	})
+}
+
+// SetSuspensedAt sets the "suspensed_at" field.
+func (u *EnterpriseUpsertOne) SetSuspensedAt(v time.Time) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetSuspensedAt(v)
+	})
+}
+
+// UpdateSuspensedAt sets the "suspensed_at" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdateSuspensedAt() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateSuspensedAt()
+	})
+}
+
+// ClearSuspensedAt clears the value of the "suspensed_at" field.
+func (u *EnterpriseUpsertOne) ClearSuspensedAt() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.ClearSuspensedAt()
 	})
 }
 
@@ -1776,6 +1837,27 @@ func (u *EnterpriseUpsertBulk) AddBalance(v float64) *EnterpriseUpsertBulk {
 func (u *EnterpriseUpsertBulk) UpdateBalance() *EnterpriseUpsertBulk {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.UpdateBalance()
+	})
+}
+
+// SetSuspensedAt sets the "suspensed_at" field.
+func (u *EnterpriseUpsertBulk) SetSuspensedAt(v time.Time) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetSuspensedAt(v)
+	})
+}
+
+// UpdateSuspensedAt sets the "suspensed_at" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdateSuspensedAt() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdateSuspensedAt()
+	})
+}
+
+// ClearSuspensedAt clears the value of the "suspensed_at" field.
+func (u *EnterpriseUpsertBulk) ClearSuspensedAt() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.ClearSuspensedAt()
 	})
 }
 

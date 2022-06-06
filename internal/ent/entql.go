@@ -300,6 +300,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterprise.FieldPayment:      {Type: field.TypeUint8, Column: enterprise.FieldPayment},
 			enterprise.FieldDeposit:      {Type: field.TypeFloat64, Column: enterprise.FieldDeposit},
 			enterprise.FieldBalance:      {Type: field.TypeFloat64, Column: enterprise.FieldBalance},
+			enterprise.FieldSuspensedAt:  {Type: field.TypeTime, Column: enterprise.FieldSuspensedAt},
 		},
 	}
 	graph.Nodes[10] = &sqlgraph.Node{
@@ -604,11 +605,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 			statement.FieldLastModifier: {Type: field.TypeJSON, Column: statement.FieldLastModifier},
 			statement.FieldRemark:       {Type: field.TypeString, Column: statement.FieldRemark},
 			statement.FieldEnterpriseID: {Type: field.TypeUint64, Column: statement.FieldEnterpriseID},
-			statement.FieldArrearage:    {Type: field.TypeFloat64, Column: statement.FieldArrearage},
+			statement.FieldCost:         {Type: field.TypeFloat64, Column: statement.FieldCost},
 			statement.FieldAmount:       {Type: field.TypeFloat64, Column: statement.FieldAmount},
+			statement.FieldBalance:      {Type: field.TypeFloat64, Column: statement.FieldBalance},
 			statement.FieldSettledAt:    {Type: field.TypeTime, Column: statement.FieldSettledAt},
-			statement.FieldDays:         {Type: field.TypeUint, Column: statement.FieldDays},
-			statement.FieldRiderNumber:  {Type: field.TypeUint, Column: statement.FieldRiderNumber},
+			statement.FieldDays:         {Type: field.TypeInt, Column: statement.FieldDays},
+			statement.FieldRiderNumber:  {Type: field.TypeInt, Column: statement.FieldRiderNumber},
 		},
 	}
 	graph.Nodes[22] = &sqlgraph.Node{
@@ -2985,6 +2987,11 @@ func (f *EnterpriseFilter) WhereBalance(p entql.Float64P) {
 	f.Where(p.Field(enterprise.FieldBalance))
 }
 
+// WhereSuspensedAt applies the entql time.Time predicate on the suspensed_at field.
+func (f *EnterpriseFilter) WhereSuspensedAt(p entql.TimeP) {
+	f.Where(p.Field(enterprise.FieldSuspensedAt))
+}
+
 // WhereHasCity applies a predicate to check if query has an edge city.
 func (f *EnterpriseFilter) WhereHasCity() {
 	f.Where(entql.HasEdge("city"))
@@ -4681,9 +4688,9 @@ func (f *StatementFilter) WhereEnterpriseID(p entql.Uint64P) {
 	f.Where(p.Field(statement.FieldEnterpriseID))
 }
 
-// WhereArrearage applies the entql float64 predicate on the arrearage field.
-func (f *StatementFilter) WhereArrearage(p entql.Float64P) {
-	f.Where(p.Field(statement.FieldArrearage))
+// WhereCost applies the entql float64 predicate on the cost field.
+func (f *StatementFilter) WhereCost(p entql.Float64P) {
+	f.Where(p.Field(statement.FieldCost))
 }
 
 // WhereAmount applies the entql float64 predicate on the amount field.
@@ -4691,18 +4698,23 @@ func (f *StatementFilter) WhereAmount(p entql.Float64P) {
 	f.Where(p.Field(statement.FieldAmount))
 }
 
+// WhereBalance applies the entql float64 predicate on the balance field.
+func (f *StatementFilter) WhereBalance(p entql.Float64P) {
+	f.Where(p.Field(statement.FieldBalance))
+}
+
 // WhereSettledAt applies the entql time.Time predicate on the settled_at field.
 func (f *StatementFilter) WhereSettledAt(p entql.TimeP) {
 	f.Where(p.Field(statement.FieldSettledAt))
 }
 
-// WhereDays applies the entql uint predicate on the days field.
-func (f *StatementFilter) WhereDays(p entql.UintP) {
+// WhereDays applies the entql int predicate on the days field.
+func (f *StatementFilter) WhereDays(p entql.IntP) {
 	f.Where(p.Field(statement.FieldDays))
 }
 
-// WhereRiderNumber applies the entql uint predicate on the rider_number field.
-func (f *StatementFilter) WhereRiderNumber(p entql.UintP) {
+// WhereRiderNumber applies the entql int predicate on the rider_number field.
+func (f *StatementFilter) WhereRiderNumber(p entql.IntP) {
 	f.Where(p.Field(statement.FieldRiderNumber))
 }
 

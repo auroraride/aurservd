@@ -24,7 +24,7 @@ var Order = new(order)
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Success      200  {object}  model.PaginationRes{items=[]model.RiderOrder} "请求成功"
 func (*order) List(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.OrderListReq](c)
     return ctx.SendResponse(

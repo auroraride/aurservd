@@ -142,7 +142,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
     // 距离上次订阅过去的时间
     var pastDays int
     if otype == model.OrderTypeAgain {
-        pastDays = tools.NewTime().SubDaysToNowString(sub.EndAt)
+        pastDays = tools.NewTime().DiffDaysOfStartToNowString(sub.EndAt)
     }
 
     // 判定用户是否需要缴纳押金
