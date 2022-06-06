@@ -983,6 +983,109 @@
             }
         },
         "/manager/v1/enterprise": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M90003 列举企业",
+                "operationId": "ManagerEnterpriseList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "联系人 姓名/电话/身份证 关键词",
+                        "name": "contactKeyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "合同到期时间早于",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "公司名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "支付方式 1预付费 2后付费",
+                        "name": "payment",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "合同到期时间晚于",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "合作状态",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.EnterpriseListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -1009,7 +1112,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.EnterprisePostReq"
+                            "$ref": "#/definitions/model.EnterpriseDetail"
                         }
                     }
                 ],
@@ -1050,7 +1153,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.EnterpriseModifyReq"
+                            "$ref": "#/definitions/model.EnterpriseDetailWithID"
                         }
                     }
                 ],
@@ -3877,7 +3980,7 @@
                 }
             }
         },
-        "model.Enterprise": {
+        "model.EnterpriseBasic": {
             "type": "object",
             "properties": {
                 "id": {
@@ -3909,7 +4012,7 @@
                 }
             }
         },
-        "model.EnterpriseModifyReq": {
+        "model.EnterpriseDetail": {
             "type": "object",
             "required": [
                 "address",
@@ -3992,7 +4095,7 @@
                 }
             }
         },
-        "model.EnterprisePostReq": {
+        "model.EnterpriseDetailWithID": {
             "type": "object",
             "required": [
                 "address",
@@ -4067,6 +4170,78 @@
                     "type": "integer",
                     "maximum": 2,
                     "minimum": 0,
+                    "enum": [
+                        0,
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
+        "model.EnterpriseListRes": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "企业地址",
+                    "type": "string"
+                },
+                "balance": {
+                    "description": "可用余额",
+                    "type": "number"
+                },
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "contactName": {
+                    "description": "联系人",
+                    "type": "string"
+                },
+                "contactPhone": {
+                    "description": "联系电话",
+                    "type": "string"
+                },
+                "contracts": {
+                    "description": "合同",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EnterpriseContract"
+                    }
+                },
+                "deposit": {
+                    "description": "押金",
+                    "type": "number"
+                },
+                "id": {
+                    "description": "企业ID",
+                    "type": "integer"
+                },
+                "idcardNumber": {
+                    "description": "身份证号",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "企业名称",
+                    "type": "string"
+                },
+                "payment": {
+                    "description": "付费方式 1:预付费 2:后付费",
+                    "type": "integer"
+                },
+                "prices": {
+                    "description": "价格列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EnterprisePriceWithCity"
+                    }
+                },
+                "status": {
+                    "description": "合作状态 0:未合作 1:已合作 2:已暂停",
+                    "type": "integer",
                     "enum": [
                         0,
                         1,
@@ -4089,6 +4264,31 @@
                 },
                 "price": {
                     "description": "单价(元/天) ",
+                    "type": "number"
+                },
+                "voltage": {
+                    "description": "电压型号 暂时固定为 60 或 72",
+                    "type": "number",
+                    "enum": [
+                        60,
+                        72
+                    ]
+                }
+            }
+        },
+        "model.EnterprisePriceWithCity": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "price": {
+                    "description": "单价(元/天)",
                     "type": "number"
                 },
                 "voltage": {
@@ -4604,7 +4804,7 @@
                     "description": "团签企业信息, 若无此字段则为个签用户",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.Enterprise"
+                            "$ref": "#/definitions/model.EnterpriseBasic"
                         }
                     ]
                 },

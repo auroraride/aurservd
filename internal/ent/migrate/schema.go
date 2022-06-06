@@ -490,7 +490,6 @@ var (
 		{Name: "payment", Type: field.TypeUint8, Comment: "付费方式 1预付费 2后付费"},
 		{Name: "deposit", Type: field.TypeFloat64, Comment: "押金", Default: 0},
 		{Name: "balance", Type: field.TypeFloat64, Comment: "账户余额", Default: 0},
-		{Name: "arrearage", Type: field.TypeFloat64, Comment: "欠费金额", Default: 0},
 		{Name: "city_id", Type: field.TypeUint64},
 	}
 	// EnterpriseTable holds the schema information for the "enterprise" table.
@@ -501,7 +500,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "enterprise_city_city",
-				Columns:    []*schema.Column{EnterpriseColumns[17]},
+				Columns:    []*schema.Column{EnterpriseColumns[16]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -518,9 +517,49 @@ var (
 				Columns: []*schema.Column{EnterpriseColumns[3]},
 			},
 			{
+				Name:    "enterprise_payment",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseColumns[13]},
+			},
+			{
+				Name:    "enterprise_balance",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseColumns[15]},
+			},
+			{
 				Name:    "enterprise_name",
 				Unique:  false,
 				Columns: []*schema.Column{EnterpriseColumns[7]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+			{
+				Name:    "enterprise_contact_name",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseColumns[9]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+			{
+				Name:    "enterprise_contact_phone",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseColumns[10]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+			{
+				Name:    "enterprise_idcard_number",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseColumns[11]},
 				Annotation: &entsql.IndexAnnotation{
 					Types: map[string]string{
 						"postgres": "GIN",
@@ -566,6 +605,54 @@ var (
 				Name:    "enterprisecontract_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{EnterpriseContractColumns[3]},
+			},
+			{
+				Name:    "enterprisecontract_start",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseContractColumns[7]},
+			},
+			{
+				Name:    "enterprisecontract_end",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseContractColumns[8]},
+			},
+		},
+	}
+	// EnterprisePrepaymentColumns holds the columns for the "enterprise_prepayment" table.
+	EnterprisePrepaymentColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "amount", Type: field.TypeFloat64, Comment: "预付金额"},
+		{Name: "enterprise_id", Type: field.TypeUint64},
+	}
+	// EnterprisePrepaymentTable holds the schema information for the "enterprise_prepayment" table.
+	EnterprisePrepaymentTable = &schema.Table{
+		Name:       "enterprise_prepayment",
+		Columns:    EnterprisePrepaymentColumns,
+		PrimaryKey: []*schema.Column{EnterprisePrepaymentColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "enterprise_prepayment_enterprise_enterprise",
+				Columns:    []*schema.Column{EnterprisePrepaymentColumns[8]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "enterpriseprepayment_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EnterprisePrepaymentColumns[1]},
+			},
+			{
+				Name:    "enterpriseprepayment_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{EnterprisePrepaymentColumns[3]},
 			},
 		},
 	}
@@ -1075,6 +1162,48 @@ var (
 			},
 		},
 	}
+	// StatementColumns holds the columns for the "statement" table.
+	StatementColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "arrearage", Type: field.TypeFloat64, Comment: "欠费金额", Default: 0},
+		{Name: "amount", Type: field.TypeFloat64, Comment: "账单金额", Default: 0},
+		{Name: "settled_at", Type: field.TypeTime, Comment: "清账时间", Nullable: true},
+		{Name: "days", Type: field.TypeUint, Comment: "账期内使用总天数", Default: 0},
+		{Name: "rider_number", Type: field.TypeUint, Comment: "账期内使用总人数", Default: 0},
+		{Name: "enterprise_id", Type: field.TypeUint64},
+	}
+	// StatementTable holds the schema information for the "statement" table.
+	StatementTable = &schema.Table{
+		Name:       "statement",
+		Columns:    StatementColumns,
+		PrimaryKey: []*schema.Column{StatementColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "statement_enterprise_statements",
+				Columns:    []*schema.Column{StatementColumns[12]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "statement_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{StatementColumns[1]},
+			},
+			{
+				Name:    "statement_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{StatementColumns[3]},
+			},
+		},
+	}
 	// StoreColumns holds the columns for the "store" table.
 	StoreColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -1147,7 +1276,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "status", Type: field.TypeUint8, Comment: "当前订阅状态", Default: 0},
-		{Name: "type", Type: field.TypeUint, Comment: "订阅类型 1新签 2续签 3重签 4更改电池"},
+		{Name: "type", Type: field.TypeUint, Comment: "订阅类型 0团签 1新签 2续签 3重签 4更改电池, 除0值外 其他值参考order.type", Default: 0},
 		{Name: "voltage", Type: field.TypeFloat64, Comment: "可用电压型号"},
 		{Name: "initial_days", Type: field.TypeInt, Comment: "初始骑士卡天数"},
 		{Name: "alter_days", Type: field.TypeInt, Comment: "改动天数", Default: 0},
@@ -1157,10 +1286,11 @@ var (
 		{Name: "remaining", Type: field.TypeInt, Comment: "剩余天数, 负数为逾期", Default: 0},
 		{Name: "paused_at", Type: field.TypeTime, Comment: "当前是否暂停计费, 暂停计费时间", Nullable: true},
 		{Name: "start_at", Type: field.TypeTime, Comment: "激活时间", Nullable: true},
-		{Name: "end_at", Type: field.TypeTime, Comment: "归还时间", Nullable: true},
+		{Name: "end_at", Type: field.TypeTime, Comment: "归还/团签结束时间", Nullable: true},
 		{Name: "refund_at", Type: field.TypeTime, Comment: "退款时间", Nullable: true},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64},
+		{Name: "statement_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "plan_id", Type: field.TypeUint64},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64},
@@ -1185,26 +1315,32 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "subscribe_plan_plan",
+				Symbol:     "subscribe_statement_subscribes",
 				Columns:    []*schema.Column{SubscribeColumns[22]},
+				RefColumns: []*schema.Column{StatementColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscribe_plan_plan",
+				Columns:    []*schema.Column{SubscribeColumns[23]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscribe_employee_employee",
-				Columns:    []*schema.Column{SubscribeColumns[23]},
+				Columns:    []*schema.Column{SubscribeColumns[24]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "subscribe_city_city",
-				Columns:    []*schema.Column{SubscribeColumns[24]},
+				Columns:    []*schema.Column{SubscribeColumns[25]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscribe_order_initial_order",
-				Columns:    []*schema.Column{SubscribeColumns[25]},
+				Columns:    []*schema.Column{SubscribeColumns[26]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1426,6 +1562,7 @@ var (
 		EmployeeTable,
 		EnterpriseTable,
 		EnterpriseContractTable,
+		EnterprisePrepaymentTable,
 		EnterprisePriceTable,
 		ExchangeTable,
 		ManagerTable,
@@ -1435,6 +1572,7 @@ var (
 		PlanTable,
 		RiderTable,
 		SettingTable,
+		StatementTable,
 		StoreTable,
 		SubscribeTable,
 		SubscribeAlterTable,
@@ -1491,6 +1629,10 @@ func init() {
 	EnterpriseContractTable.Annotation = &entsql.Annotation{
 		Table: "enterprise_contract",
 	}
+	EnterprisePrepaymentTable.ForeignKeys[0].RefTable = EnterpriseTable
+	EnterprisePrepaymentTable.Annotation = &entsql.Annotation{
+		Table: "enterprise_prepayment",
+	}
 	EnterprisePriceTable.ForeignKeys[0].RefTable = EnterpriseTable
 	EnterprisePriceTable.ForeignKeys[1].RefTable = CityTable
 	EnterprisePriceTable.Annotation = &entsql.Annotation{
@@ -1533,6 +1675,10 @@ func init() {
 	SettingTable.Annotation = &entsql.Annotation{
 		Table: "setting",
 	}
+	StatementTable.ForeignKeys[0].RefTable = EnterpriseTable
+	StatementTable.Annotation = &entsql.Annotation{
+		Table: "statement",
+	}
 	StoreTable.ForeignKeys[0].RefTable = BranchTable
 	StoreTable.ForeignKeys[1].RefTable = EmployeeTable
 	StoreTable.Annotation = &entsql.Annotation{
@@ -1540,10 +1686,11 @@ func init() {
 	}
 	SubscribeTable.ForeignKeys[0].RefTable = EnterpriseTable
 	SubscribeTable.ForeignKeys[1].RefTable = RiderTable
-	SubscribeTable.ForeignKeys[2].RefTable = PlanTable
-	SubscribeTable.ForeignKeys[3].RefTable = EmployeeTable
-	SubscribeTable.ForeignKeys[4].RefTable = CityTable
-	SubscribeTable.ForeignKeys[5].RefTable = OrderTable
+	SubscribeTable.ForeignKeys[2].RefTable = StatementTable
+	SubscribeTable.ForeignKeys[3].RefTable = PlanTable
+	SubscribeTable.ForeignKeys[4].RefTable = EmployeeTable
+	SubscribeTable.ForeignKeys[5].RefTable = CityTable
+	SubscribeTable.ForeignKeys[6].RefTable = OrderTable
 	SubscribeTable.Annotation = &entsql.Annotation{
 		Table: "subscribe",
 	}

@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/statement"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -172,20 +173,6 @@ func (ec *EnterpriseCreate) SetNillableBalance(f *float64) *EnterpriseCreate {
 	return ec
 }
 
-// SetArrearage sets the "arrearage" field.
-func (ec *EnterpriseCreate) SetArrearage(f float64) *EnterpriseCreate {
-	ec.mutation.SetArrearage(f)
-	return ec
-}
-
-// SetNillableArrearage sets the "arrearage" field if the given value is not nil.
-func (ec *EnterpriseCreate) SetNillableArrearage(f *float64) *EnterpriseCreate {
-	if f != nil {
-		ec.SetArrearage(*f)
-	}
-	return ec
-}
-
 // SetCity sets the "city" edge to the City entity.
 func (ec *EnterpriseCreate) SetCity(c *City) *EnterpriseCreate {
 	return ec.SetCityID(c.ID)
@@ -249,6 +236,21 @@ func (ec *EnterpriseCreate) AddSubscribes(s ...*Subscribe) *EnterpriseCreate {
 		ids[i] = s[i].ID
 	}
 	return ec.AddSubscribeIDs(ids...)
+}
+
+// AddStatementIDs adds the "statements" edge to the Statement entity by IDs.
+func (ec *EnterpriseCreate) AddStatementIDs(ids ...uint64) *EnterpriseCreate {
+	ec.mutation.AddStatementIDs(ids...)
+	return ec
+}
+
+// AddStatements adds the "statements" edges to the Statement entity.
+func (ec *EnterpriseCreate) AddStatements(s ...*Statement) *EnterpriseCreate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return ec.AddStatementIDs(ids...)
 }
 
 // Mutation returns the EnterpriseMutation object of the builder.
@@ -352,10 +354,6 @@ func (ec *EnterpriseCreate) defaults() error {
 		v := enterprise.DefaultBalance
 		ec.mutation.SetBalance(v)
 	}
-	if _, ok := ec.mutation.Arrearage(); !ok {
-		v := enterprise.DefaultArrearage
-		ec.mutation.SetArrearage(v)
-	}
 	return nil
 }
 
@@ -396,9 +394,6 @@ func (ec *EnterpriseCreate) check() error {
 	}
 	if _, ok := ec.mutation.Balance(); !ok {
 		return &ValidationError{Name: "balance", err: errors.New(`ent: missing required field "Enterprise.balance"`)}
-	}
-	if _, ok := ec.mutation.Arrearage(); !ok {
-		return &ValidationError{Name: "arrearage", err: errors.New(`ent: missing required field "Enterprise.arrearage"`)}
 	}
 	if _, ok := ec.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Enterprise.city"`)}
@@ -551,14 +546,6 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 		})
 		_node.Balance = value
 	}
-	if value, ok := ec.mutation.Arrearage(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprise.FieldArrearage,
-		})
-		_node.Arrearage = value
-	}
 	if nodes := ec.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -647,6 +634,25 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.StatementsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.StatementsTable,
+			Columns: []string{enterprise.StatementsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: statement.FieldID,
 				},
 			},
 		}
@@ -946,24 +952,6 @@ func (u *EnterpriseUpsert) UpdateBalance() *EnterpriseUpsert {
 // AddBalance adds v to the "balance" field.
 func (u *EnterpriseUpsert) AddBalance(v float64) *EnterpriseUpsert {
 	u.Add(enterprise.FieldBalance, v)
-	return u
-}
-
-// SetArrearage sets the "arrearage" field.
-func (u *EnterpriseUpsert) SetArrearage(v float64) *EnterpriseUpsert {
-	u.Set(enterprise.FieldArrearage, v)
-	return u
-}
-
-// UpdateArrearage sets the "arrearage" field to the value that was provided on create.
-func (u *EnterpriseUpsert) UpdateArrearage() *EnterpriseUpsert {
-	u.SetExcluded(enterprise.FieldArrearage)
-	return u
-}
-
-// AddArrearage adds v to the "arrearage" field.
-func (u *EnterpriseUpsert) AddArrearage(v float64) *EnterpriseUpsert {
-	u.Add(enterprise.FieldArrearage, v)
 	return u
 }
 
@@ -1294,27 +1282,6 @@ func (u *EnterpriseUpsertOne) AddBalance(v float64) *EnterpriseUpsertOne {
 func (u *EnterpriseUpsertOne) UpdateBalance() *EnterpriseUpsertOne {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.UpdateBalance()
-	})
-}
-
-// SetArrearage sets the "arrearage" field.
-func (u *EnterpriseUpsertOne) SetArrearage(v float64) *EnterpriseUpsertOne {
-	return u.Update(func(s *EnterpriseUpsert) {
-		s.SetArrearage(v)
-	})
-}
-
-// AddArrearage adds v to the "arrearage" field.
-func (u *EnterpriseUpsertOne) AddArrearage(v float64) *EnterpriseUpsertOne {
-	return u.Update(func(s *EnterpriseUpsert) {
-		s.AddArrearage(v)
-	})
-}
-
-// UpdateArrearage sets the "arrearage" field to the value that was provided on create.
-func (u *EnterpriseUpsertOne) UpdateArrearage() *EnterpriseUpsertOne {
-	return u.Update(func(s *EnterpriseUpsert) {
-		s.UpdateArrearage()
 	})
 }
 
@@ -1809,27 +1776,6 @@ func (u *EnterpriseUpsertBulk) AddBalance(v float64) *EnterpriseUpsertBulk {
 func (u *EnterpriseUpsertBulk) UpdateBalance() *EnterpriseUpsertBulk {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.UpdateBalance()
-	})
-}
-
-// SetArrearage sets the "arrearage" field.
-func (u *EnterpriseUpsertBulk) SetArrearage(v float64) *EnterpriseUpsertBulk {
-	return u.Update(func(s *EnterpriseUpsert) {
-		s.SetArrearage(v)
-	})
-}
-
-// AddArrearage adds v to the "arrearage" field.
-func (u *EnterpriseUpsertBulk) AddArrearage(v float64) *EnterpriseUpsertBulk {
-	return u.Update(func(s *EnterpriseUpsert) {
-		s.AddArrearage(v)
-	})
-}
-
-// UpdateArrearage sets the "arrearage" field to the value that was provided on create.
-func (u *EnterpriseUpsertBulk) UpdateArrearage() *EnterpriseUpsertBulk {
-	return u.Update(func(s *EnterpriseUpsert) {
-		s.UpdateArrearage()
 	})
 }
 

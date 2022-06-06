@@ -143,8 +143,8 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
     return res
 }
 
-// QueryAllEffective 获取所有生效的订阅
-func (s *subscribeService) QueryAllEffective() []*ent.Subscribe {
+// QueryAllRidersEffective 获取所有骑手生效中的订阅
+func (s *subscribeService) QueryAllRidersEffective() []*ent.Subscribe {
     items, _ := ar.Ent.Subscribe.Query().
         Where(
             // 未退款
@@ -153,6 +153,8 @@ func (s *subscribeService) QueryAllEffective() []*ent.Subscribe {
             subscribe.EndAtIsNil(),
             // 已开始
             subscribe.StartAtNotNil(),
+            // 非企业
+            subscribe.EnterpriseIDIsNil(),
         ).
         WithPauses(func(spq *ent.SubscribePauseQuery) {
             spq.Where(subscribepause.EndAtIsNil())

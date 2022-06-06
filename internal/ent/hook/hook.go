@@ -152,6 +152,19 @@ func (f EnterpriseContractFunc) Mutate(ctx context.Context, m ent.Mutation) (ent
 	return f(ctx, mv)
 }
 
+// The EnterprisePrepaymentFunc type is an adapter to allow the use of ordinary
+// function as EnterprisePrepayment mutator.
+type EnterprisePrepaymentFunc func(context.Context, *ent.EnterprisePrepaymentMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EnterprisePrepaymentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.EnterprisePrepaymentMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EnterprisePrepaymentMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The EnterprisePriceFunc type is an adapter to allow the use of ordinary
 // function as EnterprisePrice mutator.
 type EnterprisePriceFunc func(context.Context, *ent.EnterprisePriceMutation) (ent.Value, error)
@@ -265,6 +278,19 @@ func (f SettingFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	mv, ok := m.(*ent.SettingMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SettingMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The StatementFunc type is an adapter to allow the use of ordinary
+// function as Statement mutator.
+type StatementFunc func(context.Context, *ent.StatementMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f StatementFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.StatementMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.StatementMutation", m)
 	}
 	return f(ctx, mv)
 }

@@ -76,4 +76,5 @@ func loadManagerRoutes() {
     // 企业
     g.POST("/enterprise", mapi.Enterprise.Create)
     g.PUT("/enterprise/:id", mapi.Enterprise.Modify)
+    g.GET("/enterprise", mapi.Enterprise.List)
 }

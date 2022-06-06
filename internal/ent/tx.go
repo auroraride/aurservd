@@ -36,6 +36,8 @@ type Tx struct {
 	Enterprise *EnterpriseClient
 	// EnterpriseContract is the client for interacting with the EnterpriseContract builders.
 	EnterpriseContract *EnterpriseContractClient
+	// EnterprisePrepayment is the client for interacting with the EnterprisePrepayment builders.
+	EnterprisePrepayment *EnterprisePrepaymentClient
 	// EnterprisePrice is the client for interacting with the EnterprisePrice builders.
 	EnterprisePrice *EnterprisePriceClient
 	// Exchange is the client for interacting with the Exchange builders.
@@ -54,6 +56,8 @@ type Tx struct {
 	Rider *RiderClient
 	// Setting is the client for interacting with the Setting builders.
 	Setting *SettingClient
+	// Statement is the client for interacting with the Statement builders.
+	Statement *StatementClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
 	// Subscribe is the client for interacting with the Subscribe builders.
@@ -208,6 +212,7 @@ func (tx *Tx) init() {
 	tx.Employee = NewEmployeeClient(tx.config)
 	tx.Enterprise = NewEnterpriseClient(tx.config)
 	tx.EnterpriseContract = NewEnterpriseContractClient(tx.config)
+	tx.EnterprisePrepayment = NewEnterprisePrepaymentClient(tx.config)
 	tx.EnterprisePrice = NewEnterprisePriceClient(tx.config)
 	tx.Exchange = NewExchangeClient(tx.config)
 	tx.Manager = NewManagerClient(tx.config)
@@ -217,6 +222,7 @@ func (tx *Tx) init() {
 	tx.Plan = NewPlanClient(tx.config)
 	tx.Rider = NewRiderClient(tx.config)
 	tx.Setting = NewSettingClient(tx.config)
+	tx.Statement = NewStatementClient(tx.config)
 	tx.Store = NewStoreClient(tx.config)
 	tx.Subscribe = NewSubscribeClient(tx.config)
 	tx.SubscribeAlter = NewSubscribeAlterClient(tx.config)

@@ -112,6 +112,16 @@ func (ec *EnterpriseContract) GetID() uint64 {
 	return ec.ID
 }
 
+// GetTableName returns table name for EnterprisePrepayment.
+func (ep *EnterprisePrepayment) GetTableName() string {
+	return "enterprise_prepayment"
+}
+
+// GetID returns id for EnterprisePrepayment.
+func (ep *EnterprisePrepayment) GetID() uint64 {
+	return ep.ID
+}
+
 // GetTableName returns table name for EnterprisePrice.
 func (ep *EnterprisePrice) GetTableName() string {
 	return "enterprise_price"
@@ -199,6 +209,16 @@ func (s *Setting) GetTableName() string {
 
 // GetID returns id for Setting.
 func (s *Setting) GetID() uint64 {
+	return s.ID
+}
+
+// GetTableName returns table name for Statement.
+func (s *Statement) GetTableName() string {
+	return "statement"
+}
+
+// GetID returns id for Statement.
+func (s *Statement) GetID() uint64 {
 	return s.ID
 }
 

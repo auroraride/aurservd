@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -29,6 +30,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/setting"
+	"github.com/auroraride/aurservd/internal/ent/statement"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
@@ -66,6 +68,8 @@ type Client struct {
 	Enterprise *EnterpriseClient
 	// EnterpriseContract is the client for interacting with the EnterpriseContract builders.
 	EnterpriseContract *EnterpriseContractClient
+	// EnterprisePrepayment is the client for interacting with the EnterprisePrepayment builders.
+	EnterprisePrepayment *EnterprisePrepaymentClient
 	// EnterprisePrice is the client for interacting with the EnterprisePrice builders.
 	EnterprisePrice *EnterprisePriceClient
 	// Exchange is the client for interacting with the Exchange builders.
@@ -84,6 +88,8 @@ type Client struct {
 	Rider *RiderClient
 	// Setting is the client for interacting with the Setting builders.
 	Setting *SettingClient
+	// Statement is the client for interacting with the Statement builders.
+	Statement *StatementClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
 	// Subscribe is the client for interacting with the Subscribe builders.
@@ -116,6 +122,7 @@ func (c *Client) init() {
 	c.Employee = NewEmployeeClient(c.config)
 	c.Enterprise = NewEnterpriseClient(c.config)
 	c.EnterpriseContract = NewEnterpriseContractClient(c.config)
+	c.EnterprisePrepayment = NewEnterprisePrepaymentClient(c.config)
 	c.EnterprisePrice = NewEnterprisePriceClient(c.config)
 	c.Exchange = NewExchangeClient(c.config)
 	c.Manager = NewManagerClient(c.config)
@@ -125,6 +132,7 @@ func (c *Client) init() {
 	c.Plan = NewPlanClient(c.config)
 	c.Rider = NewRiderClient(c.config)
 	c.Setting = NewSettingClient(c.config)
+	c.Statement = NewStatementClient(c.config)
 	c.Store = NewStoreClient(c.config)
 	c.Subscribe = NewSubscribeClient(c.config)
 	c.SubscribeAlter = NewSubscribeAlterClient(c.config)
@@ -160,32 +168,34 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                ctx,
-		config:             cfg,
-		BatteryModel:       NewBatteryModelClient(cfg),
-		Branch:             NewBranchClient(cfg),
-		BranchContract:     NewBranchContractClient(cfg),
-		Cabinet:            NewCabinetClient(cfg),
-		CabinetFault:       NewCabinetFaultClient(cfg),
-		City:               NewCityClient(cfg),
-		Commission:         NewCommissionClient(cfg),
-		Contract:           NewContractClient(cfg),
-		Employee:           NewEmployeeClient(cfg),
-		Enterprise:         NewEnterpriseClient(cfg),
-		EnterpriseContract: NewEnterpriseContractClient(cfg),
-		EnterprisePrice:    NewEnterprisePriceClient(cfg),
-		Exchange:           NewExchangeClient(cfg),
-		Manager:            NewManagerClient(cfg),
-		Order:              NewOrderClient(cfg),
-		OrderRefund:        NewOrderRefundClient(cfg),
-		Person:             NewPersonClient(cfg),
-		Plan:               NewPlanClient(cfg),
-		Rider:              NewRiderClient(cfg),
-		Setting:            NewSettingClient(cfg),
-		Store:              NewStoreClient(cfg),
-		Subscribe:          NewSubscribeClient(cfg),
-		SubscribeAlter:     NewSubscribeAlterClient(cfg),
-		SubscribePause:     NewSubscribePauseClient(cfg),
+		ctx:                  ctx,
+		config:               cfg,
+		BatteryModel:         NewBatteryModelClient(cfg),
+		Branch:               NewBranchClient(cfg),
+		BranchContract:       NewBranchContractClient(cfg),
+		Cabinet:              NewCabinetClient(cfg),
+		CabinetFault:         NewCabinetFaultClient(cfg),
+		City:                 NewCityClient(cfg),
+		Commission:           NewCommissionClient(cfg),
+		Contract:             NewContractClient(cfg),
+		Employee:             NewEmployeeClient(cfg),
+		Enterprise:           NewEnterpriseClient(cfg),
+		EnterpriseContract:   NewEnterpriseContractClient(cfg),
+		EnterprisePrepayment: NewEnterprisePrepaymentClient(cfg),
+		EnterprisePrice:      NewEnterprisePriceClient(cfg),
+		Exchange:             NewExchangeClient(cfg),
+		Manager:              NewManagerClient(cfg),
+		Order:                NewOrderClient(cfg),
+		OrderRefund:          NewOrderRefundClient(cfg),
+		Person:               NewPersonClient(cfg),
+		Plan:                 NewPlanClient(cfg),
+		Rider:                NewRiderClient(cfg),
+		Setting:              NewSettingClient(cfg),
+		Statement:            NewStatementClient(cfg),
+		Store:                NewStoreClient(cfg),
+		Subscribe:            NewSubscribeClient(cfg),
+		SubscribeAlter:       NewSubscribeAlterClient(cfg),
+		SubscribePause:       NewSubscribePauseClient(cfg),
 	}, nil
 }
 
@@ -203,32 +213,34 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                ctx,
-		config:             cfg,
-		BatteryModel:       NewBatteryModelClient(cfg),
-		Branch:             NewBranchClient(cfg),
-		BranchContract:     NewBranchContractClient(cfg),
-		Cabinet:            NewCabinetClient(cfg),
-		CabinetFault:       NewCabinetFaultClient(cfg),
-		City:               NewCityClient(cfg),
-		Commission:         NewCommissionClient(cfg),
-		Contract:           NewContractClient(cfg),
-		Employee:           NewEmployeeClient(cfg),
-		Enterprise:         NewEnterpriseClient(cfg),
-		EnterpriseContract: NewEnterpriseContractClient(cfg),
-		EnterprisePrice:    NewEnterprisePriceClient(cfg),
-		Exchange:           NewExchangeClient(cfg),
-		Manager:            NewManagerClient(cfg),
-		Order:              NewOrderClient(cfg),
-		OrderRefund:        NewOrderRefundClient(cfg),
-		Person:             NewPersonClient(cfg),
-		Plan:               NewPlanClient(cfg),
-		Rider:              NewRiderClient(cfg),
-		Setting:            NewSettingClient(cfg),
-		Store:              NewStoreClient(cfg),
-		Subscribe:          NewSubscribeClient(cfg),
-		SubscribeAlter:     NewSubscribeAlterClient(cfg),
-		SubscribePause:     NewSubscribePauseClient(cfg),
+		ctx:                  ctx,
+		config:               cfg,
+		BatteryModel:         NewBatteryModelClient(cfg),
+		Branch:               NewBranchClient(cfg),
+		BranchContract:       NewBranchContractClient(cfg),
+		Cabinet:              NewCabinetClient(cfg),
+		CabinetFault:         NewCabinetFaultClient(cfg),
+		City:                 NewCityClient(cfg),
+		Commission:           NewCommissionClient(cfg),
+		Contract:             NewContractClient(cfg),
+		Employee:             NewEmployeeClient(cfg),
+		Enterprise:           NewEnterpriseClient(cfg),
+		EnterpriseContract:   NewEnterpriseContractClient(cfg),
+		EnterprisePrepayment: NewEnterprisePrepaymentClient(cfg),
+		EnterprisePrice:      NewEnterprisePriceClient(cfg),
+		Exchange:             NewExchangeClient(cfg),
+		Manager:              NewManagerClient(cfg),
+		Order:                NewOrderClient(cfg),
+		OrderRefund:          NewOrderRefundClient(cfg),
+		Person:               NewPersonClient(cfg),
+		Plan:                 NewPlanClient(cfg),
+		Rider:                NewRiderClient(cfg),
+		Setting:              NewSettingClient(cfg),
+		Statement:            NewStatementClient(cfg),
+		Store:                NewStoreClient(cfg),
+		Subscribe:            NewSubscribeClient(cfg),
+		SubscribeAlter:       NewSubscribeAlterClient(cfg),
+		SubscribePause:       NewSubscribePauseClient(cfg),
 	}, nil
 }
 
@@ -269,6 +281,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Employee.Use(hooks...)
 	c.Enterprise.Use(hooks...)
 	c.EnterpriseContract.Use(hooks...)
+	c.EnterprisePrepayment.Use(hooks...)
 	c.EnterprisePrice.Use(hooks...)
 	c.Exchange.Use(hooks...)
 	c.Manager.Use(hooks...)
@@ -278,6 +291,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Plan.Use(hooks...)
 	c.Rider.Use(hooks...)
 	c.Setting.Use(hooks...)
+	c.Statement.Use(hooks...)
 	c.Store.Use(hooks...)
 	c.Subscribe.Use(hooks...)
 	c.SubscribeAlter.Use(hooks...)
@@ -1604,6 +1618,22 @@ func (c *EnterpriseClient) QuerySubscribes(e *Enterprise) *SubscribeQuery {
 	return query
 }
 
+// QueryStatements queries the statements edge of a Enterprise.
+func (c *EnterpriseClient) QueryStatements(e *Enterprise) *StatementQuery {
+	query := &StatementQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
+			sqlgraph.To(statement.Table, statement.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.StatementsTable, enterprise.StatementsColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EnterpriseClient) Hooks() []Hook {
 	hooks := c.hooks.Enterprise
@@ -1715,6 +1745,113 @@ func (c *EnterpriseContractClient) QueryEnterprise(ec *EnterpriseContract) *Ente
 func (c *EnterpriseContractClient) Hooks() []Hook {
 	hooks := c.hooks.EnterpriseContract
 	return append(hooks[:len(hooks):len(hooks)], enterprisecontract.Hooks[:]...)
+}
+
+// EnterprisePrepaymentClient is a client for the EnterprisePrepayment schema.
+type EnterprisePrepaymentClient struct {
+	config
+}
+
+// NewEnterprisePrepaymentClient returns a client for the EnterprisePrepayment from the given config.
+func NewEnterprisePrepaymentClient(c config) *EnterprisePrepaymentClient {
+	return &EnterprisePrepaymentClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `enterpriseprepayment.Hooks(f(g(h())))`.
+func (c *EnterprisePrepaymentClient) Use(hooks ...Hook) {
+	c.hooks.EnterprisePrepayment = append(c.hooks.EnterprisePrepayment, hooks...)
+}
+
+// Create returns a create builder for EnterprisePrepayment.
+func (c *EnterprisePrepaymentClient) Create() *EnterprisePrepaymentCreate {
+	mutation := newEnterprisePrepaymentMutation(c.config, OpCreate)
+	return &EnterprisePrepaymentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EnterprisePrepayment entities.
+func (c *EnterprisePrepaymentClient) CreateBulk(builders ...*EnterprisePrepaymentCreate) *EnterprisePrepaymentCreateBulk {
+	return &EnterprisePrepaymentCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EnterprisePrepayment.
+func (c *EnterprisePrepaymentClient) Update() *EnterprisePrepaymentUpdate {
+	mutation := newEnterprisePrepaymentMutation(c.config, OpUpdate)
+	return &EnterprisePrepaymentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EnterprisePrepaymentClient) UpdateOne(ep *EnterprisePrepayment) *EnterprisePrepaymentUpdateOne {
+	mutation := newEnterprisePrepaymentMutation(c.config, OpUpdateOne, withEnterprisePrepayment(ep))
+	return &EnterprisePrepaymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EnterprisePrepaymentClient) UpdateOneID(id uint64) *EnterprisePrepaymentUpdateOne {
+	mutation := newEnterprisePrepaymentMutation(c.config, OpUpdateOne, withEnterprisePrepaymentID(id))
+	return &EnterprisePrepaymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EnterprisePrepayment.
+func (c *EnterprisePrepaymentClient) Delete() *EnterprisePrepaymentDelete {
+	mutation := newEnterprisePrepaymentMutation(c.config, OpDelete)
+	return &EnterprisePrepaymentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *EnterprisePrepaymentClient) DeleteOne(ep *EnterprisePrepayment) *EnterprisePrepaymentDeleteOne {
+	return c.DeleteOneID(ep.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *EnterprisePrepaymentClient) DeleteOneID(id uint64) *EnterprisePrepaymentDeleteOne {
+	builder := c.Delete().Where(enterpriseprepayment.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EnterprisePrepaymentDeleteOne{builder}
+}
+
+// Query returns a query builder for EnterprisePrepayment.
+func (c *EnterprisePrepaymentClient) Query() *EnterprisePrepaymentQuery {
+	return &EnterprisePrepaymentQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a EnterprisePrepayment entity by its id.
+func (c *EnterprisePrepaymentClient) Get(ctx context.Context, id uint64) (*EnterprisePrepayment, error) {
+	return c.Query().Where(enterpriseprepayment.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EnterprisePrepaymentClient) GetX(ctx context.Context, id uint64) *EnterprisePrepayment {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEnterprise queries the enterprise edge of a EnterprisePrepayment.
+func (c *EnterprisePrepaymentClient) QueryEnterprise(ep *EnterprisePrepayment) *EnterpriseQuery {
+	query := &EnterpriseQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ep.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterpriseprepayment.Table, enterpriseprepayment.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterpriseprepayment.EnterpriseTable, enterpriseprepayment.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(ep.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EnterprisePrepaymentClient) Hooks() []Hook {
+	hooks := c.hooks.EnterprisePrepayment
+	return append(hooks[:len(hooks):len(hooks)], enterpriseprepayment.Hooks[:]...)
 }
 
 // EnterprisePriceClient is a client for the EnterprisePrice schema.
@@ -2952,6 +3089,129 @@ func (c *SettingClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], setting.Hooks[:]...)
 }
 
+// StatementClient is a client for the Statement schema.
+type StatementClient struct {
+	config
+}
+
+// NewStatementClient returns a client for the Statement from the given config.
+func NewStatementClient(c config) *StatementClient {
+	return &StatementClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `statement.Hooks(f(g(h())))`.
+func (c *StatementClient) Use(hooks ...Hook) {
+	c.hooks.Statement = append(c.hooks.Statement, hooks...)
+}
+
+// Create returns a create builder for Statement.
+func (c *StatementClient) Create() *StatementCreate {
+	mutation := newStatementMutation(c.config, OpCreate)
+	return &StatementCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Statement entities.
+func (c *StatementClient) CreateBulk(builders ...*StatementCreate) *StatementCreateBulk {
+	return &StatementCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Statement.
+func (c *StatementClient) Update() *StatementUpdate {
+	mutation := newStatementMutation(c.config, OpUpdate)
+	return &StatementUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *StatementClient) UpdateOne(s *Statement) *StatementUpdateOne {
+	mutation := newStatementMutation(c.config, OpUpdateOne, withStatement(s))
+	return &StatementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *StatementClient) UpdateOneID(id uint64) *StatementUpdateOne {
+	mutation := newStatementMutation(c.config, OpUpdateOne, withStatementID(id))
+	return &StatementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Statement.
+func (c *StatementClient) Delete() *StatementDelete {
+	mutation := newStatementMutation(c.config, OpDelete)
+	return &StatementDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *StatementClient) DeleteOne(s *Statement) *StatementDeleteOne {
+	return c.DeleteOneID(s.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *StatementClient) DeleteOneID(id uint64) *StatementDeleteOne {
+	builder := c.Delete().Where(statement.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &StatementDeleteOne{builder}
+}
+
+// Query returns a query builder for Statement.
+func (c *StatementClient) Query() *StatementQuery {
+	return &StatementQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Statement entity by its id.
+func (c *StatementClient) Get(ctx context.Context, id uint64) (*Statement, error) {
+	return c.Query().Where(statement.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *StatementClient) GetX(ctx context.Context, id uint64) *Statement {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QuerySubscribes queries the subscribes edge of a Statement.
+func (c *StatementClient) QuerySubscribes(s *Statement) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(statement.Table, statement.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, statement.SubscribesTable, statement.SubscribesColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEnterprise queries the enterprise edge of a Statement.
+func (c *StatementClient) QueryEnterprise(s *Statement) *EnterpriseQuery {
+	query := &EnterpriseQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(statement.Table, statement.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, statement.EnterpriseTable, statement.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *StatementClient) Hooks() []Hook {
+	hooks := c.hooks.Statement
+	return append(hooks[:len(hooks):len(hooks)], statement.Hooks[:]...)
+}
+
 // StoreClient is a client for the Store schema.
 type StoreClient struct {
 	config
@@ -3297,6 +3557,22 @@ func (c *SubscribeClient) QueryInitialOrder(s *Subscribe) *OrderQuery {
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
 			sqlgraph.To(order.Table, order.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.InitialOrderTable, subscribe.InitialOrderColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStatement queries the statement edge of a Subscribe.
+func (c *SubscribeClient) QueryStatement(s *Subscribe) *StatementQuery {
+	query := &StatementQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
+			sqlgraph.To(statement.Table, statement.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, subscribe.StatementTable, subscribe.StatementColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

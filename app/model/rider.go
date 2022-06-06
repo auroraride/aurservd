@@ -97,7 +97,7 @@ type RiderItem struct {
     DeletedAt    string           `json:"deleteAt,omitempty"` // 账户删除时间
     Remark       string           `json:"remark"`             // 账户备注
     // 团签企业信息, 若无此字段则为个签用户
-    Enterprise *Enterprise `json:"enterprise,omitempty"`
+    Enterprise *EnterpriseBasic `json:"enterprise,omitempty"`
     // 当前有效订阅信息, 若无此字段则代表当前无有效订阅(订阅 = 骑手骑士卡)
     Subscribe *RiderItemSubscribe `json:"subscribe,omitempty"`
 }

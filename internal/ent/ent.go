@@ -21,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -30,6 +31,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/setting"
+	"github.com/auroraride/aurservd/internal/ent/statement"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
@@ -54,30 +56,32 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		batterymodel.Table:       batterymodel.ValidColumn,
-		branch.Table:             branch.ValidColumn,
-		branchcontract.Table:     branchcontract.ValidColumn,
-		cabinet.Table:            cabinet.ValidColumn,
-		cabinetfault.Table:       cabinetfault.ValidColumn,
-		city.Table:               city.ValidColumn,
-		commission.Table:         commission.ValidColumn,
-		contract.Table:           contract.ValidColumn,
-		employee.Table:           employee.ValidColumn,
-		enterprise.Table:         enterprise.ValidColumn,
-		enterprisecontract.Table: enterprisecontract.ValidColumn,
-		enterpriseprice.Table:    enterpriseprice.ValidColumn,
-		exchange.Table:           exchange.ValidColumn,
-		manager.Table:            manager.ValidColumn,
-		order.Table:              order.ValidColumn,
-		orderrefund.Table:        orderrefund.ValidColumn,
-		person.Table:             person.ValidColumn,
-		plan.Table:               plan.ValidColumn,
-		rider.Table:              rider.ValidColumn,
-		setting.Table:            setting.ValidColumn,
-		store.Table:              store.ValidColumn,
-		subscribe.Table:          subscribe.ValidColumn,
-		subscribealter.Table:     subscribealter.ValidColumn,
-		subscribepause.Table:     subscribepause.ValidColumn,
+		batterymodel.Table:         batterymodel.ValidColumn,
+		branch.Table:               branch.ValidColumn,
+		branchcontract.Table:       branchcontract.ValidColumn,
+		cabinet.Table:              cabinet.ValidColumn,
+		cabinetfault.Table:         cabinetfault.ValidColumn,
+		city.Table:                 city.ValidColumn,
+		commission.Table:           commission.ValidColumn,
+		contract.Table:             contract.ValidColumn,
+		employee.Table:             employee.ValidColumn,
+		enterprise.Table:           enterprise.ValidColumn,
+		enterprisecontract.Table:   enterprisecontract.ValidColumn,
+		enterpriseprepayment.Table: enterpriseprepayment.ValidColumn,
+		enterpriseprice.Table:      enterpriseprice.ValidColumn,
+		exchange.Table:             exchange.ValidColumn,
+		manager.Table:              manager.ValidColumn,
+		order.Table:                order.ValidColumn,
+		orderrefund.Table:          orderrefund.ValidColumn,
+		person.Table:               person.ValidColumn,
+		plan.Table:                 plan.ValidColumn,
+		rider.Table:                rider.ValidColumn,
+		setting.Table:              setting.ValidColumn,
+		statement.Table:            statement.ValidColumn,
+		store.Table:                store.ValidColumn,
+		subscribe.Table:            subscribe.ValidColumn,
+		subscribealter.Table:       subscribealter.ValidColumn,
+		subscribepause.Table:       subscribepause.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

@@ -191,13 +191,6 @@ func Balance(v float64) predicate.Enterprise {
 	})
 }
 
-// Arrearage applies equality check predicate on the "arrearage" field. It's identical to ArrearageEQ.
-func Arrearage(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldArrearage), v))
-	})
-}
-
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
@@ -1500,82 +1493,6 @@ func BalanceLTE(v float64) predicate.Enterprise {
 	})
 }
 
-// ArrearageEQ applies the EQ predicate on the "arrearage" field.
-func ArrearageEQ(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldArrearage), v))
-	})
-}
-
-// ArrearageNEQ applies the NEQ predicate on the "arrearage" field.
-func ArrearageNEQ(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldArrearage), v))
-	})
-}
-
-// ArrearageIn applies the In predicate on the "arrearage" field.
-func ArrearageIn(vs ...float64) predicate.Enterprise {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldArrearage), v...))
-	})
-}
-
-// ArrearageNotIn applies the NotIn predicate on the "arrearage" field.
-func ArrearageNotIn(vs ...float64) predicate.Enterprise {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Enterprise(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldArrearage), v...))
-	})
-}
-
-// ArrearageGT applies the GT predicate on the "arrearage" field.
-func ArrearageGT(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldArrearage), v))
-	})
-}
-
-// ArrearageGTE applies the GTE predicate on the "arrearage" field.
-func ArrearageGTE(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldArrearage), v))
-	})
-}
-
-// ArrearageLT applies the LT predicate on the "arrearage" field.
-func ArrearageLT(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldArrearage), v))
-	})
-}
-
-// ArrearageLTE applies the LTE predicate on the "arrearage" field.
-func ArrearageLTE(v float64) predicate.Enterprise {
-	return predicate.Enterprise(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldArrearage), v))
-	})
-}
-
 // HasCity applies the HasEdge predicate on the "city" edge.
 func HasCity() predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
@@ -1707,6 +1624,34 @@ func HasSubscribesWith(preds ...predicate.Subscribe) predicate.Enterprise {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(SubscribesInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, SubscribesTable, SubscribesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasStatements applies the HasEdge predicate on the "statements" edge.
+func HasStatements() predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StatementsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, StatementsTable, StatementsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStatementsWith applies the HasEdge predicate on the "statements" edge with a given conditions (other predicates).
+func HasStatementsWith(preds ...predicate.Statement) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StatementsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, StatementsTable, StatementsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

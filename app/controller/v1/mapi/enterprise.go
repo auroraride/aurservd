@@ -24,10 +24,10 @@ var Enterprise = new(enterprise)
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body  model.EnterprisePostReq  true  "desc"
+// @Param        body  body  model.EnterpriseDetail  true  "desc"
 // @Success      200  {object}  int  "请求成功"
 func (*enterprise) Create(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EnterprisePostReq](c)
+    ctx, req := app.ManagerContextAndBinding[model.EnterpriseDetail](c)
     return ctx.SendResponse(service.NewEnterpriseWithModifier(ctx.Modifier).Create(req))
 }
 
@@ -39,10 +39,27 @@ func (*enterprise) Create(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body  model.EnterpriseModifyReq  true  "desc"
+// @Param        body  body  model.EnterpriseDetailWithID  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*enterprise) Modify(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.EnterpriseModifyReq](c)
+    ctx, req := app.ManagerContextAndBinding[model.EnterpriseDetailWithID](c)
     service.NewEnterpriseWithModifier(ctx.Modifier).Modify(req)
     return ctx.SendResponse()
+}
+
+// List
+// @ID           ManagerEnterpriseList
+// @Router       /manager/v1/enterprise [GET]
+// @Summary      M90003 列举企业
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query  model.EnterpriseListReq  true  "desc"
+// @Success      200  {object}  model.PaginationRes{items=[]model.EnterpriseListRes} "请求成功"
+func (*enterprise) List(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.EnterpriseListReq](c)
+    return ctx.SendResponse(
+        service.NewEnterpriseWithModifier(ctx.Modifier).List(req),
+    )
 }

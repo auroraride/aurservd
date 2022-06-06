@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/statement"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -159,6 +160,20 @@ func (sc *SubscribeCreate) SetNillableEnterpriseID(u *uint64) *SubscribeCreate {
 	return sc
 }
 
+// SetStatementID sets the "statement_id" field.
+func (sc *SubscribeCreate) SetStatementID(u uint64) *SubscribeCreate {
+	sc.mutation.SetStatementID(u)
+	return sc
+}
+
+// SetNillableStatementID sets the "statement_id" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableStatementID(u *uint64) *SubscribeCreate {
+	if u != nil {
+		sc.SetStatementID(*u)
+	}
+	return sc
+}
+
 // SetStatus sets the "status" field.
 func (sc *SubscribeCreate) SetStatus(u uint8) *SubscribeCreate {
 	sc.mutation.SetStatus(u)
@@ -176,6 +191,14 @@ func (sc *SubscribeCreate) SetNillableStatus(u *uint8) *SubscribeCreate {
 // SetType sets the "type" field.
 func (sc *SubscribeCreate) SetType(u uint) *SubscribeCreate {
 	sc.mutation.SetType(u)
+	return sc
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableType(u *uint) *SubscribeCreate {
+	if u != nil {
+		sc.SetType(*u)
+	}
 	return sc
 }
 
@@ -392,6 +415,11 @@ func (sc *SubscribeCreate) SetInitialOrder(o *Order) *SubscribeCreate {
 	return sc.SetInitialOrderID(o.ID)
 }
 
+// SetStatement sets the "statement" edge to the Statement entity.
+func (sc *SubscribeCreate) SetStatement(s *Statement) *SubscribeCreate {
+	return sc.SetStatementID(s.ID)
+}
+
 // Mutation returns the SubscribeMutation object of the builder.
 func (sc *SubscribeCreate) Mutation() *SubscribeMutation {
 	return sc.mutation
@@ -488,6 +516,10 @@ func (sc *SubscribeCreate) defaults() error {
 	if _, ok := sc.mutation.Status(); !ok {
 		v := subscribe.DefaultStatus
 		sc.mutation.SetStatus(v)
+	}
+	if _, ok := sc.mutation.GetType(); !ok {
+		v := subscribe.DefaultType
+		sc.mutation.SetType(v)
 	}
 	if _, ok := sc.mutation.AlterDays(); !ok {
 		v := subscribe.DefaultAlterDays
@@ -922,6 +954,26 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		_node.InitialOrderID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := sc.mutation.StatementIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   subscribe.StatementTable,
+			Columns: []string{subscribe.StatementColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: statement.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.StatementID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -1159,6 +1211,24 @@ func (u *SubscribeUpsert) UpdateEnterpriseID() *SubscribeUpsert {
 // ClearEnterpriseID clears the value of the "enterprise_id" field.
 func (u *SubscribeUpsert) ClearEnterpriseID() *SubscribeUpsert {
 	u.SetNull(subscribe.FieldEnterpriseID)
+	return u
+}
+
+// SetStatementID sets the "statement_id" field.
+func (u *SubscribeUpsert) SetStatementID(v uint64) *SubscribeUpsert {
+	u.Set(subscribe.FieldStatementID, v)
+	return u
+}
+
+// UpdateStatementID sets the "statement_id" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateStatementID() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldStatementID)
+	return u
+}
+
+// ClearStatementID clears the value of the "statement_id" field.
+func (u *SubscribeUpsert) ClearStatementID() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldStatementID)
 	return u
 }
 
@@ -1663,6 +1733,27 @@ func (u *SubscribeUpsertOne) UpdateEnterpriseID() *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) ClearEnterpriseID() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearEnterpriseID()
+	})
+}
+
+// SetStatementID sets the "statement_id" field.
+func (u *SubscribeUpsertOne) SetStatementID(v uint64) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetStatementID(v)
+	})
+}
+
+// UpdateStatementID sets the "statement_id" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateStatementID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateStatementID()
+	})
+}
+
+// ClearStatementID clears the value of the "statement_id" field.
+func (u *SubscribeUpsertOne) ClearStatementID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearStatementID()
 	})
 }
 
@@ -2370,6 +2461,27 @@ func (u *SubscribeUpsertBulk) UpdateEnterpriseID() *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) ClearEnterpriseID() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearEnterpriseID()
+	})
+}
+
+// SetStatementID sets the "statement_id" field.
+func (u *SubscribeUpsertBulk) SetStatementID(v uint64) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetStatementID(v)
+	})
+}
+
+// UpdateStatementID sets the "statement_id" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateStatementID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateStatementID()
+	})
+}
+
+// ClearStatementID clears the value of the "statement_id" field.
+func (u *SubscribeUpsertBulk) ClearStatementID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearStatementID()
 	})
 }
 

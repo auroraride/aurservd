@@ -8,8 +8,30 @@ import (
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
+    "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
+
+type EnterpriseMixin struct {
+    mixin.Schema
+    Optional bool
+}
+
+func (cm EnterpriseMixin) Fields() []ent.Field {
+    f := field.Uint64("enterprise_id").Comment("企业ID")
+    if cm.Optional {
+        f.Optional()
+    }
+    return []ent.Field{f}
+}
+
+func (cm EnterpriseMixin) Edges() []ent.Edge {
+    e := edge.To("enterprise", Enterprise.Type).Unique().Field("enterprise_id")
+    if !cm.Optional {
+        e.Required()
+    }
+    return []ent.Edge{e}
+}
 
 // Enterprise holds the schema definition for the Enterprise entity.
 type Enterprise struct {
@@ -35,7 +57,6 @@ func (Enterprise) Fields() []ent.Field {
         field.Uint8("payment").Comment("付费方式 1预付费 2后付费"),
         field.Float("deposit").Default(0).Comment("押金"),
         field.Float("balance").Default(0).Comment("账户余额"),
-        field.Float("arrearage").Default(0).Comment("欠费金额"),
     }
 }
 
@@ -46,6 +67,7 @@ func (Enterprise) Edges() []ent.Edge {
         edge.To("contracts", EnterpriseContract.Type),
         edge.To("prices", EnterprisePrice.Type),
         edge.To("subscribes", Subscribe.Type),
+        edge.To("statements", Statement.Type),
     }
 }
 
@@ -61,7 +83,24 @@ func (Enterprise) Mixin() []ent.Mixin {
 
 func (Enterprise) Indexes() []ent.Index {
     return []ent.Index{
+        index.Fields("payment"),
+        index.Fields("balance"),
         index.Fields("name").Annotations(
+            entsql.IndexTypes(map[string]string{
+                dialect.Postgres: "GIN",
+            }),
+        ),
+        index.Fields("contact_name").Annotations(
+            entsql.IndexTypes(map[string]string{
+                dialect.Postgres: "GIN",
+            }),
+        ),
+        index.Fields("contact_phone").Annotations(
+            entsql.IndexTypes(map[string]string{
+                dialect.Postgres: "GIN",
+            }),
+        ),
+        index.Fields("idcard_number").Annotations(
             entsql.IndexTypes(map[string]string{
                 dialect.Postgres: "GIN",
             }),

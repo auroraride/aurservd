@@ -16,6 +16,8 @@ import (
     "github.com/auroraride/aurservd/internal/ent/enterpriseprice"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
+    "github.com/golang-module/carbon/v2"
+    "github.com/jinzhu/copier"
 )
 
 type enterpriseService struct {
@@ -55,7 +57,7 @@ func (s *enterpriseService) Query(id uint64) *ent.Enterprise {
 }
 
 // Create 创建企业
-func (s *enterpriseService) Create(req *model.EnterprisePostReq) uint64 {
+func (s *enterpriseService) Create(req *model.EnterpriseDetail) uint64 {
 
     tx, err := ar.Ent.Tx(s.ctx)
     if err != nil {
@@ -73,7 +75,7 @@ func (s *enterpriseService) Create(req *model.EnterprisePostReq) uint64 {
 }
 
 // Modify 修改企业
-func (s *enterpriseService) Modify(req *model.EnterpriseModifyReq) {
+func (s *enterpriseService) Modify(req *model.EnterpriseDetailWithID) {
     e := s.Query(req.ID)
 
     tx, err := ar.Ent.Tx(s.ctx)
@@ -81,18 +83,18 @@ func (s *enterpriseService) Modify(req *model.EnterpriseModifyReq) {
         snag.Panic(err)
     }
 
-    e, err = tx.Enterprise.ModifyOne(e, req.EnterprisePostReq).Save(s.ctx)
+    e, err = tx.Enterprise.ModifyOne(e, req.EnterpriseDetail).Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
 
     tx.EnterprisePrice.Delete().Where(enterpriseprice.EnterpriseID(e.ID)).ExecX(s.ctx)
     tx.EnterpriseContract.Delete().Where(enterprisecontract.EnterpriseID(e.ID)).ExecX(s.ctx)
 
-    s.SaveEnterprise(tx, e, req.EnterprisePostReq)
+    s.SaveEnterprise(tx, e, req.EnterpriseDetail)
     _ = tx.Commit()
 }
 
 // SaveEnterprise 保存企业信息
-func (s *enterpriseService) SaveEnterprise(tx *ent.Tx, e *ent.Enterprise, req *model.EnterprisePostReq) {
+func (s *enterpriseService) SaveEnterprise(tx *ent.Tx, e *ent.Enterprise, req *model.EnterpriseDetail) {
     var err error
     // 存储价格信息
     cvm := make(map[string]struct{})
@@ -122,4 +124,76 @@ func (s *enterpriseService) SaveEnterprise(tx *ent.Tx, e *ent.Enterprise, req *m
         snag.PanicIfErrorX(err, tx.Rollback)
         dates = append(dates, []int64{rcs.Unix(), rce.Unix()})
     }
+}
+
+// List 列举企业
+func (s *enterpriseService) List(req *model.EnterpriseListReq) *model.PaginationRes {
+    tt := tools.NewTime()
+    // pu := tools.NewPointer()
+
+    q := s.orm.QueryNotDeleted().WithStatements().WithCity().WithPrices(func(ep *ent.EnterprisePriceQuery) {
+        ep.WithCity()
+    })
+    if req.Name != nil {
+        q.Where(enterprise.NameContainsFold(*req.Name))
+    }
+    if req.CityID != nil {
+        q.Where(enterprise.CityID(*req.CityID))
+    }
+    if req.Status != nil {
+        q.Where(enterprise.Status(*req.Status))
+    }
+    if req.Payment != nil {
+        q.Where(enterprise.Payment(*req.Payment))
+    }
+    if req.ContactKeyword != nil {
+        q.Where(enterprise.Or(
+            enterprise.ContactNameContainsFold(*req.ContactKeyword),
+            enterprise.ContactPhoneContainsFold(*req.ContactKeyword),
+            enterprise.IdcardNumberContainsFold(*req.ContactKeyword),
+        ))
+    }
+    if req.Start != nil {
+        q.Where(enterprise.HasContractsWith(enterprisecontract.StartLTE(tt.ParseDateStringX(*req.Start))))
+    }
+    if req.End != nil {
+        q.Where(enterprise.HasContractsWith(enterprisecontract.EndGTE(tt.ParseDateStringX(*req.End))))
+    }
+    return model.ParsePaginationResponse(
+        q, req.PaginationReq,
+        func(item *ent.Enterprise) (res model.EnterpriseListRes) {
+            _ = copier.Copy(&res, item)
+            res.City = model.City{
+                ID:   item.Edges.City.ID,
+                Name: item.Edges.City.Name,
+            }
+            contracts := item.Edges.Contracts
+            if contracts != nil {
+                res.Contracts = make([]model.EnterpriseContract, len(contracts))
+                for i, ec := range contracts {
+                    res.Contracts[i] = model.EnterpriseContract{
+                        Start: ec.Start.Format(carbon.DateLayout),
+                        End:   ec.End.Format(carbon.DateLayout),
+                        File:  ec.File,
+                    }
+                }
+            }
+
+            prices := item.Edges.Prices
+            if prices != nil {
+                res.Prices = make([]model.EnterprisePriceWithCity, len(prices))
+                for i, ep := range prices {
+                    res.Prices[i] = model.EnterprisePriceWithCity{
+                        Voltage: ep.Voltage,
+                        Price:   ep.Price,
+                        City: model.City{
+                            ID:   ep.Edges.City.ID,
+                            Name: ep.Edges.City.Name,
+                        },
+                    }
+                }
+            }
+            return
+        },
+    )
 }

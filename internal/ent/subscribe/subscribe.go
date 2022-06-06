@@ -37,6 +37,8 @@ const (
 	FieldInitialOrderID = "initial_order_id"
 	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
 	FieldEnterpriseID = "enterprise_id"
+	// FieldStatementID holds the string denoting the statement_id field in the database.
+	FieldStatementID = "statement_id"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldType holds the string denoting the type field in the database.
@@ -81,6 +83,8 @@ const (
 	EdgeOrders = "orders"
 	// EdgeInitialOrder holds the string denoting the initial_order edge name in mutations.
 	EdgeInitialOrder = "initial_order"
+	// EdgeStatement holds the string denoting the statement edge name in mutations.
+	EdgeStatement = "statement"
 	// Table holds the table name of the subscribe in the database.
 	Table = "subscribe"
 	// PlanTable is the table that holds the plan relation/edge.
@@ -146,6 +150,13 @@ const (
 	InitialOrderInverseTable = "order"
 	// InitialOrderColumn is the table column denoting the initial_order relation/edge.
 	InitialOrderColumn = "initial_order_id"
+	// StatementTable is the table that holds the statement relation/edge.
+	StatementTable = "subscribe"
+	// StatementInverseTable is the table name for the Statement entity.
+	// It exists in this package in order to avoid circular dependency with the "statement" package.
+	StatementInverseTable = "statement"
+	// StatementColumn is the table column denoting the statement relation/edge.
+	StatementColumn = "statement_id"
 )
 
 // Columns holds all SQL columns for subscribe fields.
@@ -163,6 +174,7 @@ var Columns = []string{
 	FieldRiderID,
 	FieldInitialOrderID,
 	FieldEnterpriseID,
+	FieldStatementID,
 	FieldStatus,
 	FieldType,
 	FieldVoltage,
@@ -204,6 +216,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus uint8
+	// DefaultType holds the default value on creation for the "type" field.
+	DefaultType uint
 	// DefaultAlterDays holds the default value on creation for the "alter_days" field.
 	DefaultAlterDays int
 	// DefaultPauseDays holds the default value on creation for the "pause_days" field.

@@ -128,6 +128,13 @@ func (c *EnterpriseContractClient) ModifyOne(old *EnterpriseContract, data any) 
 	return EntitySetAttributes[EnterpriseContractUpdateOne, EnterpriseContract](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for EnterprisePrepayment.
+func (c *EnterprisePrepaymentClient) ModifyOne(old *EnterprisePrepayment, data any) *EnterprisePrepaymentUpdateOne {
+	mutation := newEnterprisePrepaymentMutation(c.config, OpUpdateOne, withEnterprisePrepayment(old))
+	up := &EnterprisePrepaymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[EnterprisePrepaymentUpdateOne, EnterprisePrepayment](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for EnterprisePrice.
 func (c *EnterprisePriceClient) ModifyOne(old *EnterprisePrice, data any) *EnterprisePriceUpdateOne {
 	mutation := newEnterprisePriceMutation(c.config, OpUpdateOne, withEnterprisePrice(old))
@@ -189,6 +196,13 @@ func (c *SettingClient) ModifyOne(old *Setting, data any) *SettingUpdateOne {
 	mutation := newSettingMutation(c.config, OpUpdateOne, withSetting(old))
 	up := &SettingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 	return EntitySetAttributes[SettingUpdateOne, Setting](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for Statement.
+func (c *StatementClient) ModifyOne(old *Statement, data any) *StatementUpdateOne {
+	mutation := newStatementMutation(c.config, OpUpdateOne, withStatement(old))
+	up := &StatementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[StatementUpdateOne, Statement](up, old, data)
 }
 
 // ModifyOne returns an update with pointer struct builder for Store.

@@ -652,7 +652,7 @@ definitions:
         description: 店员电话
         type: string
     type: object
-  model.Enterprise:
+  model.EnterpriseBasic:
     properties:
       id:
         description: 企业ID
@@ -674,7 +674,7 @@ definitions:
     - file
     - start
     type: object
-  model.EnterpriseModifyReq:
+  model.EnterpriseDetail:
     properties:
       address:
         description: '企业地址 '
@@ -739,7 +739,7 @@ definitions:
     - prices
     - status
     type: object
-  model.EnterprisePostReq:
+  model.EnterpriseDetailWithID:
     properties:
       address:
         description: '企业地址 '
@@ -803,6 +803,57 @@ definitions:
     - payment
     - prices
     - status
+    type: object
+  model.EnterpriseListRes:
+    properties:
+      address:
+        description: 企业地址
+        type: string
+      balance:
+        description: 可用余额
+        type: number
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      contactName:
+        description: 联系人
+        type: string
+      contactPhone:
+        description: 联系电话
+        type: string
+      contracts:
+        description: 合同
+        items:
+          $ref: '#/definitions/model.EnterpriseContract'
+        type: array
+      deposit:
+        description: 押金
+        type: number
+      id:
+        description: 企业ID
+        type: integer
+      idcardNumber:
+        description: 身份证号
+        type: string
+      name:
+        description: 企业名称
+        type: string
+      payment:
+        description: 付费方式 1:预付费 2:后付费
+        type: integer
+      prices:
+        description: 价格列表
+        items:
+          $ref: '#/definitions/model.EnterprisePriceWithCity'
+        type: array
+      status:
+        description: 合作状态 0:未合作 1:已合作 2:已暂停
+        enum:
+        - 0
+        - 1
+        - 2
+        type: integer
     type: object
   model.EnterprisePrice:
     properties:
@@ -822,6 +873,22 @@ definitions:
     - cityId
     - price
     - voltage
+    type: object
+  model.EnterprisePriceWithCity:
+    properties:
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      price:
+        description: 单价(元/天)
+        type: number
+      voltage:
+        description: 电压型号 暂时固定为 60 或 72
+        enum:
+        - 60
+        - 72
+        type: number
     type: object
   model.ExchangeStoreReq:
     properties:
@@ -1173,7 +1240,7 @@ definitions:
         type: number
       enterprise:
         allOf:
-        - $ref: '#/definitions/model.Enterprise'
+        - $ref: '#/definitions/model.EnterpriseBasic'
         description: 团签企业信息, 若无此字段则为个签用户
       id:
         type: integer
@@ -2261,6 +2328,72 @@ paths:
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 联系人 姓名/电话/身份证 关键词
+        in: query
+        name: contactKeyword
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 合同到期时间早于
+        in: query
+        name: end
+        type: string
+      - description: 公司名称
+        in: query
+        name: name
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 支付方式 1预付费 2后付费
+        enum:
+        - 1
+        - 2
+        in: query
+        name: payment
+        type: integer
+      - description: 合同到期时间晚于
+        in: query
+        name: start
+        type: string
+      - description: 合作状态
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.EnterpriseListRes'
+                  type: array
+              type: object
+      summary: M90003 列举企业
+      tags:
+      - '[M]管理接口'
     post:
       consumes:
       - application/json
@@ -2276,7 +2409,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.EnterprisePostReq'
+          $ref: '#/definitions/model.EnterpriseDetail'
       produces:
       - application/json
       responses:
@@ -2303,7 +2436,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.EnterpriseModifyReq'
+          $ref: '#/definitions/model.EnterpriseDetailWithID'
       produces:
       - application/json
       responses:

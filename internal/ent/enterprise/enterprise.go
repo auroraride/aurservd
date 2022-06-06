@@ -45,8 +45,6 @@ const (
 	FieldDeposit = "deposit"
 	// FieldBalance holds the string denoting the balance field in the database.
 	FieldBalance = "balance"
-	// FieldArrearage holds the string denoting the arrearage field in the database.
-	FieldArrearage = "arrearage"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeRiders holds the string denoting the riders edge name in mutations.
@@ -57,6 +55,8 @@ const (
 	EdgePrices = "prices"
 	// EdgeSubscribes holds the string denoting the subscribes edge name in mutations.
 	EdgeSubscribes = "subscribes"
+	// EdgeStatements holds the string denoting the statements edge name in mutations.
+	EdgeStatements = "statements"
 	// Table holds the table name of the enterprise in the database.
 	Table = "enterprise"
 	// CityTable is the table that holds the city relation/edge.
@@ -94,6 +94,13 @@ const (
 	SubscribesInverseTable = "subscribe"
 	// SubscribesColumn is the table column denoting the subscribes relation/edge.
 	SubscribesColumn = "enterprise_id"
+	// StatementsTable is the table that holds the statements relation/edge.
+	StatementsTable = "statement"
+	// StatementsInverseTable is the table name for the Statement entity.
+	// It exists in this package in order to avoid circular dependency with the "statement" package.
+	StatementsInverseTable = "statement"
+	// StatementsColumn is the table column denoting the statements relation/edge.
+	StatementsColumn = "enterprise_id"
 )
 
 // Columns holds all SQL columns for enterprise fields.
@@ -115,7 +122,6 @@ var Columns = []string{
 	FieldPayment,
 	FieldDeposit,
 	FieldBalance,
-	FieldArrearage,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -146,6 +152,4 @@ var (
 	DefaultDeposit float64
 	// DefaultBalance holds the default value on creation for the "balance" field.
 	DefaultBalance float64
-	// DefaultArrearage holds the default value on creation for the "arrearage" field.
-	DefaultArrearage float64
 )

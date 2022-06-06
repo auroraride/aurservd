@@ -64,9 +64,6 @@ type Enterprise struct {
 	// Balance holds the value of the "balance" field.
 	// 账户余额
 	Balance float64 `json:"balance,omitempty"`
-	// Arrearage holds the value of the "arrearage" field.
-	// 欠费金额
-	Arrearage float64 `json:"arrearage,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterpriseQuery when eager-loading is set.
 	Edges EnterpriseEdges `json:"edges"`
@@ -84,9 +81,11 @@ type EnterpriseEdges struct {
 	Prices []*EnterprisePrice `json:"prices,omitempty"`
 	// Subscribes holds the value of the subscribes edge.
 	Subscribes []*Subscribe `json:"subscribes,omitempty"`
+	// Statements holds the value of the statements edge.
+	Statements []*Statement `json:"statements,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -139,6 +138,15 @@ func (e EnterpriseEdges) SubscribesOrErr() ([]*Subscribe, error) {
 	return nil, &NotLoadedError{edge: "subscribes"}
 }
 
+// StatementsOrErr returns the Statements value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseEdges) StatementsOrErr() ([]*Statement, error) {
+	if e.loadedTypes[5] {
+		return e.Statements, nil
+	}
+	return nil, &NotLoadedError{edge: "statements"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Enterprise) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -146,7 +154,7 @@ func (*Enterprise) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case enterprise.FieldCreator, enterprise.FieldLastModifier:
 			values[i] = new([]byte)
-		case enterprise.FieldDeposit, enterprise.FieldBalance, enterprise.FieldArrearage:
+		case enterprise.FieldDeposit, enterprise.FieldBalance:
 			values[i] = new(sql.NullFloat64)
 		case enterprise.FieldID, enterprise.FieldCityID, enterprise.FieldStatus, enterprise.FieldPayment:
 			values[i] = new(sql.NullInt64)
@@ -276,12 +284,6 @@ func (e *Enterprise) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				e.Balance = value.Float64
 			}
-		case enterprise.FieldArrearage:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field arrearage", values[i])
-			} else if value.Valid {
-				e.Arrearage = value.Float64
-			}
 		}
 	}
 	return nil
@@ -310,6 +312,11 @@ func (e *Enterprise) QueryPrices() *EnterprisePriceQuery {
 // QuerySubscribes queries the "subscribes" edge of the Enterprise entity.
 func (e *Enterprise) QuerySubscribes() *SubscribeQuery {
 	return (&EnterpriseClient{config: e.config}).QuerySubscribes(e)
+}
+
+// QueryStatements queries the "statements" edge of the Enterprise entity.
+func (e *Enterprise) QueryStatements() *StatementQuery {
+	return (&EnterpriseClient{config: e.config}).QueryStatements(e)
 }
 
 // Update returns a builder for updating this Enterprise.
@@ -369,8 +376,6 @@ func (e *Enterprise) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.Deposit))
 	builder.WriteString(", balance=")
 	builder.WriteString(fmt.Sprintf("%v", e.Balance))
-	builder.WriteString(", arrearage=")
-	builder.WriteString(fmt.Sprintf("%v", e.Arrearage))
 	builder.WriteByte(')')
 	return builder.String()
 }

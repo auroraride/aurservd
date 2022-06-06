@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/statement"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -196,27 +197,6 @@ func (eu *EnterpriseUpdate) AddBalance(f float64) *EnterpriseUpdate {
 	return eu
 }
 
-// SetArrearage sets the "arrearage" field.
-func (eu *EnterpriseUpdate) SetArrearage(f float64) *EnterpriseUpdate {
-	eu.mutation.ResetArrearage()
-	eu.mutation.SetArrearage(f)
-	return eu
-}
-
-// SetNillableArrearage sets the "arrearage" field if the given value is not nil.
-func (eu *EnterpriseUpdate) SetNillableArrearage(f *float64) *EnterpriseUpdate {
-	if f != nil {
-		eu.SetArrearage(*f)
-	}
-	return eu
-}
-
-// AddArrearage adds f to the "arrearage" field.
-func (eu *EnterpriseUpdate) AddArrearage(f float64) *EnterpriseUpdate {
-	eu.mutation.AddArrearage(f)
-	return eu
-}
-
 // SetCity sets the "city" edge to the City entity.
 func (eu *EnterpriseUpdate) SetCity(c *City) *EnterpriseUpdate {
 	return eu.SetCityID(c.ID)
@@ -280,6 +260,21 @@ func (eu *EnterpriseUpdate) AddSubscribes(s ...*Subscribe) *EnterpriseUpdate {
 		ids[i] = s[i].ID
 	}
 	return eu.AddSubscribeIDs(ids...)
+}
+
+// AddStatementIDs adds the "statements" edge to the Statement entity by IDs.
+func (eu *EnterpriseUpdate) AddStatementIDs(ids ...uint64) *EnterpriseUpdate {
+	eu.mutation.AddStatementIDs(ids...)
+	return eu
+}
+
+// AddStatements adds the "statements" edges to the Statement entity.
+func (eu *EnterpriseUpdate) AddStatements(s ...*Statement) *EnterpriseUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return eu.AddStatementIDs(ids...)
 }
 
 // Mutation returns the EnterpriseMutation object of the builder.
@@ -375,6 +370,27 @@ func (eu *EnterpriseUpdate) RemoveSubscribes(s ...*Subscribe) *EnterpriseUpdate 
 		ids[i] = s[i].ID
 	}
 	return eu.RemoveSubscribeIDs(ids...)
+}
+
+// ClearStatements clears all "statements" edges to the Statement entity.
+func (eu *EnterpriseUpdate) ClearStatements() *EnterpriseUpdate {
+	eu.mutation.ClearStatements()
+	return eu
+}
+
+// RemoveStatementIDs removes the "statements" edge to Statement entities by IDs.
+func (eu *EnterpriseUpdate) RemoveStatementIDs(ids ...uint64) *EnterpriseUpdate {
+	eu.mutation.RemoveStatementIDs(ids...)
+	return eu
+}
+
+// RemoveStatements removes "statements" edges to Statement entities.
+func (eu *EnterpriseUpdate) RemoveStatements(s ...*Statement) *EnterpriseUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return eu.RemoveStatementIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -619,20 +635,6 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: enterprise.FieldBalance,
-		})
-	}
-	if value, ok := eu.mutation.Arrearage(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprise.FieldArrearage,
-		})
-	}
-	if value, ok := eu.mutation.AddedArrearage(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprise.FieldArrearage,
 		})
 	}
 	if eu.mutation.CityCleared() {
@@ -886,6 +888,60 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if eu.mutation.StatementsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.StatementsTable,
+			Columns: []string{enterprise.StatementsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: statement.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedStatementsIDs(); len(nodes) > 0 && !eu.mutation.StatementsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.StatementsTable,
+			Columns: []string{enterprise.StatementsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: statement.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.StatementsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.StatementsTable,
+			Columns: []string{enterprise.StatementsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: statement.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{enterprise.Label}
@@ -1067,27 +1123,6 @@ func (euo *EnterpriseUpdateOne) AddBalance(f float64) *EnterpriseUpdateOne {
 	return euo
 }
 
-// SetArrearage sets the "arrearage" field.
-func (euo *EnterpriseUpdateOne) SetArrearage(f float64) *EnterpriseUpdateOne {
-	euo.mutation.ResetArrearage()
-	euo.mutation.SetArrearage(f)
-	return euo
-}
-
-// SetNillableArrearage sets the "arrearage" field if the given value is not nil.
-func (euo *EnterpriseUpdateOne) SetNillableArrearage(f *float64) *EnterpriseUpdateOne {
-	if f != nil {
-		euo.SetArrearage(*f)
-	}
-	return euo
-}
-
-// AddArrearage adds f to the "arrearage" field.
-func (euo *EnterpriseUpdateOne) AddArrearage(f float64) *EnterpriseUpdateOne {
-	euo.mutation.AddArrearage(f)
-	return euo
-}
-
 // SetCity sets the "city" edge to the City entity.
 func (euo *EnterpriseUpdateOne) SetCity(c *City) *EnterpriseUpdateOne {
 	return euo.SetCityID(c.ID)
@@ -1151,6 +1186,21 @@ func (euo *EnterpriseUpdateOne) AddSubscribes(s ...*Subscribe) *EnterpriseUpdate
 		ids[i] = s[i].ID
 	}
 	return euo.AddSubscribeIDs(ids...)
+}
+
+// AddStatementIDs adds the "statements" edge to the Statement entity by IDs.
+func (euo *EnterpriseUpdateOne) AddStatementIDs(ids ...uint64) *EnterpriseUpdateOne {
+	euo.mutation.AddStatementIDs(ids...)
+	return euo
+}
+
+// AddStatements adds the "statements" edges to the Statement entity.
+func (euo *EnterpriseUpdateOne) AddStatements(s ...*Statement) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return euo.AddStatementIDs(ids...)
 }
 
 // Mutation returns the EnterpriseMutation object of the builder.
@@ -1246,6 +1296,27 @@ func (euo *EnterpriseUpdateOne) RemoveSubscribes(s ...*Subscribe) *EnterpriseUpd
 		ids[i] = s[i].ID
 	}
 	return euo.RemoveSubscribeIDs(ids...)
+}
+
+// ClearStatements clears all "statements" edges to the Statement entity.
+func (euo *EnterpriseUpdateOne) ClearStatements() *EnterpriseUpdateOne {
+	euo.mutation.ClearStatements()
+	return euo
+}
+
+// RemoveStatementIDs removes the "statements" edge to Statement entities by IDs.
+func (euo *EnterpriseUpdateOne) RemoveStatementIDs(ids ...uint64) *EnterpriseUpdateOne {
+	euo.mutation.RemoveStatementIDs(ids...)
+	return euo
+}
+
+// RemoveStatements removes "statements" edges to Statement entities.
+func (euo *EnterpriseUpdateOne) RemoveStatements(s ...*Statement) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return euo.RemoveStatementIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1522,20 +1593,6 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 			Column: enterprise.FieldBalance,
 		})
 	}
-	if value, ok := euo.mutation.Arrearage(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprise.FieldArrearage,
-		})
-	}
-	if value, ok := euo.mutation.AddedArrearage(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprise.FieldArrearage,
-		})
-	}
 	if euo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1779,6 +1836,60 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.StatementsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.StatementsTable,
+			Columns: []string{enterprise.StatementsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: statement.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedStatementsIDs(); len(nodes) > 0 && !euo.mutation.StatementsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.StatementsTable,
+			Columns: []string{enterprise.StatementsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: statement.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.StatementsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.StatementsTable,
+			Columns: []string{enterprise.StatementsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: statement.FieldID,
 				},
 			},
 		}

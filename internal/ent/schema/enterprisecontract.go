@@ -7,6 +7,7 @@ import (
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
+    "entgo.io/ent/schema/index"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -52,5 +53,8 @@ func (EnterpriseContract) Mixin() []ent.Mixin {
 }
 
 func (EnterpriseContract) Indexes() []ent.Index {
-    return []ent.Index{}
+    return []ent.Index{
+        index.Fields("start"),
+        index.Fields("end"),
+    }
 }

@@ -22,7 +22,7 @@ func (t *subscribeTask) Start() {
     go t.Do()
     c := cron.New()
     entryID, err := c.AddFunc("@daily", func() {
-        log.Info("开始执行@daily定时任务")
+        log.Info("开始执行 @daily[subscribe] 定时任务")
         t.Do()
     })
     if err != nil {
@@ -37,7 +37,7 @@ func (t *subscribeTask) Start() {
 func (*subscribeTask) Do() {
     srv := service.NewSubscribe()
     // 获取当前所有生效的订阅
-    items := srv.QueryAllEffective()
+    items := srv.QueryAllRidersEffective()
     for _, item := range items {
         go srv.UpdateStatus(item)
     }

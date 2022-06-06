@@ -250,6 +250,28 @@ func (ecq *EnterpriseContractQuery) PaginationResult(req model.PaginationReq) mo
 	}
 }
 
+// Pagination returns pagination query builder for EnterprisePrepaymentQuery.
+func (epq *EnterprisePrepaymentQuery) Pagination(req model.PaginationReq) *EnterprisePrepaymentQuery {
+	epq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return epq
+}
+
+// PaginationItems returns pagination query builder for EnterprisePrepaymentQuery.
+func (epq *EnterprisePrepaymentQuery) PaginationItemsX(req model.PaginationReq) any {
+	return epq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for EnterprisePrepaymentQuery.
+func (epq *EnterprisePrepaymentQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := epq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for EnterprisePriceQuery.
 func (epq *EnterprisePriceQuery) Pagination(req model.PaginationReq) *EnterprisePriceQuery {
 	epq.Offset(req.GetOffset()).Limit(req.GetLimit())
@@ -439,6 +461,28 @@ func (sq *SettingQuery) PaginationItemsX(req model.PaginationReq) any {
 
 // PaginationResult returns pagination for SettingQuery.
 func (sq *SettingQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := sq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
+// Pagination returns pagination query builder for StatementQuery.
+func (sq *StatementQuery) Pagination(req model.PaginationReq) *StatementQuery {
+	sq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return sq
+}
+
+// PaginationItems returns pagination query builder for StatementQuery.
+func (sq *StatementQuery) PaginationItemsX(req model.PaginationReq) any {
+	return sq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for StatementQuery.
+func (sq *StatementQuery) PaginationResult(req model.PaginationReq) model.Pagination {
 	ids := sq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
 	total := len(ids)
 	return model.Pagination{
