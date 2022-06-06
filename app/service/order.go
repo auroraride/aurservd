@@ -335,7 +335,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
         // 创建subscribe
         // var sub *ent.Subscribe
         sc := tx.Subscribe.Create().
-            SetType(model.OrderTypeNewly).
+            SetType(trade.OrderType).
             SetRiderID(trade.RiderID).
             SetVoltage(trade.Voltage).
             SetRemaining(int(trade.Days)).
