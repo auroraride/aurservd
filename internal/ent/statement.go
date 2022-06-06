@@ -41,7 +41,7 @@ type Statement struct {
 	// 账单金额
 	Cost float64 `json:"cost,omitempty"`
 	// Amount holds the value of the "amount" field.
-	// 预付金额
+	// 总预付金额
 	Amount float64 `json:"amount,omitempty"`
 	// Balance holds the value of the "balance" field.
 	// 预付剩余, 负数是欠费
@@ -56,8 +56,8 @@ type Statement struct {
 	// 账期内使用总人数
 	RiderNumber int `json:"rider_number,omitempty"`
 	// BillTime holds the value of the "bill_time" field.
-	// 对账单计算截止日
-	BillTime time.Time `json:"bill_time,omitempty"`
+	// 对账单计算日期(包含, 例如2022-06-05代表是2022-06-06日计算截止到2022-06-05的账单详情)
+	BillTime *time.Time `json:"bill_time,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the StatementQuery when eager-loading is set.
 	Edges StatementEdges `json:"edges"`
@@ -221,7 +221,8 @@ func (s *Statement) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field bill_time", values[i])
 			} else if value.Valid {
-				s.BillTime = value.Time
+				s.BillTime = new(time.Time)
+				*s.BillTime = value.Time
 			}
 		}
 	}
@@ -291,8 +292,10 @@ func (s *Statement) String() string {
 	builder.WriteString(fmt.Sprintf("%v", s.Days))
 	builder.WriteString(", rider_number=")
 	builder.WriteString(fmt.Sprintf("%v", s.RiderNumber))
-	builder.WriteString(", bill_time=")
-	builder.WriteString(s.BillTime.Format(time.ANSIC))
+	if v := s.BillTime; v != nil {
+		builder.WriteString(", bill_time=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

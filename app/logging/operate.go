@@ -17,11 +17,12 @@ import (
 type Operate uint
 
 const (
-    OperatePersonBan      = iota // 封禁身份
-    OperatePersonUnBan           // 解封身份
-    OperateRiderBLock            // 封禁账户
-    OperateRiderUnBLock          // 解封账户
-    OperateSubscribeAlter        // 修改订阅时间
+    OperatePersonBan            = iota // 封禁身份
+    OperatePersonUnBan                 // 解封身份
+    OperateRiderBLock                  // 封禁账户
+    OperateRiderUnBLock                // 解封账户
+    OperateSubscribeAlter              // 修改订阅时间
+    OperateEnterprisePrepayment        // 企业预储值
 )
 
 func (o Operate) String() string {
@@ -36,6 +37,8 @@ func (o Operate) String() string {
         return "解封账户"
     case OperateSubscribeAlter:
         return "修改时间"
+    case OperateEnterprisePrepayment:
+        return "企业预储值"
     default:
         return "未知操作"
     }

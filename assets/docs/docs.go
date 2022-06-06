@@ -1175,6 +1175,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/enterprise/{id}/prepayment": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M90005 企业预付费",
+                "operationId": "ManagerEnterprisePrepayment",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterprisePrepaymentReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "当前余额",
+                        "schema": {
+                            "type": "number"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/fault/{id}": {
             "put": {
                 "consumes": [
@@ -4270,6 +4311,23 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                }
+            }
+        },
+        "model.EnterprisePrepaymentReq": {
+            "type": "object",
+            "required": [
+                "amount",
+                "remark"
+            ],
+            "properties": {
+                "amount": {
+                    "description": "金额 ",
+                    "type": "number"
+                },
+                "remark": {
+                    "description": "备注 ",
+                    "type": "string"
                 }
             }
         },

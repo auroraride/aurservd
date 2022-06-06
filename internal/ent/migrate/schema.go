@@ -1178,12 +1178,12 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "cost", Type: field.TypeFloat64, Comment: "账单金额", Default: 0},
-		{Name: "amount", Type: field.TypeFloat64, Comment: "预付金额", Default: 0},
+		{Name: "amount", Type: field.TypeFloat64, Comment: "总预付金额", Default: 0},
 		{Name: "balance", Type: field.TypeFloat64, Comment: "预付剩余, 负数是欠费", Default: 0},
 		{Name: "settled_at", Type: field.TypeTime, Comment: "清账时间", Nullable: true},
 		{Name: "days", Type: field.TypeInt, Comment: "账期内使用总天数", Default: 0},
 		{Name: "rider_number", Type: field.TypeInt, Comment: "账期内使用总人数", Default: 0},
-		{Name: "bill_time", Type: field.TypeTime, Comment: "对账单计算截止日", SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "bill_time", Type: field.TypeTime, Comment: "对账单计算日期(包含, 例如2022-06-05代表是2022-06-06日计算截止到2022-06-05的账单详情)", Nullable: true, SchemaType: map[string]string{"postgres": "date"}},
 		{Name: "enterprise_id", Type: field.TypeUint64},
 	}
 	// StatementTable holds the schema information for the "statement" table.

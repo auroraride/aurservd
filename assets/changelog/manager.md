@@ -3,6 +3,7 @@
 #### 接口新增
 
 - [M90003 列举企业](/docs#tag/M/operation/ManagerEnterpriseList)
+- [M90005 企业预付费](/docs#tag/M/operation/ManagerEnterprisePrepayment)
 
 
 

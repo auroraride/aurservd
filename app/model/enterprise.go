@@ -88,3 +88,9 @@ type EnterpriseListRes struct {
     Prices       []EnterprisePriceWithCity `json:"prices,omitempty"`      // 价格列表
     City         City                      `json:"city"`                  // 城市
 }
+
+type EnterprisePrepaymentReq struct {
+    ID     uint64  `json:"id" validate:"required" param:"id" trans:"企业ID"`
+    Remark string  `json:"remark" validate:"required" trans:"备注"`
+    Amount float64 `json:"amount" validate:"required" trans:"金额"`
+}

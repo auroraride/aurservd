@@ -8,6 +8,7 @@ package service
 import (
     "context"
     "fmt"
+    "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -80,6 +81,13 @@ func (s *enterpriseService) Create(req *model.EnterpriseDetail) uint64 {
 // Modify 修改企业
 func (s *enterpriseService) Modify(req *model.EnterpriseDetailWithID) {
     e := s.Query(req.ID)
+    // 判定付费方式是否允许改变
+    if *req.Payment != e.Payment {
+        set := NewStatementWithModifier(s.modifier).Current(e.ID)
+        if set.Cost > 0 {
+            snag.Panic("企业已产生费用, 无法修改支付方式")
+        }
+    }
 
     tx, err := ar.Ent.Tx(s.ctx)
     if err != nil {
@@ -132,7 +140,6 @@ func (s *enterpriseService) SaveEnterprise(tx *ent.Tx, e *ent.Enterprise, req *m
 // List 列举企业
 func (s *enterpriseService) List(req *model.EnterpriseListReq) *model.PaginationRes {
     tt := tools.NewTime()
-    // pu := tools.NewPointer()
 
     q := s.orm.QueryNotDeleted().WithStatements().WithCity().WithPrices(func(ep *ent.EnterprisePriceQuery) {
         ep.WithCity()
@@ -285,6 +292,7 @@ func (s *enterpriseService) UpdateStatement(item *ent.Enterprise) {
         SetBalance(balance).
         SetDays(days).
         SetCost(cf).
+        SetBillTime(carbon.Now().StartOfDay().AddDays(-1).Carbon2Time()).
         Save(s.ctx)
 
     if err != nil {
@@ -292,4 +300,45 @@ func (s *enterpriseService) UpdateStatement(item *ent.Enterprise) {
     }
 
     log.Infof("[ENTERPRISE TASK] %d 更新成功, 账期使用总天数: %d, 总费用: %v", item.ID, days, cost)
+}
+
+// Prepayment 预付费
+func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float64 {
+    e := s.Query(req.ID)
+    if e.Payment == model.EnterprisePaymentPostPay {
+        snag.Panic("该企业支付方式为后付费")
+    }
+
+    set := NewStatementWithModifier(s.modifier).Current(e.ID)
+
+    before := e.Balance
+    tx, _ := ar.Ent.Tx(s.ctx)
+
+    // 创建预付费记录
+    _, err := tx.EnterprisePrepayment.Create().SetEnterpriseID(e.ID).SetAmount(req.Amount).SetRemark(req.Remark).Save(s.ctx)
+    snag.PanicIfErrorX(err, tx.Rollback)
+
+    // 更新余额
+    b, _ := decimal.NewFromFloat(set.Balance).Add(decimal.NewFromFloat(req.Amount)).Float64()
+    a, _ := decimal.NewFromFloat(set.Amount).Add(decimal.NewFromFloat(req.Amount)).Float64()
+
+    // 更新账单表
+    _, err = tx.Statement.UpdateOne(set).SetBalance(b).SetAmount(a).Save(s.ctx)
+    snag.PanicIfErrorX(err, tx.Rollback)
+
+    // 更新企业表
+    _, err = tx.Enterprise.UpdateOne(e).SetBalance(b).Save(s.ctx)
+    snag.PanicIfErrorX(err, tx.Rollback)
+
+    // 记录日志
+    go logging.NewOperateLog().
+        SetRef(e).
+        SetModifier(s.modifier).
+        SetOperate(logging.OperateEnterprisePrepayment).
+        SetDiff(fmt.Sprintf("余额%.2f元", before), fmt.Sprintf("余额%.2f元", b)).
+        SetRemark(req.Remark).
+        Send()
+
+    _ = tx.Commit()
+    return b
 }

@@ -63,3 +63,20 @@ func (*enterprise) List(c echo.Context) (err error) {
         service.NewEnterpriseWithModifier(ctx.Modifier).List(req),
     )
 }
+
+// Prepayment
+// @ID           ManagerEnterprisePrepayment
+// @Router       /manager/v1/enterprise/{id}/prepayment [POST]
+// @Summary      M90005 企业预付费
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body  model.EnterprisePrepaymentReq  true  "desc"
+// @Success      200  {object}  float64  "当前余额"
+func (*enterprise) Prepayment(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.EnterprisePrepaymentReq](c)
+    return ctx.SendResponse(
+        service.NewEnterpriseWithModifier(ctx.Modifier).Prepayment(req),
+    )
+}

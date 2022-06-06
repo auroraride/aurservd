@@ -1166,6 +1166,20 @@ func BillTimeLTE(v time.Time) predicate.Statement {
 	})
 }
 
+// BillTimeIsNil applies the IsNil predicate on the "bill_time" field.
+func BillTimeIsNil() predicate.Statement {
+	return predicate.Statement(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldBillTime)))
+	})
+}
+
+// BillTimeNotNil applies the NotNil predicate on the "bill_time" field.
+func BillTimeNotNil() predicate.Statement {
+	return predicate.Statement(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldBillTime)))
+	})
+}
+
 // HasSubscribes applies the HasEdge predicate on the "subscribes" edge.
 func HasSubscribes() predicate.Statement {
 	return predicate.Statement(func(s *sql.Selector) {

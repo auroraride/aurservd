@@ -189,6 +189,14 @@ func (sc *StatementCreate) SetBillTime(t time.Time) *StatementCreate {
 	return sc
 }
 
+// SetNillableBillTime sets the "bill_time" field if the given value is not nil.
+func (sc *StatementCreate) SetNillableBillTime(t *time.Time) *StatementCreate {
+	if t != nil {
+		sc.SetBillTime(*t)
+	}
+	return sc
+}
+
 // AddSubscribeIDs adds the "subscribes" edge to the Subscribe entity by IDs.
 func (sc *StatementCreate) AddSubscribeIDs(ids ...uint64) *StatementCreate {
 	sc.mutation.AddSubscribeIDs(ids...)
@@ -351,9 +359,6 @@ func (sc *StatementCreate) check() error {
 	if _, ok := sc.mutation.RiderNumber(); !ok {
 		return &ValidationError{Name: "rider_number", err: errors.New(`ent: missing required field "Statement.rider_number"`)}
 	}
-	if _, ok := sc.mutation.BillTime(); !ok {
-		return &ValidationError{Name: "bill_time", err: errors.New(`ent: missing required field "Statement.bill_time"`)}
-	}
 	if _, ok := sc.mutation.EnterpriseID(); !ok {
 		return &ValidationError{Name: "enterprise", err: errors.New(`ent: missing required edge "Statement.enterprise"`)}
 	}
@@ -487,7 +492,7 @@ func (sc *StatementCreate) createSpec() (*Statement, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: statement.FieldBillTime,
 		})
-		_node.BillTime = value
+		_node.BillTime = &value
 	}
 	if nodes := sc.mutation.SubscribesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -810,6 +815,12 @@ func (u *StatementUpsert) UpdateBillTime() *StatementUpsert {
 	return u
 }
 
+// ClearBillTime clears the value of the "bill_time" field.
+func (u *StatementUpsert) ClearBillTime() *StatementUpsert {
+	u.SetNull(statement.FieldBillTime)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1123,6 +1134,13 @@ func (u *StatementUpsertOne) SetBillTime(v time.Time) *StatementUpsertOne {
 func (u *StatementUpsertOne) UpdateBillTime() *StatementUpsertOne {
 	return u.Update(func(s *StatementUpsert) {
 		s.UpdateBillTime()
+	})
+}
+
+// ClearBillTime clears the value of the "bill_time" field.
+func (u *StatementUpsertOne) ClearBillTime() *StatementUpsertOne {
+	return u.Update(func(s *StatementUpsert) {
+		s.ClearBillTime()
 	})
 }
 
@@ -1603,6 +1621,13 @@ func (u *StatementUpsertBulk) SetBillTime(v time.Time) *StatementUpsertBulk {
 func (u *StatementUpsertBulk) UpdateBillTime() *StatementUpsertBulk {
 	return u.Update(func(s *StatementUpsert) {
 		s.UpdateBillTime()
+	})
+}
+
+// ClearBillTime clears the value of the "bill_time" field.
+func (u *StatementUpsertBulk) ClearBillTime() *StatementUpsertBulk {
+	return u.Update(func(s *StatementUpsert) {
+		s.ClearBillTime()
 	})
 }
 

@@ -226,6 +226,20 @@ func (su *StatementUpdate) SetBillTime(t time.Time) *StatementUpdate {
 	return su
 }
 
+// SetNillableBillTime sets the "bill_time" field if the given value is not nil.
+func (su *StatementUpdate) SetNillableBillTime(t *time.Time) *StatementUpdate {
+	if t != nil {
+		su.SetBillTime(*t)
+	}
+	return su
+}
+
+// ClearBillTime clears the value of the "bill_time" field.
+func (su *StatementUpdate) ClearBillTime() *StatementUpdate {
+	su.mutation.ClearBillTime()
+	return su
+}
+
 // AddSubscribeIDs adds the "subscribes" edge to the Subscribe entity by IDs.
 func (su *StatementUpdate) AddSubscribeIDs(ids ...uint64) *StatementUpdate {
 	su.mutation.AddSubscribeIDs(ids...)
@@ -518,6 +532,12 @@ func (su *StatementUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
+			Column: statement.FieldBillTime,
+		})
+	}
+	if su.mutation.BillTimeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
 			Column: statement.FieldBillTime,
 		})
 	}
@@ -821,6 +841,20 @@ func (suo *StatementUpdateOne) AddRiderNumber(i int) *StatementUpdateOne {
 // SetBillTime sets the "bill_time" field.
 func (suo *StatementUpdateOne) SetBillTime(t time.Time) *StatementUpdateOne {
 	suo.mutation.SetBillTime(t)
+	return suo
+}
+
+// SetNillableBillTime sets the "bill_time" field if the given value is not nil.
+func (suo *StatementUpdateOne) SetNillableBillTime(t *time.Time) *StatementUpdateOne {
+	if t != nil {
+		suo.SetBillTime(*t)
+	}
+	return suo
+}
+
+// ClearBillTime clears the value of the "bill_time" field.
+func (suo *StatementUpdateOne) ClearBillTime() *StatementUpdateOne {
+	suo.mutation.ClearBillTime()
 	return suo
 }
 
@@ -1146,6 +1180,12 @@ func (suo *StatementUpdateOne) sqlSave(ctx context.Context) (_node *Statement, e
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
+			Column: statement.FieldBillTime,
+		})
+	}
+	if suo.mutation.BillTimeCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
 			Column: statement.FieldBillTime,
 		})
 	}

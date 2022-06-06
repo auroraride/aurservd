@@ -28614,7 +28614,7 @@ func (m *StatementMutation) BillTime() (r time.Time, exists bool) {
 // OldBillTime returns the old "bill_time" field's value of the Statement entity.
 // If the Statement object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StatementMutation) OldBillTime(ctx context.Context) (v time.Time, err error) {
+func (m *StatementMutation) OldBillTime(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldBillTime is only allowed on UpdateOne operations")
 	}
@@ -28628,9 +28628,22 @@ func (m *StatementMutation) OldBillTime(ctx context.Context) (v time.Time, err e
 	return oldValue.BillTime, nil
 }
 
+// ClearBillTime clears the value of the "bill_time" field.
+func (m *StatementMutation) ClearBillTime() {
+	m.bill_time = nil
+	m.clearedFields[statement.FieldBillTime] = struct{}{}
+}
+
+// BillTimeCleared returns if the "bill_time" field was cleared in this mutation.
+func (m *StatementMutation) BillTimeCleared() bool {
+	_, ok := m.clearedFields[statement.FieldBillTime]
+	return ok
+}
+
 // ResetBillTime resets all changes to the "bill_time" field.
 func (m *StatementMutation) ResetBillTime() {
 	m.bill_time = nil
+	delete(m.clearedFields, statement.FieldBillTime)
 }
 
 // AddSubscribeIDs adds the "subscribes" edge to the Subscribe entity by ids.
@@ -29063,6 +29076,9 @@ func (m *StatementMutation) ClearedFields() []string {
 	if m.FieldCleared(statement.FieldSettledAt) {
 		fields = append(fields, statement.FieldSettledAt)
 	}
+	if m.FieldCleared(statement.FieldBillTime) {
+		fields = append(fields, statement.FieldBillTime)
+	}
 	return fields
 }
 
@@ -29091,6 +29107,9 @@ func (m *StatementMutation) ClearField(name string) error {
 		return nil
 	case statement.FieldSettledAt:
 		m.ClearSettledAt()
+		return nil
+	case statement.FieldBillTime:
+		m.ClearBillTime()
 		return nil
 	}
 	return fmt.Errorf("unknown Statement nullable field %s", name)

@@ -855,6 +855,18 @@ definitions:
         - 2
         type: integer
     type: object
+  model.EnterprisePrepaymentReq:
+    properties:
+      amount:
+        description: '金额 '
+        type: number
+      remark:
+        description: '备注 '
+        type: string
+    required:
+    - amount
+    - remark
+    type: object
   model.EnterprisePrice:
     properties:
       cityId:
@@ -2445,6 +2457,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M90002 修改企业
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/{id}/prepayment:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerEnterprisePrepayment
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnterprisePrepaymentReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 当前余额
+          schema:
+            type: number
+      summary: M90005 企业预付费
       tags:
       - '[M]管理接口'
   /manager/v1/fault/{id}:
