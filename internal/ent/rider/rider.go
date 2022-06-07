@@ -25,6 +25,8 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
+	// FieldStationID holds the string denoting the station_id field in the database.
+	FieldStationID = "station_id"
 	// FieldPersonID holds the string denoting the person_id field in the database.
 	FieldPersonID = "person_id"
 	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
@@ -51,6 +53,8 @@ const (
 	FieldPlanAt = "plan_at"
 	// FieldBlocked holds the string denoting the blocked field in the database.
 	FieldBlocked = "blocked"
+	// EdgeStation holds the string denoting the station edge name in mutations.
+	EdgeStation = "station"
 	// EdgePerson holds the string denoting the person edge name in mutations.
 	EdgePerson = "person"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
@@ -61,12 +65,21 @@ const (
 	EdgeFaults = "faults"
 	// EdgeOrders holds the string denoting the orders edge name in mutations.
 	EdgeOrders = "orders"
+	// EdgeInvoices holds the string denoting the invoices edge name in mutations.
+	EdgeInvoices = "invoices"
 	// EdgeExchanges holds the string denoting the exchanges edge name in mutations.
 	EdgeExchanges = "exchanges"
 	// EdgeSubscribes holds the string denoting the subscribes edge name in mutations.
 	EdgeSubscribes = "subscribes"
 	// Table holds the table name of the rider in the database.
 	Table = "rider"
+	// StationTable is the table that holds the station relation/edge.
+	StationTable = "rider"
+	// StationInverseTable is the table name for the EnterpriseStation entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisestation" package.
+	StationInverseTable = "enterprise_station"
+	// StationColumn is the table column denoting the station relation/edge.
+	StationColumn = "station_id"
 	// PersonTable is the table that holds the person relation/edge.
 	PersonTable = "rider"
 	// PersonInverseTable is the table name for the Person entity.
@@ -102,6 +115,13 @@ const (
 	OrdersInverseTable = "order"
 	// OrdersColumn is the table column denoting the orders relation/edge.
 	OrdersColumn = "rider_id"
+	// InvoicesTable is the table that holds the invoices relation/edge.
+	InvoicesTable = "enterprise_invoice"
+	// InvoicesInverseTable is the table name for the EnterpriseInvoice entity.
+	// It exists in this package in order to avoid circular dependency with the "enterpriseinvoice" package.
+	InvoicesInverseTable = "enterprise_invoice"
+	// InvoicesColumn is the table column denoting the invoices relation/edge.
+	InvoicesColumn = "rider_id"
 	// ExchangesTable is the table that holds the exchanges relation/edge.
 	ExchangesTable = "exchange"
 	// ExchangesInverseTable is the table name for the Exchange entity.
@@ -127,6 +147,7 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
+	FieldStationID,
 	FieldPersonID,
 	FieldEnterpriseID,
 	FieldPhone,

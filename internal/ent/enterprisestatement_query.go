@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseinvoice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -28,6 +29,7 @@ type EnterpriseStatementQuery struct {
 	predicates []predicate.EnterpriseStatement
 	// eager-loading edges.
 	withSubscribes *SubscribeQuery
+	withInvoices   *EnterpriseInvoiceQuery
 	withEnterprise *EnterpriseQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
@@ -81,6 +83,28 @@ func (esq *EnterpriseStatementQuery) QuerySubscribes() *SubscribeQuery {
 			sqlgraph.From(enterprisestatement.Table, enterprisestatement.FieldID, selector),
 			sqlgraph.To(subscribe.Table, subscribe.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestatement.SubscribesTable, enterprisestatement.SubscribesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(esq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryInvoices chains the current query on the "invoices" edge.
+func (esq *EnterpriseStatementQuery) QueryInvoices() *EnterpriseInvoiceQuery {
+	query := &EnterpriseInvoiceQuery{config: esq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := esq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := esq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestatement.Table, enterprisestatement.FieldID, selector),
+			sqlgraph.To(enterpriseinvoice.Table, enterpriseinvoice.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestatement.InvoicesTable, enterprisestatement.InvoicesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(esq.driver.Dialect(), step)
 		return fromU, nil
@@ -292,6 +316,7 @@ func (esq *EnterpriseStatementQuery) Clone() *EnterpriseStatementQuery {
 		order:          append([]OrderFunc{}, esq.order...),
 		predicates:     append([]predicate.EnterpriseStatement{}, esq.predicates...),
 		withSubscribes: esq.withSubscribes.Clone(),
+		withInvoices:   esq.withInvoices.Clone(),
 		withEnterprise: esq.withEnterprise.Clone(),
 		// clone intermediate query.
 		sql:    esq.sql.Clone(),
@@ -308,6 +333,17 @@ func (esq *EnterpriseStatementQuery) WithSubscribes(opts ...func(*SubscribeQuery
 		opt(query)
 	}
 	esq.withSubscribes = query
+	return esq
+}
+
+// WithInvoices tells the query-builder to eager-load the nodes that are connected to
+// the "invoices" edge. The optional arguments are used to configure the query builder of the edge.
+func (esq *EnterpriseStatementQuery) WithInvoices(opts ...func(*EnterpriseInvoiceQuery)) *EnterpriseStatementQuery {
+	query := &EnterpriseInvoiceQuery{config: esq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	esq.withInvoices = query
 	return esq
 }
 
@@ -392,8 +428,9 @@ func (esq *EnterpriseStatementQuery) sqlAll(ctx context.Context, hooks ...queryH
 	var (
 		nodes       = []*EnterpriseStatement{}
 		_spec       = esq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			esq.withSubscribes != nil,
+			esq.withInvoices != nil,
 			esq.withEnterprise != nil,
 		}
 	)
@@ -441,6 +478,31 @@ func (esq *EnterpriseStatementQuery) sqlAll(ctx context.Context, hooks ...queryH
 				return nil, fmt.Errorf(`unexpected foreign-key "statement_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Subscribes = append(node.Edges.Subscribes, n)
+		}
+	}
+
+	if query := esq.withInvoices; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*EnterpriseStatement)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Invoices = []*EnterpriseInvoice{}
+		}
+		query.Where(predicate.EnterpriseInvoice(func(s *sql.Selector) {
+			s.Where(sql.InValues(enterprisestatement.InvoicesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.StatementID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "statement_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Invoices = append(node.Edges.Invoices, n)
 		}
 	}
 

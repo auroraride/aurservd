@@ -15,6 +15,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseinvoice"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/person"
@@ -95,6 +97,12 @@ func (rc *RiderCreate) SetNillableRemark(s *string) *RiderCreate {
 	if s != nil {
 		rc.SetRemark(*s)
 	}
+	return rc
+}
+
+// SetStationID sets the "station_id" field.
+func (rc *RiderCreate) SetStationID(u uint64) *RiderCreate {
+	rc.mutation.SetStationID(u)
 	return rc
 }
 
@@ -264,6 +272,11 @@ func (rc *RiderCreate) SetNillableBlocked(b *bool) *RiderCreate {
 	return rc
 }
 
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (rc *RiderCreate) SetStation(e *EnterpriseStation) *RiderCreate {
+	return rc.SetStationID(e.ID)
+}
+
 // SetPerson sets the "person" edge to the Person entity.
 func (rc *RiderCreate) SetPerson(p *Person) *RiderCreate {
 	return rc.SetPersonID(p.ID)
@@ -317,6 +330,21 @@ func (rc *RiderCreate) AddOrders(o ...*Order) *RiderCreate {
 		ids[i] = o[i].ID
 	}
 	return rc.AddOrderIDs(ids...)
+}
+
+// AddInvoiceIDs adds the "invoices" edge to the EnterpriseInvoice entity by IDs.
+func (rc *RiderCreate) AddInvoiceIDs(ids ...uint64) *RiderCreate {
+	rc.mutation.AddInvoiceIDs(ids...)
+	return rc
+}
+
+// AddInvoices adds the "invoices" edges to the EnterpriseInvoice entity.
+func (rc *RiderCreate) AddInvoices(e ...*EnterpriseInvoice) *RiderCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return rc.AddInvoiceIDs(ids...)
 }
 
 // AddExchangeIDs adds the "exchanges" edge to the Exchange entity by IDs.
@@ -461,6 +489,9 @@ func (rc *RiderCreate) check() error {
 	if _, ok := rc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Rider.updated_at"`)}
 	}
+	if _, ok := rc.mutation.StationID(); !ok {
+		return &ValidationError{Name: "station_id", err: errors.New(`ent: missing required field "Rider.station_id"`)}
+	}
 	if _, ok := rc.mutation.Phone(); !ok {
 		return &ValidationError{Name: "phone", err: errors.New(`ent: missing required field "Rider.phone"`)}
 	}
@@ -484,6 +515,9 @@ func (rc *RiderCreate) check() error {
 	}
 	if _, ok := rc.mutation.Blocked(); !ok {
 		return &ValidationError{Name: "blocked", err: errors.New(`ent: missing required field "Rider.blocked"`)}
+	}
+	if _, ok := rc.mutation.StationID(); !ok {
+		return &ValidationError{Name: "station", err: errors.New(`ent: missing required edge "Rider.station"`)}
 	}
 	return nil
 }
@@ -649,6 +683,26 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 		})
 		_node.Blocked = value
 	}
+	if nodes := rc.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   rider.StationTable,
+			Columns: []string{rider.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.StationID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := rc.mutation.PersonIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -738,6 +792,25 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.InvoicesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.InvoicesTable,
+			Columns: []string{rider.InvoicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterpriseinvoice.FieldID,
 				},
 			},
 		}
@@ -931,6 +1004,18 @@ func (u *RiderUpsert) UpdateRemark() *RiderUpsert {
 // ClearRemark clears the value of the "remark" field.
 func (u *RiderUpsert) ClearRemark() *RiderUpsert {
 	u.SetNull(rider.FieldRemark)
+	return u
+}
+
+// SetStationID sets the "station_id" field.
+func (u *RiderUpsert) SetStationID(v uint64) *RiderUpsert {
+	u.Set(rider.FieldStationID, v)
+	return u
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateStationID() *RiderUpsert {
+	u.SetExcluded(rider.FieldStationID)
 	return u
 }
 
@@ -1315,6 +1400,20 @@ func (u *RiderUpsertOne) UpdateRemark() *RiderUpsertOne {
 func (u *RiderUpsertOne) ClearRemark() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetStationID sets the "station_id" field.
+func (u *RiderUpsertOne) SetStationID(v uint64) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetStationID(v)
+	})
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateStationID() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateStationID()
 	})
 }
 
@@ -1900,6 +1999,20 @@ func (u *RiderUpsertBulk) UpdateRemark() *RiderUpsertBulk {
 func (u *RiderUpsertBulk) ClearRemark() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetStationID sets the "station_id" field.
+func (u *RiderUpsertBulk) SetStationID(v uint64) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetStationID(v)
+	})
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateStationID() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateStationID()
 	})
 }
 

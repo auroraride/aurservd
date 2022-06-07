@@ -17,17 +17,17 @@ type PlanMixin struct {
     Optional bool
 }
 
-func (pm PlanMixin) Fields() []ent.Field {
+func (m PlanMixin) Fields() []ent.Field {
     f := field.Uint64("plan_id").Comment("骑士卡ID")
-    if pm.Optional {
+    if m.Optional {
         f.Optional()
     }
     return []ent.Field{f}
 }
 
-func (pm PlanMixin) Edges() []ent.Edge {
+func (m PlanMixin) Edges() []ent.Edge {
     e := edge.To("plan", Plan.Type).Unique().Field("plan_id")
-    if !pm.Optional {
+    if !m.Optional {
         e.Required()
     }
     return []ent.Edge{e}

@@ -16,9 +16,9 @@ type ManagerMixin struct {
     Optional bool
 }
 
-func (mm ManagerMixin) Fields() []ent.Field {
+func (mmm ManagerMixin) Fields() []ent.Field {
     f := field.Uint64("manager_id").Comment("管理人ID")
-    if mm.Optional {
+    if mmm.Optional {
         f.Optional()
     }
     return []ent.Field{
@@ -26,9 +26,9 @@ func (mm ManagerMixin) Fields() []ent.Field {
     }
 }
 
-func (mm ManagerMixin) Edges() []ent.Edge {
+func (mmm ManagerMixin) Edges() []ent.Edge {
     e := edge.To("manager", Manager.Type).Unique().Field("manager_id")
-    if !mm.Optional {
+    if !mmm.Optional {
         e.Required()
     }
     return []ent.Edge{

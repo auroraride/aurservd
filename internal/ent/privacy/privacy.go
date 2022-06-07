@@ -429,6 +429,30 @@ func (f EnterpriseContractMutationRuleFunc) EvalMutation(ctx context.Context, m 
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.EnterpriseContractMutation", m)
 }
 
+// The EnterpriseInvoiceQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type EnterpriseInvoiceQueryRuleFunc func(context.Context, *ent.EnterpriseInvoiceQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f EnterpriseInvoiceQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.EnterpriseInvoiceQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.EnterpriseInvoiceQuery", q)
+}
+
+// The EnterpriseInvoiceMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type EnterpriseInvoiceMutationRuleFunc func(context.Context, *ent.EnterpriseInvoiceMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f EnterpriseInvoiceMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.EnterpriseInvoiceMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.EnterpriseInvoiceMutation", m)
+}
+
 // The EnterprisePrepaymentQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type EnterprisePrepaymentQueryRuleFunc func(context.Context, *ent.EnterprisePrepaymentQuery) error
@@ -870,6 +894,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.EnterpriseContractQuery:
 		return q.Filter(), nil
+	case *ent.EnterpriseInvoiceQuery:
+		return q.Filter(), nil
 	case *ent.EnterprisePrepaymentQuery:
 		return q.Filter(), nil
 	case *ent.EnterprisePriceQuery:
@@ -930,6 +956,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.EnterpriseMutation:
 		return m.Filter(), nil
 	case *ent.EnterpriseContractMutation:
+		return m.Filter(), nil
+	case *ent.EnterpriseInvoiceMutation:
 		return m.Filter(), nil
 	case *ent.EnterprisePrepaymentMutation:
 		return m.Filter(), nil

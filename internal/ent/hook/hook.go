@@ -152,6 +152,19 @@ func (f EnterpriseContractFunc) Mutate(ctx context.Context, m ent.Mutation) (ent
 	return f(ctx, mv)
 }
 
+// The EnterpriseInvoiceFunc type is an adapter to allow the use of ordinary
+// function as EnterpriseInvoice mutator.
+type EnterpriseInvoiceFunc func(context.Context, *ent.EnterpriseInvoiceMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EnterpriseInvoiceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.EnterpriseInvoiceMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EnterpriseInvoiceMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The EnterprisePrepaymentFunc type is an adapter to allow the use of ordinary
 // function as EnterprisePrepayment mutator.
 type EnterprisePrepaymentFunc func(context.Context, *ent.EnterprisePrepaymentMutation) (ent.Value, error)

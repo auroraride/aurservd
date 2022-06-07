@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseinvoice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -255,6 +256,21 @@ func (esu *EnterpriseStatementUpdate) AddSubscribes(s ...*Subscribe) *Enterprise
 	return esu.AddSubscribeIDs(ids...)
 }
 
+// AddInvoiceIDs adds the "invoices" edge to the EnterpriseInvoice entity by IDs.
+func (esu *EnterpriseStatementUpdate) AddInvoiceIDs(ids ...uint64) *EnterpriseStatementUpdate {
+	esu.mutation.AddInvoiceIDs(ids...)
+	return esu
+}
+
+// AddInvoices adds the "invoices" edges to the EnterpriseInvoice entity.
+func (esu *EnterpriseStatementUpdate) AddInvoices(e ...*EnterpriseInvoice) *EnterpriseStatementUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return esu.AddInvoiceIDs(ids...)
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (esu *EnterpriseStatementUpdate) SetEnterprise(e *Enterprise) *EnterpriseStatementUpdate {
 	return esu.SetEnterpriseID(e.ID)
@@ -284,6 +300,27 @@ func (esu *EnterpriseStatementUpdate) RemoveSubscribes(s ...*Subscribe) *Enterpr
 		ids[i] = s[i].ID
 	}
 	return esu.RemoveSubscribeIDs(ids...)
+}
+
+// ClearInvoices clears all "invoices" edges to the EnterpriseInvoice entity.
+func (esu *EnterpriseStatementUpdate) ClearInvoices() *EnterpriseStatementUpdate {
+	esu.mutation.ClearInvoices()
+	return esu
+}
+
+// RemoveInvoiceIDs removes the "invoices" edge to EnterpriseInvoice entities by IDs.
+func (esu *EnterpriseStatementUpdate) RemoveInvoiceIDs(ids ...uint64) *EnterpriseStatementUpdate {
+	esu.mutation.RemoveInvoiceIDs(ids...)
+	return esu
+}
+
+// RemoveInvoices removes "invoices" edges to EnterpriseInvoice entities.
+func (esu *EnterpriseStatementUpdate) RemoveInvoices(e ...*EnterpriseInvoice) *EnterpriseStatementUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return esu.RemoveInvoiceIDs(ids...)
 }
 
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
@@ -595,6 +632,60 @@ func (esu *EnterpriseStatementUpdate) sqlSave(ctx context.Context) (n int, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if esu.mutation.InvoicesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestatement.InvoicesTable,
+			Columns: []string{enterprisestatement.InvoicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterpriseinvoice.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esu.mutation.RemovedInvoicesIDs(); len(nodes) > 0 && !esu.mutation.InvoicesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestatement.InvoicesTable,
+			Columns: []string{enterprisestatement.InvoicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterpriseinvoice.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esu.mutation.InvoicesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestatement.InvoicesTable,
+			Columns: []string{enterprisestatement.InvoicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterpriseinvoice.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if esu.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -873,6 +964,21 @@ func (esuo *EnterpriseStatementUpdateOne) AddSubscribes(s ...*Subscribe) *Enterp
 	return esuo.AddSubscribeIDs(ids...)
 }
 
+// AddInvoiceIDs adds the "invoices" edge to the EnterpriseInvoice entity by IDs.
+func (esuo *EnterpriseStatementUpdateOne) AddInvoiceIDs(ids ...uint64) *EnterpriseStatementUpdateOne {
+	esuo.mutation.AddInvoiceIDs(ids...)
+	return esuo
+}
+
+// AddInvoices adds the "invoices" edges to the EnterpriseInvoice entity.
+func (esuo *EnterpriseStatementUpdateOne) AddInvoices(e ...*EnterpriseInvoice) *EnterpriseStatementUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return esuo.AddInvoiceIDs(ids...)
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (esuo *EnterpriseStatementUpdateOne) SetEnterprise(e *Enterprise) *EnterpriseStatementUpdateOne {
 	return esuo.SetEnterpriseID(e.ID)
@@ -902,6 +1008,27 @@ func (esuo *EnterpriseStatementUpdateOne) RemoveSubscribes(s ...*Subscribe) *Ent
 		ids[i] = s[i].ID
 	}
 	return esuo.RemoveSubscribeIDs(ids...)
+}
+
+// ClearInvoices clears all "invoices" edges to the EnterpriseInvoice entity.
+func (esuo *EnterpriseStatementUpdateOne) ClearInvoices() *EnterpriseStatementUpdateOne {
+	esuo.mutation.ClearInvoices()
+	return esuo
+}
+
+// RemoveInvoiceIDs removes the "invoices" edge to EnterpriseInvoice entities by IDs.
+func (esuo *EnterpriseStatementUpdateOne) RemoveInvoiceIDs(ids ...uint64) *EnterpriseStatementUpdateOne {
+	esuo.mutation.RemoveInvoiceIDs(ids...)
+	return esuo
+}
+
+// RemoveInvoices removes "invoices" edges to EnterpriseInvoice entities.
+func (esuo *EnterpriseStatementUpdateOne) RemoveInvoices(e ...*EnterpriseInvoice) *EnterpriseStatementUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return esuo.RemoveInvoiceIDs(ids...)
 }
 
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
@@ -1235,6 +1362,60 @@ func (esuo *EnterpriseStatementUpdateOne) sqlSave(ctx context.Context) (_node *E
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if esuo.mutation.InvoicesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestatement.InvoicesTable,
+			Columns: []string{enterprisestatement.InvoicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterpriseinvoice.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esuo.mutation.RemovedInvoicesIDs(); len(nodes) > 0 && !esuo.mutation.InvoicesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestatement.InvoicesTable,
+			Columns: []string{enterprisestatement.InvoicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterpriseinvoice.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esuo.mutation.InvoicesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestatement.InvoicesTable,
+			Columns: []string{enterprisestatement.InvoicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterpriseinvoice.FieldID,
 				},
 			},
 		}

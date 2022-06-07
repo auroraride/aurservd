@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseinvoice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
@@ -210,6 +211,21 @@ func (esc *EnterpriseStatementCreate) AddSubscribes(s ...*Subscribe) *Enterprise
 		ids[i] = s[i].ID
 	}
 	return esc.AddSubscribeIDs(ids...)
+}
+
+// AddInvoiceIDs adds the "invoices" edge to the EnterpriseInvoice entity by IDs.
+func (esc *EnterpriseStatementCreate) AddInvoiceIDs(ids ...uint64) *EnterpriseStatementCreate {
+	esc.mutation.AddInvoiceIDs(ids...)
+	return esc
+}
+
+// AddInvoices adds the "invoices" edges to the EnterpriseInvoice entity.
+func (esc *EnterpriseStatementCreate) AddInvoices(e ...*EnterpriseInvoice) *EnterpriseStatementCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return esc.AddInvoiceIDs(ids...)
 }
 
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
@@ -505,6 +521,25 @@ func (esc *EnterpriseStatementCreate) createSpec() (*EnterpriseStatement, *sqlgr
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := esc.mutation.InvoicesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestatement.InvoicesTable,
+			Columns: []string{enterprisestatement.InvoicesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterpriseinvoice.FieldID,
 				},
 			},
 		}

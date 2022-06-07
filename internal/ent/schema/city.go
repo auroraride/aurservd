@@ -16,17 +16,17 @@ type CityMixin struct {
     Optional bool
 }
 
-func (cm CityMixin) Fields() []ent.Field {
+func (m CityMixin) Fields() []ent.Field {
     f := field.Uint64("city_id").Comment("城市ID")
-    if cm.Optional {
+    if m.Optional {
         f.Optional()
     }
     return []ent.Field{f}
 }
 
-func (cm CityMixin) Edges() []ent.Edge {
+func (m CityMixin) Edges() []ent.Edge {
     e := edge.To("city", City.Type).Unique().Field("city_id")
-    if !cm.Optional {
+    if !m.Optional {
         e.Required()
     }
     return []ent.Edge{e}

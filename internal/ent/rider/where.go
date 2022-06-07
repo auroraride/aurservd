@@ -121,6 +121,13 @@ func Remark(v string) predicate.Rider {
 	})
 }
 
+// StationID applies equality check predicate on the "station_id" field. It's identical to StationIDEQ.
+func StationID(v uint64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStationID), v))
+	})
+}
+
 // PersonID applies equality check predicate on the "person_id" field. It's identical to PersonIDEQ.
 func PersonID(v uint64) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
@@ -597,6 +604,54 @@ func RemarkEqualFold(v string) predicate.Rider {
 func RemarkContainsFold(v string) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldRemark), v))
+	})
+}
+
+// StationIDEQ applies the EQ predicate on the "station_id" field.
+func StationIDEQ(v uint64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStationID), v))
+	})
+}
+
+// StationIDNEQ applies the NEQ predicate on the "station_id" field.
+func StationIDNEQ(v uint64) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldStationID), v))
+	})
+}
+
+// StationIDIn applies the In predicate on the "station_id" field.
+func StationIDIn(vs ...uint64) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldStationID), v...))
+	})
+}
+
+// StationIDNotIn applies the NotIn predicate on the "station_id" field.
+func StationIDNotIn(vs ...uint64) predicate.Rider {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Rider(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldStationID), v...))
 	})
 }
 
@@ -1647,6 +1702,34 @@ func BlockedNEQ(v bool) predicate.Rider {
 	})
 }
 
+// HasStation applies the HasEdge predicate on the "station" edge.
+func HasStation() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StationTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStationWith applies the HasEdge predicate on the "station" edge with a given conditions (other predicates).
+func HasStationWith(preds ...predicate.EnterpriseStation) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StationInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasPerson applies the HasEdge predicate on the "person" edge.
 func HasPerson() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
@@ -1778,6 +1861,34 @@ func HasOrdersWith(preds ...predicate.Order) predicate.Rider {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(OrdersInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, OrdersTable, OrdersColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasInvoices applies the HasEdge predicate on the "invoices" edge.
+func HasInvoices() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(InvoicesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, InvoicesTable, InvoicesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasInvoicesWith applies the HasEdge predicate on the "invoices" edge with a given conditions (other predicates).
+func HasInvoicesWith(preds ...predicate.EnterpriseInvoice) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(InvoicesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, InvoicesTable, InvoicesColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

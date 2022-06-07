@@ -6,8 +6,30 @@ import (
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
+    "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
+
+type StationMixin struct {
+    mixin.Schema
+    Optional bool
+}
+
+func (m StationMixin) Fields() []ent.Field {
+    f := field.Uint64("station_id").Comment("站点ID")
+    if m.Optional {
+        f.Optional()
+    }
+    return []ent.Field{f}
+}
+
+func (m StationMixin) Edges() []ent.Edge {
+    e := edge.To("station", EnterpriseStation.Type).Unique().Field("station_id")
+    if !m.Optional {
+        e.Required()
+    }
+    return []ent.Edge{e}
+}
 
 // EnterpriseStation holds the schema definition for the EnterpriseStation entity.
 type EnterpriseStation struct {

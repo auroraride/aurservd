@@ -39,6 +39,7 @@ type hooks struct {
 	Employee             []ent.Hook
 	Enterprise           []ent.Hook
 	EnterpriseContract   []ent.Hook
+	EnterpriseInvoice    []ent.Hook
 	EnterprisePrepayment []ent.Hook
 	EnterprisePrice      []ent.Hook
 	EnterpriseStatement  []ent.Hook

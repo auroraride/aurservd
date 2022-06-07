@@ -17,17 +17,17 @@ type EnterpriseMixin struct {
     Optional bool
 }
 
-func (cm EnterpriseMixin) Fields() []ent.Field {
+func (m EnterpriseMixin) Fields() []ent.Field {
     f := field.Uint64("enterprise_id").Comment("企业ID")
-    if cm.Optional {
+    if m.Optional {
         f.Optional()
     }
     return []ent.Field{f}
 }
 
-func (cm EnterpriseMixin) Edges() []ent.Edge {
+func (m EnterpriseMixin) Edges() []ent.Edge {
     e := edge.To("enterprise", Enterprise.Type).Unique().Field("enterprise_id")
-    if !cm.Optional {
+    if !m.Optional {
         e.Required()
     }
     return []ent.Edge{e}

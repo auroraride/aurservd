@@ -18,24 +18,20 @@ type RiderMixin struct {
     Optional bool
 }
 
-func (rm RiderMixin) Fields() []ent.Field {
+func (m RiderMixin) Fields() []ent.Field {
     f := field.Uint64("rider_id").Comment("骑手ID")
-    if rm.Optional {
+    if m.Optional {
         f.Optional()
     }
-    return []ent.Field{
-        f,
-    }
+    return []ent.Field{f}
 }
 
-func (rm RiderMixin) Edges() []ent.Edge {
+func (m RiderMixin) Edges() []ent.Edge {
     e := edge.To("rider", Rider.Type).Unique().Field("rider_id").Comment("骑手")
-    if !rm.Optional {
+    if !m.Optional {
         e.Required()
     }
-    return []ent.Edge{
-        e,
-    }
+    return []ent.Edge{e}
 }
 
 // Rider holds the schema definition for the Rider entity.
@@ -78,6 +74,7 @@ func (Rider) Edges() []ent.Edge {
         edge.To("contract", Contract.Type),
         edge.To("faults", CabinetFault.Type),
         edge.To("orders", Order.Type),
+        edge.To("invoices", EnterpriseInvoice.Type),
 
         edge.To("exchanges", Exchange.Type).Comment("换电记录"),
         edge.To("subscribes", Subscribe.Type).Comment("订阅"),
@@ -89,6 +86,8 @@ func (Rider) Mixin() []ent.Mixin {
         internal.TimeMixin{},
         internal.DeleteMixin{},
         internal.Modifier{},
+
+        StationMixin{},
     }
 }
 

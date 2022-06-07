@@ -42,6 +42,7 @@ func (EnterpriseStatement) Fields() []ent.Field {
 func (EnterpriseStatement) Edges() []ent.Edge {
     return []ent.Edge{
         edge.To("subscribes", Subscribe.Type),
+        edge.To("invoices", EnterpriseInvoice.Type),
         edge.From("enterprise", Enterprise.Type).Ref("statements").Unique().Required().Field("enterprise_id"),
     }
 }

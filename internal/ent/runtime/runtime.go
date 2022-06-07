@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
+	"github.com/auroraride/aurservd/internal/ent/enterpriseinvoice"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
@@ -306,6 +307,23 @@ func init() {
 	enterprisecontract.DefaultUpdatedAt = enterprisecontractDescUpdatedAt.Default.(func() time.Time)
 	// enterprisecontract.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	enterprisecontract.UpdateDefaultUpdatedAt = enterprisecontractDescUpdatedAt.UpdateDefault.(func() time.Time)
+	enterpriseinvoiceMixin := schema.EnterpriseInvoice{}.Mixin()
+	enterpriseinvoiceMixinHooks2 := enterpriseinvoiceMixin[2].Hooks()
+	enterpriseinvoice.Hooks[0] = enterpriseinvoiceMixinHooks2[0]
+	enterpriseinvoiceMixinFields0 := enterpriseinvoiceMixin[0].Fields()
+	_ = enterpriseinvoiceMixinFields0
+	enterpriseinvoiceFields := schema.EnterpriseInvoice{}.Fields()
+	_ = enterpriseinvoiceFields
+	// enterpriseinvoiceDescCreatedAt is the schema descriptor for created_at field.
+	enterpriseinvoiceDescCreatedAt := enterpriseinvoiceMixinFields0[0].Descriptor()
+	// enterpriseinvoice.DefaultCreatedAt holds the default value on creation for the created_at field.
+	enterpriseinvoice.DefaultCreatedAt = enterpriseinvoiceDescCreatedAt.Default.(func() time.Time)
+	// enterpriseinvoiceDescUpdatedAt is the schema descriptor for updated_at field.
+	enterpriseinvoiceDescUpdatedAt := enterpriseinvoiceMixinFields0[1].Descriptor()
+	// enterpriseinvoice.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	enterpriseinvoice.DefaultUpdatedAt = enterpriseinvoiceDescUpdatedAt.Default.(func() time.Time)
+	// enterpriseinvoice.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	enterpriseinvoice.UpdateDefaultUpdatedAt = enterpriseinvoiceDescUpdatedAt.UpdateDefault.(func() time.Time)
 	enterpriseprepaymentMixin := schema.EnterprisePrepayment{}.Mixin()
 	enterpriseprepaymentMixinHooks2 := enterpriseprepaymentMixin[2].Hooks()
 	enterpriseprepayment.Hooks[0] = enterpriseprepaymentMixinHooks2[0]

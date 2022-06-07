@@ -8,7 +8,10 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/rider"
+    "github.com/auroraride/aurservd/pkg/snag"
 )
 
 type enterpriseRiderService struct {
@@ -46,5 +49,11 @@ func NewEnterpriseRiderWithEmployee(e *model.Employee) *enterpriseRiderService {
 }
 
 func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) {
+    // 查询是否存在
+    if ar.Ent.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).ExistX(s.ctx) {
+        snag.Panic("此手机号已存在")
+    }
 
+    // tx, _ := ar.Ent.Tx(s.ctx)
+    // tx.Rider
 }

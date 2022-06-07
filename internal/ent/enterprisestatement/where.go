@@ -1208,6 +1208,34 @@ func HasSubscribesWith(preds ...predicate.Subscribe) predicate.EnterpriseStateme
 	})
 }
 
+// HasInvoices applies the HasEdge predicate on the "invoices" edge.
+func HasInvoices() predicate.EnterpriseStatement {
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(InvoicesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, InvoicesTable, InvoicesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasInvoicesWith applies the HasEdge predicate on the "invoices" edge with a given conditions (other predicates).
+func HasInvoicesWith(preds ...predicate.EnterpriseInvoice) predicate.EnterpriseStatement {
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(InvoicesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, InvoicesTable, InvoicesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasEnterprise applies the HasEdge predicate on the "enterprise" edge.
 func HasEnterprise() predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
