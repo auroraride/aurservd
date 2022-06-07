@@ -59,6 +59,8 @@ const (
 	EdgeSubscribes = "subscribes"
 	// EdgeStatements holds the string denoting the statements edge name in mutations.
 	EdgeStatements = "statements"
+	// EdgeStations holds the string denoting the stations edge name in mutations.
+	EdgeStations = "stations"
 	// Table holds the table name of the enterprise in the database.
 	Table = "enterprise"
 	// CityTable is the table that holds the city relation/edge.
@@ -97,12 +99,19 @@ const (
 	// SubscribesColumn is the table column denoting the subscribes relation/edge.
 	SubscribesColumn = "enterprise_id"
 	// StatementsTable is the table that holds the statements relation/edge.
-	StatementsTable = "statement"
-	// StatementsInverseTable is the table name for the Statement entity.
-	// It exists in this package in order to avoid circular dependency with the "statement" package.
-	StatementsInverseTable = "statement"
+	StatementsTable = "enterprise_statement"
+	// StatementsInverseTable is the table name for the EnterpriseStatement entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisestatement" package.
+	StatementsInverseTable = "enterprise_statement"
 	// StatementsColumn is the table column denoting the statements relation/edge.
 	StatementsColumn = "enterprise_id"
+	// StationsTable is the table that holds the stations relation/edge.
+	StationsTable = "enterprise_station"
+	// StationsInverseTable is the table name for the EnterpriseStation entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisestation" package.
+	StationsInverseTable = "enterprise_station"
+	// StationsColumn is the table column denoting the stations relation/edge.
+	StationsColumn = "enterprise_id"
 )
 
 // Columns holds all SQL columns for enterprise fields.

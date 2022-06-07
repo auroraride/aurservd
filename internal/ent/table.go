@@ -132,6 +132,26 @@ func (ep *EnterprisePrice) GetID() uint64 {
 	return ep.ID
 }
 
+// GetTableName returns table name for EnterpriseStatement.
+func (es *EnterpriseStatement) GetTableName() string {
+	return "enterprise_statement"
+}
+
+// GetID returns id for EnterpriseStatement.
+func (es *EnterpriseStatement) GetID() uint64 {
+	return es.ID
+}
+
+// GetTableName returns table name for EnterpriseStation.
+func (es *EnterpriseStation) GetTableName() string {
+	return "enterprise_station"
+}
+
+// GetID returns id for EnterpriseStation.
+func (es *EnterpriseStation) GetID() uint64 {
+	return es.ID
+}
+
 // GetTableName returns table name for Exchange.
 func (e *Exchange) GetTableName() string {
 	return "exchange"
@@ -209,16 +229,6 @@ func (s *Setting) GetTableName() string {
 
 // GetID returns id for Setting.
 func (s *Setting) GetID() uint64 {
-	return s.ID
-}
-
-// GetTableName returns table name for Statement.
-func (s *Statement) GetTableName() string {
-	return "statement"
-}
-
-// GetID returns id for Statement.
-func (s *Statement) GetID() uint64 {
 	return s.ID
 }
 

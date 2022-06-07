@@ -94,3 +94,22 @@ type EnterprisePrepaymentReq struct {
     Remark string  `json:"remark" validate:"required" trans:"备注"`
     Amount float64 `json:"amount" validate:"required" trans:"金额"`
 }
+
+type EnterpriseStationCreateReq struct {
+    EnterpriseID uint64 `json:"enterpriseId" validate:"required"  trans:"企业ID"`
+    Name         string `json:"name" validate:"required" trans:"站点名称"`
+}
+
+type EnterpriseStationModifyReq struct {
+    Name string `json:"name" validate:"required" trans:"站点名称"`
+    ID   uint64 `json:"id" validate:"required" param:"id" trans:"站点ID"`
+}
+
+type EnterpriseStation struct {
+    ID   uint64 `json:"id"`   // 站点ID
+    Name string `json:"name"` // 站点名称
+}
+
+type EnterpriseStationListReq struct {
+    EnterpriseID uint64 `json:"enterpriseId" query:"enterpriseId" trans:"企业ID"`
+}

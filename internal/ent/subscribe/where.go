@@ -2357,7 +2357,7 @@ func HasStatement() predicate.Subscribe {
 }
 
 // HasStatementWith applies the HasEdge predicate on the "statement" edge with a given conditions (other predicates).
-func HasStatementWith(preds ...predicate.Statement) predicate.Subscribe {
+func HasStatementWith(preds ...predicate.EnterpriseStatement) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),

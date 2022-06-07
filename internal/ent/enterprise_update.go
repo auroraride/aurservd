@@ -16,9 +16,10 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/statement"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -282,19 +283,34 @@ func (eu *EnterpriseUpdate) AddSubscribes(s ...*Subscribe) *EnterpriseUpdate {
 	return eu.AddSubscribeIDs(ids...)
 }
 
-// AddStatementIDs adds the "statements" edge to the Statement entity by IDs.
+// AddStatementIDs adds the "statements" edge to the EnterpriseStatement entity by IDs.
 func (eu *EnterpriseUpdate) AddStatementIDs(ids ...uint64) *EnterpriseUpdate {
 	eu.mutation.AddStatementIDs(ids...)
 	return eu
 }
 
-// AddStatements adds the "statements" edges to the Statement entity.
-func (eu *EnterpriseUpdate) AddStatements(s ...*Statement) *EnterpriseUpdate {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// AddStatements adds the "statements" edges to the EnterpriseStatement entity.
+func (eu *EnterpriseUpdate) AddStatements(e ...*EnterpriseStatement) *EnterpriseUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
 	}
 	return eu.AddStatementIDs(ids...)
+}
+
+// AddStationIDs adds the "stations" edge to the EnterpriseStation entity by IDs.
+func (eu *EnterpriseUpdate) AddStationIDs(ids ...uint64) *EnterpriseUpdate {
+	eu.mutation.AddStationIDs(ids...)
+	return eu
+}
+
+// AddStations adds the "stations" edges to the EnterpriseStation entity.
+func (eu *EnterpriseUpdate) AddStations(e ...*EnterpriseStation) *EnterpriseUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return eu.AddStationIDs(ids...)
 }
 
 // Mutation returns the EnterpriseMutation object of the builder.
@@ -392,25 +408,46 @@ func (eu *EnterpriseUpdate) RemoveSubscribes(s ...*Subscribe) *EnterpriseUpdate 
 	return eu.RemoveSubscribeIDs(ids...)
 }
 
-// ClearStatements clears all "statements" edges to the Statement entity.
+// ClearStatements clears all "statements" edges to the EnterpriseStatement entity.
 func (eu *EnterpriseUpdate) ClearStatements() *EnterpriseUpdate {
 	eu.mutation.ClearStatements()
 	return eu
 }
 
-// RemoveStatementIDs removes the "statements" edge to Statement entities by IDs.
+// RemoveStatementIDs removes the "statements" edge to EnterpriseStatement entities by IDs.
 func (eu *EnterpriseUpdate) RemoveStatementIDs(ids ...uint64) *EnterpriseUpdate {
 	eu.mutation.RemoveStatementIDs(ids...)
 	return eu
 }
 
-// RemoveStatements removes "statements" edges to Statement entities.
-func (eu *EnterpriseUpdate) RemoveStatements(s ...*Statement) *EnterpriseUpdate {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// RemoveStatements removes "statements" edges to EnterpriseStatement entities.
+func (eu *EnterpriseUpdate) RemoveStatements(e ...*EnterpriseStatement) *EnterpriseUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
 	}
 	return eu.RemoveStatementIDs(ids...)
+}
+
+// ClearStations clears all "stations" edges to the EnterpriseStation entity.
+func (eu *EnterpriseUpdate) ClearStations() *EnterpriseUpdate {
+	eu.mutation.ClearStations()
+	return eu
+}
+
+// RemoveStationIDs removes the "stations" edge to EnterpriseStation entities by IDs.
+func (eu *EnterpriseUpdate) RemoveStationIDs(ids ...uint64) *EnterpriseUpdate {
+	eu.mutation.RemoveStationIDs(ids...)
+	return eu
+}
+
+// RemoveStations removes "stations" edges to EnterpriseStation entities.
+func (eu *EnterpriseUpdate) RemoveStations(e ...*EnterpriseStation) *EnterpriseUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return eu.RemoveStationIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -931,7 +968,7 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: statement.FieldID,
+					Column: enterprisestatement.FieldID,
 				},
 			},
 		}
@@ -947,7 +984,7 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: statement.FieldID,
+					Column: enterprisestatement.FieldID,
 				},
 			},
 		}
@@ -966,7 +1003,61 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: statement.FieldID,
+					Column: enterprisestatement.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.StationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.StationsTable,
+			Columns: []string{enterprise.StationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedStationsIDs(); len(nodes) > 0 && !eu.mutation.StationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.StationsTable,
+			Columns: []string{enterprise.StationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.StationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.StationsTable,
+			Columns: []string{enterprise.StationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
 				},
 			},
 		}
@@ -1241,19 +1332,34 @@ func (euo *EnterpriseUpdateOne) AddSubscribes(s ...*Subscribe) *EnterpriseUpdate
 	return euo.AddSubscribeIDs(ids...)
 }
 
-// AddStatementIDs adds the "statements" edge to the Statement entity by IDs.
+// AddStatementIDs adds the "statements" edge to the EnterpriseStatement entity by IDs.
 func (euo *EnterpriseUpdateOne) AddStatementIDs(ids ...uint64) *EnterpriseUpdateOne {
 	euo.mutation.AddStatementIDs(ids...)
 	return euo
 }
 
-// AddStatements adds the "statements" edges to the Statement entity.
-func (euo *EnterpriseUpdateOne) AddStatements(s ...*Statement) *EnterpriseUpdateOne {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// AddStatements adds the "statements" edges to the EnterpriseStatement entity.
+func (euo *EnterpriseUpdateOne) AddStatements(e ...*EnterpriseStatement) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
 	}
 	return euo.AddStatementIDs(ids...)
+}
+
+// AddStationIDs adds the "stations" edge to the EnterpriseStation entity by IDs.
+func (euo *EnterpriseUpdateOne) AddStationIDs(ids ...uint64) *EnterpriseUpdateOne {
+	euo.mutation.AddStationIDs(ids...)
+	return euo
+}
+
+// AddStations adds the "stations" edges to the EnterpriseStation entity.
+func (euo *EnterpriseUpdateOne) AddStations(e ...*EnterpriseStation) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return euo.AddStationIDs(ids...)
 }
 
 // Mutation returns the EnterpriseMutation object of the builder.
@@ -1351,25 +1457,46 @@ func (euo *EnterpriseUpdateOne) RemoveSubscribes(s ...*Subscribe) *EnterpriseUpd
 	return euo.RemoveSubscribeIDs(ids...)
 }
 
-// ClearStatements clears all "statements" edges to the Statement entity.
+// ClearStatements clears all "statements" edges to the EnterpriseStatement entity.
 func (euo *EnterpriseUpdateOne) ClearStatements() *EnterpriseUpdateOne {
 	euo.mutation.ClearStatements()
 	return euo
 }
 
-// RemoveStatementIDs removes the "statements" edge to Statement entities by IDs.
+// RemoveStatementIDs removes the "statements" edge to EnterpriseStatement entities by IDs.
 func (euo *EnterpriseUpdateOne) RemoveStatementIDs(ids ...uint64) *EnterpriseUpdateOne {
 	euo.mutation.RemoveStatementIDs(ids...)
 	return euo
 }
 
-// RemoveStatements removes "statements" edges to Statement entities.
-func (euo *EnterpriseUpdateOne) RemoveStatements(s ...*Statement) *EnterpriseUpdateOne {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// RemoveStatements removes "statements" edges to EnterpriseStatement entities.
+func (euo *EnterpriseUpdateOne) RemoveStatements(e ...*EnterpriseStatement) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
 	}
 	return euo.RemoveStatementIDs(ids...)
+}
+
+// ClearStations clears all "stations" edges to the EnterpriseStation entity.
+func (euo *EnterpriseUpdateOne) ClearStations() *EnterpriseUpdateOne {
+	euo.mutation.ClearStations()
+	return euo
+}
+
+// RemoveStationIDs removes the "stations" edge to EnterpriseStation entities by IDs.
+func (euo *EnterpriseUpdateOne) RemoveStationIDs(ids ...uint64) *EnterpriseUpdateOne {
+	euo.mutation.RemoveStationIDs(ids...)
+	return euo
+}
+
+// RemoveStations removes "stations" edges to EnterpriseStation entities.
+func (euo *EnterpriseUpdateOne) RemoveStations(e ...*EnterpriseStation) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return euo.RemoveStationIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1920,7 +2047,7 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: statement.FieldID,
+					Column: enterprisestatement.FieldID,
 				},
 			},
 		}
@@ -1936,7 +2063,7 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: statement.FieldID,
+					Column: enterprisestatement.FieldID,
 				},
 			},
 		}
@@ -1955,7 +2082,61 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: statement.FieldID,
+					Column: enterprisestatement.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.StationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.StationsTable,
+			Columns: []string{enterprise.StationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedStationsIDs(); len(nodes) > 0 && !euo.mutation.StationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.StationsTable,
+			Columns: []string{enterprise.StationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.StationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.StationsTable,
+			Columns: []string{enterprise.StationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
 				},
 			},
 		}

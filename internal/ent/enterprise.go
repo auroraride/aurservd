@@ -85,10 +85,12 @@ type EnterpriseEdges struct {
 	// Subscribes holds the value of the subscribes edge.
 	Subscribes []*Subscribe `json:"subscribes,omitempty"`
 	// Statements holds the value of the statements edge.
-	Statements []*Statement `json:"statements,omitempty"`
+	Statements []*EnterpriseStatement `json:"statements,omitempty"`
+	// Stations holds the value of the stations edge.
+	Stations []*EnterpriseStation `json:"stations,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [7]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -143,11 +145,20 @@ func (e EnterpriseEdges) SubscribesOrErr() ([]*Subscribe, error) {
 
 // StatementsOrErr returns the Statements value or an error if the edge
 // was not loaded in eager-loading.
-func (e EnterpriseEdges) StatementsOrErr() ([]*Statement, error) {
+func (e EnterpriseEdges) StatementsOrErr() ([]*EnterpriseStatement, error) {
 	if e.loadedTypes[5] {
 		return e.Statements, nil
 	}
 	return nil, &NotLoadedError{edge: "statements"}
+}
+
+// StationsOrErr returns the Stations value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseEdges) StationsOrErr() ([]*EnterpriseStation, error) {
+	if e.loadedTypes[6] {
+		return e.Stations, nil
+	}
+	return nil, &NotLoadedError{edge: "stations"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -325,8 +336,13 @@ func (e *Enterprise) QuerySubscribes() *SubscribeQuery {
 }
 
 // QueryStatements queries the "statements" edge of the Enterprise entity.
-func (e *Enterprise) QueryStatements() *StatementQuery {
+func (e *Enterprise) QueryStatements() *EnterpriseStatementQuery {
 	return (&EnterpriseClient{config: e.config}).QueryStatements(e)
+}
+
+// QueryStations queries the "stations" edge of the Enterprise entity.
+func (e *Enterprise) QueryStations() *EnterpriseStationQuery {
+	return (&EnterpriseClient{config: e.config}).QueryStations(e)
 }
 
 // Update returns a builder for updating this Enterprise.

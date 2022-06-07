@@ -1126,6 +1126,132 @@
                 }
             }
         },
+        "/manager/v1/enterprise/station": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M90008 列举站点",
+                "operationId": "ManagerEnterpriseListStation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "企业ID",
+                        "name": "enterpriseId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M90006 创建站点",
+                "operationId": "ManagerEnterpriseCreateStation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterpriseStationCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/station/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M90007 编辑站点",
+                "operationId": "ManagerEnterpriseModifyStation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterpriseStationModifyReq"
+                        }
+                    },
+                    {
+                        "type": "integer",
+                        "description": "站点ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/enterprise/{id}": {
             "put": {
                 "consumes": [
@@ -4371,6 +4497,35 @@
                         60,
                         72
                     ]
+                }
+            }
+        },
+        "model.EnterpriseStationCreateReq": {
+            "type": "object",
+            "required": [
+                "enterpriseId",
+                "name"
+            ],
+            "properties": {
+                "enterpriseId": {
+                    "description": "企业ID ",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "站点名称 ",
+                    "type": "string"
+                }
+            }
+        },
+        "model.EnterpriseStationModifyReq": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "description": "站点名称 ",
+                    "type": "string"
                 }
             }
         },

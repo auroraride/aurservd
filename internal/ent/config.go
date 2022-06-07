@@ -41,6 +41,8 @@ type hooks struct {
 	EnterpriseContract   []ent.Hook
 	EnterprisePrepayment []ent.Hook
 	EnterprisePrice      []ent.Hook
+	EnterpriseStatement  []ent.Hook
+	EnterpriseStation    []ent.Hook
 	Exchange             []ent.Hook
 	Manager              []ent.Hook
 	Order                []ent.Hook
@@ -49,7 +51,6 @@ type hooks struct {
 	Plan                 []ent.Hook
 	Rider                []ent.Hook
 	Setting              []ent.Hook
-	Statement            []ent.Hook
 	Store                []ent.Hook
 	Subscribe            []ent.Hook
 	SubscribeAlter       []ent.Hook

@@ -60,7 +60,7 @@ func (Subscribe) Edges() []ent.Edge {
         edge.To("orders", Order.Type),
 
         edge.To("initial_order", Order.Type).Unique().Field("initial_order_id").Comment("对应初始订单"),
-        edge.From("statement", Statement.Type).Unique().Ref("subscribes").Field("statement_id").Comment("对账单"),
+        edge.From("statement", EnterpriseStatement.Type).Unique().Ref("subscribes").Field("statement_id").Comment("对账单"),
     }
 }
 

@@ -142,6 +142,20 @@ func (c *EnterprisePriceClient) ModifyOne(old *EnterprisePrice, data any) *Enter
 	return EntitySetAttributes[EnterprisePriceUpdateOne, EnterprisePrice](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for EnterpriseStatement.
+func (c *EnterpriseStatementClient) ModifyOne(old *EnterpriseStatement, data any) *EnterpriseStatementUpdateOne {
+	mutation := newEnterpriseStatementMutation(c.config, OpUpdateOne, withEnterpriseStatement(old))
+	up := &EnterpriseStatementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[EnterpriseStatementUpdateOne, EnterpriseStatement](up, old, data)
+}
+
+// ModifyOne returns an update with pointer struct builder for EnterpriseStation.
+func (c *EnterpriseStationClient) ModifyOne(old *EnterpriseStation, data any) *EnterpriseStationUpdateOne {
+	mutation := newEnterpriseStationMutation(c.config, OpUpdateOne, withEnterpriseStation(old))
+	up := &EnterpriseStationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[EnterpriseStationUpdateOne, EnterpriseStation](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Exchange.
 func (c *ExchangeClient) ModifyOne(old *Exchange, data any) *ExchangeUpdateOne {
 	mutation := newExchangeMutation(c.config, OpUpdateOne, withExchange(old))
@@ -196,13 +210,6 @@ func (c *SettingClient) ModifyOne(old *Setting, data any) *SettingUpdateOne {
 	mutation := newSettingMutation(c.config, OpUpdateOne, withSetting(old))
 	up := &SettingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 	return EntitySetAttributes[SettingUpdateOne, Setting](up, old, data)
-}
-
-// ModifyOne returns an update with pointer struct builder for Statement.
-func (c *StatementClient) ModifyOne(old *Statement, data any) *StatementUpdateOne {
-	mutation := newStatementMutation(c.config, OpUpdateOne, withStatement(old))
-	up := &StatementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-	return EntitySetAttributes[StatementUpdateOne, Statement](up, old, data)
 }
 
 // ModifyOne returns an update with pointer struct builder for Store.

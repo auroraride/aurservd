@@ -178,6 +178,32 @@ func (f EnterprisePriceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Va
 	return f(ctx, mv)
 }
 
+// The EnterpriseStatementFunc type is an adapter to allow the use of ordinary
+// function as EnterpriseStatement mutator.
+type EnterpriseStatementFunc func(context.Context, *ent.EnterpriseStatementMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EnterpriseStatementFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.EnterpriseStatementMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EnterpriseStatementMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The EnterpriseStationFunc type is an adapter to allow the use of ordinary
+// function as EnterpriseStation mutator.
+type EnterpriseStationFunc func(context.Context, *ent.EnterpriseStationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EnterpriseStationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.EnterpriseStationMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EnterpriseStationMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The ExchangeFunc type is an adapter to allow the use of ordinary
 // function as Exchange mutator.
 type ExchangeFunc func(context.Context, *ent.ExchangeMutation) (ent.Value, error)
@@ -278,19 +304,6 @@ func (f SettingFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	mv, ok := m.(*ent.SettingMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SettingMutation", m)
-	}
-	return f(ctx, mv)
-}
-
-// The StatementFunc type is an adapter to allow the use of ordinary
-// function as Statement mutator.
-type StatementFunc func(context.Context, *ent.StatementMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f StatementFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.StatementMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.StatementMutation", m)
 	}
 	return f(ctx, mv)
 }

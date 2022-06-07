@@ -80,3 +80,52 @@ func (*enterprise) Prepayment(c echo.Context) (err error) {
         service.NewEnterpriseWithModifier(ctx.Modifier).Prepayment(req),
     )
 }
+
+// CreateStation
+// @ID           ManagerEnterpriseCreateStation
+// @Router       /manager/v1/enterprise/station [POST]
+// @Summary      M90006 创建站点
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body  model.EnterpriseStationCreateReq  true  "desc"
+// @Success      200  {object}  int64  "请求成功"
+func (*enterprise) CreateStation(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.EnterpriseStationCreateReq](c)
+    return ctx.SendResponse(service.NewEnterpriseStationWithModifier(ctx.Modifier).Create(req))
+}
+
+// ModifyStation
+// @ID           ManagerEnterpriseModifyStation
+// @Router       /manager/v1/enterprise/station/{id} [PUT]
+// @Summary      M90007 编辑站点
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body  model.EnterpriseStationModifyReq  true  "desc"
+// @Param        id  path  uint64  true  "站点ID"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*enterprise) ModifyStation(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.EnterpriseStationModifyReq](c)
+    service.NewEnterpriseStationWithModifier(ctx.Modifier).Modify(req)
+    return ctx.SendResponse()
+}
+
+// ListStation
+// @ID           ManagerEnterpriseListStation
+// @Router       /manager/v1/enterprise/station [GET]
+// @Summary      M90008 列举站点
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        enterpriseId  query  uint64  true  "企业ID"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*enterprise) ListStation(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.EnterpriseStationListReq](c)
+    return ctx.SendResponse(
+        service.NewEnterpriseStationWithModifier(ctx.Modifier).List(req),
+    )
+}

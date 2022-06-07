@@ -152,9 +152,9 @@ const (
 	InitialOrderColumn = "initial_order_id"
 	// StatementTable is the table that holds the statement relation/edge.
 	StatementTable = "subscribe"
-	// StatementInverseTable is the table name for the Statement entity.
-	// It exists in this package in order to avoid circular dependency with the "statement" package.
-	StatementInverseTable = "statement"
+	// StatementInverseTable is the table name for the EnterpriseStatement entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisestatement" package.
+	StatementInverseTable = "enterprise_statement"
 	// StatementColumn is the table column denoting the statement relation/edge.
 	StatementColumn = "statement_id"
 )

@@ -68,7 +68,8 @@ func (Enterprise) Edges() []ent.Edge {
         edge.To("contracts", EnterpriseContract.Type),
         edge.To("prices", EnterprisePrice.Type),
         edge.To("subscribes", Subscribe.Type),
-        edge.To("statements", Statement.Type),
+        edge.To("statements", EnterpriseStatement.Type),
+        edge.To("stations", EnterpriseStation.Type),
     }
 }
 

@@ -1743,12 +1743,40 @@ func HasStatements() predicate.Enterprise {
 }
 
 // HasStatementsWith applies the HasEdge predicate on the "statements" edge with a given conditions (other predicates).
-func HasStatementsWith(preds ...predicate.Statement) predicate.Enterprise {
+func HasStatementsWith(preds ...predicate.EnterpriseStatement) predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(StatementsInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, StatementsTable, StatementsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasStations applies the HasEdge predicate on the "stations" edge.
+func HasStations() predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StationsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, StationsTable, StationsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStationsWith applies the HasEdge predicate on the "stations" edge with a given conditions (other predicates).
+func HasStationsWith(preds ...predicate.EnterpriseStation) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StationsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, StationsTable, StationsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

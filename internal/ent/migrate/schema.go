@@ -703,6 +703,88 @@ var (
 			},
 		},
 	}
+	// EnterpriseStatementColumns holds the columns for the "enterprise_statement" table.
+	EnterpriseStatementColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "cost", Type: field.TypeFloat64, Comment: "账单金额", Default: 0},
+		{Name: "amount", Type: field.TypeFloat64, Comment: "总预付金额", Default: 0},
+		{Name: "balance", Type: field.TypeFloat64, Comment: "预付剩余, 负数是欠费", Default: 0},
+		{Name: "settled_at", Type: field.TypeTime, Comment: "清账时间", Nullable: true},
+		{Name: "days", Type: field.TypeInt, Comment: "账期内使用总天数", Default: 0},
+		{Name: "rider_number", Type: field.TypeInt, Comment: "账期内使用总人数", Default: 0},
+		{Name: "bill_time", Type: field.TypeTime, Comment: "对账单计算日期(包含, 例如2022-06-05代表是2022-06-06日计算截止到2022-06-05的账单详情)", Nullable: true, SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "enterprise_id", Type: field.TypeUint64},
+	}
+	// EnterpriseStatementTable holds the schema information for the "enterprise_statement" table.
+	EnterpriseStatementTable = &schema.Table{
+		Name:       "enterprise_statement",
+		Columns:    EnterpriseStatementColumns,
+		PrimaryKey: []*schema.Column{EnterpriseStatementColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "enterprise_statement_enterprise_statements",
+				Columns:    []*schema.Column{EnterpriseStatementColumns[14]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "enterprisestatement_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseStatementColumns[1]},
+			},
+			{
+				Name:    "enterprisestatement_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseStatementColumns[3]},
+			},
+		},
+	}
+	// EnterpriseStationColumns holds the columns for the "enterprise_station" table.
+	EnterpriseStationColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "name", Type: field.TypeString, Comment: "站点名称"},
+		{Name: "enterprise_id", Type: field.TypeUint64},
+	}
+	// EnterpriseStationTable holds the schema information for the "enterprise_station" table.
+	EnterpriseStationTable = &schema.Table{
+		Name:       "enterprise_station",
+		Columns:    EnterpriseStationColumns,
+		PrimaryKey: []*schema.Column{EnterpriseStationColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "enterprise_station_enterprise_stations",
+				Columns:    []*schema.Column{EnterpriseStationColumns[8]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "enterprisestation_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseStationColumns[1]},
+			},
+			{
+				Name:    "enterprisestation_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseStationColumns[3]},
+			},
+		},
+	}
 	// ExchangeColumns holds the columns for the "exchange" table.
 	ExchangeColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -1168,50 +1250,6 @@ var (
 			},
 		},
 	}
-	// StatementColumns holds the columns for the "statement" table.
-	StatementColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
-		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
-		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
-		{Name: "cost", Type: field.TypeFloat64, Comment: "账单金额", Default: 0},
-		{Name: "amount", Type: field.TypeFloat64, Comment: "总预付金额", Default: 0},
-		{Name: "balance", Type: field.TypeFloat64, Comment: "预付剩余, 负数是欠费", Default: 0},
-		{Name: "settled_at", Type: field.TypeTime, Comment: "清账时间", Nullable: true},
-		{Name: "days", Type: field.TypeInt, Comment: "账期内使用总天数", Default: 0},
-		{Name: "rider_number", Type: field.TypeInt, Comment: "账期内使用总人数", Default: 0},
-		{Name: "bill_time", Type: field.TypeTime, Comment: "对账单计算日期(包含, 例如2022-06-05代表是2022-06-06日计算截止到2022-06-05的账单详情)", Nullable: true, SchemaType: map[string]string{"postgres": "date"}},
-		{Name: "enterprise_id", Type: field.TypeUint64},
-	}
-	// StatementTable holds the schema information for the "statement" table.
-	StatementTable = &schema.Table{
-		Name:       "statement",
-		Columns:    StatementColumns,
-		PrimaryKey: []*schema.Column{StatementColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "statement_enterprise_statements",
-				Columns:    []*schema.Column{StatementColumns[14]},
-				RefColumns: []*schema.Column{EnterpriseColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "statement_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{StatementColumns[1]},
-			},
-			{
-				Name:    "statement_deleted_at",
-				Unique:  false,
-				Columns: []*schema.Column{StatementColumns[3]},
-			},
-		},
-	}
 	// StoreColumns holds the columns for the "store" table.
 	StoreColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -1297,8 +1335,8 @@ var (
 		{Name: "end_at", Type: field.TypeTime, Comment: "归还/团签结束时间", Nullable: true},
 		{Name: "refund_at", Type: field.TypeTime, Comment: "退款时间", Nullable: true},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "rider_id", Type: field.TypeUint64},
 		{Name: "statement_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "rider_id", Type: field.TypeUint64},
 		{Name: "plan_id", Type: field.TypeUint64},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64},
@@ -1317,16 +1355,16 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "subscribe_rider_subscribes",
+				Symbol:     "subscribe_enterprise_statement_subscribes",
 				Columns:    []*schema.Column{SubscribeColumns[21]},
-				RefColumns: []*schema.Column{RiderColumns[0]},
-				OnDelete:   schema.NoAction,
+				RefColumns: []*schema.Column{EnterpriseStatementColumns[0]},
+				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "subscribe_statement_subscribes",
+				Symbol:     "subscribe_rider_subscribes",
 				Columns:    []*schema.Column{SubscribeColumns[22]},
-				RefColumns: []*schema.Column{StatementColumns[0]},
-				OnDelete:   schema.SetNull,
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "subscribe_plan_plan",
@@ -1572,6 +1610,8 @@ var (
 		EnterpriseContractTable,
 		EnterprisePrepaymentTable,
 		EnterprisePriceTable,
+		EnterpriseStatementTable,
+		EnterpriseStationTable,
 		ExchangeTable,
 		ManagerTable,
 		OrderTable,
@@ -1580,7 +1620,6 @@ var (
 		PlanTable,
 		RiderTable,
 		SettingTable,
-		StatementTable,
 		StoreTable,
 		SubscribeTable,
 		SubscribeAlterTable,
@@ -1646,6 +1685,14 @@ func init() {
 	EnterprisePriceTable.Annotation = &entsql.Annotation{
 		Table: "enterprise_price",
 	}
+	EnterpriseStatementTable.ForeignKeys[0].RefTable = EnterpriseTable
+	EnterpriseStatementTable.Annotation = &entsql.Annotation{
+		Table: "enterprise_statement",
+	}
+	EnterpriseStationTable.ForeignKeys[0].RefTable = EnterpriseTable
+	EnterpriseStationTable.Annotation = &entsql.Annotation{
+		Table: "enterprise_station",
+	}
 	ExchangeTable.ForeignKeys[0].RefTable = CabinetTable
 	ExchangeTable.ForeignKeys[1].RefTable = CityTable
 	ExchangeTable.ForeignKeys[2].RefTable = EmployeeTable
@@ -1683,18 +1730,14 @@ func init() {
 	SettingTable.Annotation = &entsql.Annotation{
 		Table: "setting",
 	}
-	StatementTable.ForeignKeys[0].RefTable = EnterpriseTable
-	StatementTable.Annotation = &entsql.Annotation{
-		Table: "statement",
-	}
 	StoreTable.ForeignKeys[0].RefTable = BranchTable
 	StoreTable.ForeignKeys[1].RefTable = EmployeeTable
 	StoreTable.Annotation = &entsql.Annotation{
 		Table: "store",
 	}
 	SubscribeTable.ForeignKeys[0].RefTable = EnterpriseTable
-	SubscribeTable.ForeignKeys[1].RefTable = RiderTable
-	SubscribeTable.ForeignKeys[2].RefTable = StatementTable
+	SubscribeTable.ForeignKeys[1].RefTable = EnterpriseStatementTable
+	SubscribeTable.ForeignKeys[2].RefTable = RiderTable
 	SubscribeTable.ForeignKeys[3].RefTable = PlanTable
 	SubscribeTable.ForeignKeys[4].RefTable = EmployeeTable
 	SubscribeTable.ForeignKeys[5].RefTable = CityTable

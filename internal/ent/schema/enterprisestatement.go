@@ -10,20 +10,20 @@ import (
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
-// Statement holds the schema definition for the Statement entity.
-type Statement struct {
+// EnterpriseStatement holds the schema definition for the EnterpriseStatement entity.
+type EnterpriseStatement struct {
     ent.Schema
 }
 
-// Annotations of the Statement.
-func (Statement) Annotations() []schema.Annotation {
+// Annotations of the EnterpriseStatement.
+func (EnterpriseStatement) Annotations() []schema.Annotation {
     return []schema.Annotation{
-        entsql.Annotation{Table: "statement"},
+        entsql.Annotation{Table: "enterprise_statement"},
     }
 }
 
-// Fields of the Statement.
-func (Statement) Fields() []ent.Field {
+// Fields of the EnterpriseStatement.
+func (EnterpriseStatement) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("enterprise_id").Comment("企业ID"),
         field.Float("cost").Default(0).Comment("账单金额"),
@@ -38,15 +38,15 @@ func (Statement) Fields() []ent.Field {
     }
 }
 
-// Edges of the Statement.
-func (Statement) Edges() []ent.Edge {
+// Edges of the EnterpriseStatement.
+func (EnterpriseStatement) Edges() []ent.Edge {
     return []ent.Edge{
         edge.To("subscribes", Subscribe.Type),
         edge.From("enterprise", Enterprise.Type).Ref("statements").Unique().Required().Field("enterprise_id"),
     }
 }
 
-func (Statement) Mixin() []ent.Mixin {
+func (EnterpriseStatement) Mixin() []ent.Mixin {
     return []ent.Mixin{
         internal.TimeMixin{},
         internal.DeleteMixin{},
@@ -54,6 +54,6 @@ func (Statement) Mixin() []ent.Mixin {
     }
 }
 
-func (Statement) Indexes() []ent.Index {
+func (EnterpriseStatement) Indexes() []ent.Index {
     return []ent.Index{}
 }

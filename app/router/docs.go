@@ -71,6 +71,7 @@ func loadDocRoutes() {
 func renderChangelog(c echo.Context, title string, b []byte) {
     w := c.Response()
     b = github_flavored_markdown.Markdown(b)
+    b = bytes.ReplaceAll(b, []byte("http://localhost:5533"), []byte(""))
     b = bytes.ReplaceAll(b, []byte("<a "), []byte(`<a target="_blank" `))
     w.WriteHeader(http.StatusOK)
     _, _ = w.Write([]byte(fmt.Sprintf(`<html><head><title>%s</title><meta charset="utf-8"><link href="/docs/assets/gfm.css" media="all" rel="stylesheet" type="text/css" /><link href="/docs/octicons.css" media="all" rel="stylesheet" type="text/css" /></head><body><article class="markdown-body entry-content" style="padding: 30px;">`, title)))

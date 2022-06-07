@@ -15,9 +15,10 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/statement"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -36,7 +37,8 @@ type EnterpriseQuery struct {
 	withContracts  *EnterpriseContractQuery
 	withPrices     *EnterprisePriceQuery
 	withSubscribes *SubscribeQuery
-	withStatements *StatementQuery
+	withStatements *EnterpriseStatementQuery
+	withStations   *EnterpriseStationQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -185,8 +187,8 @@ func (eq *EnterpriseQuery) QuerySubscribes() *SubscribeQuery {
 }
 
 // QueryStatements chains the current query on the "statements" edge.
-func (eq *EnterpriseQuery) QueryStatements() *StatementQuery {
-	query := &StatementQuery{config: eq.config}
+func (eq *EnterpriseQuery) QueryStatements() *EnterpriseStatementQuery {
+	query := &EnterpriseStatementQuery{config: eq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := eq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -197,8 +199,30 @@ func (eq *EnterpriseQuery) QueryStatements() *StatementQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprise.Table, enterprise.FieldID, selector),
-			sqlgraph.To(statement.Table, statement.FieldID),
+			sqlgraph.To(enterprisestatement.Table, enterprisestatement.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.StatementsTable, enterprise.StatementsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStations chains the current query on the "stations" edge.
+func (eq *EnterpriseQuery) QueryStations() *EnterpriseStationQuery {
+	query := &EnterpriseStationQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, selector),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.StationsTable, enterprise.StationsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -393,6 +417,7 @@ func (eq *EnterpriseQuery) Clone() *EnterpriseQuery {
 		withPrices:     eq.withPrices.Clone(),
 		withSubscribes: eq.withSubscribes.Clone(),
 		withStatements: eq.withStatements.Clone(),
+		withStations:   eq.withStations.Clone(),
 		// clone intermediate query.
 		sql:    eq.sql.Clone(),
 		path:   eq.path,
@@ -457,12 +482,23 @@ func (eq *EnterpriseQuery) WithSubscribes(opts ...func(*SubscribeQuery)) *Enterp
 
 // WithStatements tells the query-builder to eager-load the nodes that are connected to
 // the "statements" edge. The optional arguments are used to configure the query builder of the edge.
-func (eq *EnterpriseQuery) WithStatements(opts ...func(*StatementQuery)) *EnterpriseQuery {
-	query := &StatementQuery{config: eq.config}
+func (eq *EnterpriseQuery) WithStatements(opts ...func(*EnterpriseStatementQuery)) *EnterpriseQuery {
+	query := &EnterpriseStatementQuery{config: eq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
 	eq.withStatements = query
+	return eq
+}
+
+// WithStations tells the query-builder to eager-load the nodes that are connected to
+// the "stations" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EnterpriseQuery) WithStations(opts ...func(*EnterpriseStationQuery)) *EnterpriseQuery {
+	query := &EnterpriseStationQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withStations = query
 	return eq
 }
 
@@ -536,13 +572,14 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 	var (
 		nodes       = []*Enterprise{}
 		_spec       = eq.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [7]bool{
 			eq.withCity != nil,
 			eq.withRiders != nil,
 			eq.withContracts != nil,
 			eq.withPrices != nil,
 			eq.withSubscribes != nil,
 			eq.withStatements != nil,
+			eq.withStations != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -702,9 +739,9 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Statements = []*Statement{}
+			nodes[i].Edges.Statements = []*EnterpriseStatement{}
 		}
-		query.Where(predicate.Statement(func(s *sql.Selector) {
+		query.Where(predicate.EnterpriseStatement(func(s *sql.Selector) {
 			s.Where(sql.InValues(enterprise.StatementsColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)
@@ -718,6 +755,31 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 				return nil, fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Statements = append(node.Edges.Statements, n)
+		}
+	}
+
+	if query := eq.withStations; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Enterprise)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Stations = []*EnterpriseStation{}
+		}
+		query.Where(predicate.EnterpriseStation(func(s *sql.Selector) {
+			s.Where(sql.InValues(enterprise.StationsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.EnterpriseID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Stations = append(node.Edges.Stations, n)
 		}
 	}
 

@@ -16,8 +16,9 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/statement"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -252,19 +253,34 @@ func (ec *EnterpriseCreate) AddSubscribes(s ...*Subscribe) *EnterpriseCreate {
 	return ec.AddSubscribeIDs(ids...)
 }
 
-// AddStatementIDs adds the "statements" edge to the Statement entity by IDs.
+// AddStatementIDs adds the "statements" edge to the EnterpriseStatement entity by IDs.
 func (ec *EnterpriseCreate) AddStatementIDs(ids ...uint64) *EnterpriseCreate {
 	ec.mutation.AddStatementIDs(ids...)
 	return ec
 }
 
-// AddStatements adds the "statements" edges to the Statement entity.
-func (ec *EnterpriseCreate) AddStatements(s ...*Statement) *EnterpriseCreate {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// AddStatements adds the "statements" edges to the EnterpriseStatement entity.
+func (ec *EnterpriseCreate) AddStatements(e ...*EnterpriseStatement) *EnterpriseCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
 	}
 	return ec.AddStatementIDs(ids...)
+}
+
+// AddStationIDs adds the "stations" edge to the EnterpriseStation entity by IDs.
+func (ec *EnterpriseCreate) AddStationIDs(ids ...uint64) *EnterpriseCreate {
+	ec.mutation.AddStationIDs(ids...)
+	return ec
+}
+
+// AddStations adds the "stations" edges to the EnterpriseStation entity.
+func (ec *EnterpriseCreate) AddStations(e ...*EnterpriseStation) *EnterpriseCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return ec.AddStationIDs(ids...)
 }
 
 // Mutation returns the EnterpriseMutation object of the builder.
@@ -674,7 +690,26 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: statement.FieldID,
+					Column: enterprisestatement.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.StationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.StationsTable,
+			Columns: []string{enterprise.StationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
 				},
 			},
 		}

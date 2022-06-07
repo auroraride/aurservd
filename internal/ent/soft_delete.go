@@ -19,6 +19,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -26,7 +28,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/statement"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
@@ -553,6 +554,86 @@ func (c *EnterprisePriceClient) GetNotDeletedX(ctx context.Context, id uint64) *
 	return obj
 }
 
+// SoftDelete returns an soft delete builder for EnterpriseStatement.
+func (c *EnterpriseStatementClient) SoftDelete() *EnterpriseStatementUpdate {
+	mutation := newEnterpriseStatementMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &EnterpriseStatementUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *EnterpriseStatementClient) SoftDeleteOne(es *EnterpriseStatement) *EnterpriseStatementUpdateOne {
+	mutation := newEnterpriseStatementMutation(c.config, OpUpdateOne, withEnterpriseStatement(es))
+	mutation.SetDeletedAt(time.Now())
+	return &EnterpriseStatementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *EnterpriseStatementClient) SoftDeleteOneID(id uint64) *EnterpriseStatementUpdateOne {
+	mutation := newEnterpriseStatementMutation(c.config, OpUpdateOne, withEnterpriseStatementID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &EnterpriseStatementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for EnterpriseStatement.
+func (c *EnterpriseStatementClient) QueryNotDeleted() *EnterpriseStatementQuery {
+	return c.Query().Where(enterprisestatement.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a EnterpriseStatement not deleted entity by its id.
+func (c *EnterpriseStatementClient) GetNotDeleted(ctx context.Context, id uint64) (*EnterpriseStatement, error) {
+	return c.Query().Where(enterprisestatement.ID(id), enterprisestatement.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *EnterpriseStatementClient) GetNotDeletedX(ctx context.Context, id uint64) *EnterpriseStatement {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for EnterpriseStation.
+func (c *EnterpriseStationClient) SoftDelete() *EnterpriseStationUpdate {
+	mutation := newEnterpriseStationMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &EnterpriseStationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *EnterpriseStationClient) SoftDeleteOne(es *EnterpriseStation) *EnterpriseStationUpdateOne {
+	mutation := newEnterpriseStationMutation(c.config, OpUpdateOne, withEnterpriseStation(es))
+	mutation.SetDeletedAt(time.Now())
+	return &EnterpriseStationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *EnterpriseStationClient) SoftDeleteOneID(id uint64) *EnterpriseStationUpdateOne {
+	mutation := newEnterpriseStationMutation(c.config, OpUpdateOne, withEnterpriseStationID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &EnterpriseStationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for EnterpriseStation.
+func (c *EnterpriseStationClient) QueryNotDeleted() *EnterpriseStationQuery {
+	return c.Query().Where(enterprisestation.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a EnterpriseStation not deleted entity by its id.
+func (c *EnterpriseStationClient) GetNotDeleted(ctx context.Context, id uint64) (*EnterpriseStation, error) {
+	return c.Query().Where(enterprisestation.ID(id), enterprisestation.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *EnterpriseStationClient) GetNotDeletedX(ctx context.Context, id uint64) *EnterpriseStation {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
 // SoftDelete returns an soft delete builder for Exchange.
 func (c *ExchangeClient) SoftDelete() *ExchangeUpdate {
 	mutation := newExchangeMutation(c.config, OpUpdate)
@@ -826,46 +907,6 @@ func (c *RiderClient) GetNotDeleted(ctx context.Context, id uint64) (*Rider, err
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *RiderClient) GetNotDeletedX(ctx context.Context, id uint64) *Rider {
-	obj, err := c.GetNotDeleted(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// SoftDelete returns an soft delete builder for Statement.
-func (c *StatementClient) SoftDelete() *StatementUpdate {
-	mutation := newStatementMutation(c.config, OpUpdate)
-	mutation.SetDeletedAt(time.Now())
-	return &StatementUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOne returns an soft delete builder for the given entity.
-func (c *StatementClient) SoftDeleteOne(s *Statement) *StatementUpdateOne {
-	mutation := newStatementMutation(c.config, OpUpdateOne, withStatement(s))
-	mutation.SetDeletedAt(time.Now())
-	return &StatementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// SoftDeleteOneID returns an soft delete builder for the given id.
-func (c *StatementClient) SoftDeleteOneID(id uint64) *StatementUpdateOne {
-	mutation := newStatementMutation(c.config, OpUpdateOne, withStatementID(id))
-	mutation.SetDeletedAt(time.Now())
-	return &StatementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// QueryNotDeleted returns a query not deleted builder for Statement.
-func (c *StatementClient) QueryNotDeleted() *StatementQuery {
-	return c.Query().Where(statement.DeletedAtIsNil())
-}
-
-// GetNotDeleted returns a Statement not deleted entity by its id.
-func (c *StatementClient) GetNotDeleted(ctx context.Context, id uint64) (*Statement, error) {
-	return c.Query().Where(statement.ID(id), statement.DeletedAtIsNil()).Only(ctx)
-}
-
-// GetNotDeletedX is like Get, but panics if an error occurs.
-func (c *StatementClient) GetNotDeletedX(ctx context.Context, id uint64) *Statement {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

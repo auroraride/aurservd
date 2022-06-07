@@ -10,7 +10,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
-    "github.com/auroraride/aurservd/internal/ent/statement"
+    "github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 )
 
 type statementService struct {
@@ -18,13 +18,13 @@ type statementService struct {
     modifier *model.Modifier
     rider    *ent.Rider
     employee *model.Employee
-    orm      *ent.StatementClient
+    orm      *ent.EnterpriseStatementClient
 }
 
 func NewStatement() *statementService {
     return &statementService{
         ctx: context.Background(),
-        orm: ar.Ent.Statement,
+        orm: ar.Ent.EnterpriseStatement,
     }
 }
 
@@ -50,10 +50,10 @@ func NewStatementWithEmployee(e *model.Employee) *statementService {
 }
 
 // Current 获取企业当前账单, 若无则新增
-func (s *statementService) Current(enterpriseID uint64) *ent.Statement {
+func (s *statementService) Current(enterpriseID uint64) *ent.EnterpriseStatement {
     res, _ := s.orm.QueryNotDeleted().Where(
-        statement.EnterpriseID(enterpriseID),
-        statement.SettledAtIsNil(),
+        enterprisestatement.EnterpriseID(enterpriseID),
+        enterprisestatement.SettledAtIsNil(),
     ).First(s.ctx)
     if res == nil {
         res, _ = s.orm.Create().SetEnterpriseID(enterpriseID).Save(s.ctx)
@@ -61,6 +61,6 @@ func (s *statementService) Current(enterpriseID uint64) *ent.Statement {
     return res
 }
 
-func (s *statementService) GetBill() {
+func (s *statementService) GetBill(req *model.StatementBillReq) {
 
 }

@@ -11,11 +11,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
-	"github.com/auroraride/aurservd/internal/ent/statement"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 )
 
-// Statement is the model entity for the Statement schema.
-type Statement struct {
+// EnterpriseStatement is the model entity for the EnterpriseStatement schema.
+type EnterpriseStatement struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID uint64 `json:"id,omitempty"`
@@ -59,12 +59,12 @@ type Statement struct {
 	// 对账单计算日期(包含, 例如2022-06-05代表是2022-06-06日计算截止到2022-06-05的账单详情)
 	BillTime *time.Time `json:"bill_time,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the StatementQuery when eager-loading is set.
-	Edges StatementEdges `json:"edges"`
+	// The values are being populated by the EnterpriseStatementQuery when eager-loading is set.
+	Edges EnterpriseStatementEdges `json:"edges"`
 }
 
-// StatementEdges holds the relations/edges for other nodes in the graph.
-type StatementEdges struct {
+// EnterpriseStatementEdges holds the relations/edges for other nodes in the graph.
+type EnterpriseStatementEdges struct {
 	// Subscribes holds the value of the subscribes edge.
 	Subscribes []*Subscribe `json:"subscribes,omitempty"`
 	// Enterprise holds the value of the enterprise edge.
@@ -76,7 +76,7 @@ type StatementEdges struct {
 
 // SubscribesOrErr returns the Subscribes value or an error if the edge
 // was not loaded in eager-loading.
-func (e StatementEdges) SubscribesOrErr() ([]*Subscribe, error) {
+func (e EnterpriseStatementEdges) SubscribesOrErr() ([]*Subscribe, error) {
 	if e.loadedTypes[0] {
 		return e.Subscribes, nil
 	}
@@ -85,7 +85,7 @@ func (e StatementEdges) SubscribesOrErr() ([]*Subscribe, error) {
 
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e StatementEdges) EnterpriseOrErr() (*Enterprise, error) {
+func (e EnterpriseStatementEdges) EnterpriseOrErr() (*Enterprise, error) {
 	if e.loadedTypes[1] {
 		if e.Enterprise == nil {
 			// The edge enterprise was loaded in eager-loading,
@@ -98,201 +98,201 @@ func (e StatementEdges) EnterpriseOrErr() (*Enterprise, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Statement) scanValues(columns []string) ([]interface{}, error) {
+func (*EnterpriseStatement) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case statement.FieldCreator, statement.FieldLastModifier:
+		case enterprisestatement.FieldCreator, enterprisestatement.FieldLastModifier:
 			values[i] = new([]byte)
-		case statement.FieldCost, statement.FieldAmount, statement.FieldBalance:
+		case enterprisestatement.FieldCost, enterprisestatement.FieldAmount, enterprisestatement.FieldBalance:
 			values[i] = new(sql.NullFloat64)
-		case statement.FieldID, statement.FieldEnterpriseID, statement.FieldDays, statement.FieldRiderNumber:
+		case enterprisestatement.FieldID, enterprisestatement.FieldEnterpriseID, enterprisestatement.FieldDays, enterprisestatement.FieldRiderNumber:
 			values[i] = new(sql.NullInt64)
-		case statement.FieldRemark:
+		case enterprisestatement.FieldRemark:
 			values[i] = new(sql.NullString)
-		case statement.FieldCreatedAt, statement.FieldUpdatedAt, statement.FieldDeletedAt, statement.FieldSettledAt, statement.FieldBillTime:
+		case enterprisestatement.FieldCreatedAt, enterprisestatement.FieldUpdatedAt, enterprisestatement.FieldDeletedAt, enterprisestatement.FieldSettledAt, enterprisestatement.FieldBillTime:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Statement", columns[i])
+			return nil, fmt.Errorf("unexpected column %q for type EnterpriseStatement", columns[i])
 		}
 	}
 	return values, nil
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Statement fields.
-func (s *Statement) assignValues(columns []string, values []interface{}) error {
+// to the EnterpriseStatement fields.
+func (es *EnterpriseStatement) assignValues(columns []string, values []interface{}) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case statement.FieldID:
+		case enterprisestatement.FieldID:
 			value, ok := values[i].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			s.ID = uint64(value.Int64)
-		case statement.FieldCreatedAt:
+			es.ID = uint64(value.Int64)
+		case enterprisestatement.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				s.CreatedAt = value.Time
+				es.CreatedAt = value.Time
 			}
-		case statement.FieldUpdatedAt:
+		case enterprisestatement.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				s.UpdatedAt = value.Time
+				es.UpdatedAt = value.Time
 			}
-		case statement.FieldDeletedAt:
+		case enterprisestatement.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
 			} else if value.Valid {
-				s.DeletedAt = new(time.Time)
-				*s.DeletedAt = value.Time
+				es.DeletedAt = new(time.Time)
+				*es.DeletedAt = value.Time
 			}
-		case statement.FieldCreator:
+		case enterprisestatement.FieldCreator:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field creator", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &s.Creator); err != nil {
+				if err := json.Unmarshal(*value, &es.Creator); err != nil {
 					return fmt.Errorf("unmarshal field creator: %w", err)
 				}
 			}
-		case statement.FieldLastModifier:
+		case enterprisestatement.FieldLastModifier:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field last_modifier", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &s.LastModifier); err != nil {
+				if err := json.Unmarshal(*value, &es.LastModifier); err != nil {
 					return fmt.Errorf("unmarshal field last_modifier: %w", err)
 				}
 			}
-		case statement.FieldRemark:
+		case enterprisestatement.FieldRemark:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
-				s.Remark = value.String
+				es.Remark = value.String
 			}
-		case statement.FieldEnterpriseID:
+		case enterprisestatement.FieldEnterpriseID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field enterprise_id", values[i])
 			} else if value.Valid {
-				s.EnterpriseID = uint64(value.Int64)
+				es.EnterpriseID = uint64(value.Int64)
 			}
-		case statement.FieldCost:
+		case enterprisestatement.FieldCost:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field cost", values[i])
 			} else if value.Valid {
-				s.Cost = value.Float64
+				es.Cost = value.Float64
 			}
-		case statement.FieldAmount:
+		case enterprisestatement.FieldAmount:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field amount", values[i])
 			} else if value.Valid {
-				s.Amount = value.Float64
+				es.Amount = value.Float64
 			}
-		case statement.FieldBalance:
+		case enterprisestatement.FieldBalance:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field balance", values[i])
 			} else if value.Valid {
-				s.Balance = value.Float64
+				es.Balance = value.Float64
 			}
-		case statement.FieldSettledAt:
+		case enterprisestatement.FieldSettledAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field settled_at", values[i])
 			} else if value.Valid {
-				s.SettledAt = new(time.Time)
-				*s.SettledAt = value.Time
+				es.SettledAt = new(time.Time)
+				*es.SettledAt = value.Time
 			}
-		case statement.FieldDays:
+		case enterprisestatement.FieldDays:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field days", values[i])
 			} else if value.Valid {
-				s.Days = int(value.Int64)
+				es.Days = int(value.Int64)
 			}
-		case statement.FieldRiderNumber:
+		case enterprisestatement.FieldRiderNumber:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field rider_number", values[i])
 			} else if value.Valid {
-				s.RiderNumber = int(value.Int64)
+				es.RiderNumber = int(value.Int64)
 			}
-		case statement.FieldBillTime:
+		case enterprisestatement.FieldBillTime:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field bill_time", values[i])
 			} else if value.Valid {
-				s.BillTime = new(time.Time)
-				*s.BillTime = value.Time
+				es.BillTime = new(time.Time)
+				*es.BillTime = value.Time
 			}
 		}
 	}
 	return nil
 }
 
-// QuerySubscribes queries the "subscribes" edge of the Statement entity.
-func (s *Statement) QuerySubscribes() *SubscribeQuery {
-	return (&StatementClient{config: s.config}).QuerySubscribes(s)
+// QuerySubscribes queries the "subscribes" edge of the EnterpriseStatement entity.
+func (es *EnterpriseStatement) QuerySubscribes() *SubscribeQuery {
+	return (&EnterpriseStatementClient{config: es.config}).QuerySubscribes(es)
 }
 
-// QueryEnterprise queries the "enterprise" edge of the Statement entity.
-func (s *Statement) QueryEnterprise() *EnterpriseQuery {
-	return (&StatementClient{config: s.config}).QueryEnterprise(s)
+// QueryEnterprise queries the "enterprise" edge of the EnterpriseStatement entity.
+func (es *EnterpriseStatement) QueryEnterprise() *EnterpriseQuery {
+	return (&EnterpriseStatementClient{config: es.config}).QueryEnterprise(es)
 }
 
-// Update returns a builder for updating this Statement.
-// Note that you need to call Statement.Unwrap() before calling this method if this Statement
+// Update returns a builder for updating this EnterpriseStatement.
+// Note that you need to call EnterpriseStatement.Unwrap() before calling this method if this EnterpriseStatement
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (s *Statement) Update() *StatementUpdateOne {
-	return (&StatementClient{config: s.config}).UpdateOne(s)
+func (es *EnterpriseStatement) Update() *EnterpriseStatementUpdateOne {
+	return (&EnterpriseStatementClient{config: es.config}).UpdateOne(es)
 }
 
-// Unwrap unwraps the Statement entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the EnterpriseStatement entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (s *Statement) Unwrap() *Statement {
-	tx, ok := s.config.driver.(*txDriver)
+func (es *EnterpriseStatement) Unwrap() *EnterpriseStatement {
+	tx, ok := es.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Statement is not a transactional entity")
+		panic("ent: EnterpriseStatement is not a transactional entity")
 	}
-	s.config.driver = tx.drv
-	return s
+	es.config.driver = tx.drv
+	return es
 }
 
 // String implements the fmt.Stringer.
-func (s *Statement) String() string {
+func (es *EnterpriseStatement) String() string {
 	var builder strings.Builder
-	builder.WriteString("Statement(")
-	builder.WriteString(fmt.Sprintf("id=%v", s.ID))
+	builder.WriteString("EnterpriseStatement(")
+	builder.WriteString(fmt.Sprintf("id=%v", es.ID))
 	builder.WriteString(", created_at=")
-	builder.WriteString(s.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(es.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
-	builder.WriteString(s.UpdatedAt.Format(time.ANSIC))
-	if v := s.DeletedAt; v != nil {
+	builder.WriteString(es.UpdatedAt.Format(time.ANSIC))
+	if v := es.DeletedAt; v != nil {
 		builder.WriteString(", deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", creator=")
-	builder.WriteString(fmt.Sprintf("%v", s.Creator))
+	builder.WriteString(fmt.Sprintf("%v", es.Creator))
 	builder.WriteString(", last_modifier=")
-	builder.WriteString(fmt.Sprintf("%v", s.LastModifier))
+	builder.WriteString(fmt.Sprintf("%v", es.LastModifier))
 	builder.WriteString(", remark=")
-	builder.WriteString(s.Remark)
+	builder.WriteString(es.Remark)
 	builder.WriteString(", enterprise_id=")
-	builder.WriteString(fmt.Sprintf("%v", s.EnterpriseID))
+	builder.WriteString(fmt.Sprintf("%v", es.EnterpriseID))
 	builder.WriteString(", cost=")
-	builder.WriteString(fmt.Sprintf("%v", s.Cost))
+	builder.WriteString(fmt.Sprintf("%v", es.Cost))
 	builder.WriteString(", amount=")
-	builder.WriteString(fmt.Sprintf("%v", s.Amount))
+	builder.WriteString(fmt.Sprintf("%v", es.Amount))
 	builder.WriteString(", balance=")
-	builder.WriteString(fmt.Sprintf("%v", s.Balance))
-	if v := s.SettledAt; v != nil {
+	builder.WriteString(fmt.Sprintf("%v", es.Balance))
+	if v := es.SettledAt; v != nil {
 		builder.WriteString(", settled_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", days=")
-	builder.WriteString(fmt.Sprintf("%v", s.Days))
+	builder.WriteString(fmt.Sprintf("%v", es.Days))
 	builder.WriteString(", rider_number=")
-	builder.WriteString(fmt.Sprintf("%v", s.RiderNumber))
-	if v := s.BillTime; v != nil {
+	builder.WriteString(fmt.Sprintf("%v", es.RiderNumber))
+	if v := es.BillTime; v != nil {
 		builder.WriteString(", bill_time=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
@@ -300,11 +300,11 @@ func (s *Statement) String() string {
 	return builder.String()
 }
 
-// Statements is a parsable slice of Statement.
-type Statements []*Statement
+// EnterpriseStatements is a parsable slice of EnterpriseStatement.
+type EnterpriseStatements []*EnterpriseStatement
 
-func (s Statements) config(cfg config) {
-	for _i := range s {
-		s[_i].config = cfg
+func (es EnterpriseStatements) config(cfg config) {
+	for _i := range es {
+		es[_i].config = cfg
 	}
 }

@@ -323,7 +323,7 @@ func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float
     a, _ := decimal.NewFromFloat(set.Amount).Add(decimal.NewFromFloat(req.Amount)).Float64()
 
     // 更新账单表
-    _, err = tx.Statement.UpdateOne(set).SetBalance(b).SetAmount(a).Save(s.ctx)
+    _, err = tx.EnterpriseStatement.UpdateOne(set).SetBalance(b).SetAmount(a).Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
 
     // 更新企业表
@@ -341,4 +341,12 @@ func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float
 
     _ = tx.Commit()
     return b
+}
+
+func (s *enterpriseService) CreateRider() {
+
+}
+
+func (s *enterpriseService) RiderList() {
+
 }

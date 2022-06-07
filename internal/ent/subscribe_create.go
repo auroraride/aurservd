@@ -15,10 +15,10 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/statement"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -415,9 +415,9 @@ func (sc *SubscribeCreate) SetInitialOrder(o *Order) *SubscribeCreate {
 	return sc.SetInitialOrderID(o.ID)
 }
 
-// SetStatement sets the "statement" edge to the Statement entity.
-func (sc *SubscribeCreate) SetStatement(s *Statement) *SubscribeCreate {
-	return sc.SetStatementID(s.ID)
+// SetStatement sets the "statement" edge to the EnterpriseStatement entity.
+func (sc *SubscribeCreate) SetStatement(e *EnterpriseStatement) *SubscribeCreate {
+	return sc.SetStatementID(e.ID)
 }
 
 // Mutation returns the SubscribeMutation object of the builder.
@@ -964,7 +964,7 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: statement.FieldID,
+					Column: enterprisestatement.FieldID,
 				},
 			},
 		}

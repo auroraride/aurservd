@@ -23,6 +23,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -31,7 +33,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/setting"
-	"github.com/auroraride/aurservd/internal/ent/statement"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
@@ -69,6 +70,8 @@ func columnChecker(table string) func(string) error {
 		enterprisecontract.Table:   enterprisecontract.ValidColumn,
 		enterpriseprepayment.Table: enterpriseprepayment.ValidColumn,
 		enterpriseprice.Table:      enterpriseprice.ValidColumn,
+		enterprisestatement.Table:  enterprisestatement.ValidColumn,
+		enterprisestation.Table:    enterprisestation.ValidColumn,
 		exchange.Table:             exchange.ValidColumn,
 		manager.Table:              manager.ValidColumn,
 		order.Table:                order.ValidColumn,
@@ -77,7 +80,6 @@ func columnChecker(table string) func(string) error {
 		plan.Table:                 plan.ValidColumn,
 		rider.Table:                rider.ValidColumn,
 		setting.Table:              setting.ValidColumn,
-		statement.Table:            statement.ValidColumn,
 		store.Table:                store.ValidColumn,
 		subscribe.Table:            subscribe.ValidColumn,
 		subscribealter.Table:       subscribealter.ValidColumn,

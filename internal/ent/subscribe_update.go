@@ -15,11 +15,11 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/statement"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -501,9 +501,9 @@ func (su *SubscribeUpdate) SetInitialOrder(o *Order) *SubscribeUpdate {
 	return su.SetInitialOrderID(o.ID)
 }
 
-// SetStatement sets the "statement" edge to the Statement entity.
-func (su *SubscribeUpdate) SetStatement(s *Statement) *SubscribeUpdate {
-	return su.SetStatementID(s.ID)
+// SetStatement sets the "statement" edge to the EnterpriseStatement entity.
+func (su *SubscribeUpdate) SetStatement(e *EnterpriseStatement) *SubscribeUpdate {
+	return su.SetStatementID(e.ID)
 }
 
 // Mutation returns the SubscribeMutation object of the builder.
@@ -610,7 +610,7 @@ func (su *SubscribeUpdate) ClearInitialOrder() *SubscribeUpdate {
 	return su
 }
 
-// ClearStatement clears the "statement" edge to the Statement entity.
+// ClearStatement clears the "statement" edge to the EnterpriseStatement entity.
 func (su *SubscribeUpdate) ClearStatement() *SubscribeUpdate {
 	su.mutation.ClearStatement()
 	return su
@@ -1321,7 +1321,7 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: statement.FieldID,
+					Column: enterprisestatement.FieldID,
 				},
 			},
 		}
@@ -1337,7 +1337,7 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: statement.FieldID,
+					Column: enterprisestatement.FieldID,
 				},
 			},
 		}
@@ -1828,9 +1828,9 @@ func (suo *SubscribeUpdateOne) SetInitialOrder(o *Order) *SubscribeUpdateOne {
 	return suo.SetInitialOrderID(o.ID)
 }
 
-// SetStatement sets the "statement" edge to the Statement entity.
-func (suo *SubscribeUpdateOne) SetStatement(s *Statement) *SubscribeUpdateOne {
-	return suo.SetStatementID(s.ID)
+// SetStatement sets the "statement" edge to the EnterpriseStatement entity.
+func (suo *SubscribeUpdateOne) SetStatement(e *EnterpriseStatement) *SubscribeUpdateOne {
+	return suo.SetStatementID(e.ID)
 }
 
 // Mutation returns the SubscribeMutation object of the builder.
@@ -1937,7 +1937,7 @@ func (suo *SubscribeUpdateOne) ClearInitialOrder() *SubscribeUpdateOne {
 	return suo
 }
 
-// ClearStatement clears the "statement" edge to the Statement entity.
+// ClearStatement clears the "statement" edge to the EnterpriseStatement entity.
 func (suo *SubscribeUpdateOne) ClearStatement() *SubscribeUpdateOne {
 	suo.mutation.ClearStatement()
 	return suo
@@ -2678,7 +2678,7 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: statement.FieldID,
+					Column: enterprisestatement.FieldID,
 				},
 			},
 		}
@@ -2694,7 +2694,7 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: statement.FieldID,
+					Column: enterprisestatement.FieldID,
 				},
 			},
 		}

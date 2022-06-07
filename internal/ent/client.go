@@ -22,6 +22,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -30,7 +32,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/setting"
-	"github.com/auroraride/aurservd/internal/ent/statement"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
@@ -72,6 +73,10 @@ type Client struct {
 	EnterprisePrepayment *EnterprisePrepaymentClient
 	// EnterprisePrice is the client for interacting with the EnterprisePrice builders.
 	EnterprisePrice *EnterprisePriceClient
+	// EnterpriseStatement is the client for interacting with the EnterpriseStatement builders.
+	EnterpriseStatement *EnterpriseStatementClient
+	// EnterpriseStation is the client for interacting with the EnterpriseStation builders.
+	EnterpriseStation *EnterpriseStationClient
 	// Exchange is the client for interacting with the Exchange builders.
 	Exchange *ExchangeClient
 	// Manager is the client for interacting with the Manager builders.
@@ -88,8 +93,6 @@ type Client struct {
 	Rider *RiderClient
 	// Setting is the client for interacting with the Setting builders.
 	Setting *SettingClient
-	// Statement is the client for interacting with the Statement builders.
-	Statement *StatementClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
 	// Subscribe is the client for interacting with the Subscribe builders.
@@ -124,6 +127,8 @@ func (c *Client) init() {
 	c.EnterpriseContract = NewEnterpriseContractClient(c.config)
 	c.EnterprisePrepayment = NewEnterprisePrepaymentClient(c.config)
 	c.EnterprisePrice = NewEnterprisePriceClient(c.config)
+	c.EnterpriseStatement = NewEnterpriseStatementClient(c.config)
+	c.EnterpriseStation = NewEnterpriseStationClient(c.config)
 	c.Exchange = NewExchangeClient(c.config)
 	c.Manager = NewManagerClient(c.config)
 	c.Order = NewOrderClient(c.config)
@@ -132,7 +137,6 @@ func (c *Client) init() {
 	c.Plan = NewPlanClient(c.config)
 	c.Rider = NewRiderClient(c.config)
 	c.Setting = NewSettingClient(c.config)
-	c.Statement = NewStatementClient(c.config)
 	c.Store = NewStoreClient(c.config)
 	c.Subscribe = NewSubscribeClient(c.config)
 	c.SubscribeAlter = NewSubscribeAlterClient(c.config)
@@ -183,6 +187,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		EnterpriseContract:   NewEnterpriseContractClient(cfg),
 		EnterprisePrepayment: NewEnterprisePrepaymentClient(cfg),
 		EnterprisePrice:      NewEnterprisePriceClient(cfg),
+		EnterpriseStatement:  NewEnterpriseStatementClient(cfg),
+		EnterpriseStation:    NewEnterpriseStationClient(cfg),
 		Exchange:             NewExchangeClient(cfg),
 		Manager:              NewManagerClient(cfg),
 		Order:                NewOrderClient(cfg),
@@ -191,7 +197,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Plan:                 NewPlanClient(cfg),
 		Rider:                NewRiderClient(cfg),
 		Setting:              NewSettingClient(cfg),
-		Statement:            NewStatementClient(cfg),
 		Store:                NewStoreClient(cfg),
 		Subscribe:            NewSubscribeClient(cfg),
 		SubscribeAlter:       NewSubscribeAlterClient(cfg),
@@ -228,6 +233,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		EnterpriseContract:   NewEnterpriseContractClient(cfg),
 		EnterprisePrepayment: NewEnterprisePrepaymentClient(cfg),
 		EnterprisePrice:      NewEnterprisePriceClient(cfg),
+		EnterpriseStatement:  NewEnterpriseStatementClient(cfg),
+		EnterpriseStation:    NewEnterpriseStationClient(cfg),
 		Exchange:             NewExchangeClient(cfg),
 		Manager:              NewManagerClient(cfg),
 		Order:                NewOrderClient(cfg),
@@ -236,7 +243,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Plan:                 NewPlanClient(cfg),
 		Rider:                NewRiderClient(cfg),
 		Setting:              NewSettingClient(cfg),
-		Statement:            NewStatementClient(cfg),
 		Store:                NewStoreClient(cfg),
 		Subscribe:            NewSubscribeClient(cfg),
 		SubscribeAlter:       NewSubscribeAlterClient(cfg),
@@ -283,6 +289,8 @@ func (c *Client) Use(hooks ...Hook) {
 	c.EnterpriseContract.Use(hooks...)
 	c.EnterprisePrepayment.Use(hooks...)
 	c.EnterprisePrice.Use(hooks...)
+	c.EnterpriseStatement.Use(hooks...)
+	c.EnterpriseStation.Use(hooks...)
 	c.Exchange.Use(hooks...)
 	c.Manager.Use(hooks...)
 	c.Order.Use(hooks...)
@@ -291,7 +299,6 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Plan.Use(hooks...)
 	c.Rider.Use(hooks...)
 	c.Setting.Use(hooks...)
-	c.Statement.Use(hooks...)
 	c.Store.Use(hooks...)
 	c.Subscribe.Use(hooks...)
 	c.SubscribeAlter.Use(hooks...)
@@ -1619,14 +1626,30 @@ func (c *EnterpriseClient) QuerySubscribes(e *Enterprise) *SubscribeQuery {
 }
 
 // QueryStatements queries the statements edge of a Enterprise.
-func (c *EnterpriseClient) QueryStatements(e *Enterprise) *StatementQuery {
-	query := &StatementQuery{config: c.config}
+func (c *EnterpriseClient) QueryStatements(e *Enterprise) *EnterpriseStatementQuery {
+	query := &EnterpriseStatementQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := e.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
-			sqlgraph.To(statement.Table, statement.FieldID),
+			sqlgraph.To(enterprisestatement.Table, enterprisestatement.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.StatementsTable, enterprise.StatementsColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStations queries the stations edge of a Enterprise.
+func (c *EnterpriseClient) QueryStations(e *Enterprise) *EnterpriseStationQuery {
+	query := &EnterpriseStationQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.StationsTable, enterprise.StationsColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil
@@ -1975,6 +1998,236 @@ func (c *EnterprisePriceClient) QueryEnterprise(ep *EnterprisePrice) *Enterprise
 func (c *EnterprisePriceClient) Hooks() []Hook {
 	hooks := c.hooks.EnterprisePrice
 	return append(hooks[:len(hooks):len(hooks)], enterpriseprice.Hooks[:]...)
+}
+
+// EnterpriseStatementClient is a client for the EnterpriseStatement schema.
+type EnterpriseStatementClient struct {
+	config
+}
+
+// NewEnterpriseStatementClient returns a client for the EnterpriseStatement from the given config.
+func NewEnterpriseStatementClient(c config) *EnterpriseStatementClient {
+	return &EnterpriseStatementClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `enterprisestatement.Hooks(f(g(h())))`.
+func (c *EnterpriseStatementClient) Use(hooks ...Hook) {
+	c.hooks.EnterpriseStatement = append(c.hooks.EnterpriseStatement, hooks...)
+}
+
+// Create returns a create builder for EnterpriseStatement.
+func (c *EnterpriseStatementClient) Create() *EnterpriseStatementCreate {
+	mutation := newEnterpriseStatementMutation(c.config, OpCreate)
+	return &EnterpriseStatementCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EnterpriseStatement entities.
+func (c *EnterpriseStatementClient) CreateBulk(builders ...*EnterpriseStatementCreate) *EnterpriseStatementCreateBulk {
+	return &EnterpriseStatementCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EnterpriseStatement.
+func (c *EnterpriseStatementClient) Update() *EnterpriseStatementUpdate {
+	mutation := newEnterpriseStatementMutation(c.config, OpUpdate)
+	return &EnterpriseStatementUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EnterpriseStatementClient) UpdateOne(es *EnterpriseStatement) *EnterpriseStatementUpdateOne {
+	mutation := newEnterpriseStatementMutation(c.config, OpUpdateOne, withEnterpriseStatement(es))
+	return &EnterpriseStatementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EnterpriseStatementClient) UpdateOneID(id uint64) *EnterpriseStatementUpdateOne {
+	mutation := newEnterpriseStatementMutation(c.config, OpUpdateOne, withEnterpriseStatementID(id))
+	return &EnterpriseStatementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EnterpriseStatement.
+func (c *EnterpriseStatementClient) Delete() *EnterpriseStatementDelete {
+	mutation := newEnterpriseStatementMutation(c.config, OpDelete)
+	return &EnterpriseStatementDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *EnterpriseStatementClient) DeleteOne(es *EnterpriseStatement) *EnterpriseStatementDeleteOne {
+	return c.DeleteOneID(es.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *EnterpriseStatementClient) DeleteOneID(id uint64) *EnterpriseStatementDeleteOne {
+	builder := c.Delete().Where(enterprisestatement.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EnterpriseStatementDeleteOne{builder}
+}
+
+// Query returns a query builder for EnterpriseStatement.
+func (c *EnterpriseStatementClient) Query() *EnterpriseStatementQuery {
+	return &EnterpriseStatementQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a EnterpriseStatement entity by its id.
+func (c *EnterpriseStatementClient) Get(ctx context.Context, id uint64) (*EnterpriseStatement, error) {
+	return c.Query().Where(enterprisestatement.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EnterpriseStatementClient) GetX(ctx context.Context, id uint64) *EnterpriseStatement {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QuerySubscribes queries the subscribes edge of a EnterpriseStatement.
+func (c *EnterpriseStatementClient) QuerySubscribes(es *EnterpriseStatement) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := es.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestatement.Table, enterprisestatement.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestatement.SubscribesTable, enterprisestatement.SubscribesColumn),
+		)
+		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEnterprise queries the enterprise edge of a EnterpriseStatement.
+func (c *EnterpriseStatementClient) QueryEnterprise(es *EnterpriseStatement) *EnterpriseQuery {
+	query := &EnterpriseQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := es.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestatement.Table, enterprisestatement.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, enterprisestatement.EnterpriseTable, enterprisestatement.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EnterpriseStatementClient) Hooks() []Hook {
+	hooks := c.hooks.EnterpriseStatement
+	return append(hooks[:len(hooks):len(hooks)], enterprisestatement.Hooks[:]...)
+}
+
+// EnterpriseStationClient is a client for the EnterpriseStation schema.
+type EnterpriseStationClient struct {
+	config
+}
+
+// NewEnterpriseStationClient returns a client for the EnterpriseStation from the given config.
+func NewEnterpriseStationClient(c config) *EnterpriseStationClient {
+	return &EnterpriseStationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `enterprisestation.Hooks(f(g(h())))`.
+func (c *EnterpriseStationClient) Use(hooks ...Hook) {
+	c.hooks.EnterpriseStation = append(c.hooks.EnterpriseStation, hooks...)
+}
+
+// Create returns a create builder for EnterpriseStation.
+func (c *EnterpriseStationClient) Create() *EnterpriseStationCreate {
+	mutation := newEnterpriseStationMutation(c.config, OpCreate)
+	return &EnterpriseStationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EnterpriseStation entities.
+func (c *EnterpriseStationClient) CreateBulk(builders ...*EnterpriseStationCreate) *EnterpriseStationCreateBulk {
+	return &EnterpriseStationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EnterpriseStation.
+func (c *EnterpriseStationClient) Update() *EnterpriseStationUpdate {
+	mutation := newEnterpriseStationMutation(c.config, OpUpdate)
+	return &EnterpriseStationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EnterpriseStationClient) UpdateOne(es *EnterpriseStation) *EnterpriseStationUpdateOne {
+	mutation := newEnterpriseStationMutation(c.config, OpUpdateOne, withEnterpriseStation(es))
+	return &EnterpriseStationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EnterpriseStationClient) UpdateOneID(id uint64) *EnterpriseStationUpdateOne {
+	mutation := newEnterpriseStationMutation(c.config, OpUpdateOne, withEnterpriseStationID(id))
+	return &EnterpriseStationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EnterpriseStation.
+func (c *EnterpriseStationClient) Delete() *EnterpriseStationDelete {
+	mutation := newEnterpriseStationMutation(c.config, OpDelete)
+	return &EnterpriseStationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *EnterpriseStationClient) DeleteOne(es *EnterpriseStation) *EnterpriseStationDeleteOne {
+	return c.DeleteOneID(es.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *EnterpriseStationClient) DeleteOneID(id uint64) *EnterpriseStationDeleteOne {
+	builder := c.Delete().Where(enterprisestation.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EnterpriseStationDeleteOne{builder}
+}
+
+// Query returns a query builder for EnterpriseStation.
+func (c *EnterpriseStationClient) Query() *EnterpriseStationQuery {
+	return &EnterpriseStationQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a EnterpriseStation entity by its id.
+func (c *EnterpriseStationClient) Get(ctx context.Context, id uint64) (*EnterpriseStation, error) {
+	return c.Query().Where(enterprisestation.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EnterpriseStationClient) GetX(ctx context.Context, id uint64) *EnterpriseStation {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEnterprise queries the enterprise edge of a EnterpriseStation.
+func (c *EnterpriseStationClient) QueryEnterprise(es *EnterpriseStation) *EnterpriseQuery {
+	query := &EnterpriseQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := es.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestation.Table, enterprisestation.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, enterprisestation.EnterpriseTable, enterprisestation.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EnterpriseStationClient) Hooks() []Hook {
+	hooks := c.hooks.EnterpriseStation
+	return append(hooks[:len(hooks):len(hooks)], enterprisestation.Hooks[:]...)
 }
 
 // ExchangeClient is a client for the Exchange schema.
@@ -3089,129 +3342,6 @@ func (c *SettingClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], setting.Hooks[:]...)
 }
 
-// StatementClient is a client for the Statement schema.
-type StatementClient struct {
-	config
-}
-
-// NewStatementClient returns a client for the Statement from the given config.
-func NewStatementClient(c config) *StatementClient {
-	return &StatementClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `statement.Hooks(f(g(h())))`.
-func (c *StatementClient) Use(hooks ...Hook) {
-	c.hooks.Statement = append(c.hooks.Statement, hooks...)
-}
-
-// Create returns a create builder for Statement.
-func (c *StatementClient) Create() *StatementCreate {
-	mutation := newStatementMutation(c.config, OpCreate)
-	return &StatementCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Statement entities.
-func (c *StatementClient) CreateBulk(builders ...*StatementCreate) *StatementCreateBulk {
-	return &StatementCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Statement.
-func (c *StatementClient) Update() *StatementUpdate {
-	mutation := newStatementMutation(c.config, OpUpdate)
-	return &StatementUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *StatementClient) UpdateOne(s *Statement) *StatementUpdateOne {
-	mutation := newStatementMutation(c.config, OpUpdateOne, withStatement(s))
-	return &StatementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *StatementClient) UpdateOneID(id uint64) *StatementUpdateOne {
-	mutation := newStatementMutation(c.config, OpUpdateOne, withStatementID(id))
-	return &StatementUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Statement.
-func (c *StatementClient) Delete() *StatementDelete {
-	mutation := newStatementMutation(c.config, OpDelete)
-	return &StatementDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a delete builder for the given entity.
-func (c *StatementClient) DeleteOne(s *Statement) *StatementDeleteOne {
-	return c.DeleteOneID(s.ID)
-}
-
-// DeleteOneID returns a delete builder for the given id.
-func (c *StatementClient) DeleteOneID(id uint64) *StatementDeleteOne {
-	builder := c.Delete().Where(statement.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &StatementDeleteOne{builder}
-}
-
-// Query returns a query builder for Statement.
-func (c *StatementClient) Query() *StatementQuery {
-	return &StatementQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a Statement entity by its id.
-func (c *StatementClient) Get(ctx context.Context, id uint64) (*Statement, error) {
-	return c.Query().Where(statement.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *StatementClient) GetX(ctx context.Context, id uint64) *Statement {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QuerySubscribes queries the subscribes edge of a Statement.
-func (c *StatementClient) QuerySubscribes(s *Statement) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := s.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(statement.Table, statement.FieldID, id),
-			sqlgraph.To(subscribe.Table, subscribe.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, statement.SubscribesTable, statement.SubscribesColumn),
-		)
-		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryEnterprise queries the enterprise edge of a Statement.
-func (c *StatementClient) QueryEnterprise(s *Statement) *EnterpriseQuery {
-	query := &EnterpriseQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := s.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(statement.Table, statement.FieldID, id),
-			sqlgraph.To(enterprise.Table, enterprise.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, statement.EnterpriseTable, statement.EnterpriseColumn),
-		)
-		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *StatementClient) Hooks() []Hook {
-	hooks := c.hooks.Statement
-	return append(hooks[:len(hooks):len(hooks)], statement.Hooks[:]...)
-}
-
 // StoreClient is a client for the Store schema.
 type StoreClient struct {
 	config
@@ -3565,13 +3695,13 @@ func (c *SubscribeClient) QueryInitialOrder(s *Subscribe) *OrderQuery {
 }
 
 // QueryStatement queries the statement edge of a Subscribe.
-func (c *SubscribeClient) QueryStatement(s *Subscribe) *StatementQuery {
-	query := &StatementQuery{config: c.config}
+func (c *SubscribeClient) QueryStatement(s *Subscribe) *EnterpriseStatementQuery {
+	query := &EnterpriseStatementQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
-			sqlgraph.To(statement.Table, statement.FieldID),
+			sqlgraph.To(enterprisestatement.Table, enterprisestatement.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, subscribe.StatementTable, subscribe.StatementColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)

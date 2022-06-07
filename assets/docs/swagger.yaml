@@ -902,6 +902,26 @@ definitions:
         - 72
         type: number
     type: object
+  model.EnterpriseStationCreateReq:
+    properties:
+      enterpriseId:
+        description: '企业ID '
+        type: integer
+      name:
+        description: '站点名称 '
+        type: string
+    required:
+    - enterpriseId
+    - name
+    type: object
+  model.EnterpriseStationModifyReq:
+    properties:
+      name:
+        description: '站点名称 '
+        type: string
+    required:
+    - name
+    type: object
   model.ExchangeStoreReq:
     properties:
       code:
@@ -2484,6 +2504,90 @@ paths:
           schema:
             type: number
       summary: M90005 企业预付费
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/station:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseListStation
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 企业ID
+        in: query
+        name: enterpriseId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M90008 列举站点
+      tags:
+      - '[M]管理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseCreateStation
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnterpriseStationCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: integer
+      summary: M90006 创建站点
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/station/{id}:
+    put:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseModifyStation
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnterpriseStationModifyReq'
+      - description: 站点ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M90007 编辑站点
       tags:
       - '[M]管理接口'
   /manager/v1/fault/{id}:

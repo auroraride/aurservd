@@ -18,6 +18,8 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -27,7 +29,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/schema"
 	"github.com/auroraride/aurservd/internal/ent/setting"
-	"github.com/auroraride/aurservd/internal/ent/statement"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
@@ -339,6 +340,60 @@ func init() {
 	enterpriseprice.DefaultUpdatedAt = enterprisepriceDescUpdatedAt.Default.(func() time.Time)
 	// enterpriseprice.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	enterpriseprice.UpdateDefaultUpdatedAt = enterprisepriceDescUpdatedAt.UpdateDefault.(func() time.Time)
+	enterprisestatementMixin := schema.EnterpriseStatement{}.Mixin()
+	enterprisestatementMixinHooks2 := enterprisestatementMixin[2].Hooks()
+	enterprisestatement.Hooks[0] = enterprisestatementMixinHooks2[0]
+	enterprisestatementMixinFields0 := enterprisestatementMixin[0].Fields()
+	_ = enterprisestatementMixinFields0
+	enterprisestatementFields := schema.EnterpriseStatement{}.Fields()
+	_ = enterprisestatementFields
+	// enterprisestatementDescCreatedAt is the schema descriptor for created_at field.
+	enterprisestatementDescCreatedAt := enterprisestatementMixinFields0[0].Descriptor()
+	// enterprisestatement.DefaultCreatedAt holds the default value on creation for the created_at field.
+	enterprisestatement.DefaultCreatedAt = enterprisestatementDescCreatedAt.Default.(func() time.Time)
+	// enterprisestatementDescUpdatedAt is the schema descriptor for updated_at field.
+	enterprisestatementDescUpdatedAt := enterprisestatementMixinFields0[1].Descriptor()
+	// enterprisestatement.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	enterprisestatement.DefaultUpdatedAt = enterprisestatementDescUpdatedAt.Default.(func() time.Time)
+	// enterprisestatement.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	enterprisestatement.UpdateDefaultUpdatedAt = enterprisestatementDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// enterprisestatementDescCost is the schema descriptor for cost field.
+	enterprisestatementDescCost := enterprisestatementFields[1].Descriptor()
+	// enterprisestatement.DefaultCost holds the default value on creation for the cost field.
+	enterprisestatement.DefaultCost = enterprisestatementDescCost.Default.(float64)
+	// enterprisestatementDescAmount is the schema descriptor for amount field.
+	enterprisestatementDescAmount := enterprisestatementFields[2].Descriptor()
+	// enterprisestatement.DefaultAmount holds the default value on creation for the amount field.
+	enterprisestatement.DefaultAmount = enterprisestatementDescAmount.Default.(float64)
+	// enterprisestatementDescBalance is the schema descriptor for balance field.
+	enterprisestatementDescBalance := enterprisestatementFields[3].Descriptor()
+	// enterprisestatement.DefaultBalance holds the default value on creation for the balance field.
+	enterprisestatement.DefaultBalance = enterprisestatementDescBalance.Default.(float64)
+	// enterprisestatementDescDays is the schema descriptor for days field.
+	enterprisestatementDescDays := enterprisestatementFields[5].Descriptor()
+	// enterprisestatement.DefaultDays holds the default value on creation for the days field.
+	enterprisestatement.DefaultDays = enterprisestatementDescDays.Default.(int)
+	// enterprisestatementDescRiderNumber is the schema descriptor for rider_number field.
+	enterprisestatementDescRiderNumber := enterprisestatementFields[6].Descriptor()
+	// enterprisestatement.DefaultRiderNumber holds the default value on creation for the rider_number field.
+	enterprisestatement.DefaultRiderNumber = enterprisestatementDescRiderNumber.Default.(int)
+	enterprisestationMixin := schema.EnterpriseStation{}.Mixin()
+	enterprisestationMixinHooks2 := enterprisestationMixin[2].Hooks()
+	enterprisestation.Hooks[0] = enterprisestationMixinHooks2[0]
+	enterprisestationMixinFields0 := enterprisestationMixin[0].Fields()
+	_ = enterprisestationMixinFields0
+	enterprisestationFields := schema.EnterpriseStation{}.Fields()
+	_ = enterprisestationFields
+	// enterprisestationDescCreatedAt is the schema descriptor for created_at field.
+	enterprisestationDescCreatedAt := enterprisestationMixinFields0[0].Descriptor()
+	// enterprisestation.DefaultCreatedAt holds the default value on creation for the created_at field.
+	enterprisestation.DefaultCreatedAt = enterprisestationDescCreatedAt.Default.(func() time.Time)
+	// enterprisestationDescUpdatedAt is the schema descriptor for updated_at field.
+	enterprisestationDescUpdatedAt := enterprisestationMixinFields0[1].Descriptor()
+	// enterprisestation.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	enterprisestation.DefaultUpdatedAt = enterprisestationDescUpdatedAt.Default.(func() time.Time)
+	// enterprisestation.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	enterprisestation.UpdateDefaultUpdatedAt = enterprisestationDescUpdatedAt.UpdateDefault.(func() time.Time)
 	exchangeMixin := schema.Exchange{}.Mixin()
 	exchangeMixinHooks2 := exchangeMixin[2].Hooks()
 	exchange.Hooks[0] = exchangeMixinHooks2[0]
@@ -539,43 +594,6 @@ func init() {
 	settingDescKey := settingFields[0].Descriptor()
 	// setting.KeyValidator is a validator for the "key" field. It is called by the builders before save.
 	setting.KeyValidator = settingDescKey.Validators[0].(func(string) error)
-	statementMixin := schema.Statement{}.Mixin()
-	statementMixinHooks2 := statementMixin[2].Hooks()
-	statement.Hooks[0] = statementMixinHooks2[0]
-	statementMixinFields0 := statementMixin[0].Fields()
-	_ = statementMixinFields0
-	statementFields := schema.Statement{}.Fields()
-	_ = statementFields
-	// statementDescCreatedAt is the schema descriptor for created_at field.
-	statementDescCreatedAt := statementMixinFields0[0].Descriptor()
-	// statement.DefaultCreatedAt holds the default value on creation for the created_at field.
-	statement.DefaultCreatedAt = statementDescCreatedAt.Default.(func() time.Time)
-	// statementDescUpdatedAt is the schema descriptor for updated_at field.
-	statementDescUpdatedAt := statementMixinFields0[1].Descriptor()
-	// statement.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	statement.DefaultUpdatedAt = statementDescUpdatedAt.Default.(func() time.Time)
-	// statement.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	statement.UpdateDefaultUpdatedAt = statementDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// statementDescCost is the schema descriptor for cost field.
-	statementDescCost := statementFields[1].Descriptor()
-	// statement.DefaultCost holds the default value on creation for the cost field.
-	statement.DefaultCost = statementDescCost.Default.(float64)
-	// statementDescAmount is the schema descriptor for amount field.
-	statementDescAmount := statementFields[2].Descriptor()
-	// statement.DefaultAmount holds the default value on creation for the amount field.
-	statement.DefaultAmount = statementDescAmount.Default.(float64)
-	// statementDescBalance is the schema descriptor for balance field.
-	statementDescBalance := statementFields[3].Descriptor()
-	// statement.DefaultBalance holds the default value on creation for the balance field.
-	statement.DefaultBalance = statementDescBalance.Default.(float64)
-	// statementDescDays is the schema descriptor for days field.
-	statementDescDays := statementFields[5].Descriptor()
-	// statement.DefaultDays holds the default value on creation for the days field.
-	statement.DefaultDays = statementDescDays.Default.(int)
-	// statementDescRiderNumber is the schema descriptor for rider_number field.
-	statementDescRiderNumber := statementFields[6].Descriptor()
-	// statement.DefaultRiderNumber holds the default value on creation for the rider_number field.
-	statement.DefaultRiderNumber = statementDescRiderNumber.Default.(int)
 	storeMixin := schema.Store{}.Mixin()
 	storeMixinHooks2 := storeMixin[2].Hooks()
 	store.Hooks[0] = storeMixinHooks2[0]

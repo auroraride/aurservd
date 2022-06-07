@@ -14,11 +14,11 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/statement"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -43,7 +43,7 @@ type SubscribeQuery struct {
 	withAlters       *SubscribeAlterQuery
 	withOrders       *OrderQuery
 	withInitialOrder *OrderQuery
-	withStatement    *StatementQuery
+	withStatement    *EnterpriseStatementQuery
 	modifiers        []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -280,8 +280,8 @@ func (sq *SubscribeQuery) QueryInitialOrder() *OrderQuery {
 }
 
 // QueryStatement chains the current query on the "statement" edge.
-func (sq *SubscribeQuery) QueryStatement() *StatementQuery {
-	query := &StatementQuery{config: sq.config}
+func (sq *SubscribeQuery) QueryStatement() *EnterpriseStatementQuery {
+	query := &EnterpriseStatementQuery{config: sq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -292,7 +292,7 @@ func (sq *SubscribeQuery) QueryStatement() *StatementQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
-			sqlgraph.To(statement.Table, statement.FieldID),
+			sqlgraph.To(enterprisestatement.Table, enterprisestatement.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, subscribe.StatementTable, subscribe.StatementColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
@@ -600,8 +600,8 @@ func (sq *SubscribeQuery) WithInitialOrder(opts ...func(*OrderQuery)) *Subscribe
 
 // WithStatement tells the query-builder to eager-load the nodes that are connected to
 // the "statement" edge. The optional arguments are used to configure the query builder of the edge.
-func (sq *SubscribeQuery) WithStatement(opts ...func(*StatementQuery)) *SubscribeQuery {
-	query := &StatementQuery{config: sq.config}
+func (sq *SubscribeQuery) WithStatement(opts ...func(*EnterpriseStatementQuery)) *SubscribeQuery {
+	query := &EnterpriseStatementQuery{config: sq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -955,7 +955,7 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 			}
 			nodeids[fk] = append(nodeids[fk], nodes[i])
 		}
-		query.Where(statement.IDIn(ids...))
+		query.Where(enterprisestatement.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err

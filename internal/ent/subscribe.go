@@ -13,10 +13,10 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
-	"github.com/auroraride/aurservd/internal/ent/statement"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -126,7 +126,7 @@ type SubscribeEdges struct {
 	// InitialOrder holds the value of the initial_order edge.
 	InitialOrder *Order `json:"initial_order,omitempty"`
 	// Statement holds the value of the statement edge.
-	Statement *Statement `json:"statement,omitempty"`
+	Statement *EnterpriseStatement `json:"statement,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [10]bool
@@ -245,12 +245,12 @@ func (e SubscribeEdges) InitialOrderOrErr() (*Order, error) {
 
 // StatementOrErr returns the Statement value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e SubscribeEdges) StatementOrErr() (*Statement, error) {
+func (e SubscribeEdges) StatementOrErr() (*EnterpriseStatement, error) {
 	if e.loadedTypes[9] {
 		if e.Statement == nil {
 			// The edge statement was loaded in eager-loading,
 			// but was not found.
-			return nil, &NotFoundError{label: statement.Label}
+			return nil, &NotFoundError{label: enterprisestatement.Label}
 		}
 		return e.Statement, nil
 	}
@@ -509,7 +509,7 @@ func (s *Subscribe) QueryInitialOrder() *OrderQuery {
 }
 
 // QueryStatement queries the "statement" edge of the Subscribe entity.
-func (s *Subscribe) QueryStatement() *StatementQuery {
+func (s *Subscribe) QueryStatement() *EnterpriseStatementQuery {
 	return (&SubscribeClient{config: s.config}).QueryStatement(s)
 }
 
