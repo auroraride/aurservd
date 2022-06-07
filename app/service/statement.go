@@ -60,3 +60,7 @@ func (s *statementService) Current(enterpriseID uint64) *ent.Statement {
     }
     return res
 }
+
+func (s *statementService) GetBill() {
+
+}
