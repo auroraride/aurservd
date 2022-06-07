@@ -16,6 +16,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
+    "time"
 )
 
 type enterpriseRiderService struct {
@@ -103,6 +104,16 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
             ),
         )
     }
+    tt := tools.NewTime()
+    var rs, re time.Time
+    if req.Start != nil {
+        rs = tt.ParseDateStringX(*req.Start)
+        q.Where(rider.HasSubscribesWith(subscribe.StartAtGTE(rs)))
+    }
+    if req.End != nil {
+        re = tt.ParseDateStringX(*req.End)
+        q.Where(rider.HasSubscribesWith(subscribe.StartAtLT(re.AddDate(0, 0, 1))))
+    }
     return model.ParsePaginationResponse(
         q,
         req.PaginationReq,
@@ -121,7 +132,6 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
                 res.Name = p.Name
             }
             if item.Edges.Subscribes != nil {
-                tt := tools.NewTime()
                 for i, sub := range item.Edges.Subscribes {
                     var days int
                     if i == 0 {
@@ -131,11 +141,26 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
                         continue
                     }
                     // 计算订阅使用天数
-                    if sub.EndAt != nil {
-                        days = tt.DiffDaysOfNextDay(*sub.EndAt, *sub.StartAt)
-                    } else {
-                        days = tt.DiffDaysOfNextDayToNow(*sub.StartAt)
+                    // 根据请求的时间范围计算时间周期
+                    before := rs
+                    after := re
+
+                    // 如果请求日期为空或请求日期在开始日期之前
+                    if before.IsZero() || before.Before(*sub.StartAt) {
+                        before = *sub.StartAt
                     }
+
+                    // 截止日期默认为当前日期或请求日期
+                    if after.IsZero() {
+                        after = time.Now()
+                    }
+                    // 如果订阅有结束日期并且结束日期在请求日期之前
+                    if sub.EndAt != nil && after.After(*sub.EndAt) {
+                        after = *sub.EndAt
+                    }
+
+                    days = tt.DiffDaysOfNextDay(after, before)
+
                     // 总天数
                     res.Days += days
                     // 判断是否已结算

@@ -2605,6 +2605,10 @@ paths:
         in: query
         name: current
         type: integer
+      - description: 使用结束时间
+        in: query
+        name: end
+        type: string
       - description: '企业ID '
         in: query
         name: enterpriseId
@@ -2618,6 +2622,10 @@ paths:
         in: query
         name: pageSize
         type: integer
+      - description: 使用开始时间
+        in: query
+        name: start
+        type: string
       produces:
       - application/json
       responses:

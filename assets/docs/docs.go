@@ -1162,6 +1162,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "使用结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "企业ID ",
                         "name": "enterpriseId",
@@ -1178,6 +1184,12 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "使用开始时间",
+                        "name": "start",
                         "in": "query"
                     }
                 ],
