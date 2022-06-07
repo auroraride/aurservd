@@ -2,6 +2,7 @@
 
 #### 接口新增
 
+- [M90004 企业详情](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseDetail)
 - [M90006 创建站点](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseCreateStation)
 - [M90007 编辑站点](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseModifyStation)
 - [M90008 列举站点](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseListStation)

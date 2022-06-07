@@ -1084,7 +1084,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.EnterpriseListRes"
+                                                "$ref": "#/definitions/model.EnterpriseRes"
                                             }
                                         }
                                     }
@@ -1261,6 +1261,43 @@ const docTemplate = `{
             }
         },
         "/manager/v1/enterprise/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M90004 企业详情",
+                "operationId": "ManagerEnterpriseDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "企业ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterpriseRes"
+                        }
+                    }
+                }
+            },
             "put": {
                 "consumes": [
                     "application/json"
@@ -4368,7 +4405,75 @@ const docTemplate = `{
                 }
             }
         },
-        "model.EnterpriseListRes": {
+        "model.EnterprisePrepaymentReq": {
+            "type": "object",
+            "required": [
+                "amount",
+                "remark"
+            ],
+            "properties": {
+                "amount": {
+                    "description": "金额 ",
+                    "type": "number"
+                },
+                "remark": {
+                    "description": "备注 ",
+                    "type": "string"
+                }
+            }
+        },
+        "model.EnterprisePrice": {
+            "type": "object",
+            "required": [
+                "cityId",
+                "price",
+                "voltage"
+            ],
+            "properties": {
+                "cityId": {
+                    "description": "城市 ",
+                    "type": "integer"
+                },
+                "price": {
+                    "description": "单价(元/天) ",
+                    "type": "number"
+                },
+                "voltage": {
+                    "description": "电压型号 暂时固定为 60 或 72",
+                    "type": "number",
+                    "enum": [
+                        60,
+                        72
+                    ]
+                }
+            }
+        },
+        "model.EnterprisePriceWithCity": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "price": {
+                    "description": "单价(元/天)",
+                    "type": "number"
+                },
+                "voltage": {
+                    "description": "电压型号 暂时固定为 60 或 72",
+                    "type": "number",
+                    "enum": [
+                        60,
+                        72
+                    ]
+                }
+            }
+        },
+        "model.EnterpriseRes": {
             "type": "object",
             "properties": {
                 "address": {
@@ -4436,74 +4541,6 @@ const docTemplate = `{
                         0,
                         1,
                         2
-                    ]
-                }
-            }
-        },
-        "model.EnterprisePrepaymentReq": {
-            "type": "object",
-            "required": [
-                "amount",
-                "remark"
-            ],
-            "properties": {
-                "amount": {
-                    "description": "金额 ",
-                    "type": "number"
-                },
-                "remark": {
-                    "description": "备注 ",
-                    "type": "string"
-                }
-            }
-        },
-        "model.EnterprisePrice": {
-            "type": "object",
-            "required": [
-                "cityId",
-                "price",
-                "voltage"
-            ],
-            "properties": {
-                "cityId": {
-                    "description": "城市 ",
-                    "type": "integer"
-                },
-                "price": {
-                    "description": "单价(元/天) ",
-                    "type": "number"
-                },
-                "voltage": {
-                    "description": "电压型号 暂时固定为 60 或 72",
-                    "type": "number",
-                    "enum": [
-                        60,
-                        72
-                    ]
-                }
-            }
-        },
-        "model.EnterprisePriceWithCity": {
-            "type": "object",
-            "properties": {
-                "city": {
-                    "description": "城市",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.City"
-                        }
-                    ]
-                },
-                "price": {
-                    "description": "单价(元/天)",
-                    "type": "number"
-                },
-                "voltage": {
-                    "description": "电压型号 暂时固定为 60 或 72",
-                    "type": "number",
-                    "enum": [
-                        60,
-                        72
                     ]
                 }
             }

@@ -56,12 +56,27 @@ func (*enterprise) Modify(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        query  query  model.EnterpriseListReq  true  "desc"
-// @Success      200  {object}  model.PaginationRes{items=[]model.EnterpriseListRes} "请求成功"
+// @Success      200  {object}  model.PaginationRes{items=[]model.EnterpriseRes} "请求成功"
 func (*enterprise) List(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.EnterpriseListReq](c)
     return ctx.SendResponse(
         service.NewEnterpriseWithModifier(ctx.Modifier).List(req),
     )
+}
+
+// Detail
+// @ID           ManagerEnterpriseDetail
+// @Router       /manager/v1/enterprise/{id} [GET]
+// @Summary      M90004 企业详情
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        id  path  uint64  true  "企业ID"
+// @Success      200  {object}  model.EnterpriseRes  "请求成功"
+func (*enterprise) Detail(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+    return ctx.SendResponse(service.NewEnterpriseWithModifier(ctx.Modifier).GetDetail(req))
 }
 
 // Prepayment

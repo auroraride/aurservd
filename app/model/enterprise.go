@@ -73,7 +73,7 @@ type EnterpriseListReq struct {
     // StatementEnd   *string `json:"statementEnd" query:"statementEnd"`     // 计费时间晚于
 }
 
-type EnterpriseListRes struct {
+type EnterpriseRes struct {
     ID           uint64                    `json:"id"`                    // 企业ID
     Balance      float64                   `json:"balance"`               // 可用余额
     Name         string                    `json:"name"`                  // 企业名称

@@ -171,41 +171,56 @@ func (s *enterpriseService) List(req *model.EnterpriseListReq) *model.Pagination
     }
     return model.ParsePaginationResponse(
         q, req.PaginationReq,
-        func(item *ent.Enterprise) (res model.EnterpriseListRes) {
-            _ = copier.Copy(&res, item)
-            res.City = model.City{
-                ID:   item.Edges.City.ID,
-                Name: item.Edges.City.Name,
-            }
-            contracts := item.Edges.Contracts
-            if contracts != nil {
-                res.Contracts = make([]model.EnterpriseContract, len(contracts))
-                for i, ec := range contracts {
-                    res.Contracts[i] = model.EnterpriseContract{
-                        Start: ec.Start.Format(carbon.DateLayout),
-                        End:   ec.End.Format(carbon.DateLayout),
-                        File:  ec.File,
-                    }
-                }
-            }
-
-            prices := item.Edges.Prices
-            if prices != nil {
-                res.Prices = make([]model.EnterprisePriceWithCity, len(prices))
-                for i, ep := range prices {
-                    res.Prices[i] = model.EnterprisePriceWithCity{
-                        Voltage: ep.Voltage,
-                        Price:   ep.Price,
-                        City: model.City{
-                            ID:   ep.Edges.City.ID,
-                            Name: ep.Edges.City.Name,
-                        },
-                    }
-                }
-            }
-            return
+        func(item *ent.Enterprise) model.EnterpriseRes {
+            return s.Detail(item)
         },
     )
+}
+
+func (s *enterpriseService) GetDetail(req *model.IDParamReq) model.EnterpriseRes {
+    item, _ := s.orm.QueryNotDeleted().WithStatements().WithCity().WithPrices(func(ep *ent.EnterprisePriceQuery) {
+        ep.WithCity()
+    }).First(s.ctx)
+    if item == nil {
+        snag.Panic("未找到有效企业")
+    }
+    return s.Detail(item)
+}
+
+// Detail 企业详情
+func (s *enterpriseService) Detail(item *ent.Enterprise) (res model.EnterpriseRes) {
+    _ = copier.Copy(&res, item)
+    res.City = model.City{
+        ID:   item.Edges.City.ID,
+        Name: item.Edges.City.Name,
+    }
+    contracts := item.Edges.Contracts
+    if contracts != nil {
+        res.Contracts = make([]model.EnterpriseContract, len(contracts))
+        for i, ec := range contracts {
+            res.Contracts[i] = model.EnterpriseContract{
+                Start: ec.Start.Format(carbon.DateLayout),
+                End:   ec.End.Format(carbon.DateLayout),
+                File:  ec.File,
+            }
+        }
+    }
+
+    prices := item.Edges.Prices
+    if prices != nil {
+        res.Prices = make([]model.EnterprisePriceWithCity, len(prices))
+        for i, ep := range prices {
+            res.Prices[i] = model.EnterprisePriceWithCity{
+                Voltage: ep.Voltage,
+                Price:   ep.Price,
+                City: model.City{
+                    ID:   ep.Edges.City.ID,
+                    Name: ep.Edges.City.Name,
+                },
+            }
+        }
+    }
+    return
 }
 
 // QueryAllCollaborated 获取合作中的企业

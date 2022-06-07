@@ -804,7 +804,54 @@ definitions:
     - prices
     - status
     type: object
-  model.EnterpriseListRes:
+  model.EnterprisePrepaymentReq:
+    properties:
+      amount:
+        description: '金额 '
+        type: number
+      remark:
+        description: '备注 '
+        type: string
+    required:
+    - amount
+    - remark
+    type: object
+  model.EnterprisePrice:
+    properties:
+      cityId:
+        description: '城市 '
+        type: integer
+      price:
+        description: '单价(元/天) '
+        type: number
+      voltage:
+        description: 电压型号 暂时固定为 60 或 72
+        enum:
+        - 60
+        - 72
+        type: number
+    required:
+    - cityId
+    - price
+    - voltage
+    type: object
+  model.EnterprisePriceWithCity:
+    properties:
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      price:
+        description: 单价(元/天)
+        type: number
+      voltage:
+        description: 电压型号 暂时固定为 60 或 72
+        enum:
+        - 60
+        - 72
+        type: number
+    type: object
+  model.EnterpriseRes:
     properties:
       address:
         description: 企业地址
@@ -854,53 +901,6 @@ definitions:
         - 1
         - 2
         type: integer
-    type: object
-  model.EnterprisePrepaymentReq:
-    properties:
-      amount:
-        description: '金额 '
-        type: number
-      remark:
-        description: '备注 '
-        type: string
-    required:
-    - amount
-    - remark
-    type: object
-  model.EnterprisePrice:
-    properties:
-      cityId:
-        description: '城市 '
-        type: integer
-      price:
-        description: '单价(元/天) '
-        type: number
-      voltage:
-        description: 电压型号 暂时固定为 60 或 72
-        enum:
-        - 60
-        - 72
-        type: number
-    required:
-    - cityId
-    - price
-    - voltage
-    type: object
-  model.EnterprisePriceWithCity:
-    properties:
-      city:
-        allOf:
-        - $ref: '#/definitions/model.City'
-        description: 城市
-      price:
-        description: 单价(元/天)
-        type: number
-      voltage:
-        description: 电压型号 暂时固定为 60 或 72
-        enum:
-        - 60
-        - 72
-        type: number
     type: object
   model.EnterpriseStationCreateReq:
     properties:
@@ -2420,7 +2420,7 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/model.EnterpriseListRes'
+                    $ref: '#/definitions/model.EnterpriseRes'
                   type: array
               type: object
       summary: M90003 列举企业
@@ -2453,6 +2453,31 @@ paths:
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 企业ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.EnterpriseRes'
+      summary: M90004 企业详情
+      tags:
+      - '[M]管理接口'
     put:
       consumes:
       - application/json
