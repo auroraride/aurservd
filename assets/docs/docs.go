@@ -4292,7 +4292,12 @@ const docTemplate = `{
         "model.ContractSignReq": {
             "type": "object",
             "properties": {
+                "enterpriseId": {
+                    "description": "企业ID",
+                    "type": "integer"
+                },
                 "planId": {
+                    "description": "骑士卡ID",
                     "type": "integer"
                 }
             }
@@ -5457,6 +5462,14 @@ const docTemplate = `{
                 "deposit": {
                     "description": "需缴押金",
                     "type": "number"
+                },
+                "enterprise": {
+                    "description": "所属企业",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseBasic"
+                        }
+                    ]
                 },
                 "id": {
                     "type": "integer"

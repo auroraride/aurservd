@@ -88,6 +88,11 @@ func (s *orderService) PreconditionRenewal(sub *model.Subscribe) {
 // Create 创建订单
 // TODO 需要做更改电池逻辑, 退款 + 推送订单
 func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCreateRes) {
+    // 查询是否企业骑手
+    if s.rider.EnterpriseID != nil {
+        snag.Panic("团签用户无法购买")
+    }
+
     // 查询骑手是否签约过
     if !NewContract().Effective(s.rider) {
         snag.Panic("请先签约")

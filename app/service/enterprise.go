@@ -249,6 +249,8 @@ func (s *enterpriseService) QueryAllUsingSubscribe(enterpriseID uint64) []*ent.S
         subscribe.EnterpriseID(enterpriseID),
         // 未结算
         subscribe.StatementIDIsNil(),
+        // 已开始使用
+        subscribe.StartAtNotNil(),
     ).All(s.ctx)
     return items
 }

@@ -92,7 +92,7 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
         QueryNotDeleted().
         WithPerson().
         WithSubscribes(func(sq *ent.SubscribeQuery) {
-            sq.Order(ent.Desc(subscribe.FieldCreatedAt))
+            sq.Where(subscribe.StartAtNotNil()).Order(ent.Desc(subscribe.FieldCreatedAt))
         }).
         WithStation().
         Where(rider.EnterpriseID(req.EnterpriseID))

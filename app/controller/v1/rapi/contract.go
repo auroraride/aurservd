@@ -9,6 +9,7 @@ import (
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
 )
 
@@ -29,6 +30,9 @@ var Contract = new(contract)
 // @Success      200  {object}  model.ContractSignRes  "请求成功"
 func (*contract) Sign(c echo.Context) error {
     ctx, req := app.RiderContextAndBinding[model.ContractSignReq](c)
+    if req.PlanID == nil && req.EnterpriseID == nil {
+        snag.Panic("签约参数错误")
+    }
     return ctx.SendResponse(service.NewContract().Sign(ctx.Rider, req))
 }
 

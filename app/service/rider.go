@@ -21,11 +21,11 @@ import (
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/golang-module/carbon/v2"
     jsoniter "github.com/json-iterator/go"
     "github.com/rs/xid"
-    log "github.com/sirupsen/logrus"
     "strconv"
     "time"
 )
@@ -67,6 +67,7 @@ func (s *riderService) GetRiderById(id uint64) (u *ent.Rider, err error) {
         QueryNotDeleted().
         WithPerson().
         WithEnterprise().
+        WithEnterprise().
         Where(rider.ID(id)).
         Only(context.Background())
 }
@@ -93,7 +94,7 @@ func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (
     orm := ar.Ent.Rider
     var u *ent.Rider
 
-    u, err = orm.QueryNotDeleted().Where(rider.Phone(req.Phone)).WithPerson().Only(ctx)
+    u, err = orm.QueryNotDeleted().Where(rider.Phone(req.Phone)).WithPerson().WithEnterprise().Only(ctx)
     if err != nil {
         // 创建骑手
         u, err = orm.Create().
@@ -472,10 +473,6 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
     )
 }
 
-func (s *riderService) ModifyUserPlanDays() {
-
-}
-
 func (s *riderService) Query(id uint64) *ent.Rider {
     item, err := ar.Ent.Rider.QueryNotDeleted().Where(rider.ID(id)).Only(s.ctx)
     if err != nil || item == nil {
@@ -508,14 +505,11 @@ func (s *riderService) Block(req *model.RiderBlockReq) {
 
 // DepositOrder 获取骑手押金订单
 func (s *riderService) DepositOrder(riderID uint64) *ent.Order {
-    o, err := ar.Ent.Order.QueryNotDeleted().Where(
+    o, _ := ar.Ent.Order.QueryNotDeleted().Where(
         order.RiderID(riderID),
         order.Status(model.OrderStatusPaid),
         order.Type(model.OrderTypeDeposit),
     ).First(s.ctx)
-    if err != nil {
-        log.Error(err)
-    }
     return o
 }
 
@@ -539,10 +533,18 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string)
         IsAuthed:        s.IsAuthed(u),
         Contact:         u.Contact,
         Qrcode:          fmt.Sprintf("https://rider.auroraride.com/%d", u.ID),
-        Deposit:         s.Deposit(u.ID),
-        Subscribe:       sub,
-        OrderNotActived: sub != nil && sub.Status == model.SubscribeStatusInactive,
         Token:           token,
+        Subscribe:       sub,
+    }
+    if u.Edges.Enterprise != nil {
+        profile.Enterprise = &model.EnterpriseBasic{
+            ID:   u.Edges.Enterprise.ID,
+            Name: u.Edges.Enterprise.Name,
+        }
+    } else {
+        profile.Subscribe = sub
+        profile.OrderNotActived = tools.NewPointer().Bool(sub != nil && sub.Status == model.SubscribeStatusInactive)
+        profile.Deposit = s.Deposit(u.ID)
     }
     return profile
 }

@@ -52,7 +52,7 @@ func NewSubscribeWithModifier(m *model.Modifier) *subscribeService {
 
 // Recent 获取骑手最近订阅详情
 func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
-    sub, err := s.orm.QueryNotDeleted().
+    sub, _ := s.orm.QueryNotDeleted().
         Where(subscribe.RiderID(riderID)).
         Order(ent.Desc(subscribe.FieldCreatedAt)).
         WithPlan(func(pq *ent.PlanQuery) {
@@ -67,10 +67,6 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
         }).
         Limit(1).
         First(s.ctx)
-
-    if err != nil {
-        log.Error(err)
-    }
 
     if sub == nil {
         return nil

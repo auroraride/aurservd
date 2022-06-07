@@ -40,7 +40,8 @@ func (s ContractStatus) String() string {
 
 // ContractSignReq 签约请求
 type ContractSignReq struct {
-    PlanID uint64 `json:"planId"`
+    PlanID       *uint64 `json:"planId"`       // 骑士卡ID
+    EnterpriseID *uint64 `json:"enterpriseId"` // 企业ID
 }
 
 // ContractSignRes 合同签订返回

@@ -626,7 +626,11 @@ definitions:
     type: object
   model.ContractSignReq:
     properties:
+      enterpriseId:
+        description: 企业ID
+        type: integer
       planId:
+        description: 骑士卡ID
         type: integer
     type: object
   model.ContractSignRes:
@@ -1449,6 +1453,10 @@ definitions:
       deposit:
         description: 需缴押金
         type: number
+      enterprise:
+        allOf:
+        - $ref: '#/definitions/model.EnterpriseBasic'
+        description: 所属企业
       id:
         type: integer
       isAuthed:
