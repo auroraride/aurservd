@@ -30,8 +30,8 @@ func (Subscribe) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("rider_id").Comment("骑手ID"),
         field.Uint64("initial_order_id").Optional().Comment("初始订单ID(开通订阅的初始订单), 团签用户无此字段"),
-        field.Uint64("enterprise_id").Optional().Comment("企业ID"),
-        field.Uint64("statement_id").Optional().Comment("团签结账对账单ID"),
+        field.Uint64("enterprise_id").Optional().Nillable().Comment("企业ID"),
+        field.Uint64("statement_id").Optional().Nillable().Comment("团签结账对账单ID"),
         field.Uint8("status").Default(model.SubscribeStatusInactive).Comment("当前订阅状态"),
         field.Uint("type").Default(0).Immutable().Comment("订阅类型 0团签 1新签 2续签 3重签 4更改电池, 除0值外 其他值参考order.type"),
         field.Float("voltage").Comment("可用电压型号"),
@@ -73,6 +73,7 @@ func (Subscribe) Mixin() []ent.Mixin {
         PlanMixin{},
         EmployeeMixin{},
         CityMixin{},
+        StationMixin{Optional: true},
     }
 }
 

@@ -43,8 +43,6 @@ const (
 	FieldBillTime = "bill_time"
 	// EdgeSubscribes holds the string denoting the subscribes edge name in mutations.
 	EdgeSubscribes = "subscribes"
-	// EdgeInvoices holds the string denoting the invoices edge name in mutations.
-	EdgeInvoices = "invoices"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
 	// Table holds the table name of the enterprisestatement in the database.
@@ -56,13 +54,6 @@ const (
 	SubscribesInverseTable = "subscribe"
 	// SubscribesColumn is the table column denoting the subscribes relation/edge.
 	SubscribesColumn = "statement_id"
-	// InvoicesTable is the table that holds the invoices relation/edge.
-	InvoicesTable = "enterprise_invoice"
-	// InvoicesInverseTable is the table name for the EnterpriseInvoice entity.
-	// It exists in this package in order to avoid circular dependency with the "enterpriseinvoice" package.
-	InvoicesInverseTable = "enterprise_invoice"
-	// InvoicesColumn is the table column denoting the invoices relation/edge.
-	InvoicesColumn = "statement_id"
 	// EnterpriseTable is the table that holds the enterprise relation/edge.
 	EnterpriseTable = "enterprise_statement"
 	// EnterpriseInverseTable is the table name for the Enterprise entity.

@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -123,6 +124,20 @@ func (sc *SubscribeCreate) SetNillableEmployeeID(u *uint64) *SubscribeCreate {
 // SetCityID sets the "city_id" field.
 func (sc *SubscribeCreate) SetCityID(u uint64) *SubscribeCreate {
 	sc.mutation.SetCityID(u)
+	return sc
+}
+
+// SetStationID sets the "station_id" field.
+func (sc *SubscribeCreate) SetStationID(u uint64) *SubscribeCreate {
+	sc.mutation.SetStationID(u)
+	return sc
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableStationID(u *uint64) *SubscribeCreate {
+	if u != nil {
+		sc.SetStationID(*u)
+	}
 	return sc
 }
 
@@ -353,6 +368,11 @@ func (sc *SubscribeCreate) SetEmployee(e *Employee) *SubscribeCreate {
 // SetCity sets the "city" edge to the City entity.
 func (sc *SubscribeCreate) SetCity(c *City) *SubscribeCreate {
 	return sc.SetCityID(c.ID)
+}
+
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (sc *SubscribeCreate) SetStation(e *EnterpriseStation) *SubscribeCreate {
+	return sc.SetStationID(e.ID)
 }
 
 // SetRider sets the "rider" edge to the Rider entity.
@@ -837,6 +857,26 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		_node.CityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := sc.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.StationTable,
+			Columns: []string{subscribe.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.StationID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := sc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -874,7 +914,7 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.EnterpriseID = nodes[0]
+		_node.EnterpriseID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := sc.mutation.PausesIDs(); len(nodes) > 0 {
@@ -971,7 +1011,7 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.StatementID = nodes[0]
+		_node.StatementID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -1163,6 +1203,24 @@ func (u *SubscribeUpsert) SetCityID(v uint64) *SubscribeUpsert {
 // UpdateCityID sets the "city_id" field to the value that was provided on create.
 func (u *SubscribeUpsert) UpdateCityID() *SubscribeUpsert {
 	u.SetExcluded(subscribe.FieldCityID)
+	return u
+}
+
+// SetStationID sets the "station_id" field.
+func (u *SubscribeUpsert) SetStationID(v uint64) *SubscribeUpsert {
+	u.Set(subscribe.FieldStationID, v)
+	return u
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateStationID() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldStationID)
+	return u
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *SubscribeUpsert) ClearStationID() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldStationID)
 	return u
 }
 
@@ -1677,6 +1735,27 @@ func (u *SubscribeUpsertOne) SetCityID(v uint64) *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) UpdateCityID() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdateCityID()
+	})
+}
+
+// SetStationID sets the "station_id" field.
+func (u *SubscribeUpsertOne) SetStationID(v uint64) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetStationID(v)
+	})
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateStationID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateStationID()
+	})
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *SubscribeUpsertOne) ClearStationID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearStationID()
 	})
 }
 
@@ -2405,6 +2484,27 @@ func (u *SubscribeUpsertBulk) SetCityID(v uint64) *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) UpdateCityID() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdateCityID()
+	})
+}
+
+// SetStationID sets the "station_id" field.
+func (u *SubscribeUpsertBulk) SetStationID(v uint64) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetStationID(v)
+	})
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateStationID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateStationID()
+	})
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *SubscribeUpsertBulk) ClearStationID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearStationID()
 	})
 }
 

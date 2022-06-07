@@ -39,9 +39,6 @@ type Enterprise func(*sql.Selector)
 // EnterpriseContract is the predicate function for enterprisecontract builders.
 type EnterpriseContract func(*sql.Selector)
 
-// EnterpriseInvoice is the predicate function for enterpriseinvoice builders.
-type EnterpriseInvoice func(*sql.Selector)
-
 // EnterprisePrepayment is the predicate function for enterpriseprepayment builders.
 type EnterprisePrepayment func(*sql.Selector)
 

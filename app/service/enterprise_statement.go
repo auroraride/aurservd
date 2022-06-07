@@ -1,6 +1,6 @@
 // Copyright (C) liasica. 2022-present.
 //
-// Created at 2022-06-06
+// Created at 2022-06-07
 // Based on aurservd by liasica, magicrolan@qq.com.
 
 package service
@@ -13,7 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 )
 
-type statementService struct {
+type enterpriseStatementService struct {
     ctx      context.Context
     modifier *model.Modifier
     rider    *ent.Rider
@@ -21,36 +21,36 @@ type statementService struct {
     orm      *ent.EnterpriseStatementClient
 }
 
-func NewStatement() *statementService {
-    return &statementService{
+func NewEnterpriseStatement() *enterpriseStatementService {
+    return &enterpriseStatementService{
         ctx: context.Background(),
         orm: ar.Ent.EnterpriseStatement,
     }
 }
 
-func NewStatementWithRider(r *ent.Rider) *statementService {
-    s := NewStatement()
+func NewEnterpriseStatementWithRider(r *ent.Rider) *enterpriseStatementService {
+    s := NewEnterpriseStatement()
     s.ctx = context.WithValue(s.ctx, "rider", r)
     s.rider = r
     return s
 }
 
-func NewStatementWithModifier(m *model.Modifier) *statementService {
-    s := NewStatement()
+func NewEnterpriseStatementWithModifier(m *model.Modifier) *enterpriseStatementService {
+    s := NewEnterpriseStatement()
     s.ctx = context.WithValue(s.ctx, "modifier", m)
     s.modifier = m
     return s
 }
 
-func NewStatementWithEmployee(e *model.Employee) *statementService {
-    s := NewStatement()
+func NewEnterpriseStatementWithEmployee(e *model.Employee) *enterpriseStatementService {
+    s := NewEnterpriseStatement()
     s.ctx = context.WithValue(s.ctx, "employee", e)
     s.employee = e
     return s
 }
 
 // Current 获取企业当前账单, 若无则新增
-func (s *statementService) Current(enterpriseID uint64) *ent.EnterpriseStatement {
+func (s *enterpriseStatementService) Current(enterpriseID uint64) *ent.EnterpriseStatement {
     res, _ := s.orm.QueryNotDeleted().Where(
         enterprisestatement.EnterpriseID(enterpriseID),
         enterprisestatement.SettledAtIsNil(),
@@ -59,8 +59,4 @@ func (s *statementService) Current(enterpriseID uint64) *ent.EnterpriseStatement
         res, _ = s.orm.Create().SetEnterpriseID(enterpriseID).Save(s.ctx)
     }
     return res
-}
-
-func (s *statementService) GetBill(req *model.StatementBillReq) {
-
 }

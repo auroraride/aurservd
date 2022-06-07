@@ -74,7 +74,6 @@ func (Rider) Edges() []ent.Edge {
         edge.To("contract", Contract.Type),
         edge.To("faults", CabinetFault.Type),
         edge.To("orders", Order.Type),
-        edge.To("invoices", EnterpriseInvoice.Type),
 
         edge.To("exchanges", Exchange.Type).Comment("换电记录"),
         edge.To("subscribes", Subscribe.Type).Comment("订阅"),
@@ -87,7 +86,7 @@ func (Rider) Mixin() []ent.Mixin {
         internal.DeleteMixin{},
         internal.Modifier{},
 
-        StationMixin{},
+        StationMixin{Optional: true},
     }
 }
 

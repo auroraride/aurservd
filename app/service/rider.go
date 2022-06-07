@@ -452,7 +452,7 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
             if item.Edges.Orders != nil && len(item.Edges.Orders) > 0 {
                 ri.Deposit = item.Edges.Orders[0].Amount
             }
-            if item.Edges.Subscribes != nil {
+            if item.Edges.Subscribes != nil && len(item.Edges.Subscribes) > 0 {
                 sub := item.Edges.Subscribes[0]
                 ri.Subscribe = &model.RiderItemSubscribe{
                     Status:    sub.Status,

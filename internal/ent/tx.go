@@ -36,8 +36,6 @@ type Tx struct {
 	Enterprise *EnterpriseClient
 	// EnterpriseContract is the client for interacting with the EnterpriseContract builders.
 	EnterpriseContract *EnterpriseContractClient
-	// EnterpriseInvoice is the client for interacting with the EnterpriseInvoice builders.
-	EnterpriseInvoice *EnterpriseInvoiceClient
 	// EnterprisePrepayment is the client for interacting with the EnterprisePrepayment builders.
 	EnterprisePrepayment *EnterprisePrepaymentClient
 	// EnterprisePrice is the client for interacting with the EnterprisePrice builders.
@@ -216,7 +214,6 @@ func (tx *Tx) init() {
 	tx.Employee = NewEmployeeClient(tx.config)
 	tx.Enterprise = NewEnterpriseClient(tx.config)
 	tx.EnterpriseContract = NewEnterpriseContractClient(tx.config)
-	tx.EnterpriseInvoice = NewEnterpriseInvoiceClient(tx.config)
 	tx.EnterprisePrepayment = NewEnterprisePrepaymentClient(tx.config)
 	tx.EnterprisePrice = NewEnterprisePriceClient(tx.config)
 	tx.EnterpriseStatement = NewEnterpriseStatementClient(tx.config)

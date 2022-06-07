@@ -15,7 +15,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
-	"github.com/auroraride/aurservd/internal/ent/enterpriseinvoice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -103,6 +102,14 @@ func (rc *RiderCreate) SetNillableRemark(s *string) *RiderCreate {
 // SetStationID sets the "station_id" field.
 func (rc *RiderCreate) SetStationID(u uint64) *RiderCreate {
 	rc.mutation.SetStationID(u)
+	return rc
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (rc *RiderCreate) SetNillableStationID(u *uint64) *RiderCreate {
+	if u != nil {
+		rc.SetStationID(*u)
+	}
 	return rc
 }
 
@@ -332,21 +339,6 @@ func (rc *RiderCreate) AddOrders(o ...*Order) *RiderCreate {
 	return rc.AddOrderIDs(ids...)
 }
 
-// AddInvoiceIDs adds the "invoices" edge to the EnterpriseInvoice entity by IDs.
-func (rc *RiderCreate) AddInvoiceIDs(ids ...uint64) *RiderCreate {
-	rc.mutation.AddInvoiceIDs(ids...)
-	return rc
-}
-
-// AddInvoices adds the "invoices" edges to the EnterpriseInvoice entity.
-func (rc *RiderCreate) AddInvoices(e ...*EnterpriseInvoice) *RiderCreate {
-	ids := make([]uint64, len(e))
-	for i := range e {
-		ids[i] = e[i].ID
-	}
-	return rc.AddInvoiceIDs(ids...)
-}
-
 // AddExchangeIDs adds the "exchanges" edge to the Exchange entity by IDs.
 func (rc *RiderCreate) AddExchangeIDs(ids ...uint64) *RiderCreate {
 	rc.mutation.AddExchangeIDs(ids...)
@@ -489,9 +481,6 @@ func (rc *RiderCreate) check() error {
 	if _, ok := rc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Rider.updated_at"`)}
 	}
-	if _, ok := rc.mutation.StationID(); !ok {
-		return &ValidationError{Name: "station_id", err: errors.New(`ent: missing required field "Rider.station_id"`)}
-	}
 	if _, ok := rc.mutation.Phone(); !ok {
 		return &ValidationError{Name: "phone", err: errors.New(`ent: missing required field "Rider.phone"`)}
 	}
@@ -515,9 +504,6 @@ func (rc *RiderCreate) check() error {
 	}
 	if _, ok := rc.mutation.Blocked(); !ok {
 		return &ValidationError{Name: "blocked", err: errors.New(`ent: missing required field "Rider.blocked"`)}
-	}
-	if _, ok := rc.mutation.StationID(); !ok {
-		return &ValidationError{Name: "station", err: errors.New(`ent: missing required edge "Rider.station"`)}
 	}
 	return nil
 }
@@ -700,7 +686,7 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.StationID = nodes[0]
+		_node.StationID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := rc.mutation.PersonIDs(); len(nodes) > 0 {
@@ -792,25 +778,6 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: order.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := rc.mutation.InvoicesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   rider.InvoicesTable,
-			Columns: []string{rider.InvoicesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterpriseinvoice.FieldID,
 				},
 			},
 		}
@@ -1016,6 +983,12 @@ func (u *RiderUpsert) SetStationID(v uint64) *RiderUpsert {
 // UpdateStationID sets the "station_id" field to the value that was provided on create.
 func (u *RiderUpsert) UpdateStationID() *RiderUpsert {
 	u.SetExcluded(rider.FieldStationID)
+	return u
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *RiderUpsert) ClearStationID() *RiderUpsert {
+	u.SetNull(rider.FieldStationID)
 	return u
 }
 
@@ -1414,6 +1387,13 @@ func (u *RiderUpsertOne) SetStationID(v uint64) *RiderUpsertOne {
 func (u *RiderUpsertOne) UpdateStationID() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.UpdateStationID()
+	})
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *RiderUpsertOne) ClearStationID() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearStationID()
 	})
 }
 
@@ -2013,6 +1993,13 @@ func (u *RiderUpsertBulk) SetStationID(v uint64) *RiderUpsertBulk {
 func (u *RiderUpsertBulk) UpdateStationID() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.UpdateStationID()
+	})
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *RiderUpsertBulk) ClearStationID() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearStationID()
 	})
 }
 

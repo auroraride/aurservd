@@ -65,8 +65,6 @@ const (
 	EdgeFaults = "faults"
 	// EdgeOrders holds the string denoting the orders edge name in mutations.
 	EdgeOrders = "orders"
-	// EdgeInvoices holds the string denoting the invoices edge name in mutations.
-	EdgeInvoices = "invoices"
 	// EdgeExchanges holds the string denoting the exchanges edge name in mutations.
 	EdgeExchanges = "exchanges"
 	// EdgeSubscribes holds the string denoting the subscribes edge name in mutations.
@@ -115,13 +113,6 @@ const (
 	OrdersInverseTable = "order"
 	// OrdersColumn is the table column denoting the orders relation/edge.
 	OrdersColumn = "rider_id"
-	// InvoicesTable is the table that holds the invoices relation/edge.
-	InvoicesTable = "enterprise_invoice"
-	// InvoicesInverseTable is the table name for the EnterpriseInvoice entity.
-	// It exists in this package in order to avoid circular dependency with the "enterpriseinvoice" package.
-	InvoicesInverseTable = "enterprise_invoice"
-	// InvoicesColumn is the table column denoting the invoices relation/edge.
-	InvoicesColumn = "rider_id"
 	// ExchangesTable is the table that holds the exchanges relation/edge.
 	ExchangesTable = "exchange"
 	// ExchangesInverseTable is the table name for the Exchange entity.

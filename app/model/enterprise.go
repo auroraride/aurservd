@@ -84,6 +84,7 @@ type EnterpriseRes struct {
     Address      string                    `json:"address"`               // 企业地址
     Payment      uint8                     `json:"payment"`               // 付费方式 1:预付费 2:后付费
     Deposit      float64                   `json:"deposit"`               // 押金
+    Riders       int                       `json:"riders"`                // 骑手数量
     Contracts    []EnterpriseContract      `json:"contracts,omitempty"`   // 合同
     Prices       []EnterprisePriceWithCity `json:"prices,omitempty"`      // 价格列表
     City         City                      `json:"city"`                  // 城市

@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -125,6 +126,26 @@ func (su *SubscribeUpdate) ClearEmployeeID() *SubscribeUpdate {
 // SetCityID sets the "city_id" field.
 func (su *SubscribeUpdate) SetCityID(u uint64) *SubscribeUpdate {
 	su.mutation.SetCityID(u)
+	return su
+}
+
+// SetStationID sets the "station_id" field.
+func (su *SubscribeUpdate) SetStationID(u uint64) *SubscribeUpdate {
+	su.mutation.SetStationID(u)
+	return su
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableStationID(u *uint64) *SubscribeUpdate {
+	if u != nil {
+		su.SetStationID(*u)
+	}
+	return su
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (su *SubscribeUpdate) ClearStationID() *SubscribeUpdate {
+	su.mutation.ClearStationID()
 	return su
 }
 
@@ -441,6 +462,11 @@ func (su *SubscribeUpdate) SetCity(c *City) *SubscribeUpdate {
 	return su.SetCityID(c.ID)
 }
 
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (su *SubscribeUpdate) SetStation(e *EnterpriseStation) *SubscribeUpdate {
+	return su.SetStationID(e.ID)
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (su *SubscribeUpdate) SetRider(r *Rider) *SubscribeUpdate {
 	return su.SetRiderID(r.ID)
@@ -526,6 +552,12 @@ func (su *SubscribeUpdate) ClearEmployee() *SubscribeUpdate {
 // ClearCity clears the "city" edge to the City entity.
 func (su *SubscribeUpdate) ClearCity() *SubscribeUpdate {
 	su.mutation.ClearCity()
+	return su
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (su *SubscribeUpdate) ClearStation() *SubscribeUpdate {
+	su.mutation.ClearStation()
 	return su
 }
 
@@ -1044,6 +1076,41 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if su.mutation.StationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.StationTable,
+			Columns: []string{subscribe.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.StationTable,
+			Columns: []string{subscribe.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if su.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1455,6 +1522,26 @@ func (suo *SubscribeUpdateOne) SetCityID(u uint64) *SubscribeUpdateOne {
 	return suo
 }
 
+// SetStationID sets the "station_id" field.
+func (suo *SubscribeUpdateOne) SetStationID(u uint64) *SubscribeUpdateOne {
+	suo.mutation.SetStationID(u)
+	return suo
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableStationID(u *uint64) *SubscribeUpdateOne {
+	if u != nil {
+		suo.SetStationID(*u)
+	}
+	return suo
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (suo *SubscribeUpdateOne) ClearStationID() *SubscribeUpdateOne {
+	suo.mutation.ClearStationID()
+	return suo
+}
+
 // SetRiderID sets the "rider_id" field.
 func (suo *SubscribeUpdateOne) SetRiderID(u uint64) *SubscribeUpdateOne {
 	suo.mutation.SetRiderID(u)
@@ -1768,6 +1855,11 @@ func (suo *SubscribeUpdateOne) SetCity(c *City) *SubscribeUpdateOne {
 	return suo.SetCityID(c.ID)
 }
 
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (suo *SubscribeUpdateOne) SetStation(e *EnterpriseStation) *SubscribeUpdateOne {
+	return suo.SetStationID(e.ID)
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (suo *SubscribeUpdateOne) SetRider(r *Rider) *SubscribeUpdateOne {
 	return suo.SetRiderID(r.ID)
@@ -1853,6 +1945,12 @@ func (suo *SubscribeUpdateOne) ClearEmployee() *SubscribeUpdateOne {
 // ClearCity clears the "city" edge to the City entity.
 func (suo *SubscribeUpdateOne) ClearCity() *SubscribeUpdateOne {
 	suo.mutation.ClearCity()
+	return suo
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (suo *SubscribeUpdateOne) ClearStation() *SubscribeUpdateOne {
+	suo.mutation.ClearStation()
 	return suo
 }
 
@@ -2393,6 +2491,41 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.StationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.StationTable,
+			Columns: []string{subscribe.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.StationTable,
+			Columns: []string{subscribe.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
 				},
 			},
 		}

@@ -10,8 +10,12 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
+    "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
+    "github.com/golang-module/carbon/v2"
 )
 
 type enterpriseRiderService struct {
@@ -48,12 +52,99 @@ func NewEnterpriseRiderWithEmployee(e *model.Employee) *enterpriseRiderService {
     return s
 }
 
-func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) {
+// Create 新增骑手
+func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) model.EnterpriseRider {
     // 查询是否存在
     if ar.Ent.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).ExistX(s.ctx) {
         snag.Panic("此手机号已存在")
     }
 
-    // tx, _ := ar.Ent.Tx(s.ctx)
-    // tx.Rider
+    stat := NewEnterpriseStation().Query(req.StationID)
+
+    tx, _ := ar.Ent.Tx(s.ctx)
+    // 创建person
+    p, err := tx.Person.Create().SetName(req.Name).Save(s.ctx)
+    snag.PanicIfErrorX(err, tx.Rollback)
+
+    // 创建rider
+    var r *ent.Rider
+    r, err = tx.Rider.Create().SetPhone(req.Phone).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).SetPerson(p).Save(s.ctx)
+    snag.PanicIfErrorX(err, tx.Rollback)
+
+    _ = tx.Commit()
+
+    return model.EnterpriseRider{
+        ID:        r.ID,
+        Name:      req.Name,
+        Phone:     req.Phone,
+        CreatedAt: r.CreatedAt.Format(carbon.DateTimeLayout),
+        Station: model.EnterpriseStation{
+            ID:   stat.ID,
+            Name: stat.Name,
+        },
+    }
+}
+
+// List 列举骑手
+func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.PaginationRes {
+    q := ar.Ent.Rider.
+        QueryNotDeleted().
+        WithPerson().
+        WithSubscribes(func(sq *ent.SubscribeQuery) {
+            sq.Order(ent.Desc(subscribe.FieldCreatedAt))
+        }).
+        WithStation().
+        Where(rider.EnterpriseID(req.EnterpriseID))
+    if req.Keyword != nil {
+        q.Where(
+            rider.Or(
+                rider.HasPersonWith(person.NameContainsFold(*req.Keyword)),
+                rider.PhoneContainsFold(*req.Keyword),
+            ),
+        )
+    }
+    return model.ParsePaginationResponse(
+        q,
+        req.PaginationReq,
+        func(item *ent.Rider) model.EnterpriseRider {
+            p := item.Edges.Person
+            res := model.EnterpriseRider{
+                ID:        item.ID,
+                Phone:     item.Phone,
+                CreatedAt: item.CreatedAt.Format(carbon.DateTimeLayout),
+                Station: model.EnterpriseStation{
+                    ID:   item.Edges.Station.ID,
+                    Name: item.Edges.Station.Name,
+                },
+            }
+            if p != nil {
+                res.Name = p.Name
+            }
+            if item.Edges.Subscribes != nil {
+                tt := tools.NewTime()
+                for i, sub := range item.Edges.Subscribes {
+                    var days int
+                    if i == 0 {
+                        res.Voltage = sub.Voltage
+                    }
+                    if sub.StartAt == nil {
+                        continue
+                    }
+                    // 计算订阅使用天数
+                    if sub.EndAt != nil {
+                        days = tt.DiffDaysOfNextDay(*sub.EndAt, *sub.StartAt)
+                    } else {
+                        days = tt.DiffDaysOfNextDayToNow(*sub.StartAt)
+                    }
+                    // 总天数
+                    res.Days += days
+                    // 判断是否已结算
+                    if sub.StatementID == nil {
+                        res.Unsettled += days
+                    }
+                }
+            }
+            return res
+        },
+    )
 }

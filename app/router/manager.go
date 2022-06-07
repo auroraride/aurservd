@@ -82,4 +82,6 @@ func loadManagerRoutes() {
     g.POST("/enterprise/station", mapi.Enterprise.CreateStation)
     g.PUT("/enterprise/station/:id", mapi.Enterprise.ModifyStation)
     g.GET("/enterprise/station", mapi.Enterprise.ListStation)
+    g.POST("/enterprise/rider", mapi.Enterprise.CreateRider)
+    g.GET("/enterprise/rider", mapi.Enterprise.ListRider)
 }

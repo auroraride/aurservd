@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -37,6 +38,7 @@ type SubscribeQuery struct {
 	withPlan         *PlanQuery
 	withEmployee     *EmployeeQuery
 	withCity         *CityQuery
+	withStation      *EnterpriseStationQuery
 	withRider        *RiderQuery
 	withEnterprise   *EnterpriseQuery
 	withPauses       *SubscribePauseQuery
@@ -140,6 +142,28 @@ func (sq *SubscribeQuery) QueryCity() *CityQuery {
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.CityTable, subscribe.CityColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStation chains the current query on the "station" edge.
+func (sq *SubscribeQuery) QueryStation() *EnterpriseStationQuery {
+	query := &EnterpriseStationQuery{config: sq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.StationTable, subscribe.StationColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -485,6 +509,7 @@ func (sq *SubscribeQuery) Clone() *SubscribeQuery {
 		withPlan:         sq.withPlan.Clone(),
 		withEmployee:     sq.withEmployee.Clone(),
 		withCity:         sq.withCity.Clone(),
+		withStation:      sq.withStation.Clone(),
 		withRider:        sq.withRider.Clone(),
 		withEnterprise:   sq.withEnterprise.Clone(),
 		withPauses:       sq.withPauses.Clone(),
@@ -529,6 +554,17 @@ func (sq *SubscribeQuery) WithCity(opts ...func(*CityQuery)) *SubscribeQuery {
 		opt(query)
 	}
 	sq.withCity = query
+	return sq
+}
+
+// WithStation tells the query-builder to eager-load the nodes that are connected to
+// the "station" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *SubscribeQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *SubscribeQuery {
+	query := &EnterpriseStationQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withStation = query
 	return sq
 }
 
@@ -679,10 +715,11 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 	var (
 		nodes       = []*Subscribe{}
 		_spec       = sq.querySpec()
-		loadedTypes = [10]bool{
+		loadedTypes = [11]bool{
 			sq.withPlan != nil,
 			sq.withEmployee != nil,
 			sq.withCity != nil,
+			sq.withStation != nil,
 			sq.withRider != nil,
 			sq.withEnterprise != nil,
 			sq.withPauses != nil,
@@ -792,6 +829,35 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 		}
 	}
 
+	if query := sq.withStation; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Subscribe)
+		for i := range nodes {
+			if nodes[i].StationID == nil {
+				continue
+			}
+			fk := *nodes[i].StationID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(enterprisestation.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "station_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Station = n
+			}
+		}
+	}
+
 	if query := sq.withRider; query != nil {
 		ids := make([]uint64, 0, len(nodes))
 		nodeids := make(map[uint64][]*Subscribe)
@@ -822,7 +888,10 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 		ids := make([]uint64, 0, len(nodes))
 		nodeids := make(map[uint64][]*Subscribe)
 		for i := range nodes {
-			fk := nodes[i].EnterpriseID
+			if nodes[i].EnterpriseID == nil {
+				continue
+			}
+			fk := *nodes[i].EnterpriseID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
@@ -949,7 +1018,10 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 		ids := make([]uint64, 0, len(nodes))
 		nodeids := make(map[uint64][]*Subscribe)
 		for i := range nodes {
-			fk := nodes[i].StatementID
+			if nodes[i].StatementID == nil {
+				continue
+			}
+			fk := *nodes[i].StatementID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}

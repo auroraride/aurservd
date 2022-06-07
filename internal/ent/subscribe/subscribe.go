@@ -31,6 +31,8 @@ const (
 	FieldEmployeeID = "employee_id"
 	// FieldCityID holds the string denoting the city_id field in the database.
 	FieldCityID = "city_id"
+	// FieldStationID holds the string denoting the station_id field in the database.
+	FieldStationID = "station_id"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
 	// FieldInitialOrderID holds the string denoting the initial_order_id field in the database.
@@ -71,6 +73,8 @@ const (
 	EdgeEmployee = "employee"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
+	// EdgeStation holds the string denoting the station edge name in mutations.
+	EdgeStation = "station"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
@@ -108,6 +112,13 @@ const (
 	CityInverseTable = "city"
 	// CityColumn is the table column denoting the city relation/edge.
 	CityColumn = "city_id"
+	// StationTable is the table that holds the station relation/edge.
+	StationTable = "subscribe"
+	// StationInverseTable is the table name for the EnterpriseStation entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisestation" package.
+	StationInverseTable = "enterprise_station"
+	// StationColumn is the table column denoting the station relation/edge.
+	StationColumn = "station_id"
 	// RiderTable is the table that holds the rider relation/edge.
 	RiderTable = "subscribe"
 	// RiderInverseTable is the table name for the Rider entity.
@@ -171,6 +182,7 @@ var Columns = []string{
 	FieldPlanID,
 	FieldEmployeeID,
 	FieldCityID,
+	FieldStationID,
 	FieldRiderID,
 	FieldInitialOrderID,
 	FieldEnterpriseID,

@@ -14,7 +14,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
-	"github.com/auroraride/aurservd/internal/ent/enterpriseinvoice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -40,7 +39,6 @@ type RiderQuery struct {
 	withContract   *ContractQuery
 	withFaults     *CabinetFaultQuery
 	withOrders     *OrderQuery
-	withInvoices   *EnterpriseInvoiceQuery
 	withExchanges  *ExchangeQuery
 	withSubscribes *SubscribeQuery
 	modifiers      []func(*sql.Selector)
@@ -205,28 +203,6 @@ func (rq *RiderQuery) QueryOrders() *OrderQuery {
 			sqlgraph.From(rider.Table, rider.FieldID, selector),
 			sqlgraph.To(order.Table, order.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, rider.OrdersTable, rider.OrdersColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryInvoices chains the current query on the "invoices" edge.
-func (rq *RiderQuery) QueryInvoices() *EnterpriseInvoiceQuery {
-	query := &EnterpriseInvoiceQuery{config: rq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := rq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := rq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(rider.Table, rider.FieldID, selector),
-			sqlgraph.To(enterpriseinvoice.Table, enterpriseinvoice.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, rider.InvoicesTable, rider.InvoicesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -465,7 +441,6 @@ func (rq *RiderQuery) Clone() *RiderQuery {
 		withContract:   rq.withContract.Clone(),
 		withFaults:     rq.withFaults.Clone(),
 		withOrders:     rq.withOrders.Clone(),
-		withInvoices:   rq.withInvoices.Clone(),
 		withExchanges:  rq.withExchanges.Clone(),
 		withSubscribes: rq.withSubscribes.Clone(),
 		// clone intermediate query.
@@ -538,17 +513,6 @@ func (rq *RiderQuery) WithOrders(opts ...func(*OrderQuery)) *RiderQuery {
 		opt(query)
 	}
 	rq.withOrders = query
-	return rq
-}
-
-// WithInvoices tells the query-builder to eager-load the nodes that are connected to
-// the "invoices" edge. The optional arguments are used to configure the query builder of the edge.
-func (rq *RiderQuery) WithInvoices(opts ...func(*EnterpriseInvoiceQuery)) *RiderQuery {
-	query := &EnterpriseInvoiceQuery{config: rq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	rq.withInvoices = query
 	return rq
 }
 
@@ -644,14 +608,13 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 	var (
 		nodes       = []*Rider{}
 		_spec       = rq.querySpec()
-		loadedTypes = [9]bool{
+		loadedTypes = [8]bool{
 			rq.withStation != nil,
 			rq.withPerson != nil,
 			rq.withEnterprise != nil,
 			rq.withContract != nil,
 			rq.withFaults != nil,
 			rq.withOrders != nil,
-			rq.withInvoices != nil,
 			rq.withExchanges != nil,
 			rq.withSubscribes != nil,
 		}
@@ -682,7 +645,10 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 		ids := make([]uint64, 0, len(nodes))
 		nodeids := make(map[uint64][]*Rider)
 		for i := range nodes {
-			fk := nodes[i].StationID
+			if nodes[i].StationID == nil {
+				continue
+			}
+			fk := *nodes[i].StationID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
@@ -834,31 +800,6 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 				return nil, fmt.Errorf(`unexpected foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Orders = append(node.Edges.Orders, n)
-		}
-	}
-
-	if query := rq.withInvoices; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[uint64]*Rider)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Invoices = []*EnterpriseInvoice{}
-		}
-		query.Where(predicate.EnterpriseInvoice(func(s *sql.Selector) {
-			s.Where(sql.InValues(rider.InvoicesColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			fk := n.RiderID
-			node, ok := nodeids[fk]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
-			}
-			node.Edges.Invoices = append(node.Edges.Invoices, n)
 		}
 	}
 

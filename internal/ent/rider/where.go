@@ -655,6 +655,20 @@ func StationIDNotIn(vs ...uint64) predicate.Rider {
 	})
 }
 
+// StationIDIsNil applies the IsNil predicate on the "station_id" field.
+func StationIDIsNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldStationID)))
+	})
+}
+
+// StationIDNotNil applies the NotNil predicate on the "station_id" field.
+func StationIDNotNil() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldStationID)))
+	})
+}
+
 // PersonIDEQ applies the EQ predicate on the "person_id" field.
 func PersonIDEQ(v uint64) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
@@ -1861,34 +1875,6 @@ func HasOrdersWith(preds ...predicate.Order) predicate.Rider {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(OrdersInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, OrdersTable, OrdersColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasInvoices applies the HasEdge predicate on the "invoices" edge.
-func HasInvoices() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(InvoicesTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, InvoicesTable, InvoicesColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasInvoicesWith applies the HasEdge predicate on the "invoices" edge with a given conditions (other predicates).
-func HasInvoicesWith(preds ...predicate.EnterpriseInvoice) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(InvoicesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, InvoicesTable, InvoicesColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

@@ -193,8 +193,12 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe) {
 
 // AlterDays 修改骑手时间
 func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.RiderItemSubscribe) {
-    // if req.Days +
     sub, _ := s.orm.QueryNotDeleted().Where(subscribe.ID(req.ID)).WithRider().Only(s.ctx)
+    // 团签用户禁止修改
+    if sub.EnterpriseID != nil {
+        snag.Panic("团签用户无法修改")
+    }
+
     u := sub.Edges.Rider
     if sub == nil {
         snag.Panic("订阅不存在")

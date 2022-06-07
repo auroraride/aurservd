@@ -619,65 +619,6 @@ var (
 			},
 		},
 	}
-	// EnterpriseInvoiceColumns holds the columns for the "enterprise_invoice" table.
-	EnterpriseInvoiceColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
-		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
-		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
-		{Name: "price", Type: field.TypeFloat64, Comment: "单价"},
-		{Name: "station_id", Type: field.TypeUint64},
-		{Name: "enterprise_id", Type: field.TypeUint64},
-		{Name: "statement_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "rider_id", Type: field.TypeUint64},
-	}
-	// EnterpriseInvoiceTable holds the schema information for the "enterprise_invoice" table.
-	EnterpriseInvoiceTable = &schema.Table{
-		Name:       "enterprise_invoice",
-		Columns:    EnterpriseInvoiceColumns,
-		PrimaryKey: []*schema.Column{EnterpriseInvoiceColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "enterprise_invoice_enterprise_station_station",
-				Columns:    []*schema.Column{EnterpriseInvoiceColumns[8]},
-				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
-				Symbol:     "enterprise_invoice_enterprise_enterprise",
-				Columns:    []*schema.Column{EnterpriseInvoiceColumns[9]},
-				RefColumns: []*schema.Column{EnterpriseColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
-				Symbol:     "enterprise_invoice_enterprise_statement_invoices",
-				Columns:    []*schema.Column{EnterpriseInvoiceColumns[10]},
-				RefColumns: []*schema.Column{EnterpriseStatementColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "enterprise_invoice_rider_invoices",
-				Columns:    []*schema.Column{EnterpriseInvoiceColumns[11]},
-				RefColumns: []*schema.Column{RiderColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "enterpriseinvoice_created_at",
-				Unique:  false,
-				Columns: []*schema.Column{EnterpriseInvoiceColumns[1]},
-			},
-			{
-				Name:    "enterpriseinvoice_deleted_at",
-				Unique:  false,
-				Columns: []*schema.Column{EnterpriseInvoiceColumns[3]},
-			},
-		},
-	}
 	// EnterprisePrepaymentColumns holds the columns for the "enterprise_prepayment" table.
 	EnterprisePrepaymentColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -1231,7 +1172,7 @@ var (
 		{Name: "blocked", Type: field.TypeBool, Comment: "是否封禁骑手账号", Default: false},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "person_id", Type: field.TypeUint64, Nullable: true},
-		{Name: "station_id", Type: field.TypeUint64},
+		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// RiderTable holds the schema information for the "rider" table.
 	RiderTable = &schema.Table{
@@ -1255,7 +1196,7 @@ var (
 				Symbol:     "rider_enterprise_station_station",
 				Columns:    []*schema.Column{RiderColumns[20]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -1406,6 +1347,7 @@ var (
 		{Name: "plan_id", Type: field.TypeUint64},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64},
+		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "initial_order_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// SubscribeTable holds the schema information for the "subscribe" table.
@@ -1451,8 +1393,14 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "subscribe_order_initial_order",
+				Symbol:     "subscribe_enterprise_station_station",
 				Columns:    []*schema.Column{SubscribeColumns[26]},
+				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscribe_order_initial_order",
+				Columns:    []*schema.Column{SubscribeColumns[27]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1674,7 +1622,6 @@ var (
 		EmployeeTable,
 		EnterpriseTable,
 		EnterpriseContractTable,
-		EnterpriseInvoiceTable,
 		EnterprisePrepaymentTable,
 		EnterprisePriceTable,
 		EnterpriseStatementTable,
@@ -1743,13 +1690,6 @@ func init() {
 	EnterpriseContractTable.Annotation = &entsql.Annotation{
 		Table: "enterprise_contract",
 	}
-	EnterpriseInvoiceTable.ForeignKeys[0].RefTable = EnterpriseStationTable
-	EnterpriseInvoiceTable.ForeignKeys[1].RefTable = EnterpriseTable
-	EnterpriseInvoiceTable.ForeignKeys[2].RefTable = EnterpriseStatementTable
-	EnterpriseInvoiceTable.ForeignKeys[3].RefTable = RiderTable
-	EnterpriseInvoiceTable.Annotation = &entsql.Annotation{
-		Table: "enterprise_invoice",
-	}
 	EnterprisePrepaymentTable.ForeignKeys[0].RefTable = EnterpriseTable
 	EnterprisePrepaymentTable.Annotation = &entsql.Annotation{
 		Table: "enterprise_prepayment",
@@ -1816,7 +1756,8 @@ func init() {
 	SubscribeTable.ForeignKeys[3].RefTable = PlanTable
 	SubscribeTable.ForeignKeys[4].RefTable = EmployeeTable
 	SubscribeTable.ForeignKeys[5].RefTable = CityTable
-	SubscribeTable.ForeignKeys[6].RefTable = OrderTable
+	SubscribeTable.ForeignKeys[6].RefTable = EnterpriseStationTable
+	SubscribeTable.ForeignKeys[7].RefTable = OrderTable
 	SubscribeTable.Annotation = &entsql.Annotation{
 		Table: "subscribe",
 	}

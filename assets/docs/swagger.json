@@ -1126,6 +1126,117 @@
                 }
             }
         },
+        "/manager/v1/enterprise/rider": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M90010 列举骑手",
+                "operationId": "ManagerEnterpriseListRider",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "企业ID ",
+                        "name": "enterpriseId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索关键词",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.EnterpriseRider"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M90009 添加骑手",
+                "operationId": "ManagerEnterpriseCreateRider",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterpriseRiderCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterpriseRider"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/enterprise/station": {
             "get": {
                 "consumes": [
@@ -4526,6 +4637,10 @@
                         "$ref": "#/definitions/model.EnterprisePriceWithCity"
                     }
                 },
+                "riders": {
+                    "description": "骑手数量",
+                    "type": "integer"
+                },
                 "status": {
                     "description": "合作状态 0:未合作 1:已合作 2:已暂停",
                     "type": "integer",
@@ -4534,6 +4649,86 @@
                         1,
                         2
                     ]
+                }
+            }
+        },
+        "model.EnterpriseRider": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "添加时间",
+                    "type": "string"
+                },
+                "days": {
+                    "description": "总天数",
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "station": {
+                    "description": "站点",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseStation"
+                        }
+                    ]
+                },
+                "unsettled": {
+                    "description": "未结算天数",
+                    "type": "integer"
+                },
+                "voltage": {
+                    "description": "可用电压型号, 骑手未开通订阅则此字段不存在",
+                    "type": "number"
+                }
+            }
+        },
+        "model.EnterpriseRiderCreateReq": {
+            "type": "object",
+            "required": [
+                "enterpriseId",
+                "name",
+                "phone",
+                "stationId"
+            ],
+            "properties": {
+                "enterpriseId": {
+                    "description": "企业ID ",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名 ",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话号 ",
+                    "type": "string"
+                },
+                "stationId": {
+                    "description": "站点ID ",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.EnterpriseStation": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "站点ID",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "站点名称",
+                    "type": "string"
                 }
             }
         },

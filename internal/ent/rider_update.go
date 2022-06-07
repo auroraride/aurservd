@@ -15,7 +15,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
-	"github.com/auroraride/aurservd/internal/ent/enterpriseinvoice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -99,6 +98,20 @@ func (ru *RiderUpdate) ClearRemark() *RiderUpdate {
 // SetStationID sets the "station_id" field.
 func (ru *RiderUpdate) SetStationID(u uint64) *RiderUpdate {
 	ru.mutation.SetStationID(u)
+	return ru
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (ru *RiderUpdate) SetNillableStationID(u *uint64) *RiderUpdate {
+	if u != nil {
+		ru.SetStationID(*u)
+	}
+	return ru
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (ru *RiderUpdate) ClearStationID() *RiderUpdate {
+	ru.mutation.ClearStationID()
 	return ru
 }
 
@@ -395,21 +408,6 @@ func (ru *RiderUpdate) AddOrders(o ...*Order) *RiderUpdate {
 	return ru.AddOrderIDs(ids...)
 }
 
-// AddInvoiceIDs adds the "invoices" edge to the EnterpriseInvoice entity by IDs.
-func (ru *RiderUpdate) AddInvoiceIDs(ids ...uint64) *RiderUpdate {
-	ru.mutation.AddInvoiceIDs(ids...)
-	return ru
-}
-
-// AddInvoices adds the "invoices" edges to the EnterpriseInvoice entity.
-func (ru *RiderUpdate) AddInvoices(e ...*EnterpriseInvoice) *RiderUpdate {
-	ids := make([]uint64, len(e))
-	for i := range e {
-		ids[i] = e[i].ID
-	}
-	return ru.AddInvoiceIDs(ids...)
-}
-
 // AddExchangeIDs adds the "exchanges" edge to the Exchange entity by IDs.
 func (ru *RiderUpdate) AddExchangeIDs(ids ...uint64) *RiderUpdate {
 	ru.mutation.AddExchangeIDs(ids...)
@@ -524,27 +522,6 @@ func (ru *RiderUpdate) RemoveOrders(o ...*Order) *RiderUpdate {
 		ids[i] = o[i].ID
 	}
 	return ru.RemoveOrderIDs(ids...)
-}
-
-// ClearInvoices clears all "invoices" edges to the EnterpriseInvoice entity.
-func (ru *RiderUpdate) ClearInvoices() *RiderUpdate {
-	ru.mutation.ClearInvoices()
-	return ru
-}
-
-// RemoveInvoiceIDs removes the "invoices" edge to EnterpriseInvoice entities by IDs.
-func (ru *RiderUpdate) RemoveInvoiceIDs(ids ...uint64) *RiderUpdate {
-	ru.mutation.RemoveInvoiceIDs(ids...)
-	return ru
-}
-
-// RemoveInvoices removes "invoices" edges to EnterpriseInvoice entities.
-func (ru *RiderUpdate) RemoveInvoices(e ...*EnterpriseInvoice) *RiderUpdate {
-	ids := make([]uint64, len(e))
-	for i := range e {
-		ids[i] = e[i].ID
-	}
-	return ru.RemoveInvoiceIDs(ids...)
 }
 
 // ClearExchanges clears all "exchanges" edges to the Exchange entity.
@@ -680,9 +657,6 @@ func (ru *RiderUpdate) check() error {
 		if err := rider.PushIDValidator(v); err != nil {
 			return &ValidationError{Name: "push_id", err: fmt.Errorf(`ent: validator failed for field "Rider.push_id": %w`, err)}
 		}
-	}
-	if _, ok := ru.mutation.StationID(); ru.mutation.StationCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Rider.station"`)
 	}
 	return nil
 }
@@ -1156,60 +1130,6 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ru.mutation.InvoicesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   rider.InvoicesTable,
-			Columns: []string{rider.InvoicesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterpriseinvoice.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ru.mutation.RemovedInvoicesIDs(); len(nodes) > 0 && !ru.mutation.InvoicesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   rider.InvoicesTable,
-			Columns: []string{rider.InvoicesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterpriseinvoice.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ru.mutation.InvoicesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   rider.InvoicesTable,
-			Columns: []string{rider.InvoicesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterpriseinvoice.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if ru.mutation.ExchangesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -1398,6 +1318,20 @@ func (ruo *RiderUpdateOne) ClearRemark() *RiderUpdateOne {
 // SetStationID sets the "station_id" field.
 func (ruo *RiderUpdateOne) SetStationID(u uint64) *RiderUpdateOne {
 	ruo.mutation.SetStationID(u)
+	return ruo
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (ruo *RiderUpdateOne) SetNillableStationID(u *uint64) *RiderUpdateOne {
+	if u != nil {
+		ruo.SetStationID(*u)
+	}
+	return ruo
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (ruo *RiderUpdateOne) ClearStationID() *RiderUpdateOne {
+	ruo.mutation.ClearStationID()
 	return ruo
 }
 
@@ -1694,21 +1628,6 @@ func (ruo *RiderUpdateOne) AddOrders(o ...*Order) *RiderUpdateOne {
 	return ruo.AddOrderIDs(ids...)
 }
 
-// AddInvoiceIDs adds the "invoices" edge to the EnterpriseInvoice entity by IDs.
-func (ruo *RiderUpdateOne) AddInvoiceIDs(ids ...uint64) *RiderUpdateOne {
-	ruo.mutation.AddInvoiceIDs(ids...)
-	return ruo
-}
-
-// AddInvoices adds the "invoices" edges to the EnterpriseInvoice entity.
-func (ruo *RiderUpdateOne) AddInvoices(e ...*EnterpriseInvoice) *RiderUpdateOne {
-	ids := make([]uint64, len(e))
-	for i := range e {
-		ids[i] = e[i].ID
-	}
-	return ruo.AddInvoiceIDs(ids...)
-}
-
 // AddExchangeIDs adds the "exchanges" edge to the Exchange entity by IDs.
 func (ruo *RiderUpdateOne) AddExchangeIDs(ids ...uint64) *RiderUpdateOne {
 	ruo.mutation.AddExchangeIDs(ids...)
@@ -1823,27 +1742,6 @@ func (ruo *RiderUpdateOne) RemoveOrders(o ...*Order) *RiderUpdateOne {
 		ids[i] = o[i].ID
 	}
 	return ruo.RemoveOrderIDs(ids...)
-}
-
-// ClearInvoices clears all "invoices" edges to the EnterpriseInvoice entity.
-func (ruo *RiderUpdateOne) ClearInvoices() *RiderUpdateOne {
-	ruo.mutation.ClearInvoices()
-	return ruo
-}
-
-// RemoveInvoiceIDs removes the "invoices" edge to EnterpriseInvoice entities by IDs.
-func (ruo *RiderUpdateOne) RemoveInvoiceIDs(ids ...uint64) *RiderUpdateOne {
-	ruo.mutation.RemoveInvoiceIDs(ids...)
-	return ruo
-}
-
-// RemoveInvoices removes "invoices" edges to EnterpriseInvoice entities.
-func (ruo *RiderUpdateOne) RemoveInvoices(e ...*EnterpriseInvoice) *RiderUpdateOne {
-	ids := make([]uint64, len(e))
-	for i := range e {
-		ids[i] = e[i].ID
-	}
-	return ruo.RemoveInvoiceIDs(ids...)
 }
 
 // ClearExchanges clears all "exchanges" edges to the Exchange entity.
@@ -1992,9 +1890,6 @@ func (ruo *RiderUpdateOne) check() error {
 		if err := rider.PushIDValidator(v); err != nil {
 			return &ValidationError{Name: "push_id", err: fmt.Errorf(`ent: validator failed for field "Rider.push_id": %w`, err)}
 		}
-	}
-	if _, ok := ruo.mutation.StationID(); ruo.mutation.StationCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Rider.station"`)
 	}
 	return nil
 }
@@ -2477,60 +2372,6 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: order.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if ruo.mutation.InvoicesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   rider.InvoicesTable,
-			Columns: []string{rider.InvoicesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterpriseinvoice.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ruo.mutation.RemovedInvoicesIDs(); len(nodes) > 0 && !ruo.mutation.InvoicesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   rider.InvoicesTable,
-			Columns: []string{rider.InvoicesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterpriseinvoice.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ruo.mutation.InvoicesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   rider.InvoicesTable,
-			Columns: []string{rider.InvoicesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterpriseinvoice.FieldID,
 				},
 			},
 		}

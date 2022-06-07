@@ -18,7 +18,7 @@ type StationMixin struct {
 func (m StationMixin) Fields() []ent.Field {
     f := field.Uint64("station_id").Comment("站点ID")
     if m.Optional {
-        f.Optional()
+        f.Optional().Nillable()
     }
     return []ent.Field{f}
 }

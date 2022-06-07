@@ -250,28 +250,6 @@ func (ecq *EnterpriseContractQuery) PaginationResult(req model.PaginationReq) mo
 	}
 }
 
-// Pagination returns pagination query builder for EnterpriseInvoiceQuery.
-func (eiq *EnterpriseInvoiceQuery) Pagination(req model.PaginationReq) *EnterpriseInvoiceQuery {
-	eiq.Offset(req.GetOffset()).Limit(req.GetLimit())
-	return eiq
-}
-
-// PaginationItems returns pagination query builder for EnterpriseInvoiceQuery.
-func (eiq *EnterpriseInvoiceQuery) PaginationItemsX(req model.PaginationReq) any {
-	return eiq.Pagination(req).AllX(context.Background())
-}
-
-// PaginationResult returns pagination for EnterpriseInvoiceQuery.
-func (eiq *EnterpriseInvoiceQuery) PaginationResult(req model.PaginationReq) model.Pagination {
-	ids := eiq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
-	total := len(ids)
-	return model.Pagination{
-		Current: req.GetCurrent(),
-		Pages:   req.GetPages(total),
-		Total:   total,
-	}
-}
-
 // Pagination returns pagination query builder for EnterprisePrepaymentQuery.
 func (epq *EnterprisePrepaymentQuery) Pagination(req model.PaginationReq) *EnterprisePrepaymentQuery {
 	epq.Offset(req.GetOffset()).Limit(req.GetLimit())

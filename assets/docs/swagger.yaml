@@ -894,6 +894,9 @@ definitions:
         items:
           $ref: '#/definitions/model.EnterprisePriceWithCity'
         type: array
+      riders:
+        description: 骑手数量
+        type: integer
       status:
         description: 合作状态 0:未合作 1:已合作 2:已暂停
         enum:
@@ -901,6 +904,62 @@ definitions:
         - 1
         - 2
         type: integer
+    type: object
+  model.EnterpriseRider:
+    properties:
+      createdAt:
+        description: 添加时间
+        type: string
+      days:
+        description: 总天数
+        type: integer
+      id:
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 电话
+        type: string
+      station:
+        allOf:
+        - $ref: '#/definitions/model.EnterpriseStation'
+        description: 站点
+      unsettled:
+        description: 未结算天数
+        type: integer
+      voltage:
+        description: 可用电压型号, 骑手未开通订阅则此字段不存在
+        type: number
+    type: object
+  model.EnterpriseRiderCreateReq:
+    properties:
+      enterpriseId:
+        description: '企业ID '
+        type: integer
+      name:
+        description: '姓名 '
+        type: string
+      phone:
+        description: '电话号 '
+        type: string
+      stationId:
+        description: '站点ID '
+        type: integer
+    required:
+    - enterpriseId
+    - name
+    - phone
+    - stationId
+    type: object
+  model.EnterpriseStation:
+    properties:
+      id:
+        description: 站点ID
+        type: integer
+      name:
+        description: 站点名称
+        type: string
     type: object
   model.EnterpriseStationCreateReq:
     properties:
@@ -2529,6 +2588,77 @@ paths:
           schema:
             type: number
       summary: M90005 企业预付费
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/rider:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseListRider
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: '企业ID '
+        in: query
+        name: enterpriseId
+        required: true
+        type: integer
+      - description: 搜索关键词
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.EnterpriseRider'
+                  type: array
+              type: object
+      summary: M90010 列举骑手
+      tags:
+      - '[M]管理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseCreateRider
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnterpriseRiderCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.EnterpriseRider'
+      summary: M90009 添加骑手
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/station:

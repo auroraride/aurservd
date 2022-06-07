@@ -15,6 +15,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/enterprise"
     "github.com/auroraride/aurservd/internal/ent/enterprisecontract"
     "github.com/auroraride/aurservd/internal/ent/enterpriseprice"
+    "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
@@ -83,7 +84,7 @@ func (s *enterpriseService) Modify(req *model.EnterpriseDetailWithID) {
     e := s.Query(req.ID)
     // 判定付费方式是否允许改变
     if *req.Payment != e.Payment {
-        set := NewStatementWithModifier(s.modifier).Current(e.ID)
+        set := NewEnterpriseStatementWithModifier(s.modifier).Current(e.ID)
         if set.Cost > 0 {
             snag.Panic("企业已产生费用, 无法修改支付方式")
         }
@@ -137,13 +138,22 @@ func (s *enterpriseService) SaveEnterprise(tx *ent.Tx, e *ent.Enterprise, req *m
     }
 }
 
+// DetailQuery 企业详情查询语句
+func (s *enterpriseService) DetailQuery() *ent.EnterpriseQuery {
+    return s.orm.QueryNotDeleted().WithStatements().WithCity().WithPrices(func(ep *ent.EnterprisePriceQuery) {
+        ep.WithCity()
+    }).WithContracts(func(ecq *ent.EnterpriseContractQuery) {
+        ecq.Order(ent.Desc(enterprisecontract.FieldEnd))
+    }).WithRiders(func(erq *ent.RiderQuery) {
+        erq.Where(rider.DeletedAtIsNil())
+    })
+}
+
 // List 列举企业
 func (s *enterpriseService) List(req *model.EnterpriseListReq) *model.PaginationRes {
     tt := tools.NewTime()
 
-    q := s.orm.QueryNotDeleted().WithStatements().WithCity().WithPrices(func(ep *ent.EnterprisePriceQuery) {
-        ep.WithCity()
-    })
+    q := s.DetailQuery()
     if req.Name != nil {
         q.Where(enterprise.NameContainsFold(*req.Name))
     }
@@ -177,10 +187,9 @@ func (s *enterpriseService) List(req *model.EnterpriseListReq) *model.Pagination
     )
 }
 
+// GetDetail 获取企业详情
 func (s *enterpriseService) GetDetail(req *model.IDParamReq) model.EnterpriseRes {
-    item, _ := s.orm.QueryNotDeleted().WithStatements().WithCity().WithPrices(func(ep *ent.EnterprisePriceQuery) {
-        ep.WithCity()
-    }).First(s.ctx)
+    item, _ := s.DetailQuery().Where(enterprise.ID(req.ID)).First(s.ctx)
     if item == nil {
         snag.Panic("未找到有效企业")
     }
@@ -190,6 +199,7 @@ func (s *enterpriseService) GetDetail(req *model.IDParamReq) model.EnterpriseRes
 // Detail 企业详情
 func (s *enterpriseService) Detail(item *ent.Enterprise) (res model.EnterpriseRes) {
     _ = copier.Copy(&res, item)
+    res.Riders = len(item.Edges.Riders)
     res.City = model.City{
         ID:   item.Edges.City.ID,
         Name: item.Edges.City.Name,
@@ -264,21 +274,28 @@ func (s *enterpriseService) GetPrices(item *ent.Enterprise) (res map[string]floa
 func (s *enterpriseService) UpdateStatement(item *ent.Enterprise) {
     tt := tools.NewTime()
     prices := s.GetPrices(item)
-    statement := NewStatement().Current(item.ID)
+    statement := NewEnterpriseStatement().Current(item.ID)
 
     // 获取所有骑手订阅
     var days int
     cost := decimal.NewFromFloat(0)
     subs := s.QueryAllUsingSubscribe(item.ID)
     for _, sub := range subs {
-        // 计算总天数
+        // 计算使用天数
+        var used int
         // 判定是否退订
         if sub.EndAt != nil {
-            days += tt.DiffDaysOfStart(*sub.EndAt, *sub.StartAt)
+            used = tt.DiffDaysOfStart(*sub.EndAt, *sub.StartAt)
         } else {
             // 排除当前时间当日0点
-            days += tt.DiffDaysOfStartToNow(*sub.StartAt)
+            used = tt.DiffDaysOfStartToNow(*sub.StartAt)
         }
+
+        // 保存骑手费用详细
+        // NewEnterpriseInvoice().Current(sub).Update().SetDays(used)
+
+        // 总天数
+        days += used
 
         // 按城市/型号计算金额
         k := fmt.Sprintf("%d-%f", sub.CityID, sub.Voltage)
@@ -324,7 +341,7 @@ func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float
         snag.Panic("该企业支付方式为后付费")
     }
 
-    set := NewStatementWithModifier(s.modifier).Current(e.ID)
+    set := NewEnterpriseStatementWithModifier(s.modifier).Current(e.ID)
 
     before := e.Balance
     tx, _ := ar.Ent.Tx(s.ctx)
@@ -356,12 +373,4 @@ func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float
 
     _ = tx.Commit()
     return b
-}
-
-func (s *enterpriseService) CreateRider() {
-
-}
-
-func (s *enterpriseService) RiderList() {
-
 }

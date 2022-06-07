@@ -67,13 +67,11 @@ type EnterpriseStatement struct {
 type EnterpriseStatementEdges struct {
 	// Subscribes holds the value of the subscribes edge.
 	Subscribes []*Subscribe `json:"subscribes,omitempty"`
-	// Invoices holds the value of the invoices edge.
-	Invoices []*EnterpriseInvoice `json:"invoices,omitempty"`
 	// Enterprise holds the value of the enterprise edge.
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [2]bool
 }
 
 // SubscribesOrErr returns the Subscribes value or an error if the edge
@@ -85,19 +83,10 @@ func (e EnterpriseStatementEdges) SubscribesOrErr() ([]*Subscribe, error) {
 	return nil, &NotLoadedError{edge: "subscribes"}
 }
 
-// InvoicesOrErr returns the Invoices value or an error if the edge
-// was not loaded in eager-loading.
-func (e EnterpriseStatementEdges) InvoicesOrErr() ([]*EnterpriseInvoice, error) {
-	if e.loadedTypes[1] {
-		return e.Invoices, nil
-	}
-	return nil, &NotLoadedError{edge: "invoices"}
-}
-
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterpriseStatementEdges) EnterpriseOrErr() (*Enterprise, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[1] {
 		if e.Enterprise == nil {
 			// The edge enterprise was loaded in eager-loading,
 			// but was not found.
@@ -243,11 +232,6 @@ func (es *EnterpriseStatement) assignValues(columns []string, values []interface
 // QuerySubscribes queries the "subscribes" edge of the EnterpriseStatement entity.
 func (es *EnterpriseStatement) QuerySubscribes() *SubscribeQuery {
 	return (&EnterpriseStatementClient{config: es.config}).QuerySubscribes(es)
-}
-
-// QueryInvoices queries the "invoices" edge of the EnterpriseStatement entity.
-func (es *EnterpriseStatement) QueryInvoices() *EnterpriseInvoiceQuery {
-	return (&EnterpriseStatementClient{config: es.config}).QueryInvoices(es)
 }
 
 // QueryEnterprise queries the "enterprise" edge of the EnterpriseStatement entity.
