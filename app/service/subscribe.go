@@ -86,11 +86,23 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
             ID:   sub.Edges.City.ID,
             Name: sub.Edges.City.Name,
         },
-        Plan: &model.Plan{
-            ID:   sub.Edges.Plan.ID,
-            Name: sub.Edges.Plan.Name,
-            Days: sub.Edges.Plan.Days,
-        },
+    }
+
+    if sub.Edges.Plan != nil {
+        p := sub.Edges.Plan
+        res.Plan = &model.Plan{
+            ID:   p.ID,
+            Name: p.Name,
+            Days: p.Days,
+        }
+
+        for _, pm := range sub.Edges.Plan.Edges.Pms {
+            res.Models = append(res.Models, model.BatteryModel{
+                ID:       pm.ID,
+                Voltage:  pm.Voltage,
+                Capacity: pm.Capacity,
+            })
+        }
     }
 
     startAt := time.Now()
@@ -105,14 +117,6 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
         res.EndAt = sub.EndAt.Format(carbon.DateLayout)
     } else {
         res.EndAt = startAt.AddDate(0, 0, sub.Remaining).Format(carbon.DateLayout)
-    }
-
-    for _, pm := range sub.Edges.Plan.Edges.Pms {
-        res.Models = append(res.Models, model.BatteryModel{
-            ID:       pm.ID,
-            Voltage:  pm.Voltage,
-            Capacity: pm.Capacity,
-        })
     }
 
     // 已取消(退款)不显示到期日期
