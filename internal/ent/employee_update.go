@@ -12,8 +12,10 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // EmployeeUpdate is the builder for updating Employee entities.
@@ -87,6 +89,26 @@ func (eu *EmployeeUpdate) ClearRemark() *EmployeeUpdate {
 	return eu
 }
 
+// SetCityID sets the "city_id" field.
+func (eu *EmployeeUpdate) SetCityID(u uint64) *EmployeeUpdate {
+	eu.mutation.SetCityID(u)
+	return eu
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (eu *EmployeeUpdate) SetNillableCityID(u *uint64) *EmployeeUpdate {
+	if u != nil {
+		eu.SetCityID(*u)
+	}
+	return eu
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (eu *EmployeeUpdate) ClearCityID() *EmployeeUpdate {
+	eu.mutation.ClearCityID()
+	return eu
+}
+
 // SetName sets the "name" field.
 func (eu *EmployeeUpdate) SetName(s string) *EmployeeUpdate {
 	eu.mutation.SetName(s)
@@ -99,9 +121,45 @@ func (eu *EmployeeUpdate) SetPhone(s string) *EmployeeUpdate {
 	return eu
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (eu *EmployeeUpdate) SetCity(c *City) *EmployeeUpdate {
+	return eu.SetCityID(c.ID)
+}
+
+// SetStoreID sets the "store" edge to the Store entity by ID.
+func (eu *EmployeeUpdate) SetStoreID(id uint64) *EmployeeUpdate {
+	eu.mutation.SetStoreID(id)
+	return eu
+}
+
+// SetNillableStoreID sets the "store" edge to the Store entity by ID if the given value is not nil.
+func (eu *EmployeeUpdate) SetNillableStoreID(id *uint64) *EmployeeUpdate {
+	if id != nil {
+		eu = eu.SetStoreID(*id)
+	}
+	return eu
+}
+
+// SetStore sets the "store" edge to the Store entity.
+func (eu *EmployeeUpdate) SetStore(s *Store) *EmployeeUpdate {
+	return eu.SetStoreID(s.ID)
+}
+
 // Mutation returns the EmployeeMutation object of the builder.
 func (eu *EmployeeUpdate) Mutation() *EmployeeMutation {
 	return eu.mutation
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (eu *EmployeeUpdate) ClearCity() *EmployeeUpdate {
+	eu.mutation.ClearCity()
+	return eu
+}
+
+// ClearStore clears the "store" edge to the Store entity.
+func (eu *EmployeeUpdate) ClearStore() *EmployeeUpdate {
+	eu.mutation.ClearStore()
+	return eu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -257,6 +315,76 @@ func (eu *EmployeeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: employee.FieldPhone,
 		})
 	}
+	if eu.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   employee.CityTable,
+			Columns: []string{employee.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   employee.CityTable,
+			Columns: []string{employee.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.StoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   employee.StoreTable,
+			Columns: []string{employee.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   employee.StoreTable,
+			Columns: []string{employee.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{employee.Label}
@@ -334,6 +462,26 @@ func (euo *EmployeeUpdateOne) ClearRemark() *EmployeeUpdateOne {
 	return euo
 }
 
+// SetCityID sets the "city_id" field.
+func (euo *EmployeeUpdateOne) SetCityID(u uint64) *EmployeeUpdateOne {
+	euo.mutation.SetCityID(u)
+	return euo
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (euo *EmployeeUpdateOne) SetNillableCityID(u *uint64) *EmployeeUpdateOne {
+	if u != nil {
+		euo.SetCityID(*u)
+	}
+	return euo
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (euo *EmployeeUpdateOne) ClearCityID() *EmployeeUpdateOne {
+	euo.mutation.ClearCityID()
+	return euo
+}
+
 // SetName sets the "name" field.
 func (euo *EmployeeUpdateOne) SetName(s string) *EmployeeUpdateOne {
 	euo.mutation.SetName(s)
@@ -346,9 +494,45 @@ func (euo *EmployeeUpdateOne) SetPhone(s string) *EmployeeUpdateOne {
 	return euo
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (euo *EmployeeUpdateOne) SetCity(c *City) *EmployeeUpdateOne {
+	return euo.SetCityID(c.ID)
+}
+
+// SetStoreID sets the "store" edge to the Store entity by ID.
+func (euo *EmployeeUpdateOne) SetStoreID(id uint64) *EmployeeUpdateOne {
+	euo.mutation.SetStoreID(id)
+	return euo
+}
+
+// SetNillableStoreID sets the "store" edge to the Store entity by ID if the given value is not nil.
+func (euo *EmployeeUpdateOne) SetNillableStoreID(id *uint64) *EmployeeUpdateOne {
+	if id != nil {
+		euo = euo.SetStoreID(*id)
+	}
+	return euo
+}
+
+// SetStore sets the "store" edge to the Store entity.
+func (euo *EmployeeUpdateOne) SetStore(s *Store) *EmployeeUpdateOne {
+	return euo.SetStoreID(s.ID)
+}
+
 // Mutation returns the EmployeeMutation object of the builder.
 func (euo *EmployeeUpdateOne) Mutation() *EmployeeMutation {
 	return euo.mutation
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (euo *EmployeeUpdateOne) ClearCity() *EmployeeUpdateOne {
+	euo.mutation.ClearCity()
+	return euo
+}
+
+// ClearStore clears the "store" edge to the Store entity.
+func (euo *EmployeeUpdateOne) ClearStore() *EmployeeUpdateOne {
+	euo.mutation.ClearStore()
+	return euo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -533,6 +717,76 @@ func (euo *EmployeeUpdateOne) sqlSave(ctx context.Context) (_node *Employee, err
 			Value:  value,
 			Column: employee.FieldPhone,
 		})
+	}
+	if euo.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   employee.CityTable,
+			Columns: []string{employee.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   employee.CityTable,
+			Columns: []string{employee.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.StoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   employee.StoreTable,
+			Columns: []string{employee.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   employee.StoreTable,
+			Columns: []string{employee.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Employee{config: euo.config}
 	_spec.Assign = _node.assignValues

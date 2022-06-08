@@ -14,18 +14,23 @@ import (
 
 type StoreMixin struct {
     mixin.Schema
+    Optional bool
 }
 
-func (StoreMixin) Fields() []ent.Field {
-    return []ent.Field{
-        field.Uint64("store_id").Optional(),
+func (m StoreMixin) Fields() []ent.Field {
+    f := field.Uint64("store_id").Comment("门店ID")
+    if m.Optional {
+        f.Optional()
     }
+    return []ent.Field{f}
 }
 
-func (StoreMixin) Edges() []ent.Edge {
-    return []ent.Edge{
-        edge.To("store", Store.Type).Unique().Field("store_id"),
+func (m StoreMixin) Edges() []ent.Edge {
+    e := edge.To("store", Store.Type).Unique().Field("store_id")
+    if !m.Optional {
+        e.Required()
     }
+    return []ent.Edge{e}
 }
 
 // Store holds the schema definition for the Store entity.
@@ -43,6 +48,7 @@ func (Store) Annotations() []schema.Annotation {
 // Fields of the Store.
 func (Store) Fields() []ent.Field {
     return []ent.Field{
+        field.Uint64("employee_id").Optional().Comment("上班员工ID"),
         field.Uint64("branch_id").Comment("网点ID"),
         field.String("sn").Immutable().Comment("门店编号"),
         field.String("name").Comment("门店名称"),
@@ -54,6 +60,7 @@ func (Store) Fields() []ent.Field {
 func (Store) Edges() []ent.Edge {
     return []ent.Edge{
         edge.From("branch", Branch.Type).Ref("stores").Required().Unique().Field("branch_id"),
+        edge.From("employee", Employee.Type).Ref("store").Unique().Field("employee_id"),
     }
 }
 
@@ -62,8 +69,6 @@ func (Store) Mixin() []ent.Mixin {
         internal.TimeMixin{},
         internal.DeleteMixin{},
         internal.Modifier{},
-
-        EmployeeMixin{},
     }
 }
 

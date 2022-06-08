@@ -4,14 +4,17 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // EmployeeQuery is the builder for querying Employee entities.
@@ -23,7 +26,10 @@ type EmployeeQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.Employee
-	modifiers  []func(*sql.Selector)
+	// eager-loading edges.
+	withCity  *CityQuery
+	withStore *StoreQuery
+	modifiers []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -58,6 +64,50 @@ func (eq *EmployeeQuery) Unique(unique bool) *EmployeeQuery {
 func (eq *EmployeeQuery) Order(o ...OrderFunc) *EmployeeQuery {
 	eq.order = append(eq.order, o...)
 	return eq
+}
+
+// QueryCity chains the current query on the "city" edge.
+func (eq *EmployeeQuery) QueryCity() *CityQuery {
+	query := &CityQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, selector),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, employee.CityTable, employee.CityColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStore chains the current query on the "store" edge.
+func (eq *EmployeeQuery) QueryStore() *StoreQuery {
+	query := &StoreQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, selector),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, employee.StoreTable, employee.StoreColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Employee entity from the query.
@@ -241,11 +291,35 @@ func (eq *EmployeeQuery) Clone() *EmployeeQuery {
 		offset:     eq.offset,
 		order:      append([]OrderFunc{}, eq.order...),
 		predicates: append([]predicate.Employee{}, eq.predicates...),
+		withCity:   eq.withCity.Clone(),
+		withStore:  eq.withStore.Clone(),
 		// clone intermediate query.
 		sql:    eq.sql.Clone(),
 		path:   eq.path,
 		unique: eq.unique,
 	}
+}
+
+// WithCity tells the query-builder to eager-load the nodes that are connected to
+// the "city" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EmployeeQuery) WithCity(opts ...func(*CityQuery)) *EmployeeQuery {
+	query := &CityQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withCity = query
+	return eq
+}
+
+// WithStore tells the query-builder to eager-load the nodes that are connected to
+// the "store" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EmployeeQuery) WithStore(opts ...func(*StoreQuery)) *EmployeeQuery {
+	query := &StoreQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withStore = query
+	return eq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -316,8 +390,12 @@ func (eq *EmployeeQuery) prepareQuery(ctx context.Context) error {
 
 func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Employee, error) {
 	var (
-		nodes = []*Employee{}
-		_spec = eq.querySpec()
+		nodes       = []*Employee{}
+		_spec       = eq.querySpec()
+		loadedTypes = [2]bool{
+			eq.withCity != nil,
+			eq.withStore != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		return (*Employee).scanValues(nil, columns)
@@ -325,6 +403,7 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 	_spec.Assign = func(columns []string, values []interface{}) error {
 		node := &Employee{config: eq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(eq.modifiers) > 0 {
@@ -339,6 +418,57 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+
+	if query := eq.withCity; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Employee)
+		for i := range nodes {
+			fk := nodes[i].CityID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(city.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.City = n
+			}
+		}
+	}
+
+	if query := eq.withStore; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Employee)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+		}
+		query.Where(predicate.Store(func(s *sql.Selector) {
+			s.Where(sql.InValues(employee.StoreColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.EmployeeID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "employee_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Store = n
+		}
+	}
+
 	return nodes, nil
 }
 

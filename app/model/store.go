@@ -35,6 +35,11 @@ type StoreItem struct {
     Employee *Employee `json:"employee,omitempty"` // 店员, 有可能不存在
 }
 
+type Store struct {
+    ID   uint64 `json:"id"`
+    Name string `json:"name"` // 门店名称
+}
+
 type StoreListReq struct {
     PaginationReq
 

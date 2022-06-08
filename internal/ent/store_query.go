@@ -26,8 +26,8 @@ type StoreQuery struct {
 	fields     []string
 	predicates []predicate.Store
 	// eager-loading edges.
-	withEmployee *EmployeeQuery
 	withBranch   *BranchQuery
+	withEmployee *EmployeeQuery
 	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -65,28 +65,6 @@ func (sq *StoreQuery) Order(o ...OrderFunc) *StoreQuery {
 	return sq
 }
 
-// QueryEmployee chains the current query on the "employee" edge.
-func (sq *StoreQuery) QueryEmployee() *EmployeeQuery {
-	query := &EmployeeQuery{config: sq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := sq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := sq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(store.Table, store.FieldID, selector),
-			sqlgraph.To(employee.Table, employee.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, store.EmployeeTable, store.EmployeeColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
 // QueryBranch chains the current query on the "branch" edge.
 func (sq *StoreQuery) QueryBranch() *BranchQuery {
 	query := &BranchQuery{config: sq.config}
@@ -102,6 +80,28 @@ func (sq *StoreQuery) QueryBranch() *BranchQuery {
 			sqlgraph.From(store.Table, store.FieldID, selector),
 			sqlgraph.To(branch.Table, branch.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, store.BranchTable, store.BranchColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEmployee chains the current query on the "employee" edge.
+func (sq *StoreQuery) QueryEmployee() *EmployeeQuery {
+	query := &EmployeeQuery{config: sq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, selector),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, store.EmployeeTable, store.EmployeeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -290,24 +290,13 @@ func (sq *StoreQuery) Clone() *StoreQuery {
 		offset:       sq.offset,
 		order:        append([]OrderFunc{}, sq.order...),
 		predicates:   append([]predicate.Store{}, sq.predicates...),
-		withEmployee: sq.withEmployee.Clone(),
 		withBranch:   sq.withBranch.Clone(),
+		withEmployee: sq.withEmployee.Clone(),
 		// clone intermediate query.
 		sql:    sq.sql.Clone(),
 		path:   sq.path,
 		unique: sq.unique,
 	}
-}
-
-// WithEmployee tells the query-builder to eager-load the nodes that are connected to
-// the "employee" edge. The optional arguments are used to configure the query builder of the edge.
-func (sq *StoreQuery) WithEmployee(opts ...func(*EmployeeQuery)) *StoreQuery {
-	query := &EmployeeQuery{config: sq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	sq.withEmployee = query
-	return sq
 }
 
 // WithBranch tells the query-builder to eager-load the nodes that are connected to
@@ -318,6 +307,17 @@ func (sq *StoreQuery) WithBranch(opts ...func(*BranchQuery)) *StoreQuery {
 		opt(query)
 	}
 	sq.withBranch = query
+	return sq
+}
+
+// WithEmployee tells the query-builder to eager-load the nodes that are connected to
+// the "employee" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StoreQuery) WithEmployee(opts ...func(*EmployeeQuery)) *StoreQuery {
+	query := &EmployeeQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withEmployee = query
 	return sq
 }
 
@@ -392,8 +392,8 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 		nodes       = []*Store{}
 		_spec       = sq.querySpec()
 		loadedTypes = [2]bool{
-			sq.withEmployee != nil,
 			sq.withBranch != nil,
+			sq.withEmployee != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -418,32 +418,6 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 		return nodes, nil
 	}
 
-	if query := sq.withEmployee; query != nil {
-		ids := make([]uint64, 0, len(nodes))
-		nodeids := make(map[uint64][]*Store)
-		for i := range nodes {
-			fk := nodes[i].EmployeeID
-			if _, ok := nodeids[fk]; !ok {
-				ids = append(ids, fk)
-			}
-			nodeids[fk] = append(nodeids[fk], nodes[i])
-		}
-		query.Where(employee.IDIn(ids...))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "employee_id" returned %v`, n.ID)
-			}
-			for i := range nodes {
-				nodes[i].Edges.Employee = n
-			}
-		}
-	}
-
 	if query := sq.withBranch; query != nil {
 		ids := make([]uint64, 0, len(nodes))
 		nodeids := make(map[uint64][]*Store)
@@ -466,6 +440,32 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 			}
 			for i := range nodes {
 				nodes[i].Edges.Branch = n
+			}
+		}
+	}
+
+	if query := sq.withEmployee; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Store)
+		for i := range nodes {
+			fk := nodes[i].EmployeeID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(employee.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "employee_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Employee = n
 			}
 		}
 	}

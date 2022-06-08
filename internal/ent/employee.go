@@ -10,7 +10,9 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // Employee is the model entity for the Employee schema.
@@ -33,12 +35,57 @@ type Employee struct {
 	// Remark holds the value of the "remark" field.
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
+	// CityID holds the value of the "city_id" field.
+	// 城市ID
+	CityID uint64 `json:"city_id,omitempty"`
 	// Name holds the value of the "name" field.
 	// 姓名
 	Name string `json:"name,omitempty"`
 	// Phone holds the value of the "phone" field.
 	// 电话
 	Phone string `json:"phone,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the EmployeeQuery when eager-loading is set.
+	Edges EmployeeEdges `json:"edges"`
+}
+
+// EmployeeEdges holds the relations/edges for other nodes in the graph.
+type EmployeeEdges struct {
+	// City holds the value of the city edge.
+	City *City `json:"city,omitempty"`
+	// Store holds the value of the store edge.
+	Store *Store `json:"store,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [2]bool
+}
+
+// CityOrErr returns the City value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EmployeeEdges) CityOrErr() (*City, error) {
+	if e.loadedTypes[0] {
+		if e.City == nil {
+			// The edge city was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: city.Label}
+		}
+		return e.City, nil
+	}
+	return nil, &NotLoadedError{edge: "city"}
+}
+
+// StoreOrErr returns the Store value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EmployeeEdges) StoreOrErr() (*Store, error) {
+	if e.loadedTypes[1] {
+		if e.Store == nil {
+			// The edge store was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: store.Label}
+		}
+		return e.Store, nil
+	}
+	return nil, &NotLoadedError{edge: "store"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -48,7 +95,7 @@ func (*Employee) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case employee.FieldCreator, employee.FieldLastModifier:
 			values[i] = new([]byte)
-		case employee.FieldID:
+		case employee.FieldID, employee.FieldCityID:
 			values[i] = new(sql.NullInt64)
 		case employee.FieldRemark, employee.FieldName, employee.FieldPhone:
 			values[i] = new(sql.NullString)
@@ -116,6 +163,12 @@ func (e *Employee) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				e.Remark = value.String
 			}
+		case employee.FieldCityID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field city_id", values[i])
+			} else if value.Valid {
+				e.CityID = uint64(value.Int64)
+			}
 		case employee.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -131,6 +184,16 @@ func (e *Employee) assignValues(columns []string, values []interface{}) error {
 		}
 	}
 	return nil
+}
+
+// QueryCity queries the "city" edge of the Employee entity.
+func (e *Employee) QueryCity() *CityQuery {
+	return (&EmployeeClient{config: e.config}).QueryCity(e)
+}
+
+// QueryStore queries the "store" edge of the Employee entity.
+func (e *Employee) QueryStore() *StoreQuery {
+	return (&EmployeeClient{config: e.config}).QueryStore(e)
 }
 
 // Update returns a builder for updating this Employee.
@@ -170,6 +233,8 @@ func (e *Employee) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(e.Remark)
+	builder.WriteString(", city_id=")
+	builder.WriteString(fmt.Sprintf("%v", e.CityID))
 	builder.WriteString(", name=")
 	builder.WriteString(e.Name)
 	builder.WriteString(", phone=")

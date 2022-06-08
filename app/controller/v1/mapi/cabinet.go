@@ -19,7 +19,7 @@ var Cabinet = new(cabinet)
 // Create
 // @ID           CabinetCreate
 // @Router       /manager/v1/cabinet [POST]
-// @Summary      M50001 创建电柜
+// @Summary      M5001 创建电柜
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -37,7 +37,7 @@ func (*cabinet) Create(c echo.Context) (err error) {
 // Query
 // @ID           CabinetQuery
 // @Router       /manager/v1/cabinet [GET]
-// @Summary      M50002 查询电柜
+// @Summary      M5002 查询电柜
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -52,7 +52,7 @@ func (*cabinet) Query(c echo.Context) (err error) {
 // Modify
 // @ID           CabinetModify
 // @Router       /manager/v1/cabinet/{id} [PUT]
-// @Summary      M50003 编辑电柜
+// @Summary      M5003 编辑电柜
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -69,7 +69,7 @@ func (*cabinet) Modify(c echo.Context) (err error) {
 // Delete
 // @ID           CabinetDelete
 // @Router       /manager/v1/cabinet/{id} [DELETE]
-// @Summary      M50004 删除电柜
+// @Summary      M5004 删除电柜
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -86,7 +86,7 @@ func (*cabinet) Delete(c echo.Context) (err error) {
 // Detail
 // @ID           CabinetDetail
 // @Router       /manager/v1/cabinet/{id} [GET]
-// @Summary      M50005 获取并更新电柜详细信息
+// @Summary      M5005 获取并更新电柜详细信息
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -101,7 +101,7 @@ func (*cabinet) Detail(c echo.Context) (err error) {
 // DoorOperate
 // @ID           CabinetDoorOperate
 // @Router       /manager/v1/cabinet/door-operate [POST]
-// @Summary      M50006 柜门操作
+// @Summary      M5006 柜门操作
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -125,7 +125,7 @@ func (*cabinet) DoorOperate(c echo.Context) (err error) {
 // Reboot
 // @ID           CabinetReboot
 // @Router       /manager/v1/cabinet/reboot [POST]
-// @Summary      M50007 重启电柜
+// @Summary      M5007 重启电柜
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -142,7 +142,7 @@ func (*cabinet) Reboot(c echo.Context) (err error) {
 // Fault
 // @ID           CabinetFault
 // @Router       /manager/v1/cabinet/fault [GET]
-// @Summary      M50008 故障列表
+// @Summary      M5008 故障列表
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -159,7 +159,7 @@ func (*cabinet) Fault(c echo.Context) (err error) {
 // FaultDeal
 // @ID           CabinetFaultDeal
 // @Router       /manager/v1/fault/{id} [PUT]
-// @Summary      M50009 处理故障
+// @Summary      M5009 处理故障
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json

@@ -19,7 +19,7 @@ var Order = new(order)
 // Create
 // @ID           RiderOrderCreate
 // @Router       /rider/v1/order [POST]
-// @Summary      R30006 支付请求
+// @Summary      R3006 支付请求
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
@@ -37,7 +37,7 @@ func (*order) Create(c echo.Context) (err error) {
 // Refund
 // @ID           RiderOrderRefund
 // @Router       /rider/v1/order/refund [POST]
-// @Summary      R30007 申请退款
+// @Summary      R3007 申请退款
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
@@ -53,7 +53,7 @@ func (*order) Refund(c echo.Context) (err error) {
 // List
 // @ID           RiderOrderList
 // @Router       /rider/v1/order [GET]
-// @Summary      R30008 骑士卡购买历史
+// @Summary      R3008 骑士卡购买历史
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
@@ -71,7 +71,7 @@ func (*order) List(c echo.Context) (err error) {
 // Detail
 // @ID           RiderOrderDetail
 // @Router       /rider/v1/order/{id} [GET]
-// @Summary      R30009 订单详情
+// @Summary      R3009 订单详情
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json

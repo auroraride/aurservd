@@ -1454,6 +1454,38 @@ func (c *EmployeeClient) GetX(ctx context.Context, id uint64) *Employee {
 	return obj
 }
 
+// QueryCity queries the city edge of a Employee.
+func (c *EmployeeClient) QueryCity(e *Employee) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, employee.CityTable, employee.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStore queries the store edge of a Employee.
+func (c *EmployeeClient) QueryStore(e *Employee) *StoreQuery {
+	query := &StoreQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, employee.StoreTable, employee.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EmployeeClient) Hooks() []Hook {
 	hooks := c.hooks.Employee
@@ -3443,22 +3475,6 @@ func (c *StoreClient) GetX(ctx context.Context, id uint64) *Store {
 	return obj
 }
 
-// QueryEmployee queries the employee edge of a Store.
-func (c *StoreClient) QueryEmployee(s *Store) *EmployeeQuery {
-	query := &EmployeeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := s.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(store.Table, store.FieldID, id),
-			sqlgraph.To(employee.Table, employee.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, store.EmployeeTable, store.EmployeeColumn),
-		)
-		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryBranch queries the branch edge of a Store.
 func (c *StoreClient) QueryBranch(s *Store) *BranchQuery {
 	query := &BranchQuery{config: c.config}
@@ -3468,6 +3484,22 @@ func (c *StoreClient) QueryBranch(s *Store) *BranchQuery {
 			sqlgraph.From(store.Table, store.FieldID, id),
 			sqlgraph.To(branch.Table, branch.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, store.BranchTable, store.BranchColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEmployee queries the employee edge of a Store.
+func (c *StoreClient) QueryEmployee(s *Store) *EmployeeQuery {
+	query := &EmployeeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, id),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, store.EmployeeTable, store.EmployeeColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

@@ -42,9 +42,10 @@ type Exchange struct {
 	// 城市ID
 	CityID uint64 `json:"city_id,omitempty"`
 	// EmployeeID holds the value of the "employee_id" field.
-	// 操作店员ID
+	// 店员ID
 	EmployeeID uint64 `json:"employee_id,omitempty"`
 	// StoreID holds the value of the "store_id" field.
+	// 门店ID
 	StoreID uint64 `json:"store_id,omitempty"`
 	// RiderID holds the value of the "rider_id" field.
 	// 骑手ID

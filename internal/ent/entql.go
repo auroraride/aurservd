@@ -270,6 +270,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			employee.FieldCreator:      {Type: field.TypeJSON, Column: employee.FieldCreator},
 			employee.FieldLastModifier: {Type: field.TypeJSON, Column: employee.FieldLastModifier},
 			employee.FieldRemark:       {Type: field.TypeString, Column: employee.FieldRemark},
+			employee.FieldCityID:       {Type: field.TypeUint64, Column: employee.FieldCityID},
 			employee.FieldName:         {Type: field.TypeString, Column: employee.FieldName},
 			employee.FieldPhone:        {Type: field.TypeString, Column: employee.FieldPhone},
 		},
@@ -1006,6 +1007,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
+			Table:   employee.CityTable,
+			Columns: []string{employee.CityColumn},
+			Bidi:    false,
+		},
+		"Employee",
+		"City",
+	)
+	graph.MustAddE(
+		"store",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   employee.StoreTable,
+			Columns: []string{employee.StoreColumn},
+			Bidi:    false,
+		},
+		"Employee",
+		"Store",
+	)
+	graph.MustAddE(
+		"city",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
 			Table:   enterprise.CityTable,
 			Columns: []string{enterprise.CityColumn},
 			Bidi:    false,
@@ -1470,18 +1495,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Subscribe",
 	)
 	graph.MustAddE(
-		"employee",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   store.EmployeeTable,
-			Columns: []string{store.EmployeeColumn},
-			Bidi:    false,
-		},
-		"Store",
-		"Employee",
-	)
-	graph.MustAddE(
 		"branch",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1492,6 +1505,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Store",
 		"Branch",
+	)
+	graph.MustAddE(
+		"employee",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   store.EmployeeTable,
+			Columns: []string{store.EmployeeColumn},
+			Bidi:    false,
+		},
+		"Store",
+		"Employee",
 	)
 	graph.MustAddE(
 		"plan",
@@ -2930,6 +2955,11 @@ func (f *EmployeeFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(employee.FieldRemark))
 }
 
+// WhereCityID applies the entql uint64 predicate on the city_id field.
+func (f *EmployeeFilter) WhereCityID(p entql.Uint64P) {
+	f.Where(p.Field(employee.FieldCityID))
+}
+
 // WhereName applies the entql string predicate on the name field.
 func (f *EmployeeFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(employee.FieldName))
@@ -2938,6 +2968,34 @@ func (f *EmployeeFilter) WhereName(p entql.StringP) {
 // WherePhone applies the entql string predicate on the phone field.
 func (f *EmployeeFilter) WherePhone(p entql.StringP) {
 	f.Where(p.Field(employee.FieldPhone))
+}
+
+// WhereHasCity applies a predicate to check if query has an edge city.
+func (f *EmployeeFilter) WhereHasCity() {
+	f.Where(entql.HasEdge("city"))
+}
+
+// WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
+func (f *EmployeeFilter) WhereHasCityWith(preds ...predicate.City) {
+	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasStore applies a predicate to check if query has an edge store.
+func (f *EmployeeFilter) WhereHasStore() {
+	f.Where(entql.HasEdge("store"))
+}
+
+// WhereHasStoreWith applies a predicate to check if query has an edge store with a given conditions (other predicates).
+func (f *EmployeeFilter) WhereHasStoreWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("store", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // addPredicate implements the predicateAdder interface.
@@ -5046,20 +5104,6 @@ func (f *StoreFilter) WhereStatus(p entql.Uint8P) {
 	f.Where(p.Field(store.FieldStatus))
 }
 
-// WhereHasEmployee applies a predicate to check if query has an edge employee.
-func (f *StoreFilter) WhereHasEmployee() {
-	f.Where(entql.HasEdge("employee"))
-}
-
-// WhereHasEmployeeWith applies a predicate to check if query has an edge employee with a given conditions (other predicates).
-func (f *StoreFilter) WhereHasEmployeeWith(preds ...predicate.Employee) {
-	f.Where(entql.HasEdgeWith("employee", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
 // WhereHasBranch applies a predicate to check if query has an edge branch.
 func (f *StoreFilter) WhereHasBranch() {
 	f.Where(entql.HasEdge("branch"))
@@ -5068,6 +5112,20 @@ func (f *StoreFilter) WhereHasBranch() {
 // WhereHasBranchWith applies a predicate to check if query has an edge branch with a given conditions (other predicates).
 func (f *StoreFilter) WhereHasBranchWith(preds ...predicate.Branch) {
 	f.Where(entql.HasEdgeWith("branch", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasEmployee applies a predicate to check if query has an edge employee.
+func (f *StoreFilter) WhereHasEmployee() {
+	f.Where(entql.HasEdge("employee"))
+}
+
+// WhereHasEmployeeWith applies a predicate to check if query has an edge employee with a given conditions (other predicates).
+func (f *StoreFilter) WhereHasEmployeeWith(preds ...predicate.Employee) {
+	f.Where(entql.HasEdgeWith("employee", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

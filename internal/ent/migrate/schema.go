@@ -453,12 +453,21 @@ var (
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "name", Type: field.TypeString, Comment: "姓名"},
 		{Name: "phone", Type: field.TypeString, Comment: "电话"},
+		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// EmployeeTable holds the schema information for the "employee" table.
 	EmployeeTable = &schema.Table{
 		Name:       "employee",
 		Columns:    EmployeeColumns,
 		PrimaryKey: []*schema.Column{EmployeeColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "employee_city_city",
+				Columns:    []*schema.Column{EmployeeColumns[9]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "employee_created_at",
@@ -469,6 +478,26 @@ var (
 				Name:    "employee_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{EmployeeColumns[3]},
+			},
+			{
+				Name:    "employee_name",
+				Unique:  false,
+				Columns: []*schema.Column{EmployeeColumns[7]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+			{
+				Name:    "employee_phone",
+				Unique:  false,
+				Columns: []*schema.Column{EmployeeColumns[8]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
 			},
 		},
 	}
@@ -1270,7 +1299,7 @@ var (
 		{Name: "name", Type: field.TypeString, Comment: "门店名称"},
 		{Name: "status", Type: field.TypeUint8, Comment: "门店状态 0维护 1营业 2休息 3隐藏", Default: 0},
 		{Name: "branch_id", Type: field.TypeUint64},
-		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "employee_id", Type: field.TypeUint64, Unique: true, Nullable: true},
 	}
 	// StoreTable holds the schema information for the "store" table.
 	StoreTable = &schema.Table{
@@ -1285,7 +1314,7 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "store_employee_employee",
+				Symbol:     "store_employee_store",
 				Columns:    []*schema.Column{StoreColumns[11]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -1679,6 +1708,7 @@ func init() {
 	ContractTable.Annotation = &entsql.Annotation{
 		Table: "contract",
 	}
+	EmployeeTable.ForeignKeys[0].RefTable = CityTable
 	EmployeeTable.Annotation = &entsql.Annotation{
 		Table: "employee",
 	}

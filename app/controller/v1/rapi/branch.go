@@ -20,7 +20,7 @@ var Branch = new(branch)
 // List
 // @ID           RiderBranchList
 // @Router       /rider/v1/branch [GET]
-// @Summary      R20001 列举网点
+// @Summary      R2001 列举网点
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
@@ -35,7 +35,7 @@ func (*branch) List(c echo.Context) (err error) {
 // Riding
 // @ID           RiderBranchRiding
 // @Router       /rider/v1/branch/riding [GET]
-// @Summary      R20002 网点骑行规划时间
+// @Summary      R2002 网点骑行规划时间
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json

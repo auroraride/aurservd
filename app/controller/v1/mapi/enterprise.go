@@ -19,7 +19,7 @@ var Enterprise = new(enterprise)
 // Create
 // @ID           ManagerEnterpriseCreate
 // @Router       /manager/v1/enterprise [POST]
-// @Summary      M90001 创建企业
+// @Summary      M9001 创建企业
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -34,7 +34,7 @@ func (*enterprise) Create(c echo.Context) (err error) {
 // Modify
 // @ID           ManagerEnterpriseModify
 // @Router       /manager/v1/enterprise/{id} [PUT]
-// @Summary      M90002 修改企业
+// @Summary      M9002 修改企业
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -50,7 +50,7 @@ func (*enterprise) Modify(c echo.Context) (err error) {
 // List
 // @ID           ManagerEnterpriseList
 // @Router       /manager/v1/enterprise [GET]
-// @Summary      M90003 列举企业
+// @Summary      M9003 列举企业
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -67,7 +67,7 @@ func (*enterprise) List(c echo.Context) (err error) {
 // Detail
 // @ID           ManagerEnterpriseDetail
 // @Router       /manager/v1/enterprise/{id} [GET]
-// @Summary      M90004 企业详情
+// @Summary      M9004 企业详情
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -82,7 +82,7 @@ func (*enterprise) Detail(c echo.Context) (err error) {
 // Prepayment
 // @ID           ManagerEnterprisePrepayment
 // @Router       /manager/v1/enterprise/{id}/prepayment [POST]
-// @Summary      M90005 企业预付费
+// @Summary      M9005 企业预付费
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -99,7 +99,7 @@ func (*enterprise) Prepayment(c echo.Context) (err error) {
 // CreateStation
 // @ID           ManagerEnterpriseCreateStation
 // @Router       /manager/v1/enterprise/station [POST]
-// @Summary      M90006 创建站点
+// @Summary      M9006 创建站点
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -114,7 +114,7 @@ func (*enterprise) CreateStation(c echo.Context) (err error) {
 // ModifyStation
 // @ID           ManagerEnterpriseModifyStation
 // @Router       /manager/v1/enterprise/station/{id} [PUT]
-// @Summary      M90007 编辑站点
+// @Summary      M9007 编辑站点
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -131,7 +131,7 @@ func (*enterprise) ModifyStation(c echo.Context) (err error) {
 // ListStation
 // @ID           ManagerEnterpriseListStation
 // @Router       /manager/v1/enterprise/station [GET]
-// @Summary      M90008 列举站点
+// @Summary      M9008 列举站点
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -148,7 +148,7 @@ func (*enterprise) ListStation(c echo.Context) (err error) {
 // CreateRider
 // @ID           ManagerEnterpriseCreateRider
 // @Router       /manager/v1/enterprise/rider [POST]
-// @Summary      M90009 添加骑手
+// @Summary      M9009 添加骑手
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -163,7 +163,7 @@ func (*enterprise) CreateRider(c echo.Context) (err error) {
 // ListRider
 // @ID           ManagerEnterpriseListRider
 // @Router       /manager/v1/enterprise/rider [GET]
-// @Summary      M90010 列举骑手
+// @Summary      M9010 列举骑手
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json

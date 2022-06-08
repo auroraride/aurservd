@@ -19,7 +19,7 @@ var Battery = new(battery)
 // ListModels
 // @ID           BatteryModels
 // @Router       /manager/v1/battery/model [GET]
-// @Summary      M40001 获取电池型号
+// @Summary      M4001 获取电池型号
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -33,7 +33,7 @@ func (*battery) ListModels(c echo.Context) (err error) {
 // CreateModel
 // @ID           BatteryCreateModel
 // @Router       /manager/v1/battery/model [POST]
-// @Summary      M40002 创建电池型号
+// @Summary      M4002 创建电池型号
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json

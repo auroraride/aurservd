@@ -19,7 +19,7 @@ var Order = new(order)
 // List
 // @ID           ManagerOrderList
 // @Router       /manager/v1/order [GET]
-// @Summary      M80001 订单列表
+// @Summary      M8001 订单列表
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json

@@ -19,7 +19,7 @@ var Plan = new(plan)
 // Create
 // @ID           PlanCreate
 // @Router       /manager/v1/plan [POST]
-// @Summary      M60001 创建骑士卡
+// @Summary      M6001 创建骑士卡
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -34,7 +34,7 @@ func (*plan) Create(c echo.Context) (err error) {
 // UpdateEnable
 // @ID           PlanUpdateEnable
 // @Router       /manager/v1/plan/{id} [PUT]
-// @Summary      M60002 上下架骑士卡
+// @Summary      M6002 上下架骑士卡
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -51,7 +51,7 @@ func (*plan) UpdateEnable(c echo.Context) (err error) {
 // Delete
 // @ID           PlanDelete
 // @Router       /manager/v1/plan/{id} [DELETE]
-// @Summary      M60003 删除骑士卡
+// @Summary      M6003 删除骑士卡
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -67,7 +67,7 @@ func (*plan) Delete(c echo.Context) (err error) {
 // List
 // @ID           PlanList
 // @Router       /manager/v1/plan [GET]
-// @Summary      M60004 列举骑士卡
+// @Summary      M6004 列举骑士卡
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json

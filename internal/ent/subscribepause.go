@@ -40,7 +40,7 @@ type SubscribePause struct {
 	// 骑手ID
 	RiderID uint64 `json:"rider_id,omitempty"`
 	// EmployeeID holds the value of the "employee_id" field.
-	// 操作店员ID
+	// 店员ID
 	EmployeeID uint64 `json:"employee_id,omitempty"`
 	// SubscribeID holds the value of the "subscribe_id" field.
 	// 订阅ID

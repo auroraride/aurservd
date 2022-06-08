@@ -35,19 +35,12 @@ const (
 	FieldName = "name"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
-	// EdgeEmployee holds the string denoting the employee edge name in mutations.
-	EdgeEmployee = "employee"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
 	EdgeBranch = "branch"
+	// EdgeEmployee holds the string denoting the employee edge name in mutations.
+	EdgeEmployee = "employee"
 	// Table holds the table name of the store in the database.
 	Table = "store"
-	// EmployeeTable is the table that holds the employee relation/edge.
-	EmployeeTable = "store"
-	// EmployeeInverseTable is the table name for the Employee entity.
-	// It exists in this package in order to avoid circular dependency with the "employee" package.
-	EmployeeInverseTable = "employee"
-	// EmployeeColumn is the table column denoting the employee relation/edge.
-	EmployeeColumn = "employee_id"
 	// BranchTable is the table that holds the branch relation/edge.
 	BranchTable = "store"
 	// BranchInverseTable is the table name for the Branch entity.
@@ -55,6 +48,13 @@ const (
 	BranchInverseTable = "branch"
 	// BranchColumn is the table column denoting the branch relation/edge.
 	BranchColumn = "branch_id"
+	// EmployeeTable is the table that holds the employee relation/edge.
+	EmployeeTable = "store"
+	// EmployeeInverseTable is the table name for the Employee entity.
+	// It exists in this package in order to avoid circular dependency with the "employee" package.
+	EmployeeInverseTable = "employee"
+	// EmployeeColumn is the table column denoting the employee relation/edge.
+	EmployeeColumn = "employee_id"
 )
 
 // Columns holds all SQL columns for store fields.

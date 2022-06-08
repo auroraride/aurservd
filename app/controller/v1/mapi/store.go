@@ -19,7 +19,7 @@ var Store = new(store)
 // List
 // @ID           StoreList
 // @Router       /manager/v1/store [GET]
-// @Summary      M30006 列举门店
+// @Summary      M3006 列举门店
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -34,7 +34,7 @@ func (*store) List(c echo.Context) (err error) {
 // Create
 // @ID           StoreCreate
 // @Router       /manager/v1/store [POST]
-// @Summary      M30007 创建门店
+// @Summary      M3007 创建门店
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -49,7 +49,7 @@ func (*store) Create(c echo.Context) (err error) {
 // Modify
 // @ID           StoreModify
 // @Router       /manager/v1/store/{id} [PUT]
-// @Summary      M30008 修改门店
+// @Summary      M3008 修改门店
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -65,7 +65,7 @@ func (*store) Modify(c echo.Context) (err error) {
 // Delete
 // @ID           StoreDelete
 // @Router       /manager/v1/store/{id} [DELETE]
-// @Summary      M30009 删除门店
+// @Summary      M3009 删除门店
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json

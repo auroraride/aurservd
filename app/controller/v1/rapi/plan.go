@@ -19,7 +19,7 @@ var Plan = new(plan)
 // List
 // @ID           RiderPlanList
 // @Router       /rider/v1/plan [GET]
-// @Summary      R30002 获取骑士卡
+// @Summary      R3002 获取骑士卡
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json

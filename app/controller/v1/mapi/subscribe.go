@@ -19,7 +19,7 @@ var Subscribe = new(subscribe)
 // Alter
 // @ID           ManagerSubscribeAlter
 // @Router       /manager/v1/subscribe/alter [POST]
-// @Summary      M70004 修改订阅时间
+// @Summary      M7004 修改订阅时间
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json

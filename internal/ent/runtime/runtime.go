@@ -612,7 +612,7 @@ func init() {
 	// store.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	store.UpdateDefaultUpdatedAt = storeDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// storeDescStatus is the schema descriptor for status field.
-	storeDescStatus := storeFields[3].Descriptor()
+	storeDescStatus := storeFields[4].Descriptor()
 	// store.DefaultStatus holds the default value on creation for the status field.
 	store.DefaultStatus = storeDescStatus.Default.(uint8)
 	subscribeMixin := schema.Subscribe{}.Mixin()

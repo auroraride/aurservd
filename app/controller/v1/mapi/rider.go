@@ -19,7 +19,7 @@ var Rider = new(rider)
 // List
 // @ID           RiderList
 // @Router       /manager/v1/rider [GET]
-// @Summary      M70001 列举骑手
+// @Summary      M7001 列举骑手
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -34,7 +34,7 @@ func (*rider) List(c echo.Context) (err error) {
 // Ban
 // @ID           RiderBan
 // @Router       /manager/v1/rider/ban [POST]
-// @Summary      M70002 封禁/解除封禁身份
+// @Summary      M7002 封禁/解除封禁身份
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -50,7 +50,7 @@ func (*rider) Ban(c echo.Context) (err error) {
 // Block
 // @ID           RiderBlock
 // @Router       /manager/v1/rider/block [POST]
-// @Summary      M70003 封禁/解除封禁骑手账户
+// @Summary      M7003 封禁/解除封禁骑手账户
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -66,7 +66,7 @@ func (*rider) Block(c echo.Context) (err error) {
 // Log
 // @ID           ManagerRiderLog
 // @Router       /manager/v1/rider/log [GET]
-// @Summary      M70005 查看骑手操作日志
+// @Summary      M7005 查看骑手操作日志
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json

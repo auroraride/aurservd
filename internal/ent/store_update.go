@@ -142,14 +142,14 @@ func (su *StoreUpdate) AddStatus(u int8) *StoreUpdate {
 	return su
 }
 
-// SetEmployee sets the "employee" edge to the Employee entity.
-func (su *StoreUpdate) SetEmployee(e *Employee) *StoreUpdate {
-	return su.SetEmployeeID(e.ID)
-}
-
 // SetBranch sets the "branch" edge to the Branch entity.
 func (su *StoreUpdate) SetBranch(b *Branch) *StoreUpdate {
 	return su.SetBranchID(b.ID)
+}
+
+// SetEmployee sets the "employee" edge to the Employee entity.
+func (su *StoreUpdate) SetEmployee(e *Employee) *StoreUpdate {
+	return su.SetEmployeeID(e.ID)
 }
 
 // Mutation returns the StoreMutation object of the builder.
@@ -157,15 +157,15 @@ func (su *StoreUpdate) Mutation() *StoreMutation {
 	return su.mutation
 }
 
-// ClearEmployee clears the "employee" edge to the Employee entity.
-func (su *StoreUpdate) ClearEmployee() *StoreUpdate {
-	su.mutation.ClearEmployee()
-	return su
-}
-
 // ClearBranch clears the "branch" edge to the Branch entity.
 func (su *StoreUpdate) ClearBranch() *StoreUpdate {
 	su.mutation.ClearBranch()
+	return su
+}
+
+// ClearEmployee clears the "employee" edge to the Employee entity.
+func (su *StoreUpdate) ClearEmployee() *StoreUpdate {
+	su.mutation.ClearEmployee()
 	return su
 }
 
@@ -343,41 +343,6 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: store.FieldStatus,
 		})
 	}
-	if su.mutation.EmployeeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   store.EmployeeTable,
-			Columns: []string{store.EmployeeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := su.mutation.EmployeeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   store.EmployeeTable,
-			Columns: []string{store.EmployeeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if su.mutation.BranchCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -405,6 +370,41 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: branch.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if su.mutation.EmployeeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   store.EmployeeTable,
+			Columns: []string{store.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.EmployeeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   store.EmployeeTable,
+			Columns: []string{store.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
 				},
 			},
 		}
@@ -543,14 +543,14 @@ func (suo *StoreUpdateOne) AddStatus(u int8) *StoreUpdateOne {
 	return suo
 }
 
-// SetEmployee sets the "employee" edge to the Employee entity.
-func (suo *StoreUpdateOne) SetEmployee(e *Employee) *StoreUpdateOne {
-	return suo.SetEmployeeID(e.ID)
-}
-
 // SetBranch sets the "branch" edge to the Branch entity.
 func (suo *StoreUpdateOne) SetBranch(b *Branch) *StoreUpdateOne {
 	return suo.SetBranchID(b.ID)
+}
+
+// SetEmployee sets the "employee" edge to the Employee entity.
+func (suo *StoreUpdateOne) SetEmployee(e *Employee) *StoreUpdateOne {
+	return suo.SetEmployeeID(e.ID)
 }
 
 // Mutation returns the StoreMutation object of the builder.
@@ -558,15 +558,15 @@ func (suo *StoreUpdateOne) Mutation() *StoreMutation {
 	return suo.mutation
 }
 
-// ClearEmployee clears the "employee" edge to the Employee entity.
-func (suo *StoreUpdateOne) ClearEmployee() *StoreUpdateOne {
-	suo.mutation.ClearEmployee()
-	return suo
-}
-
 // ClearBranch clears the "branch" edge to the Branch entity.
 func (suo *StoreUpdateOne) ClearBranch() *StoreUpdateOne {
 	suo.mutation.ClearBranch()
+	return suo
+}
+
+// ClearEmployee clears the "employee" edge to the Employee entity.
+func (suo *StoreUpdateOne) ClearEmployee() *StoreUpdateOne {
+	suo.mutation.ClearEmployee()
 	return suo
 }
 
@@ -774,41 +774,6 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 			Column: store.FieldStatus,
 		})
 	}
-	if suo.mutation.EmployeeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   store.EmployeeTable,
-			Columns: []string{store.EmployeeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := suo.mutation.EmployeeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   store.EmployeeTable,
-			Columns: []string{store.EmployeeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if suo.mutation.BranchCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -836,6 +801,41 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: branch.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.EmployeeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   store.EmployeeTable,
+			Columns: []string{store.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.EmployeeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   store.EmployeeTable,
+			Columns: []string{store.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
 				},
 			},
 		}

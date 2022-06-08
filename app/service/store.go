@@ -118,7 +118,7 @@ func (s *storeService) Detail(id uint64) model.StoreItem {
 // Delete 删除门店
 func (s *storeService) Delete(req *model.IDParamReq) {
     item := s.Query(req.ID)
-    s.orm.UpdateOne(item).SetDeletedAt(time.Now()).SaveX(s.ctx)
+    s.orm.UpdateOne(item).SetDeletedAt(time.Now()).SetEmployee(nil).SaveX(s.ctx)
 }
 
 // List 列举门店

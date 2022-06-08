@@ -19,7 +19,7 @@ var Cabinet = new(cabinet)
 // GetProcess
 // @ID           RiderCabinetGetProcess
 // @Router       /rider/v1/cabinet/process/{serial} [GET]
-// @Summary      R40001 获取换电信息
+// @Summary      R4001 获取换电信息
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
@@ -34,7 +34,7 @@ func (*cabinet) GetProcess(c echo.Context) (err error) {
 // Process
 // @ID           RiderCabinetProcess
 // @Router       /rider/v1/cabinet/process [POST]
-// @Summary      R40002 操作换电
+// @Summary      R4002 操作换电
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
@@ -50,7 +50,7 @@ func (*cabinet) Process(c echo.Context) (err error) {
 // ProcessStatus
 // @ID           RiderCabinetProcessStatus
 // @Router       /rider/v1/cabinet/process/status [GET]
-// @Summary      R40003 换电状态
+// @Summary      R4003 换电状态
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
@@ -68,7 +68,7 @@ func (*cabinet) ProcessStatus(c echo.Context) (err error) {
 // Report
 // @ID           CabinetReport
 // @Router       /rider/v1/cabinet/report [POST]
-// @Summary      R40004 电柜故障上报
+// @Summary      R4004 电柜故障上报
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json

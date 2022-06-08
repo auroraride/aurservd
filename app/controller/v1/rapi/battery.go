@@ -18,7 +18,7 @@ var Battery = new(battery)
 // ListVoltage
 // @ID           RiderBatteryListVoltage
 // @Router       /rider/v1/battery/voltage [GET]
-// @Summary      R30001 电压型号
+// @Summary      R3001 电压型号
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json

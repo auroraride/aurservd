@@ -36,7 +36,7 @@ type Store struct {
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
 	// EmployeeID holds the value of the "employee_id" field.
-	// 操作店员ID
+	// 上班员工ID
 	EmployeeID uint64 `json:"employee_id,omitempty"`
 	// BranchID holds the value of the "branch_id" field.
 	// 网点ID
@@ -57,33 +57,19 @@ type Store struct {
 
 // StoreEdges holds the relations/edges for other nodes in the graph.
 type StoreEdges struct {
-	// Employee holds the value of the employee edge.
-	Employee *Employee `json:"employee,omitempty"`
 	// Branch holds the value of the branch edge.
 	Branch *Branch `json:"branch,omitempty"`
+	// Employee holds the value of the employee edge.
+	Employee *Employee `json:"employee,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
 }
 
-// EmployeeOrErr returns the Employee value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e StoreEdges) EmployeeOrErr() (*Employee, error) {
-	if e.loadedTypes[0] {
-		if e.Employee == nil {
-			// The edge employee was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: employee.Label}
-		}
-		return e.Employee, nil
-	}
-	return nil, &NotLoadedError{edge: "employee"}
-}
-
 // BranchOrErr returns the Branch value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StoreEdges) BranchOrErr() (*Branch, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[0] {
 		if e.Branch == nil {
 			// The edge branch was loaded in eager-loading,
 			// but was not found.
@@ -92,6 +78,20 @@ func (e StoreEdges) BranchOrErr() (*Branch, error) {
 		return e.Branch, nil
 	}
 	return nil, &NotLoadedError{edge: "branch"}
+}
+
+// EmployeeOrErr returns the Employee value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e StoreEdges) EmployeeOrErr() (*Employee, error) {
+	if e.loadedTypes[1] {
+		if e.Employee == nil {
+			// The edge employee was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: employee.Label}
+		}
+		return e.Employee, nil
+	}
+	return nil, &NotLoadedError{edge: "employee"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -204,14 +204,14 @@ func (s *Store) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryEmployee queries the "employee" edge of the Store entity.
-func (s *Store) QueryEmployee() *EmployeeQuery {
-	return (&StoreClient{config: s.config}).QueryEmployee(s)
-}
-
 // QueryBranch queries the "branch" edge of the Store entity.
 func (s *Store) QueryBranch() *BranchQuery {
 	return (&StoreClient{config: s.config}).QueryBranch(s)
+}
+
+// QueryEmployee queries the "employee" edge of the Store entity.
+func (s *Store) QueryEmployee() *EmployeeQuery {
+	return (&StoreClient{config: s.config}).QueryEmployee(s)
 }
 
 // Update returns a builder for updating this Store.

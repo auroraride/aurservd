@@ -656,6 +656,50 @@ definitions:
         description: 店员电话
         type: string
     type: object
+  model.EmployeeCreateReq:
+    properties:
+      cityId:
+        description: '城市ID '
+        type: integer
+      name:
+        description: '姓名 '
+        type: string
+      phone:
+        description: '手机号 '
+        type: string
+    required:
+    - cityId
+    - name
+    - phone
+    type: object
+  model.EmployeeListRes:
+    properties:
+      assistanceMiles:
+        description: 救援里程(米)
+        type: number
+      assistanceTimes:
+        description: 救援次数
+        type: integer
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      exchangeTimes:
+        description: 换电次数
+        type: integer
+      id:
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 电话
+        type: string
+      store:
+        allOf:
+        - $ref: '#/definitions/model.Store'
+        description: 当前上班门店, 字段为空的时候是休息状态
+    type: object
   model.EnterpriseBasic:
     properties:
       id:
@@ -1585,6 +1629,14 @@ definitions:
       status:
         type: boolean
     type: object
+  model.Store:
+    properties:
+      id:
+        type: integer
+      name:
+        description: 门店名称
+        type: string
+    type: object
   model.StoreCreateReq:
     properties:
       branchId:
@@ -1751,8 +1803,33 @@ info:
     <br>
     图片/附件前缀 `https://cdn.auroraride.com/`
 
+    <br />
+
+    <br />
+
+    ### 接口编号
+
+    第一位代表接口端分类
+
+    - M 管理端
+    - R 骑手端
+    - E 门店端
+    - C 通用
+
+    第二位代表子分类（36进制）
+
+    后三位代表子编号（10进制）
+
+    <br />
+
+    <br />
+
     ### 调试工具
     - [paw](/docs/api.paw)
+
+    <br />
+
+    <br />
 
     ### 认证
     项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`
@@ -1762,7 +1839,12 @@ info:
     | X-Manager-Token | string |  后台API  |
     |  X-Employee-Token   | string |  员工API  |
 
+    <br />
+
+    <br />
+
     ### 返回
+
     一个标准的返回应包含以下结构
 
     |  字段   |  类型  |  必填  |  说明  |
@@ -1891,7 +1973,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: E20001 激活骑士卡
+      summary: E2001 激活骑士卡
       tags:
       - '[E]门店接口'
   /manager/v1/{id}/contract:
@@ -1923,7 +2005,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M30004 新增合同
+      summary: M3004 新增合同
       tags:
       - '[M]管理接口'
   /manager/v1/battery/model:
@@ -1951,7 +2033,7 @@ paths:
                     $ref: '#/definitions/model.BatteryModel'
                   type: array
               type: object
-      summary: M40001 获取电池型号
+      summary: M4001 获取电池型号
       tags:
       - '[M]管理接口'
     post:
@@ -1982,7 +2064,7 @@ paths:
                 item:
                   $ref: '#/definitions/model.BatteryModel'
               type: object
-      summary: M40002 创建电池型号
+      summary: M4002 创建电池型号
       tags:
       - '[M]管理接口'
   /manager/v1/branch:
@@ -2010,7 +2092,7 @@ paths:
                     $ref: '#/definitions/model.BranchItem'
                   type: array
               type: object
-      summary: M30001 网点列表
+      summary: M3001 网点列表
       tags:
       - '[M]管理接口'
     post:
@@ -2036,7 +2118,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M30002 新增网点
+      summary: M3002 新增网点
       tags:
       - '[M]管理接口'
   /manager/v1/branch/{id}:
@@ -2068,7 +2150,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M30003 编辑网点
+      summary: M3003 编辑网点
       tags:
       - '[M]管理接口'
   /manager/v1/branch/selector:
@@ -2096,7 +2178,7 @@ paths:
                     $ref: '#/definitions/model.BranchSampleItem'
                   type: array
               type: object
-      summary: M30005 网点选择列表
+      summary: M3005 网点选择列表
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet:
@@ -2147,7 +2229,7 @@ paths:
                     $ref: '#/definitions/model.CabinetItem'
                   type: array
               type: object
-      summary: M50002 查询电柜
+      summary: M5002 查询电柜
       tags:
       - '[M]管理接口'
     post:
@@ -2178,7 +2260,7 @@ paths:
                 item:
                   $ref: '#/definitions/model.CabinetItem'
               type: object
-      summary: M50001 创建电柜
+      summary: M5001 创建电柜
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet/{id}:
@@ -2204,7 +2286,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M50004 删除电柜
+      summary: M5004 删除电柜
       tags:
       - '[M]管理接口'
     get:
@@ -2229,7 +2311,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.CabinetDetailRes'
-      summary: M50005 获取并更新电柜详细信息
+      summary: M5005 获取并更新电柜详细信息
       tags:
       - '[M]管理接口'
     put:
@@ -2260,7 +2342,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M50003 编辑电柜
+      summary: M5003 编辑电柜
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet/door-operate:
@@ -2287,7 +2369,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M50006 柜门操作
+      summary: M5006 柜门操作
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet/fault:
@@ -2341,7 +2423,7 @@ paths:
                     $ref: '#/definitions/model.CabinetFaultItem'
                   type: array
               type: object
-      summary: M50008 故障列表
+      summary: M5008 故障列表
       tags:
       - '[M]管理接口'
   /manager/v1/cabinet/reboot:
@@ -2368,7 +2450,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M50007 重启电柜
+      summary: M5007 重启电柜
       tags:
       - '[M]管理接口'
   /manager/v1/city:
@@ -2396,7 +2478,7 @@ paths:
             items:
               $ref: '#/definitions/model.CityItem'
             type: array
-      summary: M20001 城市列表
+      summary: M2001 城市列表
       tags:
       - '[M]管理接口'
   /manager/v1/city/{id}:
@@ -2429,7 +2511,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M20002 修改城市
+      summary: M2002 修改城市
       tags:
       - '[M]管理接口'
   /manager/v1/csc/irv:
@@ -2456,6 +2538,139 @@ paths:
           schema:
             $ref: '#/definitions/model.ShiguangjuIVRRes'
       summary: MT1001 时光驹催费工具
+      tags:
+      - '[M]管理接口'
+  /manager/v1/employee:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerEmployeeList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 业绩统计结束时间
+        in: query
+        name: end
+        type: string
+      - description: 查询店员电话或姓名
+        in: query
+        name: name
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 业绩统计开始时间
+        in: query
+        name: start
+        type: string
+      - description: 门店ID
+        in: query
+        name: storeId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.EmployeeListRes'
+                  type: array
+              type: object
+      summary: MA012 列举店员
+      tags:
+      - '[M]管理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerEmployeeCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EmployeeCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            type: integer
+      summary: MA010 新增店员
+      tags:
+      - '[M]管理接口'
+  /manager/v1/employee/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: ManagerEmployeeDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 店员ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MA013 删除店员
+      tags:
+      - '[M]管理接口'
+    put:
+      consumes:
+      - application/json
+      operationId: ManagerEmployeeModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 店员ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MA011 修改店员
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise:
@@ -2522,7 +2737,7 @@ paths:
                     $ref: '#/definitions/model.EnterpriseRes'
                   type: array
               type: object
-      summary: M90003 列举企业
+      summary: M9003 列举企业
       tags:
       - '[M]管理接口'
     post:
@@ -2548,7 +2763,7 @@ paths:
           description: 请求成功
           schema:
             type: integer
-      summary: M90001 创建企业
+      summary: M9001 创建企业
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/{id}:
@@ -2574,7 +2789,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.EnterpriseRes'
-      summary: M90004 企业详情
+      summary: M9004 企业详情
       tags:
       - '[M]管理接口'
     put:
@@ -2600,7 +2815,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M90002 修改企业
+      summary: M9002 修改企业
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/{id}/prepayment:
@@ -2627,7 +2842,7 @@ paths:
           description: 当前余额
           schema:
             type: number
-      summary: M90005 企业预付费
+      summary: M9005 企业预付费
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/rider:
@@ -2680,7 +2895,7 @@ paths:
                     $ref: '#/definitions/model.EnterpriseRider'
                   type: array
               type: object
-      summary: M90010 列举骑手
+      summary: M9010 列举骑手
       tags:
       - '[M]管理接口'
     post:
@@ -2706,7 +2921,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.EnterpriseRider'
-      summary: M90009 添加骑手
+      summary: M9009 添加骑手
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/station:
@@ -2732,7 +2947,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M90008 列举站点
+      summary: M9008 列举站点
       tags:
       - '[M]管理接口'
     post:
@@ -2758,7 +2973,7 @@ paths:
           description: 请求成功
           schema:
             type: integer
-      summary: M90006 创建站点
+      summary: M9006 创建站点
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/station/{id}:
@@ -2790,7 +3005,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M90007 编辑站点
+      summary: M9007 编辑站点
       tags:
       - '[M]管理接口'
   /manager/v1/fault/{id}:
@@ -2822,7 +3037,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M50009 处理故障
+      summary: M5009 处理故障
       tags:
       - '[M]管理接口'
   /manager/v1/order:
@@ -2850,7 +3065,7 @@ paths:
                     $ref: '#/definitions/model.RiderOrder'
                   type: array
               type: object
-      summary: M80001 订单列表
+      summary: M8001 订单列表
       tags:
       - '[M]管理接口'
   /manager/v1/plan:
@@ -2898,7 +3113,7 @@ paths:
                     $ref: '#/definitions/model.PlanItemRes'
                   type: array
               type: object
-      summary: M60004 列举骑士卡
+      summary: M6004 列举骑士卡
       tags:
       - '[M]管理接口'
     post:
@@ -2918,7 +3133,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M60001 创建骑士卡
+      summary: M6001 创建骑士卡
       tags:
       - '[M]管理接口'
   /manager/v1/plan/{id}:
@@ -2944,7 +3159,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M60003 删除骑士卡
+      summary: M6003 删除骑士卡
       tags:
       - '[M]管理接口'
     put:
@@ -2975,7 +3190,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M60002 上下架骑士卡
+      summary: M6002 上下架骑士卡
       tags:
       - '[M]管理接口'
   /manager/v1/rider:
@@ -3063,7 +3278,7 @@ paths:
                     $ref: '#/definitions/model.RiderItem'
                   type: array
               type: object
-      summary: M70001 列举骑手
+      summary: M7001 列举骑手
       tags:
       - '[M]管理接口'
   /manager/v1/rider/ban:
@@ -3090,7 +3305,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M70002 封禁/解除封禁身份
+      summary: M7002 封禁/解除封禁身份
       tags:
       - '[M]管理接口'
   /manager/v1/rider/block:
@@ -3117,7 +3332,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M70003 封禁/解除封禁骑手账户
+      summary: M7003 封禁/解除封禁骑手账户
       tags:
       - '[M]管理接口'
   /manager/v1/rider/log:
@@ -3149,7 +3364,7 @@ paths:
             items:
               $ref: '#/definitions/model.LogOperate'
             type: array
-      summary: M70005 查看骑手操作日志
+      summary: M7005 查看骑手操作日志
       tags:
       - '[M]管理接口'
   /manager/v1/setting:
@@ -3172,7 +3387,7 @@ paths:
             items:
               $ref: '#/definitions/model.SettingReq'
             type: array
-      summary: M10003 列举设置
+      summary: M1003 列举设置
       tags:
       - '[M]管理接口'
   /manager/v1/setting/{key}:
@@ -3204,7 +3419,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M10004 调整设置
+      summary: M1004 调整设置
       tags:
       - '[M]管理接口'
   /manager/v1/store:
@@ -3252,7 +3467,7 @@ paths:
                     $ref: '#/definitions/model.StoreItem'
                   type: array
               type: object
-      summary: M30006 列举门店
+      summary: M3006 列举门店
       tags:
       - '[M]管理接口'
     post:
@@ -3278,7 +3493,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StoreItem'
-      summary: M30007 创建门店
+      summary: M3007 创建门店
       tags:
       - '[M]管理接口'
   /manager/v1/store/{id}:
@@ -3304,7 +3519,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M30009 删除门店
+      summary: M3009 删除门店
       tags:
       - '[M]管理接口'
     put:
@@ -3335,7 +3550,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StoreItem'
-      summary: M30008 修改门店
+      summary: M3008 修改门店
       tags:
       - '[M]管理接口'
   /manager/v1/subscribe/alter:
@@ -3362,7 +3577,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M70004 修改订阅时间
+      summary: M7004 修改订阅时间
       tags:
       - '[M]管理接口'
   /manager/v1/user:
@@ -3383,7 +3598,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M10002 新增管理员
+      summary: M1002 新增管理员
       tags:
       - '[M]管理接口'
   /manager/v1/user/signin:
@@ -3399,7 +3614,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ManagerSigninRes'
-      summary: M10001 用户登录
+      summary: M1001 用户登录
       tags:
       - '[M]管理接口'
   /rider/v1/authenticator:
@@ -3426,7 +3641,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.FaceAuthUrlResponse'
-      summary: R10003 实名认证
+      summary: R1003 实名认证
       tags:
       - '[R]骑手接口'
   /rider/v1/authenticator/{token}:
@@ -3452,7 +3667,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R10004 实名认证结果
+      summary: R1004 实名认证结果
       tags:
       - '[R]骑手接口'
   /rider/v1/battery/voltage:
@@ -3475,7 +3690,7 @@ paths:
             items:
               type: integer
             type: array
-      summary: R30001 电压型号
+      summary: R3001 电压型号
       tags:
       - '[R]骑手接口'
   /rider/v1/branch:
@@ -3516,7 +3731,7 @@ paths:
             items:
               $ref: '#/definitions/model.BranchWithDistanceRes'
             type: array
-      summary: R20001 列举网点
+      summary: R2001 列举网点
       tags:
       - '[R]骑手接口'
   /rider/v1/branch/riding:
@@ -3545,7 +3760,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.BranchRidingRes'
-      summary: R20002 网点骑行规划时间
+      summary: R2002 网点骑行规划时间
       tags:
       - '[R]骑手接口'
   /rider/v1/cabinet/process:
@@ -3572,7 +3787,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R40002 操作换电
+      summary: R4002 操作换电
       tags:
       - '[R]骑手接口'
   /rider/v1/cabinet/process/{serial}:
@@ -3598,7 +3813,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.RiderCabinetInfo'
-      summary: R40001 获取换电信息
+      summary: R4001 获取换电信息
       tags:
       - '[R]骑手接口'
   /rider/v1/cabinet/process/status:
@@ -3623,7 +3838,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.RiderCabinetOperateRes'
-      summary: R40003 换电状态
+      summary: R4003 换电状态
       tags:
       - '[R]骑手接口'
   /rider/v1/cabinet/report:
@@ -3650,7 +3865,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R40004 电柜故障上报
+      summary: R4004 电柜故障上报
       tags:
       - '[R]骑手接口'
   /rider/v1/city:
@@ -3673,7 +3888,7 @@ paths:
             items:
               $ref: '#/definitions/model.CityWithLocation'
             type: array
-      summary: R20003 获取已开通城市
+      summary: R2003 获取已开通城市
       tags:
       - '[R]骑手接口'
   /rider/v1/contact:
@@ -3700,7 +3915,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R10002 添加紧急联系人
+      summary: R1002 添加紧急联系人
       tags:
       - '[R]骑手接口'
   /rider/v1/contract/sign:
@@ -3727,7 +3942,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ContractSignRes'
-      summary: R30005 签署合同
+      summary: R3005 签署合同
       tags:
       - '[R]骑手接口'
   /rider/v1/enterprise/subscribe:
@@ -3753,7 +3968,7 @@ paths:
           description: TRUE已激活, FALSE未激活
           schema:
             type: boolean
-      summary: R30012 企业骑手订阅激活状态
+      summary: R3012 企业骑手订阅激活状态
       tags:
       - '[R]骑手接口'
     post:
@@ -3779,7 +3994,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.EnterpriseRiderSubscribeChooseRes'
-      summary: R30011 企业骑手选择电池
+      summary: R3011 企业骑手选择电池
       tags:
       - '[R]骑手接口'
   /rider/v1/enterprise/voltage:
@@ -3807,7 +4022,7 @@ paths:
             items:
               $ref: '#/definitions/model.EnterprisePriceVoltageListRes'
             type: array
-      summary: R30010 企业骑手获取可用电池
+      summary: R3010 企业骑手获取可用电池
       tags:
       - '[R]骑手接口'
   /rider/v1/exchange/log:
@@ -3828,7 +4043,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R40007 换电记录
+      summary: R4007 换电记录
       tags:
       - '[R]骑手接口'
   /rider/v1/exchange/overview:
@@ -3849,7 +4064,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R40006 换电概览
+      summary: R4006 换电概览
       tags:
       - '[R]骑手接口'
   /rider/v1/exchange/store:
@@ -3876,7 +4091,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.ExchangeStoreRes'
-      summary: R40005 门店换电
+      summary: R4005 门店换电
       tags:
       - '[R]骑手接口'
   /rider/v1/face/{token}:
@@ -3902,7 +4117,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R10005 获取人脸校验结果
+      summary: R1005 获取人脸校验结果
       tags:
       - '[R]骑手接口'
   /rider/v1/order:
@@ -3938,7 +4153,7 @@ paths:
                     $ref: '#/definitions/model.RiderOrder'
                   type: array
               type: object
-      summary: R30008 骑士卡购买历史
+      summary: R3008 骑士卡购买历史
       tags:
       - '[R]骑手接口'
     post:
@@ -3964,7 +4179,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.OrderCreateRes'
-      summary: R30006 支付请求
+      summary: R3006 支付请求
       tags:
       - '[R]骑手接口'
   /rider/v1/order/{id}:
@@ -3990,7 +4205,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R30009 订单详情
+      summary: R3009 订单详情
       tags:
       - '[R]骑手接口'
   /rider/v1/order/refund:
@@ -4017,7 +4232,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R30007 申请退款
+      summary: R3007 申请退款
       tags:
       - '[R]骑手接口'
   /rider/v1/plan:
@@ -4050,7 +4265,7 @@ paths:
             items:
               $ref: '#/definitions/model.RiderPlanItem'
             type: array
-      summary: R30002 获取骑士卡
+      summary: R3002 获取骑士卡
       tags:
       - '[R]骑手接口'
   /rider/v1/profile:
@@ -4071,7 +4286,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.RiderSigninRes'
-      summary: R10006 获取个人信息
+      summary: R1006 获取个人信息
       tags:
       - '[R]骑手接口'
   /rider/v1/signin:
@@ -4093,7 +4308,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R10001 登录或注册
+      summary: R1001 登录或注册
       tags:
       - '[R]骑手接口'
 swagger: "2.0"

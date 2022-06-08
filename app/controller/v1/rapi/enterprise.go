@@ -19,7 +19,7 @@ var Enterprise = new(enterprise)
 // ListVoltage
 // @ID           RiderEnterpriseListVoltage
 // @Router       /rider/v1/enterprise/voltage [GET]
-// @Summary      R30010 企业骑手获取可用电池
+// @Summary      R3010 企业骑手获取可用电池
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
@@ -34,7 +34,7 @@ func (*enterprise) ListVoltage(c echo.Context) (err error) {
 // Subscribe
 // @ID           RiderEnterpriseSubscribe
 // @Router       /rider/v1/enterprise/subscribe [POST]
-// @Summary      R30011 企业骑手选择电池
+// @Summary      R3011 企业骑手选择电池
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
@@ -49,7 +49,7 @@ func (*enterprise) Subscribe(c echo.Context) (err error) {
 // SubscribeStatus
 // @ID           RiderEnterpriseSubscribeStatus
 // @Router       /rider/v1/enterprise/subscribe [GET]
-// @Summary      R30012 企业骑手订阅激活状态
+// @Summary      R3012 企业骑手订阅激活状态
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json

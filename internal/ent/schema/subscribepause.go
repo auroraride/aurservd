@@ -44,7 +44,7 @@ func (SubscribePause) Mixin() []ent.Mixin {
         internal.DeleteMixin{},
         internal.Modifier{},
         RiderMixin{},
-        EmployeeMixin{},
+        EmployeeMixin{Optional: true},
     }
 }
 

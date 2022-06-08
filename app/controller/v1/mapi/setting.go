@@ -19,7 +19,7 @@ var Setting = new(setting)
 // List
 // @ID           ManagerSettingList
 // @Router       /manager/v1/setting [GET]
-// @Summary      M10003 列举设置
+// @Summary      M1003 列举设置
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -34,7 +34,7 @@ func (*setting) List(c echo.Context) (err error) {
 // Modify
 // @ID           ManagerSettingModify
 // @Router       /manager/v1/setting/{key} [PUT]
-// @Summary      M10004 调整设置
+// @Summary      M1004 调整设置
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json

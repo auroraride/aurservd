@@ -5,8 +5,33 @@
 <br>
 图片/附件前缀 `https://cdn.auroraride.com/`
 
+<br />
+
+<br />
+
+### 接口编号
+
+第一位代表接口端分类
+
+- M 管理端
+- R 骑手端
+- E 门店端
+- C 通用
+
+第二位代表子分类（36进制）
+
+后三位代表子编号（10进制）
+
+<br />
+
+<br />
+
 ### 调试工具
 - [paw](/docs/api.paw)
+
+<br />
+
+<br />
 
 ### 认证
 项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`
@@ -16,7 +41,12 @@
 | X-Manager-Token | string |  后台API  |
 |  X-Employee-Token   | string |  员工API  |
 
+<br />
+
+<br />
+
 ### 返回
+
 一个标准的返回应包含以下结构
 
 |  字段   |  类型  |  必填  |  说明  |

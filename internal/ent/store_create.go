@@ -139,14 +139,14 @@ func (sc *StoreCreate) SetNillableStatus(u *uint8) *StoreCreate {
 	return sc
 }
 
-// SetEmployee sets the "employee" edge to the Employee entity.
-func (sc *StoreCreate) SetEmployee(e *Employee) *StoreCreate {
-	return sc.SetEmployeeID(e.ID)
-}
-
 // SetBranch sets the "branch" edge to the Branch entity.
 func (sc *StoreCreate) SetBranch(b *Branch) *StoreCreate {
 	return sc.SetBranchID(b.ID)
+}
+
+// SetEmployee sets the "employee" edge to the Employee entity.
+func (sc *StoreCreate) SetEmployee(e *Employee) *StoreCreate {
+	return sc.SetEmployeeID(e.ID)
 }
 
 // Mutation returns the StoreMutation object of the builder.
@@ -372,26 +372,6 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 		})
 		_node.Status = value
 	}
-	if nodes := sc.mutation.EmployeeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   store.EmployeeTable,
-			Columns: []string{store.EmployeeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.EmployeeID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := sc.mutation.BranchIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -410,6 +390,26 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.BranchID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.EmployeeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   store.EmployeeTable,
+			Columns: []string{store.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EmployeeID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

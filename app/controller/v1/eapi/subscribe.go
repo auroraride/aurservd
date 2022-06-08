@@ -19,7 +19,7 @@ var Subscribe = new(subscribe)
 // Active
 // @ID           RiderOrderActive
 // @Router       /employee/v1/subscribe/active [POST]
-// @Summary      E20001 激活骑士卡
+// @Summary      E2001 激活骑士卡
 // @Tags         [E]门店接口
 // @Accept       json
 // @Produce      json

@@ -2,28 +2,35 @@ package schema
 
 import (
     "entgo.io/ent"
+    "entgo.io/ent/dialect"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
+    "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
 type EmployeeMixin struct {
     mixin.Schema
+    Optional bool
 }
 
-func (EmployeeMixin) Fields() []ent.Field {
-    return []ent.Field{
-        field.Uint64("employee_id").Optional().Comment("操作店员ID"),
+func (m EmployeeMixin) Fields() []ent.Field {
+    f := field.Uint64("employee_id").Comment("店员ID")
+    if m.Optional {
+        f.Optional()
     }
+    return []ent.Field{f}
 }
 
-func (EmployeeMixin) Edges() []ent.Edge {
-    return []ent.Edge{
-        edge.To("employee", Employee.Type).Unique().Field("employee_id"),
+func (m EmployeeMixin) Edges() []ent.Edge {
+    e := edge.To("employee", Employee.Type).Unique().Field("employee_id")
+    if !m.Optional {
+        e.Required()
     }
+    return []ent.Edge{e}
 }
 
 // Employee holds the schema definition for the Employee entity.
@@ -50,6 +57,7 @@ func (Employee) Fields() []ent.Field {
 func (Employee) Edges() []ent.Edge {
     return []ent.Edge{
         // edge.To("subscribes", Subscribe.Type),
+        edge.To("store", Store.Type).Unique(),
     }
 }
 
@@ -58,9 +66,22 @@ func (Employee) Mixin() []ent.Mixin {
         internal.TimeMixin{},
         internal.DeleteMixin{},
         internal.Modifier{},
+
+        CityMixin{Optional: true},
     }
 }
 
 func (Employee) Indexes() []ent.Index {
-    return []ent.Index{}
+    return []ent.Index{
+        index.Fields("name").Annotations(
+            entsql.IndexTypes(map[string]string{
+                dialect.Postgres: "GIN",
+            }),
+        ),
+        index.Fields("phone").Annotations(
+            entsql.IndexTypes(map[string]string{
+                dialect.Postgres: "GIN",
+            }),
+        ),
+    }
 }

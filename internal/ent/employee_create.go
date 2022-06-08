@@ -12,7 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
 // EmployeeCreate is the builder for creating a Employee entity.
@@ -91,6 +93,20 @@ func (ec *EmployeeCreate) SetNillableRemark(s *string) *EmployeeCreate {
 	return ec
 }
 
+// SetCityID sets the "city_id" field.
+func (ec *EmployeeCreate) SetCityID(u uint64) *EmployeeCreate {
+	ec.mutation.SetCityID(u)
+	return ec
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (ec *EmployeeCreate) SetNillableCityID(u *uint64) *EmployeeCreate {
+	if u != nil {
+		ec.SetCityID(*u)
+	}
+	return ec
+}
+
 // SetName sets the "name" field.
 func (ec *EmployeeCreate) SetName(s string) *EmployeeCreate {
 	ec.mutation.SetName(s)
@@ -101,6 +117,30 @@ func (ec *EmployeeCreate) SetName(s string) *EmployeeCreate {
 func (ec *EmployeeCreate) SetPhone(s string) *EmployeeCreate {
 	ec.mutation.SetPhone(s)
 	return ec
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (ec *EmployeeCreate) SetCity(c *City) *EmployeeCreate {
+	return ec.SetCityID(c.ID)
+}
+
+// SetStoreID sets the "store" edge to the Store entity by ID.
+func (ec *EmployeeCreate) SetStoreID(id uint64) *EmployeeCreate {
+	ec.mutation.SetStoreID(id)
+	return ec
+}
+
+// SetNillableStoreID sets the "store" edge to the Store entity by ID if the given value is not nil.
+func (ec *EmployeeCreate) SetNillableStoreID(id *uint64) *EmployeeCreate {
+	if id != nil {
+		ec = ec.SetStoreID(*id)
+	}
+	return ec
+}
+
+// SetStore sets the "store" edge to the Store entity.
+func (ec *EmployeeCreate) SetStore(s *Store) *EmployeeCreate {
+	return ec.SetStoreID(s.ID)
 }
 
 // Mutation returns the EmployeeMutation object of the builder.
@@ -305,6 +345,45 @@ func (ec *EmployeeCreate) createSpec() (*Employee, *sqlgraph.CreateSpec) {
 		})
 		_node.Phone = value
 	}
+	if nodes := ec.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   employee.CityTable,
+			Columns: []string{employee.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CityID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   employee.StoreTable,
+			Columns: []string{employee.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -452,6 +531,24 @@ func (u *EmployeeUpsert) UpdateRemark() *EmployeeUpsert {
 // ClearRemark clears the value of the "remark" field.
 func (u *EmployeeUpsert) ClearRemark() *EmployeeUpsert {
 	u.SetNull(employee.FieldRemark)
+	return u
+}
+
+// SetCityID sets the "city_id" field.
+func (u *EmployeeUpsert) SetCityID(v uint64) *EmployeeUpsert {
+	u.Set(employee.FieldCityID, v)
+	return u
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *EmployeeUpsert) UpdateCityID() *EmployeeUpsert {
+	u.SetExcluded(employee.FieldCityID)
+	return u
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *EmployeeUpsert) ClearCityID() *EmployeeUpsert {
+	u.SetNull(employee.FieldCityID)
 	return u
 }
 
@@ -638,6 +735,27 @@ func (u *EmployeeUpsertOne) UpdateRemark() *EmployeeUpsertOne {
 func (u *EmployeeUpsertOne) ClearRemark() *EmployeeUpsertOne {
 	return u.Update(func(s *EmployeeUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetCityID sets the "city_id" field.
+func (u *EmployeeUpsertOne) SetCityID(v uint64) *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *EmployeeUpsertOne) UpdateCityID() *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdateCityID()
+	})
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *EmployeeUpsertOne) ClearCityID() *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.ClearCityID()
 	})
 }
 
@@ -992,6 +1110,27 @@ func (u *EmployeeUpsertBulk) UpdateRemark() *EmployeeUpsertBulk {
 func (u *EmployeeUpsertBulk) ClearRemark() *EmployeeUpsertBulk {
 	return u.Update(func(s *EmployeeUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetCityID sets the "city_id" field.
+func (u *EmployeeUpsertBulk) SetCityID(v uint64) *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *EmployeeUpsertBulk) UpdateCityID() *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdateCityID()
+	})
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *EmployeeUpsertBulk) ClearCityID() *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.ClearCityID()
 	})
 }
 

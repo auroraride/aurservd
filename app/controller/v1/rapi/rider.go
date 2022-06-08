@@ -24,7 +24,7 @@ type rider struct {
 // Signin
 // @ID           RiderSignin
 // @Router       /rider/v1/signin [POST]
-// @Summary      R10001 登录或注册
+// @Summary      R1001 登录或注册
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
@@ -52,7 +52,7 @@ func (*rider) Signin(c echo.Context) (err error) {
 // Contact
 // @ID           RiderContact
 // @Router       /rider/v1/contact [POST]
-// @Summary      R10002 添加紧急联系人
+// @Summary      R1002 添加紧急联系人
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
@@ -68,7 +68,7 @@ func (r *rider) Contact(c echo.Context) error {
 // Authenticator
 // @ID           RiderAuthenticator
 // @Router       /rider/v1/authenticator [POST]
-// @Summary      R10003 实名认证
+// @Summary      R1003 实名认证
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
@@ -90,7 +90,7 @@ func (*rider) Authenticator(c echo.Context) error {
 // TODO 测试认证失败逻辑
 // @ID           RiderAuthResult
 // @Router       /rider/v1/authenticator/{token} [GET]
-// @Summary      R10004 实名认证结果
+// @Summary      R1004 实名认证结果
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
@@ -105,7 +105,7 @@ func (r *rider) AuthResult(c echo.Context) error {
 // FaceResult
 // @ID           RiderFaceResult
 // @Router       /rider/v1/face/{token} [GET]
-// @Summary      R10005 获取人脸校验结果
+// @Summary      R1005 获取人脸校验结果
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
@@ -125,7 +125,7 @@ func (r *rider) Demo(c echo.Context) error {
 // Profile
 // @ID           RiderRiderProfile
 // @Router       /rider/v1/profile [GET]
-// @Summary      R10006 获取个人信息
+// @Summary      R1006 获取个人信息
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json

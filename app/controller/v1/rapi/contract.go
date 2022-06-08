@@ -21,7 +21,7 @@ var Contract = new(contract)
 // Sign
 // @ID           RiderContractSign
 // @Router       /rider/v1/contract/sign [POST]
-// @Summary      R30005 签署合同
+// @Summary      R3005 签署合同
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json

@@ -123,7 +123,7 @@ const docTemplate = `{
                 "tags": [
                     "[E]门店接口"
                 ],
-                "summary": "E20001 激活骑士卡",
+                "summary": "E2001 激活骑士卡",
                 "operationId": "RiderOrderActive",
                 "parameters": [
                     {
@@ -164,7 +164,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M40001 获取电池型号",
+                "summary": "M4001 获取电池型号",
                 "operationId": "BatteryModels",
                 "parameters": [
                     {
@@ -209,7 +209,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M40002 创建电池型号",
+                "summary": "M4002 创建电池型号",
                 "operationId": "BatteryCreateModel",
                 "parameters": [
                     {
@@ -262,7 +262,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M30001 网点列表",
+                "summary": "M3001 网点列表",
                 "operationId": "BranchList",
                 "parameters": [
                     {
@@ -307,7 +307,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M30002 新增网点",
+                "summary": "M3002 新增网点",
                 "operationId": "BranchCreate",
                 "parameters": [
                     {
@@ -348,7 +348,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M30005 网点选择列表",
+                "summary": "M3005 网点选择列表",
                 "operationId": "BranchSelector",
                 "parameters": [
                     {
@@ -395,7 +395,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M30003 编辑网点",
+                "summary": "M3003 编辑网点",
                 "operationId": "BranchModify",
                 "parameters": [
                     {
@@ -443,7 +443,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M50002 查询电柜",
+                "summary": "M5002 查询电柜",
                 "operationId": "CabinetQuery",
                 "parameters": [
                     {
@@ -525,7 +525,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M50001 创建电柜",
+                "summary": "M5001 创建电柜",
                 "operationId": "CabinetCreate",
                 "parameters": [
                     {
@@ -578,7 +578,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M50006 柜门操作",
+                "summary": "M5006 柜门操作",
                 "operationId": "CabinetDoorOperate",
                 "parameters": [
                     {
@@ -619,7 +619,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M50008 故障列表",
+                "summary": "M5008 故障列表",
                 "operationId": "CabinetFault",
                 "parameters": [
                     {
@@ -708,7 +708,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M50007 重启电柜",
+                "summary": "M5007 重启电柜",
                 "operationId": "CabinetReboot",
                 "parameters": [
                     {
@@ -749,7 +749,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M50005 获取并更新电柜详细信息",
+                "summary": "M5005 获取并更新电柜详细信息",
                 "operationId": "CabinetDetail",
                 "parameters": [
                     {
@@ -786,7 +786,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M50003 编辑电柜",
+                "summary": "M5003 编辑电柜",
                 "operationId": "CabinetModify",
                 "parameters": [
                     {
@@ -832,7 +832,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M50004 删除电柜",
+                "summary": "M5004 删除电柜",
                 "operationId": "CabinetDelete",
                 "parameters": [
                     {
@@ -871,7 +871,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M20001 城市列表",
+                "summary": "M2001 城市列表",
                 "parameters": [
                     {
                         "type": "string",
@@ -914,7 +914,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M20002 修改城市",
+                "summary": "M2002 修改城市",
                 "operationId": "CityModify",
                 "parameters": [
                     {
@@ -990,6 +990,210 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/employee": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MA012 列举店员",
+                "operationId": "ManagerEmployeeList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "业绩统计结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "查询店员电话或姓名",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "业绩统计开始时间",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店ID",
+                        "name": "storeId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.EmployeeListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MA010 新增店员",
+                "operationId": "ManagerEmployeeCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EmployeeCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/employee/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MA011 修改店员",
+                "operationId": "ManagerEmployeeModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "店员ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MA013 删除店员",
+                "operationId": "ManagerEmployeeDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "店员ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/enterprise": {
             "get": {
                 "consumes": [
@@ -1001,7 +1205,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M90003 列举企业",
+                "summary": "M9003 列举企业",
                 "operationId": "ManagerEnterpriseList",
                 "parameters": [
                     {
@@ -1104,7 +1308,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M90001 创建企业",
+                "summary": "M9001 创建企业",
                 "operationId": "ManagerEnterpriseCreate",
                 "parameters": [
                     {
@@ -1145,7 +1349,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M90010 列举骑手",
+                "summary": "M9010 列举骑手",
                 "operationId": "ManagerEnterpriseListRider",
                 "parameters": [
                     {
@@ -1227,7 +1431,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M90009 添加骑手",
+                "summary": "M9009 添加骑手",
                 "operationId": "ManagerEnterpriseCreateRider",
                 "parameters": [
                     {
@@ -1268,7 +1472,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M90008 列举站点",
+                "summary": "M9008 列举站点",
                 "operationId": "ManagerEnterpriseListStation",
                 "parameters": [
                     {
@@ -1305,7 +1509,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M90006 创建站点",
+                "summary": "M9006 创建站点",
                 "operationId": "ManagerEnterpriseCreateStation",
                 "parameters": [
                     {
@@ -1346,7 +1550,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M90007 编辑站点",
+                "summary": "M9007 编辑站点",
                 "operationId": "ManagerEnterpriseModifyStation",
                 "parameters": [
                     {
@@ -1394,7 +1598,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M90004 企业详情",
+                "summary": "M9004 企业详情",
                 "operationId": "ManagerEnterpriseDetail",
                 "parameters": [
                     {
@@ -1431,7 +1635,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M90002 修改企业",
+                "summary": "M9002 修改企业",
                 "operationId": "ManagerEnterpriseModify",
                 "parameters": [
                     {
@@ -1472,7 +1676,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M90005 企业预付费",
+                "summary": "M9005 企业预付费",
                 "operationId": "ManagerEnterprisePrepayment",
                 "parameters": [
                     {
@@ -1513,7 +1717,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M50009 处理故障",
+                "summary": "M5009 处理故障",
                 "operationId": "CabinetFaultDeal",
                 "parameters": [
                     {
@@ -1561,7 +1765,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M80001 订单列表",
+                "summary": "M8001 订单列表",
                 "operationId": "ManagerOrderList",
                 "parameters": [
                     {
@@ -1608,7 +1812,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M60004 列举骑士卡",
+                "summary": "M6004 列举骑士卡",
                 "operationId": "PlanList",
                 "parameters": [
                     {
@@ -1683,7 +1887,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M60001 创建骑士卡",
+                "summary": "M6001 创建骑士卡",
                 "operationId": "PlanCreate",
                 "parameters": [
                     {
@@ -1715,7 +1919,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M60002 上下架骑士卡",
+                "summary": "M6002 上下架骑士卡",
                 "operationId": "PlanUpdateEnable",
                 "parameters": [
                     {
@@ -1761,7 +1965,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M60003 删除骑士卡",
+                "summary": "M6003 删除骑士卡",
                 "operationId": "PlanDelete",
                 "parameters": [
                     {
@@ -1800,7 +2004,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M70001 列举骑手",
+                "summary": "M7001 列举骑手",
                 "operationId": "RiderList",
                 "parameters": [
                     {
@@ -1930,7 +2134,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M70002 封禁/解除封禁身份",
+                "summary": "M7002 封禁/解除封禁身份",
                 "operationId": "RiderBan",
                 "parameters": [
                     {
@@ -1971,7 +2175,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M70003 封禁/解除封禁骑手账户",
+                "summary": "M7003 封禁/解除封禁骑手账户",
                 "operationId": "RiderBlock",
                 "parameters": [
                     {
@@ -2012,7 +2216,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M70005 查看骑手操作日志",
+                "summary": "M7005 查看骑手操作日志",
                 "operationId": "ManagerRiderLog",
                 "parameters": [
                     {
@@ -2060,7 +2264,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M10003 列举设置",
+                "summary": "M1003 列举设置",
                 "operationId": "ManagerSettingList",
                 "parameters": [
                     {
@@ -2095,7 +2299,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M10004 调整设置",
+                "summary": "M1004 调整设置",
                 "operationId": "ManagerSettingModify",
                 "parameters": [
                     {
@@ -2143,7 +2347,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M30006 列举门店",
+                "summary": "M3006 列举门店",
                 "operationId": "StoreList",
                 "parameters": [
                     {
@@ -2218,7 +2422,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M30007 创建门店",
+                "summary": "M3007 创建门店",
                 "operationId": "StoreCreate",
                 "parameters": [
                     {
@@ -2259,7 +2463,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M30008 修改门店",
+                "summary": "M3008 修改门店",
                 "operationId": "StoreModify",
                 "parameters": [
                     {
@@ -2305,7 +2509,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M30009 删除门店",
+                "summary": "M3009 删除门店",
                 "operationId": "StoreDelete",
                 "parameters": [
                     {
@@ -2344,7 +2548,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M70004 修改订阅时间",
+                "summary": "M7004 修改订阅时间",
                 "operationId": "ManagerSubscribeAlter",
                 "parameters": [
                     {
@@ -2385,7 +2589,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M10002 新增管理员",
+                "summary": "M1002 新增管理员",
                 "operationId": "ManagerCreate",
                 "parameters": [
                     {
@@ -2418,7 +2622,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M10001 用户登录",
+                "summary": "M1001 用户登录",
                 "operationId": "ManagerSignin",
                 "responses": {
                     "200": {
@@ -2441,7 +2645,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M30004 新增合同",
+                "summary": "M3004 新增合同",
                 "operationId": "BranchAddContract",
                 "parameters": [
                     {
@@ -2489,7 +2693,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R10003 实名认证",
+                "summary": "R1003 实名认证",
                 "operationId": "RiderAuthenticator",
                 "parameters": [
                     {
@@ -2530,7 +2734,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R10004 实名认证结果",
+                "summary": "R1004 实名认证结果",
                 "operationId": "RiderAuthResult",
                 "parameters": [
                     {
@@ -2569,7 +2773,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R30001 电压型号",
+                "summary": "R3001 电压型号",
                 "operationId": "RiderBatteryListVoltage",
                 "parameters": [
                     {
@@ -2604,7 +2808,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R20001 列举网点",
+                "summary": "R2001 列举网点",
                 "operationId": "RiderBranchList",
                 "parameters": [
                     {
@@ -2665,7 +2869,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R20002 网点骑行规划时间",
+                "summary": "R2002 网点骑行规划时间",
                 "operationId": "RiderBranchRiding",
                 "parameters": [
                     {
@@ -2709,7 +2913,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R40002 操作换电",
+                "summary": "R4002 操作换电",
                 "operationId": "RiderCabinetProcess",
                 "parameters": [
                     {
@@ -2750,7 +2954,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R40003 换电状态",
+                "summary": "R4003 换电状态",
                 "operationId": "RiderCabinetProcessStatus",
                 "parameters": [
                     {
@@ -2788,7 +2992,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R40001 获取换电信息",
+                "summary": "R4001 获取换电信息",
                 "operationId": "RiderCabinetGetProcess",
                 "parameters": [
                     {
@@ -2827,7 +3031,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R40004 电柜故障上报",
+                "summary": "R4004 电柜故障上报",
                 "operationId": "CabinetReport",
                 "parameters": [
                     {
@@ -2868,7 +3072,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R20003 获取已开通城市",
+                "summary": "R2003 获取已开通城市",
                 "operationId": "RiderCityList",
                 "parameters": [
                     {
@@ -2903,7 +3107,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R10002 添加紧急联系人",
+                "summary": "R1002 添加紧急联系人",
                 "operationId": "RiderContact",
                 "parameters": [
                     {
@@ -2944,7 +3148,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R30005 签署合同",
+                "summary": "R3005 签署合同",
                 "operationId": "RiderContractSign",
                 "parameters": [
                     {
@@ -2985,7 +3189,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R30012 企业骑手订阅激活状态",
+                "summary": "R3012 企业骑手订阅激活状态",
                 "operationId": "RiderEnterpriseSubscribeStatus",
                 "parameters": [
                     {
@@ -3022,7 +3226,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R30011 企业骑手选择电池",
+                "summary": "R3011 企业骑手选择电池",
                 "operationId": "RiderEnterpriseSubscribe",
                 "parameters": [
                     {
@@ -3063,7 +3267,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R30010 企业骑手获取可用电池",
+                "summary": "R3010 企业骑手获取可用电池",
                 "operationId": "RiderEnterpriseListVoltage",
                 "parameters": [
                     {
@@ -3105,7 +3309,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R40007 换电记录",
+                "summary": "R4007 换电记录",
                 "operationId": "RiderExchangeLog",
                 "parameters": [
                     {
@@ -3137,7 +3341,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R40006 换电概览",
+                "summary": "R4006 换电概览",
                 "operationId": "RiderExchangeOverview",
                 "parameters": [
                     {
@@ -3169,7 +3373,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R40005 门店换电",
+                "summary": "R4005 门店换电",
                 "operationId": "RiderExchangeStore",
                 "parameters": [
                     {
@@ -3210,7 +3414,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R10005 获取人脸校验结果",
+                "summary": "R1005 获取人脸校验结果",
                 "operationId": "RiderFaceResult",
                 "parameters": [
                     {
@@ -3249,7 +3453,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R30008 骑士卡购买历史",
+                "summary": "R3008 骑士卡购买历史",
                 "operationId": "RiderOrderList",
                 "parameters": [
                     {
@@ -3306,7 +3510,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R30006 支付请求",
+                "summary": "R3006 支付请求",
                 "operationId": "RiderOrderCreate",
                 "parameters": [
                     {
@@ -3347,7 +3551,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R30007 申请退款",
+                "summary": "R3007 申请退款",
                 "operationId": "RiderOrderRefund",
                 "parameters": [
                     {
@@ -3388,7 +3592,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R30009 订单详情",
+                "summary": "R3009 订单详情",
                 "operationId": "RiderOrderDetail",
                 "parameters": [
                     {
@@ -3427,7 +3631,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R30002 获取骑士卡",
+                "summary": "R3002 获取骑士卡",
                 "operationId": "RiderPlanList",
                 "parameters": [
                     {
@@ -3476,7 +3680,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R10006 获取个人信息",
+                "summary": "R1006 获取个人信息",
                 "operationId": "RiderRiderProfile",
                 "parameters": [
                     {
@@ -3508,7 +3712,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R10001 登录或注册",
+                "summary": "R1001 登录或注册",
                 "operationId": "RiderSignin",
                 "parameters": [
                     {
@@ -4452,6 +4656,72 @@ const docTemplate = `{
                 "phone": {
                     "description": "店员电话",
                     "type": "string"
+                }
+            }
+        },
+        "model.EmployeeCreateReq": {
+            "type": "object",
+            "required": [
+                "cityId",
+                "name",
+                "phone"
+            ],
+            "properties": {
+                "cityId": {
+                    "description": "城市ID ",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名 ",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号 ",
+                    "type": "string"
+                }
+            }
+        },
+        "model.EmployeeListRes": {
+            "type": "object",
+            "properties": {
+                "assistanceMiles": {
+                    "description": "救援里程(米)",
+                    "type": "number"
+                },
+                "assistanceTimes": {
+                    "description": "救援次数",
+                    "type": "integer"
+                },
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "exchangeTimes": {
+                    "description": "换电次数",
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "store": {
+                    "description": "当前上班门店, 字段为空的时候是休息状态",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Store"
+                        }
+                    ]
                 }
             }
         },
@@ -5777,6 +6047,18 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Store": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "门店名称",
+                    "type": "string"
+                }
+            }
+        },
         "model.StoreCreateReq": {
             "type": "object",
             "required": [
@@ -6012,7 +6294,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "极光出行API",
-	Description:      "### 说明\n接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。\n<br>\n接口返回说明查看 **[返回](#返回)**\n<br>\n图片/附件前缀 `https://cdn.auroraride.com/`\n\n### 调试工具\n- [paw](/docs/api.paw)\n\n### 认证\n项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`\n|  header   |  类型  |  接口  |\n| :-----: | :----: | :--: |\n|  X-Rider-Token   |  string   |  骑手API  |\n| X-Manager-Token | string |  后台API  |\n|  X-Employee-Token   | string |  员工API  |\n\n### 返回\n一个标准的返回应包含以下结构\n\n|  字段   |  类型  |  必填  |  说明  |\n| :-----: | :----: | :--: | :--: |\n|  code   |  int   |  是  |  返回代码  |\n| message | string |  是  |  返回消息  |\n|  data   | object |  是  |  返回数据  |\n\n`code`代码取值说明\n\n| 十进制 | 十六进制 | 说明 |\n| :----: | :------: | :--: |\n| 0  |  0x000  | 请求成功 |\n| 256 |  0x100  | 请求失败 |\n| 512 |  0x200  | *需要认证(跳转登录) |\n| 768 |  0x300  | *用户被封禁 |\n| 1024 |  0x400  | 资源未获 |\n| 1280 |  0x500  | 未知错误 |\n| 1536 |  0x600  | *需要实名 |\n| 1792 |  0x700  | *需要验证 (更换设备, 需要人脸验证) |\n| 2048 |  0x800  | *需要联系人 |\n| 2304 |  0x900  | 请求过期 |\n\n> 当返回值是`1792(0x700)需要人脸验证`或`1536(0x600)需要实名`的时候`data`返回值为`{\"url\": \"string\"}`, 直接跳转url\n\n\n比如：\n> 默认成功返回\n```json\n{\n  \"code\": 0,\n  \"message\": \"OK\",\n  \"data\": {\n    \"status\": true\n  }\n}\n```",
+	Description:      "### 说明\n接口采用非标准Restful API，所有http返回代码均为`200`，当返回为非`200`时应为network错误，需要及时排查。\n<br>\n接口返回说明查看 **[返回](#返回)**\n<br>\n图片/附件前缀 `https://cdn.auroraride.com/`\n\n<br />\n\n<br />\n\n### 接口编号\n\n第一位代表接口端分类\n\n- M 管理端\n- R 骑手端\n- E 门店端\n- C 通用\n\n第二位代表子分类（36进制）\n\n后三位代表子编号（10进制）\n\n<br />\n\n<br />\n\n### 调试工具\n- [paw](/docs/api.paw)\n\n<br />\n\n<br />\n\n### 认证\n项目接口使用简单认证，认证方式为`header`中添加对应的认证`token`\n|  header   |  类型  |  接口  |\n| :-----: | :----: | :--: |\n|  X-Rider-Token   |  string   |  骑手API  |\n| X-Manager-Token | string |  后台API  |\n|  X-Employee-Token   | string |  员工API  |\n\n<br />\n\n<br />\n\n### 返回\n\n一个标准的返回应包含以下结构\n\n|  字段   |  类型  |  必填  |  说明  |\n| :-----: | :----: | :--: | :--: |\n|  code   |  int   |  是  |  返回代码  |\n| message | string |  是  |  返回消息  |\n|  data   | object |  是  |  返回数据  |\n\n`code`代码取值说明\n\n| 十进制 | 十六进制 | 说明 |\n| :----: | :------: | :--: |\n| 0  |  0x000  | 请求成功 |\n| 256 |  0x100  | 请求失败 |\n| 512 |  0x200  | *需要认证(跳转登录) |\n| 768 |  0x300  | *用户被封禁 |\n| 1024 |  0x400  | 资源未获 |\n| 1280 |  0x500  | 未知错误 |\n| 1536 |  0x600  | *需要实名 |\n| 1792 |  0x700  | *需要验证 (更换设备, 需要人脸验证) |\n| 2048 |  0x800  | *需要联系人 |\n| 2304 |  0x900  | 请求过期 |\n\n> 当返回值是`1792(0x700)需要人脸验证`或`1536(0x600)需要实名`的时候`data`返回值为`{\"url\": \"string\"}`, 直接跳转url\n\n\n比如：\n> 默认成功返回\n```json\n{\n  \"code\": 0,\n  \"message\": \"OK\",\n  \"data\": {\n    \"status\": true\n  }\n}\n```",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

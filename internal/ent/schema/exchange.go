@@ -49,8 +49,8 @@ func (Exchange) Mixin() []ent.Mixin {
         internal.Modifier{},
 
         CityMixin{},
-        EmployeeMixin{},
-        StoreMixin{},
+        EmployeeMixin{Optional: true},
+        StoreMixin{Optional: true},
     }
 }
 

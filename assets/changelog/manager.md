@@ -1,13 +1,32 @@
+## 2022-06-08
+
+#### 接口调整
+
+- 接口编号调整
+
+
+
+#### 接口新增
+
+- [MA010 新增店员](http://localhost:5533/docs#tag/M/operation/ManagerEmployeeCreate)
+- [MA011 修改店员](http://localhost:5533/docs#tag/M/operation/ManagerEmployeeModify)
+- [MA012 列举店员](http://localhost:5533/docs#tag/M/operation/ManagerEmployeeList)
+- [MA013 删除店员](http://localhost:5533/docs#tag/M/operation/ManagerEmployeeDelete)
+
+
+
+<br />
+
 ## 2022-06-07
 
 #### 接口新增
 
-- [M90004 企业详情](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseDetail)
-- [M90006 创建站点](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseCreateStation)
-- [M90007 编辑站点](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseModifyStation)
-- [M90008 列举站点](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseListStation)
-- [M90009 添加骑手](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseCreateRider)
-- [M90010 列举骑手](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseListRider)
+- [M9004 企业详情](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseDetail)
+- [M9006 创建站点](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseCreateStation)
+- [M9007 编辑站点](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseModifyStation)
+- [M9008 列举站点](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseListStation)
+- [M9009 添加骑手](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseCreateRider)
+- [M9010 列举骑手](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseListRider)
 
 
 
@@ -17,8 +36,8 @@
 
 #### 接口新增
 
-- [M90003 列举企业](/docs#tag/M/operation/ManagerEnterpriseList)
-- [M90005 企业预付费](/docs#tag/M/operation/ManagerEnterprisePrepayment)
+- [M9003 列举企业](/docs#tag/M/operation/ManagerEnterpriseList)
+- [M9005 企业预付费](/docs#tag/M/operation/ManagerEnterprisePrepayment)
 
 
 
@@ -36,8 +55,8 @@
 
 #### 接口新增
 
-- [M90001 创建企业](/docs#tag/M/operation/ManagerEnterpriseCreate)
-- [M90002 更新企业](/docs#tag/M/operation/ManagerEnterpriseModify)
+- [M9001 创建企业](/docs#tag/M/operation/ManagerEnterpriseCreate)
+- [M9002 更新企业](/docs#tag/M/operation/ManagerEnterpriseModify)
 
 
 
@@ -47,13 +66,13 @@
 
 #### 接口调整
 
-- [M70001 列举骑手](/docs#tag/M/operation/RiderList) 新增字段 `address`(户籍地址)
+- [M7001 列举骑手](/docs#tag/M/operation/RiderList) 新增字段 `address`(户籍地址)
 
 
 
 #### 接口新增
 
-- [M80001 订单列表](/docs#tag/M/operation/ManagerOrderList)
+- [M8001 订单列表](/docs#tag/M/operation/ManagerOrderList)
 
 
 
@@ -63,8 +82,8 @@
 
 #### 接口新增
 
-- [M70004 修改订阅时间](/docs#tag/M/operation/ManagerSubscribeAlter)
-- [M70005 查看骑手操作日志](/docs#tag/M/operation/ManagerRiderLog)
+- [M7004 修改订阅时间](/docs#tag/M/operation/ManagerSubscribeAlter)
+- [M7005 查看骑手操作日志](/docs#tag/M/operation/ManagerRiderLog)
 
 
 
@@ -76,5 +95,5 @@
 - 骑手状态 `status` 
 - 认证状态 `authStatus`
 
-详细见接口文档 [M70001列举骑手](/docs#tag/M/operation/RiderList)解释，筛选亦如是。
+详细见接口文档 [M7001列举骑手](/docs#tag/M/operation/RiderList)解释，筛选亦如是。
 

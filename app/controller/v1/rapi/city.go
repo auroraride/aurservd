@@ -18,7 +18,7 @@ var City = new(city)
 // List
 // @ID           RiderCityList
 // @Router       /rider/v1/city [GET]
-// @Summary      R20003 获取已开通城市
+// @Summary      R2003 获取已开通城市
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json

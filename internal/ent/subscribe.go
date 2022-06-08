@@ -45,7 +45,7 @@ type Subscribe struct {
 	// 骑士卡ID
 	PlanID uint64 `json:"plan_id,omitempty"`
 	// EmployeeID holds the value of the "employee_id" field.
-	// 操作店员ID
+	// 店员ID
 	EmployeeID uint64 `json:"employee_id,omitempty"`
 	// CityID holds the value of the "city_id" field.
 	// 城市ID

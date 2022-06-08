@@ -23,7 +23,7 @@ var (
 // Signin
 // @ID           ManagerSignin
 // @Router       /manager/v1/user/signin [POST]
-// @Summary      M10001 用户登录
+// @Summary      M1001 用户登录
 // @Description  管理员登录
 // @Tags         [M]管理接口
 // @Accept       json
@@ -41,7 +41,7 @@ func (*manager) Signin(c echo.Context) (err error) {
 // Create
 // @ID           ManagerCreate
 // @Router       /manager/v1/user [POST]
-// @Summary      M10002 新增管理员
+// @Summary      M1002 新增管理员
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json

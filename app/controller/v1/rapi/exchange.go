@@ -19,7 +19,7 @@ var Exchange = new(exchange)
 // Store
 // @ID           RiderExchangeStore
 // @Router       /rider/v1/exchange/store [POST]
-// @Summary      R40005 门店换电
+// @Summary      R4005 门店换电
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
@@ -34,7 +34,7 @@ func (*exchange) Store(c echo.Context) (err error) {
 // Overview
 // @ID           RiderExchangeOverview
 // @Router       /rider/v1/exchange/overview [GET]
-// @Summary      R40006 换电概览
+// @Summary      R4006 换电概览
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
@@ -48,7 +48,7 @@ func (*exchange) Overview(c echo.Context) (err error) {
 // Log
 // @ID           RiderExchangeLog
 // @Router       /rider/v1/exchange/log [GET]
-// @Summary      R40007 换电记录
+// @Summary      R4007 换电记录
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
