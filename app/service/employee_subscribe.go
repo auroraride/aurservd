@@ -60,15 +60,18 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
         Where(
             subscribe.ID(id),
             subscribe.RefundAtIsNil(),
-            subscribe.TypeIn(model.OrderTypeNewly, model.OrderTypeAgain),
             subscribe.StartAtIsNil(),
+            subscribe.Or(
+                subscribe.Type(0),
+                subscribe.TypeIn(model.OrderTypeNewly, model.OrderTypeAgain),
+            ),
         ).
         WithInitialOrder().
         Only(s.ctx)
     if sub == nil {
         snag.Panic("未找到骑士卡")
     }
-    if sub.Edges.InitialOrder.Status == model.OrderStatusRefundPending {
+    if sub.EnterpriseID == nil && sub.Edges.InitialOrder.Status == model.OrderStatusRefundPending {
         snag.Panic("骑士卡已申请退款")
     }
     sub.Update().
