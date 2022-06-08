@@ -61,3 +61,7 @@ type EmployeeProfile struct {
     Phone  string `json:"phone"`  // 电话
     Name   string `json:"name"`   // 姓名
 }
+
+type EmployeeQrcodeRes struct {
+    Qrcode string `json:"qrcode"`
+}

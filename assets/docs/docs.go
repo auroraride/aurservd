@@ -112,6 +112,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/employee/v1/qrcode": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E1002 更换二维码",
+                "operationId": "ManagerEmployeeQrcode",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.EmployeeQrcodeRes"
+                        }
+                    }
+                }
+            }
+        },
         "/employee/v1/signin": {
             "post": {
                 "consumes": [
@@ -4786,6 +4818,14 @@ const docTemplate = `{
                 },
                 "token": {
                     "description": "认证token",
+                    "type": "string"
+                }
+            }
+        },
+        "model.EmployeeQrcodeRes": {
+            "type": "object",
+            "properties": {
+                "qrcode": {
                     "type": "string"
                 }
             }

@@ -31,8 +31,16 @@ func (*employee) Signin(c echo.Context) (err error) {
     return ctx.SendResponse(service.NewEmployee().Signin(req))
 }
 
+// Qrcode
+// @ID           ManagerEmployeeQrcode
+// @Router       /employee/v1/qrcode [GET]
+// @Summary      E1002 更换二维码
+// @Tags         [E]店员接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Employee-Token  header  string  true  "管理员校验token"
+// @Success      200  {object}  model.EmployeeQrcodeRes  "请求成功"
 func (*employee) Qrcode(c echo.Context) (err error) {
     ctx := app.ContextX[app.EmployeeContext](c)
-
-    return ctx.SendResponse()
+    return ctx.SendResponse(service.NewEmployeeWithEmployee(ctx.Employee).RefreshQrcode())
 }

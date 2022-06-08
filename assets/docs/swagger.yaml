@@ -717,6 +717,11 @@ definitions:
         description: 认证token
         type: string
     type: object
+  model.EmployeeQrcodeRes:
+    properties:
+      qrcode:
+        type: string
+    type: object
   model.EmployeeSignReq:
     properties:
       phone:
@@ -1982,6 +1987,27 @@ paths:
       summary: C3.获取阿里云oss临时凭证
       tags:
       - '[C]公共接口'
+  /employee/v1/qrcode:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerEmployeeQrcode
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.EmployeeQrcodeRes'
+      summary: E1002 更换二维码
+      tags:
+      - '[E]店员接口'
   /employee/v1/signin:
     post:
       consumes:

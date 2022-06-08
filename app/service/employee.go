@@ -206,5 +206,8 @@ func (s *employeeService) Signin(req *model.EmployeeSignReq) model.EmployeeProfi
     }
 }
 
-func (s *employeeService) RefreshQrcode() {
+// RefreshQrcode 重新生成二维码
+func (s *employeeService) RefreshQrcode() model.EmployeeQrcodeRes {
+    e := s.employee.Update().SetSn(uuid.New()).SaveX(s.ctx)
+    return model.EmployeeQrcodeRes{Qrcode: fmt.Sprintf("EMPLOYEE:%s", e.Sn)}
 }
