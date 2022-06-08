@@ -74,6 +74,9 @@ func Run() {
         app.HeaderManagerToken,
         app.HeaderEmployeeToken,
     }...)
+    corsConfig.ExposeHeaders = append(corsConfig.ExposeHeaders, []string{
+        app.HeaderCaptchaID,
+    }...)
     // 加载全局中间件
     root.Use(
         // AppContext
