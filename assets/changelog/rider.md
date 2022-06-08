@@ -6,6 +6,14 @@
 
 
 
+#### 接口调整
+
+- 骑手登录或资料新增字段
+  - `phone`电话
+  - `name`骑手姓名，仅骑手认证后才会有
+
+
+
 #### 接口新增
 
 - [R30010 企业骑手获取可用电池](http://localhost:5533/docs#tag/R/operation/RiderEnterpriseListVoltage)

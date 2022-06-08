@@ -532,6 +532,7 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string)
     sub := NewSubscribe().Recent(u.ID)
     profile := &model.RiderSigninRes{
         ID:              u.ID,
+        Phone:           u.Phone,
         IsNewDevice:     s.IsNewDevice(u, device),
         IsContactFilled: u.Contact != nil,
         IsAuthed:        s.IsAuthed(u),
@@ -539,6 +540,9 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string)
         Qrcode:          fmt.Sprintf("https://rider.auroraride.com/%d", u.ID),
         Token:           token,
         Subscribe:       sub,
+    }
+    if u.Edges.Person != nil {
+        profile.Name = u.Edges.Person.Name
     }
     if u.Edges.Enterprise != nil {
         profile.Enterprise = &model.EnterpriseBasic{

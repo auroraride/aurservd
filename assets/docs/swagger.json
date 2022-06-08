@@ -5636,9 +5636,17 @@
                     "description": "是否新设备",
                     "type": "boolean"
                 },
+                "name": {
+                    "description": "姓名, 实名认证后才会有",
+                    "type": "string"
+                },
                 "orderNotActived": {
                     "description": "是否存在未激活订单",
                     "type": "boolean"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
                 },
                 "qrcode": {
                     "description": "二维码",

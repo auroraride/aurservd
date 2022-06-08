@@ -35,6 +35,8 @@ type RiderSignupReq struct {
 // RiderSigninRes 骑手登录数据返回
 type RiderSigninRes struct {
     ID              uint64           `json:"id"`
+    Phone           string           `json:"phone"`                     // 电话
+    Name            string           `json:"name"`                      // 姓名, 实名认证后才会有
     Token           string           `json:"token,omitempty"`           // 认证token
     IsNewDevice     bool             `json:"isNewDevice"`               // 是否新设备
     IsAuthed        bool             `json:"isAuthed"`                  // 是否已认证
