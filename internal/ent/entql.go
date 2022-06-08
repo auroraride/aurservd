@@ -271,6 +271,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			employee.FieldLastModifier: {Type: field.TypeJSON, Column: employee.FieldLastModifier},
 			employee.FieldRemark:       {Type: field.TypeString, Column: employee.FieldRemark},
 			employee.FieldCityID:       {Type: field.TypeUint64, Column: employee.FieldCityID},
+			employee.FieldSn:           {Type: field.TypeUUID, Column: employee.FieldSn},
 			employee.FieldName:         {Type: field.TypeString, Column: employee.FieldName},
 			employee.FieldPhone:        {Type: field.TypeString, Column: employee.FieldPhone},
 		},
@@ -2958,6 +2959,11 @@ func (f *EmployeeFilter) WhereRemark(p entql.StringP) {
 // WhereCityID applies the entql uint64 predicate on the city_id field.
 func (f *EmployeeFilter) WhereCityID(p entql.Uint64P) {
 	f.Where(p.Field(employee.FieldCityID))
+}
+
+// WhereSn applies the entql [16]byte predicate on the sn field.
+func (f *EmployeeFilter) WhereSn(p entql.ValueP) {
+	f.Where(p.Field(employee.FieldSn))
 }
 
 // WhereName applies the entql string predicate on the name field.

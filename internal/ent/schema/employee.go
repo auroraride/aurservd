@@ -10,6 +10,7 @@ import (
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/internal/ent/internal"
+    "github.com/google/uuid"
 )
 
 type EmployeeMixin struct {
@@ -48,6 +49,7 @@ func (Employee) Annotations() []schema.Annotation {
 // Fields of the Employee.
 func (Employee) Fields() []ent.Field {
     return []ent.Field{
+        field.UUID("sn", uuid.New()).Optional().Unique(),
         field.String("name").Comment("姓名"),
         field.String("phone").Comment("电话"),
     }

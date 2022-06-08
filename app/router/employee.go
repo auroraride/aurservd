@@ -5,10 +5,16 @@
 
 package router
 
-import "github.com/auroraride/aurservd/app/controller/v1/eapi"
+import (
+    "github.com/auroraride/aurservd/app/controller/v1/eapi"
+    "github.com/auroraride/aurservd/app/middleware"
+)
 
 func loadEmployeeRoutes() {
     g := root.Group("employee/v1")
+
+    g.Use(middleware.EmployeeMiddleware())
+    g.POST("/signin", eapi.Employee.Signin)
 
     g.POST("/subscribe/active", eapi.Subscribe.Active)
 }

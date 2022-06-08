@@ -21,6 +21,6 @@ const (
     HeaderRiderToken = "X-Rider-Token"
     // HeaderManagerToken 后台token
     HeaderManagerToken = "X-Manager-Token"
-    // HeaderEmployeeToken 员工token
+    // HeaderEmployeeToken 店员token
     HeaderEmployeeToken = "X-Employee-Token"
 )

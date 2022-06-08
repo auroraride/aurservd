@@ -22,7 +22,7 @@ type exchangeService struct {
     ctx      context.Context
     modifier *model.Modifier
     rider    *ent.Rider
-    employee *model.Employee
+    employee *ent.Employee
     orm      *ent.ExchangeClient
 }
 
@@ -47,7 +47,7 @@ func NewExchangeWithModifier(m *model.Modifier) *exchangeService {
     return s
 }
 
-func NewExchangeWithEmployee(e *model.Employee) *exchangeService {
+func NewExchangeWithEmployee(e *ent.Employee) *exchangeService {
     s := NewExchange()
     s.ctx = context.WithValue(s.ctx, "employee", e)
     s.employee = e

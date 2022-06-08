@@ -13,6 +13,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/google/uuid"
 )
 
 // Employee is the model entity for the Employee schema.
@@ -38,6 +39,8 @@ type Employee struct {
 	// CityID holds the value of the "city_id" field.
 	// 城市ID
 	CityID uint64 `json:"city_id,omitempty"`
+	// Sn holds the value of the "sn" field.
+	Sn uuid.UUID `json:"sn,omitempty"`
 	// Name holds the value of the "name" field.
 	// 姓名
 	Name string `json:"name,omitempty"`
@@ -101,6 +104,8 @@ func (*Employee) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullString)
 		case employee.FieldCreatedAt, employee.FieldUpdatedAt, employee.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
+		case employee.FieldSn:
+			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Employee", columns[i])
 		}
@@ -169,6 +174,12 @@ func (e *Employee) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				e.CityID = uint64(value.Int64)
 			}
+		case employee.FieldSn:
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field sn", values[i])
+			} else if value != nil {
+				e.Sn = *value
+			}
 		case employee.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -235,6 +246,8 @@ func (e *Employee) String() string {
 	builder.WriteString(e.Remark)
 	builder.WriteString(", city_id=")
 	builder.WriteString(fmt.Sprintf("%v", e.CityID))
+	builder.WriteString(", sn=")
+	builder.WriteString(fmt.Sprintf("%v", e.Sn))
 	builder.WriteString(", name=")
 	builder.WriteString(e.Name)
 	builder.WriteString(", phone=")

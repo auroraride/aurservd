@@ -158,7 +158,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
     price := plan.Price
     // DEBUG 模式支付一分钱
     mode := ar.Config.App.Mode
-    if mode == "debug" {
+    if mode == "debug" || mode == "next" {
         price = 0.01
         if deposit > 0 {
             deposit = 0.01

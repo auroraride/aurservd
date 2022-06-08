@@ -20,19 +20,14 @@ var Subscribe = new(subscribe)
 // @ID           RiderOrderActive
 // @Router       /employee/v1/subscribe/active [POST]
 // @Summary      E2001 激活骑士卡
-// @Tags         [E]门店接口
+// @Tags         [E]店员接口
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
 // @Param        body  body  model.QRPostReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Active(c echo.Context) (err error) {
-    ctx, req := app.ContextBinding[model.QRPostReq](c)
-    // TODO 真实employee
-    service.NewEmployeeSubscribeWithEmployee(&model.Employee{
-        ID:    1,
-        Name:  "超级店员",
-        Phone: "18888888888",
-    }).Active(req)
+    ctx, req := app.EmployeeContextAndBinding[model.QRPostReq](c)
+    service.NewEmployeeSubscribeWithEmployee(ctx.Employee).Active(req)
     return ctx.SendResponse()
 }

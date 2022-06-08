@@ -451,6 +451,7 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "sn", Type: field.TypeUUID, Unique: true, Nullable: true},
 		{Name: "name", Type: field.TypeString, Comment: "姓名"},
 		{Name: "phone", Type: field.TypeString, Comment: "电话"},
 		{Name: "city_id", Type: field.TypeUint64},
@@ -463,7 +464,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "employee_city_city",
-				Columns:    []*schema.Column{EmployeeColumns[9]},
+				Columns:    []*schema.Column{EmployeeColumns[10]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -482,7 +483,7 @@ var (
 			{
 				Name:    "employee_name",
 				Unique:  false,
-				Columns: []*schema.Column{EmployeeColumns[7]},
+				Columns: []*schema.Column{EmployeeColumns[8]},
 				Annotation: &entsql.IndexAnnotation{
 					Types: map[string]string{
 						"postgres": "GIN",
@@ -492,7 +493,7 @@ var (
 			{
 				Name:    "employee_phone",
 				Unique:  false,
-				Columns: []*schema.Column{EmployeeColumns[8]},
+				Columns: []*schema.Column{EmployeeColumns[9]},
 				Annotation: &entsql.IndexAnnotation{
 					Types: map[string]string{
 						"postgres": "GIN",

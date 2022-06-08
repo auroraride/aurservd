@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/google/uuid"
 )
 
 // EmployeeCreate is the builder for creating a Employee entity.
@@ -96,6 +97,20 @@ func (ec *EmployeeCreate) SetNillableRemark(s *string) *EmployeeCreate {
 // SetCityID sets the "city_id" field.
 func (ec *EmployeeCreate) SetCityID(u uint64) *EmployeeCreate {
 	ec.mutation.SetCityID(u)
+	return ec
+}
+
+// SetSn sets the "sn" field.
+func (ec *EmployeeCreate) SetSn(u uuid.UUID) *EmployeeCreate {
+	ec.mutation.SetSn(u)
+	return ec
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (ec *EmployeeCreate) SetNillableSn(u *uuid.UUID) *EmployeeCreate {
+	if u != nil {
+		ec.SetSn(*u)
+	}
 	return ec
 }
 
@@ -327,6 +342,14 @@ func (ec *EmployeeCreate) createSpec() (*Employee, *sqlgraph.CreateSpec) {
 		})
 		_node.Remark = value
 	}
+	if value, ok := ec.mutation.Sn(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: employee.FieldSn,
+		})
+		_node.Sn = value
+	}
 	if value, ok := ec.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -544,6 +567,24 @@ func (u *EmployeeUpsert) UpdateCityID() *EmployeeUpsert {
 	return u
 }
 
+// SetSn sets the "sn" field.
+func (u *EmployeeUpsert) SetSn(v uuid.UUID) *EmployeeUpsert {
+	u.Set(employee.FieldSn, v)
+	return u
+}
+
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *EmployeeUpsert) UpdateSn() *EmployeeUpsert {
+	u.SetExcluded(employee.FieldSn)
+	return u
+}
+
+// ClearSn clears the value of the "sn" field.
+func (u *EmployeeUpsert) ClearSn() *EmployeeUpsert {
+	u.SetNull(employee.FieldSn)
+	return u
+}
+
 // SetName sets the "name" field.
 func (u *EmployeeUpsert) SetName(v string) *EmployeeUpsert {
 	u.Set(employee.FieldName, v)
@@ -741,6 +782,27 @@ func (u *EmployeeUpsertOne) SetCityID(v uint64) *EmployeeUpsertOne {
 func (u *EmployeeUpsertOne) UpdateCityID() *EmployeeUpsertOne {
 	return u.Update(func(s *EmployeeUpsert) {
 		s.UpdateCityID()
+	})
+}
+
+// SetSn sets the "sn" field.
+func (u *EmployeeUpsertOne) SetSn(v uuid.UUID) *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetSn(v)
+	})
+}
+
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *EmployeeUpsertOne) UpdateSn() *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdateSn()
+	})
+}
+
+// ClearSn clears the value of the "sn" field.
+func (u *EmployeeUpsertOne) ClearSn() *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.ClearSn()
 	})
 }
 
@@ -1109,6 +1171,27 @@ func (u *EmployeeUpsertBulk) SetCityID(v uint64) *EmployeeUpsertBulk {
 func (u *EmployeeUpsertBulk) UpdateCityID() *EmployeeUpsertBulk {
 	return u.Update(func(s *EmployeeUpsert) {
 		s.UpdateCityID()
+	})
+}
+
+// SetSn sets the "sn" field.
+func (u *EmployeeUpsertBulk) SetSn(v uuid.UUID) *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetSn(v)
+	})
+}
+
+// UpdateSn sets the "sn" field to the value that was provided on create.
+func (u *EmployeeUpsertBulk) UpdateSn() *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdateSn()
+	})
+}
+
+// ClearSn clears the value of the "sn" field.
+func (u *EmployeeUpsertBulk) ClearSn() *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.ClearSn()
 	})
 }
 

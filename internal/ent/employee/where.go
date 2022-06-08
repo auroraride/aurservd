@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/google/uuid"
 )
 
 // ID filters vertices based on their ID field.
@@ -125,6 +126,13 @@ func Remark(v string) predicate.Employee {
 func CityID(v uint64) predicate.Employee {
 	return predicate.Employee(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldCityID), v))
+	})
+}
+
+// Sn applies equality check predicate on the "sn" field. It's identical to SnEQ.
+func Sn(v uuid.UUID) predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSn), v))
 	})
 }
 
@@ -582,6 +590,96 @@ func CityIDNotIn(vs ...uint64) predicate.Employee {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldCityID), v...))
+	})
+}
+
+// SnEQ applies the EQ predicate on the "sn" field.
+func SnEQ(v uuid.UUID) predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSn), v))
+	})
+}
+
+// SnNEQ applies the NEQ predicate on the "sn" field.
+func SnNEQ(v uuid.UUID) predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldSn), v))
+	})
+}
+
+// SnIn applies the In predicate on the "sn" field.
+func SnIn(vs ...uuid.UUID) predicate.Employee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Employee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldSn), v...))
+	})
+}
+
+// SnNotIn applies the NotIn predicate on the "sn" field.
+func SnNotIn(vs ...uuid.UUID) predicate.Employee {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Employee(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldSn), v...))
+	})
+}
+
+// SnGT applies the GT predicate on the "sn" field.
+func SnGT(v uuid.UUID) predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldSn), v))
+	})
+}
+
+// SnGTE applies the GTE predicate on the "sn" field.
+func SnGTE(v uuid.UUID) predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldSn), v))
+	})
+}
+
+// SnLT applies the LT predicate on the "sn" field.
+func SnLT(v uuid.UUID) predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldSn), v))
+	})
+}
+
+// SnLTE applies the LTE predicate on the "sn" field.
+func SnLTE(v uuid.UUID) predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldSn), v))
+	})
+}
+
+// SnIsNil applies the IsNil predicate on the "sn" field.
+func SnIsNil() predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldSn)))
+	})
+}
+
+// SnNotNil applies the NotNil predicate on the "sn" field.
+func SnNotNil() predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldSn)))
 	})
 }
 

@@ -17,7 +17,7 @@ type enterpriseStatementService struct {
     ctx      context.Context
     modifier *model.Modifier
     rider    *ent.Rider
-    employee *model.Employee
+    employee *ent.Employee
     orm      *ent.EnterpriseStatementClient
 }
 
@@ -42,7 +42,7 @@ func NewEnterpriseStatementWithModifier(m *model.Modifier) *enterpriseStatementS
     return s
 }
 
-func NewEnterpriseStatementWithEmployee(e *model.Employee) *enterpriseStatementService {
+func NewEnterpriseStatementWithEmployee(e *ent.Employee) *enterpriseStatementService {
     s := NewEnterpriseStatement()
     s.ctx = context.WithValue(s.ctx, "employee", e)
     s.employee = e

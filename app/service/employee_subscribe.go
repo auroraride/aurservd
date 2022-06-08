@@ -21,7 +21,7 @@ type employeeSubscribeService struct {
     ctx      context.Context
     modifier *model.Modifier
     rider    *ent.Rider
-    employee *model.Employee
+    employee *ent.Employee
 }
 
 func NewEmployeeSubscribe() *employeeSubscribeService {
@@ -44,7 +44,7 @@ func NewEmployeeSubscribeWithModifier(m *model.Modifier) *employeeSubscribeServi
     return s
 }
 
-func NewEmployeeSubscribeWithEmployee(e *model.Employee) *employeeSubscribeService {
+func NewEmployeeSubscribeWithEmployee(e *ent.Employee) *employeeSubscribeService {
     s := NewEmployeeSubscribe()
     s.ctx = context.WithValue(s.ctx, "employee", e)
     s.employee = e

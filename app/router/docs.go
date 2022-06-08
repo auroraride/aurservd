@@ -71,6 +71,11 @@ func loadDocRoutes() {
         renderChangelog(c, "骑手接口更新日志", assets.ChangelogRider)
         return nil
     })
+
+    g.GET("/changelog/employee", func(c echo.Context) error {
+        renderChangelog(c, "店员接口更新日志", assets.ChangelogEmployee)
+        return nil
+    })
 }
 
 func renderChangelog(c echo.Context, title string, b []byte) {

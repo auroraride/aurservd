@@ -38,6 +38,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
+	"github.com/google/uuid"
 
 	"entgo.io/ent"
 )
@@ -11023,6 +11024,7 @@ type EmployeeMutation struct {
 	creator       **model.Modifier
 	last_modifier **model.Modifier
 	remark        *string
+	sn            *uuid.UUID
 	name          *string
 	phone         *string
 	clearedFields map[string]struct{}
@@ -11437,6 +11439,55 @@ func (m *EmployeeMutation) ResetCityID() {
 	m.city = nil
 }
 
+// SetSn sets the "sn" field.
+func (m *EmployeeMutation) SetSn(u uuid.UUID) {
+	m.sn = &u
+}
+
+// Sn returns the value of the "sn" field in the mutation.
+func (m *EmployeeMutation) Sn() (r uuid.UUID, exists bool) {
+	v := m.sn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSn returns the old "sn" field's value of the Employee entity.
+// If the Employee object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EmployeeMutation) OldSn(ctx context.Context) (v uuid.UUID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSn: %w", err)
+	}
+	return oldValue.Sn, nil
+}
+
+// ClearSn clears the value of the "sn" field.
+func (m *EmployeeMutation) ClearSn() {
+	m.sn = nil
+	m.clearedFields[employee.FieldSn] = struct{}{}
+}
+
+// SnCleared returns if the "sn" field was cleared in this mutation.
+func (m *EmployeeMutation) SnCleared() bool {
+	_, ok := m.clearedFields[employee.FieldSn]
+	return ok
+}
+
+// ResetSn resets all changes to the "sn" field.
+func (m *EmployeeMutation) ResetSn() {
+	m.sn = nil
+	delete(m.clearedFields, employee.FieldSn)
+}
+
 // SetName sets the "name" field.
 func (m *EmployeeMutation) SetName(s string) {
 	m.name = &s
@@ -11593,7 +11644,7 @@ func (m *EmployeeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EmployeeMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, employee.FieldCreatedAt)
 	}
@@ -11614,6 +11665,9 @@ func (m *EmployeeMutation) Fields() []string {
 	}
 	if m.city != nil {
 		fields = append(fields, employee.FieldCityID)
+	}
+	if m.sn != nil {
+		fields = append(fields, employee.FieldSn)
 	}
 	if m.name != nil {
 		fields = append(fields, employee.FieldName)
@@ -11643,6 +11697,8 @@ func (m *EmployeeMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case employee.FieldCityID:
 		return m.CityID()
+	case employee.FieldSn:
+		return m.Sn()
 	case employee.FieldName:
 		return m.Name()
 	case employee.FieldPhone:
@@ -11670,6 +11726,8 @@ func (m *EmployeeMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldRemark(ctx)
 	case employee.FieldCityID:
 		return m.OldCityID(ctx)
+	case employee.FieldSn:
+		return m.OldSn(ctx)
 	case employee.FieldName:
 		return m.OldName(ctx)
 	case employee.FieldPhone:
@@ -11732,6 +11790,13 @@ func (m *EmployeeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCityID(v)
 		return nil
+	case employee.FieldSn:
+		v, ok := value.(uuid.UUID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSn(v)
+		return nil
 	case employee.FieldName:
 		v, ok := value.(string)
 		if !ok {
@@ -11791,6 +11856,9 @@ func (m *EmployeeMutation) ClearedFields() []string {
 	if m.FieldCleared(employee.FieldRemark) {
 		fields = append(fields, employee.FieldRemark)
 	}
+	if m.FieldCleared(employee.FieldSn) {
+		fields = append(fields, employee.FieldSn)
+	}
 	return fields
 }
 
@@ -11816,6 +11884,9 @@ func (m *EmployeeMutation) ClearField(name string) error {
 		return nil
 	case employee.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case employee.FieldSn:
+		m.ClearSn()
 		return nil
 	}
 	return fmt.Errorf("unknown Employee nullable field %s", name)
@@ -11845,6 +11916,9 @@ func (m *EmployeeMutation) ResetField(name string) error {
 		return nil
 	case employee.FieldCityID:
 		m.ResetCityID()
+		return nil
+	case employee.FieldSn:
+		m.ResetSn()
 		return nil
 	case employee.FieldName:
 		m.ResetName()

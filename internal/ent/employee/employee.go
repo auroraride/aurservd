@@ -27,6 +27,8 @@ const (
 	FieldRemark = "remark"
 	// FieldCityID holds the string denoting the city_id field in the database.
 	FieldCityID = "city_id"
+	// FieldSn holds the string denoting the sn field in the database.
+	FieldSn = "sn"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldPhone holds the string denoting the phone field in the database.
@@ -63,6 +65,7 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldCityID,
+	FieldSn,
 	FieldName,
 	FieldPhone,
 }

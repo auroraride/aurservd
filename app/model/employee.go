@@ -47,3 +47,17 @@ type EmployeeListRes struct {
 type EmployeeDeleteReq struct {
     ID uint64 `json:"id" validate:"required" param:"id" trans:"店员ID"`
 }
+
+type EmployeeSignReq struct {
+    Phone   string `json:"phone" validate:"required" trans:"电话"`
+    SmsId   string `json:"smsId" validate:"required" trans:"短信ID"`
+    SmsCode string `json:"smsCode" validate:"required" trans:"短信验证码"`
+}
+
+type EmployeeProfile struct {
+    ID     uint64 `json:"id"`
+    Token  string `json:"token"`  // 认证token
+    Qrcode string `json:"qrcode"` // 二维码, 未上班或外出中二维码失效
+    Phone  string `json:"phone"`  // 电话
+    Name   string `json:"name"`   // 姓名
+}

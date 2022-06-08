@@ -31,6 +31,9 @@ var (
     //go:embed changelog/rider.md
     ChangelogRider []byte
 
+    //go:embed changelog/employee.md
+    ChangelogEmployee []byte
+
     //go:embed octicons.css
     OcticonsCss []byte
 )

@@ -112,6 +112,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/employee/v1/signin": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E1001 登录",
+                "operationId": "ManagerEmployeeSignin",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EmployeeSignReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.EmployeeProfile"
+                        }
+                    }
+                }
+            }
+        },
         "/employee/v1/subscribe/active": {
             "post": {
                 "consumes": [
@@ -121,7 +162,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[E]门店接口"
+                    "[E]店员接口"
                 ],
                 "summary": "E2001 激活骑士卡",
                 "operationId": "RiderOrderActive",
@@ -4722,6 +4763,52 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.Store"
                         }
                     ]
+                }
+            }
+        },
+        "model.EmployeeProfile": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "qrcode": {
+                    "description": "二维码, 未上班或外出中二维码失效",
+                    "type": "string"
+                },
+                "token": {
+                    "description": "认证token",
+                    "type": "string"
+                }
+            }
+        },
+        "model.EmployeeSignReq": {
+            "type": "object",
+            "required": [
+                "phone",
+                "smsCode",
+                "smsId"
+            ],
+            "properties": {
+                "phone": {
+                    "description": "电话 ",
+                    "type": "string"
+                },
+                "smsCode": {
+                    "description": "短信验证码 ",
+                    "type": "string"
+                },
+                "smsId": {
+                    "description": "短信ID ",
+                    "type": "string"
                 }
             }
         },

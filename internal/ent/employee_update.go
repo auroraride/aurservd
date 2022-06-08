@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/google/uuid"
 )
 
 // EmployeeUpdate is the builder for updating Employee entities.
@@ -92,6 +93,26 @@ func (eu *EmployeeUpdate) ClearRemark() *EmployeeUpdate {
 // SetCityID sets the "city_id" field.
 func (eu *EmployeeUpdate) SetCityID(u uint64) *EmployeeUpdate {
 	eu.mutation.SetCityID(u)
+	return eu
+}
+
+// SetSn sets the "sn" field.
+func (eu *EmployeeUpdate) SetSn(u uuid.UUID) *EmployeeUpdate {
+	eu.mutation.SetSn(u)
+	return eu
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (eu *EmployeeUpdate) SetNillableSn(u *uuid.UUID) *EmployeeUpdate {
+	if u != nil {
+		eu.SetSn(*u)
+	}
+	return eu
+}
+
+// ClearSn clears the value of the "sn" field.
+func (eu *EmployeeUpdate) ClearSn() *EmployeeUpdate {
+	eu.mutation.ClearSn()
 	return eu
 }
 
@@ -301,6 +322,19 @@ func (eu *EmployeeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: employee.FieldRemark,
 		})
 	}
+	if value, ok := eu.mutation.Sn(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: employee.FieldSn,
+		})
+	}
+	if eu.mutation.SnCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Column: employee.FieldSn,
+		})
+	}
 	if value, ok := eu.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -465,6 +499,26 @@ func (euo *EmployeeUpdateOne) ClearRemark() *EmployeeUpdateOne {
 // SetCityID sets the "city_id" field.
 func (euo *EmployeeUpdateOne) SetCityID(u uint64) *EmployeeUpdateOne {
 	euo.mutation.SetCityID(u)
+	return euo
+}
+
+// SetSn sets the "sn" field.
+func (euo *EmployeeUpdateOne) SetSn(u uuid.UUID) *EmployeeUpdateOne {
+	euo.mutation.SetSn(u)
+	return euo
+}
+
+// SetNillableSn sets the "sn" field if the given value is not nil.
+func (euo *EmployeeUpdateOne) SetNillableSn(u *uuid.UUID) *EmployeeUpdateOne {
+	if u != nil {
+		euo.SetSn(*u)
+	}
+	return euo
+}
+
+// ClearSn clears the value of the "sn" field.
+func (euo *EmployeeUpdateOne) ClearSn() *EmployeeUpdateOne {
+	euo.mutation.ClearSn()
 	return euo
 }
 
@@ -702,6 +756,19 @@ func (euo *EmployeeUpdateOne) sqlSave(ctx context.Context) (_node *Employee, err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: employee.FieldRemark,
+		})
+	}
+	if value, ok := euo.mutation.Sn(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Value:  value,
+			Column: employee.FieldSn,
+		})
+	}
+	if euo.mutation.SnCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeUUID,
+			Column: employee.FieldSn,
 		})
 	}
 	if value, ok := euo.mutation.Name(); ok {
