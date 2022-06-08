@@ -48,7 +48,7 @@ func (*exchange) Overview(c echo.Context) (err error) {
 // Log
 // @ID           RiderExchangeLog
 // @Router       /rider/v1/exchange/log [GET]
-// @Summary      R40006 换电记录
+// @Summary      R40007 换电记录
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json

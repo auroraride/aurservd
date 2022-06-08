@@ -107,6 +107,14 @@ func (sc *SubscribeCreate) SetPlanID(u uint64) *SubscribeCreate {
 	return sc
 }
 
+// SetNillablePlanID sets the "plan_id" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillablePlanID(u *uint64) *SubscribeCreate {
+	if u != nil {
+		sc.SetPlanID(*u)
+	}
+	return sc
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (sc *SubscribeCreate) SetEmployeeID(u uint64) *SubscribeCreate {
 	sc.mutation.SetEmployeeID(u)
@@ -226,6 +234,14 @@ func (sc *SubscribeCreate) SetVoltage(f float64) *SubscribeCreate {
 // SetInitialDays sets the "initial_days" field.
 func (sc *SubscribeCreate) SetInitialDays(i int) *SubscribeCreate {
 	sc.mutation.SetInitialDays(i)
+	return sc
+}
+
+// SetNillableInitialDays sets the "initial_days" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableInitialDays(i *int) *SubscribeCreate {
+	if i != nil {
+		sc.SetInitialDays(*i)
+	}
 	return sc
 }
 
@@ -572,9 +588,6 @@ func (sc *SubscribeCreate) check() error {
 	if _, ok := sc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Subscribe.updated_at"`)}
 	}
-	if _, ok := sc.mutation.PlanID(); !ok {
-		return &ValidationError{Name: "plan_id", err: errors.New(`ent: missing required field "Subscribe.plan_id"`)}
-	}
 	if _, ok := sc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city_id", err: errors.New(`ent: missing required field "Subscribe.city_id"`)}
 	}
@@ -590,9 +603,6 @@ func (sc *SubscribeCreate) check() error {
 	if _, ok := sc.mutation.Voltage(); !ok {
 		return &ValidationError{Name: "voltage", err: errors.New(`ent: missing required field "Subscribe.voltage"`)}
 	}
-	if _, ok := sc.mutation.InitialDays(); !ok {
-		return &ValidationError{Name: "initial_days", err: errors.New(`ent: missing required field "Subscribe.initial_days"`)}
-	}
 	if _, ok := sc.mutation.AlterDays(); !ok {
 		return &ValidationError{Name: "alter_days", err: errors.New(`ent: missing required field "Subscribe.alter_days"`)}
 	}
@@ -607,9 +617,6 @@ func (sc *SubscribeCreate) check() error {
 	}
 	if _, ok := sc.mutation.Remaining(); !ok {
 		return &ValidationError{Name: "remaining", err: errors.New(`ent: missing required field "Subscribe.remaining"`)}
-	}
-	if _, ok := sc.mutation.PlanID(); !ok {
-		return &ValidationError{Name: "plan", err: errors.New(`ent: missing required edge "Subscribe.plan"`)}
 	}
 	if _, ok := sc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Subscribe.city"`)}
@@ -1176,6 +1183,12 @@ func (u *SubscribeUpsert) UpdatePlanID() *SubscribeUpsert {
 	return u
 }
 
+// ClearPlanID clears the value of the "plan_id" field.
+func (u *SubscribeUpsert) ClearPlanID() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldPlanID)
+	return u
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (u *SubscribeUpsert) SetEmployeeID(v uint64) *SubscribeUpsert {
 	u.Set(subscribe.FieldEmployeeID, v)
@@ -1359,6 +1372,12 @@ func (u *SubscribeUpsert) UpdateInitialDays() *SubscribeUpsert {
 // AddInitialDays adds v to the "initial_days" field.
 func (u *SubscribeUpsert) AddInitialDays(v int) *SubscribeUpsert {
 	u.Add(subscribe.FieldInitialDays, v)
+	return u
+}
+
+// ClearInitialDays clears the value of the "initial_days" field.
+func (u *SubscribeUpsert) ClearInitialDays() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldInitialDays)
 	return u
 }
 
@@ -1703,6 +1722,13 @@ func (u *SubscribeUpsertOne) UpdatePlanID() *SubscribeUpsertOne {
 	})
 }
 
+// ClearPlanID clears the value of the "plan_id" field.
+func (u *SubscribeUpsertOne) ClearPlanID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearPlanID()
+	})
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (u *SubscribeUpsertOne) SetEmployeeID(v uint64) *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
@@ -1917,6 +1943,13 @@ func (u *SubscribeUpsertOne) AddInitialDays(v int) *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) UpdateInitialDays() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdateInitialDays()
+	})
+}
+
+// ClearInitialDays clears the value of the "initial_days" field.
+func (u *SubscribeUpsertOne) ClearInitialDays() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearInitialDays()
 	})
 }
 
@@ -2452,6 +2485,13 @@ func (u *SubscribeUpsertBulk) UpdatePlanID() *SubscribeUpsertBulk {
 	})
 }
 
+// ClearPlanID clears the value of the "plan_id" field.
+func (u *SubscribeUpsertBulk) ClearPlanID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearPlanID()
+	})
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (u *SubscribeUpsertBulk) SetEmployeeID(v uint64) *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
@@ -2666,6 +2706,13 @@ func (u *SubscribeUpsertBulk) AddInitialDays(v int) *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) UpdateInitialDays() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.UpdateInitialDays()
+	})
+}
+
+// ClearInitialDays clears the value of the "initial_days" field.
+func (u *SubscribeUpsertBulk) ClearInitialDays() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearInitialDays()
 	})
 }
 

@@ -75,6 +75,9 @@ func RiderRequireAuthAndContact() echo.MiddlewareFunc {
             // if riderAuthSkipper[url] {
             //     return next(c)
             // }
+            if url == "/rider/v1/profile" {
+                return next(c)
+            }
 
             ctx := c.(*app.RiderContext)
 
@@ -94,10 +97,13 @@ func RiderRequireAuthAndContact() echo.MiddlewareFunc {
 func RiderFaceMiddleware() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
-            // url := c.Request().RequestURI
+            url := c.Request().RequestURI
             // if riderAuthSkipper[url] {
             //     return next(c)
             // }
+            if url == "/rider/v1/profile" {
+                return next(c)
+            }
 
             ctx := c.(*app.RiderContext)
             u := ctx.Rider

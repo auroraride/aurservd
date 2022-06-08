@@ -1,3 +1,15 @@
+## 2022-06-08
+
+#### 接口新增
+
+- [R30010 企业骑手获取可用电池](http://localhost:5533/docs#tag/R/operation/RiderEnterpriseListVoltage)
+- [R30011 企业骑手选择电池](http://localhost:5533/docs#tag/R/operation/RiderEnterpriseSubscribe)
+- [R30012 企业骑手订阅激活状态](http://localhost:5533/docs#tag/R/operation/RiderEnterpriseSubscribeStatus) (长连接轮询，30s轮询一次，返回结果为`TRUE`或出现错误时中断轮询)
+
+
+
+<br />
+
 ## 2022-06-07
 
 #### 接口调整

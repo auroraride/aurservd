@@ -103,6 +103,20 @@ func (su *SubscribeUpdate) SetPlanID(u uint64) *SubscribeUpdate {
 	return su
 }
 
+// SetNillablePlanID sets the "plan_id" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillablePlanID(u *uint64) *SubscribeUpdate {
+	if u != nil {
+		su.SetPlanID(*u)
+	}
+	return su
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (su *SubscribeUpdate) ClearPlanID() *SubscribeUpdate {
+	su.mutation.ClearPlanID()
+	return su
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (su *SubscribeUpdate) SetEmployeeID(u uint64) *SubscribeUpdate {
 	su.mutation.SetEmployeeID(u)
@@ -256,9 +270,23 @@ func (su *SubscribeUpdate) SetInitialDays(i int) *SubscribeUpdate {
 	return su
 }
 
+// SetNillableInitialDays sets the "initial_days" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableInitialDays(i *int) *SubscribeUpdate {
+	if i != nil {
+		su.SetInitialDays(*i)
+	}
+	return su
+}
+
 // AddInitialDays adds i to the "initial_days" field.
 func (su *SubscribeUpdate) AddInitialDays(i int) *SubscribeUpdate {
 	su.mutation.AddInitialDays(i)
+	return su
+}
+
+// ClearInitialDays clears the value of the "initial_days" field.
+func (su *SubscribeUpdate) ClearInitialDays() *SubscribeUpdate {
+	su.mutation.ClearInitialDays()
 	return su
 }
 
@@ -725,9 +753,6 @@ func (su *SubscribeUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (su *SubscribeUpdate) check() error {
-	if _, ok := su.mutation.PlanID(); su.mutation.PlanCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Subscribe.plan"`)
-	}
 	if _, ok := su.mutation.CityID(); su.mutation.CityCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Subscribe.city"`)
 	}
@@ -846,6 +871,12 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Value:  value,
+			Column: subscribe.FieldInitialDays,
+		})
+	}
+	if su.mutation.InitialDaysCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
 			Column: subscribe.FieldInitialDays,
 		})
 	}
@@ -1496,6 +1527,20 @@ func (suo *SubscribeUpdateOne) SetPlanID(u uint64) *SubscribeUpdateOne {
 	return suo
 }
 
+// SetNillablePlanID sets the "plan_id" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillablePlanID(u *uint64) *SubscribeUpdateOne {
+	if u != nil {
+		suo.SetPlanID(*u)
+	}
+	return suo
+}
+
+// ClearPlanID clears the value of the "plan_id" field.
+func (suo *SubscribeUpdateOne) ClearPlanID() *SubscribeUpdateOne {
+	suo.mutation.ClearPlanID()
+	return suo
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (suo *SubscribeUpdateOne) SetEmployeeID(u uint64) *SubscribeUpdateOne {
 	suo.mutation.SetEmployeeID(u)
@@ -1649,9 +1694,23 @@ func (suo *SubscribeUpdateOne) SetInitialDays(i int) *SubscribeUpdateOne {
 	return suo
 }
 
+// SetNillableInitialDays sets the "initial_days" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableInitialDays(i *int) *SubscribeUpdateOne {
+	if i != nil {
+		suo.SetInitialDays(*i)
+	}
+	return suo
+}
+
 // AddInitialDays adds i to the "initial_days" field.
 func (suo *SubscribeUpdateOne) AddInitialDays(i int) *SubscribeUpdateOne {
 	suo.mutation.AddInitialDays(i)
+	return suo
+}
+
+// ClearInitialDays clears the value of the "initial_days" field.
+func (suo *SubscribeUpdateOne) ClearInitialDays() *SubscribeUpdateOne {
+	suo.mutation.ClearInitialDays()
 	return suo
 }
 
@@ -2131,9 +2190,6 @@ func (suo *SubscribeUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (suo *SubscribeUpdateOne) check() error {
-	if _, ok := suo.mutation.PlanID(); suo.mutation.PlanCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Subscribe.plan"`)
-	}
 	if _, ok := suo.mutation.CityID(); suo.mutation.CityCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Subscribe.city"`)
 	}
@@ -2269,6 +2325,12 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Value:  value,
+			Column: subscribe.FieldInitialDays,
+		})
+	}
+	if suo.mutation.InitialDaysCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
 			Column: subscribe.FieldInitialDays,
 		})
 	}

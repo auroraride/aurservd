@@ -2966,6 +2966,126 @@
                 }
             }
         },
+        "/rider/v1/enterprise/subscribe": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R30012 企业骑手订阅激活状态",
+                "operationId": "RiderEnterpriseSubscribeStatus",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "订阅ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "TRUE已激活, FALSE未激活",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R30011 企业骑手选择电池",
+                "operationId": "RiderEnterpriseSubscribe",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterpriseRiderSubscribeChooseReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterpriseRiderSubscribeChooseRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/enterprise/voltage": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R30010 企业骑手获取可用电池",
+                "operationId": "RiderEnterpriseListVoltage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.EnterprisePriceVoltageListRes"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/exchange/log": {
             "get": {
                 "consumes": [
@@ -2977,7 +3097,7 @@
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R40006 换电记录",
+                "summary": "R40007 换电记录",
                 "operationId": "RiderExchangeLog",
                 "parameters": [
                     {
@@ -4568,6 +4688,23 @@
                 }
             }
         },
+        "model.EnterprisePriceVoltageListRes": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "型号ID",
+                    "type": "integer"
+                },
+                "voltage": {
+                    "description": "电压型号, 暂时固定为 60 或 72",
+                    "type": "number",
+                    "enum": [
+                        60,
+                        72
+                    ]
+                }
+            }
+        },
         "model.EnterprisePriceWithCity": {
             "type": "object",
             "properties": {
@@ -4733,6 +4870,27 @@
                 "stationId": {
                     "description": "站点ID ",
                     "type": "integer"
+                }
+            }
+        },
+        "model.EnterpriseRiderSubscribeChooseReq": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "description": "型号ID ",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.EnterpriseRiderSubscribeChooseRes": {
+            "type": "object",
+            "properties": {
+                "qrcode": {
+                    "description": "二维码, 格式为SUBSCRIBE:订阅ID, 后续使用订阅ID请求状态",
+                    "type": "string"
                 }
             }
         },

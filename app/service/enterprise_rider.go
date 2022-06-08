@@ -7,15 +7,18 @@ package service
 
 import (
     "context"
+    "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/enterpriseprice"
     "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
+    log "github.com/sirupsen/logrus"
     "time"
 )
 
@@ -172,4 +175,81 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
             return res
         },
     )
+}
+
+// ListVoltage 列出可用电压型号
+func (s *enterpriseRiderService) ListVoltage(req *model.EnterprisePriceVoltageListReq) []model.EnterprisePriceVoltageListRes {
+    if s.rider.EnterpriseID == nil {
+        snag.Panic("非企业骑手")
+    }
+    items, _ := ar.Ent.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(*s.rider.EnterpriseID), enterpriseprice.CityID(req.CityID)).All(s.ctx)
+    res := make([]model.EnterprisePriceVoltageListRes, len(items))
+    for i, item := range items {
+        res[i] = model.EnterprisePriceVoltageListRes{
+            Voltage: item.Voltage,
+            ID:      item.ID,
+        }
+    }
+    return res
+}
+
+// ChooseVoltage 选择电池
+func (s *enterpriseRiderService) ChooseVoltage(req *model.EnterpriseRiderSubscribeChooseReq) model.EnterpriseRiderSubscribeChooseRes {
+    enterpriseID := s.rider.EnterpriseID
+    if enterpriseID == nil {
+        snag.Panic("非企业骑手")
+    }
+    ep, _ := ar.Ent.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(*enterpriseID)).First(s.ctx)
+    if ep == nil {
+        snag.Panic("未找到电池")
+    }
+    // 判断骑手是否有使用中的电池
+    sub, _ := ar.Ent.Subscribe.QueryNotDeleted().Where(
+        subscribe.EnterpriseID(*s.rider.EnterpriseID),
+    ).Order(ent.Desc(subscribe.FieldCreatedAt)).First(s.ctx)
+    if sub != nil && sub.StartAt != nil {
+        snag.Panic("已被激活, 无法重新选择电池")
+    }
+    var err error
+    if sub == nil {
+        sub, err = ar.Ent.Subscribe.Create().
+            SetEnterpriseID(*s.rider.EnterpriseID).
+            SetStationID(*s.rider.StationID).
+            SetVoltage(ep.Voltage).
+            SetCityID(ep.CityID).
+            SetRiderID(s.rider.ID).
+            Save(s.ctx)
+    } else {
+        sub, err = sub.Update().SetVoltage(ep.Voltage).Save(s.ctx)
+        if err != nil {
+            return model.EnterpriseRiderSubscribeChooseRes{}
+        }
+    }
+    if err != nil {
+        log.Error(err)
+        snag.Panic("型号选择失败")
+    }
+    return model.EnterpriseRiderSubscribeChooseRes{
+        Qrcode: fmt.Sprintf("SUBSCRIBE:%d", sub.ID),
+    }
+}
+
+// SubscribeStatus 骑手激活电池状态
+func (s *enterpriseRiderService) SubscribeStatus(req *model.EnterpriseRiderSubscribeStatusReq) bool {
+    now := time.Now()
+    for {
+        sub, _ := ar.Ent.Subscribe.QueryNotDeleted().Where(
+            subscribe.ID(req.ID),
+        ).First(s.ctx)
+        if sub == nil {
+            snag.Panic("未找到有效订阅")
+        }
+        if sub.StartAt != nil {
+            return true
+        }
+        if time.Now().Sub(now).Seconds() >= 30 {
+            return false
+        }
+        time.Sleep(1 * time.Second)
+    }
 }

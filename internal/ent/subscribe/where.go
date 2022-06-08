@@ -711,6 +711,20 @@ func PlanIDNotIn(vs ...uint64) predicate.Subscribe {
 	})
 }
 
+// PlanIDIsNil applies the IsNil predicate on the "plan_id" field.
+func PlanIDIsNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPlanID)))
+	})
+}
+
+// PlanIDNotNil applies the NotNil predicate on the "plan_id" field.
+func PlanIDNotNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPlanID)))
+	})
+}
+
 // EmployeeIDEQ applies the EQ predicate on the "employee_id" field.
 func EmployeeIDEQ(v uint64) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
@@ -1418,6 +1432,20 @@ func InitialDaysLT(v int) predicate.Subscribe {
 func InitialDaysLTE(v int) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldInitialDays), v))
+	})
+}
+
+// InitialDaysIsNil applies the IsNil predicate on the "initial_days" field.
+func InitialDaysIsNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldInitialDays)))
+	})
+}
+
+// InitialDaysNotNil applies the NotNil predicate on the "initial_days" field.
+func InitialDaysNotNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldInitialDays)))
 	})
 }
 

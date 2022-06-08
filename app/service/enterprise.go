@@ -293,9 +293,6 @@ func (s *enterpriseService) UpdateStatement(item *ent.Enterprise) {
             used = tt.DiffDaysOfStartToNow(*sub.StartAt)
         }
 
-        // 保存骑手费用详细
-        // NewEnterpriseInvoice().Current(sub).Update().SetDays(used)
-
         // 总天数
         days += used
 

@@ -234,6 +234,10 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
         snag.Panic(err)
     }
 
+    // 判断ID是否等于实名认证的ID, 如果不是, 则删除
+    if u.PersonID != nil && *u.PersonID != id {
+        _ = ar.Ent.Person.DeleteOneID(*u.PersonID).Exec(s.ctx)
+    }
     err = ar.Ent.Rider.
         UpdateOneID(u.ID).
         SetPersonID(id).

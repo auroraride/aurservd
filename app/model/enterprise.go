@@ -114,3 +114,24 @@ type EnterpriseStation struct {
 type EnterpriseStationListReq struct {
     EnterpriseID uint64 `json:"enterpriseId" query:"enterpriseId" trans:"企业ID"`
 }
+
+type EnterprisePriceVoltageListReq struct {
+    CityID uint64 `json:"cityId" validate:"required" query:"cityId" trans:"城市ID"`
+}
+
+type EnterprisePriceVoltageListRes struct {
+    ID      uint64  `json:"id"`                    // 型号ID
+    Voltage float64 `json:"voltage" enums:"60,72"` // 电压型号, 暂时固定为 60 或 72
+}
+
+type EnterpriseRiderSubscribeChooseReq struct {
+    ID uint64 `json:"id" validate:"required" trans:"型号ID"`
+}
+
+type EnterpriseRiderSubscribeChooseRes struct {
+    Qrcode string `json:"qrcode"` // 二维码, 格式为SUBSCRIBE:订阅ID, 后续使用订阅ID请求状态
+}
+
+type EnterpriseRiderSubscribeStatusReq struct {
+    ID uint64 `json:"id" validate:"required" query:"id" trans:"订阅ID"`
+}

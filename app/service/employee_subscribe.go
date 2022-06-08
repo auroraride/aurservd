@@ -76,4 +76,7 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
         SetStartAt(time.Now()).
         SetEmployeeID(s.employee.ID).
         SaveX(s.ctx)
+    if sub.EnterpriseID != nil {
+        _, _ = NewEnterpriseStatement().Current(*sub.EnterpriseID).Update().AddRiderNumber(1).Save(s.ctx)
+    }
 }

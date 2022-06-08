@@ -31843,9 +31843,22 @@ func (m *SubscribeMutation) OldPlanID(ctx context.Context) (v uint64, err error)
 	return oldValue.PlanID, nil
 }
 
+// ClearPlanID clears the value of the "plan_id" field.
+func (m *SubscribeMutation) ClearPlanID() {
+	m.plan = nil
+	m.clearedFields[subscribe.FieldPlanID] = struct{}{}
+}
+
+// PlanIDCleared returns if the "plan_id" field was cleared in this mutation.
+func (m *SubscribeMutation) PlanIDCleared() bool {
+	_, ok := m.clearedFields[subscribe.FieldPlanID]
+	return ok
+}
+
 // ResetPlanID resets all changes to the "plan_id" field.
 func (m *SubscribeMutation) ResetPlanID() {
 	m.plan = nil
+	delete(m.clearedFields, subscribe.FieldPlanID)
 }
 
 // SetEmployeeID sets the "employee_id" field.
@@ -32383,10 +32396,24 @@ func (m *SubscribeMutation) AddedInitialDays() (r int, exists bool) {
 	return *v, true
 }
 
+// ClearInitialDays clears the value of the "initial_days" field.
+func (m *SubscribeMutation) ClearInitialDays() {
+	m.initial_days = nil
+	m.addinitial_days = nil
+	m.clearedFields[subscribe.FieldInitialDays] = struct{}{}
+}
+
+// InitialDaysCleared returns if the "initial_days" field was cleared in this mutation.
+func (m *SubscribeMutation) InitialDaysCleared() bool {
+	_, ok := m.clearedFields[subscribe.FieldInitialDays]
+	return ok
+}
+
 // ResetInitialDays resets all changes to the "initial_days" field.
 func (m *SubscribeMutation) ResetInitialDays() {
 	m.initial_days = nil
 	m.addinitial_days = nil
+	delete(m.clearedFields, subscribe.FieldInitialDays)
 }
 
 // SetAlterDays sets the "alter_days" field.
@@ -32872,7 +32899,7 @@ func (m *SubscribeMutation) ClearPlan() {
 
 // PlanCleared reports if the "plan" edge to the Plan entity was cleared.
 func (m *SubscribeMutation) PlanCleared() bool {
-	return m.clearedplan
+	return m.PlanIDCleared() || m.clearedplan
 }
 
 // PlanIDs returns the "plan" edge IDs in the mutation.
@@ -33812,6 +33839,9 @@ func (m *SubscribeMutation) ClearedFields() []string {
 	if m.FieldCleared(subscribe.FieldRemark) {
 		fields = append(fields, subscribe.FieldRemark)
 	}
+	if m.FieldCleared(subscribe.FieldPlanID) {
+		fields = append(fields, subscribe.FieldPlanID)
+	}
 	if m.FieldCleared(subscribe.FieldEmployeeID) {
 		fields = append(fields, subscribe.FieldEmployeeID)
 	}
@@ -33826,6 +33856,9 @@ func (m *SubscribeMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(subscribe.FieldStatementID) {
 		fields = append(fields, subscribe.FieldStatementID)
+	}
+	if m.FieldCleared(subscribe.FieldInitialDays) {
+		fields = append(fields, subscribe.FieldInitialDays)
 	}
 	if m.FieldCleared(subscribe.FieldPausedAt) {
 		fields = append(fields, subscribe.FieldPausedAt)
@@ -33865,6 +33898,9 @@ func (m *SubscribeMutation) ClearField(name string) error {
 	case subscribe.FieldRemark:
 		m.ClearRemark()
 		return nil
+	case subscribe.FieldPlanID:
+		m.ClearPlanID()
+		return nil
 	case subscribe.FieldEmployeeID:
 		m.ClearEmployeeID()
 		return nil
@@ -33879,6 +33915,9 @@ func (m *SubscribeMutation) ClearField(name string) error {
 		return nil
 	case subscribe.FieldStatementID:
 		m.ClearStatementID()
+		return nil
+	case subscribe.FieldInitialDays:
+		m.ClearInitialDays()
 		return nil
 	case subscribe.FieldPausedAt:
 		m.ClearPausedAt()

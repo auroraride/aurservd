@@ -36,7 +36,7 @@ func (Subscribe) Fields() []ent.Field {
         field.Uint("type").Default(0).Immutable().Comment("订阅类型 0团签 1新签 2续签 3重签 4更改电池, 除0值外 其他值参考order.type"),
         field.Float("voltage").Comment("可用电压型号"),
         // field.Int("days").Comment("总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 续费天数 + 已缴纳逾期滞纳金天数"),
-        field.Int("initial_days").Comment("初始骑士卡天数"),
+        field.Int("initial_days").Optional().Comment("初始骑士卡天数"),
         field.Int("alter_days").Default(0).Comment("改动天数"),
         field.Int("pause_days").Default(0).Comment("暂停天数"),
         field.Int("renewal_days").Default(0).Comment("续期天数"),
@@ -70,7 +70,7 @@ func (Subscribe) Mixin() []ent.Mixin {
         internal.DeleteMixin{},
         internal.Modifier{},
 
-        PlanMixin{},
+        PlanMixin{Optional: true},
         EmployeeMixin{},
         CityMixin{},
         StationMixin{Optional: true},

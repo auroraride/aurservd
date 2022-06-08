@@ -58,6 +58,9 @@ func loadRideRoutes() {
     g.POST("/order/refund", rapi.Order.Refund) // 申请退款
     g.GET("/order", rapi.Order.List)
     g.GET("/order/:id", rapi.Order.Detail)
+    g.GET("/enterprise/voltage", rapi.Enterprise.ListVoltage)
+    g.POST("/enterprise/subscribe", rapi.Enterprise.Subscribe)
+    g.GET("/enterprise/subscribe", rapi.Enterprise.SubscribeStatus)
 
     // 电柜
     cabinet := g.Group("/cabinet")

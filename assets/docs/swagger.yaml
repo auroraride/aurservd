@@ -839,6 +839,18 @@ definitions:
     - price
     - voltage
     type: object
+  model.EnterprisePriceVoltageListRes:
+    properties:
+      id:
+        description: 型号ID
+        type: integer
+      voltage:
+        description: 电压型号, 暂时固定为 60 或 72
+        enum:
+        - 60
+        - 72
+        type: number
+    type: object
   model.EnterprisePriceWithCity:
     properties:
       city:
@@ -955,6 +967,20 @@ definitions:
     - name
     - phone
     - stationId
+    type: object
+  model.EnterpriseRiderSubscribeChooseReq:
+    properties:
+      id:
+        description: '型号ID '
+        type: integer
+    required:
+    - id
+    type: object
+  model.EnterpriseRiderSubscribeChooseRes:
+    properties:
+      qrcode:
+        description: 二维码, 格式为SUBSCRIBE:订阅ID, 后续使用订阅ID请求状态
+        type: string
     type: object
   model.EnterpriseStation:
     properties:
@@ -3698,6 +3724,86 @@ paths:
       summary: R30005 签署合同
       tags:
       - '[R]骑手接口'
+  /rider/v1/enterprise/subscribe:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderEnterpriseSubscribeStatus
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 订阅ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: TRUE已激活, FALSE未激活
+          schema:
+            type: boolean
+      summary: R30012 企业骑手订阅激活状态
+      tags:
+      - '[R]骑手接口'
+    post:
+      consumes:
+      - application/json
+      operationId: RiderEnterpriseSubscribe
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnterpriseRiderSubscribeChooseReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.EnterpriseRiderSubscribeChooseRes'
+      summary: R30011 企业骑手选择电池
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/enterprise/voltage:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderEnterpriseListVoltage
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.EnterprisePriceVoltageListRes'
+            type: array
+      summary: R30010 企业骑手获取可用电池
+      tags:
+      - '[R]骑手接口'
   /rider/v1/exchange/log:
     get:
       consumes:
@@ -3716,7 +3822,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: R40006 换电记录
+      summary: R40007 换电记录
       tags:
       - '[R]骑手接口'
   /rider/v1/exchange/overview:
