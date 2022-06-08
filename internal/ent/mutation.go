@@ -11432,22 +11432,9 @@ func (m *EmployeeMutation) OldCityID(ctx context.Context) (v uint64, err error) 
 	return oldValue.CityID, nil
 }
 
-// ClearCityID clears the value of the "city_id" field.
-func (m *EmployeeMutation) ClearCityID() {
-	m.city = nil
-	m.clearedFields[employee.FieldCityID] = struct{}{}
-}
-
-// CityIDCleared returns if the "city_id" field was cleared in this mutation.
-func (m *EmployeeMutation) CityIDCleared() bool {
-	_, ok := m.clearedFields[employee.FieldCityID]
-	return ok
-}
-
 // ResetCityID resets all changes to the "city_id" field.
 func (m *EmployeeMutation) ResetCityID() {
 	m.city = nil
-	delete(m.clearedFields, employee.FieldCityID)
 }
 
 // SetName sets the "name" field.
@@ -11529,7 +11516,7 @@ func (m *EmployeeMutation) ClearCity() {
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
 func (m *EmployeeMutation) CityCleared() bool {
-	return m.CityIDCleared() || m.clearedcity
+	return m.clearedcity
 }
 
 // CityIDs returns the "city" edge IDs in the mutation.
@@ -11804,9 +11791,6 @@ func (m *EmployeeMutation) ClearedFields() []string {
 	if m.FieldCleared(employee.FieldRemark) {
 		fields = append(fields, employee.FieldRemark)
 	}
-	if m.FieldCleared(employee.FieldCityID) {
-		fields = append(fields, employee.FieldCityID)
-	}
 	return fields
 }
 
@@ -11832,9 +11816,6 @@ func (m *EmployeeMutation) ClearField(name string) error {
 		return nil
 	case employee.FieldRemark:
 		m.ClearRemark()
-		return nil
-	case employee.FieldCityID:
-		m.ClearCityID()
 		return nil
 	}
 	return fmt.Errorf("unknown Employee nullable field %s", name)

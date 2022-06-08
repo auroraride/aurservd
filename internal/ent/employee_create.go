@@ -99,14 +99,6 @@ func (ec *EmployeeCreate) SetCityID(u uint64) *EmployeeCreate {
 	return ec
 }
 
-// SetNillableCityID sets the "city_id" field if the given value is not nil.
-func (ec *EmployeeCreate) SetNillableCityID(u *uint64) *EmployeeCreate {
-	if u != nil {
-		ec.SetCityID(*u)
-	}
-	return ec
-}
-
 // SetName sets the "name" field.
 func (ec *EmployeeCreate) SetName(s string) *EmployeeCreate {
 	ec.mutation.SetName(s)
@@ -247,11 +239,17 @@ func (ec *EmployeeCreate) check() error {
 	if _, ok := ec.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Employee.updated_at"`)}
 	}
+	if _, ok := ec.mutation.CityID(); !ok {
+		return &ValidationError{Name: "city_id", err: errors.New(`ent: missing required field "Employee.city_id"`)}
+	}
 	if _, ok := ec.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Employee.name"`)}
 	}
 	if _, ok := ec.mutation.Phone(); !ok {
 		return &ValidationError{Name: "phone", err: errors.New(`ent: missing required field "Employee.phone"`)}
+	}
+	if _, ok := ec.mutation.CityID(); !ok {
+		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Employee.city"`)}
 	}
 	return nil
 }
@@ -546,12 +544,6 @@ func (u *EmployeeUpsert) UpdateCityID() *EmployeeUpsert {
 	return u
 }
 
-// ClearCityID clears the value of the "city_id" field.
-func (u *EmployeeUpsert) ClearCityID() *EmployeeUpsert {
-	u.SetNull(employee.FieldCityID)
-	return u
-}
-
 // SetName sets the "name" field.
 func (u *EmployeeUpsert) SetName(v string) *EmployeeUpsert {
 	u.Set(employee.FieldName, v)
@@ -749,13 +741,6 @@ func (u *EmployeeUpsertOne) SetCityID(v uint64) *EmployeeUpsertOne {
 func (u *EmployeeUpsertOne) UpdateCityID() *EmployeeUpsertOne {
 	return u.Update(func(s *EmployeeUpsert) {
 		s.UpdateCityID()
-	})
-}
-
-// ClearCityID clears the value of the "city_id" field.
-func (u *EmployeeUpsertOne) ClearCityID() *EmployeeUpsertOne {
-	return u.Update(func(s *EmployeeUpsert) {
-		s.ClearCityID()
 	})
 }
 
@@ -1124,13 +1109,6 @@ func (u *EmployeeUpsertBulk) SetCityID(v uint64) *EmployeeUpsertBulk {
 func (u *EmployeeUpsertBulk) UpdateCityID() *EmployeeUpsertBulk {
 	return u.Update(func(s *EmployeeUpsert) {
 		s.UpdateCityID()
-	})
-}
-
-// ClearCityID clears the value of the "city_id" field.
-func (u *EmployeeUpsertBulk) ClearCityID() *EmployeeUpsertBulk {
-	return u.Update(func(s *EmployeeUpsert) {
-		s.ClearCityID()
 	})
 }
 

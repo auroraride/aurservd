@@ -585,20 +585,6 @@ func CityIDNotIn(vs ...uint64) predicate.Employee {
 	})
 }
 
-// CityIDIsNil applies the IsNil predicate on the "city_id" field.
-func CityIDIsNil() predicate.Employee {
-	return predicate.Employee(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCityID)))
-	})
-}
-
-// CityIDNotNil applies the NotNil predicate on the "city_id" field.
-func CityIDNotNil() predicate.Employee {
-	return predicate.Employee(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCityID)))
-	})
-}
-
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Employee {
 	return predicate.Employee(func(s *sql.Selector) {

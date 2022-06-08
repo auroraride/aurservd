@@ -453,7 +453,7 @@ var (
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "name", Type: field.TypeString, Comment: "姓名"},
 		{Name: "phone", Type: field.TypeString, Comment: "电话"},
-		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "city_id", Type: field.TypeUint64},
 	}
 	// EmployeeTable holds the schema information for the "employee" table.
 	EmployeeTable = &schema.Table{
@@ -465,7 +465,7 @@ var (
 				Symbol:     "employee_city_city",
 				Columns:    []*schema.Column{EmployeeColumns[9]},
 				RefColumns: []*schema.Column{CityColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 		Indexes: []*schema.Index{

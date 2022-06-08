@@ -95,20 +95,6 @@ func (eu *EmployeeUpdate) SetCityID(u uint64) *EmployeeUpdate {
 	return eu
 }
 
-// SetNillableCityID sets the "city_id" field if the given value is not nil.
-func (eu *EmployeeUpdate) SetNillableCityID(u *uint64) *EmployeeUpdate {
-	if u != nil {
-		eu.SetCityID(*u)
-	}
-	return eu
-}
-
-// ClearCityID clears the value of the "city_id" field.
-func (eu *EmployeeUpdate) ClearCityID() *EmployeeUpdate {
-	eu.mutation.ClearCityID()
-	return eu
-}
-
 // SetName sets the "name" field.
 func (eu *EmployeeUpdate) SetName(s string) *EmployeeUpdate {
 	eu.mutation.SetName(s)
@@ -172,12 +158,18 @@ func (eu *EmployeeUpdate) Save(ctx context.Context) (int, error) {
 		return 0, err
 	}
 	if len(eu.hooks) == 0 {
+		if err = eu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = eu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*EmployeeMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = eu.check(); err != nil {
+				return 0, err
 			}
 			eu.mutation = mutation
 			affected, err = eu.sqlSave(ctx)
@@ -227,6 +219,14 @@ func (eu *EmployeeUpdate) defaults() error {
 		}
 		v := employee.UpdateDefaultUpdatedAt()
 		eu.mutation.SetUpdatedAt(v)
+	}
+	return nil
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (eu *EmployeeUpdate) check() error {
+	if _, ok := eu.mutation.CityID(); eu.mutation.CityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Employee.city"`)
 	}
 	return nil
 }
@@ -468,20 +468,6 @@ func (euo *EmployeeUpdateOne) SetCityID(u uint64) *EmployeeUpdateOne {
 	return euo
 }
 
-// SetNillableCityID sets the "city_id" field if the given value is not nil.
-func (euo *EmployeeUpdateOne) SetNillableCityID(u *uint64) *EmployeeUpdateOne {
-	if u != nil {
-		euo.SetCityID(*u)
-	}
-	return euo
-}
-
-// ClearCityID clears the value of the "city_id" field.
-func (euo *EmployeeUpdateOne) ClearCityID() *EmployeeUpdateOne {
-	euo.mutation.ClearCityID()
-	return euo
-}
-
 // SetName sets the "name" field.
 func (euo *EmployeeUpdateOne) SetName(s string) *EmployeeUpdateOne {
 	euo.mutation.SetName(s)
@@ -552,12 +538,18 @@ func (euo *EmployeeUpdateOne) Save(ctx context.Context) (*Employee, error) {
 		return nil, err
 	}
 	if len(euo.hooks) == 0 {
+		if err = euo.check(); err != nil {
+			return nil, err
+		}
 		node, err = euo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*EmployeeMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = euo.check(); err != nil {
+				return nil, err
 			}
 			euo.mutation = mutation
 			node, err = euo.sqlSave(ctx)
@@ -613,6 +605,14 @@ func (euo *EmployeeUpdateOne) defaults() error {
 		}
 		v := employee.UpdateDefaultUpdatedAt()
 		euo.mutation.SetUpdatedAt(v)
+	}
+	return nil
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (euo *EmployeeUpdateOne) check() error {
+	if _, ok := euo.mutation.CityID(); euo.mutation.CityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Employee.city"`)
 	}
 	return nil
 }

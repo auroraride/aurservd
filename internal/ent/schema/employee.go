@@ -67,7 +67,7 @@ func (Employee) Mixin() []ent.Mixin {
         internal.DeleteMixin{},
         internal.Modifier{},
 
-        CityMixin{Optional: true},
+        CityMixin{Optional: false},
     }
 }
 
