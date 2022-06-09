@@ -149,6 +149,13 @@ func StationID(v uint64) predicate.Subscribe {
 	})
 }
 
+// StoreID applies equality check predicate on the "store_id" field. It's identical to StoreIDEQ.
+func StoreID(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStoreID), v))
+	})
+}
+
 // RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
 func RiderID(v uint64) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
@@ -894,6 +901,68 @@ func StationIDIsNil() predicate.Subscribe {
 func StationIDNotNil() predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldStationID)))
+	})
+}
+
+// StoreIDEQ applies the EQ predicate on the "store_id" field.
+func StoreIDEQ(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStoreID), v))
+	})
+}
+
+// StoreIDNEQ applies the NEQ predicate on the "store_id" field.
+func StoreIDNEQ(v uint64) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldStoreID), v))
+	})
+}
+
+// StoreIDIn applies the In predicate on the "store_id" field.
+func StoreIDIn(vs ...uint64) predicate.Subscribe {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldStoreID), v...))
+	})
+}
+
+// StoreIDNotIn applies the NotIn predicate on the "store_id" field.
+func StoreIDNotIn(vs ...uint64) predicate.Subscribe {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldStoreID), v...))
+	})
+}
+
+// StoreIDIsNil applies the IsNil predicate on the "store_id" field.
+func StoreIDIsNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldStoreID)))
+	})
+}
+
+// StoreIDNotNil applies the NotNil predicate on the "store_id" field.
+func StoreIDNotNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldStoreID)))
 	})
 }
 
@@ -2292,6 +2361,34 @@ func HasStationWith(preds ...predicate.EnterpriseStation) predicate.Subscribe {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(StationInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasStore applies the HasEdge predicate on the "store" edge.
+func HasStore() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StoreTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStoreWith applies the HasEdge predicate on the "store" edge with a given conditions (other predicates).
+func HasStoreWith(preds ...predicate.Store) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StoreInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

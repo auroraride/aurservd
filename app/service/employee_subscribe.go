@@ -54,6 +54,9 @@ func NewEmployeeSubscribeWithEmployee(e *ent.Employee) *employeeSubscribeService
 // Active 激活订单
 // TODO 后续逻辑
 func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
+    if s.employee.Edges.Store == nil {
+        snag.Panic("你未上班")
+    }
     id, _ := strconv.ParseUint(strings.TrimSpace(strings.ReplaceAll(req.Qrcode, "SUBSCRIBE:", "")), 10, 64)
     // 查询订单状态
     sub, _ := ar.Ent.Subscribe.QueryNotDeleted().
@@ -78,6 +81,7 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
         SetStatus(model.SubscribeStatusUsing).
         SetStartAt(time.Now()).
         SetEmployeeID(s.employee.ID).
+        SetStoreID(s.employee.Edges.Store.ID).
         SaveX(s.ctx)
     if sub.EnterpriseID != nil {
         _, _ = NewEnterpriseStatement().Current(*sub.EnterpriseID).Update().AddRiderNumber(1).Save(s.ctx)

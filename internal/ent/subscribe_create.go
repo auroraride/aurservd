@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -145,6 +146,20 @@ func (sc *SubscribeCreate) SetStationID(u uint64) *SubscribeCreate {
 func (sc *SubscribeCreate) SetNillableStationID(u *uint64) *SubscribeCreate {
 	if u != nil {
 		sc.SetStationID(*u)
+	}
+	return sc
+}
+
+// SetStoreID sets the "store_id" field.
+func (sc *SubscribeCreate) SetStoreID(u uint64) *SubscribeCreate {
+	sc.mutation.SetStoreID(u)
+	return sc
+}
+
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableStoreID(u *uint64) *SubscribeCreate {
+	if u != nil {
+		sc.SetStoreID(*u)
 	}
 	return sc
 }
@@ -389,6 +404,11 @@ func (sc *SubscribeCreate) SetCity(c *City) *SubscribeCreate {
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (sc *SubscribeCreate) SetStation(e *EnterpriseStation) *SubscribeCreate {
 	return sc.SetStationID(e.ID)
+}
+
+// SetStore sets the "store" edge to the Store entity.
+func (sc *SubscribeCreate) SetStore(s *Store) *SubscribeCreate {
+	return sc.SetStoreID(s.ID)
 }
 
 // SetRider sets the "rider" edge to the Rider entity.
@@ -884,6 +904,26 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		_node.StationID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := sc.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.StoreTable,
+			Columns: []string{subscribe.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.StoreID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := sc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1234,6 +1274,24 @@ func (u *SubscribeUpsert) UpdateStationID() *SubscribeUpsert {
 // ClearStationID clears the value of the "station_id" field.
 func (u *SubscribeUpsert) ClearStationID() *SubscribeUpsert {
 	u.SetNull(subscribe.FieldStationID)
+	return u
+}
+
+// SetStoreID sets the "store_id" field.
+func (u *SubscribeUpsert) SetStoreID(v uint64) *SubscribeUpsert {
+	u.Set(subscribe.FieldStoreID, v)
+	return u
+}
+
+// UpdateStoreID sets the "store_id" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateStoreID() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldStoreID)
+	return u
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (u *SubscribeUpsert) ClearStoreID() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldStoreID)
 	return u
 }
 
@@ -1782,6 +1840,27 @@ func (u *SubscribeUpsertOne) UpdateStationID() *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) ClearStationID() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearStationID()
+	})
+}
+
+// SetStoreID sets the "store_id" field.
+func (u *SubscribeUpsertOne) SetStoreID(v uint64) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetStoreID(v)
+	})
+}
+
+// UpdateStoreID sets the "store_id" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateStoreID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateStoreID()
+	})
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (u *SubscribeUpsertOne) ClearStoreID() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearStoreID()
 	})
 }
 
@@ -2545,6 +2624,27 @@ func (u *SubscribeUpsertBulk) UpdateStationID() *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) ClearStationID() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearStationID()
+	})
+}
+
+// SetStoreID sets the "store_id" field.
+func (u *SubscribeUpsertBulk) SetStoreID(v uint64) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetStoreID(v)
+	})
+}
+
+// UpdateStoreID sets the "store_id" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateStoreID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateStoreID()
+	})
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (u *SubscribeUpsertBulk) ClearStoreID() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearStoreID()
 	})
 }
 

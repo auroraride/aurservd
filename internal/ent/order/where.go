@@ -212,6 +212,13 @@ func RefundAt(v time.Time) predicate.Order {
 	})
 }
 
+// InitialDays applies equality check predicate on the "initial_days" field. It's identical to InitialDaysEQ.
+func InitialDays(v int) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldInitialDays), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
@@ -1592,6 +1599,96 @@ func RefundAtIsNil() predicate.Order {
 func RefundAtNotNil() predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldRefundAt)))
+	})
+}
+
+// InitialDaysEQ applies the EQ predicate on the "initial_days" field.
+func InitialDaysEQ(v int) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldInitialDays), v))
+	})
+}
+
+// InitialDaysNEQ applies the NEQ predicate on the "initial_days" field.
+func InitialDaysNEQ(v int) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldInitialDays), v))
+	})
+}
+
+// InitialDaysIn applies the In predicate on the "initial_days" field.
+func InitialDaysIn(vs ...int) predicate.Order {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldInitialDays), v...))
+	})
+}
+
+// InitialDaysNotIn applies the NotIn predicate on the "initial_days" field.
+func InitialDaysNotIn(vs ...int) predicate.Order {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldInitialDays), v...))
+	})
+}
+
+// InitialDaysGT applies the GT predicate on the "initial_days" field.
+func InitialDaysGT(v int) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldInitialDays), v))
+	})
+}
+
+// InitialDaysGTE applies the GTE predicate on the "initial_days" field.
+func InitialDaysGTE(v int) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldInitialDays), v))
+	})
+}
+
+// InitialDaysLT applies the LT predicate on the "initial_days" field.
+func InitialDaysLT(v int) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldInitialDays), v))
+	})
+}
+
+// InitialDaysLTE applies the LTE predicate on the "initial_days" field.
+func InitialDaysLTE(v int) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldInitialDays), v))
+	})
+}
+
+// InitialDaysIsNil applies the IsNil predicate on the "initial_days" field.
+func InitialDaysIsNil() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldInitialDays)))
+	})
+}
+
+// InitialDaysNotNil applies the NotNil predicate on the "initial_days" field.
+func InitialDaysNotNil() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldInitialDays)))
 	})
 }
 

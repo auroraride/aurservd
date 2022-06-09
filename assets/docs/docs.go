@@ -1885,6 +1885,18 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "骑士卡时长(搜索大于等于)",
+                        "name": "days",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "店员名字",
+                        "name": "employeeName",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "时间结束, 格式为: 2022-01-01",
                         "name": "end",
@@ -1915,9 +1927,21 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "门店名字",
+                        "name": "storeName",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "订单类型 1:新签 2:续签 3:重签 4:更改电池 5:救援 6:滞纳金 7:押金",
                         "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "电压",
+                        "name": "voltage",
                         "in": "query"
                     }
                 ],
@@ -3855,7 +3879,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "$ref": "#/definitions/model.RiderOrder"
                         }
                     }
                 }
@@ -5862,6 +5886,22 @@ const docTemplate = `{
                 }
             }
         },
+        "model.RiderBasic": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                }
+            }
+        },
         "model.RiderBlockReq": {
             "type": "object",
             "properties": {
@@ -6107,6 +6147,14 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "employee": {
+                    "description": "店员 (可为空)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Employee"
+                        }
+                    ]
+                },
                 "id": {
                     "description": "订单ID",
                     "type": "integer"
@@ -6138,13 +6186,33 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "rider": {
+                    "description": "骑手",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderBasic"
+                        }
+                    ]
+                },
                 "status": {
                     "description": "订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝",
                     "type": "integer"
                 },
+                "store": {
+                    "description": "门店 (可为空)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Store"
+                        }
+                    ]
+                },
                 "type": {
                     "description": "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
                     "type": "integer"
+                },
+                "voltage": {
+                    "description": "电压",
+                    "type": "number"
                 }
             }
         },

@@ -36,6 +36,7 @@ func (Order) Fields() []ent.Field {
         field.Float("amount").Immutable().Comment("子订单金额(拆分项此条订单)"),
         field.Float("total").Immutable().Default(0).Comment("此次支付总金额(包含所有子订单的总支付)"),
         field.Time("refund_at").Optional().Nillable().Comment("退款时间"),
+        field.Int("initial_days").Optional().Comment("初始骑士卡天数"),
     }
 }
 
@@ -66,5 +67,6 @@ func (Order) Indexes() []ent.Index {
         index.Fields("trade_no"),
         index.Fields("out_trade_no"),
         index.Fields("status"),
+        index.Fields("initial_days"),
     }
 }

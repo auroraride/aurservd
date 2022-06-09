@@ -231,6 +231,20 @@ func (oc *OrderCreate) SetNillableRefundAt(t *time.Time) *OrderCreate {
 	return oc
 }
 
+// SetInitialDays sets the "initial_days" field.
+func (oc *OrderCreate) SetInitialDays(i int) *OrderCreate {
+	oc.mutation.SetInitialDays(i)
+	return oc
+}
+
+// SetNillableInitialDays sets the "initial_days" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableInitialDays(i *int) *OrderCreate {
+	if i != nil {
+		oc.SetInitialDays(*i)
+	}
+	return oc
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (oc *OrderCreate) SetPlan(p *Plan) *OrderCreate {
 	return oc.SetPlanID(p.ID)
@@ -583,6 +597,14 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 			Column: order.FieldRefundAt,
 		})
 		_node.RefundAt = &value
+	}
+	if value, ok := oc.mutation.InitialDays(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: order.FieldInitialDays,
+		})
+		_node.InitialDays = value
 	}
 	if nodes := oc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1107,6 +1129,30 @@ func (u *OrderUpsert) ClearRefundAt() *OrderUpsert {
 	return u
 }
 
+// SetInitialDays sets the "initial_days" field.
+func (u *OrderUpsert) SetInitialDays(v int) *OrderUpsert {
+	u.Set(order.FieldInitialDays, v)
+	return u
+}
+
+// UpdateInitialDays sets the "initial_days" field to the value that was provided on create.
+func (u *OrderUpsert) UpdateInitialDays() *OrderUpsert {
+	u.SetExcluded(order.FieldInitialDays)
+	return u
+}
+
+// AddInitialDays adds v to the "initial_days" field.
+func (u *OrderUpsert) AddInitialDays(v int) *OrderUpsert {
+	u.Add(order.FieldInitialDays, v)
+	return u
+}
+
+// ClearInitialDays clears the value of the "initial_days" field.
+func (u *OrderUpsert) ClearInitialDays() *OrderUpsert {
+	u.SetNull(order.FieldInitialDays)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1536,6 +1582,34 @@ func (u *OrderUpsertOne) UpdateRefundAt() *OrderUpsertOne {
 func (u *OrderUpsertOne) ClearRefundAt() *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearRefundAt()
+	})
+}
+
+// SetInitialDays sets the "initial_days" field.
+func (u *OrderUpsertOne) SetInitialDays(v int) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetInitialDays(v)
+	})
+}
+
+// AddInitialDays adds v to the "initial_days" field.
+func (u *OrderUpsertOne) AddInitialDays(v int) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.AddInitialDays(v)
+	})
+}
+
+// UpdateInitialDays sets the "initial_days" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdateInitialDays() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateInitialDays()
+	})
+}
+
+// ClearInitialDays clears the value of the "initial_days" field.
+func (u *OrderUpsertOne) ClearInitialDays() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearInitialDays()
 	})
 }
 
@@ -2132,6 +2206,34 @@ func (u *OrderUpsertBulk) UpdateRefundAt() *OrderUpsertBulk {
 func (u *OrderUpsertBulk) ClearRefundAt() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearRefundAt()
+	})
+}
+
+// SetInitialDays sets the "initial_days" field.
+func (u *OrderUpsertBulk) SetInitialDays(v int) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetInitialDays(v)
+	})
+}
+
+// AddInitialDays adds v to the "initial_days" field.
+func (u *OrderUpsertBulk) AddInitialDays(v int) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.AddInitialDays(v)
+	})
+}
+
+// UpdateInitialDays sets the "initial_days" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdateInitialDays() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdateInitialDays()
+	})
+}
+
+// ClearInitialDays clears the value of the "initial_days" field.
+func (u *OrderUpsertBulk) ClearInitialDays() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearInitialDays()
 	})
 }
 

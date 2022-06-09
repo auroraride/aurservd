@@ -76,10 +76,14 @@ type OrderRefundReq struct {
 type OrderListReq struct {
     PaginationReq
 
-    Type       *uint   `json:"type" query:"type"`             // 订单类型 1:新签 2:续签 3:重签 4:更改电池 5:救援 6:滞纳金 7:押金
-    CityID     *uint64 `json:"cityId" query:"cityID"`         // 城市ID
-    RiderName  *string `json:"riderName" query:"riderName"`   // 骑手姓名
-    RiderPhone *string `json:"riderPhone" query:"riderPhone"` // 骑手电话
-    Start      *string `json:"start" query:"start"`           // 时间起始, 格式为: 2022-01-01
-    End        *string `json:"end" query:"end"`               // 时间结束, 格式为: 2022-01-01
+    Type         *uint    `json:"type" query:"type"`                 // 订单类型 1:新签 2:续签 3:重签 4:更改电池 5:救援 6:滞纳金 7:押金
+    CityID       *uint64  `json:"cityId" query:"cityID"`             // 城市ID
+    RiderName    *string  `json:"riderName" query:"riderName"`       // 骑手姓名
+    RiderPhone   *string  `json:"riderPhone" query:"riderPhone"`     // 骑手电话
+    Start        *string  `json:"start" query:"start"`               // 时间起始, 格式为: 2022-01-01
+    End          *string  `json:"end" query:"end"`                   // 时间结束, 格式为: 2022-01-01
+    EmployeeName *string  `json:"employeeName" query:"employeeName"` // 店员名字
+    StoreName    *string  `json:"storeName" query:"storeName"`       // 门店名字
+    Voltage      *float64 `json:"voltage" query:"voltage"`           // 电压
+    Days         *int     `json:"days"`                              // 骑士卡时长(搜索大于等于)
 }

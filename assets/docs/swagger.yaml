@@ -1341,6 +1341,17 @@ definitions:
     required:
     - qrcode
     type: object
+  model.RiderBasic:
+    properties:
+      id:
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 电话
+        type: string
+    type: object
   model.RiderBlockReq:
     properties:
       block:
@@ -1508,6 +1519,10 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.City'
         description: 城市
+      employee:
+        allOf:
+        - $ref: '#/definitions/model.Employee'
+        description: 店员 (可为空)
       id:
         description: 订单ID
         type: integer
@@ -1529,12 +1544,23 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Plan'
         description: 骑士卡, 非骑士卡订阅订单无此字段
+      rider:
+        allOf:
+        - $ref: '#/definitions/model.RiderBasic'
+        description: 骑手
       status:
         description: 订单状态 0未支付 1已支付 2申请退款 3已退款 4退款被拒绝
         type: integer
+      store:
+        allOf:
+        - $ref: '#/definitions/model.Store'
+        description: 门店 (可为空)
       type:
         description: 订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
         type: integer
+      voltage:
+        description: 电压
+        type: number
     type: object
   model.RiderPlanItem:
     properties:
@@ -3177,6 +3203,14 @@ paths:
         in: query
         name: current
         type: integer
+      - description: 骑士卡时长(搜索大于等于)
+        in: query
+        name: days
+        type: integer
+      - description: 店员名字
+        in: query
+        name: employeeName
+        type: string
       - description: '时间结束, 格式为: 2022-01-01'
         in: query
         name: end
@@ -3197,10 +3231,18 @@ paths:
         in: query
         name: start
         type: string
+      - description: 门店名字
+        in: query
+        name: storeName
+        type: string
       - description: 订单类型 1:新签 2:续签 3:重签 4:更改电池 5:救援 6:滞纳金 7:押金
         in: query
         name: type
         type: integer
+      - description: 电压
+        in: query
+        name: voltage
+        type: number
       produces:
       - application/json
       responses:
@@ -4418,7 +4460,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.StatusResponse'
+            $ref: '#/definitions/model.RiderOrder'
       summary: R3009 订单详情
       tags:
       - '[R]骑手接口'

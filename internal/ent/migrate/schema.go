@@ -100,6 +100,16 @@ var (
 					},
 				},
 			},
+			{
+				Name:    "branch_name",
+				Unique:  false,
+				Columns: []*schema.Column{BranchColumns[7]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
 		},
 	}
 	// BranchContractColumns holds the columns for the "branch_contract" table.
@@ -957,6 +967,7 @@ var (
 		{Name: "amount", Type: field.TypeFloat64, Comment: "子订单金额(拆分项此条订单)"},
 		{Name: "total", Type: field.TypeFloat64, Comment: "此次支付总金额(包含所有子订单的总支付)", Default: 0},
 		{Name: "refund_at", Type: field.TypeTime, Comment: "退款时间", Nullable: true},
+		{Name: "initial_days", Type: field.TypeInt, Comment: "初始骑士卡天数", Nullable: true},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "parent_id", Type: field.TypeUint64, Nullable: true},
@@ -971,31 +982,31 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "order_plan_plan",
-				Columns:    []*schema.Column{OrderColumns[15]},
+				Columns:    []*schema.Column{OrderColumns[16]},
 				RefColumns: []*schema.Column{PlanColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "order_city_city",
-				Columns:    []*schema.Column{OrderColumns[16]},
+				Columns:    []*schema.Column{OrderColumns[17]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "order_order_children",
-				Columns:    []*schema.Column{OrderColumns[17]},
+				Columns:    []*schema.Column{OrderColumns[18]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "order_rider_orders",
-				Columns:    []*schema.Column{OrderColumns[18]},
+				Columns:    []*schema.Column{OrderColumns[19]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "order_subscribe_orders",
-				Columns:    []*schema.Column{OrderColumns[19]},
+				Columns:    []*schema.Column{OrderColumns[20]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1025,6 +1036,11 @@ var (
 				Name:    "order_status",
 				Unique:  false,
 				Columns: []*schema.Column{OrderColumns[7]},
+			},
+			{
+				Name:    "order_initial_days",
+				Unique:  false,
+				Columns: []*schema.Column{OrderColumns[15]},
 			},
 		},
 	}
@@ -1393,6 +1409,7 @@ var (
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "initial_order_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// SubscribeTable holds the schema information for the "subscribe" table.
@@ -1444,8 +1461,14 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "subscribe_order_initial_order",
+				Symbol:     "subscribe_store_store",
 				Columns:    []*schema.Column{SubscribeColumns[27]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscribe_order_initial_order",
+				Columns:    []*schema.Column{SubscribeColumns[28]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1803,7 +1826,8 @@ func init() {
 	SubscribeTable.ForeignKeys[4].RefTable = EmployeeTable
 	SubscribeTable.ForeignKeys[5].RefTable = CityTable
 	SubscribeTable.ForeignKeys[6].RefTable = EnterpriseStationTable
-	SubscribeTable.ForeignKeys[7].RefTable = OrderTable
+	SubscribeTable.ForeignKeys[7].RefTable = StoreTable
+	SubscribeTable.ForeignKeys[8].RefTable = OrderTable
 	SubscribeTable.Annotation = &entsql.Annotation{
 		Table: "subscribe",
 	}

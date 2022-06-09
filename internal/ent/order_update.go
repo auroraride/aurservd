@@ -220,6 +220,33 @@ func (ou *OrderUpdate) ClearRefundAt() *OrderUpdate {
 	return ou
 }
 
+// SetInitialDays sets the "initial_days" field.
+func (ou *OrderUpdate) SetInitialDays(i int) *OrderUpdate {
+	ou.mutation.ResetInitialDays()
+	ou.mutation.SetInitialDays(i)
+	return ou
+}
+
+// SetNillableInitialDays sets the "initial_days" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableInitialDays(i *int) *OrderUpdate {
+	if i != nil {
+		ou.SetInitialDays(*i)
+	}
+	return ou
+}
+
+// AddInitialDays adds i to the "initial_days" field.
+func (ou *OrderUpdate) AddInitialDays(i int) *OrderUpdate {
+	ou.mutation.AddInitialDays(i)
+	return ou
+}
+
+// ClearInitialDays clears the value of the "initial_days" field.
+func (ou *OrderUpdate) ClearInitialDays() *OrderUpdate {
+	ou.mutation.ClearInitialDays()
+	return ou
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (ou *OrderUpdate) SetPlan(p *Plan) *OrderUpdate {
 	return ou.SetPlanID(p.ID)
@@ -555,6 +582,26 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: order.FieldRefundAt,
+		})
+	}
+	if value, ok := ou.mutation.InitialDays(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: order.FieldInitialDays,
+		})
+	}
+	if value, ok := ou.mutation.AddedInitialDays(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: order.FieldInitialDays,
+		})
+	}
+	if ou.mutation.InitialDaysCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Column: order.FieldInitialDays,
 		})
 	}
 	if ou.mutation.PlanCleared() {
@@ -1079,6 +1126,33 @@ func (ouo *OrderUpdateOne) ClearRefundAt() *OrderUpdateOne {
 	return ouo
 }
 
+// SetInitialDays sets the "initial_days" field.
+func (ouo *OrderUpdateOne) SetInitialDays(i int) *OrderUpdateOne {
+	ouo.mutation.ResetInitialDays()
+	ouo.mutation.SetInitialDays(i)
+	return ouo
+}
+
+// SetNillableInitialDays sets the "initial_days" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableInitialDays(i *int) *OrderUpdateOne {
+	if i != nil {
+		ouo.SetInitialDays(*i)
+	}
+	return ouo
+}
+
+// AddInitialDays adds i to the "initial_days" field.
+func (ouo *OrderUpdateOne) AddInitialDays(i int) *OrderUpdateOne {
+	ouo.mutation.AddInitialDays(i)
+	return ouo
+}
+
+// ClearInitialDays clears the value of the "initial_days" field.
+func (ouo *OrderUpdateOne) ClearInitialDays() *OrderUpdateOne {
+	ouo.mutation.ClearInitialDays()
+	return ouo
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (ouo *OrderUpdateOne) SetPlan(p *Plan) *OrderUpdateOne {
 	return ouo.SetPlanID(p.ID)
@@ -1444,6 +1518,26 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: order.FieldRefundAt,
+		})
+	}
+	if value, ok := ouo.mutation.InitialDays(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: order.FieldInitialDays,
+		})
+	}
+	if value, ok := ouo.mutation.AddedInitialDays(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: order.FieldInitialDays,
+		})
+	}
+	if ouo.mutation.InitialDaysCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Column: order.FieldInitialDays,
 		})
 	}
 	if ouo.mutation.PlanCleared() {

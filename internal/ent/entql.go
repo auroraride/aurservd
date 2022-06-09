@@ -501,6 +501,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			order.FieldAmount:       {Type: field.TypeFloat64, Column: order.FieldAmount},
 			order.FieldTotal:        {Type: field.TypeFloat64, Column: order.FieldTotal},
 			order.FieldRefundAt:     {Type: field.TypeTime, Column: order.FieldRefundAt},
+			order.FieldInitialDays:  {Type: field.TypeInt, Column: order.FieldInitialDays},
 		},
 	}
 	graph.Nodes[18] = &sqlgraph.Node{
@@ -684,6 +685,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldEmployeeID:     {Type: field.TypeUint64, Column: subscribe.FieldEmployeeID},
 			subscribe.FieldCityID:         {Type: field.TypeUint64, Column: subscribe.FieldCityID},
 			subscribe.FieldStationID:      {Type: field.TypeUint64, Column: subscribe.FieldStationID},
+			subscribe.FieldStoreID:        {Type: field.TypeUint64, Column: subscribe.FieldStoreID},
 			subscribe.FieldRiderID:        {Type: field.TypeUint64, Column: subscribe.FieldRiderID},
 			subscribe.FieldInitialOrderID: {Type: field.TypeUint64, Column: subscribe.FieldInitialOrderID},
 			subscribe.FieldEnterpriseID:   {Type: field.TypeUint64, Column: subscribe.FieldEnterpriseID},
@@ -1566,6 +1568,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Subscribe",
 		"EnterpriseStation",
+	)
+	graph.MustAddE(
+		"store",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.StoreTable,
+			Columns: []string{subscribe.StoreColumn},
+			Bidi:    false,
+		},
+		"Subscribe",
+		"Store",
 	)
 	graph.MustAddE(
 		"rider",
@@ -4180,6 +4194,11 @@ func (f *OrderFilter) WhereRefundAt(p entql.TimeP) {
 	f.Where(p.Field(order.FieldRefundAt))
 }
 
+// WhereInitialDays applies the entql int predicate on the initial_days field.
+func (f *OrderFilter) WhereInitialDays(p entql.IntP) {
+	f.Where(p.Field(order.FieldInitialDays))
+}
+
 // WhereHasPlan applies a predicate to check if query has an edge plan.
 func (f *OrderFilter) WhereHasPlan() {
 	f.Where(entql.HasEdge("plan"))
@@ -5228,6 +5247,11 @@ func (f *SubscribeFilter) WhereStationID(p entql.Uint64P) {
 	f.Where(p.Field(subscribe.FieldStationID))
 }
 
+// WhereStoreID applies the entql uint64 predicate on the store_id field.
+func (f *SubscribeFilter) WhereStoreID(p entql.Uint64P) {
+	f.Where(p.Field(subscribe.FieldStoreID))
+}
+
 // WhereRiderID applies the entql uint64 predicate on the rider_id field.
 func (f *SubscribeFilter) WhereRiderID(p entql.Uint64P) {
 	f.Where(p.Field(subscribe.FieldRiderID))
@@ -5363,6 +5387,20 @@ func (f *SubscribeFilter) WhereHasStation() {
 // WhereHasStationWith applies a predicate to check if query has an edge station with a given conditions (other predicates).
 func (f *SubscribeFilter) WhereHasStationWith(preds ...predicate.EnterpriseStation) {
 	f.Where(entql.HasEdgeWith("station", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasStore applies a predicate to check if query has an edge store.
+func (f *SubscribeFilter) WhereHasStore() {
+	f.Where(entql.HasEdge("store"))
+}
+
+// WhereHasStoreWith applies a predicate to check if query has an edge store with a given conditions (other predicates).
+func (f *SubscribeFilter) WhereHasStoreWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("store", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

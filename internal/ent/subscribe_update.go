@@ -21,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -160,6 +161,26 @@ func (su *SubscribeUpdate) SetNillableStationID(u *uint64) *SubscribeUpdate {
 // ClearStationID clears the value of the "station_id" field.
 func (su *SubscribeUpdate) ClearStationID() *SubscribeUpdate {
 	su.mutation.ClearStationID()
+	return su
+}
+
+// SetStoreID sets the "store_id" field.
+func (su *SubscribeUpdate) SetStoreID(u uint64) *SubscribeUpdate {
+	su.mutation.SetStoreID(u)
+	return su
+}
+
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableStoreID(u *uint64) *SubscribeUpdate {
+	if u != nil {
+		su.SetStoreID(*u)
+	}
+	return su
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (su *SubscribeUpdate) ClearStoreID() *SubscribeUpdate {
+	su.mutation.ClearStoreID()
 	return su
 }
 
@@ -495,6 +516,11 @@ func (su *SubscribeUpdate) SetStation(e *EnterpriseStation) *SubscribeUpdate {
 	return su.SetStationID(e.ID)
 }
 
+// SetStore sets the "store" edge to the Store entity.
+func (su *SubscribeUpdate) SetStore(s *Store) *SubscribeUpdate {
+	return su.SetStoreID(s.ID)
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (su *SubscribeUpdate) SetRider(r *Rider) *SubscribeUpdate {
 	return su.SetRiderID(r.ID)
@@ -586,6 +612,12 @@ func (su *SubscribeUpdate) ClearCity() *SubscribeUpdate {
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (su *SubscribeUpdate) ClearStation() *SubscribeUpdate {
 	su.mutation.ClearStation()
+	return su
+}
+
+// ClearStore clears the "store" edge to the Store entity.
+func (su *SubscribeUpdate) ClearStore() *SubscribeUpdate {
+	su.mutation.ClearStore()
 	return su
 }
 
@@ -1142,6 +1174,41 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if su.mutation.StoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.StoreTable,
+			Columns: []string{subscribe.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.StoreTable,
+			Columns: []string{subscribe.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if su.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1587,6 +1654,26 @@ func (suo *SubscribeUpdateOne) ClearStationID() *SubscribeUpdateOne {
 	return suo
 }
 
+// SetStoreID sets the "store_id" field.
+func (suo *SubscribeUpdateOne) SetStoreID(u uint64) *SubscribeUpdateOne {
+	suo.mutation.SetStoreID(u)
+	return suo
+}
+
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableStoreID(u *uint64) *SubscribeUpdateOne {
+	if u != nil {
+		suo.SetStoreID(*u)
+	}
+	return suo
+}
+
+// ClearStoreID clears the value of the "store_id" field.
+func (suo *SubscribeUpdateOne) ClearStoreID() *SubscribeUpdateOne {
+	suo.mutation.ClearStoreID()
+	return suo
+}
+
 // SetRiderID sets the "rider_id" field.
 func (suo *SubscribeUpdateOne) SetRiderID(u uint64) *SubscribeUpdateOne {
 	suo.mutation.SetRiderID(u)
@@ -1919,6 +2006,11 @@ func (suo *SubscribeUpdateOne) SetStation(e *EnterpriseStation) *SubscribeUpdate
 	return suo.SetStationID(e.ID)
 }
 
+// SetStore sets the "store" edge to the Store entity.
+func (suo *SubscribeUpdateOne) SetStore(s *Store) *SubscribeUpdateOne {
+	return suo.SetStoreID(s.ID)
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (suo *SubscribeUpdateOne) SetRider(r *Rider) *SubscribeUpdateOne {
 	return suo.SetRiderID(r.ID)
@@ -2010,6 +2102,12 @@ func (suo *SubscribeUpdateOne) ClearCity() *SubscribeUpdateOne {
 // ClearStation clears the "station" edge to the EnterpriseStation entity.
 func (suo *SubscribeUpdateOne) ClearStation() *SubscribeUpdateOne {
 	suo.mutation.ClearStation()
+	return suo
+}
+
+// ClearStore clears the "store" edge to the Store entity.
+func (suo *SubscribeUpdateOne) ClearStore() *SubscribeUpdateOne {
+	suo.mutation.ClearStore()
 	return suo
 }
 
@@ -2588,6 +2686,41 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.StoreCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.StoreTable,
+			Columns: []string{subscribe.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.StoreIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribe.StoreTable,
+			Columns: []string{subscribe.StoreColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: store.FieldID,
 				},
 			},
 		}

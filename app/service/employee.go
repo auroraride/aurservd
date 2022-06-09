@@ -69,7 +69,7 @@ func (s *employeeService) Query(id uint64) *ent.Employee {
 }
 
 func (s *employeeService) GetEmployeeByID(id uint64) (*ent.Employee, error) {
-    return s.orm.QueryNotDeleted().Where(employee.ID(id)).First(s.ctx)
+    return s.orm.QueryNotDeleted().Where(employee.ID(id)).WithStore().First(s.ctx)
 }
 
 // QueryByPhone 根据phone查找店员

@@ -24,6 +24,12 @@ const (
 type RiderContext struct {
 }
 
+type RiderBasic struct {
+    ID    uint64
+    Phone string `json:"phone"` // 电话
+    Name  string `json:"name"`  // 姓名
+}
+
 // RiderSignupReq 骑手登录请求数据
 type RiderSignupReq struct {
     Phone   string `json:"phone" validate:"required" trans:"电话"`

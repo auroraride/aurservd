@@ -11,7 +11,12 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/order"
+    "github.com/auroraride/aurservd/internal/ent/person"
+    "github.com/auroraride/aurservd/internal/ent/rider"
+    "github.com/auroraride/aurservd/internal/ent/store"
+    "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/payment"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -303,6 +308,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
         SetStatus(model.OrderStatusPaid).
         SetType(trade.OrderType).
         SetCityID(trade.CityID).
+        SetInitialDays(int(trade.Days)).
         SetNillableParentID(trade.OrderID).
         SetNillableSubscribeID(trade.SubscribeID)
     o, err := oc.Save(s.ctx)
@@ -422,7 +428,13 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
         WithPlan(func(pq *ent.PlanQuery) {
             pq.WithPms()
         }).
-        WithCity()
+        WithCity().
+        WithRider(func(rq *ent.RiderQuery) {
+            rq.WithPerson()
+        }).
+        WithSubscribe(func(sq *ent.SubscribeQuery) {
+            sq.WithEmployee().WithStore()
+        })
     if req.Start != nil {
         q.Where(order.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
     }
@@ -431,6 +443,29 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
     }
     if req.Type != nil {
         q.Where(order.Type(*req.Type))
+    }
+    if req.RiderName != nil {
+        q.Where(order.HasRiderWith(rider.HasPersonWith(person.NameContainsFold(*req.RiderName))))
+    }
+    if req.RiderPhone != nil {
+        q.Where(order.HasRiderWith(rider.PhoneContainsFold(*req.RiderPhone)))
+    }
+    if req.CityID != nil {
+        q.Where(order.CityID(*req.CityID))
+    }
+    // TODO 救援订单
+    if req.EmployeeName != nil {
+        q.Where(order.HasSubscribeWith(subscribe.HasEmployeeWith(employee.NameContainsFold(*req.EmployeeName))))
+    }
+    // TODO 救援订单
+    if req.StoreName != nil {
+        q.Where(order.HasSubscribeWith(subscribe.HasStoreWith(store.NameContainsFold(*req.StoreName))))
+    }
+    if req.Voltage != nil {
+        q.Where(order.HasSubscribeWith(subscribe.Voltage(*req.Voltage)))
+    }
+    if req.Days != nil {
+        q.Where(order.InitialDaysGTE(*req.Days))
     }
     return model.ParsePaginationResponse[model.RiderOrder, ent.Order](
         q,

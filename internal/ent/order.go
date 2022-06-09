@@ -77,6 +77,9 @@ type Order struct {
 	// RefundAt holds the value of the "refund_at" field.
 	// 退款时间
 	RefundAt *time.Time `json:"refund_at,omitempty"`
+	// InitialDays holds the value of the "initial_days" field.
+	// 初始骑士卡天数
+	InitialDays int `json:"initial_days,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrderQuery when eager-loading is set.
 	Edges OrderEdges `json:"edges"`
@@ -216,7 +219,7 @@ func (*Order) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case order.FieldAmount, order.FieldTotal:
 			values[i] = new(sql.NullFloat64)
-		case order.FieldID, order.FieldPlanID, order.FieldCityID, order.FieldRiderID, order.FieldParentID, order.FieldSubscribeID, order.FieldStatus, order.FieldPayway, order.FieldType:
+		case order.FieldID, order.FieldPlanID, order.FieldCityID, order.FieldRiderID, order.FieldParentID, order.FieldSubscribeID, order.FieldStatus, order.FieldPayway, order.FieldType, order.FieldInitialDays:
 			values[i] = new(sql.NullInt64)
 		case order.FieldRemark, order.FieldOutTradeNo, order.FieldTradeNo:
 			values[i] = new(sql.NullString)
@@ -363,6 +366,12 @@ func (o *Order) assignValues(columns []string, values []interface{}) error {
 				o.RefundAt = new(time.Time)
 				*o.RefundAt = value.Time
 			}
+		case order.FieldInitialDays:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field initial_days", values[i])
+			} else if value.Valid {
+				o.InitialDays = int(value.Int64)
+			}
 		}
 	}
 	return nil
@@ -473,6 +482,8 @@ func (o *Order) String() string {
 		builder.WriteString(", refund_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", initial_days=")
+	builder.WriteString(fmt.Sprintf("%v", o.InitialDays))
 	builder.WriteByte(')')
 	return builder.String()
 }

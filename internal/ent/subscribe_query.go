@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -39,6 +40,7 @@ type SubscribeQuery struct {
 	withEmployee     *EmployeeQuery
 	withCity         *CityQuery
 	withStation      *EnterpriseStationQuery
+	withStore        *StoreQuery
 	withRider        *RiderQuery
 	withEnterprise   *EnterpriseQuery
 	withPauses       *SubscribePauseQuery
@@ -164,6 +166,28 @@ func (sq *SubscribeQuery) QueryStation() *EnterpriseStationQuery {
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
 			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.StationTable, subscribe.StationColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStore chains the current query on the "store" edge.
+func (sq *SubscribeQuery) QueryStore() *StoreQuery {
+	query := &StoreQuery{config: sq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.StoreTable, subscribe.StoreColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -510,6 +534,7 @@ func (sq *SubscribeQuery) Clone() *SubscribeQuery {
 		withEmployee:     sq.withEmployee.Clone(),
 		withCity:         sq.withCity.Clone(),
 		withStation:      sq.withStation.Clone(),
+		withStore:        sq.withStore.Clone(),
 		withRider:        sq.withRider.Clone(),
 		withEnterprise:   sq.withEnterprise.Clone(),
 		withPauses:       sq.withPauses.Clone(),
@@ -565,6 +590,17 @@ func (sq *SubscribeQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *Su
 		opt(query)
 	}
 	sq.withStation = query
+	return sq
+}
+
+// WithStore tells the query-builder to eager-load the nodes that are connected to
+// the "store" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *SubscribeQuery) WithStore(opts ...func(*StoreQuery)) *SubscribeQuery {
+	query := &StoreQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withStore = query
 	return sq
 }
 
@@ -715,11 +751,12 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 	var (
 		nodes       = []*Subscribe{}
 		_spec       = sq.querySpec()
-		loadedTypes = [11]bool{
+		loadedTypes = [12]bool{
 			sq.withPlan != nil,
 			sq.withEmployee != nil,
 			sq.withCity != nil,
 			sq.withStation != nil,
+			sq.withStore != nil,
 			sq.withRider != nil,
 			sq.withEnterprise != nil,
 			sq.withPauses != nil,
@@ -854,6 +891,32 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 			}
 			for i := range nodes {
 				nodes[i].Edges.Station = n
+			}
+		}
+	}
+
+	if query := sq.withStore; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Subscribe)
+		for i := range nodes {
+			fk := nodes[i].StoreID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(store.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "store_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Store = n
 			}
 		}
 	}

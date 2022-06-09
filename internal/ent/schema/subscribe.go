@@ -74,6 +74,7 @@ func (Subscribe) Mixin() []ent.Mixin {
         EmployeeMixin{Optional: true},
         CityMixin{},
         StationMixin{Optional: true},
+        StoreMixin{Optional: true},
     }
 }
 

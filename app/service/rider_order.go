@@ -68,7 +68,13 @@ func (s *riderOrderService) List(riderID uint64, req *model.PaginationReq) *mode
         Where(
             order.RiderID(riderID),
             order.TypeIn(model.OrderSubscribeTypes...),
-        )
+        ).
+        WithRider(func(rq *ent.RiderQuery) {
+            rq.WithPerson()
+        }).
+        WithSubscribe(func(sq *ent.SubscribeQuery) {
+            sq.WithEmployee().WithStore()
+        })
     return model.ParsePaginationResponse[model.RiderOrder, ent.Order](
         q,
         *req,
@@ -93,14 +99,14 @@ func (s *riderOrderService) Detail(item *ent.Order) model.RiderOrder {
         },
     }
     // 骑士卡订阅订单
-    rp := item.Edges.Plan
-    if rp != nil {
+    op := item.Edges.Plan
+    if op != nil {
         res.Plan = &model.Plan{
-            ID:   rp.ID,
-            Name: rp.Name,
-            Days: rp.Days,
+            ID:   op.ID,
+            Name: op.Name,
+            Days: op.Days,
         }
-        for _, pm := range rp.Edges.Pms {
+        for _, pm := range op.Edges.Pms {
             res.Models = append(res.Models, model.BatteryModel{
                 ID:       pm.ID,
                 Voltage:  pm.Voltage,
@@ -108,13 +114,56 @@ func (s *riderOrderService) Detail(item *ent.Order) model.RiderOrder {
             })
         }
     }
+
+    // rider
+    or := item.Edges.Rider
+    if or != nil {
+        res.Rider = model.RiderBasic{
+            ID:    or.ID,
+            Phone: or.Phone,
+        }
+        if or.Edges.Person != nil {
+            res.Rider.Name = or.Edges.Person.Name
+        }
+    }
+
+    // store
+    osub := item.Edges.Subscribe
+    if osub != nil {
+        os := osub.Edges.Store
+        if os != nil {
+            res.Store = &model.Store{
+                ID:   os.ID,
+                Name: os.Name,
+            }
+        }
+
+        oe := osub.Edges.Employee
+        if oe != nil {
+            res.Employee = &model.Employee{
+                ID:    oe.ID,
+                Name:  oe.Name,
+                Phone: oe.Phone,
+            }
+        }
+    }
     return res
 }
 
 func (s *riderOrderService) Query(riderID, orderID uint64) *ent.Order {
-    item, _ := s.orm.QueryNotDeleted().Where(order.RiderID(riderID), order.ID(orderID)).WithCity().WithPlan(func(pq *ent.PlanQuery) {
-        pq.WithPms()
-    }).First(s.ctx)
+    item, _ := s.orm.QueryNotDeleted().
+        Where(order.RiderID(riderID), order.ID(orderID)).
+        WithCity().
+        WithPlan(func(pq *ent.PlanQuery) {
+            pq.WithPms()
+        }).
+        WithRider(func(rq *ent.RiderQuery) {
+            rq.WithPerson()
+        }).
+        WithSubscribe(func(sq *ent.SubscribeQuery) {
+            sq.WithEmployee().WithStore()
+        }).
+        First(s.ctx)
     if item == nil {
         snag.Panic("未找到订单")
     }

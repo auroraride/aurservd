@@ -3662,6 +3662,22 @@ func (c *SubscribeClient) QueryStation(s *Subscribe) *EnterpriseStationQuery {
 	return query
 }
 
+// QueryStore queries the store edge of a Subscribe.
+func (c *SubscribeClient) QueryStore(s *Subscribe) *StoreQuery {
+	query := &StoreQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.StoreTable, subscribe.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryRider queries the rider edge of a Subscribe.
 func (c *SubscribeClient) QueryRider(s *Subscribe) *RiderQuery {
 	query := &RiderQuery{config: c.config}
