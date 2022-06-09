@@ -25,6 +25,7 @@ var Branch = new(branch)
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query  model.BranchListReq  true  "desc"
 // @Success      200  {object}  model.PaginationRes{items=[]model.BranchItem}  "请求成功"
 func (*branch) List(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.BranchListReq](c)

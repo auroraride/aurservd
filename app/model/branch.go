@@ -9,7 +9,8 @@ package model
 type BranchListReq struct {
     PaginationReq
 
-    CityID *uint64 `json:"cityId" query:"cityId" trans:"城市"`
+    Name   *string `json:"name" query:"name"`     // 网点名称
+    CityID *uint64 `json:"cityId" query:"cityId"` // 城市ID
 }
 
 // BranchCreateReq 创建网点

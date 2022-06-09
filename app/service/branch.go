@@ -111,6 +111,10 @@ func (s *branchService) List(req *model.BranchListReq) *model.PaginationRes {
         q.Where(branch.CityID(*req.CityID))
     }
 
+    if req.Name != nil {
+        q.Where(branch.NameContainsFold(*req.Name))
+    }
+
     q.WithCity().
         WithStores().
         WithCabinets().

@@ -65,5 +65,10 @@ func (Branch) Indexes() []ent.Index {
                 dialect.Postgres: "GIST",
             }),
         ),
+        index.Fields("name").Annotations(
+            entsql.IndexTypes(map[string]string{
+                dialect.Postgres: "GIN",
+            }),
+        ),
     }
 }
