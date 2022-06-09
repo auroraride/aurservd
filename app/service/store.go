@@ -136,7 +136,7 @@ func (s *storeService) List(req *model.StoreListReq) *model.PaginationRes {
         q.Where(store.Status(*req.Status))
     }
 
-    return model.ParsePaginationResponse[model.StoreItem, ent.Cabinet](q, req.PaginationReq, func(item *ent.Cabinet) (res model.StoreItem) {
+    return model.ParsePaginationResponse[model.StoreItem, ent.Store](q, req.PaginationReq, func(item *ent.Store) (res model.StoreItem) {
         _ = copier.Copy(&res, item)
         if item.Edges.Branch != nil {
             city := item.Edges.Branch.Edges.City
