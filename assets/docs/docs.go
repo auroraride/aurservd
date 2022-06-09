@@ -1847,6 +1847,54 @@ const docTemplate = `{
                         "name": "X-Manager-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "时间结束, 格式为: 2022-01-01",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "骑手姓名",
+                        "name": "riderName",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "骑手电话",
+                        "name": "riderPhone",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "时间起始, 格式为: 2022-01-01",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "订单类型 1:新签 2:续签 3:重签 4:更改电池 5:救援 6:滞纳金 7:押金",
+                        "name": "type",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2671,6 +2719,15 @@ const docTemplate = `{
                         "name": "X-Manager-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ManagerCreateReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -5434,6 +5491,26 @@ const docTemplate = `{
                 },
                 "time": {
                     "description": "操作时间",
+                    "type": "string"
+                }
+            }
+        },
+        "model.ManagerCreateReq": {
+            "type": "object",
+            "required": [
+                "name",
+                "password",
+                "phone"
+            ],
+            "properties": {
+                "name": {
+                    "description": "姓名 ",
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone": {
                     "type": "string"
                 }
             }

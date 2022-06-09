@@ -1160,6 +1160,20 @@ definitions:
         description: 操作时间
         type: string
     type: object
+  model.ManagerCreateReq:
+    properties:
+      name:
+        description: '姓名 '
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+    - name
+    - password
+    - phone
+    type: object
   model.ManagerSigninRes:
     properties:
       id:
@@ -3137,6 +3151,38 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: '时间结束, 格式为: 2022-01-01'
+        in: query
+        name: end
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 骑手姓名
+        in: query
+        name: riderName
+        type: string
+      - description: 骑手电话
+        in: query
+        name: riderPhone
+        type: string
+      - description: '时间起始, 格式为: 2022-01-01'
+        in: query
+        name: start
+        type: string
+      - description: 订单类型 1:新签 2:续签 3:重签 4:更改电池 5:救援 6:滞纳金 7:押金
+        in: query
+        name: type
+        type: integer
       produces:
       - application/json
       responses:
@@ -3677,6 +3723,12 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ManagerCreateReq'
       produces:
       - application/json
       responses:
