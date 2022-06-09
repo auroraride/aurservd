@@ -14,6 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/manager"
     "github.com/auroraride/aurservd/pkg/cache"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/rs/xid"
     log "github.com/sirupsen/logrus"
@@ -100,8 +101,49 @@ func (s *managerService) ExtendTokenTime(id uint64, token string) {
     ctx := context.Background()
     cache.Set(ctx, key, token, 24*time.Hour)
     cache.Set(ctx, token, id, 24*time.Hour)
-    _ = ar.Ent.Rider.
+    _, _ = s.orm.
         UpdateOneID(id).
         SetLastSigninAt(time.Now()).
-        Exec(context.Background())
+        Save(ctx)
+}
+
+// List 列举管理员
+func (s *managerService) List(req *model.ManagerListReq) *model.PaginationRes {
+    q := s.orm.QueryNotDeleted().Order(ent.Desc(manager.FieldCreatedAt))
+    if req.Keyword != nil {
+        q.Where(
+            manager.Or(
+                manager.PhoneContainsFold(*req.Keyword),
+                manager.NameContainsFold(*req.Keyword),
+            ),
+        )
+    }
+    return model.ParsePaginationResponse(
+        q,
+        req.PaginationReq,
+        func(item *ent.Manager) model.ManagerListRes {
+            return model.ManagerListRes{
+                ID:    item.ID,
+                Name:  item.Name,
+                Phone: item.Phone,
+                Role: model.Role{
+                    ID:   1,
+                    Name: "超级管理员",
+                },
+            }
+        },
+    )
+}
+
+func (s *managerService) Query(id uint64) *ent.Manager {
+    mgr, _ := s.GetManagerById(id)
+    if mgr == nil {
+        snag.Panic("未找到有效的管理员")
+    }
+    return mgr
+}
+
+// Delete 删除管理员
+func (s *managerService) Delete(req *model.IDParamReq) {
+    s.orm.SoftDeleteOne(s.Query(req.ID)).SaveX(s.ctx)
 }

@@ -1,3 +1,14 @@
+## 2022-06-09
+
+#### 接口新增
+
+- [M1003 列举管理员](http://localhost:5533/docs#tag/M/operation/ManagerManagerList)
+- [M1004 删除管理员](http://localhost:5533/docs#tag/M/operation/ManagerManagerDelete)
+
+
+
+<br />
+
 ## 2022-06-08
 
 #### 接口调整

@@ -897,7 +897,7 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
-		{Name: "phone", Type: field.TypeString, Unique: true, Comment: "账户/手机号", Size: 30},
+		{Name: "phone", Type: field.TypeString, Comment: "账户/手机号", Size: 30},
 		{Name: "name", Type: field.TypeString, Comment: "姓名", Size: 30},
 		{Name: "password", Type: field.TypeString, Comment: "密码"},
 		{Name: "last_signin_at", Type: field.TypeTime, Comment: "最后登录时间", Nullable: true},
@@ -922,6 +922,21 @@ var (
 				Name:    "manager_phone",
 				Unique:  false,
 				Columns: []*schema.Column{ManagerColumns[7]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+			{
+				Name:    "manager_name",
+				Unique:  false,
+				Columns: []*schema.Column{ManagerColumns[8]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
 			},
 		},
 	}

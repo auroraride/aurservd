@@ -16,7 +16,9 @@ func loadManagerRoutes() {
     g.POST("/user/signin", mapi.Manager.Signin) // 登录
 
     g.Use(middleware.ManagerMiddleware())
-    g.POST("/user", mapi.Manager.Create) // 新增管理员
+    g.POST("/user", mapi.Manager.Create)
+    g.GET("/user", mapi.Manager.List)
+    g.DELETE("/user/:id", mapi.Manager.Delete)
 
     // 设置
     g.GET("/setting", mapi.Setting.List)

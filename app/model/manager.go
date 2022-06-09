@@ -7,8 +7,8 @@ package model
 
 // ManagerSigninReq 管理员登录请求
 type ManagerSigninReq struct {
-    Phone    string `json:"phone" validate:"required,phone"`
-    Password string `json:"password" validate:"required"`
+    Phone    string `json:"phone" validate:"required,phone" trans:"手机号"`
+    Password string `json:"password" validate:"required" trans:"密码"`
 }
 
 // ManagerSigninRes 管理员登录返回
@@ -23,4 +23,21 @@ type ManagerSigninRes struct {
 type ManagerCreateReq struct {
     ManagerSigninReq
     Name string `json:"name" validate:"required" trans:"姓名"`
+}
+
+type ManagerListReq struct {
+    PaginationReq
+    Keyword *string `json:"keyword"` // 搜索关键词 姓名/手机号
+}
+
+type Role struct {
+    ID   uint64 `json:"id"`
+    Name string `json:"name"` // 角色名称
+}
+
+type ManagerListRes struct {
+    ID    uint64 `json:"id"`
+    Name  string `json:"name"`  // 姓名
+    Phone string `json:"phone"` // 手机号
+    Role  Role   `json:"role"`  // 角色
 }

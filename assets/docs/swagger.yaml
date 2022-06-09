@@ -1166,8 +1166,10 @@ definitions:
         description: '姓名 '
         type: string
       password:
+        description: '密码 '
         type: string
       phone:
+        description: '手机号 '
         type: string
     required:
     - name
@@ -3519,7 +3521,7 @@ paths:
             items:
               $ref: '#/definitions/model.SettingReq'
             type: array
-      summary: M1003 列举设置
+      summary: M1010 列举设置
       tags:
       - '[M]管理接口'
   /manager/v1/setting/{key}:
@@ -3551,7 +3553,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1004 调整设置
+      summary: M1011 调整设置
       tags:
       - '[M]管理接口'
   /manager/v1/store:
@@ -3713,6 +3715,38 @@ paths:
       tags:
       - '[M]管理接口'
   /manager/v1/user:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerManagerList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 搜索关键词 姓名/手机号
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M1003 列举管理员
+      tags:
+      - '[M]管理接口'
     post:
       consumes:
       - application/json
@@ -3737,6 +3771,32 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M1002 新增管理员
+      tags:
+      - '[M]管理接口'
+  /manager/v1/user/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: ManagerManagerDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 管理员ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M1004 删除管理员
       tags:
       - '[M]管理接口'
   /manager/v1/user/signin:

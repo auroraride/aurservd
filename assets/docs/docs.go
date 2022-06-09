@@ -2385,7 +2385,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M1003 列举设置",
+                "summary": "M1010 列举设置",
                 "operationId": "ManagerSettingList",
                 "parameters": [
                     {
@@ -2420,7 +2420,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M1004 调整设置",
+                "summary": "M1011 调整设置",
                 "operationId": "ManagerSettingModify",
                 "parameters": [
                     {
@@ -2700,6 +2700,54 @@ const docTemplate = `{
             }
         },
         "/manager/v1/user": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M1003 列举管理员",
+                "operationId": "ManagerManagerList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索关键词 姓名/手机号",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -2759,6 +2807,45 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.ManagerSigninRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/user/{id}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M1004 删除管理员",
+                "operationId": "ManagerManagerDelete",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "管理员ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -5508,9 +5595,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "description": "密码 ",
                     "type": "string"
                 },
                 "phone": {
+                    "description": "手机号 ",
                     "type": "string"
                 }
             }

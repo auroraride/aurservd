@@ -56,3 +56,34 @@ func (*manager) Create(c echo.Context) (err error) {
     }
     return ctx.SendResponse()
 }
+
+// List
+// @ID           ManagerManagerList
+// @Router       /manager/v1/user [GET]
+// @Summary      M1003 列举管理员
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query  model.ManagerListReq  true  "desc"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*manager) List(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.ManagerListReq](c)
+    return ctx.SendResponse(service.NewManagerWithModifier(ctx.Modifier).List(req))
+}
+
+// Delete
+// @ID           ManagerManagerDelete
+// @Router       /manager/v1/user/{id} [DELETE]
+// @Summary      M1004 删除管理员
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        id  path  uint64  true  "管理员ID"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*manager) Delete(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+    service.NewManagerWithModifier(ctx.Modifier).Delete(req)
+    return ctx.SendResponse()
+}
