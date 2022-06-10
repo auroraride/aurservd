@@ -2438,6 +2438,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "骑手ID ",
                         "name": "id",
                         "in": "query",
@@ -2445,8 +2451,21 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "查询偏移, 默认为0, 尝试上拉分页查询时加100, 当尝试分页请求返回空数组时代表无数据, 不用再上拉请求",
-                        "name": "offset",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4
+                        ],
+                        "type": "integer",
+                        "description": "操作类别 0:全部 1:状态 2:资料 3:时长 4:押金",
+                        "name": "type",
                         "in": "query"
                     }
                 ],
@@ -2454,10 +2473,22 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.LogOperate"
-                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.LogOperate"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }

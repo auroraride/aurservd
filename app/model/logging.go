@@ -17,6 +17,7 @@ const (
     OperateSubscribePause              // 暂停计费
     OperateSubscribeContinue           // 继续计费
     OperateDeposit                     // 调整押金
+    OperateProfile                     // 修改资料
 )
 
 func (o Operate) String() string {
@@ -39,6 +40,8 @@ func (o Operate) String() string {
         return "继续计费"
     case OperateDeposit:
         return "调整押金"
+    case OperateProfile:
+        return "修改资料"
     default:
         return "未知操作"
     }

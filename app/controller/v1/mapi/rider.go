@@ -72,7 +72,7 @@ func (*rider) Block(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        query  query  model.RiderLogReq  true  "desc"
-// @Success      200  {object}  []model.LogOperate  "请求成功"
+// @Success      200  {object}  model.PaginationRes{items=[]model.LogOperate}  "请求成功"
 func (*rider) Log(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.RiderLogReq](c)
     return ctx.SendResponse(service.NewRiderWithModifier(ctx.Modifier).GetLogs(req))

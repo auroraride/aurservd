@@ -10,8 +10,10 @@ import (
     sls "github.com/aliyun/aliyun-log-go-sdk"
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
+    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "reflect"
+    "strconv"
     "time"
 )
 
@@ -121,4 +123,35 @@ func PutLog(ptr Logger) {
             return
         }
     }()
+}
+
+func GetCount(logstore string, query string, from time.Time) (total int) {
+    var cnt []struct {
+        Count string `json:"count"`
+    }
+    cfg := ar.Config.Aliyun.Sls
+    response, err := ali.NewSls().GetLogsV2(cfg.Project, logstore, &sls.GetLogRequest{
+        From:    from.Unix(),
+        To:      time.Now().Unix(),
+        Reverse: true,
+        Query:   query + " | SELECT COUNT(*) as count",
+    })
+    if err != nil {
+        log.Error(err)
+        return
+    }
+    var b []byte
+    b, err = jsoniter.Marshal(response.Logs)
+    if err != nil {
+        return
+    }
+    err = jsoniter.Unmarshal(b, &cnt)
+    if err != nil {
+        return
+    }
+    if len(cnt) < 1 {
+        return
+    }
+    total, _ = strconv.Atoi(cnt[0].Count)
+    return
 }

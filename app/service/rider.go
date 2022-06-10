@@ -27,6 +27,7 @@ import (
     jsoniter "github.com/json-iterator/go"
     "github.com/rs/xid"
     "strconv"
+    "strings"
     "time"
 )
 
@@ -559,9 +560,39 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string)
 }
 
 // GetLogs 获取用户操作日志
-func (s *riderService) GetLogs(req *model.RiderLogReq) (items []model.LogOperate) {
+func (s *riderService) GetLogs(req *model.RiderLogReq) *model.PaginationRes {
+    cfg := ar.Config.Aliyun.Sls
+
     u := s.Query(req.ID)
-    b, _ := jsoniter.Marshal(logging.NewOperateLog().GetLogs(u.CreatedAt, fmt.Sprintf(`refTable = 'rider' AND refId = %d`, u.ID), req.Offset))
+    query := fmt.Sprintf(`refTable:'rider' AND refId:%d`, u.ID)
+    if req.Type != model.RiderLogTypeAll {
+        ts, ok := model.RiderLogTypes[req.Type]
+        if !ok {
+            snag.Panic("类型错误")
+        }
+        and := make([]string, len(ts))
+        for i, t := range ts {
+            and[i] = fmt.Sprintf(`operate:%s`, t)
+        }
+        query += fmt.Sprintf(" AND %s", strings.Join(and, " OR "))
+    }
+
+    // 分页获取
+    total := logging.GetCount(cfg.OperateLog, query, u.CreatedAt)
+    pageReq := req.PaginationReq
+    pages := pageReq.GetPages(total)
+
+    // 查询结果
+    result := logging.NewOperateLog().GetLogs(u.CreatedAt, query, int64(pageReq.GetOffset()), int64(pageReq.GetLimit()))
+    b, _ := jsoniter.Marshal(result)
+    items := make([]model.LogOperate, 0)
     _ = jsoniter.Unmarshal(b, &items)
-    return
+    return &model.PaginationRes{
+        Pagination: model.Pagination{
+            Current: pageReq.GetCurrent(),
+            Pages:   pages,
+            Total:   total,
+        },
+        Items: items,
+    }
 }

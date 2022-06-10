@@ -117,8 +117,40 @@ type RiderBlockReq struct {
     Block bool   `json:"block"` // `true`封禁 `false`解封
 }
 
+const (
+    RiderLogTypeAll           uint8 = iota // 全部
+    RiderLogTypeStatus                     // 状态
+    RiderLogTypeProfile                    // 资料
+    RiderLogTypeSubscribeDate              // 时长
+    RiderLogTypeDeposit                    // 押金
+)
+
+var (
+    RiderLogTypes = map[uint8][]Operate{
+        RiderLogTypeStatus: {
+            OperatePersonBan,
+            OperatePersonUnBan,
+            OperateRiderBLock,
+            OperateRiderUnBLock,
+        },
+        RiderLogTypeProfile: {
+            OperateProfile,
+        },
+        RiderLogTypeSubscribeDate: {
+            OperateSubscribeAlter,
+            OperateSubscribePause,
+            OperateSubscribeContinue,
+        },
+        RiderLogTypeDeposit: {
+            OperateDeposit,
+        },
+    }
+)
+
 // RiderLogReq 骑手操作日志
 type RiderLogReq struct {
-    ID     uint64 `json:"id" query:"id" validate:"required" trans:"骑手ID"`
-    Offset int64  `json:"offset" query:"offset"` // 查询偏移, 默认为0, 尝试上拉分页查询时加100, 当尝试分页请求返回空数组时代表无数据, 不用再上拉请求
+    PaginationReq
+
+    ID   uint64 `json:"id" query:"id" validate:"required" trans:"骑手ID"`
+    Type uint8  `json:"type" enums:"0,1,2,3,4" query:"type"` // 操作类别 0:全部 1:状态 2:资料 3:时长 4:押金
 }

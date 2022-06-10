@@ -10,6 +10,14 @@
 
 
 
+#### 接口调整
+
+- [M7005 查看骑手操作日志](http://localhost:5533/docs#tag/M/operation/ManagerRiderLog)
+  - 调整入参和返回为标准分页模型
+  - 入参新增参数`type`详情参见文档
+
+
+
 
 
 <br />

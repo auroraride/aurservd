@@ -78,18 +78,14 @@ func (o *OperateLog) Send() {
 
 // GetLogs 获取日志
 // 参考 https://help.aliyun.com/document_detail/29029.htm?spm=a2c4g.11186623.0.0.21752a73O1u0I4#t13238.html
-func (o *OperateLog) GetLogs(from time.Time, query string, params ...int64) []map[string]string {
+func (o *OperateLog) GetLogs(from time.Time, query string, offset, limit int64) []map[string]string {
     cfg := ar.Config.Aliyun.Sls
-    var offset int64
-    if len(params) > 0 {
-        offset = params[0]
-    }
     response, err := ali.NewSls().GetLogsV2(cfg.Project, cfg.OperateLog, &sls.GetLogRequest{
         From:    from.Unix(),
         To:      time.Now().Unix(),
         Reverse: true,
         Query:   query,
-        Lines:   100,
+        Lines:   limit,
         Offset:  offset,
     })
     if err != nil {

@@ -276,7 +276,7 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
     go logging.NewOperateLog().
         SetRef(r).
         SetModifier(s.modifier).
-        SetOperate(model.OperateDeposit).
+        SetOperate(model.OperateProfile).
         SetDiff(strings.Join(before, "\n"), strings.Join(after, "\n")).
         Send()
 }
