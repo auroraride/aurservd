@@ -50,8 +50,8 @@ func NewSubscribeWithModifier(m *model.Modifier) *subscribeService {
     return s
 }
 
-// Recent 获取骑手最近订阅详情
-func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
+// Recent 查询骑手最近的订阅
+func (s *subscribeService) Recent(riderID uint64) *ent.Subscribe {
     sub, _ := s.orm.QueryNotDeleted().
         Where(subscribe.RiderID(riderID)).
         Order(ent.Desc(subscribe.FieldCreatedAt)).
@@ -65,8 +65,15 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
                 doq.Where(order.Type(model.OrderTypeDeposit))
             })
         }).
-        Limit(1).
+        WithEnterprise().
         First(s.ctx)
+
+    return sub
+}
+
+// RecentDetail 获取骑手最近订阅详情
+func (s *subscribeService) RecentDetail(riderID uint64) *model.Subscribe {
+    sub := s.Recent(riderID)
 
     if sub == nil {
         return nil
@@ -137,6 +144,13 @@ func (s *subscribeService) Recent(riderID uint64) *model.Subscribe {
         }
         if len(o.Edges.Children) > 0 {
             res.Order.Deposit = o.Edges.Children[0].Amount
+        }
+    }
+
+    if sub.Edges.Enterprise != nil {
+        res.Enterprise = &model.EnterpriseBasic{
+            ID:   sub.Edges.Enterprise.ID,
+            Name: sub.Edges.Enterprise.Name,
         }
     }
 

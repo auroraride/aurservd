@@ -112,7 +112,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
         snag.Panic("当前有退款中的订单")
     }
 
-    sub := NewSubscribe().Recent(s.rider.ID)
+    sub := NewSubscribe().RecentDetail(s.rider.ID)
     // 判定类型条件
     var subID, orderID *uint64
     otype := req.OrderType
@@ -234,7 +234,7 @@ func (s *orderService) Refund(riderID uint64, req *model.OrderRefundReq) {
         snag.Panic("退款参数错误")
     }
 
-    sub := NewSubscribe().Recent(riderID)
+    sub := NewSubscribe().RecentDetail(riderID)
     orc := ar.Ent.OrderRefund.Create().SetOutRefundNo(tools.NewUnique().NewSN28())
     if req.SubscribeID != nil {
         if sub.ID != *req.SubscribeID {

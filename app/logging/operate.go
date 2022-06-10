@@ -23,6 +23,8 @@ const (
     OperateRiderUnBLock                // 解封账户
     OperateSubscribeAlter              // 修改订阅时间
     OperateEnterprisePrepayment        // 企业预储值
+    OperateSubscribePause              // 暂停计费
+    OperateSubscribeContinue           // 继续计费
 )
 
 func (o Operate) String() string {
@@ -39,6 +41,10 @@ func (o Operate) String() string {
         return "修改时间"
     case OperateEnterprisePrepayment:
         return "企业预储值"
+    case OperateSubscribePause:
+        return "暂停计费"
+    case OperateSubscribeContinue:
+        return "继续计费"
     default:
         return "未知操作"
     }

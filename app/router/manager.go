@@ -71,6 +71,8 @@ func loadManagerRoutes() {
     g.POST("/rider/block", mapi.Rider.Block)
     g.POST("/subscribe/alter", mapi.Subscribe.Alter)
     g.GET("/rider/log", mapi.Rider.Log)
+    g.POST("/rider/pause", mapi.Rider.Pause)
+    g.POST("/rider/continue", mapi.Rider.Continue)
 
     // 业务
     g.GET("/order", mapi.Order.List)

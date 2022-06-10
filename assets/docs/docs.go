@@ -2374,6 +2374,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/rider/continue": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7007 继续计费",
+                "operationId": "ManagerRiderContinue",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑手ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/rider/log": {
             "get": {
                 "consumes": [
@@ -2417,6 +2456,45 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/model.LogOperate"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/rider/pause": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7006 暂停计费",
+                "operationId": "ManagerRiderPause",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑手ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -6549,6 +6627,14 @@ const docTemplate = `{
                 "endAt": {
                     "description": "结束时间 / 预计套餐结束时间",
                     "type": "string"
+                },
+                "enterprise": {
+                    "description": "企业信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseBasic"
+                        }
+                    ]
                 },
                 "id": {
                     "description": "订阅ID",

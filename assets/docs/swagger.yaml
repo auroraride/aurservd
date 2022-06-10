@@ -1789,6 +1789,10 @@ definitions:
       endAt:
         description: 结束时间 / 预计套餐结束时间
         type: string
+      enterprise:
+        allOf:
+        - $ref: '#/definitions/model.EnterpriseBasic'
+        description: 企业信息
       id:
         description: 订阅ID
         type: integer
@@ -3527,6 +3531,32 @@ paths:
       summary: M7003 封禁/解除封禁骑手账户
       tags:
       - '[M]管理接口'
+  /manager/v1/rider/continue:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerRiderContinue
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 骑手ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M7007 继续计费
+      tags:
+      - '[M]管理接口'
   /manager/v1/rider/log:
     get:
       consumes:
@@ -3557,6 +3587,32 @@ paths:
               $ref: '#/definitions/model.LogOperate'
             type: array
       summary: M7005 查看骑手操作日志
+      tags:
+      - '[M]管理接口'
+  /manager/v1/rider/pause:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerRiderPause
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 骑手ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M7006 暂停计费
       tags:
       - '[M]管理接口'
   /manager/v1/setting:

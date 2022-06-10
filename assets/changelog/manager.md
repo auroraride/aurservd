@@ -1,3 +1,16 @@
+## 2022-06-10
+
+#### 接口新增
+
+- [M7006 暂停计费](http://localhost:5533/docs#tag/M/operation/ManagerRiderPause)
+- [M7007 继续计费](http://localhost:5533/docs#tag/M/operation/ManagerRiderContinue)
+
+
+
+
+
+<br />
+
 ## 2022-06-09
 
 #### 接口新增

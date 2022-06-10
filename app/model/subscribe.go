@@ -38,10 +38,11 @@ type Subscribe struct {
     StartAt     string  `json:"startAt"`                  // 开始时间
     EndAt       string  `json:"endAt"`                    // 结束时间 / 预计套餐结束时间
 
-    City   *City               `json:"city,omitempty"`   // 所属城市
-    Models []BatteryModel      `json:"models,omitempty"` // 可用电池型号, 显示为`72V30AH`即Voltage(V)+Capacity(AH), 逗号分隔
-    Plan   *Plan               `json:"plan,omitempty"`   // 骑士卡信息
-    Order  *SubscribeOrderInfo `json:"order,omitempty"`  // 订单信息
+    City       *City               `json:"city,omitempty"`       // 所属城市
+    Models     []BatteryModel      `json:"models,omitempty"`     // 可用电池型号, 显示为`72V30AH`即Voltage(V)+Capacity(AH), 逗号分隔
+    Plan       *Plan               `json:"plan,omitempty"`       // 骑士卡信息
+    Order      *SubscribeOrderInfo `json:"order,omitempty"`      // 订单信息
+    Enterprise *EnterpriseBasic    `json:"enterprise,omitempty"` // 企业信息
 }
 
 // UnsubscribedDaysToNewly 退订多少天后视为有效重签并计算佣金

@@ -68,7 +68,7 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
     }
 
     // 获取套餐
-    o := NewSubscribe().Recent(s.rider.ID)
+    o := NewSubscribe().RecentDetail(s.rider.ID)
 
     // TODO 判定门店物资是否匹配电压型号
     if o.Status != model.SubscribeStatusUsing {

@@ -63,7 +63,7 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
     }
 
     // 是否有生效中套餐
-    o := NewSubscribe().Recent(s.rider.ID)
+    o := NewSubscribe().RecentDetail(s.rider.ID)
     if o == nil || o.Status != model.SubscribeStatusUsing {
         snag.Panic("无生效中的骑行卡")
     }

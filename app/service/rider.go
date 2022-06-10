@@ -334,7 +334,7 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
             )
         }).
         WithSubscribes(func(sq *ent.SubscribeQuery) {
-            sq.Order(ent.Desc(subscribe.FieldCreatedAt)).Limit(1)
+            sq.Order(ent.Desc(subscribe.FieldCreatedAt))
         })
     if req.Keyword != nil {
         // 判定是否id字段
@@ -529,7 +529,7 @@ func (s *riderService) Deposit(riderID uint64) float64 {
 
 // Profile 获取用户资料
 func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string) *model.RiderSigninRes {
-    sub := NewSubscribe().Recent(u.ID)
+    sub := NewSubscribe().RecentDetail(u.ID)
     profile := &model.RiderSigninRes{
         ID:              u.ID,
         Phone:           u.Phone,

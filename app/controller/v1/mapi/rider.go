@@ -77,3 +77,35 @@ func (*rider) Log(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.RiderLogReq](c)
     return ctx.SendResponse(service.NewRiderWithModifier(ctx.Modifier).GetLogs(req))
 }
+
+// Pause
+// @ID           ManagerRiderPause
+// @Router       /manager/v1/rider/pause [POST]
+// @Summary      M7006 暂停计费
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        id  path  uint64  true  "骑手ID"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*rider) Pause(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.IDPostReq](c)
+    service.NewRiderMgrWithModifier(ctx.Modifier).PauseSubscribe(req.ID)
+    return ctx.SendResponse()
+}
+
+// Continue
+// @ID           ManagerRiderContinue
+// @Router       /manager/v1/rider/continue [POST]
+// @Summary      M7007 继续计费
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        id  path  uint64  true  "骑手ID"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*rider) Continue(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.IDPostReq](c)
+    service.NewRiderMgrWithModifier(ctx.Modifier).ContinueSubscribe(req.ID)
+    return ctx.SendResponse()
+}
