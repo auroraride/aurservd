@@ -14,6 +14,24 @@ const (
     SubscribeStatusCanceled                  // 已取消, 已退款
 )
 
+func SubscribeStatusText(status uint8) string {
+    switch status {
+    case SubscribeStatusInactive:
+        return "未激活"
+    case SubscribeStatusUsing:
+        return "计费中"
+    case SubscribeStatusPaused:
+        return "寄存中"
+    case SubscribeStatusOverdue:
+        return "已逾期"
+    case SubscribeStatusUnSubscribed:
+        return "已退订"
+    case SubscribeStatusCanceled:
+        return "已取消"
+    }
+    return "未知状态"
+}
+
 // SubscribeOrderInfo 订阅订单信息
 type SubscribeOrderInfo struct {
     ID      uint64  `json:"id"`      // 订阅ID

@@ -7,13 +7,16 @@ package service
 
 import (
     "context"
+    "fmt"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
+    log "github.com/sirupsen/logrus"
     "time"
 )
 
@@ -51,10 +54,17 @@ func NewRiderMgrWithEmployee(e *model.Employee) *riderMgrService {
     return s
 }
 
+func (s *riderMgrService) QuerySubscribeWithRider(subscribeID uint64) *ent.Subscribe {
+    item, _ := ar.Ent.Subscribe.QueryNotDeleted().Where(subscribe.ID(subscribeID)).WithRider().Only(s.ctx)
+    if item == nil {
+        snag.Panic("未找到对应订阅")
+    }
+    return item
+}
+
 // PauseSubscribe 暂停计费
-func (s *riderMgrService) PauseSubscribe(riderID uint64) {
-    r := NewRider().Query(riderID)
-    sub := NewSubscribeWithModifier(s.modifier).Recent(riderID)
+func (s *riderMgrService) PauseSubscribe(subscribeID uint64) {
+    sub := s.QuerySubscribeWithRider(subscribeID)
     if sub == nil || sub.Status != model.SubscribeStatusUsing {
         snag.Panic("无生效订阅")
     }
@@ -65,7 +75,7 @@ func (s *riderMgrService) PauseSubscribe(riderID uint64) {
     _, err := tx.SubscribePause.Create().
         SetStartAt(time.Now()).
         SetRemark("管理员操作").
-        SetRiderID(riderID).
+        SetRiderID(sub.RiderID).
         SetSubscribeID(sub.ID).
         Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
@@ -80,7 +90,7 @@ func (s *riderMgrService) PauseSubscribe(riderID uint64) {
 
     // 记录日志
     go logging.NewOperateLog().
-        SetRef(r).
+        SetRef(sub.Edges.Rider).
         SetModifier(s.modifier).
         SetOperate(logging.OperateSubscribePause).
         SetDiff("计费中", "暂停计费").
@@ -88,16 +98,15 @@ func (s *riderMgrService) PauseSubscribe(riderID uint64) {
 }
 
 // ContinueSubscribe 继续计费
-func (s *riderMgrService) ContinueSubscribe(riderID uint64) {
-    r := NewRider().Query(riderID)
+func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
+    sub := s.QuerySubscribeWithRider(subscribeID)
 
     sp, _ := ar.Ent.SubscribePause.QueryNotDeleted().
-        Where(subscribepause.RiderID(riderID), subscribepause.EndAtIsNil()).
+        Where(subscribepause.SubscribeID(sub.ID), subscribepause.EndAtIsNil()).
         Order(ent.Desc(subscribepause.FieldCreatedAt)).
-        WithSubscribe().
         First(s.ctx)
 
-    if sp == nil || sp.Edges.Subscribe == nil || sp.Edges.Subscribe.Status != model.SubscribeStatusPaused {
+    if sp == nil || sub.Status != model.SubscribeStatusPaused {
         snag.Panic("无暂停中的订阅")
     }
 
@@ -113,7 +122,7 @@ func (s *riderMgrService) ContinueSubscribe(riderID uint64) {
     snag.PanicIfErrorX(err, tx.Rollback)
 
     // 更新订阅
-    _, err = tx.Subscribe.UpdateOne(sp.Edges.Subscribe).
+    _, err = tx.Subscribe.UpdateOne(sub).
         SetStatus(model.SubscribeStatusUsing).
         AddPauseDays(days).
         ClearPausedAt().
@@ -124,10 +133,39 @@ func (s *riderMgrService) ContinueSubscribe(riderID uint64) {
 
     // 记录日志
     go logging.NewOperateLog().
-        SetRef(r).
+        SetRef(sub.Edges.Rider).
         SetModifier(s.modifier).
         SetOperate(logging.OperateSubscribePause).
         SetDiff("暂停计费", "计费中").
         Send()
+}
 
+// HaltSubscribe 强制退租
+// 会抹去欠费情况
+// TODO 是否适用于团签骑手
+func (s *riderMgrService) HaltSubscribe(subscribeID uint64) {
+    sub := s.QuerySubscribeWithRider(subscribeID)
+    if sub == nil || sub.EndAt != nil {
+        snag.Panic("未找到订阅")
+    }
+
+    _, err := sub.Update().SetEndAt(time.Now()).SetRemaining(0).SetStatus(model.SubscribeStatusCanceled).SetRemark("管理员操作强制退租").Save(s.ctx)
+    if err != nil {
+        log.Error(err)
+        snag.Panic("操作失败")
+    }
+
+    before := fmt.Sprintf(
+        "%s剩余天数: %d",
+        model.SubscribeStatusText(sub.Status),
+        sub.Remaining,
+    )
+
+    // 记录日志
+    go logging.NewOperateLog().
+        SetRef(sub.Edges.Rider).
+        SetModifier(s.modifier).
+        SetOperate(logging.OperateSubscribePause).
+        SetDiff(before, "强制退租").
+        Send()
 }

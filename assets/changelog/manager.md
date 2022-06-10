@@ -4,6 +4,7 @@
 
 - [M7006 暂停计费](http://localhost:5533/docs#tag/M/operation/ManagerRiderPause)
 - [M7007 继续计费](http://localhost:5533/docs#tag/M/operation/ManagerRiderContinue)
+- [M7008 强制退租](http://localhost:5533/docs#tag/M/operation/ManagerSubscribeHalt)
 
 
 
