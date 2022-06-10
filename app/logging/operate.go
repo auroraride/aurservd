@@ -25,6 +25,7 @@ const (
     OperateEnterprisePrepayment        // 企业预储值
     OperateSubscribePause              // 暂停计费
     OperateSubscribeContinue           // 继续计费
+    OperateDeposit                     // 调整押金
 )
 
 func (o Operate) String() string {
@@ -45,6 +46,8 @@ func (o Operate) String() string {
         return "暂停计费"
     case OperateSubscribeContinue:
         return "继续计费"
+    case OperateDeposit:
+        return "调整押金"
     default:
         return "未知操作"
     }

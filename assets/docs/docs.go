@@ -1087,6 +1087,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/deposit": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7009 修改押金",
+                "operationId": "ManagerSubscribeDeposit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderMgrDepositReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/employee": {
             "get": {
                 "consumes": [
@@ -2417,6 +2458,47 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/model.LogOperate"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/rider/modify": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7010 修改骑手资料",
+                "operationId": "ManagerSubscribeModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderMgrModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -6246,6 +6328,56 @@ const docTemplate = `{
                 "voltage": {
                     "description": "骑士卡可用电压型号",
                     "type": "number"
+                }
+            }
+        },
+        "model.RiderMgrDepositReq": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "amount": {
+                    "description": "押金金额",
+                    "type": "number"
+                },
+                "id": {
+                    "description": "骑手ID ",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.RiderMgrModifyReq": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "authStatus": {
+                    "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                "contact": {
+                    "description": "联系人",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderContact"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "骑手ID ",
+                    "type": "integer"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
                 }
             }
         },

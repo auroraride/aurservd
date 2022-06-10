@@ -478,7 +478,7 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
 }
 
 func (s *riderService) Query(id uint64) *ent.Rider {
-    item, err := ar.Ent.Rider.QueryNotDeleted().Where(rider.ID(id)).Only(s.ctx)
+    item, err := ar.Ent.Rider.QueryNotDeleted().Where(rider.ID(id)).WithPerson().Only(s.ctx)
     if err != nil || item == nil {
         snag.Panic("未找到骑手")
     }
@@ -513,6 +513,7 @@ func (s *riderService) DepositOrder(riderID uint64) *ent.Order {
         order.RiderID(riderID),
         order.Status(model.OrderStatusPaid),
         order.Type(model.OrderTypeDeposit),
+        order.DeletedAtIsNil(),
     ).First(s.ctx)
     return o
 }

@@ -266,7 +266,7 @@ func (s *enterpriseService) GetPrices(item *ent.Enterprise) (res map[string]floa
 
     res = make(map[string]float64)
     for _, ep := range items {
-        res[fmt.Sprintf("%d-%f", ep.CityID, ep.Price)] = ep.Price
+        res[fmt.Sprintf("%d-%f", ep.CityID, ep.Voltage)] = ep.Price
     }
 
     return res
@@ -299,7 +299,7 @@ func (s *enterpriseService) UpdateStatement(item *ent.Enterprise) {
         // 按城市/型号计算金额
         k := fmt.Sprintf("%d-%f", sub.CityID, sub.Voltage)
         if p, ok := prices[k]; ok {
-            cost = cost.Add(decimal.NewFromFloat(p))
+            cost = cost.Add(decimal.NewFromFloat(p).Mul(decimal.NewFromInt(int64(days))))
         }
     }
 

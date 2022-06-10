@@ -1510,6 +1510,40 @@ definitions:
         description: 骑士卡可用电压型号
         type: number
     type: object
+  model.RiderMgrDepositReq:
+    properties:
+      amount:
+        description: 押金金额
+        type: number
+      id:
+        description: '骑手ID '
+        type: integer
+    required:
+    - id
+    type: object
+  model.RiderMgrModifyReq:
+    properties:
+      authStatus:
+        description: 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        type: integer
+      contact:
+        allOf:
+        - $ref: '#/definitions/model.RiderContact'
+        description: 联系人
+      id:
+        description: '骑手ID '
+        type: integer
+      phone:
+        description: 手机号
+        type: string
+    required:
+    - id
+    type: object
   model.RiderOrder:
     properties:
       amount:
@@ -2688,6 +2722,33 @@ paths:
       summary: MT1001 时光驹催费工具
       tags:
       - '[M]管理接口'
+  /manager/v1/deposit:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSubscribeDeposit
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderMgrDepositReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M7009 修改押金
+      tags:
+      - '[M]管理接口'
   /manager/v1/employee:
     get:
       consumes:
@@ -3561,6 +3622,33 @@ paths:
               $ref: '#/definitions/model.LogOperate'
             type: array
       summary: M7005 查看骑手操作日志
+      tags:
+      - '[M]管理接口'
+  /manager/v1/rider/modify:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSubscribeModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderMgrModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M7010 修改骑手资料
       tags:
       - '[M]管理接口'
   /manager/v1/setting:

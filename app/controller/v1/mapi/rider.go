@@ -77,3 +77,35 @@ func (*rider) Log(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.RiderLogReq](c)
     return ctx.SendResponse(service.NewRiderWithModifier(ctx.Modifier).GetLogs(req))
 }
+
+// Deposit
+// @ID           ManagerSubscribeDeposit
+// @Router       /manager/v1/deposit [GET]
+// @Summary      M7009 修改押金
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body  model.RiderMgrDepositReq  true  "desc"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*rider) Deposit(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.RiderMgrDepositReq](c)
+    service.NewRiderMgrWithModifier(ctx.Modifier).Deposit(req)
+    return ctx.SendResponse()
+}
+
+// Modify
+// @ID           ManagerSubscribeModify
+// @Router       /manager/v1/rider/modify [GET]
+// @Summary      M7010 修改骑手资料
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body  model.RiderMgrModifyReq  true  "desc"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*rider) Modify(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.RiderMgrModifyReq](c)
+    service.NewRiderMgrWithModifier(ctx.Modifier).Modify(req)
+    return ctx.SendResponse()
+}

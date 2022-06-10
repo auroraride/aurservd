@@ -12,11 +12,13 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     log "github.com/sirupsen/logrus"
+    "strings"
     "time"
 )
 
@@ -167,5 +169,114 @@ func (s *riderMgrService) HaltSubscribe(subscribeID uint64) {
         SetModifier(s.modifier).
         SetOperate(logging.OperateSubscribePause).
         SetDiff(before, "强制退租").
+        Send()
+}
+
+// Deposit 手动调整押金
+func (s *riderMgrService) Deposit(req *model.RiderMgrDepositReq) {
+    r := NewRider().Query(req.ID)
+    o, _ := ar.Ent.Order.QueryNotDeleted().
+        Where(
+            order.RiderID(req.ID),
+            order.Status(model.OrderStatusPaid),
+            order.Type(model.OrderTypeDeposit),
+            order.DeletedAtIsNil(),
+        ).
+        First(s.ctx)
+    var before float64
+    // 判断押金是否骑手自行缴纳
+    if o != nil && o.Creator == nil {
+        snag.Panic("用户有实际缴纳的押金订单, 无法继续修改")
+    }
+
+    var err error
+    tx, _ := ar.Ent.Tx(s.ctx)
+    if o != nil {
+        before = o.Amount
+        _, err = tx.Order.SoftDeleteOne(o).Save(s.ctx)
+        snag.PanicIfErrorX(err, tx.Rollback)
+    }
+
+    if req.Amount > 0 {
+        _, err = tx.Order.Create().
+            SetRiderID(req.ID).
+            SetType(model.OrderTypeDeposit).
+            SetStatus(model.OrderStatusPaid).
+            SetRemark("管理员修改").
+            SetAmount(req.Amount).
+            SetTotal(req.Amount).
+            SetPayway(model.OrderPaywayManual).
+            SetOutTradeNo(tools.NewUnique().NewSN28()).
+            SetTradeNo(tools.NewUnique().NewSN28()).
+            Save(s.ctx)
+        snag.PanicIfErrorX(err, tx.Rollback)
+    }
+
+    _ = tx.Commit()
+
+    // 记录日志
+    go logging.NewOperateLog().
+        SetRef(r).
+        SetModifier(s.modifier).
+        SetOperate(logging.OperateDeposit).
+        SetDiff(fmt.Sprintf("%.2f元", before), fmt.Sprintf("%.2f元", req.Amount)).
+        Send()
+}
+
+// Modify 修改骑手资料
+func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
+    if req.Contact == nil && req.Phone == nil && req.AuthStatus == nil {
+        snag.Panic("参数错误")
+    }
+
+    tx, _ := ar.Ent.Tx(s.ctx)
+
+    var err error
+    r := NewRiderWithModifier(s.modifier).Query(req.ID)
+    p := r.Edges.Person
+
+    if p == nil && req.AuthStatus != nil {
+        snag.Panic("用户还未提交个人信息")
+    }
+
+    pu := tx.Person.UpdateOne(p)
+    ru := tx.Rider.UpdateOne(r)
+
+    var before, after []string
+
+    if req.Phone != nil {
+        ru.SetPhone(*req.Phone)
+        before = append(before, fmt.Sprintf("电话: %s", r.Phone))
+        after = append(after, fmt.Sprintf("电话: %s", *req.Phone))
+    }
+
+    if req.Contact != nil {
+        ru.SetContact(req.Contact)
+        if r.Contact == nil {
+            before = append(before, "联系人: 无")
+        } else {
+            before = append(before, fmt.Sprintf("联系人: %s, %s, %s", r.Contact.Relation, r.Contact.Phone, r.Contact.Name))
+        }
+        after = append(after, fmt.Sprintf("联系人: %s, %s, %s", req.Contact.Relation, req.Contact.Phone, req.Contact.Name))
+    }
+
+    if req.AuthStatus != nil {
+        pu.SetStatus(req.AuthStatus.Raw())
+        before = append(before, fmt.Sprintf("认证状态: %s", model.PersonAuthStatus(p.Status).String()))
+        after = append(after, fmt.Sprintf("认证状态: %s", req.AuthStatus.String()))
+    }
+
+    _, err = pu.Save(s.ctx)
+    snag.PanicIfErrorX(err, tx.Rollback)
+
+    _, err = ru.Save(s.ctx)
+    snag.PanicIfErrorX(err, tx.Rollback)
+
+    // 记录日志
+    go logging.NewOperateLog().
+        SetRef(r).
+        SetModifier(s.modifier).
+        SetOperate(logging.OperateDeposit).
+        SetDiff(strings.Join(before, "\n"), strings.Join(after, "\n")).
         Send()
 }

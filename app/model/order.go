@@ -21,8 +21,9 @@ var (
 )
 
 const (
-    OrderPaywayAlipay uint8 = iota + 1 // 支付宝支付
-    OrderPaywayWechat                  // 微信支付
+    OrderPaywayManual uint8 = iota // 后台手动调整
+    OrderPaywayAlipay              // 支付宝支付
+    OrderPaywayWechat              // 微信支付
 )
 
 const (
