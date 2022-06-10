@@ -36,7 +36,7 @@ type RiderQuery struct {
 	withStation    *EnterpriseStationQuery
 	withPerson     *PersonQuery
 	withEnterprise *EnterpriseQuery
-	withContract   *ContractQuery
+	withContracts  *ContractQuery
 	withFaults     *CabinetFaultQuery
 	withOrders     *OrderQuery
 	withExchanges  *ExchangeQuery
@@ -144,8 +144,8 @@ func (rq *RiderQuery) QueryEnterprise() *EnterpriseQuery {
 	return query
 }
 
-// QueryContract chains the current query on the "contract" edge.
-func (rq *RiderQuery) QueryContract() *ContractQuery {
+// QueryContracts chains the current query on the "contracts" edge.
+func (rq *RiderQuery) QueryContracts() *ContractQuery {
 	query := &ContractQuery{config: rq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := rq.prepareQuery(ctx); err != nil {
@@ -158,7 +158,7 @@ func (rq *RiderQuery) QueryContract() *ContractQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, selector),
 			sqlgraph.To(contract.Table, contract.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, rider.ContractTable, rider.ContractColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.ContractsTable, rider.ContractsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -438,7 +438,7 @@ func (rq *RiderQuery) Clone() *RiderQuery {
 		withStation:    rq.withStation.Clone(),
 		withPerson:     rq.withPerson.Clone(),
 		withEnterprise: rq.withEnterprise.Clone(),
-		withContract:   rq.withContract.Clone(),
+		withContracts:  rq.withContracts.Clone(),
 		withFaults:     rq.withFaults.Clone(),
 		withOrders:     rq.withOrders.Clone(),
 		withExchanges:  rq.withExchanges.Clone(),
@@ -483,14 +483,14 @@ func (rq *RiderQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *RiderQuery
 	return rq
 }
 
-// WithContract tells the query-builder to eager-load the nodes that are connected to
-// the "contract" edge. The optional arguments are used to configure the query builder of the edge.
-func (rq *RiderQuery) WithContract(opts ...func(*ContractQuery)) *RiderQuery {
+// WithContracts tells the query-builder to eager-load the nodes that are connected to
+// the "contracts" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RiderQuery) WithContracts(opts ...func(*ContractQuery)) *RiderQuery {
 	query := &ContractQuery{config: rq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	rq.withContract = query
+	rq.withContracts = query
 	return rq
 }
 
@@ -612,7 +612,7 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 			rq.withStation != nil,
 			rq.withPerson != nil,
 			rq.withEnterprise != nil,
-			rq.withContract != nil,
+			rq.withContracts != nil,
 			rq.withFaults != nil,
 			rq.withOrders != nil,
 			rq.withExchanges != nil,
@@ -728,16 +728,16 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 		}
 	}
 
-	if query := rq.withContract; query != nil {
+	if query := rq.withContracts; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
 		nodeids := make(map[uint64]*Rider)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Contract = []*Contract{}
+			nodes[i].Edges.Contracts = []*Contract{}
 		}
 		query.Where(predicate.Contract(func(s *sql.Selector) {
-			s.Where(sql.InValues(rider.ContractColumn, fks...))
+			s.Where(sql.InValues(rider.ContractsColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)
 		if err != nil {
@@ -749,7 +749,7 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 			if !ok {
 				return nil, fmt.Errorf(`unexpected foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
 			}
-			node.Edges.Contract = append(node.Edges.Contract, n)
+			node.Edges.Contracts = append(node.Edges.Contracts, n)
 		}
 	}
 

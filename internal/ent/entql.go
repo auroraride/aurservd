@@ -1438,12 +1438,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Enterprise",
 	)
 	graph.MustAddE(
-		"contract",
+		"contracts",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.ContractTable,
-			Columns: []string{rider.ContractColumn},
+			Table:   rider.ContractsTable,
+			Columns: []string{rider.ContractsColumn},
 			Bidi:    false,
 		},
 		"Rider",
@@ -4884,14 +4884,14 @@ func (f *RiderFilter) WhereHasEnterpriseWith(preds ...predicate.Enterprise) {
 	})))
 }
 
-// WhereHasContract applies a predicate to check if query has an edge contract.
-func (f *RiderFilter) WhereHasContract() {
-	f.Where(entql.HasEdge("contract"))
+// WhereHasContracts applies a predicate to check if query has an edge contracts.
+func (f *RiderFilter) WhereHasContracts() {
+	f.Where(entql.HasEdge("contracts"))
 }
 
-// WhereHasContractWith applies a predicate to check if query has an edge contract with a given conditions (other predicates).
-func (f *RiderFilter) WhereHasContractWith(preds ...predicate.Contract) {
-	f.Where(entql.HasEdgeWith("contract", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasContractsWith applies a predicate to check if query has an edge contracts with a given conditions (other predicates).
+func (f *RiderFilter) WhereHasContractsWith(preds ...predicate.Contract) {
+	f.Where(entql.HasEdgeWith("contracts", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

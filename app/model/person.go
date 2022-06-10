@@ -59,3 +59,14 @@ type PersonBanReq struct {
     ID  uint64 `json:"id" ` // 骑手ID
     Ban bool   `json:"ban"` // `true`封禁 `false`解封
 }
+
+type Person struct {
+    // 证件号码
+    IDCardNumber string `json:"id_card_number,omitempty"`
+    // 证件人像面
+    IDCardPortrait string `json:"id_card_portrait,omitempty"`
+    // 证件国徽面
+    IDCardNational string `json:"id_card_national,omitempty"`
+    // 实名认证人脸照片
+    AuthFace string `json:"auth_face,omitempty"`
+}

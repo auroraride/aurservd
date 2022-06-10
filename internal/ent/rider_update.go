@@ -363,14 +363,14 @@ func (ru *RiderUpdate) SetEnterprise(e *Enterprise) *RiderUpdate {
 	return ru.SetEnterpriseID(e.ID)
 }
 
-// AddContractIDs adds the "contract" edge to the Contract entity by IDs.
+// AddContractIDs adds the "contracts" edge to the Contract entity by IDs.
 func (ru *RiderUpdate) AddContractIDs(ids ...uint64) *RiderUpdate {
 	ru.mutation.AddContractIDs(ids...)
 	return ru
 }
 
-// AddContract adds the "contract" edges to the Contract entity.
-func (ru *RiderUpdate) AddContract(c ...*Contract) *RiderUpdate {
+// AddContracts adds the "contracts" edges to the Contract entity.
+func (ru *RiderUpdate) AddContracts(c ...*Contract) *RiderUpdate {
 	ids := make([]uint64, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
@@ -461,20 +461,20 @@ func (ru *RiderUpdate) ClearEnterprise() *RiderUpdate {
 	return ru
 }
 
-// ClearContract clears all "contract" edges to the Contract entity.
-func (ru *RiderUpdate) ClearContract() *RiderUpdate {
-	ru.mutation.ClearContract()
+// ClearContracts clears all "contracts" edges to the Contract entity.
+func (ru *RiderUpdate) ClearContracts() *RiderUpdate {
+	ru.mutation.ClearContracts()
 	return ru
 }
 
-// RemoveContractIDs removes the "contract" edge to Contract entities by IDs.
+// RemoveContractIDs removes the "contracts" edge to Contract entities by IDs.
 func (ru *RiderUpdate) RemoveContractIDs(ids ...uint64) *RiderUpdate {
 	ru.mutation.RemoveContractIDs(ids...)
 	return ru
 }
 
-// RemoveContract removes "contract" edges to Contract entities.
-func (ru *RiderUpdate) RemoveContract(c ...*Contract) *RiderUpdate {
+// RemoveContracts removes "contracts" edges to Contract entities.
+func (ru *RiderUpdate) RemoveContracts(c ...*Contract) *RiderUpdate {
 	ids := make([]uint64, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
@@ -968,12 +968,12 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ru.mutation.ContractCleared() {
+	if ru.mutation.ContractsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.ContractTable,
-			Columns: []string{rider.ContractColumn},
+			Table:   rider.ContractsTable,
+			Columns: []string{rider.ContractsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -984,12 +984,12 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ru.mutation.RemovedContractIDs(); len(nodes) > 0 && !ru.mutation.ContractCleared() {
+	if nodes := ru.mutation.RemovedContractsIDs(); len(nodes) > 0 && !ru.mutation.ContractsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.ContractTable,
-			Columns: []string{rider.ContractColumn},
+			Table:   rider.ContractsTable,
+			Columns: []string{rider.ContractsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1003,12 +1003,12 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ru.mutation.ContractIDs(); len(nodes) > 0 {
+	if nodes := ru.mutation.ContractsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.ContractTable,
-			Columns: []string{rider.ContractColumn},
+			Table:   rider.ContractsTable,
+			Columns: []string{rider.ContractsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1583,14 +1583,14 @@ func (ruo *RiderUpdateOne) SetEnterprise(e *Enterprise) *RiderUpdateOne {
 	return ruo.SetEnterpriseID(e.ID)
 }
 
-// AddContractIDs adds the "contract" edge to the Contract entity by IDs.
+// AddContractIDs adds the "contracts" edge to the Contract entity by IDs.
 func (ruo *RiderUpdateOne) AddContractIDs(ids ...uint64) *RiderUpdateOne {
 	ruo.mutation.AddContractIDs(ids...)
 	return ruo
 }
 
-// AddContract adds the "contract" edges to the Contract entity.
-func (ruo *RiderUpdateOne) AddContract(c ...*Contract) *RiderUpdateOne {
+// AddContracts adds the "contracts" edges to the Contract entity.
+func (ruo *RiderUpdateOne) AddContracts(c ...*Contract) *RiderUpdateOne {
 	ids := make([]uint64, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
@@ -1681,20 +1681,20 @@ func (ruo *RiderUpdateOne) ClearEnterprise() *RiderUpdateOne {
 	return ruo
 }
 
-// ClearContract clears all "contract" edges to the Contract entity.
-func (ruo *RiderUpdateOne) ClearContract() *RiderUpdateOne {
-	ruo.mutation.ClearContract()
+// ClearContracts clears all "contracts" edges to the Contract entity.
+func (ruo *RiderUpdateOne) ClearContracts() *RiderUpdateOne {
+	ruo.mutation.ClearContracts()
 	return ruo
 }
 
-// RemoveContractIDs removes the "contract" edge to Contract entities by IDs.
+// RemoveContractIDs removes the "contracts" edge to Contract entities by IDs.
 func (ruo *RiderUpdateOne) RemoveContractIDs(ids ...uint64) *RiderUpdateOne {
 	ruo.mutation.RemoveContractIDs(ids...)
 	return ruo
 }
 
-// RemoveContract removes "contract" edges to Contract entities.
-func (ruo *RiderUpdateOne) RemoveContract(c ...*Contract) *RiderUpdateOne {
+// RemoveContracts removes "contracts" edges to Contract entities.
+func (ruo *RiderUpdateOne) RemoveContracts(c ...*Contract) *RiderUpdateOne {
 	ids := make([]uint64, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
@@ -2218,12 +2218,12 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ruo.mutation.ContractCleared() {
+	if ruo.mutation.ContractsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.ContractTable,
-			Columns: []string{rider.ContractColumn},
+			Table:   rider.ContractsTable,
+			Columns: []string{rider.ContractsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -2234,12 +2234,12 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ruo.mutation.RemovedContractIDs(); len(nodes) > 0 && !ruo.mutation.ContractCleared() {
+	if nodes := ruo.mutation.RemovedContractsIDs(); len(nodes) > 0 && !ruo.mutation.ContractsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.ContractTable,
-			Columns: []string{rider.ContractColumn},
+			Table:   rider.ContractsTable,
+			Columns: []string{rider.ContractsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -2253,12 +2253,12 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ruo.mutation.ContractIDs(); len(nodes) > 0 {
+	if nodes := ruo.mutation.ContractsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.ContractTable,
-			Columns: []string{rider.ContractColumn},
+			Table:   rider.ContractsTable,
+			Columns: []string{rider.ContractsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

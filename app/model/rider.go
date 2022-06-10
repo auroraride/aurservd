@@ -93,22 +93,23 @@ type RiderItemSubscribe struct {
 }
 
 // RiderItem 骑手信息
-// {"name":"虞章君","score":96.472916,"gender":"男","nation":"汉","address":"安徽省马鞍山市和县白桥镇七成村委会虞志旺自然村76号","birthday":"19900120","spoofing":0,"issueTime":"20220510","expireTime":"20420510","idCardNumber":"342626199001200176","livenessScore":0.99900466,"issueAuthority":"和县公安局"}
 type RiderItem struct {
-    ID           uint64           `json:"id"`
-    Name         string           `json:"name"`               // 用户姓名
-    Phone        string           `json:"phone"`              // 手机号
-    Status       uint8            `json:"status"`             // 用户状态, 优先显示状态值大的 1:正常 2:已禁用 3:黑名单
-    AuthStatus   PersonAuthStatus `json:"authStatus"`         // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
-    IDCardNumber string           `json:"idCardNumber"`       // 身份证
-    Deposit      float64          `json:"deposit"`            // 押金
-    Address      string           `json:"address"`            // 户籍地址
-    DeletedAt    string           `json:"deleteAt,omitempty"` // 账户删除时间
-    Remark       string           `json:"remark"`             // 账户备注
+    ID         uint64           `json:"id"`
+    Name       string           `json:"name"`               // 用户姓名
+    Phone      string           `json:"phone"`              // 手机号
+    Status     uint8            `json:"status"`             // 用户状态, 优先显示状态值大的 1:正常 2:已禁用 3:黑名单
+    AuthStatus PersonAuthStatus `json:"authStatus"`         // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
+    Deposit    float64          `json:"deposit"`            // 押金
+    Address    string           `json:"address"`            // 户籍地址
+    DeletedAt  string           `json:"deleteAt,omitempty"` // 账户删除时间
+    Remark     string           `json:"remark"`             // 账户备注
+    Contract   string           `json:"contract,omitempty"` // 合同(有可能不存在)
     // 团签企业信息, 若无此字段则为个签用户
     Enterprise *EnterpriseBasic `json:"enterprise,omitempty"`
     // 当前有效订阅信息, 若无此字段则代表当前无有效订阅(订阅 = 骑手骑士卡)
     Subscribe *RiderItemSubscribe `json:"subscribe,omitempty"`
+    // 认证信息, 有可能不存在, 内部字段也有可能不存在
+    Person *Person `json:"person,omitempty"`
 }
 
 // RiderBlockReq 封禁或解封骑手账号

@@ -5998,6 +5998,27 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Person": {
+            "type": "object",
+            "properties": {
+                "auth_face": {
+                    "description": "实名认证人脸照片",
+                    "type": "string"
+                },
+                "id_card_national": {
+                    "description": "证件国徽面",
+                    "type": "string"
+                },
+                "id_card_number": {
+                    "description": "证件号码",
+                    "type": "string"
+                },
+                "id_card_portrait": {
+                    "description": "证件人像面",
+                    "type": "string"
+                }
+            }
+        },
         "model.PersonBanReq": {
             "type": "object",
             "properties": {
@@ -6292,6 +6313,10 @@ const docTemplate = `{
                     "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
                     "type": "integer"
                 },
+                "contract": {
+                    "description": "合同(有可能不存在)",
+                    "type": "string"
+                },
                 "deleteAt": {
                     "description": "账户删除时间",
                     "type": "string"
@@ -6311,13 +6336,17 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "idCardNumber": {
-                    "description": "身份证",
-                    "type": "string"
-                },
                 "name": {
                     "description": "用户姓名",
                     "type": "string"
+                },
+                "person": {
+                    "description": "认证信息, 有可能不存在, 内部字段也有可能不存在",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Person"
+                        }
+                    ]
                 },
                 "phone": {
                     "description": "手机号",

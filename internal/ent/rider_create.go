@@ -294,14 +294,14 @@ func (rc *RiderCreate) SetEnterprise(e *Enterprise) *RiderCreate {
 	return rc.SetEnterpriseID(e.ID)
 }
 
-// AddContractIDs adds the "contract" edge to the Contract entity by IDs.
+// AddContractIDs adds the "contracts" edge to the Contract entity by IDs.
 func (rc *RiderCreate) AddContractIDs(ids ...uint64) *RiderCreate {
 	rc.mutation.AddContractIDs(ids...)
 	return rc
 }
 
-// AddContract adds the "contract" edges to the Contract entity.
-func (rc *RiderCreate) AddContract(c ...*Contract) *RiderCreate {
+// AddContracts adds the "contracts" edges to the Contract entity.
+func (rc *RiderCreate) AddContracts(c ...*Contract) *RiderCreate {
 	ids := make([]uint64, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
@@ -729,12 +729,12 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 		_node.EnterpriseID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := rc.mutation.ContractIDs(); len(nodes) > 0 {
+	if nodes := rc.mutation.ContractsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   rider.ContractTable,
-			Columns: []string{rider.ContractColumn},
+			Table:   rider.ContractsTable,
+			Columns: []string{rider.ContractsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

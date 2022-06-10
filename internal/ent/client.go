@@ -3213,15 +3213,15 @@ func (c *RiderClient) QueryEnterprise(r *Rider) *EnterpriseQuery {
 	return query
 }
 
-// QueryContract queries the contract edge of a Rider.
-func (c *RiderClient) QueryContract(r *Rider) *ContractQuery {
+// QueryContracts queries the contracts edge of a Rider.
+func (c *RiderClient) QueryContracts(r *Rider) *ContractQuery {
 	query := &ContractQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := r.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(rider.Table, rider.FieldID, id),
 			sqlgraph.To(contract.Table, contract.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, rider.ContractTable, rider.ContractColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.ContractsTable, rider.ContractsColumn),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil

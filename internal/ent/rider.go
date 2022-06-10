@@ -91,8 +91,8 @@ type RiderEdges struct {
 	Person *Person `json:"person,omitempty"`
 	// Enterprise holds the value of the enterprise edge.
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
-	// Contract holds the value of the contract edge.
-	Contract []*Contract `json:"contract,omitempty"`
+	// Contracts holds the value of the contracts edge.
+	Contracts []*Contract `json:"contracts,omitempty"`
 	// Faults holds the value of the faults edge.
 	Faults []*CabinetFault `json:"faults,omitempty"`
 	// Orders holds the value of the orders edge.
@@ -148,13 +148,13 @@ func (e RiderEdges) EnterpriseOrErr() (*Enterprise, error) {
 	return nil, &NotLoadedError{edge: "enterprise"}
 }
 
-// ContractOrErr returns the Contract value or an error if the edge
+// ContractsOrErr returns the Contracts value or an error if the edge
 // was not loaded in eager-loading.
-func (e RiderEdges) ContractOrErr() ([]*Contract, error) {
+func (e RiderEdges) ContractsOrErr() ([]*Contract, error) {
 	if e.loadedTypes[3] {
-		return e.Contract, nil
+		return e.Contracts, nil
 	}
-	return nil, &NotLoadedError{edge: "contract"}
+	return nil, &NotLoadedError{edge: "contracts"}
 }
 
 // FaultsOrErr returns the Faults value or an error if the edge
@@ -381,9 +381,9 @@ func (r *Rider) QueryEnterprise() *EnterpriseQuery {
 	return (&RiderClient{config: r.config}).QueryEnterprise(r)
 }
 
-// QueryContract queries the "contract" edge of the Rider entity.
-func (r *Rider) QueryContract() *ContractQuery {
-	return (&RiderClient{config: r.config}).QueryContract(r)
+// QueryContracts queries the "contracts" edge of the Rider entity.
+func (r *Rider) QueryContracts() *ContractQuery {
+	return (&RiderClient{config: r.config}).QueryContracts(r)
 }
 
 // QueryFaults queries the "faults" edge of the Rider entity.

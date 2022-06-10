@@ -71,7 +71,7 @@ func (Rider) Edges() []ent.Edge {
         edge.From("person", Person.Type).Ref("rider").Unique().Field("person_id"),
         edge.From("enterprise", Enterprise.Type).Ref("riders").Unique().Field("enterprise_id"),
 
-        edge.To("contract", Contract.Type),
+        edge.To("contracts", Contract.Type),
         edge.To("faults", CabinetFault.Type),
         edge.To("orders", Order.Type),
 

@@ -59,8 +59,8 @@ const (
 	EdgePerson = "person"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
-	// EdgeContract holds the string denoting the contract edge name in mutations.
-	EdgeContract = "contract"
+	// EdgeContracts holds the string denoting the contracts edge name in mutations.
+	EdgeContracts = "contracts"
 	// EdgeFaults holds the string denoting the faults edge name in mutations.
 	EdgeFaults = "faults"
 	// EdgeOrders holds the string denoting the orders edge name in mutations.
@@ -92,13 +92,13 @@ const (
 	EnterpriseInverseTable = "enterprise"
 	// EnterpriseColumn is the table column denoting the enterprise relation/edge.
 	EnterpriseColumn = "enterprise_id"
-	// ContractTable is the table that holds the contract relation/edge.
-	ContractTable = "contract"
-	// ContractInverseTable is the table name for the Contract entity.
+	// ContractsTable is the table that holds the contracts relation/edge.
+	ContractsTable = "contract"
+	// ContractsInverseTable is the table name for the Contract entity.
 	// It exists in this package in order to avoid circular dependency with the "contract" package.
-	ContractInverseTable = "contract"
-	// ContractColumn is the table column denoting the contract relation/edge.
-	ContractColumn = "rider_id"
+	ContractsInverseTable = "contract"
+	// ContractsColumn is the table column denoting the contracts relation/edge.
+	ContractsColumn = "rider_id"
 	// FaultsTable is the table that holds the faults relation/edge.
 	FaultsTable = "cabinet_fault"
 	// FaultsInverseTable is the table name for the CabinetFault entity.

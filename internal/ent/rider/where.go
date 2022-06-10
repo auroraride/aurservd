@@ -1800,25 +1800,25 @@ func HasEnterpriseWith(preds ...predicate.Enterprise) predicate.Rider {
 	})
 }
 
-// HasContract applies the HasEdge predicate on the "contract" edge.
-func HasContract() predicate.Rider {
+// HasContracts applies the HasEdge predicate on the "contracts" edge.
+func HasContracts() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ContractTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ContractTable, ContractColumn),
+			sqlgraph.To(ContractsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ContractsTable, ContractsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasContractWith applies the HasEdge predicate on the "contract" edge with a given conditions (other predicates).
-func HasContractWith(preds ...predicate.Contract) predicate.Rider {
+// HasContractsWith applies the HasEdge predicate on the "contracts" edge with a given conditions (other predicates).
+func HasContractsWith(preds ...predicate.Contract) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ContractInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ContractTable, ContractColumn),
+			sqlgraph.To(ContractsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ContractsTable, ContractsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

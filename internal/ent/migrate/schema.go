@@ -428,7 +428,7 @@ var (
 		PrimaryKey: []*schema.Column{ContractColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "contract_rider_contract",
+				Symbol:     "contract_rider_contracts",
 				Columns:    []*schema.Column{ContractColumns[12]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,

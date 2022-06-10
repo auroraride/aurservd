@@ -37,7 +37,7 @@ func (Contract) Fields() []ent.Field {
 // Edges of the Contract.
 func (Contract) Edges() []ent.Edge {
     return []ent.Edge{
-        edge.From("rider", Rider.Type).Ref("contract").Required().Unique().Field("rider_id"),
+        edge.From("rider", Rider.Type).Ref("contracts").Required().Unique().Field("rider_id"),
     }
 }
 

@@ -15,6 +15,10 @@
 - [M7005 查看骑手操作日志](http://localhost:5533/docs#tag/M/operation/ManagerRiderLog)
   - 调整入参和返回为标准分页模型
   - 入参新增参数`type`详情参见文档
+- [M7001列举骑手](http://localhost:5533/docs#tag/M/operation/RiderList)
+  - 删除顶级字段`idCardNumber`
+  - 新增字段`person`用户认证信息
+  - 新增字段`contract`合同
 
 
 

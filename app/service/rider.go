@@ -15,6 +15,7 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/baidu"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/contract"
     "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
@@ -336,6 +337,9 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
         }).
         WithSubscribes(func(sq *ent.SubscribeQuery) {
             sq.Order(ent.Desc(subscribe.FieldCreatedAt))
+        }).
+        WithContracts(func(cq *ent.ContractQuery) {
+            cq.Where(contract.DeletedAtIsNil())
         })
     if req.Keyword != nil {
         // 判定是否id字段
@@ -445,7 +449,6 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
             }
             if p != nil {
                 ri.Name = p.Name
-                ri.IDCardNumber = p.IDCardNumber
                 ri.AuthStatus = model.PersonAuthStatus(p.Status)
                 if p.Banned {
                     ri.Status = model.RiderStatusBanned
@@ -453,6 +456,18 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
                 if p.AuthResult != nil {
                     ri.Address = p.AuthResult.Address
                 }
+                ri.Person = &model.Person{
+                    IDCardNumber:   p.IDCardNumber,
+                    IDCardPortrait: p.IDCardPortrait,
+                    IDCardNational: p.IDCardNational,
+                    AuthFace:       p.AuthFace,
+                }
+            }
+
+            // 获取合同
+            contracts := item.Edges.Contracts
+            if contracts != nil && len(contracts) > 0 {
+                ri.Contract = contracts[0].Files[0]
             }
 
             if item.Edges.Orders != nil && len(item.Edges.Orders) > 0 {

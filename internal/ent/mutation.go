@@ -27708,9 +27708,9 @@ type RiderMutation struct {
 	clearedperson     bool
 	enterprise        *uint64
 	clearedenterprise bool
-	contract          map[uint64]struct{}
-	removedcontract   map[uint64]struct{}
-	clearedcontract   bool
+	contracts         map[uint64]struct{}
+	removedcontracts  map[uint64]struct{}
+	clearedcontracts  bool
 	faults            map[uint64]struct{}
 	removedfaults     map[uint64]struct{}
 	clearedfaults     bool
@@ -28840,58 +28840,58 @@ func (m *RiderMutation) ResetEnterprise() {
 	m.clearedenterprise = false
 }
 
-// AddContractIDs adds the "contract" edge to the Contract entity by ids.
+// AddContractIDs adds the "contracts" edge to the Contract entity by ids.
 func (m *RiderMutation) AddContractIDs(ids ...uint64) {
-	if m.contract == nil {
-		m.contract = make(map[uint64]struct{})
+	if m.contracts == nil {
+		m.contracts = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		m.contract[ids[i]] = struct{}{}
+		m.contracts[ids[i]] = struct{}{}
 	}
 }
 
-// ClearContract clears the "contract" edge to the Contract entity.
-func (m *RiderMutation) ClearContract() {
-	m.clearedcontract = true
+// ClearContracts clears the "contracts" edge to the Contract entity.
+func (m *RiderMutation) ClearContracts() {
+	m.clearedcontracts = true
 }
 
-// ContractCleared reports if the "contract" edge to the Contract entity was cleared.
-func (m *RiderMutation) ContractCleared() bool {
-	return m.clearedcontract
+// ContractsCleared reports if the "contracts" edge to the Contract entity was cleared.
+func (m *RiderMutation) ContractsCleared() bool {
+	return m.clearedcontracts
 }
 
-// RemoveContractIDs removes the "contract" edge to the Contract entity by IDs.
+// RemoveContractIDs removes the "contracts" edge to the Contract entity by IDs.
 func (m *RiderMutation) RemoveContractIDs(ids ...uint64) {
-	if m.removedcontract == nil {
-		m.removedcontract = make(map[uint64]struct{})
+	if m.removedcontracts == nil {
+		m.removedcontracts = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		delete(m.contract, ids[i])
-		m.removedcontract[ids[i]] = struct{}{}
+		delete(m.contracts, ids[i])
+		m.removedcontracts[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedContract returns the removed IDs of the "contract" edge to the Contract entity.
-func (m *RiderMutation) RemovedContractIDs() (ids []uint64) {
-	for id := range m.removedcontract {
+// RemovedContracts returns the removed IDs of the "contracts" edge to the Contract entity.
+func (m *RiderMutation) RemovedContractsIDs() (ids []uint64) {
+	for id := range m.removedcontracts {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ContractIDs returns the "contract" edge IDs in the mutation.
-func (m *RiderMutation) ContractIDs() (ids []uint64) {
-	for id := range m.contract {
+// ContractsIDs returns the "contracts" edge IDs in the mutation.
+func (m *RiderMutation) ContractsIDs() (ids []uint64) {
+	for id := range m.contracts {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetContract resets all changes to the "contract" edge.
-func (m *RiderMutation) ResetContract() {
-	m.contract = nil
-	m.clearedcontract = false
-	m.removedcontract = nil
+// ResetContracts resets all changes to the "contracts" edge.
+func (m *RiderMutation) ResetContracts() {
+	m.contracts = nil
+	m.clearedcontracts = false
+	m.removedcontracts = nil
 }
 
 // AddFaultIDs adds the "faults" edge to the CabinetFault entity by ids.
@@ -29669,8 +29669,8 @@ func (m *RiderMutation) AddedEdges() []string {
 	if m.enterprise != nil {
 		edges = append(edges, rider.EdgeEnterprise)
 	}
-	if m.contract != nil {
-		edges = append(edges, rider.EdgeContract)
+	if m.contracts != nil {
+		edges = append(edges, rider.EdgeContracts)
 	}
 	if m.faults != nil {
 		edges = append(edges, rider.EdgeFaults)
@@ -29703,9 +29703,9 @@ func (m *RiderMutation) AddedIDs(name string) []ent.Value {
 		if id := m.enterprise; id != nil {
 			return []ent.Value{*id}
 		}
-	case rider.EdgeContract:
-		ids := make([]ent.Value, 0, len(m.contract))
-		for id := range m.contract {
+	case rider.EdgeContracts:
+		ids := make([]ent.Value, 0, len(m.contracts))
+		for id := range m.contracts {
 			ids = append(ids, id)
 		}
 		return ids
@@ -29740,8 +29740,8 @@ func (m *RiderMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *RiderMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 8)
-	if m.removedcontract != nil {
-		edges = append(edges, rider.EdgeContract)
+	if m.removedcontracts != nil {
+		edges = append(edges, rider.EdgeContracts)
 	}
 	if m.removedfaults != nil {
 		edges = append(edges, rider.EdgeFaults)
@@ -29762,9 +29762,9 @@ func (m *RiderMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *RiderMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case rider.EdgeContract:
-		ids := make([]ent.Value, 0, len(m.removedcontract))
-		for id := range m.removedcontract {
+	case rider.EdgeContracts:
+		ids := make([]ent.Value, 0, len(m.removedcontracts))
+		for id := range m.removedcontracts {
 			ids = append(ids, id)
 		}
 		return ids
@@ -29808,8 +29808,8 @@ func (m *RiderMutation) ClearedEdges() []string {
 	if m.clearedenterprise {
 		edges = append(edges, rider.EdgeEnterprise)
 	}
-	if m.clearedcontract {
-		edges = append(edges, rider.EdgeContract)
+	if m.clearedcontracts {
+		edges = append(edges, rider.EdgeContracts)
 	}
 	if m.clearedfaults {
 		edges = append(edges, rider.EdgeFaults)
@@ -29836,8 +29836,8 @@ func (m *RiderMutation) EdgeCleared(name string) bool {
 		return m.clearedperson
 	case rider.EdgeEnterprise:
 		return m.clearedenterprise
-	case rider.EdgeContract:
-		return m.clearedcontract
+	case rider.EdgeContracts:
+		return m.clearedcontracts
 	case rider.EdgeFaults:
 		return m.clearedfaults
 	case rider.EdgeOrders:
@@ -29880,8 +29880,8 @@ func (m *RiderMutation) ResetEdge(name string) error {
 	case rider.EdgeEnterprise:
 		m.ResetEnterprise()
 		return nil
-	case rider.EdgeContract:
-		m.ResetContract()
+	case rider.EdgeContracts:
+		m.ResetContracts()
 		return nil
 	case rider.EdgeFaults:
 		m.ResetFaults()
