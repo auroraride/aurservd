@@ -500,9 +500,9 @@ func (s *riderService) Block(req *model.RiderBlockReq) {
     ol := logging.NewOperateLog().SetRef(item).SetModifier(s.modifier)
     if req.Block {
         // 封禁
-        ol.SetOperate(logging.OperateRiderBLock).SetDiff(nb, bd)
+        ol.SetOperate(model.OperateRiderBLock).SetDiff(nb, bd)
     } else {
-        ol.SetOperate(logging.OperateRiderUnBLock).SetDiff(bd, nb)
+        ol.SetOperate(model.OperateRiderUnBLock).SetDiff(bd, nb)
     }
     ol.Send()
 }

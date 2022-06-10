@@ -261,7 +261,7 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
     go logging.NewOperateLog().
         SetRef(u).
         SetModifier(s.modifier).
-        SetOperate(logging.OperateSubscribeAlter).
+        SetOperate(model.OperateSubscribeAlter).
         SetDiff(fmt.Sprintf("剩余%d天", before), fmt.Sprintf("剩余%d天", sub.Remaining)).
         SetRemark(req.Reason).
         Send()

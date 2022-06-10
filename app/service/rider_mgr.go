@@ -94,7 +94,7 @@ func (s *riderMgrService) PauseSubscribe(subscribeID uint64) {
     go logging.NewOperateLog().
         SetRef(sub.Edges.Rider).
         SetModifier(s.modifier).
-        SetOperate(logging.OperateSubscribePause).
+        SetOperate(model.OperateSubscribePause).
         SetDiff("计费中", "暂停计费").
         Send()
 }
@@ -137,7 +137,7 @@ func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
     go logging.NewOperateLog().
         SetRef(sub.Edges.Rider).
         SetModifier(s.modifier).
-        SetOperate(logging.OperateSubscribePause).
+        SetOperate(model.OperateSubscribePause).
         SetDiff("暂停计费", "计费中").
         Send()
 }
@@ -167,7 +167,7 @@ func (s *riderMgrService) HaltSubscribe(subscribeID uint64) {
     go logging.NewOperateLog().
         SetRef(sub.Edges.Rider).
         SetModifier(s.modifier).
-        SetOperate(logging.OperateSubscribePause).
+        SetOperate(model.OperateSubscribePause).
         SetDiff(before, "强制退租").
         Send()
 }
@@ -218,7 +218,7 @@ func (s *riderMgrService) Deposit(req *model.RiderMgrDepositReq) {
     go logging.NewOperateLog().
         SetRef(r).
         SetModifier(s.modifier).
-        SetOperate(logging.OperateDeposit).
+        SetOperate(model.OperateDeposit).
         SetDiff(fmt.Sprintf("%.2f元", before), fmt.Sprintf("%.2f元", req.Amount)).
         Send()
 }
@@ -276,7 +276,7 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
     go logging.NewOperateLog().
         SetRef(r).
         SetModifier(s.modifier).
-        SetOperate(logging.OperateDeposit).
+        SetOperate(model.OperateDeposit).
         SetDiff(strings.Join(before, "\n"), strings.Join(after, "\n")).
         Send()
 }

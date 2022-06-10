@@ -14,45 +14,6 @@ import (
     "time"
 )
 
-type Operate uint
-
-const (
-    OperatePersonBan            = iota // 封禁身份
-    OperatePersonUnBan                 // 解封身份
-    OperateRiderBLock                  // 封禁账户
-    OperateRiderUnBLock                // 解封账户
-    OperateSubscribeAlter              // 修改订阅时间
-    OperateEnterprisePrepayment        // 企业预储值
-    OperateSubscribePause              // 暂停计费
-    OperateSubscribeContinue           // 继续计费
-    OperateDeposit                     // 调整押金
-)
-
-func (o Operate) String() string {
-    switch o {
-    case OperatePersonBan:
-        return "封禁用户"
-    case OperatePersonUnBan:
-        return "解封用户"
-    case OperateRiderBLock:
-        return "封禁账户"
-    case OperateRiderUnBLock:
-        return "解封账户"
-    case OperateSubscribeAlter:
-        return "修改时间"
-    case OperateEnterprisePrepayment:
-        return "企业预储值"
-    case OperateSubscribePause:
-        return "暂停计费"
-    case OperateSubscribeContinue:
-        return "继续计费"
-    case OperateDeposit:
-        return "调整押金"
-    default:
-        return "未知操作"
-    }
-}
-
 // OperateLog 系统操作日志
 type OperateLog struct {
     ID string `json:"id" sls:"操作ID"`
@@ -60,10 +21,10 @@ type OperateLog struct {
     RefID    uint64 `json:"refId" sls:"关联ID" index:"doc"`
     RefTable string `json:"refTable" sls:"关联表" index:"doc"`
 
-    Operate Operate `json:"operate" sls:"类别" string:"true" index:"doc"`
-    Remark  string  `json:"remark" sls:"备注" index:"doc"`
-    Before  string  `json:"before" sls:"操作前" index:"doc"`
-    After   string  `json:"after" sls:"操作后" index:"doc"`
+    Operate model.Operate `json:"operate" sls:"类别" string:"true" index:"doc"`
+    Remark  string        `json:"remark" sls:"备注" index:"doc"`
+    Before  string        `json:"before" sls:"操作前" index:"doc"`
+    After   string        `json:"after" sls:"操作后" index:"doc"`
 
     ManagerID    uint64 `json:"managerID" sls:"操作人ID" index:"doc"`
     ManagerPhone string `json:"phone" sls:"操作人电话" index:"doc"`
@@ -88,7 +49,7 @@ func (o *OperateLog) SetRef(ref model.Table) *OperateLog {
     return o
 }
 
-func (o *OperateLog) SetOperate(operate Operate) *OperateLog {
+func (o *OperateLog) SetOperate(operate model.Operate) *OperateLog {
     o.Operate = operate
     return o
 }

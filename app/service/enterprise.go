@@ -365,7 +365,7 @@ func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float
     go logging.NewOperateLog().
         SetRef(e).
         SetModifier(s.modifier).
-        SetOperate(logging.OperateEnterprisePrepayment).
+        SetOperate(model.OperateEnterprisePrepayment).
         SetDiff(fmt.Sprintf("余额%.2f元", before), fmt.Sprintf("余额%.2f元", b)).
         SetRemark(req.Remark).
         Send()

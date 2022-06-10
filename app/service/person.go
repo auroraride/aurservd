@@ -35,17 +35,17 @@ func NewPersonWithModifier(m *model.Modifier) *personService {
     return s
 }
 
-func (s *personService) Query(id uint64) *ent.Person {
+func (s *personService) Query(id uint64) (*ent.Person, *ent.Rider) {
     item, err := ar.Ent.Rider.QueryNotDeleted().WithPerson().Where(rider.ID(id)).Only(s.ctx)
     if err != nil || item == nil || item.Edges.Person == nil {
         snag.Panic("未找到骑手实名信息")
     }
-    return item.Edges.Person
+    return item.Edges.Person, item
 }
 
 // Ban 封禁或取消封禁
 func (s *personService) Ban(req *model.PersonBanReq) {
-    item := s.Query(req.ID)
+    item, r := s.Query(req.ID)
     if req.Ban == item.Banned {
         snag.Panic("骑手已是封禁状态")
     }
@@ -55,12 +55,12 @@ func (s *personService) Ban(req *model.PersonBanReq) {
     }
     nb := "未封禁"
     bd := "已封禁"
-    ol := logging.NewOperateLog().SetRef(item).SetModifier(s.modifier)
+    ol := logging.NewOperateLog().SetRef(r).SetModifier(s.modifier)
     if req.Ban {
         // 封禁
-        ol.SetOperate(logging.OperatePersonBan).SetDiff(nb, bd)
+        ol.SetOperate(model.OperatePersonBan).SetDiff(nb, bd)
     } else {
-        ol.SetOperate(logging.OperatePersonUnBan).SetDiff(bd, nb)
+        ol.SetOperate(model.OperatePersonUnBan).SetDiff(bd, nb)
     }
     ol.Send()
 }
