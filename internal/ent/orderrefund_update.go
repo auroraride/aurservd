@@ -378,7 +378,7 @@ func (oru *OrderRefundUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if oru.mutation.OrderCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2O,
 			Inverse: true,
 			Table:   orderrefund.OrderTable,
 			Columns: []string{orderrefund.OrderColumn},
@@ -394,7 +394,7 @@ func (oru *OrderRefundUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := oru.mutation.OrderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2O,
 			Inverse: true,
 			Table:   orderrefund.OrderTable,
 			Columns: []string{orderrefund.OrderColumn},
@@ -808,7 +808,7 @@ func (oruo *OrderRefundUpdateOne) sqlSave(ctx context.Context) (_node *OrderRefu
 	}
 	if oruo.mutation.OrderCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2O,
 			Inverse: true,
 			Table:   orderrefund.OrderTable,
 			Columns: []string{orderrefund.OrderColumn},
@@ -824,7 +824,7 @@ func (oruo *OrderRefundUpdateOne) sqlSave(ctx context.Context) (_node *OrderRefu
 	}
 	if nodes := oruo.mutation.OrderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2O,
 			Inverse: true,
 			Table:   orderrefund.OrderTable,
 			Columns: []string{orderrefund.OrderColumn},

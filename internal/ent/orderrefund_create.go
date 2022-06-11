@@ -377,11 +377,11 @@ func (orc *OrderRefundCreate) createSpec() (*OrderRefund, *sqlgraph.CreateSpec) 
 			Value:  value,
 			Column: orderrefund.FieldRefundAt,
 		})
-		_node.RefundAt = value
+		_node.RefundAt = &value
 	}
 	if nodes := orc.mutation.OrderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2O,
 			Inverse: true,
 			Table:   orderrefund.OrderTable,
 			Columns: []string{orderrefund.OrderColumn},

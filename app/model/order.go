@@ -34,12 +34,6 @@ const (
     OrderStatusRefundRefused              // 退款被拒绝
 )
 
-const (
-    OrderRefundStatusPending uint8 = iota // 退款中
-    OrderRefundStatusSuccess              // 成功退款
-    OrderRefundStatusFail                 // 退款失败
-)
-
 // OrderCreateReq 订单创建请求
 type OrderCreateReq struct {
     CityID    uint64 `json:"cityId" validate:"required" trans:"城市ID"`
@@ -67,18 +61,13 @@ type OrderNotActived struct {
     Time    string         `json:"time"`               // 支付时间
 }
 
-// OrderRefundReq 退款申请
-type OrderRefundReq struct {
-    SubscribeID *uint64 `json:"subscribeId"` // 骑士卡ID, 和deposit不能同时存在, 也不能同时为空
-    Deposit     *bool   `json:"deposit"`     // 是否退押金, 押金退款条件: 1. 无最近订单; 2. 存在订单且状态为已退款或已退租
-}
-
 // OrderListReq 订单列表请求
 type OrderListReq struct {
     PaginationReq
 
+    RiderID      *uint64  `json:"riderId" query:"riderId"`           // 骑手ID
     Type         *uint    `json:"type" query:"type"`                 // 订单类型 1:新签 2:续签 3:重签 4:更改电池 5:救援 6:滞纳金 7:押金
-    CityID       *uint64  `json:"cityId" query:"cityID"`             // 城市ID
+    CityID       *uint64  `json:"cityId" query:"cityId"`             // 城市ID
     RiderName    *string  `json:"riderName" query:"riderName"`       // 骑手姓名
     RiderPhone   *string  `json:"riderPhone" query:"riderPhone"`     // 骑手电话
     Start        *string  `json:"start" query:"start"`               // 时间起始, 格式为: 2022-01-01
@@ -86,5 +75,6 @@ type OrderListReq struct {
     EmployeeName *string  `json:"employeeName" query:"employeeName"` // 店员名字
     StoreName    *string  `json:"storeName" query:"storeName"`       // 门店名字
     Voltage      *float64 `json:"voltage" query:"voltage"`           // 电压
-    Days         *int     `json:"days"`                              // 骑士卡时长(搜索大于等于)
+    Days         *int     `json:"days" query:"days"`                 // 骑士卡时长(搜索大于等于)
+    Refund       uint8    `json:"refund" query:"refund"`             // 退款查询 0:查询全部 1:查询未申请退款 2:查询已申请退款(包含退款中/已退款/已拒绝)
 }

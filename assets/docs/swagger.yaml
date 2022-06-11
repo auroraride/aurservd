@@ -1187,6 +1187,15 @@ definitions:
       token:
         type: string
     type: object
+  model.Modifier:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
   model.OrderCreateReq:
     properties:
       cityId:
@@ -1226,15 +1235,6 @@ definitions:
       prepay:
         description: 预支付字符串
         type: string
-    type: object
-  model.OrderRefundReq:
-    properties:
-      deposit:
-        description: '是否退押金, 押金退款条件: 1. 无最近订单; 2. 存在订单且状态为已退款或已退租'
-        type: boolean
-      subscribeId:
-        description: 骑士卡ID, 和deposit不能同时存在, 也不能同时为空
-        type: integer
     type: object
   model.Pagination:
     properties:
@@ -1355,6 +1355,74 @@ definitions:
         type: string
     required:
     - qrcode
+    type: object
+  model.Refund:
+    properties:
+      amount:
+        description: 退款金额
+        type: number
+      createdAt:
+        description: 申请退款时间
+        type: string
+      modifier:
+        allOf:
+        - $ref: '#/definitions/model.Modifier'
+        description: 处理人 (可为空)
+      outRefundNo:
+        description: 退款单号
+        type: string
+      reason:
+        description: 退款理由
+        type: string
+      refundAt:
+        description: 退款成功时间
+        type: string
+      remark:
+        description: 备注
+        type: string
+      status:
+        description: 退款状态 0:处理中 1:已同意 2:已拒绝 3:已失败
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        type: integer
+    type: object
+  model.RefundAuditReq:
+    properties:
+      outRefundNo:
+        description: '退款单号 '
+        type: string
+      remark:
+        description: 操作备注
+        type: string
+      status:
+        description: 退款状态 1:同意 2:拒绝
+        enum:
+        - 1
+        - 2
+        maximum: 2
+        minimum: 1
+        type: integer
+    required:
+    - outRefundNo
+    - status
+    type: object
+  model.RefundReq:
+    properties:
+      deposit:
+        description: '是否退押金, 押金退款条件: 1. 无最近订单; 2. 存在订单且状态为已退款或已退租'
+        type: boolean
+      subscribeId:
+        description: 骑士卡ID, 和deposit不能同时存在, 也不能同时为空
+        type: integer
+    type: object
+  model.RefundRes:
+    properties:
+      outRefundNo:
+        description: 退款单号
+        type: string
     type: object
   model.RiderBasic:
     properties:
@@ -1596,7 +1664,11 @@ definitions:
       plan:
         allOf:
         - $ref: '#/definitions/model.Plan'
-        description: 骑士卡, 非骑士卡订阅订单无此字段
+        description: 骑士卡, 非骑士卡订阅订单无此字段 (可为空)
+      refund:
+        allOf:
+        - $ref: '#/definitions/model.Refund'
+        description: 退款详情 (可为空)
       rider:
         allOf:
         - $ref: '#/definitions/model.RiderBasic'
@@ -1612,7 +1684,7 @@ definitions:
         description: 订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
         type: integer
       voltage:
-        description: 电压
+        description: 电压 (可为空)
         type: number
     type: object
   model.RiderPlanItem:
@@ -3303,6 +3375,14 @@ paths:
         in: query
         name: pageSize
         type: integer
+      - description: 退款查询 0:查询全部 1:查询未申请退款 2:查询已申请退款(包含退款中/已退款/已拒绝)
+        in: query
+        name: refund
+        type: integer
+      - description: 骑手ID
+        in: query
+        name: riderId
+        type: integer
       - description: 骑手姓名
         in: query
         name: riderName
@@ -3342,6 +3422,33 @@ paths:
                   type: array
               type: object
       summary: M8001 订单列表
+      tags:
+      - '[M]管理接口'
+  /manager/v1/order/refund:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerOrderRefundAudit
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RefundAuditReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M8002 退款审核
       tags:
       - '[M]管理接口'
   /manager/v1/plan:
@@ -4688,14 +4795,14 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.OrderRefundReq'
+          $ref: '#/definitions/model.RefundReq'
       produces:
       - application/json
       responses:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.StatusResponse'
+            $ref: '#/definitions/model.RefundRes'
       summary: R3007 申请退款
       tags:
       - '[R]骑手接口'

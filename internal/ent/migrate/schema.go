@@ -1058,7 +1058,7 @@ var (
 		{Name: "out_refund_no", Type: field.TypeString, Unique: true, Comment: "退款订单编号"},
 		{Name: "reason", Type: field.TypeString, Comment: "退款理由"},
 		{Name: "refund_at", Type: field.TypeTime, Comment: "退款成功时间", Nullable: true},
-		{Name: "order_id", Type: field.TypeUint64},
+		{Name: "order_id", Type: field.TypeUint64, Unique: true},
 	}
 	// OrderRefundTable holds the schema information for the "order_refund" table.
 	OrderRefundTable = &schema.Table{
@@ -1067,7 +1067,7 @@ var (
 		PrimaryKey: []*schema.Column{OrderRefundColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "order_refund_order_refunds",
+				Symbol:     "order_refund_order_refund",
 				Columns:    []*schema.Column{OrderRefundColumns[12]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.NoAction,

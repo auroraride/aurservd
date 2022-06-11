@@ -30,14 +30,14 @@ func (OrderRefund) Fields() []ent.Field {
         field.Float("amount").Comment("退款金额"),
         field.String("out_refund_no").Unique().Comment("退款订单编号"),
         field.String("reason").Comment("退款理由"),
-        field.Time("refund_at").Optional().Comment("退款成功时间"),
+        field.Time("refund_at").Optional().Nillable().Comment("退款成功时间"),
     }
 }
 
 // Edges of the OrderRefund.
 func (OrderRefund) Edges() []ent.Edge {
     return []ent.Edge{
-        edge.From("order", Order.Type).Ref("refunds").Required().Unique().Field("order_id").Comment("订单"),
+        edge.From("order", Order.Type).Ref("refund").Required().Unique().Field("order_id").Comment("订单"),
     }
 }
 

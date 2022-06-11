@@ -21429,9 +21429,8 @@ type OrderMutation struct {
 	children          map[uint64]struct{}
 	removedchildren   map[uint64]struct{}
 	clearedchildren   bool
-	refunds           map[uint64]struct{}
-	removedrefunds    map[uint64]struct{}
-	clearedrefunds    bool
+	refund            *uint64
+	clearedrefund     bool
 	done              bool
 	oldValue          func(context.Context) (*Order, error)
 	predicates        []predicate.Order
@@ -22729,58 +22728,43 @@ func (m *OrderMutation) ResetChildren() {
 	m.removedchildren = nil
 }
 
-// AddRefundIDs adds the "refunds" edge to the OrderRefund entity by ids.
-func (m *OrderMutation) AddRefundIDs(ids ...uint64) {
-	if m.refunds == nil {
-		m.refunds = make(map[uint64]struct{})
-	}
-	for i := range ids {
-		m.refunds[ids[i]] = struct{}{}
-	}
+// SetRefundID sets the "refund" edge to the OrderRefund entity by id.
+func (m *OrderMutation) SetRefundID(id uint64) {
+	m.refund = &id
 }
 
-// ClearRefunds clears the "refunds" edge to the OrderRefund entity.
-func (m *OrderMutation) ClearRefunds() {
-	m.clearedrefunds = true
+// ClearRefund clears the "refund" edge to the OrderRefund entity.
+func (m *OrderMutation) ClearRefund() {
+	m.clearedrefund = true
 }
 
-// RefundsCleared reports if the "refunds" edge to the OrderRefund entity was cleared.
-func (m *OrderMutation) RefundsCleared() bool {
-	return m.clearedrefunds
+// RefundCleared reports if the "refund" edge to the OrderRefund entity was cleared.
+func (m *OrderMutation) RefundCleared() bool {
+	return m.clearedrefund
 }
 
-// RemoveRefundIDs removes the "refunds" edge to the OrderRefund entity by IDs.
-func (m *OrderMutation) RemoveRefundIDs(ids ...uint64) {
-	if m.removedrefunds == nil {
-		m.removedrefunds = make(map[uint64]struct{})
-	}
-	for i := range ids {
-		delete(m.refunds, ids[i])
-		m.removedrefunds[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedRefunds returns the removed IDs of the "refunds" edge to the OrderRefund entity.
-func (m *OrderMutation) RemovedRefundsIDs() (ids []uint64) {
-	for id := range m.removedrefunds {
-		ids = append(ids, id)
+// RefundID returns the "refund" edge ID in the mutation.
+func (m *OrderMutation) RefundID() (id uint64, exists bool) {
+	if m.refund != nil {
+		return *m.refund, true
 	}
 	return
 }
 
-// RefundsIDs returns the "refunds" edge IDs in the mutation.
-func (m *OrderMutation) RefundsIDs() (ids []uint64) {
-	for id := range m.refunds {
-		ids = append(ids, id)
+// RefundIDs returns the "refund" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RefundID instead. It exists only for internal usage by the builders.
+func (m *OrderMutation) RefundIDs() (ids []uint64) {
+	if id := m.refund; id != nil {
+		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetRefunds resets all changes to the "refunds" edge.
-func (m *OrderMutation) ResetRefunds() {
-	m.refunds = nil
-	m.clearedrefunds = false
-	m.removedrefunds = nil
+// ResetRefund resets all changes to the "refund" edge.
+func (m *OrderMutation) ResetRefund() {
+	m.refund = nil
+	m.clearedrefund = false
 }
 
 // Where appends a list predicates to the OrderMutation builder.
@@ -23384,8 +23368,8 @@ func (m *OrderMutation) AddedEdges() []string {
 	if m.children != nil {
 		edges = append(edges, order.EdgeChildren)
 	}
-	if m.refunds != nil {
-		edges = append(edges, order.EdgeRefunds)
+	if m.refund != nil {
+		edges = append(edges, order.EdgeRefund)
 	}
 	return edges
 }
@@ -23424,12 +23408,10 @@ func (m *OrderMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case order.EdgeRefunds:
-		ids := make([]ent.Value, 0, len(m.refunds))
-		for id := range m.refunds {
-			ids = append(ids, id)
+	case order.EdgeRefund:
+		if id := m.refund; id != nil {
+			return []ent.Value{*id}
 		}
-		return ids
 	}
 	return nil
 }
@@ -23439,9 +23421,6 @@ func (m *OrderMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 8)
 	if m.removedchildren != nil {
 		edges = append(edges, order.EdgeChildren)
-	}
-	if m.removedrefunds != nil {
-		edges = append(edges, order.EdgeRefunds)
 	}
 	return edges
 }
@@ -23453,12 +23432,6 @@ func (m *OrderMutation) RemovedIDs(name string) []ent.Value {
 	case order.EdgeChildren:
 		ids := make([]ent.Value, 0, len(m.removedchildren))
 		for id := range m.removedchildren {
-			ids = append(ids, id)
-		}
-		return ids
-	case order.EdgeRefunds:
-		ids := make([]ent.Value, 0, len(m.removedrefunds))
-		for id := range m.removedrefunds {
 			ids = append(ids, id)
 		}
 		return ids
@@ -23490,8 +23463,8 @@ func (m *OrderMutation) ClearedEdges() []string {
 	if m.clearedchildren {
 		edges = append(edges, order.EdgeChildren)
 	}
-	if m.clearedrefunds {
-		edges = append(edges, order.EdgeRefunds)
+	if m.clearedrefund {
+		edges = append(edges, order.EdgeRefund)
 	}
 	return edges
 }
@@ -23514,8 +23487,8 @@ func (m *OrderMutation) EdgeCleared(name string) bool {
 		return m.clearedparent
 	case order.EdgeChildren:
 		return m.clearedchildren
-	case order.EdgeRefunds:
-		return m.clearedrefunds
+	case order.EdgeRefund:
+		return m.clearedrefund
 	}
 	return false
 }
@@ -23541,6 +23514,9 @@ func (m *OrderMutation) ClearEdge(name string) error {
 		return nil
 	case order.EdgeParent:
 		m.ClearParent()
+		return nil
+	case order.EdgeRefund:
+		m.ClearRefund()
 		return nil
 	}
 	return fmt.Errorf("unknown Order unique edge %s", name)
@@ -23571,8 +23547,8 @@ func (m *OrderMutation) ResetEdge(name string) error {
 	case order.EdgeChildren:
 		m.ResetChildren()
 		return nil
-	case order.EdgeRefunds:
-		m.ResetRefunds()
+	case order.EdgeRefund:
+		m.ResetRefund()
 		return nil
 	}
 	return fmt.Errorf("unknown Order edge %s", name)
@@ -24208,7 +24184,7 @@ func (m *OrderRefundMutation) RefundAt() (r time.Time, exists bool) {
 // OldRefundAt returns the old "refund_at" field's value of the OrderRefund entity.
 // If the OrderRefund object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OrderRefundMutation) OldRefundAt(ctx context.Context) (v time.Time, err error) {
+func (m *OrderRefundMutation) OldRefundAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRefundAt is only allowed on UpdateOne operations")
 	}

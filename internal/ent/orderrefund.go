@@ -51,7 +51,7 @@ type OrderRefund struct {
 	Reason string `json:"reason,omitempty"`
 	// RefundAt holds the value of the "refund_at" field.
 	// 退款成功时间
-	RefundAt time.Time `json:"refund_at,omitempty"`
+	RefundAt *time.Time `json:"refund_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrderRefundQuery when eager-loading is set.
 	Edges OrderRefundEdges `json:"edges"`
@@ -191,7 +191,8 @@ func (or *OrderRefund) assignValues(columns []string, values []interface{}) erro
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field refund_at", values[i])
 			} else if value.Valid {
-				or.RefundAt = value.Time
+				or.RefundAt = new(time.Time)
+				*or.RefundAt = value.Time
 			}
 		}
 	}
@@ -250,8 +251,10 @@ func (or *OrderRefund) String() string {
 	builder.WriteString(or.OutRefundNo)
 	builder.WriteString(", reason=")
 	builder.WriteString(or.Reason)
-	builder.WriteString(", refund_at=")
-	builder.WriteString(or.RefundAt.Format(time.ANSIC))
+	if v := or.RefundAt; v != nil {
+		builder.WriteString(", refund_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

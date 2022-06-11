@@ -77,7 +77,7 @@ func (orq *OrderRefundQuery) QueryOrder() *OrderQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(orderrefund.Table, orderrefund.FieldID, selector),
 			sqlgraph.To(order.Table, order.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, orderrefund.OrderTable, orderrefund.OrderColumn),
+			sqlgraph.Edge(sqlgraph.O2O, true, orderrefund.OrderTable, orderrefund.OrderColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(orq.driver.Dialect(), step)
 		return fromU, nil

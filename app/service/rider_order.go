@@ -15,17 +15,6 @@ import (
     "github.com/golang-module/carbon/v2"
 )
 
-// import (
-//     "context"
-//     "github.com/auroraride/aurservd/app/model"
-//     "github.com/auroraride/aurservd/internal/ar"
-//     "github.com/auroraride/aurservd/internal/ent"
-//     "github.com/auroraride/aurservd/internal/ent/order"
-//     "github.com/auroraride/aurservd/pkg/tools"
-//     "github.com/golang-module/carbon/v2"
-//     "time"
-// )
-//
 type riderOrderService struct {
     ctx      context.Context
     modifier *model.Modifier
@@ -147,9 +136,27 @@ func (s *riderOrderService) Detail(item *ent.Order) model.RiderOrder {
             }
         }
     }
+
+    // refund
+    rf := item.Edges.Refund
+    if rf != nil {
+        res.Refund = &model.Refund{
+            Status:      rf.Status,
+            Amount:      rf.Amount,
+            OutRefundNo: rf.OutRefundNo,
+            Reason:      rf.Reason,
+            CreatedAt:   rf.CreatedAt.Format(carbon.DateTimeLayout),
+            Remark:      rf.Remark,
+            Modifier:    rf.LastModifier,
+        }
+        if rf.RefundAt != nil {
+            res.Refund.RefundAt = rf.RefundAt.Format(carbon.DateTimeLayout)
+        }
+    }
     return res
 }
 
+// Query 查询订单
 func (s *riderOrderService) Query(riderID, orderID uint64) *ent.Order {
     item, _ := s.orm.QueryNotDeleted().
         Where(order.RiderID(riderID), order.ID(orderID)).

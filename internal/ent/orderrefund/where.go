@@ -1076,7 +1076,7 @@ func HasOrder() predicate.OrderRefund {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(OrderTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, OrderTable, OrderColumn),
+			sqlgraph.Edge(sqlgraph.O2O, true, OrderTable, OrderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -1088,7 +1088,7 @@ func HasOrderWith(preds ...predicate.Order) predicate.OrderRefund {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(OrderInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, OrderTable, OrderColumn),
+			sqlgraph.Edge(sqlgraph.O2O, true, OrderTable, OrderColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

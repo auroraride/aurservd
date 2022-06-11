@@ -79,6 +79,7 @@ func loadManagerRoutes() {
 
     // 业务
     g.GET("/order", mapi.Order.List)
+    g.POST("/order/refund", mapi.Order.RefundAudit)
 
     // 企业
     g.POST("/enterprise", mapi.Enterprise.Create)

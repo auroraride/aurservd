@@ -1888,25 +1888,25 @@ func HasChildrenWith(preds ...predicate.Order) predicate.Order {
 	})
 }
 
-// HasRefunds applies the HasEdge predicate on the "refunds" edge.
-func HasRefunds() predicate.Order {
+// HasRefund applies the HasEdge predicate on the "refund" edge.
+func HasRefund() predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RefundsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, RefundsTable, RefundsColumn),
+			sqlgraph.To(RefundTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, RefundTable, RefundColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasRefundsWith applies the HasEdge predicate on the "refunds" edge with a given conditions (other predicates).
-func HasRefundsWith(preds ...predicate.OrderRefund) predicate.Order {
+// HasRefundWith applies the HasEdge predicate on the "refund" edge with a given conditions (other predicates).
+func HasRefundWith(preds ...predicate.OrderRefund) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(RefundsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, RefundsTable, RefundsColumn),
+			sqlgraph.To(RefundInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, RefundTable, RefundColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

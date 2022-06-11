@@ -304,19 +304,23 @@ func (oc *OrderCreate) AddChildren(o ...*Order) *OrderCreate {
 	return oc.AddChildIDs(ids...)
 }
 
-// AddRefundIDs adds the "refunds" edge to the OrderRefund entity by IDs.
-func (oc *OrderCreate) AddRefundIDs(ids ...uint64) *OrderCreate {
-	oc.mutation.AddRefundIDs(ids...)
+// SetRefundID sets the "refund" edge to the OrderRefund entity by ID.
+func (oc *OrderCreate) SetRefundID(id uint64) *OrderCreate {
+	oc.mutation.SetRefundID(id)
 	return oc
 }
 
-// AddRefunds adds the "refunds" edges to the OrderRefund entity.
-func (oc *OrderCreate) AddRefunds(o ...*OrderRefund) *OrderCreate {
-	ids := make([]uint64, len(o))
-	for i := range o {
-		ids[i] = o[i].ID
+// SetNillableRefundID sets the "refund" edge to the OrderRefund entity by ID if the given value is not nil.
+func (oc *OrderCreate) SetNillableRefundID(id *uint64) *OrderCreate {
+	if id != nil {
+		oc = oc.SetRefundID(*id)
 	}
-	return oc.AddRefundIDs(ids...)
+	return oc
+}
+
+// SetRefund sets the "refund" edge to the OrderRefund entity.
+func (oc *OrderCreate) SetRefund(o *OrderRefund) *OrderCreate {
+	return oc.SetRefundID(o.ID)
 }
 
 // Mutation returns the OrderMutation object of the builder.
@@ -744,12 +748,12 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := oc.mutation.RefundsIDs(); len(nodes) > 0 {
+	if nodes := oc.mutation.RefundIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   order.RefundsTable,
-			Columns: []string{order.RefundsColumn},
+			Table:   order.RefundTable,
+			Columns: []string{order.RefundColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

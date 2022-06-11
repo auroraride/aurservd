@@ -13,6 +13,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/order"
+	"github.com/auroraride/aurservd/internal/ent/orderrefund"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -101,8 +102,8 @@ type OrderEdges struct {
 	Parent *Order `json:"parent,omitempty"`
 	// Children holds the value of the children edge.
 	Children []*Order `json:"children,omitempty"`
-	// Refunds holds the value of the refunds edge.
-	Refunds []*OrderRefund `json:"refunds,omitempty"`
+	// Refund holds the value of the refund edge.
+	Refund *OrderRefund `json:"refund,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [8]bool
@@ -201,13 +202,18 @@ func (e OrderEdges) ChildrenOrErr() ([]*Order, error) {
 	return nil, &NotLoadedError{edge: "children"}
 }
 
-// RefundsOrErr returns the Refunds value or an error if the edge
-// was not loaded in eager-loading.
-func (e OrderEdges) RefundsOrErr() ([]*OrderRefund, error) {
+// RefundOrErr returns the Refund value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e OrderEdges) RefundOrErr() (*OrderRefund, error) {
 	if e.loadedTypes[7] {
-		return e.Refunds, nil
+		if e.Refund == nil {
+			// The edge refund was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: orderrefund.Label}
+		}
+		return e.Refund, nil
 	}
-	return nil, &NotLoadedError{edge: "refunds"}
+	return nil, &NotLoadedError{edge: "refund"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -412,9 +418,9 @@ func (o *Order) QueryChildren() *OrderQuery {
 	return (&OrderClient{config: o.config}).QueryChildren(o)
 }
 
-// QueryRefunds queries the "refunds" edge of the Order entity.
-func (o *Order) QueryRefunds() *OrderRefundQuery {
-	return (&OrderClient{config: o.config}).QueryRefunds(o)
+// QueryRefund queries the "refund" edge of the Order entity.
+func (o *Order) QueryRefund() *OrderRefundQuery {
+	return (&OrderClient{config: o.config}).QueryRefund(o)
 }
 
 // Update returns a builder for updating this Order.

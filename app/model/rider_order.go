@@ -5,6 +5,7 @@
 
 package model
 
+// RiderOrder 骑手订单
 type RiderOrder struct {
     ID         uint64         `json:"id"`                 // 订单ID
     Type       uint           `json:"type"`               // 订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
@@ -13,11 +14,12 @@ type RiderOrder struct {
     PayAt      string         `json:"payAt"`              // 支付时间
     Amount     float64        `json:"amount"`             // 支付金额
     OutTradeNo string         `json:"outTradeNo"`         // 订单编号
-    Plan       *Plan          `json:"plan,omitempty"`     // 骑士卡, 非骑士卡订阅订单无此字段
     City       City           `json:"city"`               // 城市
-    Voltage    float64        `json:"voltage,omitempty"`  // 电压
     Models     []BatteryModel `json:"models,omitempty"`   // 可用型号, 非骑士卡订阅订单无此字段
     Rider      RiderBasic     `json:"rider"`              // 骑手
+    Plan       *Plan          `json:"plan,omitempty"`     // 骑士卡, 非骑士卡订阅订单无此字段 (可为空)
+    Voltage    float64        `json:"voltage,omitempty"`  // 电压 (可为空)
     Store      *Store         `json:"store,omitempty"`    // 门店 (可为空)
     Employee   *Employee      `json:"employee,omitempty"` // 店员 (可为空)
+    Refund     *Refund        `json:"refund,omitempty"`   // 退款详情 (可为空)
 }

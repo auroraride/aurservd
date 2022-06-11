@@ -101,7 +101,7 @@ func (c *alipayClient) Refund(req *model.PaymentRefund) {
     log.Infof("[%s]支付宝退款反馈\n%s, err: %v", req.TradeNo, b, err)
 
     if err != nil {
-        snag.Panic("退款申请失败")
+        snag.Panic("退款处理失败")
         return
     }
     if !result.Content.Code.IsSuccess() {
@@ -126,24 +126,25 @@ func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
         return nil
     }
 
-    if result.TradeStatus == alipay.TradeStatusSuccess {
-        // 从缓存中获取订单数据
-        out := result.OutTradeNo
-        pc := new(model.PaymentCache)
-        err = cache.Get(context.Background(), out).Scan(pc)
-        if err != nil {
-            log.Errorf("从缓存获取订单信息失败: %v", err)
-            return nil
-        }
-        switch pc.CacheType {
-        case model.PaymentCacheTypePlan:
+    // 从缓存中获取订单数据
+    pc := new(model.PaymentCache)
+    out := result.OutTradeNo
+    err = cache.Get(context.Background(), out).Scan(pc)
+    if err != nil {
+        log.Errorf("从缓存获取订单信息失败: %v", err)
+        return nil
+    }
+
+    switch pc.CacheType {
+    case model.PaymentCacheTypePlan:
+        if result.TradeStatus == alipay.TradeStatusSuccess {
             pc.Subscribe.TradeNo = result.TradeNo
-            break
-        case model.PaymentCacheTypeRefund:
-            pc.Refund.Success = true
-            pc.Refund.Request = true
-            pc.Refund.Time = carbon.Parse(result.GmtRefund).Carbon2Time()
         }
+        return pc
+    case model.PaymentCacheTypeRefund:
+        pc.Refund.Success = true
+        pc.Refund.Request = true
+        pc.Refund.Time = carbon.Parse(result.GmtRefund).Carbon2Time()
         return pc
     }
 

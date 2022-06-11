@@ -47,7 +47,7 @@ func (Order) Edges() []ent.Edge {
         edge.From("subscribe", Subscribe.Type).Ref("orders").Unique().Field("subscribe_id").Comment("所属订阅"),
         edge.To("commission", Commission.Type).Unique(),
         edge.To("children", Order.Type).From("parent").Field("parent_id").Unique().Comment("子订单"),
-        edge.To("refunds", OrderRefund.Type).Comment("退款"),
+        edge.To("refund", OrderRefund.Type).Unique().Comment("退款"),
     }
 }
 

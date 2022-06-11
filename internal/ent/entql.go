@@ -1342,12 +1342,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Order",
 	)
 	graph.MustAddE(
-		"refunds",
+		"refund",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   order.RefundsTable,
-			Columns: []string{order.RefundsColumn},
+			Table:   order.RefundTable,
+			Columns: []string{order.RefundColumn},
 			Bidi:    false,
 		},
 		"Order",
@@ -1356,7 +1356,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 	graph.MustAddE(
 		"order",
 		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2O,
 			Inverse: true,
 			Table:   orderrefund.OrderTable,
 			Columns: []string{orderrefund.OrderColumn},
@@ -4297,14 +4297,14 @@ func (f *OrderFilter) WhereHasChildrenWith(preds ...predicate.Order) {
 	})))
 }
 
-// WhereHasRefunds applies a predicate to check if query has an edge refunds.
-func (f *OrderFilter) WhereHasRefunds() {
-	f.Where(entql.HasEdge("refunds"))
+// WhereHasRefund applies a predicate to check if query has an edge refund.
+func (f *OrderFilter) WhereHasRefund() {
+	f.Where(entql.HasEdge("refund"))
 }
 
-// WhereHasRefundsWith applies a predicate to check if query has an edge refunds with a given conditions (other predicates).
-func (f *OrderFilter) WhereHasRefundsWith(preds ...predicate.OrderRefund) {
-	f.Where(entql.HasEdgeWith("refunds", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasRefundWith applies a predicate to check if query has an edge refund with a given conditions (other predicates).
+func (f *OrderFilter) WhereHasRefundWith(preds ...predicate.OrderRefund) {
+	f.Where(entql.HasEdgeWith("refund", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

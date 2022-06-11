@@ -42,12 +42,11 @@ func (*order) Create(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        body  body  model.OrderRefundReq  true  "desc"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Param        body  body  model.RefundReq  true  "desc"
+// @Success      200  {object}  model.RefundRes  "请求成功"
 func (*order) Refund(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.OrderRefundReq](c)
-    service.NewOrderWithRider(ctx.Rider).Refund(ctx.Rider.ID, req)
-    return ctx.SendResponse()
+    ctx, req := app.RiderContextAndBinding[model.RefundReq](c)
+    return ctx.SendResponse(service.NewRefundWithRider(ctx.Rider).Refund(ctx.Rider.ID, req))
 }
 
 // List

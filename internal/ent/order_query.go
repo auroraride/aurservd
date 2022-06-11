@@ -38,7 +38,7 @@ type OrderQuery struct {
 	withCommission *CommissionQuery
 	withParent     *OrderQuery
 	withChildren   *OrderQuery
-	withRefunds    *OrderRefundQuery
+	withRefund     *OrderRefundQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -230,8 +230,8 @@ func (oq *OrderQuery) QueryChildren() *OrderQuery {
 	return query
 }
 
-// QueryRefunds chains the current query on the "refunds" edge.
-func (oq *OrderQuery) QueryRefunds() *OrderRefundQuery {
+// QueryRefund chains the current query on the "refund" edge.
+func (oq *OrderQuery) QueryRefund() *OrderRefundQuery {
 	query := &OrderRefundQuery{config: oq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := oq.prepareQuery(ctx); err != nil {
@@ -244,7 +244,7 @@ func (oq *OrderQuery) QueryRefunds() *OrderRefundQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(order.Table, order.FieldID, selector),
 			sqlgraph.To(orderrefund.Table, orderrefund.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, order.RefundsTable, order.RefundsColumn),
+			sqlgraph.Edge(sqlgraph.O2O, false, order.RefundTable, order.RefundColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
 		return fromU, nil
@@ -440,7 +440,7 @@ func (oq *OrderQuery) Clone() *OrderQuery {
 		withCommission: oq.withCommission.Clone(),
 		withParent:     oq.withParent.Clone(),
 		withChildren:   oq.withChildren.Clone(),
-		withRefunds:    oq.withRefunds.Clone(),
+		withRefund:     oq.withRefund.Clone(),
 		// clone intermediate query.
 		sql:    oq.sql.Clone(),
 		path:   oq.path,
@@ -525,14 +525,14 @@ func (oq *OrderQuery) WithChildren(opts ...func(*OrderQuery)) *OrderQuery {
 	return oq
 }
 
-// WithRefunds tells the query-builder to eager-load the nodes that are connected to
-// the "refunds" edge. The optional arguments are used to configure the query builder of the edge.
-func (oq *OrderQuery) WithRefunds(opts ...func(*OrderRefundQuery)) *OrderQuery {
+// WithRefund tells the query-builder to eager-load the nodes that are connected to
+// the "refund" edge. The optional arguments are used to configure the query builder of the edge.
+func (oq *OrderQuery) WithRefund(opts ...func(*OrderRefundQuery)) *OrderQuery {
 	query := &OrderRefundQuery{config: oq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	oq.withRefunds = query
+	oq.withRefund = query
 	return oq
 }
 
@@ -614,7 +614,7 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 			oq.withCommission != nil,
 			oq.withParent != nil,
 			oq.withChildren != nil,
-			oq.withRefunds != nil,
+			oq.withRefund != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -818,16 +818,15 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 		}
 	}
 
-	if query := oq.withRefunds; query != nil {
+	if query := oq.withRefund; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
 		nodeids := make(map[uint64]*Order)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Refunds = []*OrderRefund{}
 		}
 		query.Where(predicate.OrderRefund(func(s *sql.Selector) {
-			s.Where(sql.InValues(order.RefundsColumn, fks...))
+			s.Where(sql.InValues(order.RefundColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)
 		if err != nil {
@@ -839,7 +838,7 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 			if !ok {
 				return nil, fmt.Errorf(`unexpected foreign-key "order_id" returned %v for node %v`, fk, n.ID)
 			}
-			node.Edges.Refunds = append(node.Edges.Refunds, n)
+			node.Edges.Refund = n
 		}
 	}
 

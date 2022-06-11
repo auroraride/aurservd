@@ -1,3 +1,30 @@
+## 2022-06-11
+
+#### 接口调整
+
+- [M8001 订单列表](http://localhost:5533/docs#tag/M/operation/ManagerOrderList)
+  - 筛选新增`riderId`(骑手ID) `refund`筛选退款
+  - 返回新增`refund`退款详情
+
+
+
+#### 接口新增
+
+- [M8002 退款审核](http://localhost:5533/docs#tag/M/operation/ManagerOrderRefundAudit)
+
+
+
+#### 后台调整
+
+- 删除骑手详情下的订单、退款tabs
+- 订单管理新增退款筛选，若有退款申请（判定条件: `status == 2`），则新增操作处理退款同意或拒绝，若拒绝则必填理由
+
+
+
+
+
+<br />
+
 ## 2022-06-10
 
 #### 接口新增

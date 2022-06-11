@@ -67,8 +67,8 @@ const (
 	EdgeParent = "parent"
 	// EdgeChildren holds the string denoting the children edge name in mutations.
 	EdgeChildren = "children"
-	// EdgeRefunds holds the string denoting the refunds edge name in mutations.
-	EdgeRefunds = "refunds"
+	// EdgeRefund holds the string denoting the refund edge name in mutations.
+	EdgeRefund = "refund"
 	// Table holds the table name of the order in the database.
 	Table = "order"
 	// PlanTable is the table that holds the plan relation/edge.
@@ -114,13 +114,13 @@ const (
 	ChildrenTable = "order"
 	// ChildrenColumn is the table column denoting the children relation/edge.
 	ChildrenColumn = "parent_id"
-	// RefundsTable is the table that holds the refunds relation/edge.
-	RefundsTable = "order_refund"
-	// RefundsInverseTable is the table name for the OrderRefund entity.
+	// RefundTable is the table that holds the refund relation/edge.
+	RefundTable = "order_refund"
+	// RefundInverseTable is the table name for the OrderRefund entity.
 	// It exists in this package in order to avoid circular dependency with the "orderrefund" package.
-	RefundsInverseTable = "order_refund"
-	// RefundsColumn is the table column denoting the refunds relation/edge.
-	RefundsColumn = "order_id"
+	RefundInverseTable = "order_refund"
+	// RefundColumn is the table column denoting the refund relation/edge.
+	RefundColumn = "order_id"
 )
 
 // Columns holds all SQL columns for order fields.

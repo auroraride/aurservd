@@ -2721,15 +2721,15 @@ func (c *OrderClient) QueryChildren(o *Order) *OrderQuery {
 	return query
 }
 
-// QueryRefunds queries the refunds edge of a Order.
-func (c *OrderClient) QueryRefunds(o *Order) *OrderRefundQuery {
+// QueryRefund queries the refund edge of a Order.
+func (c *OrderClient) QueryRefund(o *Order) *OrderRefundQuery {
 	query := &OrderRefundQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := o.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(order.Table, order.FieldID, id),
 			sqlgraph.To(orderrefund.Table, orderrefund.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, order.RefundsTable, order.RefundsColumn),
+			sqlgraph.Edge(sqlgraph.O2O, false, order.RefundTable, order.RefundColumn),
 		)
 		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
 		return fromV, nil
@@ -2836,7 +2836,7 @@ func (c *OrderRefundClient) QueryOrder(or *OrderRefund) *OrderQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(orderrefund.Table, orderrefund.FieldID, id),
 			sqlgraph.To(order.Table, order.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, orderrefund.OrderTable, orderrefund.OrderColumn),
+			sqlgraph.Edge(sqlgraph.O2O, true, orderrefund.OrderTable, orderrefund.OrderColumn),
 		)
 		fromV = sqlgraph.Neighbors(or.driver.Dialect(), step)
 		return fromV, nil

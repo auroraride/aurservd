@@ -1950,6 +1950,18 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "退款查询 0:查询全部 1:查询未申请退款 2:查询已申请退款(包含退款中/已退款/已拒绝)",
+                        "name": "refund",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑手ID",
+                        "name": "riderId",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "骑手姓名",
                         "name": "riderName",
@@ -2006,6 +2018,47 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/order/refund": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M8002 退款审核",
+                "operationId": "ManagerOrderRefundAudit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RefundAuditReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -4062,7 +4115,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.OrderRefundReq"
+                            "$ref": "#/definitions/model.RefundReq"
                         }
                     }
                 ],
@@ -4070,7 +4123,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "$ref": "#/definitions/model.RefundRes"
                         }
                     }
                 }
@@ -5899,6 +5952,20 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Modifier": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
         "model.OrderCreateReq": {
             "type": "object",
             "required": [
@@ -5949,19 +6016,6 @@ const docTemplate = `{
                 "prepay": {
                     "description": "预支付字符串",
                     "type": "string"
-                }
-            }
-        },
-        "model.OrderRefundReq": {
-            "type": "object",
-            "properties": {
-                "deposit": {
-                    "description": "是否退押金, 押金退款条件: 1. 无最近订单; 2. 存在订单且状态为已退款或已退租",
-                    "type": "boolean"
-                },
-                "subscribeId": {
-                    "description": "骑士卡ID, 和deposit不能同时存在, 也不能同时为空",
-                    "type": "integer"
                 }
             }
         },
@@ -6133,6 +6187,102 @@ const docTemplate = `{
             "properties": {
                 "qrcode": {
                     "description": "二维码 ",
+                    "type": "string"
+                }
+            }
+        },
+        "model.Refund": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "退款金额",
+                    "type": "number"
+                },
+                "createdAt": {
+                    "description": "申请退款时间",
+                    "type": "string"
+                },
+                "modifier": {
+                    "description": "处理人 (可为空)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Modifier"
+                        }
+                    ]
+                },
+                "outRefundNo": {
+                    "description": "退款单号",
+                    "type": "string"
+                },
+                "reason": {
+                    "description": "退款理由",
+                    "type": "string"
+                },
+                "refundAt": {
+                    "description": "退款成功时间",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "备注",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "退款状态 0:处理中 1:已同意 2:已拒绝 3:已失败",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                }
+            }
+        },
+        "model.RefundAuditReq": {
+            "type": "object",
+            "required": [
+                "outRefundNo",
+                "status"
+            ],
+            "properties": {
+                "outRefundNo": {
+                    "description": "退款单号 ",
+                    "type": "string"
+                },
+                "remark": {
+                    "description": "操作备注",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "退款状态 1:同意 2:拒绝",
+                    "type": "integer",
+                    "maximum": 2,
+                    "minimum": 1,
+                    "enum": [
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
+        "model.RefundReq": {
+            "type": "object",
+            "properties": {
+                "deposit": {
+                    "description": "是否退押金, 押金退款条件: 1. 无最近订单; 2. 存在订单且状态为已退款或已退租",
+                    "type": "boolean"
+                },
+                "subscribeId": {
+                    "description": "骑士卡ID, 和deposit不能同时存在, 也不能同时为空",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.RefundRes": {
+            "type": "object",
+            "properties": {
+                "outRefundNo": {
+                    "description": "退款单号",
                     "type": "string"
                 }
             }
@@ -6488,10 +6638,18 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "plan": {
-                    "description": "骑士卡, 非骑士卡订阅订单无此字段",
+                    "description": "骑士卡, 非骑士卡订阅订单无此字段 (可为空)",
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.Plan"
+                        }
+                    ]
+                },
+                "refund": {
+                    "description": "退款详情 (可为空)",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Refund"
                         }
                     ]
                 },
@@ -6520,7 +6678,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "voltage": {
-                    "description": "电压",
+                    "description": "电压 (可为空)",
                     "type": "number"
                 }
             }

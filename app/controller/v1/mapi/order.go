@@ -32,3 +32,19 @@ func (*order) List(c echo.Context) (err error) {
         service.NewOrderWithModifier(ctx.Modifier).List(req),
     )
 }
+
+// RefundAudit
+// @ID           ManagerOrderRefundAudit
+// @Router       /manager/v1/order/refund [POST]
+// @Summary      M8002 退款审核
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body  model.RefundAuditReq  true  "desc"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*order) RefundAudit(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.RefundAuditReq](c)
+    service.NewRefundWithModifier(ctx.Modifier).RefundAudit(req)
+    return ctx.SendResponse()
+}

@@ -135,7 +135,7 @@ func (c *wechatClient) Refund(req *model.PaymentRefund) {
     if err != nil {
         b, _ := ioutil.ReadAll(result.Response.Body)
         log.Errorf("微信退款调用失败: %#v, %s", err, string(b))
-        snag.Panic("退款失败")
+        snag.Panic("退款处理失败")
     }
 
     req.Request = true
@@ -213,7 +213,7 @@ func (c *wechatClient) RefundNotification(req *http.Request) *model.PaymentCache
     pc := new(model.PaymentCache)
 
     // 从缓存中获取订单数据
-    err = cache.Get(context.Background(), transaction.OutRefundNo).Scan(pc)
+    err = cache.Get(context.Background(), transaction.OutTradeNo).Scan(pc)
     if err != nil {
         log.Errorf("从缓存获取订单信息失败: %v", err)
         return nil

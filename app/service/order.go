@@ -11,8 +11,10 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/commission"
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/order"
+    "github.com/auroraride/aurservd/internal/ent/orderrefund"
     "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/store"
@@ -227,46 +229,6 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
     return
 }
 
-// Refund 退款
-// TODO 重构退款申请逻辑
-func (s *orderService) Refund(riderID uint64, req *model.OrderRefundReq) {
-    if (req.Deposit == nil && req.SubscribeID == nil) || (req.Deposit != nil && req.SubscribeID != nil) {
-        snag.Panic("退款参数错误")
-    }
-
-    sub := NewSubscribe().RecentDetail(riderID)
-    orc := ar.Ent.OrderRefund.Create().SetOutRefundNo(tools.NewUnique().NewSN28())
-    if req.SubscribeID != nil {
-        if sub.ID != *req.SubscribeID {
-            snag.Panic("未找到有效骑士卡")
-        }
-        if sub.Status != model.SubscribeStatusInactive {
-            snag.Panic("骑士卡已激活, 无法退款")
-        }
-        orc.SetOrderID(sub.Order.ID).
-            SetAmount(sub.Order.Amount).
-            SetReason("骑士卡未激活, 用户申请")
-    }
-
-    if req.Deposit != nil {
-        // 押金退款逻辑
-        if sub.Status != model.SubscribeStatusUnSubscribed && sub.Status != model.SubscribeStatusCanceled {
-            snag.Panic("骑士卡正在使用中, 无法退押金")
-        }
-        // 获取骑手押金订单
-        o := NewRider().DepositOrder(s.rider.ID)
-        if o == nil {
-            snag.Panic("未找到押金订单")
-        }
-        orc.SetOrderID(o.ID).SetAmount(o.Amount).SetReason("无使用中的骑士卡, 用户申请退还押金")
-    }
-
-    _, err := orc.Save(s.ctx)
-    if err != nil {
-        snag.Panic("押金退还申请失败")
-    }
-}
-
 // DoPayment 处理支付
 func (s *orderService) DoPayment(pc *model.PaymentCache) {
     if pc == nil {
@@ -397,26 +359,41 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 
 // RefundSuccess 成功退款
 func (s *orderService) RefundSuccess(req *model.PaymentRefund) {
-    // ctx := context.Background()
-    // tx, _ := ar.Ent.Tx(ctx)
-    // tx.Detail.UpdateOneID(req.OrderID).
-    //     SetStatus(model.OrderStatusRefundSuccess).
-    //     SetEndAt(req.Time).
-    //     SaveX(ctx)
-    //
-    // tx.OrderRefund.Update().
-    //     Where(orderrefund.OutRefundNo(req.OutRefundNo)).
-    //     SetStatus(model.OrderRefundStatusSuccess).
-    //     SetRefundAt(req.Time).
-    //     SaveX(ctx)
-    //
-    // // 删除提成订单
-    // tx.Commission.Delete().Where(commission.OrderID(req.OrderID)).ExecX(ctx)
-    //
-    // _ = tx.Commit()
-    //
-    // // 删除缓存
-    // cache.Del(ctx, req.OutRefundNo)
+    ctx := context.Background()
+
+    // 更新订单
+    _, err := ar.Ent.Order.UpdateOneID(req.OrderID).
+        SetStatus(model.OrderStatusRefundSuccess).
+        SetRefundAt(req.Time).
+        Save(ctx)
+    if err != nil {
+        log.Error(err)
+    }
+
+    // 更新退款订单
+    _, err = ar.Ent.OrderRefund.Update().
+        Where(orderrefund.OutRefundNo(req.OutRefundNo)).
+        SetStatus(model.RefundStatusSuccess).
+        SetRefundAt(req.Time).
+        Save(ctx)
+    if err != nil {
+        log.Error(err)
+    }
+
+    // 更新骑士卡
+    _, err = ar.Ent.Subscribe.Update().Where(subscribe.InitialOrderID(req.OrderID)).SetRefundAt(req.Time).SetStatus(model.SubscribeStatusCanceled).Save(ctx)
+    if err != nil {
+        log.Error(err)
+    }
+
+    // 删除提成订单
+    err = ar.Ent.Commission.SoftDelete().Where(commission.OrderID(req.OrderID)).SetRemark("用户已退款").Exec(ctx)
+    if err != nil {
+        log.Error(err)
+    }
+
+    // 删除缓存
+    cache.Del(ctx, req.OutRefundNo)
 }
 
 // List 获取订单列表
@@ -435,6 +412,9 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
         WithSubscribe(func(sq *ent.SubscribeQuery) {
             sq.WithEmployee().WithStore()
         })
+    if req.RiderID != nil {
+        q.Where(order.RiderID(*req.RiderID))
+    }
     if req.Start != nil {
         q.Where(order.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
     }
@@ -466,6 +446,16 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
     }
     if req.Days != nil {
         q.Where(order.InitialDaysGTE(*req.Days))
+    }
+    if req.Refund > 0 {
+        switch req.Refund {
+        case 1:
+            q.Where(order.StatusNotIn(model.OrderStatusRefundPending, model.OrderStatusRefundRefused, model.OrderStatusRefundSuccess))
+            break
+        case 2:
+            q.Where(order.StatusIn(model.OrderStatusRefundPending, model.OrderStatusRefundRefused, model.OrderStatusRefundSuccess)).WithRefund()
+            break
+        }
     }
     return model.ParsePaginationResponse[model.RiderOrder, ent.Order](
         q,
