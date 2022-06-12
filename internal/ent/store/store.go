@@ -39,6 +39,10 @@ const (
 	EdgeBranch = "branch"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
 	EdgeEmployee = "employee"
+	// EdgeStocks holds the string denoting the stocks edge name in mutations.
+	EdgeStocks = "stocks"
+	// EdgeToStocks holds the string denoting the tostocks edge name in mutations.
+	EdgeToStocks = "toStocks"
 	// Table holds the table name of the store in the database.
 	Table = "store"
 	// BranchTable is the table that holds the branch relation/edge.
@@ -55,6 +59,20 @@ const (
 	EmployeeInverseTable = "employee"
 	// EmployeeColumn is the table column denoting the employee relation/edge.
 	EmployeeColumn = "employee_id"
+	// StocksTable is the table that holds the stocks relation/edge.
+	StocksTable = "stock"
+	// StocksInverseTable is the table name for the Stock entity.
+	// It exists in this package in order to avoid circular dependency with the "stock" package.
+	StocksInverseTable = "stock"
+	// StocksColumn is the table column denoting the stocks relation/edge.
+	StocksColumn = "store_id"
+	// ToStocksTable is the table that holds the toStocks relation/edge.
+	ToStocksTable = "stock"
+	// ToStocksInverseTable is the table name for the Stock entity.
+	// It exists in this package in order to avoid circular dependency with the "stock" package.
+	ToStocksInverseTable = "stock"
+	// ToStocksColumn is the table column denoting the toStocks relation/edge.
+	ToStocksColumn = "from_store_id"
 )
 
 // Columns holds all SQL columns for store fields.

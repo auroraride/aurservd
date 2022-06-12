@@ -62,6 +62,8 @@ type Tx struct {
 	Rider *RiderClient
 	// Setting is the client for interacting with the Setting builders.
 	Setting *SettingClient
+	// Stock is the client for interacting with the Stock builders.
+	Stock *StockClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
 	// Subscribe is the client for interacting with the Subscribe builders.
@@ -229,6 +231,7 @@ func (tx *Tx) init() {
 	tx.Plan = NewPlanClient(tx.config)
 	tx.Rider = NewRiderClient(tx.config)
 	tx.Setting = NewSettingClient(tx.config)
+	tx.Stock = NewStockClient(tx.config)
 	tx.Store = NewStoreClient(tx.config)
 	tx.Subscribe = NewSubscribeClient(tx.config)
 	tx.SubscribeAlter = NewSubscribeAlterClient(tx.config)

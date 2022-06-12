@@ -242,6 +242,16 @@ func (s *Setting) GetID() uint64 {
 	return s.ID
 }
 
+// GetTableName returns table name for Stock.
+func (s *Stock) GetTableName() string {
+	return "stock"
+}
+
+// GetID returns id for Stock.
+func (s *Stock) GetID() uint64 {
+	return s.ID
+}
+
 // GetTableName returns table name for Store.
 func (s *Store) GetTableName() string {
 	return "store"

@@ -61,6 +61,9 @@ func (Store) Edges() []ent.Edge {
     return []ent.Edge{
         edge.From("branch", Branch.Type).Ref("stores").Required().Unique().Field("branch_id"),
         edge.From("employee", Employee.Type).Ref("store").Unique().Field("employee_id"),
+
+        edge.To("stocks", Stock.Type),
+        edge.To("toStocks", Stock.Type),
     }
 }
 

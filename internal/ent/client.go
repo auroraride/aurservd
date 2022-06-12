@@ -33,6 +33,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/setting"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
@@ -96,6 +97,8 @@ type Client struct {
 	Rider *RiderClient
 	// Setting is the client for interacting with the Setting builders.
 	Setting *SettingClient
+	// Stock is the client for interacting with the Stock builders.
+	Stock *StockClient
 	// Store is the client for interacting with the Store builders.
 	Store *StoreClient
 	// Subscribe is the client for interacting with the Subscribe builders.
@@ -141,6 +144,7 @@ func (c *Client) init() {
 	c.Plan = NewPlanClient(c.config)
 	c.Rider = NewRiderClient(c.config)
 	c.Setting = NewSettingClient(c.config)
+	c.Stock = NewStockClient(c.config)
 	c.Store = NewStoreClient(c.config)
 	c.Subscribe = NewSubscribeClient(c.config)
 	c.SubscribeAlter = NewSubscribeAlterClient(c.config)
@@ -202,6 +206,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Plan:                 NewPlanClient(cfg),
 		Rider:                NewRiderClient(cfg),
 		Setting:              NewSettingClient(cfg),
+		Stock:                NewStockClient(cfg),
 		Store:                NewStoreClient(cfg),
 		Subscribe:            NewSubscribeClient(cfg),
 		SubscribeAlter:       NewSubscribeAlterClient(cfg),
@@ -249,6 +254,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Plan:                 NewPlanClient(cfg),
 		Rider:                NewRiderClient(cfg),
 		Setting:              NewSettingClient(cfg),
+		Stock:                NewStockClient(cfg),
 		Store:                NewStoreClient(cfg),
 		Subscribe:            NewSubscribeClient(cfg),
 		SubscribeAlter:       NewSubscribeAlterClient(cfg),
@@ -306,6 +312,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Plan.Use(hooks...)
 	c.Rider.Use(hooks...)
 	c.Setting.Use(hooks...)
+	c.Stock.Use(hooks...)
 	c.Store.Use(hooks...)
 	c.Subscribe.Use(hooks...)
 	c.SubscribeAlter.Use(hooks...)
@@ -3520,6 +3527,129 @@ func (c *SettingClient) Hooks() []Hook {
 	return append(hooks[:len(hooks):len(hooks)], setting.Hooks[:]...)
 }
 
+// StockClient is a client for the Stock schema.
+type StockClient struct {
+	config
+}
+
+// NewStockClient returns a client for the Stock from the given config.
+func NewStockClient(c config) *StockClient {
+	return &StockClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `stock.Hooks(f(g(h())))`.
+func (c *StockClient) Use(hooks ...Hook) {
+	c.hooks.Stock = append(c.hooks.Stock, hooks...)
+}
+
+// Create returns a create builder for Stock.
+func (c *StockClient) Create() *StockCreate {
+	mutation := newStockMutation(c.config, OpCreate)
+	return &StockCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Stock entities.
+func (c *StockClient) CreateBulk(builders ...*StockCreate) *StockCreateBulk {
+	return &StockCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Stock.
+func (c *StockClient) Update() *StockUpdate {
+	mutation := newStockMutation(c.config, OpUpdate)
+	return &StockUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *StockClient) UpdateOne(s *Stock) *StockUpdateOne {
+	mutation := newStockMutation(c.config, OpUpdateOne, withStock(s))
+	return &StockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *StockClient) UpdateOneID(id uint64) *StockUpdateOne {
+	mutation := newStockMutation(c.config, OpUpdateOne, withStockID(id))
+	return &StockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Stock.
+func (c *StockClient) Delete() *StockDelete {
+	mutation := newStockMutation(c.config, OpDelete)
+	return &StockDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *StockClient) DeleteOne(s *Stock) *StockDeleteOne {
+	return c.DeleteOneID(s.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *StockClient) DeleteOneID(id uint64) *StockDeleteOne {
+	builder := c.Delete().Where(stock.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &StockDeleteOne{builder}
+}
+
+// Query returns a query builder for Stock.
+func (c *StockClient) Query() *StockQuery {
+	return &StockQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Stock entity by its id.
+func (c *StockClient) Get(ctx context.Context, id uint64) (*Stock, error) {
+	return c.Query().Where(stock.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *StockClient) GetX(ctx context.Context, id uint64) *Stock {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryStore queries the store edge of a Stock.
+func (c *StockClient) QueryStore(s *Stock) *StoreQuery {
+	query := &StoreQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.StoreTable, stock.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryFromStore queries the fromStore edge of a Stock.
+func (c *StockClient) QueryFromStore(s *Stock) *StoreQuery {
+	query := &StoreQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.FromStoreTable, stock.FromStoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *StockClient) Hooks() []Hook {
+	hooks := c.hooks.Stock
+	return append(hooks[:len(hooks):len(hooks)], stock.Hooks[:]...)
+}
+
 // StoreClient is a client for the Store schema.
 type StoreClient struct {
 	config
@@ -3630,6 +3760,38 @@ func (c *StoreClient) QueryEmployee(s *Store) *EmployeeQuery {
 			sqlgraph.From(store.Table, store.FieldID, id),
 			sqlgraph.To(employee.Table, employee.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, true, store.EmployeeTable, store.EmployeeColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStocks queries the stocks edge of a Store.
+func (c *StoreClient) QueryStocks(s *Store) *StockQuery {
+	query := &StockQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, store.StocksTable, store.StocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryToStocks queries the toStocks edge of a Store.
+func (c *StoreClient) QueryToStocks(s *Store) *StockQuery {
+	query := &StockQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, store.ToStocksTable, store.ToStocksColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

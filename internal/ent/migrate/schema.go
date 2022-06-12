@@ -1374,6 +1374,74 @@ var (
 			},
 		},
 	}
+	// StockColumns holds the columns for the "stock" table.
+	StockColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "uuid", Type: field.TypeUUID, Comment: "调拨编号"},
+		{Name: "name", Type: field.TypeString, Comment: "物资名称"},
+		{Name: "voltage", Type: field.TypeFloat64, Comment: "电池型号(电压)", Nullable: true},
+		{Name: "num", Type: field.TypeInt, Comment: "物资数量: 正值调入 / 负值调出"},
+		{Name: "store_id", Type: field.TypeUint64},
+		{Name: "from_store_id", Type: field.TypeUint64, Nullable: true},
+	}
+	// StockTable holds the schema information for the "stock" table.
+	StockTable = &schema.Table{
+		Name:       "stock",
+		Columns:    StockColumns,
+		PrimaryKey: []*schema.Column{StockColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "stock_store_stocks",
+				Columns:    []*schema.Column{StockColumns[11]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "stock_store_toStocks",
+				Columns:    []*schema.Column{StockColumns[12]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "stock_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{StockColumns[1]},
+			},
+			{
+				Name:    "stock_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{StockColumns[3]},
+			},
+			{
+				Name:    "stock_creator",
+				Unique:  false,
+				Columns: []*schema.Column{StockColumns[4]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
+			{
+				Name:    "stock_name",
+				Unique:  false,
+				Columns: []*schema.Column{StockColumns[8]},
+			},
+			{
+				Name:    "stock_voltage",
+				Unique:  false,
+				Columns: []*schema.Column{StockColumns[9]},
+			},
+		},
+	}
 	// StoreColumns holds the columns for the "store" table.
 	StoreColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -1759,6 +1827,7 @@ var (
 		PlanTable,
 		RiderTable,
 		SettingTable,
+		StockTable,
 		StoreTable,
 		SubscribeTable,
 		SubscribeAlterTable,
@@ -1874,6 +1943,11 @@ func init() {
 	}
 	SettingTable.Annotation = &entsql.Annotation{
 		Table: "setting",
+	}
+	StockTable.ForeignKeys[0].RefTable = StoreTable
+	StockTable.ForeignKeys[1].RefTable = StoreTable
+	StockTable.Annotation = &entsql.Annotation{
+		Table: "stock",
 	}
 	StoreTable.ForeignKeys[0].RefTable = BranchTable
 	StoreTable.ForeignKeys[1].RefTable = EmployeeTable

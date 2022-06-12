@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
 
@@ -147,6 +148,36 @@ func (sc *StoreCreate) SetBranch(b *Branch) *StoreCreate {
 // SetEmployee sets the "employee" edge to the Employee entity.
 func (sc *StoreCreate) SetEmployee(e *Employee) *StoreCreate {
 	return sc.SetEmployeeID(e.ID)
+}
+
+// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
+func (sc *StoreCreate) AddStockIDs(ids ...uint64) *StoreCreate {
+	sc.mutation.AddStockIDs(ids...)
+	return sc
+}
+
+// AddStocks adds the "stocks" edges to the Stock entity.
+func (sc *StoreCreate) AddStocks(s ...*Stock) *StoreCreate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return sc.AddStockIDs(ids...)
+}
+
+// AddToStockIDs adds the "toStocks" edge to the Stock entity by IDs.
+func (sc *StoreCreate) AddToStockIDs(ids ...uint64) *StoreCreate {
+	sc.mutation.AddToStockIDs(ids...)
+	return sc
+}
+
+// AddToStocks adds the "toStocks" edges to the Stock entity.
+func (sc *StoreCreate) AddToStocks(s ...*Stock) *StoreCreate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return sc.AddToStockIDs(ids...)
 }
 
 // Mutation returns the StoreMutation object of the builder.
@@ -410,6 +441,44 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.EmployeeID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.StocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.StocksTable,
+			Columns: []string{store.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.ToStocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.ToStocksTable,
+			Columns: []string{store.ToStocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

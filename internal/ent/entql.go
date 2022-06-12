@@ -28,6 +28,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/setting"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
@@ -41,7 +42,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 28)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 29)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   batterymodel.Table,
@@ -667,6 +668,31 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[24] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
+			Table:   stock.Table,
+			Columns: stock.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: stock.FieldID,
+			},
+		},
+		Type: "Stock",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			stock.FieldCreatedAt:    {Type: field.TypeTime, Column: stock.FieldCreatedAt},
+			stock.FieldUpdatedAt:    {Type: field.TypeTime, Column: stock.FieldUpdatedAt},
+			stock.FieldDeletedAt:    {Type: field.TypeTime, Column: stock.FieldDeletedAt},
+			stock.FieldCreator:      {Type: field.TypeJSON, Column: stock.FieldCreator},
+			stock.FieldLastModifier: {Type: field.TypeJSON, Column: stock.FieldLastModifier},
+			stock.FieldRemark:       {Type: field.TypeString, Column: stock.FieldRemark},
+			stock.FieldStoreID:      {Type: field.TypeUint64, Column: stock.FieldStoreID},
+			stock.FieldUUID:         {Type: field.TypeUUID, Column: stock.FieldUUID},
+			stock.FieldFromStoreID:  {Type: field.TypeUint64, Column: stock.FieldFromStoreID},
+			stock.FieldName:         {Type: field.TypeString, Column: stock.FieldName},
+			stock.FieldVoltage:      {Type: field.TypeFloat64, Column: stock.FieldVoltage},
+			stock.FieldNum:          {Type: field.TypeInt, Column: stock.FieldNum},
+		},
+	}
+	graph.Nodes[25] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
 			Table:   store.Table,
 			Columns: store.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -689,7 +715,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			store.FieldStatus:       {Type: field.TypeUint8, Column: store.FieldStatus},
 		},
 	}
-	graph.Nodes[25] = &sqlgraph.Node{
+	graph.Nodes[26] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribe.Table,
 			Columns: subscribe.Columns,
@@ -730,7 +756,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldRefundAt:       {Type: field.TypeTime, Column: subscribe.FieldRefundAt},
 		},
 	}
-	graph.Nodes[26] = &sqlgraph.Node{
+	graph.Nodes[27] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribealter.Table,
 			Columns: subscribealter.Columns,
@@ -753,7 +779,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribealter.FieldDays:         {Type: field.TypeInt, Column: subscribealter.FieldDays},
 		},
 	}
-	graph.Nodes[27] = &sqlgraph.Node{
+	graph.Nodes[28] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribepause.Table,
 			Columns: subscribepause.Columns,
@@ -1547,6 +1573,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Subscribe",
 	)
 	graph.MustAddE(
+		"store",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.StoreTable,
+			Columns: []string{stock.StoreColumn},
+			Bidi:    false,
+		},
+		"Stock",
+		"Store",
+	)
+	graph.MustAddE(
+		"fromStore",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.FromStoreTable,
+			Columns: []string{stock.FromStoreColumn},
+			Bidi:    false,
+		},
+		"Stock",
+		"Store",
+	)
+	graph.MustAddE(
 		"branch",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1569,6 +1619,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Store",
 		"Employee",
+	)
+	graph.MustAddE(
+		"stocks",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.StocksTable,
+			Columns: []string{store.StocksColumn},
+			Bidi:    false,
+		},
+		"Store",
+		"Stock",
+	)
+	graph.MustAddE(
+		"toStocks",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.ToStocksTable,
+			Columns: []string{store.ToStocksColumn},
+			Bidi:    false,
+		},
+		"Store",
+		"Stock",
 	)
 	graph.MustAddE(
 		"plan",
@@ -5207,6 +5281,134 @@ func (f *SettingFilter) WhereContent(p entql.StringP) {
 }
 
 // addPredicate implements the predicateAdder interface.
+func (sq *StockQuery) addPredicate(pred func(s *sql.Selector)) {
+	sq.predicates = append(sq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the StockQuery builder.
+func (sq *StockQuery) Filter() *StockFilter {
+	return &StockFilter{sq.config, sq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *StockMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the StockMutation builder.
+func (m *StockMutation) Filter() *StockFilter {
+	return &StockFilter{m.config, m}
+}
+
+// StockFilter provides a generic filtering capability at runtime for StockQuery.
+type StockFilter struct {
+	config
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *StockFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[24].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *StockFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(stock.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *StockFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(stock.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *StockFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(stock.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *StockFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(stock.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *StockFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(stock.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *StockFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(stock.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *StockFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(stock.FieldRemark))
+}
+
+// WhereStoreID applies the entql uint64 predicate on the store_id field.
+func (f *StockFilter) WhereStoreID(p entql.Uint64P) {
+	f.Where(p.Field(stock.FieldStoreID))
+}
+
+// WhereUUID applies the entql [16]byte predicate on the uuid field.
+func (f *StockFilter) WhereUUID(p entql.ValueP) {
+	f.Where(p.Field(stock.FieldUUID))
+}
+
+// WhereFromStoreID applies the entql uint64 predicate on the from_store_id field.
+func (f *StockFilter) WhereFromStoreID(p entql.Uint64P) {
+	f.Where(p.Field(stock.FieldFromStoreID))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *StockFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(stock.FieldName))
+}
+
+// WhereVoltage applies the entql float64 predicate on the voltage field.
+func (f *StockFilter) WhereVoltage(p entql.Float64P) {
+	f.Where(p.Field(stock.FieldVoltage))
+}
+
+// WhereNum applies the entql int predicate on the num field.
+func (f *StockFilter) WhereNum(p entql.IntP) {
+	f.Where(p.Field(stock.FieldNum))
+}
+
+// WhereHasStore applies a predicate to check if query has an edge store.
+func (f *StockFilter) WhereHasStore() {
+	f.Where(entql.HasEdge("store"))
+}
+
+// WhereHasStoreWith applies a predicate to check if query has an edge store with a given conditions (other predicates).
+func (f *StockFilter) WhereHasStoreWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("store", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasFromStore applies a predicate to check if query has an edge fromStore.
+func (f *StockFilter) WhereHasFromStore() {
+	f.Where(entql.HasEdge("fromStore"))
+}
+
+// WhereHasFromStoreWith applies a predicate to check if query has an edge fromStore with a given conditions (other predicates).
+func (f *StockFilter) WhereHasFromStoreWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("fromStore", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (sq *StoreQuery) addPredicate(pred func(s *sql.Selector)) {
 	sq.predicates = append(sq.predicates, pred)
 }
@@ -5235,7 +5437,7 @@ type StoreFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *StoreFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[24].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[25].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -5329,6 +5531,34 @@ func (f *StoreFilter) WhereHasEmployeeWith(preds ...predicate.Employee) {
 	})))
 }
 
+// WhereHasStocks applies a predicate to check if query has an edge stocks.
+func (f *StoreFilter) WhereHasStocks() {
+	f.Where(entql.HasEdge("stocks"))
+}
+
+// WhereHasStocksWith applies a predicate to check if query has an edge stocks with a given conditions (other predicates).
+func (f *StoreFilter) WhereHasStocksWith(preds ...predicate.Stock) {
+	f.Where(entql.HasEdgeWith("stocks", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasToStocks applies a predicate to check if query has an edge toStocks.
+func (f *StoreFilter) WhereHasToStocks() {
+	f.Where(entql.HasEdge("toStocks"))
+}
+
+// WhereHasToStocksWith applies a predicate to check if query has an edge toStocks with a given conditions (other predicates).
+func (f *StoreFilter) WhereHasToStocksWith(preds ...predicate.Stock) {
+	f.Where(entql.HasEdgeWith("toStocks", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (sq *SubscribeQuery) addPredicate(pred func(s *sql.Selector)) {
 	sq.predicates = append(sq.predicates, pred)
@@ -5358,7 +5588,7 @@ type SubscribeFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[25].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[26].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -5706,7 +5936,7 @@ type SubscribeAlterFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeAlterFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[26].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[27].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -5838,7 +6068,7 @@ type SubscribePauseFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribePauseFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[27].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[28].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

@@ -61,9 +61,13 @@ type StoreEdges struct {
 	Branch *Branch `json:"branch,omitempty"`
 	// Employee holds the value of the employee edge.
 	Employee *Employee `json:"employee,omitempty"`
+	// Stocks holds the value of the stocks edge.
+	Stocks []*Stock `json:"stocks,omitempty"`
+	// ToStocks holds the value of the toStocks edge.
+	ToStocks []*Stock `json:"toStocks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [4]bool
 }
 
 // BranchOrErr returns the Branch value or an error if the edge
@@ -92,6 +96,24 @@ func (e StoreEdges) EmployeeOrErr() (*Employee, error) {
 		return e.Employee, nil
 	}
 	return nil, &NotLoadedError{edge: "employee"}
+}
+
+// StocksOrErr returns the Stocks value or an error if the edge
+// was not loaded in eager-loading.
+func (e StoreEdges) StocksOrErr() ([]*Stock, error) {
+	if e.loadedTypes[2] {
+		return e.Stocks, nil
+	}
+	return nil, &NotLoadedError{edge: "stocks"}
+}
+
+// ToStocksOrErr returns the ToStocks value or an error if the edge
+// was not loaded in eager-loading.
+func (e StoreEdges) ToStocksOrErr() ([]*Stock, error) {
+	if e.loadedTypes[3] {
+		return e.ToStocks, nil
+	}
+	return nil, &NotLoadedError{edge: "toStocks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -212,6 +234,16 @@ func (s *Store) QueryBranch() *BranchQuery {
 // QueryEmployee queries the "employee" edge of the Store entity.
 func (s *Store) QueryEmployee() *EmployeeQuery {
 	return (&StoreClient{config: s.config}).QueryEmployee(s)
+}
+
+// QueryStocks queries the "stocks" edge of the Store entity.
+func (s *Store) QueryStocks() *StockQuery {
+	return (&StoreClient{config: s.config}).QueryStocks(s)
+}
+
+// QueryToStocks queries the "toStocks" edge of the Store entity.
+func (s *Store) QueryToStocks() *StockQuery {
+	return (&StoreClient{config: s.config}).QueryToStocks(s)
 }
 
 // Update returns a builder for updating this Store.

@@ -30,6 +30,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/schema"
 	"github.com/auroraride/aurservd/internal/ent/setting"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
@@ -612,6 +613,23 @@ func init() {
 	settingDescKey := settingFields[0].Descriptor()
 	// setting.KeyValidator is a validator for the "key" field. It is called by the builders before save.
 	setting.KeyValidator = settingDescKey.Validators[0].(func(string) error)
+	stockMixin := schema.Stock{}.Mixin()
+	stockMixinHooks2 := stockMixin[2].Hooks()
+	stock.Hooks[0] = stockMixinHooks2[0]
+	stockMixinFields0 := stockMixin[0].Fields()
+	_ = stockMixinFields0
+	stockFields := schema.Stock{}.Fields()
+	_ = stockFields
+	// stockDescCreatedAt is the schema descriptor for created_at field.
+	stockDescCreatedAt := stockMixinFields0[0].Descriptor()
+	// stock.DefaultCreatedAt holds the default value on creation for the created_at field.
+	stock.DefaultCreatedAt = stockDescCreatedAt.Default.(func() time.Time)
+	// stockDescUpdatedAt is the schema descriptor for updated_at field.
+	stockDescUpdatedAt := stockMixinFields0[1].Descriptor()
+	// stock.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	stock.DefaultUpdatedAt = stockDescUpdatedAt.Default.(func() time.Time)
+	// stock.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	stock.UpdateDefaultUpdatedAt = stockDescUpdatedAt.UpdateDefault.(func() time.Time)
 	storeMixin := schema.Store{}.Mixin()
 	storeMixinHooks2 := storeMixin[2].Hooks()
 	store.Hooks[0] = storeMixinHooks2[0]

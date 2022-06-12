@@ -1870,6 +1870,24 @@ definitions:
       status:
         type: boolean
     type: object
+  model.StockTransferReq:
+    properties:
+      from:
+        description: 调出自 (0:平台)
+        type: integer
+      name:
+        description: 物资名称 (和`电池型号`不能同时存在, 也不能同时为空)
+        type: string
+      num:
+        description: 调拨数量
+        type: integer
+      to:
+        description: 调入至 (0:平台)
+        type: integer
+      voltage:
+        description: 电池型号 (和`物资名称`不能同时存在, 也不能同时为空)
+        type: number
+    type: object
   model.Store:
     properties:
       id:
@@ -3423,7 +3441,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1014 删除物资
+      summary: M1014 删除物资设定
       tags:
       - '[M]管理接口'
     get:
@@ -3443,7 +3461,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.Inventory'
-      summary: M1013 列举物资
+      summary: M1013 列举物资设定
       tags:
       - '[M]管理接口'
     post:
@@ -3469,7 +3487,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M1012 物资创建或更新
+      summary: M1012 物资设定创建或更新
       tags:
       - '[M]管理接口'
   /manager/v1/order:
@@ -3981,6 +3999,77 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M1011 调整设置
+      tags:
+      - '[M]管理接口'
+  /manager/v1/stock:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerStockList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 结束时间
+        in: query
+        name: end
+        type: string
+      - description: 门店名称
+        in: query
+        name: name
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 开始时间
+        in: query
+        name: start
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M1017 门店物资详细
+      tags:
+      - '[M]管理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerStockCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.StockTransferReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M1015 调拨物资
       tags:
       - '[M]管理接口'
   /manager/v1/store:

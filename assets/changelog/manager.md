@@ -11,9 +11,11 @@
 #### 接口新增
 
 - [M4003 列举电池电压型号](http://localhost:5533/docs#tag/M/operation/ManagerBatteryListVoltages)
-- [M1012 物资创建或更新](http://localhost:5533/docs#tag/M/operation/ManagerInventoryCreateOrModify)
-- [M1013 列举物资](http://localhost:5533/docs#tag/M/operation/ManagerInventoryList)
-- [M1014 删除物资](http://localhost:5533/docs#tag/M/operation/ManagerInventoryDelete)
+- [M1012 物资设定创建或更新](http://localhost:5533/docs#tag/M/operation/ManagerInventoryCreateOrModify)
+- [M1013 列举物资设定](http://localhost:5533/docs#tag/M/operation/ManagerInventoryList)
+- [M1014 删除物资设定](http://localhost:5533/docs#tag/M/operation/ManagerInventoryDelete)
+- [M1015 调拨物资](http://localhost:5533/docs#tag/M/operation/ManagerStockCreate)
+- [M1017 门店物资详细](http://localhost:5533/docs#tag/M/operation/ManagerStockList)
 
 
 

@@ -1938,7 +1938,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M1013 列举物资",
+                "summary": "M1013 列举物资设定",
                 "operationId": "ManagerInventoryList",
                 "parameters": [
                     {
@@ -1968,7 +1968,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M1012 物资创建或更新",
+                "summary": "M1012 物资设定创建或更新",
                 "operationId": "ManagerInventoryCreateOrModify",
                 "parameters": [
                     {
@@ -2007,7 +2007,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M1014 删除物资",
+                "summary": "M1014 删除物资设定",
                 "operationId": "ManagerInventoryDelete",
                 "parameters": [
                     {
@@ -2803,6 +2803,113 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/model.SettingReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/stock": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M1017 门店物资详细",
+                "operationId": "ManagerStockList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "门店名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M1015 调拨物资",
+                "operationId": "ManagerStockCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.StockTransferReq"
                         }
                     }
                 ],
@@ -7093,6 +7200,31 @@ const docTemplate = `{
             "properties": {
                 "status": {
                     "type": "boolean"
+                }
+            }
+        },
+        "model.StockTransferReq": {
+            "type": "object",
+            "properties": {
+                "from": {
+                    "description": "调出自 (0:平台)",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "物资名称 (和` + "`" + `电池型号` + "`" + `不能同时存在, 也不能同时为空)",
+                    "type": "string"
+                },
+                "num": {
+                    "description": "调拨数量",
+                    "type": "integer"
+                },
+                "to": {
+                    "description": "调入至 (0:平台)",
+                    "type": "integer"
+                },
+                "voltage": {
+                    "description": "电池型号 (和` + "`" + `物资名称` + "`" + `不能同时存在, 也不能同时为空)",
+                    "type": "number"
                 }
             }
         },

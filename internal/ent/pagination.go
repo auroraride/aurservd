@@ -536,6 +536,28 @@ func (sq *SettingQuery) PaginationResult(req model.PaginationReq) model.Paginati
 	}
 }
 
+// Pagination returns pagination query builder for StockQuery.
+func (sq *StockQuery) Pagination(req model.PaginationReq) *StockQuery {
+	sq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return sq
+}
+
+// PaginationItems returns pagination query builder for StockQuery.
+func (sq *StockQuery) PaginationItemsX(req model.PaginationReq) any {
+	return sq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for StockQuery.
+func (sq *StockQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := sq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for StoreQuery.
 func (sq *StoreQuery) Pagination(req model.PaginationReq) *StoreQuery {
 	sq.Offset(req.GetOffset()).Limit(req.GetLimit())

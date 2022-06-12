@@ -19,7 +19,7 @@ var Inventory = new(inventory)
 // CreateOrModify
 // @ID           ManagerInventoryCreateOrModify
 // @Router       /manager/v1/inventory [POST]
-// @Summary      M1012 物资创建或更新
+// @Summary      M1012 物资设定创建或更新
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -35,7 +35,7 @@ func (*inventory) CreateOrModify(c echo.Context) (err error) {
 // List
 // @ID           ManagerInventoryList
 // @Router       /manager/v1/inventory [GET]
-// @Summary      M1013 列举物资
+// @Summary      M1013 列举物资设定
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -49,7 +49,7 @@ func (*inventory) List(c echo.Context) (err error) {
 // Delete
 // @ID           ManagerInventoryDelete
 // @Router       /manager/v1/inventory [DELETE]
-// @Summary      M1014 删除物资
+// @Summary      M1014 删除物资设定
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -61,4 +61,3 @@ func (*inventory) Delete(c echo.Context) (err error) {
     service.NewInventoryWithModifier(ctx.Modifier).Delete(req)
     return ctx.SendResponse()
 }
-
