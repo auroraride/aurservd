@@ -5,10 +5,35 @@
 
 package model
 
+// Plan 骑士卡基础信息
+type Plan struct {
+    ID   uint64 `json:"id"`   // 骑士卡ID
+    Name string `json:"name"` // 骑士卡名称
+    Days uint   `json:"days"` // 骑士卡天数
+}
+
+type PlanComplex struct {
+    ID         uint64  `json:"id,omitempty"` // 子项ID (可为空, 编辑的时候需要携带此字段)
+    Price      float64 `json:"price" validate:"required" trans:"价格"`
+    Days       uint    `json:"days" validate:"required,min=1" trans:"有效天数"`
+    Original   float64 `json:"original"`   // 原价
+    Desc       string  `json:"desc"`       // 优惠信息
+    Commission float64 `json:"commission"` // 提成
+}
+
 type PlanCreateReq struct {
-    PlanItem
-    Cities []uint64 `json:"cities" validate:"required,min=1" trans:"启用城市"`
-    Models []uint64 `json:"models" validate:"required,min=1" trans:"电池型号"`
+    Name      string        `json:"name" validate:"required" trans:"骑士卡名称"`
+    Enable    bool          `json:"enable"` // 是否启用
+    Start     string        `json:"start" validate:"required,datetime=2006-01-02" trans:"开始日期"`
+    End       string        `json:"end" validate:"required,datetime=2006-01-02" trans:"结束日期"`
+    Cities    []uint64      `json:"cities" validate:"required,min=1" trans:"启用城市"`
+    Models    []uint64      `json:"models" validate:"required,min=1" trans:"电池型号"`
+    Complexes []PlanComplex `json:"complexes" validate:"required,min=1" trans:"骑士卡详细信息"`
+}
+
+type PlanModifyReq struct {
+    ID uint64 `json:"id" param:"id" validate:"required" trans:"骑士卡ID"`
+    PlanCreateReq
 }
 
 // PlanEnableModifyReq 骑士卡状态修改请求
@@ -26,30 +51,15 @@ type PlanListReq struct {
     Enable *bool   `json:"enable" query:"enable"` // 启用状态
 }
 
-// Plan 骑士卡基础信息
-type Plan struct {
-    ID   uint64 `json:"id"`   // 骑士卡ID
-    Name string `json:"name"` // 骑士卡名称
-    Days uint   `json:"days"` // 骑士卡天数
-}
-
-type PlanItem struct {
-    ID         uint64  `json:"id"`
-    Name       string  `json:"name" validate:"required" trans:"骑士卡名称"`
-    Enable     bool    `json:"enable"` // 是否启用
-    Start      string  `json:"start" validate:"required,datetime=2006-01-02" trans:"开始日期"`
-    End        string  `json:"end" validate:"required,datetime=2006-01-02" trans:"结束日期"`
-    Price      float64 `json:"price" validate:"required" trans:"价格"`
-    Days       uint    `json:"days" validate:"required,min=1" trans:"有效天数"`
-    Original   float64 `json:"original"`   // 原价
-    Desc       string  `json:"desc"`       // 优惠信息
-    Commission float64 `json:"commission"` // 提成
-}
-
-type PlanItemRes struct {
-    PlanItem
-    Cities []City         `json:"cities"`
-    Models []BatteryModel `json:"models"`
+type PlanWithComplexes struct {
+    ID        uint64         `json:"id"`        // 骑士卡ID
+    Name      string         `json:"name"`      // 骑士卡名称
+    Enable    bool           `json:"enable"`    // 是否启用
+    Start     string         `json:"start"`     // 开始日期
+    End       string         `json:"end"`       // 结束日期
+    Cities    []City         `json:"cities"`    // 可用城市
+    Models    []BatteryModel `json:"models"`    // 可用型号
+    Complexes []PlanComplex  `json:"complexes"` // 详情集合
 }
 
 // PlanListRiderReq 骑士套餐列表请求
@@ -67,3 +77,17 @@ type RiderPlanItem struct {
     Original float64 `json:"original"` // 原价
     Desc     string  `json:"desc"`     // 优惠信息
 }
+
+// // PlanItem 单项骑士卡详情(用做订单备份)
+// type PlanItem struct {
+//     ID         uint64  `json:"id"`
+//     Name       string  `json:"name"`       // 骑士卡名称
+//     Enable     bool    `json:"enable"`     // 是否启用
+//     Start      string  `json:"start"`      // 开始日期
+//     End        string  `json:"end"`        // 结束日期
+//     Price      float64 `json:"price"`      // 价格
+//     Days       uint    `json:"days"`       // 有效天数
+//     Original   float64 `json:"original"`   // 原价
+//     Desc       string  `json:"desc"`       // 优惠信息
+//     Commission float64 `json:"commission"` // 提成
+// }

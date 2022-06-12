@@ -163,6 +163,20 @@ func (pc *PlanCreate) SetNillableDesc(s *string) *PlanCreate {
 	return pc
 }
 
+// SetParentID sets the "parent_id" field.
+func (pc *PlanCreate) SetParentID(u uint64) *PlanCreate {
+	pc.mutation.SetParentID(u)
+	return pc
+}
+
+// SetNillableParentID sets the "parent_id" field if the given value is not nil.
+func (pc *PlanCreate) SetNillableParentID(u *uint64) *PlanCreate {
+	if u != nil {
+		pc.SetParentID(*u)
+	}
+	return pc
+}
+
 // AddPmIDs adds the "pms" edge to the BatteryModel entity by IDs.
 func (pc *PlanCreate) AddPmIDs(ids ...uint64) *PlanCreate {
 	pc.mutation.AddPmIDs(ids...)
@@ -191,6 +205,26 @@ func (pc *PlanCreate) AddCities(c ...*City) *PlanCreate {
 		ids[i] = c[i].ID
 	}
 	return pc.AddCityIDs(ids...)
+}
+
+// SetParent sets the "parent" edge to the Plan entity.
+func (pc *PlanCreate) SetParent(p *Plan) *PlanCreate {
+	return pc.SetParentID(p.ID)
+}
+
+// AddComplexIDs adds the "complexes" edge to the Plan entity by IDs.
+func (pc *PlanCreate) AddComplexIDs(ids ...uint64) *PlanCreate {
+	pc.mutation.AddComplexIDs(ids...)
+	return pc
+}
+
+// AddComplexes adds the "complexes" edges to the Plan entity.
+func (pc *PlanCreate) AddComplexes(p ...*Plan) *PlanCreate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pc.AddComplexIDs(ids...)
 }
 
 // Mutation returns the PlanMutation object of the builder.
@@ -504,6 +538,45 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := pc.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   plan.ParentTable,
+			Columns: []string{plan.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.ParentID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.ComplexesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.ComplexesTable,
+			Columns: []string{plan.ComplexesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -795,6 +868,24 @@ func (u *PlanUpsert) UpdateDesc() *PlanUpsert {
 // ClearDesc clears the value of the "desc" field.
 func (u *PlanUpsert) ClearDesc() *PlanUpsert {
 	u.SetNull(plan.FieldDesc)
+	return u
+}
+
+// SetParentID sets the "parent_id" field.
+func (u *PlanUpsert) SetParentID(v uint64) *PlanUpsert {
+	u.Set(plan.FieldParentID, v)
+	return u
+}
+
+// UpdateParentID sets the "parent_id" field to the value that was provided on create.
+func (u *PlanUpsert) UpdateParentID() *PlanUpsert {
+	u.SetExcluded(plan.FieldParentID)
+	return u
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (u *PlanUpsert) ClearParentID() *PlanUpsert {
+	u.SetNull(plan.FieldParentID)
 	return u
 }
 
@@ -1125,6 +1216,27 @@ func (u *PlanUpsertOne) UpdateDesc() *PlanUpsertOne {
 func (u *PlanUpsertOne) ClearDesc() *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearDesc()
+	})
+}
+
+// SetParentID sets the "parent_id" field.
+func (u *PlanUpsertOne) SetParentID(v uint64) *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetParentID(v)
+	})
+}
+
+// UpdateParentID sets the "parent_id" field to the value that was provided on create.
+func (u *PlanUpsertOne) UpdateParentID() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateParentID()
+	})
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (u *PlanUpsertOne) ClearParentID() *PlanUpsertOne {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearParentID()
 	})
 }
 
@@ -1619,6 +1731,27 @@ func (u *PlanUpsertBulk) UpdateDesc() *PlanUpsertBulk {
 func (u *PlanUpsertBulk) ClearDesc() *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.ClearDesc()
+	})
+}
+
+// SetParentID sets the "parent_id" field.
+func (u *PlanUpsertBulk) SetParentID(v uint64) *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.SetParentID(v)
+	})
+}
+
+// UpdateParentID sets the "parent_id" field to the value that was provided on create.
+func (u *PlanUpsertBulk) UpdateParentID() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.UpdateParentID()
+	})
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (u *PlanUpsertBulk) ClearParentID() *PlanUpsertBulk {
+	return u.Update(func(s *PlanUpsert) {
+		s.ClearParentID()
 	})
 }
 

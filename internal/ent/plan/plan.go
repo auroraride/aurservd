@@ -43,10 +43,16 @@ const (
 	FieldOriginal = "original"
 	// FieldDesc holds the string denoting the desc field in the database.
 	FieldDesc = "desc"
+	// FieldParentID holds the string denoting the parent_id field in the database.
+	FieldParentID = "parent_id"
 	// EdgePms holds the string denoting the pms edge name in mutations.
 	EdgePms = "pms"
 	// EdgeCities holds the string denoting the cities edge name in mutations.
 	EdgeCities = "cities"
+	// EdgeParent holds the string denoting the parent edge name in mutations.
+	EdgeParent = "parent"
+	// EdgeComplexes holds the string denoting the complexes edge name in mutations.
+	EdgeComplexes = "complexes"
 	// Table holds the table name of the plan in the database.
 	Table = "plan"
 	// PmsTable is the table that holds the pms relation/edge. The primary key declared below.
@@ -59,6 +65,14 @@ const (
 	// CitiesInverseTable is the table name for the City entity.
 	// It exists in this package in order to avoid circular dependency with the "city" package.
 	CitiesInverseTable = "city"
+	// ParentTable is the table that holds the parent relation/edge.
+	ParentTable = "plan"
+	// ParentColumn is the table column denoting the parent relation/edge.
+	ParentColumn = "parent_id"
+	// ComplexesTable is the table that holds the complexes relation/edge.
+	ComplexesTable = "plan"
+	// ComplexesColumn is the table column denoting the complexes relation/edge.
+	ComplexesColumn = "parent_id"
 )
 
 // Columns holds all SQL columns for plan fields.
@@ -79,6 +93,7 @@ var Columns = []string{
 	FieldCommission,
 	FieldOriginal,
 	FieldDesc,
+	FieldParentID,
 }
 
 var (

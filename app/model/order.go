@@ -48,19 +48,6 @@ type OrderCreateRes struct {
     OutTradeNo string `json:"outTradeNo"` // 交易编码
 }
 
-// OrderNotActived 骑手未激活订单信息
-type OrderNotActived struct {
-    ID      uint64         `json:"id"`                 // 订单编号
-    Amount  float64        `json:"amount"`             // 骑士卡金额
-    Deposit float64        `json:"deposit"`            // 押金, 若押金为0则押金一行不显示
-    Total   float64        `json:"total"`              // 总金额, 总金额为 amount + deposit
-    Payway  uint8          `json:"payway" enums:"1,2"` // 支付方式 1支付宝 2微信
-    Plan    PlanItem       `json:"plan"`               // 骑行卡详情
-    City    City           `json:"city"`               // 所属城市
-    Models  []BatteryModel `json:"models"`             // 可用电池型号, 显示为`72V30AH`即Voltage(V)+Capacity(AH), 逗号分隔
-    Time    string         `json:"time"`               // 支付时间
-}
-
 // OrderListReq 订单列表请求
 type OrderListReq struct {
     PaginationReq

@@ -24,11 +24,10 @@ var Plan = new(plan)
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Success      200  {object}  model.PlanWithComplexes  "请求成功"
 func (*plan) Create(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.PlanCreateReq](c)
-    service.NewPlanWithModifier(ctx.Modifier).CreatePlan(req)
-    return ctx.SendResponse()
+    return ctx.SendResponse(service.NewPlanWithModifier(ctx.Modifier).Create(req))
 }
 
 // UpdateEnable
@@ -40,7 +39,7 @@ func (*plan) Create(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        id  path  int  true  "骑士卡ID"
-// @Param        body  body  model.PlanEnableModifyReq  true  "desc"
+// @Param        body  body     model.PlanEnableModifyReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*plan) UpdateEnable(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.PlanEnableModifyReq](c)
@@ -72,9 +71,14 @@ func (*plan) Delete(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        query  query  model.PlanListReq  true  "desc"
-// @Success      200  {object}  model.PaginationRes{items=[]model.PlanItemRes}  "请求成功"
+// @Param        query  query   model.PlanListReq  true  "desc"
+// @Success      200  {object}  model.PaginationRes{items=[]model.PlanWithComplexes}  "请求成功"
 func (*plan) List(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.PlanListReq](c)
     return ctx.SendResponse(service.NewPlan().List(req))
 }
+
+// func (*plan) Modify(c echo.Context) (err error) {
+//     ctx, req := app.ManagerContextAndBinding[model.PlanModifyReq](c)
+//     return ctx.SendResponse(service.NewPlanWithModifier(ctx.Modifier).Modify(req))
+// }

@@ -44,7 +44,7 @@ func openPgx(dsn string) (c *ent.Client) {
     // 从db变量中构造一个ent.Driver对象。
     drv := entsql.OpenDB(dialect.Postgres, pgx)
     c = ent.NewClient(ent.Driver(drv))
-    if Config.App.Mode == "debug" {
+    if Config.App.SQL {
         c = c.Debug()
     }
     return

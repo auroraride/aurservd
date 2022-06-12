@@ -26160,38 +26160,43 @@ func (m *PersonMutation) ResetEdge(name string) error {
 // PlanMutation represents an operation that mutates the Plan nodes in the graph.
 type PlanMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint64
-	created_at    *time.Time
-	updated_at    *time.Time
-	deleted_at    *time.Time
-	creator       **model.Modifier
-	last_modifier **model.Modifier
-	remark        *string
-	enable        *bool
-	name          *string
-	start         *time.Time
-	end           *time.Time
-	price         *float64
-	addprice      *float64
-	days          *uint
-	adddays       *int
-	commission    *float64
-	addcommission *float64
-	original      *float64
-	addoriginal   *float64
-	desc          *string
-	clearedFields map[string]struct{}
-	pms           map[uint64]struct{}
-	removedpms    map[uint64]struct{}
-	clearedpms    bool
-	cities        map[uint64]struct{}
-	removedcities map[uint64]struct{}
-	clearedcities bool
-	done          bool
-	oldValue      func(context.Context) (*Plan, error)
-	predicates    []predicate.Plan
+	op               Op
+	typ              string
+	id               *uint64
+	created_at       *time.Time
+	updated_at       *time.Time
+	deleted_at       *time.Time
+	creator          **model.Modifier
+	last_modifier    **model.Modifier
+	remark           *string
+	enable           *bool
+	name             *string
+	start            *time.Time
+	end              *time.Time
+	price            *float64
+	addprice         *float64
+	days             *uint
+	adddays          *int
+	commission       *float64
+	addcommission    *float64
+	original         *float64
+	addoriginal      *float64
+	desc             *string
+	clearedFields    map[string]struct{}
+	pms              map[uint64]struct{}
+	removedpms       map[uint64]struct{}
+	clearedpms       bool
+	cities           map[uint64]struct{}
+	removedcities    map[uint64]struct{}
+	clearedcities    bool
+	parent           *uint64
+	clearedparent    bool
+	complexes        map[uint64]struct{}
+	removedcomplexes map[uint64]struct{}
+	clearedcomplexes bool
+	done             bool
+	oldValue         func(context.Context) (*Plan, error)
+	predicates       []predicate.Plan
 }
 
 var _ ent.Mutation = (*PlanMutation)(nil)
@@ -26991,6 +26996,55 @@ func (m *PlanMutation) ResetDesc() {
 	delete(m.clearedFields, plan.FieldDesc)
 }
 
+// SetParentID sets the "parent_id" field.
+func (m *PlanMutation) SetParentID(u uint64) {
+	m.parent = &u
+}
+
+// ParentID returns the value of the "parent_id" field in the mutation.
+func (m *PlanMutation) ParentID() (r uint64, exists bool) {
+	v := m.parent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentID returns the old "parent_id" field's value of the Plan entity.
+// If the Plan object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlanMutation) OldParentID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldParentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldParentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentID: %w", err)
+	}
+	return oldValue.ParentID, nil
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (m *PlanMutation) ClearParentID() {
+	m.parent = nil
+	m.clearedFields[plan.FieldParentID] = struct{}{}
+}
+
+// ParentIDCleared returns if the "parent_id" field was cleared in this mutation.
+func (m *PlanMutation) ParentIDCleared() bool {
+	_, ok := m.clearedFields[plan.FieldParentID]
+	return ok
+}
+
+// ResetParentID resets all changes to the "parent_id" field.
+func (m *PlanMutation) ResetParentID() {
+	m.parent = nil
+	delete(m.clearedFields, plan.FieldParentID)
+}
+
 // AddPmIDs adds the "pms" edge to the BatteryModel entity by ids.
 func (m *PlanMutation) AddPmIDs(ids ...uint64) {
 	if m.pms == nil {
@@ -27099,6 +27153,86 @@ func (m *PlanMutation) ResetCities() {
 	m.removedcities = nil
 }
 
+// ClearParent clears the "parent" edge to the Plan entity.
+func (m *PlanMutation) ClearParent() {
+	m.clearedparent = true
+}
+
+// ParentCleared reports if the "parent" edge to the Plan entity was cleared.
+func (m *PlanMutation) ParentCleared() bool {
+	return m.ParentIDCleared() || m.clearedparent
+}
+
+// ParentIDs returns the "parent" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ParentID instead. It exists only for internal usage by the builders.
+func (m *PlanMutation) ParentIDs() (ids []uint64) {
+	if id := m.parent; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetParent resets all changes to the "parent" edge.
+func (m *PlanMutation) ResetParent() {
+	m.parent = nil
+	m.clearedparent = false
+}
+
+// AddComplexIDs adds the "complexes" edge to the Plan entity by ids.
+func (m *PlanMutation) AddComplexIDs(ids ...uint64) {
+	if m.complexes == nil {
+		m.complexes = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.complexes[ids[i]] = struct{}{}
+	}
+}
+
+// ClearComplexes clears the "complexes" edge to the Plan entity.
+func (m *PlanMutation) ClearComplexes() {
+	m.clearedcomplexes = true
+}
+
+// ComplexesCleared reports if the "complexes" edge to the Plan entity was cleared.
+func (m *PlanMutation) ComplexesCleared() bool {
+	return m.clearedcomplexes
+}
+
+// RemoveComplexIDs removes the "complexes" edge to the Plan entity by IDs.
+func (m *PlanMutation) RemoveComplexIDs(ids ...uint64) {
+	if m.removedcomplexes == nil {
+		m.removedcomplexes = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.complexes, ids[i])
+		m.removedcomplexes[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedComplexes returns the removed IDs of the "complexes" edge to the Plan entity.
+func (m *PlanMutation) RemovedComplexesIDs() (ids []uint64) {
+	for id := range m.removedcomplexes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ComplexesIDs returns the "complexes" edge IDs in the mutation.
+func (m *PlanMutation) ComplexesIDs() (ids []uint64) {
+	for id := range m.complexes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetComplexes resets all changes to the "complexes" edge.
+func (m *PlanMutation) ResetComplexes() {
+	m.complexes = nil
+	m.clearedcomplexes = false
+	m.removedcomplexes = nil
+}
+
 // Where appends a list predicates to the PlanMutation builder.
 func (m *PlanMutation) Where(ps ...predicate.Plan) {
 	m.predicates = append(m.predicates, ps...)
@@ -27118,7 +27252,7 @@ func (m *PlanMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlanMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 16)
 	if m.created_at != nil {
 		fields = append(fields, plan.FieldCreatedAt)
 	}
@@ -27164,6 +27298,9 @@ func (m *PlanMutation) Fields() []string {
 	if m.desc != nil {
 		fields = append(fields, plan.FieldDesc)
 	}
+	if m.parent != nil {
+		fields = append(fields, plan.FieldParentID)
+	}
 	return fields
 }
 
@@ -27202,6 +27339,8 @@ func (m *PlanMutation) Field(name string) (ent.Value, bool) {
 		return m.Original()
 	case plan.FieldDesc:
 		return m.Desc()
+	case plan.FieldParentID:
+		return m.ParentID()
 	}
 	return nil, false
 }
@@ -27241,6 +27380,8 @@ func (m *PlanMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldOriginal(ctx)
 	case plan.FieldDesc:
 		return m.OldDesc(ctx)
+	case plan.FieldParentID:
+		return m.OldParentID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Plan field %s", name)
 }
@@ -27355,6 +27496,13 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDesc(v)
 		return nil
+	case plan.FieldParentID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)
 }
@@ -27454,6 +27602,9 @@ func (m *PlanMutation) ClearedFields() []string {
 	if m.FieldCleared(plan.FieldDesc) {
 		fields = append(fields, plan.FieldDesc)
 	}
+	if m.FieldCleared(plan.FieldParentID) {
+		fields = append(fields, plan.FieldParentID)
+	}
 	return fields
 }
 
@@ -27485,6 +27636,9 @@ func (m *PlanMutation) ClearField(name string) error {
 		return nil
 	case plan.FieldDesc:
 		m.ClearDesc()
+		return nil
+	case plan.FieldParentID:
+		m.ClearParentID()
 		return nil
 	}
 	return fmt.Errorf("unknown Plan nullable field %s", name)
@@ -27539,18 +27693,27 @@ func (m *PlanMutation) ResetField(name string) error {
 	case plan.FieldDesc:
 		m.ResetDesc()
 		return nil
+	case plan.FieldParentID:
+		m.ResetParentID()
+		return nil
 	}
 	return fmt.Errorf("unknown Plan field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlanMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.pms != nil {
 		edges = append(edges, plan.EdgePms)
 	}
 	if m.cities != nil {
 		edges = append(edges, plan.EdgeCities)
+	}
+	if m.parent != nil {
+		edges = append(edges, plan.EdgeParent)
+	}
+	if m.complexes != nil {
+		edges = append(edges, plan.EdgeComplexes)
 	}
 	return edges
 }
@@ -27571,18 +27734,31 @@ func (m *PlanMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case plan.EdgeParent:
+		if id := m.parent; id != nil {
+			return []ent.Value{*id}
+		}
+	case plan.EdgeComplexes:
+		ids := make([]ent.Value, 0, len(m.complexes))
+		for id := range m.complexes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlanMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.removedpms != nil {
 		edges = append(edges, plan.EdgePms)
 	}
 	if m.removedcities != nil {
 		edges = append(edges, plan.EdgeCities)
+	}
+	if m.removedcomplexes != nil {
+		edges = append(edges, plan.EdgeComplexes)
 	}
 	return edges
 }
@@ -27603,18 +27779,30 @@ func (m *PlanMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case plan.EdgeComplexes:
+		ids := make([]ent.Value, 0, len(m.removedcomplexes))
+		for id := range m.removedcomplexes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlanMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.clearedpms {
 		edges = append(edges, plan.EdgePms)
 	}
 	if m.clearedcities {
 		edges = append(edges, plan.EdgeCities)
+	}
+	if m.clearedparent {
+		edges = append(edges, plan.EdgeParent)
+	}
+	if m.clearedcomplexes {
+		edges = append(edges, plan.EdgeComplexes)
 	}
 	return edges
 }
@@ -27627,6 +27815,10 @@ func (m *PlanMutation) EdgeCleared(name string) bool {
 		return m.clearedpms
 	case plan.EdgeCities:
 		return m.clearedcities
+	case plan.EdgeParent:
+		return m.clearedparent
+	case plan.EdgeComplexes:
+		return m.clearedcomplexes
 	}
 	return false
 }
@@ -27635,6 +27827,9 @@ func (m *PlanMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *PlanMutation) ClearEdge(name string) error {
 	switch name {
+	case plan.EdgeParent:
+		m.ClearParent()
+		return nil
 	}
 	return fmt.Errorf("unknown Plan unique edge %s", name)
 }
@@ -27648,6 +27843,12 @@ func (m *PlanMutation) ResetEdge(name string) error {
 		return nil
 	case plan.EdgeCities:
 		m.ResetCities()
+		return nil
+	case plan.EdgeParent:
+		m.ResetParent()
+		return nil
+	case plan.EdgeComplexes:
+		m.ResetComplexes()
 		return nil
 	}
 	return fmt.Errorf("unknown Plan edge %s", name)

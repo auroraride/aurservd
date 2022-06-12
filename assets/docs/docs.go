@@ -2130,7 +2130,7 @@ const docTemplate = `{
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.PlanItemRes"
+                                                "$ref": "#/definitions/model.PlanWithComplexes"
                                             }
                                         }
                                     }
@@ -2165,7 +2165,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "$ref": "#/definitions/model.PlanWithComplexes"
                         }
                     }
                 }
@@ -6103,34 +6103,13 @@ const docTemplate = `{
                 }
             }
         },
-        "model.PlanEnableModifyReq": {
-            "type": "object",
-            "required": [
-                "enable"
-            ],
-            "properties": {
-                "enable": {
-                    "description": "启用或禁用",
-                    "type": "boolean"
-                }
-            }
-        },
-        "model.PlanItemRes": {
+        "model.PlanComplex": {
             "type": "object",
             "required": [
                 "days",
-                "end",
-                "name",
-                "price",
-                "start"
+                "price"
             ],
             "properties": {
-                "cities": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.City"
-                    }
-                },
                 "commission": {
                     "description": "提成",
                     "type": "number"
@@ -6144,26 +6123,9 @@ const docTemplate = `{
                     "description": "优惠信息",
                     "type": "string"
                 },
-                "enable": {
-                    "description": "是否启用",
-                    "type": "boolean"
-                },
-                "end": {
-                    "description": "结束日期 ",
-                    "type": "string"
-                },
                 "id": {
+                    "description": "子项ID (可为空, 编辑的时候需要携带此字段)",
                     "type": "integer"
-                },
-                "models": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.BatteryModel"
-                    }
-                },
-                "name": {
-                    "description": "骑士卡名称 ",
-                    "type": "string"
                 },
                 "original": {
                     "description": "原价",
@@ -6172,9 +6134,63 @@ const docTemplate = `{
                 "price": {
                     "description": "价格 ",
                     "type": "number"
+                }
+            }
+        },
+        "model.PlanEnableModifyReq": {
+            "type": "object",
+            "required": [
+                "enable"
+            ],
+            "properties": {
+                "enable": {
+                    "description": "启用或禁用",
+                    "type": "boolean"
+                }
+            }
+        },
+        "model.PlanWithComplexes": {
+            "type": "object",
+            "properties": {
+                "cities": {
+                    "description": "可用城市",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.City"
+                    }
+                },
+                "complexes": {
+                    "description": "详情集合",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PlanComplex"
+                    }
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
+                "end": {
+                    "description": "结束日期",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "骑士卡ID",
+                    "type": "integer"
+                },
+                "models": {
+                    "description": "可用型号",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BatteryModel"
+                    }
+                },
+                "name": {
+                    "description": "骑士卡名称",
+                    "type": "string"
                 },
                 "start": {
-                    "description": "开始日期 ",
+                    "description": "开始日期",
                     "type": "string"
                 }
             }

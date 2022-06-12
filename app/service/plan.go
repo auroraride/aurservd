@@ -15,7 +15,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/plan"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
-    "github.com/jinzhu/copier"
+    "sort"
     "time"
 )
 
@@ -74,70 +74,229 @@ func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
     return item
 }
 
-// Duplicated 查询骑士卡是否冲突
-func (s *planService) Duplicated(cities, models []uint64, start, end time.Time, days uint) bool {
+// checkDuplicate 查询骑士卡是否冲突
+func (s *planService) checkDuplicate(cities, models []uint64, start, end time.Time, parentID ...uint64) {
     for _, cityID := range cities {
         for _, modelID := range models {
-            if exists, _ := s.orm.QueryNotDeleted().
+            q := s.orm.QueryNotDeleted().
                 Where(
                     plan.Enable(true),
-                    plan.Days(days),
                     plan.HasCitiesWith(city.ID(cityID)),
                     plan.HasPmsWith(batterymodel.ID(modelID)),
-                    plan.Or(
-                        plan.StartLTE(start),
-                        plan.EndGTE(end),
-                    ),
-                ).Exist(s.ctx); exists {
+                    plan.StartLTE(end),
+                    plan.EndGTE(start),
+                )
+            if len(parentID) > 0 {
+                id := parentID[0]
+                q.Where(
+                    plan.IDNEQ(id),
+                    plan.ParentIDNEQ(id),
+                )
+            }
+            if exists, _ := q.Exist(s.ctx); exists {
                 snag.Panic("骑士卡冲突")
             }
         }
     }
-    return false
 }
 
-// CreatePlan 创建骑士卡
-func (s *planService) CreatePlan(req *model.PlanCreateReq) {
+func (s *planService) cloneCreator(creator *ent.PlanCreate) *ent.PlanCreate {
+    c := *creator
+    return &c
+}
+
+func (s *planService) getCitiesAndModels(reqCities, reqModels []uint64) (cities ent.Cities, pms ent.BatteryModels) {
+    var err error
+    cities, err = ar.Ent.City.QueryNotDeleted().Where(city.IDIn(reqCities...)).All(s.ctx)
+    if err != nil {
+        snag.Panic("城市参数错误")
+    }
+    pms, err = ar.Ent.BatteryModel.QueryNotDeleted().Where(batterymodel.IDIn(reqModels...)).All(s.ctx)
+    if err != nil {
+        snag.Panic("电池型号错误")
+    }
+    return
+}
+
+// Create 创建骑士卡
+func (s *planService) Create(req *model.PlanCreateReq) model.PlanWithComplexes {
+    cities, pms := s.getCitiesAndModels(req.Cities, req.Models)
+
     start := carbon.ParseByLayout(req.Start, carbon.DateLayout).Carbon2Time()
-    end := carbon.Parse(req.End, carbon.DateLayout).Carbon2Time()
+    end := carbon.ParseByLayout(req.End, carbon.DateLayout).Carbon2Time()
+
     // 查询是否重复
-    if s.Duplicated(req.Cities, req.Models, start, end, req.Days) {
-        snag.Panic("骑士卡冲突")
-    }
-    original := req.Original
-    if original == 0 {
-        original = req.Price
-    }
-    s.orm.Create().
+    s.checkDuplicate(req.Cities, req.Models, start, end)
+
+    // 排序
+    sort.Slice(req.Complexes, func(i, j int) bool {
+        return req.Complexes[i].Days < req.Complexes[j].Days
+    })
+
+    // 开始创建
+    tx, _ := ar.Ent.Tx(s.ctx)
+    creator := tx.Plan.Create().
+        SetName(req.Name).
+        SetEnable(req.Enable).
         AddCityIDs(req.Cities...).
         AddPmIDs(req.Models...).
         SetStart(start).
-        SetEnd(end).
-        SetDays(req.Days).
-        SetEnable(req.Enable).
-        SetName(req.Name).
-        SetPrice(req.Price).
-        SetCommission(req.Commission).
-        SetOriginal(original).
-        SetDesc(req.Desc).
-        SaveX(s.ctx)
+        SetEnd(end)
+
+    var parent *ent.Plan
+    for i, cl := range req.Complexes {
+        c := s.cloneCreator(creator).
+            SetPrice(cl.Price).
+            SetOriginal(cl.Original).
+            SetCommission(cl.Commission).
+            SetDesc(cl.Desc).
+            SetDays(cl.Days)
+        if i > 0 {
+            c.SetParent(parent)
+        }
+        r, err := c.Save(s.ctx)
+        snag.PanicIfErrorX(err, tx.Rollback)
+        if i == 0 {
+            parent = r
+            parent.Edges.Cities = cities
+            parent.Edges.Pms = pms
+            parent.Edges.Complexes = make([]*ent.Plan, len(req.Complexes))
+            parent.Edges.Complexes[i] = r
+        } else {
+            parent.Edges.Complexes[i] = r
+        }
+    }
+
+    _ = tx.Commit()
+
+    return s.PlanWithComplexes(parent)
 }
+
+// // Modify 修改骑士卡 TODO: 修改太麻烦了, 情况贼多, 暂时不做?
+// func (s *planService) Modify(req *model.PlanModifyReq) model.PlanWithComplexes {
+//     old, err := s.orm.QueryNotDeleted().Where(plan.ID(req.ID)).WithPms().WithCities().WithComplexes().First(s.ctx)
+//     if err != nil {
+//         snag.Panic("未找到骑士卡")
+//     }
+//     if old.ParentID != nil {
+//         snag.Panic("骑士卡子项无法单独修改, 请携带原始骑士卡ID")
+//     }
+//
+//     start := carbon.ParseByLayout(req.Start, carbon.DateLayout).Carbon2Time()
+//     end := carbon.ParseByLayout(req.End, carbon.DateLayout).Carbon2Time()
+//
+//     // 查询是否重复
+//     s.checkDuplicate(req.Cities, req.Models, start, end, req.ID)
+//
+//     // 排序
+//     sort.Slice(req.Complexes, func(i, j int) bool {
+//         return req.Complexes[i].Days < req.Complexes[j].Days
+//     })
+//
+//     tx, _ := ar.Ent.Tx(s.ctx)
+//
+//     var parent *ent.Plan
+//
+//     // 判定父级骑士卡是否改变
+//     first := req.Complexes[0]
+//     if first.ID != old.ID {}
+//
+//     _ = tx.Commit()
+//     return model.PlanWithComplexes{}
+// }
 
 // UpdateEnable 修改骑士卡状态
 func (s *planService) UpdateEnable(req *model.PlanEnableModifyReq) {
     item := s.Query(req.ID)
-    s.orm.UpdateOne(item).SetEnable(*req.Enable).SaveX(s.ctx)
+    if item.ParentID != nil {
+        snag.Panic("子项不能单独操作")
+    }
+    s.orm.Update().
+        Where(plan.Or(
+            plan.ID(req.ID),
+            plan.ParentID(req.ID),
+        )).
+        SetEnable(*req.Enable).
+        SaveX(s.ctx)
 }
 
 // Delete 软删除骑士卡
 func (s *planService) Delete(req *model.IDParamReq) {
-    s.orm.SoftDeleteOne(s.Query(req.ID)).SaveX(s.ctx)
+    item := s.Query(req.ID)
+    if item.ParentID != nil {
+        snag.Panic("子项不能单独操作")
+    }
+    s.orm.SoftDelete().Where(plan.Or(
+        plan.ID(req.ID),
+        plan.ParentID(req.ID),
+    )).SaveX(s.ctx)
+}
+
+// PlanWithComplexes 骑士卡详情
+func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanWithComplexes) {
+    sort.Slice(item.Edges.Complexes, func(i, j int) bool {
+        return item.Edges.Complexes[i].Days < item.Edges.Complexes[j].Days
+    })
+
+    res = model.PlanWithComplexes{
+        ID:        item.ID,
+        Name:      item.Name,
+        Enable:    item.Enable,
+        Start:     item.Start.Format(carbon.DateLayout),
+        End:       item.End.Format(carbon.DateLayout),
+        Cities:    make([]model.City, len(item.Edges.Cities)),
+        Models:    make([]model.BatteryModel, len(item.Edges.Pms)),
+        Complexes: make([]model.PlanComplex, len(item.Edges.Complexes)+1),
+    }
+
+    for i, c := range item.Edges.Cities {
+        res.Cities[i] = model.City{
+            ID:   c.ID,
+            Name: c.Name,
+        }
+    }
+
+    for i, pm := range item.Edges.Pms {
+        res.Models[i] = model.BatteryModel{
+            ID:       pm.ID,
+            Voltage:  pm.Voltage,
+            Capacity: pm.Capacity,
+        }
+    }
+
+    res.Complexes[0] = model.PlanComplex{
+        ID:         item.ID,
+        Price:      item.Price,
+        Days:       item.Days,
+        Original:   item.Original,
+        Desc:       item.Desc,
+        Commission: item.Commission,
+    }
+
+    for i, child := range item.Edges.Complexes {
+        res.Complexes[i+1] = model.PlanComplex{
+            ID:         child.ID,
+            Price:      child.Price,
+            Days:       child.Days,
+            Original:   child.Original,
+            Desc:       child.Desc,
+            Commission: child.Commission,
+        }
+    }
+    return
 }
 
 // List 列举骑士卡
 func (s *planService) List(req *model.PlanListReq) *model.PaginationRes {
-    res := new(model.PaginationRes)
-    q := s.orm.QueryNotDeleted().WithCities().WithPms()
+    q := s.orm.QueryNotDeleted().
+        Where(plan.ParentIDIsNil()).
+        WithComplexes(func(pq *ent.PlanQuery) {
+            pq.Where(plan.DeletedAtIsNil())
+        }).
+        WithCities().
+        WithPms().
+        Order(ent.Desc(plan.FieldStart), ent.Asc(plan.FieldEnd))
+
     if req.CityID != nil {
         q.Where(plan.HasCitiesWith(city.ID(*req.CityID)))
     }
@@ -147,44 +306,14 @@ func (s *planService) List(req *model.PlanListReq) *model.PaginationRes {
     if req.Enable != nil {
         q.Where(plan.Enable(*req.Enable))
     }
-    res.Pagination = q.PaginationResult(req.PaginationReq)
-    items := q.AllX(s.ctx)
-    out := make([]model.PlanItemRes, len(items))
-    for i, item := range items {
-        _ = copier.CopyWithOption(&out[i], item, copier.Option{Converters: []copier.TypeConverter{
-            {
-                SrcType: time.Time{},
-                DstType: copier.String,
-                Fn: func(src interface{}) (interface{}, error) {
-                    t, ok := src.(time.Time)
-                    if !ok {
-                        return "", nil
-                    }
-                    return t.Format(carbon.DateLayout), nil
-                },
-            },
-        }})
-        cities := make([]model.City, len(item.Edges.Cities))
-        for ci, c := range item.Edges.Cities {
-            cities[ci] = model.City{
-                ID:   c.ID,
-                Name: c.Name,
-            }
-        }
-        out[i].Cities = cities
 
-        models := make([]model.BatteryModel, len(item.Edges.Pms))
-        for mi, pm := range item.Edges.Pms {
-            models[mi] = model.BatteryModel{
-                ID:       pm.ID,
-                Voltage:  pm.Voltage,
-                Capacity: pm.Capacity,
-            }
-        }
-        out[i].Models = models
-    }
-    res.Items = out
-    return res
+    return model.ParsePaginationResponse(
+        q,
+        req.PaginationReq,
+        func(item *ent.Plan) model.PlanWithComplexes {
+            return s.PlanWithComplexes(item)
+        },
+    )
 }
 
 // RiderList 获取骑士卡列表

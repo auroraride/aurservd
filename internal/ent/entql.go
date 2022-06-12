@@ -584,6 +584,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			plan.FieldCommission:   {Type: field.TypeFloat64, Column: plan.FieldCommission},
 			plan.FieldOriginal:     {Type: field.TypeFloat64, Column: plan.FieldOriginal},
 			plan.FieldDesc:         {Type: field.TypeString, Column: plan.FieldDesc},
+			plan.FieldParentID:     {Type: field.TypeUint64, Column: plan.FieldParentID},
 		},
 	}
 	graph.Nodes[21] = &sqlgraph.Node{
@@ -1400,6 +1401,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Plan",
 		"City",
+	)
+	graph.MustAddE(
+		"parent",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   plan.ParentTable,
+			Columns: []string{plan.ParentColumn},
+			Bidi:    false,
+		},
+		"Plan",
+		"Plan",
+	)
+	graph.MustAddE(
+		"complexes",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.ComplexesTable,
+			Columns: []string{plan.ComplexesColumn},
+			Bidi:    false,
+		},
+		"Plan",
+		"Plan",
 	)
 	graph.MustAddE(
 		"station",
@@ -4674,6 +4699,11 @@ func (f *PlanFilter) WhereDesc(p entql.StringP) {
 	f.Where(p.Field(plan.FieldDesc))
 }
 
+// WhereParentID applies the entql uint64 predicate on the parent_id field.
+func (f *PlanFilter) WhereParentID(p entql.Uint64P) {
+	f.Where(p.Field(plan.FieldParentID))
+}
+
 // WhereHasPms applies a predicate to check if query has an edge pms.
 func (f *PlanFilter) WhereHasPms() {
 	f.Where(entql.HasEdge("pms"))
@@ -4696,6 +4726,34 @@ func (f *PlanFilter) WhereHasCities() {
 // WhereHasCitiesWith applies a predicate to check if query has an edge cities with a given conditions (other predicates).
 func (f *PlanFilter) WhereHasCitiesWith(preds ...predicate.City) {
 	f.Where(entql.HasEdgeWith("cities", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasParent applies a predicate to check if query has an edge parent.
+func (f *PlanFilter) WhereHasParent() {
+	f.Where(entql.HasEdge("parent"))
+}
+
+// WhereHasParentWith applies a predicate to check if query has an edge parent with a given conditions (other predicates).
+func (f *PlanFilter) WhereHasParentWith(preds ...predicate.Plan) {
+	f.Where(entql.HasEdgeWith("parent", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasComplexes applies a predicate to check if query has an edge complexes.
+func (f *PlanFilter) WhereHasComplexes() {
+	f.Where(entql.HasEdge("complexes"))
+}
+
+// WhereHasComplexesWith applies a predicate to check if query has an edge complexes with a given conditions (other predicates).
+func (f *PlanFilter) WhereHasComplexesWith(preds ...predicate.Plan) {
+	f.Where(entql.HasEdgeWith("complexes", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

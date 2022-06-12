@@ -49,6 +49,7 @@ type config struct {
         Address   string
         Host      string
         Mode      string
+        SQL       bool
         BodyLimit string
         RateLimit float64
         Debug     struct {

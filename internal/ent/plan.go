@@ -60,6 +60,9 @@ type Plan struct {
 	// Desc holds the value of the "desc" field.
 	// 优惠信息
 	Desc string `json:"desc,omitempty"`
+	// ParentID holds the value of the "parent_id" field.
+	// 父级
+	ParentID *uint64 `json:"parent_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlanQuery when eager-loading is set.
 	Edges PlanEdges `json:"edges"`
@@ -71,9 +74,13 @@ type PlanEdges struct {
 	Pms []*BatteryModel `json:"pms,omitempty"`
 	// Cities holds the value of the cities edge.
 	Cities []*City `json:"cities,omitempty"`
+	// Parent holds the value of the parent edge.
+	Parent *Plan `json:"parent,omitempty"`
+	// Complexes holds the value of the complexes edge.
+	Complexes []*Plan `json:"complexes,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [4]bool
 }
 
 // PmsOrErr returns the Pms value or an error if the edge
@@ -94,6 +101,29 @@ func (e PlanEdges) CitiesOrErr() ([]*City, error) {
 	return nil, &NotLoadedError{edge: "cities"}
 }
 
+// ParentOrErr returns the Parent value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PlanEdges) ParentOrErr() (*Plan, error) {
+	if e.loadedTypes[2] {
+		if e.Parent == nil {
+			// The edge parent was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: plan.Label}
+		}
+		return e.Parent, nil
+	}
+	return nil, &NotLoadedError{edge: "parent"}
+}
+
+// ComplexesOrErr returns the Complexes value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlanEdges) ComplexesOrErr() ([]*Plan, error) {
+	if e.loadedTypes[3] {
+		return e.Complexes, nil
+	}
+	return nil, &NotLoadedError{edge: "complexes"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Plan) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -105,7 +135,7 @@ func (*Plan) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case plan.FieldPrice, plan.FieldCommission, plan.FieldOriginal:
 			values[i] = new(sql.NullFloat64)
-		case plan.FieldID, plan.FieldDays:
+		case plan.FieldID, plan.FieldDays, plan.FieldParentID:
 			values[i] = new(sql.NullInt64)
 		case plan.FieldRemark, plan.FieldName, plan.FieldDesc:
 			values[i] = new(sql.NullString)
@@ -227,6 +257,13 @@ func (pl *Plan) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				pl.Desc = value.String
 			}
+		case plan.FieldParentID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
+			} else if value.Valid {
+				pl.ParentID = new(uint64)
+				*pl.ParentID = uint64(value.Int64)
+			}
 		}
 	}
 	return nil
@@ -240,6 +277,16 @@ func (pl *Plan) QueryPms() *BatteryModelQuery {
 // QueryCities queries the "cities" edge of the Plan entity.
 func (pl *Plan) QueryCities() *CityQuery {
 	return (&PlanClient{config: pl.config}).QueryCities(pl)
+}
+
+// QueryParent queries the "parent" edge of the Plan entity.
+func (pl *Plan) QueryParent() *PlanQuery {
+	return (&PlanClient{config: pl.config}).QueryParent(pl)
+}
+
+// QueryComplexes queries the "complexes" edge of the Plan entity.
+func (pl *Plan) QueryComplexes() *PlanQuery {
+	return (&PlanClient{config: pl.config}).QueryComplexes(pl)
 }
 
 // Update returns a builder for updating this Plan.
@@ -297,6 +344,10 @@ func (pl *Plan) String() string {
 	builder.WriteString(fmt.Sprintf("%v", pl.Original))
 	builder.WriteString(", desc=")
 	builder.WriteString(pl.Desc)
+	if v := pl.ParentID; v != nil {
+		builder.WriteString(", parent_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

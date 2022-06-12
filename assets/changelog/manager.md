@@ -1,3 +1,15 @@
+## 2022-06-12
+
+#### 接口调整
+
+- 骑士卡相关，骑士卡多日期调整，详情参考接口文档，涉及接口如下：
+  - [M6001 创建骑士卡](http://localhost:5533/docs#tag/M/operation/PlanCreate)
+  - [M6004 列举骑士卡](http://localhost:5533/docs#tag/M/operation/PlanList)
+
+
+
+<br />
+
 ## 2022-06-11
 
 #### 接口调整

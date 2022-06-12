@@ -3074,6 +3074,38 @@ func (c *PlanClient) QueryCities(pl *Plan) *CityQuery {
 	return query
 }
 
+// QueryParent queries the parent edge of a Plan.
+func (c *PlanClient) QueryParent(pl *Plan) *PlanQuery {
+	query := &PlanQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, plan.ParentTable, plan.ParentColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryComplexes queries the complexes edge of a Plan.
+func (c *PlanClient) QueryComplexes(pl *Plan) *PlanQuery {
+	query := &PlanQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, plan.ComplexesTable, plan.ComplexesColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *PlanClient) Hooks() []Hook {
 	hooks := c.hooks.Plan

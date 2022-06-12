@@ -184,6 +184,13 @@ func Desc(v string) predicate.Plan {
 	})
 }
 
+// ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
+func ParentID(v uint64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldParentID), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
@@ -1299,6 +1306,68 @@ func DescContainsFold(v string) predicate.Plan {
 	})
 }
 
+// ParentIDEQ applies the EQ predicate on the "parent_id" field.
+func ParentIDEQ(v uint64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldParentID), v))
+	})
+}
+
+// ParentIDNEQ applies the NEQ predicate on the "parent_id" field.
+func ParentIDNEQ(v uint64) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldParentID), v))
+	})
+}
+
+// ParentIDIn applies the In predicate on the "parent_id" field.
+func ParentIDIn(vs ...uint64) predicate.Plan {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Plan(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldParentID), v...))
+	})
+}
+
+// ParentIDNotIn applies the NotIn predicate on the "parent_id" field.
+func ParentIDNotIn(vs ...uint64) predicate.Plan {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Plan(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldParentID), v...))
+	})
+}
+
+// ParentIDIsNil applies the IsNil predicate on the "parent_id" field.
+func ParentIDIsNil() predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldParentID)))
+	})
+}
+
+// ParentIDNotNil applies the NotNil predicate on the "parent_id" field.
+func ParentIDNotNil() predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldParentID)))
+	})
+}
+
 // HasPms applies the HasEdge predicate on the "pms" edge.
 func HasPms() predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
@@ -1346,6 +1415,62 @@ func HasCitiesWith(preds ...predicate.City) predicate.Plan {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(CitiesInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, CitiesTable, CitiesPrimaryKey...),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasParent applies the HasEdge predicate on the "parent" edge.
+func HasParent() predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ParentTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasParentWith applies the HasEdge predicate on the "parent" edge with a given conditions (other predicates).
+func HasParentWith(preds ...predicate.Plan) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasComplexes applies the HasEdge predicate on the "complexes" edge.
+func HasComplexes() predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ComplexesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ComplexesTable, ComplexesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasComplexesWith applies the HasEdge predicate on the "complexes" edge with a given conditions (other predicates).
+func HasComplexesWith(preds ...predicate.Plan) predicate.Plan {
+	return predicate.Plan(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ComplexesTable, ComplexesColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

@@ -27,9 +27,11 @@ type PlanQuery struct {
 	fields     []string
 	predicates []predicate.Plan
 	// eager-loading edges.
-	withPms    *BatteryModelQuery
-	withCities *CityQuery
-	modifiers  []func(*sql.Selector)
+	withPms       *BatteryModelQuery
+	withCities    *CityQuery
+	withParent    *PlanQuery
+	withComplexes *PlanQuery
+	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -103,6 +105,50 @@ func (pq *PlanQuery) QueryCities() *CityQuery {
 			sqlgraph.From(plan.Table, plan.FieldID, selector),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, plan.CitiesTable, plan.CitiesPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryParent chains the current query on the "parent" edge.
+func (pq *PlanQuery) QueryParent() *PlanQuery {
+	query := &PlanQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, selector),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, plan.ParentTable, plan.ParentColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryComplexes chains the current query on the "complexes" edge.
+func (pq *PlanQuery) QueryComplexes() *PlanQuery {
+	query := &PlanQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plan.Table, plan.FieldID, selector),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, plan.ComplexesTable, plan.ComplexesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -286,13 +332,15 @@ func (pq *PlanQuery) Clone() *PlanQuery {
 		return nil
 	}
 	return &PlanQuery{
-		config:     pq.config,
-		limit:      pq.limit,
-		offset:     pq.offset,
-		order:      append([]OrderFunc{}, pq.order...),
-		predicates: append([]predicate.Plan{}, pq.predicates...),
-		withPms:    pq.withPms.Clone(),
-		withCities: pq.withCities.Clone(),
+		config:        pq.config,
+		limit:         pq.limit,
+		offset:        pq.offset,
+		order:         append([]OrderFunc{}, pq.order...),
+		predicates:    append([]predicate.Plan{}, pq.predicates...),
+		withPms:       pq.withPms.Clone(),
+		withCities:    pq.withCities.Clone(),
+		withParent:    pq.withParent.Clone(),
+		withComplexes: pq.withComplexes.Clone(),
 		// clone intermediate query.
 		sql:    pq.sql.Clone(),
 		path:   pq.path,
@@ -319,6 +367,28 @@ func (pq *PlanQuery) WithCities(opts ...func(*CityQuery)) *PlanQuery {
 		opt(query)
 	}
 	pq.withCities = query
+	return pq
+}
+
+// WithParent tells the query-builder to eager-load the nodes that are connected to
+// the "parent" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PlanQuery) WithParent(opts ...func(*PlanQuery)) *PlanQuery {
+	query := &PlanQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withParent = query
+	return pq
+}
+
+// WithComplexes tells the query-builder to eager-load the nodes that are connected to
+// the "complexes" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PlanQuery) WithComplexes(opts ...func(*PlanQuery)) *PlanQuery {
+	query := &PlanQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withComplexes = query
 	return pq
 }
 
@@ -392,9 +462,11 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 	var (
 		nodes       = []*Plan{}
 		_spec       = pq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [4]bool{
 			pq.withPms != nil,
 			pq.withCities != nil,
+			pq.withParent != nil,
+			pq.withComplexes != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -522,6 +594,63 @@ func (pq *PlanQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Plan, e
 			for kn := range nodes {
 				kn.Edges.Cities = append(kn.Edges.Cities, n)
 			}
+		}
+	}
+
+	if query := pq.withParent; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Plan)
+		for i := range nodes {
+			if nodes[i].ParentID == nil {
+				continue
+			}
+			fk := *nodes[i].ParentID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(plan.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "parent_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Parent = n
+			}
+		}
+	}
+
+	if query := pq.withComplexes; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Plan)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Complexes = []*Plan{}
+		}
+		query.Where(predicate.Plan(func(s *sql.Selector) {
+			s.Where(sql.InValues(plan.ComplexesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ParentID
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "parent_id" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "parent_id" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Complexes = append(node.Edges.Complexes, n)
 		}
 	}
 

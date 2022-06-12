@@ -23,8 +23,6 @@ import (
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
-    "github.com/golang-module/carbon/v2"
-    "github.com/jinzhu/copier"
     "github.com/shopspring/decimal"
     log "github.com/sirupsen/logrus"
     "time"
@@ -135,21 +133,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
     }
 
     // 查询套餐是否存在
-    plan := NewPlan().QueryEffectiveWithID(req.PlanID)
-    cp := new(model.PlanItem)
-    _ = copier.CopyWithOption(cp, plan, copier.Option{Converters: []copier.TypeConverter{
-        {
-            SrcType: time.Time{},
-            DstType: copier.String,
-            Fn: func(src interface{}) (interface{}, error) {
-                t, ok := src.(time.Time)
-                if !ok {
-                    return "", nil
-                }
-                return t.Format(carbon.DateLayout), nil
-            },
-        },
-    }})
+    op := NewPlan().QueryEffectiveWithID(req.PlanID)
 
     // 距离上次订阅过去的时间
     var pastDays int
@@ -162,7 +146,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
     no := tools.NewUnique().NewSN28()
     result.OutTradeNo = no
     // 生成订单字段
-    price := plan.Price
+    price := op.Price
     // DEBUG 模式支付一分钱
     mode := ar.Config.App.Mode
     if mode == "debug" || mode == "next" {
@@ -181,16 +165,16 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
             OrderType:   otype,
             OutTradeNo:  no,
             RiderID:     s.rider.ID,
-            Name:        "购买" + plan.Name,
+            Name:        "购买" + op.Name,
             Amount:      total,
             Payway:      req.Payway,
             Expire:      time.Now().Add(10 * time.Minute),
-            PlanID:      cp.ID,
+            PlanID:      op.ID,
             Deposit:     deposit,
             PastDays:    pastDays,
-            Commission:  plan.Commission,
-            Voltage:     plan.Edges.Pms[0].Voltage,
-            Days:        plan.Days,
+            Commission:  op.Commission,
+            Voltage:     op.Edges.Pms[0].Voltage,
+            Days:        op.Days,
             OrderID:     orderID,
             SubscribeID: subID,
         },

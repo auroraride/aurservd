@@ -199,6 +199,26 @@ func (pu *PlanUpdate) ClearDesc() *PlanUpdate {
 	return pu
 }
 
+// SetParentID sets the "parent_id" field.
+func (pu *PlanUpdate) SetParentID(u uint64) *PlanUpdate {
+	pu.mutation.SetParentID(u)
+	return pu
+}
+
+// SetNillableParentID sets the "parent_id" field if the given value is not nil.
+func (pu *PlanUpdate) SetNillableParentID(u *uint64) *PlanUpdate {
+	if u != nil {
+		pu.SetParentID(*u)
+	}
+	return pu
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (pu *PlanUpdate) ClearParentID() *PlanUpdate {
+	pu.mutation.ClearParentID()
+	return pu
+}
+
 // AddPmIDs adds the "pms" edge to the BatteryModel entity by IDs.
 func (pu *PlanUpdate) AddPmIDs(ids ...uint64) *PlanUpdate {
 	pu.mutation.AddPmIDs(ids...)
@@ -227,6 +247,26 @@ func (pu *PlanUpdate) AddCities(c ...*City) *PlanUpdate {
 		ids[i] = c[i].ID
 	}
 	return pu.AddCityIDs(ids...)
+}
+
+// SetParent sets the "parent" edge to the Plan entity.
+func (pu *PlanUpdate) SetParent(p *Plan) *PlanUpdate {
+	return pu.SetParentID(p.ID)
+}
+
+// AddComplexIDs adds the "complexes" edge to the Plan entity by IDs.
+func (pu *PlanUpdate) AddComplexIDs(ids ...uint64) *PlanUpdate {
+	pu.mutation.AddComplexIDs(ids...)
+	return pu
+}
+
+// AddComplexes adds the "complexes" edges to the Plan entity.
+func (pu *PlanUpdate) AddComplexes(p ...*Plan) *PlanUpdate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.AddComplexIDs(ids...)
 }
 
 // Mutation returns the PlanMutation object of the builder.
@@ -274,6 +314,33 @@ func (pu *PlanUpdate) RemoveCities(c ...*City) *PlanUpdate {
 		ids[i] = c[i].ID
 	}
 	return pu.RemoveCityIDs(ids...)
+}
+
+// ClearParent clears the "parent" edge to the Plan entity.
+func (pu *PlanUpdate) ClearParent() *PlanUpdate {
+	pu.mutation.ClearParent()
+	return pu
+}
+
+// ClearComplexes clears all "complexes" edges to the Plan entity.
+func (pu *PlanUpdate) ClearComplexes() *PlanUpdate {
+	pu.mutation.ClearComplexes()
+	return pu
+}
+
+// RemoveComplexIDs removes the "complexes" edge to Plan entities by IDs.
+func (pu *PlanUpdate) RemoveComplexIDs(ids ...uint64) *PlanUpdate {
+	pu.mutation.RemoveComplexIDs(ids...)
+	return pu
+}
+
+// RemoveComplexes removes "complexes" edges to Plan entities.
+func (pu *PlanUpdate) RemoveComplexes(p ...*Plan) *PlanUpdate {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.RemoveComplexIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -626,6 +693,95 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.ParentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   plan.ParentTable,
+			Columns: []string{plan.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   plan.ParentTable,
+			Columns: []string{plan.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pu.mutation.ComplexesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.ComplexesTable,
+			Columns: []string{plan.ComplexesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedComplexesIDs(); len(nodes) > 0 && !pu.mutation.ComplexesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.ComplexesTable,
+			Columns: []string{plan.ComplexesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.ComplexesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.ComplexesTable,
+			Columns: []string{plan.ComplexesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{plan.Label}
@@ -813,6 +969,26 @@ func (puo *PlanUpdateOne) ClearDesc() *PlanUpdateOne {
 	return puo
 }
 
+// SetParentID sets the "parent_id" field.
+func (puo *PlanUpdateOne) SetParentID(u uint64) *PlanUpdateOne {
+	puo.mutation.SetParentID(u)
+	return puo
+}
+
+// SetNillableParentID sets the "parent_id" field if the given value is not nil.
+func (puo *PlanUpdateOne) SetNillableParentID(u *uint64) *PlanUpdateOne {
+	if u != nil {
+		puo.SetParentID(*u)
+	}
+	return puo
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (puo *PlanUpdateOne) ClearParentID() *PlanUpdateOne {
+	puo.mutation.ClearParentID()
+	return puo
+}
+
 // AddPmIDs adds the "pms" edge to the BatteryModel entity by IDs.
 func (puo *PlanUpdateOne) AddPmIDs(ids ...uint64) *PlanUpdateOne {
 	puo.mutation.AddPmIDs(ids...)
@@ -841,6 +1017,26 @@ func (puo *PlanUpdateOne) AddCities(c ...*City) *PlanUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return puo.AddCityIDs(ids...)
+}
+
+// SetParent sets the "parent" edge to the Plan entity.
+func (puo *PlanUpdateOne) SetParent(p *Plan) *PlanUpdateOne {
+	return puo.SetParentID(p.ID)
+}
+
+// AddComplexIDs adds the "complexes" edge to the Plan entity by IDs.
+func (puo *PlanUpdateOne) AddComplexIDs(ids ...uint64) *PlanUpdateOne {
+	puo.mutation.AddComplexIDs(ids...)
+	return puo
+}
+
+// AddComplexes adds the "complexes" edges to the Plan entity.
+func (puo *PlanUpdateOne) AddComplexes(p ...*Plan) *PlanUpdateOne {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.AddComplexIDs(ids...)
 }
 
 // Mutation returns the PlanMutation object of the builder.
@@ -888,6 +1084,33 @@ func (puo *PlanUpdateOne) RemoveCities(c ...*City) *PlanUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return puo.RemoveCityIDs(ids...)
+}
+
+// ClearParent clears the "parent" edge to the Plan entity.
+func (puo *PlanUpdateOne) ClearParent() *PlanUpdateOne {
+	puo.mutation.ClearParent()
+	return puo
+}
+
+// ClearComplexes clears all "complexes" edges to the Plan entity.
+func (puo *PlanUpdateOne) ClearComplexes() *PlanUpdateOne {
+	puo.mutation.ClearComplexes()
+	return puo
+}
+
+// RemoveComplexIDs removes the "complexes" edge to Plan entities by IDs.
+func (puo *PlanUpdateOne) RemoveComplexIDs(ids ...uint64) *PlanUpdateOne {
+	puo.mutation.RemoveComplexIDs(ids...)
+	return puo
+}
+
+// RemoveComplexes removes "complexes" edges to Plan entities.
+func (puo *PlanUpdateOne) RemoveComplexes(p ...*Plan) *PlanUpdateOne {
+	ids := make([]uint64, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.RemoveComplexIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1262,6 +1485,95 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.ParentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   plan.ParentTable,
+			Columns: []string{plan.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   plan.ParentTable,
+			Columns: []string{plan.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.ComplexesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.ComplexesTable,
+			Columns: []string{plan.ComplexesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedComplexesIDs(); len(nodes) > 0 && !puo.mutation.ComplexesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.ComplexesTable,
+			Columns: []string{plan.ComplexesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.ComplexesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   plan.ComplexesTable,
+			Columns: []string{plan.ComplexesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: plan.FieldID,
 				},
 			},
 		}

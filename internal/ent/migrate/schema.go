@@ -1167,12 +1167,21 @@ var (
 		{Name: "commission", Type: field.TypeFloat64, Comment: "提成"},
 		{Name: "original", Type: field.TypeFloat64, Comment: "原价", Nullable: true},
 		{Name: "desc", Type: field.TypeString, Comment: "优惠信息", Nullable: true},
+		{Name: "parent_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// PlanTable holds the schema information for the "plan" table.
 	PlanTable = &schema.Table{
 		Name:       "plan",
 		Columns:    PlanColumns,
 		PrimaryKey: []*schema.Column{PlanColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "plan_plan_complexes",
+				Columns:    []*schema.Column{PlanColumns[16]},
+				RefColumns: []*schema.Column{PlanColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "plan_created_at",
@@ -1802,6 +1811,7 @@ func init() {
 	PersonTable.Annotation = &entsql.Annotation{
 		Table: "person",
 	}
+	PlanTable.ForeignKeys[0].RefTable = PlanTable
 	PlanTable.Annotation = &entsql.Annotation{
 		Table: "plan",
 	}

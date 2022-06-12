@@ -57,6 +57,7 @@ func (Plan) Fields() []ent.Field {
         field.Float("commission").Comment("提成"),
         field.Float("original").Optional().Comment("原价"),
         field.String("desc").Optional().Comment("优惠信息"),
+        field.Uint64("parent_id").Optional().Nillable().Comment("父级"),
     }
 }
 
@@ -65,6 +66,10 @@ func (Plan) Edges() []ent.Edge {
     return []ent.Edge{
         edge.To("pms", BatteryModel.Type),
         edge.To("cities", City.Type),
+        edge.To("complexes", Plan.Type).
+            From("parent").
+            Field("parent_id").
+            Unique(),
     }
 }
 
