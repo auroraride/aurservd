@@ -54,6 +54,9 @@ type EnterpriseStation func(*sql.Selector)
 // Exchange is the predicate function for exchange builders.
 type Exchange func(*sql.Selector)
 
+// Inventory is the predicate function for inventory builders.
+type Inventory func(*sql.Selector)
+
 // Manager is the predicate function for manager builders.
 type Manager func(*sql.Selector)
 

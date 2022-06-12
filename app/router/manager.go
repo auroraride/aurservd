@@ -23,6 +23,9 @@ func loadManagerRoutes() {
     // 设置
     g.GET("/setting", mapi.Setting.List)
     g.PUT("/setting/:key", mapi.Setting.Modify)
+    g.POST("/inventory", mapi.Inventory.CreateOrModify)
+    g.GET("/inventory", mapi.Inventory.List)
+    g.DELETE("/inventory", mapi.Inventory.Delete)
 
     // 城市
     g.GET("/city", mapi.City.List)       // 城市列表
@@ -47,6 +50,7 @@ func loadManagerRoutes() {
     // 电池
     g.GET("/battery/model", mapi.Battery.ListModels)
     g.POST("/battery/model", mapi.Battery.CreateModel)
+    g.GET("/battery/voltages", mapi.Battery.ListVoltages)
 
     // 电柜
     g.POST("/cabinet", mapi.Cabinet.Create)

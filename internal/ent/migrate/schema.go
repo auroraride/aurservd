@@ -898,6 +898,53 @@ var (
 			},
 		},
 	}
+	// InventoryColumns holds the columns for the "inventory" table.
+	InventoryColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "name", Type: field.TypeString, Unique: true, Comment: "物资名称"},
+		{Name: "count", Type: field.TypeBool, Comment: "是否需要盘点"},
+		{Name: "transfer", Type: field.TypeBool, Comment: "是否可调拨"},
+		{Name: "purchase", Type: field.TypeBool, Comment: "是否可采购"},
+	}
+	// InventoryTable holds the schema information for the "inventory" table.
+	InventoryTable = &schema.Table{
+		Name:       "inventory",
+		Columns:    InventoryColumns,
+		PrimaryKey: []*schema.Column{InventoryColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "inventory_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{InventoryColumns[1]},
+			},
+			{
+				Name:    "inventory_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{InventoryColumns[3]},
+			},
+			{
+				Name:    "inventory_count",
+				Unique:  false,
+				Columns: []*schema.Column{InventoryColumns[8]},
+			},
+			{
+				Name:    "inventory_transfer",
+				Unique:  false,
+				Columns: []*schema.Column{InventoryColumns[9]},
+			},
+			{
+				Name:    "inventory_purchase",
+				Unique:  false,
+				Columns: []*schema.Column{InventoryColumns[10]},
+			},
+		},
+	}
 	// ManagerColumns holds the columns for the "manager" table.
 	ManagerColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -1704,6 +1751,7 @@ var (
 		EnterpriseStatementTable,
 		EnterpriseStationTable,
 		ExchangeTable,
+		InventoryTable,
 		ManagerTable,
 		OrderTable,
 		OrderRefundTable,
@@ -1792,6 +1840,9 @@ func init() {
 	ExchangeTable.ForeignKeys[4].RefTable = RiderTable
 	ExchangeTable.Annotation = &entsql.Annotation{
 		Table: "exchange",
+	}
+	InventoryTable.Annotation = &entsql.Annotation{
+		Table: "inventory",
 	}
 	ManagerTable.Annotation = &entsql.Annotation{
 		Table: "manager",

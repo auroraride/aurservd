@@ -73,8 +73,8 @@ func (s *batteryService) QueryIDs(ids []uint64) []*ent.BatteryModel {
 }
 
 // ListVoltages 列出所有型号电压
-func (s *batteryService) ListVoltages() []int {
-    var items []int
+func (s *batteryService) ListVoltages() []float64 {
+    var items []float64
     s.orm.QueryNotDeleted().
         Select(batterymodel.FieldVoltage).
         GroupBy(batterymodel.FieldVoltage).

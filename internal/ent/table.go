@@ -162,6 +162,16 @@ func (e *Exchange) GetID() uint64 {
 	return e.ID
 }
 
+// GetTableName returns table name for Inventory.
+func (i *Inventory) GetTableName() string {
+	return "inventory"
+}
+
+// GetID returns id for Inventory.
+func (i *Inventory) GetID() uint64 {
+	return i.ID
+}
+
 // GetTableName returns table name for Manager.
 func (m *Manager) GetTableName() string {
 	return "manager"

@@ -46,6 +46,8 @@ type Tx struct {
 	EnterpriseStation *EnterpriseStationClient
 	// Exchange is the client for interacting with the Exchange builders.
 	Exchange *ExchangeClient
+	// Inventory is the client for interacting with the Inventory builders.
+	Inventory *InventoryClient
 	// Manager is the client for interacting with the Manager builders.
 	Manager *ManagerClient
 	// Order is the client for interacting with the Order builders.
@@ -219,6 +221,7 @@ func (tx *Tx) init() {
 	tx.EnterpriseStatement = NewEnterpriseStatementClient(tx.config)
 	tx.EnterpriseStation = NewEnterpriseStationClient(tx.config)
 	tx.Exchange = NewExchangeClient(tx.config)
+	tx.Inventory = NewInventoryClient(tx.config)
 	tx.Manager = NewManagerClient(tx.config)
 	tx.Order = NewOrderClient(tx.config)
 	tx.OrderRefund = NewOrderRefundClient(tx.config)

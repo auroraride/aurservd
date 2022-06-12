@@ -1129,6 +1129,31 @@ definitions:
     required:
     - id
     type: object
+  model.Inventory:
+    properties:
+      count:
+        description: '是否需要盘点 '
+        type: boolean
+      name:
+        description: '物资名称 '
+        type: string
+      purchase:
+        description: '是否可采购 '
+        type: boolean
+      transfer:
+        description: '是否可调拨 '
+        type: boolean
+    required:
+    - name
+    type: object
+  model.InventoryDelete:
+    properties:
+      name:
+        description: 物资名称 *POST参数*
+        type: string
+    required:
+    - name
+    type: object
   model.ItemListRes:
     properties:
       items:
@@ -2335,6 +2360,29 @@ paths:
       summary: M4002 创建电池型号
       tags:
       - '[M]管理接口'
+  /manager/v1/battery/voltages:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerBatteryListVoltages
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              type: number
+            type: array
+      summary: M4003 列举电池电压型号
+      tags:
+      - '[M]管理接口'
   /manager/v1/branch:
     get:
       consumes:
@@ -3349,6 +3397,79 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M5009 处理故障
+      tags:
+      - '[M]管理接口'
+  /manager/v1/inventory:
+    delete:
+      consumes:
+      - application/json
+      operationId: ManagerInventoryDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.InventoryDelete'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M1014 删除物资
+      tags:
+      - '[M]管理接口'
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerInventoryList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.Inventory'
+      summary: M1013 列举物资
+      tags:
+      - '[M]管理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerInventoryCreateOrModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.Inventory'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M1012 物资创建或更新
       tags:
       - '[M]管理接口'
   /manager/v1/order:

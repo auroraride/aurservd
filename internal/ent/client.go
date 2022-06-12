@@ -25,6 +25,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
+	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
@@ -79,6 +80,8 @@ type Client struct {
 	EnterpriseStation *EnterpriseStationClient
 	// Exchange is the client for interacting with the Exchange builders.
 	Exchange *ExchangeClient
+	// Inventory is the client for interacting with the Inventory builders.
+	Inventory *InventoryClient
 	// Manager is the client for interacting with the Manager builders.
 	Manager *ManagerClient
 	// Order is the client for interacting with the Order builders.
@@ -130,6 +133,7 @@ func (c *Client) init() {
 	c.EnterpriseStatement = NewEnterpriseStatementClient(c.config)
 	c.EnterpriseStation = NewEnterpriseStationClient(c.config)
 	c.Exchange = NewExchangeClient(c.config)
+	c.Inventory = NewInventoryClient(c.config)
 	c.Manager = NewManagerClient(c.config)
 	c.Order = NewOrderClient(c.config)
 	c.OrderRefund = NewOrderRefundClient(c.config)
@@ -190,6 +194,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		EnterpriseStatement:  NewEnterpriseStatementClient(cfg),
 		EnterpriseStation:    NewEnterpriseStationClient(cfg),
 		Exchange:             NewExchangeClient(cfg),
+		Inventory:            NewInventoryClient(cfg),
 		Manager:              NewManagerClient(cfg),
 		Order:                NewOrderClient(cfg),
 		OrderRefund:          NewOrderRefundClient(cfg),
@@ -236,6 +241,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		EnterpriseStatement:  NewEnterpriseStatementClient(cfg),
 		EnterpriseStation:    NewEnterpriseStationClient(cfg),
 		Exchange:             NewExchangeClient(cfg),
+		Inventory:            NewInventoryClient(cfg),
 		Manager:              NewManagerClient(cfg),
 		Order:                NewOrderClient(cfg),
 		OrderRefund:          NewOrderRefundClient(cfg),
@@ -292,6 +298,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.EnterpriseStatement.Use(hooks...)
 	c.EnterpriseStation.Use(hooks...)
 	c.Exchange.Use(hooks...)
+	c.Inventory.Use(hooks...)
 	c.Manager.Use(hooks...)
 	c.Order.Use(hooks...)
 	c.OrderRefund.Use(hooks...)
@@ -2431,6 +2438,97 @@ func (c *ExchangeClient) QueryRider(e *Exchange) *RiderQuery {
 func (c *ExchangeClient) Hooks() []Hook {
 	hooks := c.hooks.Exchange
 	return append(hooks[:len(hooks):len(hooks)], exchange.Hooks[:]...)
+}
+
+// InventoryClient is a client for the Inventory schema.
+type InventoryClient struct {
+	config
+}
+
+// NewInventoryClient returns a client for the Inventory from the given config.
+func NewInventoryClient(c config) *InventoryClient {
+	return &InventoryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `inventory.Hooks(f(g(h())))`.
+func (c *InventoryClient) Use(hooks ...Hook) {
+	c.hooks.Inventory = append(c.hooks.Inventory, hooks...)
+}
+
+// Create returns a create builder for Inventory.
+func (c *InventoryClient) Create() *InventoryCreate {
+	mutation := newInventoryMutation(c.config, OpCreate)
+	return &InventoryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Inventory entities.
+func (c *InventoryClient) CreateBulk(builders ...*InventoryCreate) *InventoryCreateBulk {
+	return &InventoryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Inventory.
+func (c *InventoryClient) Update() *InventoryUpdate {
+	mutation := newInventoryMutation(c.config, OpUpdate)
+	return &InventoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *InventoryClient) UpdateOne(i *Inventory) *InventoryUpdateOne {
+	mutation := newInventoryMutation(c.config, OpUpdateOne, withInventory(i))
+	return &InventoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *InventoryClient) UpdateOneID(id uint64) *InventoryUpdateOne {
+	mutation := newInventoryMutation(c.config, OpUpdateOne, withInventoryID(id))
+	return &InventoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Inventory.
+func (c *InventoryClient) Delete() *InventoryDelete {
+	mutation := newInventoryMutation(c.config, OpDelete)
+	return &InventoryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *InventoryClient) DeleteOne(i *Inventory) *InventoryDeleteOne {
+	return c.DeleteOneID(i.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *InventoryClient) DeleteOneID(id uint64) *InventoryDeleteOne {
+	builder := c.Delete().Where(inventory.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &InventoryDeleteOne{builder}
+}
+
+// Query returns a query builder for Inventory.
+func (c *InventoryClient) Query() *InventoryQuery {
+	return &InventoryQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Inventory entity by its id.
+func (c *InventoryClient) Get(ctx context.Context, id uint64) (*Inventory, error) {
+	return c.Query().Where(inventory.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *InventoryClient) GetX(ctx context.Context, id uint64) *Inventory {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *InventoryClient) Hooks() []Hook {
+	hooks := c.hooks.Inventory
+	return append(hooks[:len(hooks):len(hooks)], inventory.Hooks[:]...)
 }
 
 // ManagerClient is a client for the Manager schema.

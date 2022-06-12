@@ -217,6 +217,19 @@ func (f ExchangeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return f(ctx, mv)
 }
 
+// The InventoryFunc type is an adapter to allow the use of ordinary
+// function as Inventory mutator.
+type InventoryFunc func(context.Context, *ent.InventoryMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f InventoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.InventoryMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.InventoryMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The ManagerFunc type is an adapter to allow the use of ordinary
 // function as Manager mutator.
 type ManagerFunc func(context.Context, *ent.ManagerMutation) (ent.Value, error)

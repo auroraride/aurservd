@@ -22,6 +22,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
+	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
@@ -667,6 +668,46 @@ func (c *ExchangeClient) GetNotDeleted(ctx context.Context, id uint64) (*Exchang
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *ExchangeClient) GetNotDeletedX(ctx context.Context, id uint64) *Exchange {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for Inventory.
+func (c *InventoryClient) SoftDelete() *InventoryUpdate {
+	mutation := newInventoryMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &InventoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *InventoryClient) SoftDeleteOne(i *Inventory) *InventoryUpdateOne {
+	mutation := newInventoryMutation(c.config, OpUpdateOne, withInventory(i))
+	mutation.SetDeletedAt(time.Now())
+	return &InventoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *InventoryClient) SoftDeleteOneID(id uint64) *InventoryUpdateOne {
+	mutation := newInventoryMutation(c.config, OpUpdateOne, withInventoryID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &InventoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Inventory.
+func (c *InventoryClient) QueryNotDeleted() *InventoryQuery {
+	return c.Query().Where(inventory.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Inventory not deleted entity by its id.
+func (c *InventoryClient) GetNotDeleted(ctx context.Context, id uint64) (*Inventory, error) {
+	return c.Query().Where(inventory.ID(id), inventory.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *InventoryClient) GetNotDeletedX(ctx context.Context, id uint64) *Inventory {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

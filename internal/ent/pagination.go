@@ -360,6 +360,28 @@ func (eq *ExchangeQuery) PaginationResult(req model.PaginationReq) model.Paginat
 	}
 }
 
+// Pagination returns pagination query builder for InventoryQuery.
+func (iq *InventoryQuery) Pagination(req model.PaginationReq) *InventoryQuery {
+	iq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return iq
+}
+
+// PaginationItems returns pagination query builder for InventoryQuery.
+func (iq *InventoryQuery) PaginationItemsX(req model.PaginationReq) any {
+	return iq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for InventoryQuery.
+func (iq *InventoryQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := iq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for ManagerQuery.
 func (mq *ManagerQuery) Pagination(req model.PaginationReq) *ManagerQuery {
 	mq.Offset(req.GetOffset()).Limit(req.GetLimit())

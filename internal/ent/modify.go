@@ -163,6 +163,13 @@ func (c *ExchangeClient) ModifyOne(old *Exchange, data any) *ExchangeUpdateOne {
 	return EntitySetAttributes[ExchangeUpdateOne, Exchange](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for Inventory.
+func (c *InventoryClient) ModifyOne(old *Inventory, data any) *InventoryUpdateOne {
+	mutation := newInventoryMutation(c.config, OpUpdateOne, withInventory(old))
+	up := &InventoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[InventoryUpdateOne, Inventory](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Manager.
 func (c *ManagerClient) ModifyOne(old *Manager, data any) *ManagerUpdateOne {
 	mutation := newManagerMutation(c.config, OpUpdateOne, withManager(old))

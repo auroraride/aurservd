@@ -44,6 +44,7 @@ type hooks struct {
 	EnterpriseStatement  []ent.Hook
 	EnterpriseStation    []ent.Hook
 	Exchange             []ent.Hook
+	Inventory            []ent.Hook
 	Manager              []ent.Hook
 	Order                []ent.Hook
 	OrderRefund          []ent.Hook

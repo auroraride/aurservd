@@ -21,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
+	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/orderrefund"
@@ -415,6 +416,23 @@ func init() {
 	exchangeDescSuccess := exchangeFields[3].Descriptor()
 	// exchange.DefaultSuccess holds the default value on creation for the success field.
 	exchange.DefaultSuccess = exchangeDescSuccess.Default.(bool)
+	inventoryMixin := schema.Inventory{}.Mixin()
+	inventoryMixinHooks2 := inventoryMixin[2].Hooks()
+	inventory.Hooks[0] = inventoryMixinHooks2[0]
+	inventoryMixinFields0 := inventoryMixin[0].Fields()
+	_ = inventoryMixinFields0
+	inventoryFields := schema.Inventory{}.Fields()
+	_ = inventoryFields
+	// inventoryDescCreatedAt is the schema descriptor for created_at field.
+	inventoryDescCreatedAt := inventoryMixinFields0[0].Descriptor()
+	// inventory.DefaultCreatedAt holds the default value on creation for the created_at field.
+	inventory.DefaultCreatedAt = inventoryDescCreatedAt.Default.(func() time.Time)
+	// inventoryDescUpdatedAt is the schema descriptor for updated_at field.
+	inventoryDescUpdatedAt := inventoryMixinFields0[1].Descriptor()
+	// inventory.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	inventory.DefaultUpdatedAt = inventoryDescUpdatedAt.Default.(func() time.Time)
+	// inventory.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	inventory.UpdateDefaultUpdatedAt = inventoryDescUpdatedAt.UpdateDefault.(func() time.Time)
 	managerMixin := schema.Manager{}.Mixin()
 	managerMixinHooks2 := managerMixin[2].Hooks()
 	manager.Hooks[0] = managerMixinHooks2[0]
