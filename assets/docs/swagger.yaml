@@ -2436,7 +2436,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: E2001 激活骑士卡
+      summary: E2002 激活骑士卡
       tags:
       - '[E]店员接口'
   /manager/v1/{id}/contract:

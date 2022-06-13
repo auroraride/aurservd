@@ -320,3 +320,12 @@ GROUP BY outbound, inbound, plaform`)
     res.Surplus = res.Inbound - res.Outbound
     return
 }
+
+// BatteryOutbound 电池出库
+func (s *stockService) BatteryOutbound(storeID uint64, voltage float64, num int) {
+    name := NewBattery().VoltageName(voltage)
+    if num < s.Fetch(storeID, name) {
+        snag.Panic("电池库存不足")
+    }
+
+}

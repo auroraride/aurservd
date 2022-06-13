@@ -106,6 +106,7 @@ func (s *attendanceService) dutyDate(duty bool, storeID, employeeID uint64) time
 }
 
 // Create 打卡
+// TODO 打卡物资盘点和出入库是否联动????如何联动
 func (s *attendanceService) Create(req *model.AttendanceCreateReq) {
     if !strings.HasPrefix(*req.Photo, "employee/") {
         snag.Panic("照片错误")

@@ -281,7 +281,7 @@ const docTemplate = `{
                 "tags": [
                     "[E]店员接口"
                 ],
-                "summary": "E2001 激活骑士卡",
+                "summary": "E2002 激活骑士卡",
                 "operationId": "RiderOrderActive",
                 "parameters": [
                     {

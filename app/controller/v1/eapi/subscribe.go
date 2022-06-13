@@ -16,10 +16,16 @@ type subscribe struct{}
 
 var Subscribe = new(subscribe)
 
+func (*subscribe) Detail(c echo.Context) (err error) {
+    ctx := app.Context(c)
+    
+    return ctx.SendResponse()
+}
+
 // Active
 // @ID           RiderOrderActive
 // @Router       /employee/v1/subscribe/active [POST]
-// @Summary      E2001 激活骑士卡
+// @Summary      E2002 激活骑士卡
 // @Tags         [E]店员接口
 // @Accept       json
 // @Produce      json
