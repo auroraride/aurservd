@@ -7250,6 +7250,10 @@ const docTemplate = `{
                     "description": "电池出库数",
                     "type": "integer"
                 },
+                "surplus": {
+                    "description": "库存电池",
+                    "type": "integer"
+                },
                 "total": {
                     "description": "电池总数",
                     "type": "integer"

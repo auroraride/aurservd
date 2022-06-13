@@ -317,5 +317,7 @@ GROUP BY outbound, inbound, plaform`)
             res.Total = total
         }
     }
+
+    res.Surplus = res.Inbound - res.Outbound
     return
 }

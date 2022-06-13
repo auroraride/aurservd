@@ -40,6 +40,7 @@ type StockListRes struct {
 
 type StockOverview struct {
     Total     int `json:"total"`     // 电池总数
+    Surplus   int `json:"surplus"`   // 库存电池
     Outbound  int `json:"outbound"`  // 电池出库数
     Inbound   int `json:"inbound"`   // 电池库存数
     Exception int `json:"exception"` // 电池异常数
