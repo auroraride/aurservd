@@ -6,11 +6,11 @@
 package model
 
 type StockTransferReq struct {
-    Voltage float64 `json:"voltage,omitempty"` // 电池型号 (和`物资名称`不能同时存在, 也不能同时为空)
-    Name    string  `json:"name,omitempty"`    // 物资名称 (和`电池型号`不能同时存在, 也不能同时为空)
-    From    uint64  `json:"from"`              // 调出自 (0:平台)
-    To      uint64  `json:"to"`                // 调入至 (0:平台)
-    Num     int     `json:"num"`               // 调拨数量
+    Voltage    float64 `json:"voltage,omitempty"` // 电池型号 (和`物资名称`不能同时存在, 也不能同时为空)
+    Name       string  `json:"name,omitempty"`    // 物资名称 (和`电池型号`不能同时存在, 也不能同时为空)
+    OutboundID uint64  `json:"outboundId"`        // 调出自 (0:平台)
+    InboundID  uint64  `json:"inboundId"`         // 调入至 (0:平台)
+    Num        int     `json:"num"`               // 调拨数量
 }
 
 type StockListReq struct {

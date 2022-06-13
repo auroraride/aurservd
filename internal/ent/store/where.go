@@ -1015,25 +1015,25 @@ func HasEmployeeWith(preds ...predicate.Employee) predicate.Store {
 	})
 }
 
-// HasStocks applies the HasEdge predicate on the "stocks" edge.
-func HasStocks() predicate.Store {
+// HasInboundStocks applies the HasEdge predicate on the "inboundStocks" edge.
+func HasInboundStocks() predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StocksTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
+			sqlgraph.To(InboundStocksTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, InboundStocksTable, InboundStocksColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasStocksWith applies the HasEdge predicate on the "stocks" edge with a given conditions (other predicates).
-func HasStocksWith(preds ...predicate.Stock) predicate.Store {
+// HasInboundStocksWith applies the HasEdge predicate on the "inboundStocks" edge with a given conditions (other predicates).
+func HasInboundStocksWith(preds ...predicate.Stock) predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StocksInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, StocksTable, StocksColumn),
+			sqlgraph.To(InboundStocksInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, InboundStocksTable, InboundStocksColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
@@ -1043,25 +1043,25 @@ func HasStocksWith(preds ...predicate.Stock) predicate.Store {
 	})
 }
 
-// HasToStocks applies the HasEdge predicate on the "toStocks" edge.
-func HasToStocks() predicate.Store {
+// HasOutboundStocks applies the HasEdge predicate on the "outboundStocks" edge.
+func HasOutboundStocks() predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ToStocksTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ToStocksTable, ToStocksColumn),
+			sqlgraph.To(OutboundStocksTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, OutboundStocksTable, OutboundStocksColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasToStocksWith applies the HasEdge predicate on the "toStocks" edge with a given conditions (other predicates).
-func HasToStocksWith(preds ...predicate.Stock) predicate.Store {
+// HasOutboundStocksWith applies the HasEdge predicate on the "outboundStocks" edge with a given conditions (other predicates).
+func HasOutboundStocksWith(preds ...predicate.Stock) predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ToStocksInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ToStocksTable, ToStocksColumn),
+			sqlgraph.To(OutboundStocksInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, OutboundStocksTable, OutboundStocksColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

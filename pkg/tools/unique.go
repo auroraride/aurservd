@@ -34,3 +34,7 @@ func (u *unique) NewSN28() string {
         utils.RandomIntMaxMin(10000000, 99999999),
     )
 }
+
+func (u *unique) NewSN() string {
+    return strings.ReplaceAll(time.Now().Format(carbon.ShortDateTimeMilliLayout), ".", "")
+}

@@ -25,38 +25,38 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
-	// FieldStoreID holds the string denoting the store_id field in the database.
-	FieldStoreID = "store_id"
-	// FieldUUID holds the string denoting the uuid field in the database.
-	FieldUUID = "uuid"
-	// FieldFromStoreID holds the string denoting the from_store_id field in the database.
-	FieldFromStoreID = "from_store_id"
+	// FieldSn holds the string denoting the sn field in the database.
+	FieldSn = "sn"
+	// FieldInboundStoreID holds the string denoting the inbound_store_id field in the database.
+	FieldInboundStoreID = "inbound_store_id"
+	// FieldOutboundStoreID holds the string denoting the outbound_store_id field in the database.
+	FieldOutboundStoreID = "outbound_store_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldVoltage holds the string denoting the voltage field in the database.
 	FieldVoltage = "voltage"
 	// FieldNum holds the string denoting the num field in the database.
 	FieldNum = "num"
-	// EdgeStore holds the string denoting the store edge name in mutations.
-	EdgeStore = "store"
-	// EdgeFromStore holds the string denoting the fromstore edge name in mutations.
-	EdgeFromStore = "fromStore"
+	// EdgeInboundStore holds the string denoting the inbound_store edge name in mutations.
+	EdgeInboundStore = "inbound_store"
+	// EdgeOutboundStore holds the string denoting the outbound_store edge name in mutations.
+	EdgeOutboundStore = "outbound_store"
 	// Table holds the table name of the stock in the database.
 	Table = "stock"
-	// StoreTable is the table that holds the store relation/edge.
-	StoreTable = "stock"
-	// StoreInverseTable is the table name for the Store entity.
+	// InboundStoreTable is the table that holds the inbound_store relation/edge.
+	InboundStoreTable = "stock"
+	// InboundStoreInverseTable is the table name for the Store entity.
 	// It exists in this package in order to avoid circular dependency with the "store" package.
-	StoreInverseTable = "store"
-	// StoreColumn is the table column denoting the store relation/edge.
-	StoreColumn = "store_id"
-	// FromStoreTable is the table that holds the fromStore relation/edge.
-	FromStoreTable = "stock"
-	// FromStoreInverseTable is the table name for the Store entity.
+	InboundStoreInverseTable = "store"
+	// InboundStoreColumn is the table column denoting the inbound_store relation/edge.
+	InboundStoreColumn = "inbound_store_id"
+	// OutboundStoreTable is the table that holds the outbound_store relation/edge.
+	OutboundStoreTable = "stock"
+	// OutboundStoreInverseTable is the table name for the Store entity.
 	// It exists in this package in order to avoid circular dependency with the "store" package.
-	FromStoreInverseTable = "store"
-	// FromStoreColumn is the table column denoting the fromStore relation/edge.
-	FromStoreColumn = "from_store_id"
+	OutboundStoreInverseTable = "store"
+	// OutboundStoreColumn is the table column denoting the outbound_store relation/edge.
+	OutboundStoreColumn = "outbound_store_id"
 )
 
 // Columns holds all SQL columns for stock fields.
@@ -68,9 +68,9 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
-	FieldStoreID,
-	FieldUUID,
-	FieldFromStoreID,
+	FieldSn,
+	FieldInboundStoreID,
+	FieldOutboundStoreID,
 	FieldName,
 	FieldVoltage,
 	FieldNum,

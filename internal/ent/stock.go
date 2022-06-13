@@ -12,7 +12,6 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
-	"github.com/google/uuid"
 )
 
 // Stock is the model entity for the Stock schema.
@@ -35,15 +34,15 @@ type Stock struct {
 	// Remark holds the value of the "remark" field.
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
-	// StoreID holds the value of the "store_id" field.
-	// 所属门店ID
-	StoreID uint64 `json:"store_id,omitempty"`
-	// UUID holds the value of the "uuid" field.
+	// Sn holds the value of the "sn" field.
 	// 调拨编号
-	UUID uuid.UUID `json:"uuid,omitempty"`
-	// FromStoreID holds the value of the "from_store_id" field.
+	Sn string `json:"sn,omitempty"`
+	// InboundStoreID holds the value of the "inbound_store_id" field.
+	// 所属门店ID
+	InboundStoreID *uint64 `json:"inbound_store_id,omitempty"`
+	// OutboundStoreID holds the value of the "outbound_store_id" field.
 	// 调入自门店ID
-	FromStoreID *uint64 `json:"from_store_id,omitempty"`
+	OutboundStoreID *uint64 `json:"outbound_store_id,omitempty"`
 	// Name holds the value of the "name" field.
 	// 物资名称
 	Name string `json:"name,omitempty"`
@@ -60,41 +59,41 @@ type Stock struct {
 
 // StockEdges holds the relations/edges for other nodes in the graph.
 type StockEdges struct {
-	// Store holds the value of the store edge.
-	Store *Store `json:"store,omitempty"`
-	// FromStore holds the value of the fromStore edge.
-	FromStore *Store `json:"fromStore,omitempty"`
+	// InboundStore holds the value of the inbound_store edge.
+	InboundStore *Store `json:"inbound_store,omitempty"`
+	// OutboundStore holds the value of the outbound_store edge.
+	OutboundStore *Store `json:"outbound_store,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
 }
 
-// StoreOrErr returns the Store value or an error if the edge
+// InboundStoreOrErr returns the InboundStore value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e StockEdges) StoreOrErr() (*Store, error) {
+func (e StockEdges) InboundStoreOrErr() (*Store, error) {
 	if e.loadedTypes[0] {
-		if e.Store == nil {
-			// The edge store was loaded in eager-loading,
+		if e.InboundStore == nil {
+			// The edge inbound_store was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: store.Label}
 		}
-		return e.Store, nil
+		return e.InboundStore, nil
 	}
-	return nil, &NotLoadedError{edge: "store"}
+	return nil, &NotLoadedError{edge: "inbound_store"}
 }
 
-// FromStoreOrErr returns the FromStore value or an error if the edge
+// OutboundStoreOrErr returns the OutboundStore value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e StockEdges) FromStoreOrErr() (*Store, error) {
+func (e StockEdges) OutboundStoreOrErr() (*Store, error) {
 	if e.loadedTypes[1] {
-		if e.FromStore == nil {
-			// The edge fromStore was loaded in eager-loading,
+		if e.OutboundStore == nil {
+			// The edge outbound_store was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: store.Label}
 		}
-		return e.FromStore, nil
+		return e.OutboundStore, nil
 	}
-	return nil, &NotLoadedError{edge: "fromStore"}
+	return nil, &NotLoadedError{edge: "outbound_store"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -106,14 +105,12 @@ func (*Stock) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case stock.FieldVoltage:
 			values[i] = new(sql.NullFloat64)
-		case stock.FieldID, stock.FieldStoreID, stock.FieldFromStoreID, stock.FieldNum:
+		case stock.FieldID, stock.FieldInboundStoreID, stock.FieldOutboundStoreID, stock.FieldNum:
 			values[i] = new(sql.NullInt64)
-		case stock.FieldRemark, stock.FieldName:
+		case stock.FieldRemark, stock.FieldSn, stock.FieldName:
 			values[i] = new(sql.NullString)
 		case stock.FieldCreatedAt, stock.FieldUpdatedAt, stock.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case stock.FieldUUID:
-			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Stock", columns[i])
 		}
@@ -176,24 +173,25 @@ func (s *Stock) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.Remark = value.String
 			}
-		case stock.FieldStoreID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field store_id", values[i])
+		case stock.FieldSn:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field sn", values[i])
 			} else if value.Valid {
-				s.StoreID = uint64(value.Int64)
+				s.Sn = value.String
 			}
-		case stock.FieldUUID:
-			if value, ok := values[i].(*uuid.UUID); !ok {
-				return fmt.Errorf("unexpected type %T for field uuid", values[i])
-			} else if value != nil {
-				s.UUID = *value
-			}
-		case stock.FieldFromStoreID:
+		case stock.FieldInboundStoreID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field from_store_id", values[i])
+				return fmt.Errorf("unexpected type %T for field inbound_store_id", values[i])
 			} else if value.Valid {
-				s.FromStoreID = new(uint64)
-				*s.FromStoreID = uint64(value.Int64)
+				s.InboundStoreID = new(uint64)
+				*s.InboundStoreID = uint64(value.Int64)
+			}
+		case stock.FieldOutboundStoreID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field outbound_store_id", values[i])
+			} else if value.Valid {
+				s.OutboundStoreID = new(uint64)
+				*s.OutboundStoreID = uint64(value.Int64)
 			}
 		case stock.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -219,14 +217,14 @@ func (s *Stock) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryStore queries the "store" edge of the Stock entity.
-func (s *Stock) QueryStore() *StoreQuery {
-	return (&StockClient{config: s.config}).QueryStore(s)
+// QueryInboundStore queries the "inbound_store" edge of the Stock entity.
+func (s *Stock) QueryInboundStore() *StoreQuery {
+	return (&StockClient{config: s.config}).QueryInboundStore(s)
 }
 
-// QueryFromStore queries the "fromStore" edge of the Stock entity.
-func (s *Stock) QueryFromStore() *StoreQuery {
-	return (&StockClient{config: s.config}).QueryFromStore(s)
+// QueryOutboundStore queries the "outbound_store" edge of the Stock entity.
+func (s *Stock) QueryOutboundStore() *StoreQuery {
+	return (&StockClient{config: s.config}).QueryOutboundStore(s)
 }
 
 // Update returns a builder for updating this Stock.
@@ -266,12 +264,14 @@ func (s *Stock) String() string {
 	builder.WriteString(fmt.Sprintf("%v", s.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(s.Remark)
-	builder.WriteString(", store_id=")
-	builder.WriteString(fmt.Sprintf("%v", s.StoreID))
-	builder.WriteString(", uuid=")
-	builder.WriteString(fmt.Sprintf("%v", s.UUID))
-	if v := s.FromStoreID; v != nil {
-		builder.WriteString(", from_store_id=")
+	builder.WriteString(", sn=")
+	builder.WriteString(s.Sn)
+	if v := s.InboundStoreID; v != nil {
+		builder.WriteString(", inbound_store_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := s.OutboundStoreID; v != nil {
+		builder.WriteString(", outbound_store_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", name=")

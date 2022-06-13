@@ -1872,8 +1872,8 @@ definitions:
     type: object
   model.StockTransferReq:
     properties:
-      from:
-        description: 调出自 (0:平台)
+      inboundId:
+        description: 调入至 (0:平台)
         type: integer
       name:
         description: 物资名称 (和`电池型号`不能同时存在, 也不能同时为空)
@@ -1881,8 +1881,8 @@ definitions:
       num:
         description: 调拨数量
         type: integer
-      to:
-        description: 调入至 (0:平台)
+      outboundId:
+        description: 调出自 (0:平台)
         type: integer
       voltage:
         description: 电池型号 (和`物资名称`不能同时存在, 也不能同时为空)

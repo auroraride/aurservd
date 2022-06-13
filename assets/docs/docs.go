@@ -7206,8 +7206,8 @@ const docTemplate = `{
         "model.StockTransferReq": {
             "type": "object",
             "properties": {
-                "from": {
-                    "description": "调出自 (0:平台)",
+                "inboundId": {
+                    "description": "调入至 (0:平台)",
                     "type": "integer"
                 },
                 "name": {
@@ -7218,8 +7218,8 @@ const docTemplate = `{
                     "description": "调拨数量",
                     "type": "integer"
                 },
-                "to": {
-                    "description": "调入至 (0:平台)",
+                "outboundId": {
+                    "description": "调出自 (0:平台)",
                     "type": "integer"
                 },
                 "voltage": {

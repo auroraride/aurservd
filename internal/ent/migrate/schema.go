@@ -1383,12 +1383,12 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
-		{Name: "uuid", Type: field.TypeUUID, Comment: "调拨编号"},
+		{Name: "sn", Type: field.TypeString, Comment: "调拨编号"},
 		{Name: "name", Type: field.TypeString, Comment: "物资名称"},
 		{Name: "voltage", Type: field.TypeFloat64, Comment: "电池型号(电压)", Nullable: true},
 		{Name: "num", Type: field.TypeInt, Comment: "物资数量: 正值调入 / 负值调出"},
-		{Name: "store_id", Type: field.TypeUint64},
-		{Name: "from_store_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "inbound_store_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "outbound_store_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// StockTable holds the schema information for the "stock" table.
 	StockTable = &schema.Table{
@@ -1397,13 +1397,13 @@ var (
 		PrimaryKey: []*schema.Column{StockColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "stock_store_stocks",
+				Symbol:     "stock_store_inboundStocks",
 				Columns:    []*schema.Column{StockColumns[11]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "stock_store_toStocks",
+				Symbol:     "stock_store_outboundStocks",
 				Columns:    []*schema.Column{StockColumns[12]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -1439,6 +1439,11 @@ var (
 				Name:    "stock_voltage",
 				Unique:  false,
 				Columns: []*schema.Column{StockColumns[9]},
+			},
+			{
+				Name:    "stock_sn",
+				Unique:  false,
+				Columns: []*schema.Column{StockColumns[7]},
 			},
 		},
 	}

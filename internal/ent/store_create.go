@@ -150,34 +150,34 @@ func (sc *StoreCreate) SetEmployee(e *Employee) *StoreCreate {
 	return sc.SetEmployeeID(e.ID)
 }
 
-// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
-func (sc *StoreCreate) AddStockIDs(ids ...uint64) *StoreCreate {
-	sc.mutation.AddStockIDs(ids...)
+// AddInboundStockIDs adds the "inboundStocks" edge to the Stock entity by IDs.
+func (sc *StoreCreate) AddInboundStockIDs(ids ...uint64) *StoreCreate {
+	sc.mutation.AddInboundStockIDs(ids...)
 	return sc
 }
 
-// AddStocks adds the "stocks" edges to the Stock entity.
-func (sc *StoreCreate) AddStocks(s ...*Stock) *StoreCreate {
+// AddInboundStocks adds the "inboundStocks" edges to the Stock entity.
+func (sc *StoreCreate) AddInboundStocks(s ...*Stock) *StoreCreate {
 	ids := make([]uint64, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
-	return sc.AddStockIDs(ids...)
+	return sc.AddInboundStockIDs(ids...)
 }
 
-// AddToStockIDs adds the "toStocks" edge to the Stock entity by IDs.
-func (sc *StoreCreate) AddToStockIDs(ids ...uint64) *StoreCreate {
-	sc.mutation.AddToStockIDs(ids...)
+// AddOutboundStockIDs adds the "outboundStocks" edge to the Stock entity by IDs.
+func (sc *StoreCreate) AddOutboundStockIDs(ids ...uint64) *StoreCreate {
+	sc.mutation.AddOutboundStockIDs(ids...)
 	return sc
 }
 
-// AddToStocks adds the "toStocks" edges to the Stock entity.
-func (sc *StoreCreate) AddToStocks(s ...*Stock) *StoreCreate {
+// AddOutboundStocks adds the "outboundStocks" edges to the Stock entity.
+func (sc *StoreCreate) AddOutboundStocks(s ...*Stock) *StoreCreate {
 	ids := make([]uint64, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
-	return sc.AddToStockIDs(ids...)
+	return sc.AddOutboundStockIDs(ids...)
 }
 
 // Mutation returns the StoreMutation object of the builder.
@@ -443,12 +443,12 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 		_node.EmployeeID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := sc.mutation.StocksIDs(); len(nodes) > 0 {
+	if nodes := sc.mutation.InboundStocksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   store.StocksTable,
-			Columns: []string{store.StocksColumn},
+			Table:   store.InboundStocksTable,
+			Columns: []string{store.InboundStocksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -462,12 +462,12 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := sc.mutation.ToStocksIDs(); len(nodes) > 0 {
+	if nodes := sc.mutation.OutboundStocksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   store.ToStocksTable,
-			Columns: []string{store.ToStocksColumn},
+			Table:   store.OutboundStocksTable,
+			Columns: []string{store.OutboundStocksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

@@ -15,7 +15,10 @@ import (
     "github.com/auroraride/aurservd/internal/ent/stock"
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
+    log "github.com/sirupsen/logrus"
+    "math"
     "sort"
     "strings"
 )
@@ -31,6 +34,7 @@ type stockService struct {
 func NewStock() *stockService {
     return &stockService{
         ctx: context.Background(),
+        orm: ar.Ent.Stock,
     }
 }
 
@@ -57,11 +61,17 @@ func NewStockWithEmployee(e *model.Employee) *stockService {
 
 func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
     q := ar.Ent.Store.QueryNotDeleted().
-        Where(store.HasStocks()).
+        Where(
+            store.Or(
+                store.HasInboundStocks(),
+                store.HasOutboundStocks(),
+            ),
+        ).
         WithBranch(func(bq *ent.BranchQuery) {
             bq.WithCity()
         }).
-        WithStocks()
+        WithInboundStocks().
+        WithOutboundStocks()
     if req.Name != nil {
         q.Where(
             store.NameContainsFold(*req.Name),
@@ -78,7 +88,10 @@ func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
             snag.Panic("开始时间错误")
         }
         q.Where(
-            store.HasStocksWith(stock.CreatedAtGTE(start)),
+            store.Or(
+                store.HasInboundStocksWith(stock.CreatedAtGTE(start)),
+                store.HasOutboundStocksWith(stock.CreatedAtGTE(start)),
+            ),
         )
     }
     if req.End != nil {
@@ -87,7 +100,10 @@ func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
             snag.Panic("结束时间错误")
         }
         q.Where(
-            store.HasStocksWith(stock.CreatedAtLTE(end)),
+            store.Or(
+                store.HasInboundStocksWith(stock.CreatedAtLTE(end)),
+                store.HasOutboundStocksWith(stock.CreatedAtLTE(end)),
+            ),
         )
     }
     return model.ParsePaginationResponse(
@@ -113,7 +129,7 @@ func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
             materials := make(map[string]*model.StockMaterial)
 
             // 入库
-            for _, st := range item.Edges.Stocks {
+            for _, st := range item.Edges.InboundStocks {
                 if st.Voltage != nil {
                     // 电池
                     s.calculate(batteries, st)
@@ -124,7 +140,7 @@ func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
             }
 
             // 出库
-            for _, st := range item.Edges.ToStocks {
+            for _, st := range item.Edges.OutboundStocks {
                 if st.Voltage != nil {
                     // 电池
                     s.calculate(batteries, st)
@@ -169,7 +185,7 @@ func (s *stockService) calculate(items map[string]*model.StockMaterial, st *ent.
     if st.Num > 0 {
         items[name].Inbound += st.Num
     } else {
-        items[name].Outbound += st.Num
+        items[name].Outbound += int(math.Abs(float64(st.Num)))
     }
     items[name].Surplus += st.Num
 }
@@ -177,14 +193,16 @@ func (s *stockService) calculate(items map[string]*model.StockMaterial, st *ent.
 // Fetch 获取门店对应物资库存
 func (s *stockService) Fetch(storeID uint64, name string) int {
     var result []struct {
-        Sum int `json:"sum"`
+        Sum            int    `json:"sum"`
+        InboundStoreID uint64 `json:"inbound_store_id"`
     }
-    err := s.orm.QueryNotDeleted().
-        Where(stock.Name(name), stock.StoreID(storeID)).
-        GroupBy(stock.FieldStoreID).
-        Aggregate(ent.Sum(stock.FieldNum)).
-        Scan(s.ctx, &result)
+    q := s.orm.QueryNotDeleted().
+        Where(stock.Name(name), stock.InboundStoreID(storeID)).
+        GroupBy(stock.FieldInboundStoreID).
+        Aggregate(ent.Sum(stock.FieldNum))
+    err := q.Scan(s.ctx, &result)
     if err != nil {
+        log.Error(err)
         snag.Panic("物资数量获取失败")
     }
     if len(result) < 0 {
@@ -201,10 +219,10 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
     if req.Name != "" && req.Voltage != 0 {
         snag.Panic("电池型号和物资名称不能同时存在")
     }
-    if req.Num < 0 {
-        snag.Panic("调拨物资数量不能小于0")
+    if req.Num <= 0 {
+        snag.Panic("调拨物资数量错误")
     }
-    if req.To == 0 && req.From == 0 {
+    if req.InboundID == 0 && req.OutboundID == 0 {
         snag.Panic("平台之间无法调拨物资")
     }
 
@@ -213,28 +231,47 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
     // 调出检查
     name := req.Name
     if req.Voltage != 0 {
-        name = fmt.Sprintf("%fV电池", req.Voltage)
+        name = fmt.Sprintf("%.2gV电池", req.Voltage)
     }
 
-    if req.From > 0 && s.Fetch(req.From, name) < req.Num {
+    if req.OutboundID > 0 && s.Fetch(req.OutboundID, name) < req.Num {
         snag.Panic("操作失败, 调出物资大于库存物资")
+    }
+
+    sn := tools.NewUnique().NewSN()
+
+    in := &req.InboundID
+    if req.InboundID < 0 {
+        in = nil
+    }
+
+    out := &req.OutboundID
+    if req.OutboundID == 0 {
+        out = nil
+    }
+
+    v := &req.Voltage
+    if req.Voltage == 0 {
+        v = nil
     }
 
     // 调出
     _, err := tx.Stock.Create().
         SetName(name).
-        SetVoltage(req.Voltage).
+        SetNillableVoltage(v).
         SetNum(-req.Num).
-        SetStoreID(req.To).
+        SetNillableOutboundStoreID(out).
+        SetSn(sn).
         Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
 
     // 调入
     _, err = tx.Stock.Create().
         SetName(name).
-        SetVoltage(req.Voltage).
+        SetNillableVoltage(v).
         SetNum(req.Num).
-        SetFromStoreID(req.From).
+        SetNillableInboundStoreID(in).
+        SetSn(sn).
         Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
 

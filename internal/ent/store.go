@@ -61,10 +61,10 @@ type StoreEdges struct {
 	Branch *Branch `json:"branch,omitempty"`
 	// Employee holds the value of the employee edge.
 	Employee *Employee `json:"employee,omitempty"`
-	// Stocks holds the value of the stocks edge.
-	Stocks []*Stock `json:"stocks,omitempty"`
-	// ToStocks holds the value of the toStocks edge.
-	ToStocks []*Stock `json:"toStocks,omitempty"`
+	// InboundStocks holds the value of the inboundStocks edge.
+	InboundStocks []*Stock `json:"inboundStocks,omitempty"`
+	// OutboundStocks holds the value of the outboundStocks edge.
+	OutboundStocks []*Stock `json:"outboundStocks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [4]bool
@@ -98,22 +98,22 @@ func (e StoreEdges) EmployeeOrErr() (*Employee, error) {
 	return nil, &NotLoadedError{edge: "employee"}
 }
 
-// StocksOrErr returns the Stocks value or an error if the edge
+// InboundStocksOrErr returns the InboundStocks value or an error if the edge
 // was not loaded in eager-loading.
-func (e StoreEdges) StocksOrErr() ([]*Stock, error) {
+func (e StoreEdges) InboundStocksOrErr() ([]*Stock, error) {
 	if e.loadedTypes[2] {
-		return e.Stocks, nil
+		return e.InboundStocks, nil
 	}
-	return nil, &NotLoadedError{edge: "stocks"}
+	return nil, &NotLoadedError{edge: "inboundStocks"}
 }
 
-// ToStocksOrErr returns the ToStocks value or an error if the edge
+// OutboundStocksOrErr returns the OutboundStocks value or an error if the edge
 // was not loaded in eager-loading.
-func (e StoreEdges) ToStocksOrErr() ([]*Stock, error) {
+func (e StoreEdges) OutboundStocksOrErr() ([]*Stock, error) {
 	if e.loadedTypes[3] {
-		return e.ToStocks, nil
+		return e.OutboundStocks, nil
 	}
-	return nil, &NotLoadedError{edge: "toStocks"}
+	return nil, &NotLoadedError{edge: "outboundStocks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -236,14 +236,14 @@ func (s *Store) QueryEmployee() *EmployeeQuery {
 	return (&StoreClient{config: s.config}).QueryEmployee(s)
 }
 
-// QueryStocks queries the "stocks" edge of the Store entity.
-func (s *Store) QueryStocks() *StockQuery {
-	return (&StoreClient{config: s.config}).QueryStocks(s)
+// QueryInboundStocks queries the "inboundStocks" edge of the Store entity.
+func (s *Store) QueryInboundStocks() *StockQuery {
+	return (&StoreClient{config: s.config}).QueryInboundStocks(s)
 }
 
-// QueryToStocks queries the "toStocks" edge of the Store entity.
-func (s *Store) QueryToStocks() *StockQuery {
-	return (&StoreClient{config: s.config}).QueryToStocks(s)
+// QueryOutboundStocks queries the "outboundStocks" edge of the Store entity.
+func (s *Store) QueryOutboundStocks() *StockQuery {
+	return (&StoreClient{config: s.config}).QueryOutboundStocks(s)
 }
 
 // Update returns a builder for updating this Store.

@@ -31708,29 +31708,29 @@ func (m *SettingMutation) ResetEdge(name string) error {
 // StockMutation represents an operation that mutates the Stock nodes in the graph.
 type StockMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *uint64
-	created_at       *time.Time
-	updated_at       *time.Time
-	deleted_at       *time.Time
-	creator          **model.Modifier
-	last_modifier    **model.Modifier
-	remark           *string
-	uuid             *uuid.UUID
-	name             *string
-	voltage          *float64
-	addvoltage       *float64
-	num              *int
-	addnum           *int
-	clearedFields    map[string]struct{}
-	store            *uint64
-	clearedstore     bool
-	fromStore        *uint64
-	clearedfromStore bool
-	done             bool
-	oldValue         func(context.Context) (*Stock, error)
-	predicates       []predicate.Stock
+	op                    Op
+	typ                   string
+	id                    *uint64
+	created_at            *time.Time
+	updated_at            *time.Time
+	deleted_at            *time.Time
+	creator               **model.Modifier
+	last_modifier         **model.Modifier
+	remark                *string
+	sn                    *string
+	name                  *string
+	voltage               *float64
+	addvoltage            *float64
+	num                   *int
+	addnum                *int
+	clearedFields         map[string]struct{}
+	inbound_store         *uint64
+	clearedinbound_store  bool
+	outbound_store        *uint64
+	clearedoutbound_store bool
+	done                  bool
+	oldValue              func(context.Context) (*Stock, error)
+	predicates            []predicate.Stock
 }
 
 var _ ent.Mutation = (*StockMutation)(nil)
@@ -32099,125 +32099,138 @@ func (m *StockMutation) ResetRemark() {
 	delete(m.clearedFields, stock.FieldRemark)
 }
 
-// SetStoreID sets the "store_id" field.
-func (m *StockMutation) SetStoreID(u uint64) {
-	m.store = &u
+// SetSn sets the "sn" field.
+func (m *StockMutation) SetSn(s string) {
+	m.sn = &s
 }
 
-// StoreID returns the value of the "store_id" field in the mutation.
-func (m *StockMutation) StoreID() (r uint64, exists bool) {
-	v := m.store
+// Sn returns the value of the "sn" field in the mutation.
+func (m *StockMutation) Sn() (r string, exists bool) {
+	v := m.sn
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldStoreID returns the old "store_id" field's value of the Stock entity.
+// OldSn returns the old "sn" field's value of the Stock entity.
 // If the Stock object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StockMutation) OldStoreID(ctx context.Context) (v uint64, err error) {
+func (m *StockMutation) OldSn(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldStoreID is only allowed on UpdateOne operations")
+		return v, errors.New("OldSn is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldStoreID requires an ID field in the mutation")
+		return v, errors.New("OldSn requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldStoreID: %w", err)
+		return v, fmt.Errorf("querying old value for OldSn: %w", err)
 	}
-	return oldValue.StoreID, nil
+	return oldValue.Sn, nil
 }
 
-// ResetStoreID resets all changes to the "store_id" field.
-func (m *StockMutation) ResetStoreID() {
-	m.store = nil
+// ResetSn resets all changes to the "sn" field.
+func (m *StockMutation) ResetSn() {
+	m.sn = nil
 }
 
-// SetUUID sets the "uuid" field.
-func (m *StockMutation) SetUUID(u uuid.UUID) {
-	m.uuid = &u
+// SetInboundStoreID sets the "inbound_store_id" field.
+func (m *StockMutation) SetInboundStoreID(u uint64) {
+	m.inbound_store = &u
 }
 
-// UUID returns the value of the "uuid" field in the mutation.
-func (m *StockMutation) UUID() (r uuid.UUID, exists bool) {
-	v := m.uuid
+// InboundStoreID returns the value of the "inbound_store_id" field in the mutation.
+func (m *StockMutation) InboundStoreID() (r uint64, exists bool) {
+	v := m.inbound_store
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldUUID returns the old "uuid" field's value of the Stock entity.
+// OldInboundStoreID returns the old "inbound_store_id" field's value of the Stock entity.
 // If the Stock object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StockMutation) OldUUID(ctx context.Context) (v uuid.UUID, err error) {
+func (m *StockMutation) OldInboundStoreID(ctx context.Context) (v *uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUUID is only allowed on UpdateOne operations")
+		return v, errors.New("OldInboundStoreID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUUID requires an ID field in the mutation")
+		return v, errors.New("OldInboundStoreID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUUID: %w", err)
+		return v, fmt.Errorf("querying old value for OldInboundStoreID: %w", err)
 	}
-	return oldValue.UUID, nil
+	return oldValue.InboundStoreID, nil
 }
 
-// ResetUUID resets all changes to the "uuid" field.
-func (m *StockMutation) ResetUUID() {
-	m.uuid = nil
+// ClearInboundStoreID clears the value of the "inbound_store_id" field.
+func (m *StockMutation) ClearInboundStoreID() {
+	m.inbound_store = nil
+	m.clearedFields[stock.FieldInboundStoreID] = struct{}{}
 }
 
-// SetFromStoreID sets the "from_store_id" field.
-func (m *StockMutation) SetFromStoreID(u uint64) {
-	m.fromStore = &u
-}
-
-// FromStoreID returns the value of the "from_store_id" field in the mutation.
-func (m *StockMutation) FromStoreID() (r uint64, exists bool) {
-	v := m.fromStore
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldFromStoreID returns the old "from_store_id" field's value of the Stock entity.
-// If the Stock object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StockMutation) OldFromStoreID(ctx context.Context) (v *uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldFromStoreID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldFromStoreID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldFromStoreID: %w", err)
-	}
-	return oldValue.FromStoreID, nil
-}
-
-// ClearFromStoreID clears the value of the "from_store_id" field.
-func (m *StockMutation) ClearFromStoreID() {
-	m.fromStore = nil
-	m.clearedFields[stock.FieldFromStoreID] = struct{}{}
-}
-
-// FromStoreIDCleared returns if the "from_store_id" field was cleared in this mutation.
-func (m *StockMutation) FromStoreIDCleared() bool {
-	_, ok := m.clearedFields[stock.FieldFromStoreID]
+// InboundStoreIDCleared returns if the "inbound_store_id" field was cleared in this mutation.
+func (m *StockMutation) InboundStoreIDCleared() bool {
+	_, ok := m.clearedFields[stock.FieldInboundStoreID]
 	return ok
 }
 
-// ResetFromStoreID resets all changes to the "from_store_id" field.
-func (m *StockMutation) ResetFromStoreID() {
-	m.fromStore = nil
-	delete(m.clearedFields, stock.FieldFromStoreID)
+// ResetInboundStoreID resets all changes to the "inbound_store_id" field.
+func (m *StockMutation) ResetInboundStoreID() {
+	m.inbound_store = nil
+	delete(m.clearedFields, stock.FieldInboundStoreID)
+}
+
+// SetOutboundStoreID sets the "outbound_store_id" field.
+func (m *StockMutation) SetOutboundStoreID(u uint64) {
+	m.outbound_store = &u
+}
+
+// OutboundStoreID returns the value of the "outbound_store_id" field in the mutation.
+func (m *StockMutation) OutboundStoreID() (r uint64, exists bool) {
+	v := m.outbound_store
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOutboundStoreID returns the old "outbound_store_id" field's value of the Stock entity.
+// If the Stock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StockMutation) OldOutboundStoreID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOutboundStoreID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOutboundStoreID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOutboundStoreID: %w", err)
+	}
+	return oldValue.OutboundStoreID, nil
+}
+
+// ClearOutboundStoreID clears the value of the "outbound_store_id" field.
+func (m *StockMutation) ClearOutboundStoreID() {
+	m.outbound_store = nil
+	m.clearedFields[stock.FieldOutboundStoreID] = struct{}{}
+}
+
+// OutboundStoreIDCleared returns if the "outbound_store_id" field was cleared in this mutation.
+func (m *StockMutation) OutboundStoreIDCleared() bool {
+	_, ok := m.clearedFields[stock.FieldOutboundStoreID]
+	return ok
+}
+
+// ResetOutboundStoreID resets all changes to the "outbound_store_id" field.
+func (m *StockMutation) ResetOutboundStoreID() {
+	m.outbound_store = nil
+	delete(m.clearedFields, stock.FieldOutboundStoreID)
 }
 
 // SetName sets the "name" field.
@@ -32382,56 +32395,56 @@ func (m *StockMutation) ResetNum() {
 	m.addnum = nil
 }
 
-// ClearStore clears the "store" edge to the Store entity.
-func (m *StockMutation) ClearStore() {
-	m.clearedstore = true
+// ClearInboundStore clears the "inbound_store" edge to the Store entity.
+func (m *StockMutation) ClearInboundStore() {
+	m.clearedinbound_store = true
 }
 
-// StoreCleared reports if the "store" edge to the Store entity was cleared.
-func (m *StockMutation) StoreCleared() bool {
-	return m.clearedstore
+// InboundStoreCleared reports if the "inbound_store" edge to the Store entity was cleared.
+func (m *StockMutation) InboundStoreCleared() bool {
+	return m.InboundStoreIDCleared() || m.clearedinbound_store
 }
 
-// StoreIDs returns the "store" edge IDs in the mutation.
+// InboundStoreIDs returns the "inbound_store" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// StoreID instead. It exists only for internal usage by the builders.
-func (m *StockMutation) StoreIDs() (ids []uint64) {
-	if id := m.store; id != nil {
+// InboundStoreID instead. It exists only for internal usage by the builders.
+func (m *StockMutation) InboundStoreIDs() (ids []uint64) {
+	if id := m.inbound_store; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetStore resets all changes to the "store" edge.
-func (m *StockMutation) ResetStore() {
-	m.store = nil
-	m.clearedstore = false
+// ResetInboundStore resets all changes to the "inbound_store" edge.
+func (m *StockMutation) ResetInboundStore() {
+	m.inbound_store = nil
+	m.clearedinbound_store = false
 }
 
-// ClearFromStore clears the "fromStore" edge to the Store entity.
-func (m *StockMutation) ClearFromStore() {
-	m.clearedfromStore = true
+// ClearOutboundStore clears the "outbound_store" edge to the Store entity.
+func (m *StockMutation) ClearOutboundStore() {
+	m.clearedoutbound_store = true
 }
 
-// FromStoreCleared reports if the "fromStore" edge to the Store entity was cleared.
-func (m *StockMutation) FromStoreCleared() bool {
-	return m.FromStoreIDCleared() || m.clearedfromStore
+// OutboundStoreCleared reports if the "outbound_store" edge to the Store entity was cleared.
+func (m *StockMutation) OutboundStoreCleared() bool {
+	return m.OutboundStoreIDCleared() || m.clearedoutbound_store
 }
 
-// FromStoreIDs returns the "fromStore" edge IDs in the mutation.
+// OutboundStoreIDs returns the "outbound_store" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// FromStoreID instead. It exists only for internal usage by the builders.
-func (m *StockMutation) FromStoreIDs() (ids []uint64) {
-	if id := m.fromStore; id != nil {
+// OutboundStoreID instead. It exists only for internal usage by the builders.
+func (m *StockMutation) OutboundStoreIDs() (ids []uint64) {
+	if id := m.outbound_store; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetFromStore resets all changes to the "fromStore" edge.
-func (m *StockMutation) ResetFromStore() {
-	m.fromStore = nil
-	m.clearedfromStore = false
+// ResetOutboundStore resets all changes to the "outbound_store" edge.
+func (m *StockMutation) ResetOutboundStore() {
+	m.outbound_store = nil
+	m.clearedoutbound_store = false
 }
 
 // Where appends a list predicates to the StockMutation builder.
@@ -32472,14 +32485,14 @@ func (m *StockMutation) Fields() []string {
 	if m.remark != nil {
 		fields = append(fields, stock.FieldRemark)
 	}
-	if m.store != nil {
-		fields = append(fields, stock.FieldStoreID)
+	if m.sn != nil {
+		fields = append(fields, stock.FieldSn)
 	}
-	if m.uuid != nil {
-		fields = append(fields, stock.FieldUUID)
+	if m.inbound_store != nil {
+		fields = append(fields, stock.FieldInboundStoreID)
 	}
-	if m.fromStore != nil {
-		fields = append(fields, stock.FieldFromStoreID)
+	if m.outbound_store != nil {
+		fields = append(fields, stock.FieldOutboundStoreID)
 	}
 	if m.name != nil {
 		fields = append(fields, stock.FieldName)
@@ -32510,12 +32523,12 @@ func (m *StockMutation) Field(name string) (ent.Value, bool) {
 		return m.LastModifier()
 	case stock.FieldRemark:
 		return m.Remark()
-	case stock.FieldStoreID:
-		return m.StoreID()
-	case stock.FieldUUID:
-		return m.UUID()
-	case stock.FieldFromStoreID:
-		return m.FromStoreID()
+	case stock.FieldSn:
+		return m.Sn()
+	case stock.FieldInboundStoreID:
+		return m.InboundStoreID()
+	case stock.FieldOutboundStoreID:
+		return m.OutboundStoreID()
 	case stock.FieldName:
 		return m.Name()
 	case stock.FieldVoltage:
@@ -32543,12 +32556,12 @@ func (m *StockMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldLastModifier(ctx)
 	case stock.FieldRemark:
 		return m.OldRemark(ctx)
-	case stock.FieldStoreID:
-		return m.OldStoreID(ctx)
-	case stock.FieldUUID:
-		return m.OldUUID(ctx)
-	case stock.FieldFromStoreID:
-		return m.OldFromStoreID(ctx)
+	case stock.FieldSn:
+		return m.OldSn(ctx)
+	case stock.FieldInboundStoreID:
+		return m.OldInboundStoreID(ctx)
+	case stock.FieldOutboundStoreID:
+		return m.OldOutboundStoreID(ctx)
 	case stock.FieldName:
 		return m.OldName(ctx)
 	case stock.FieldVoltage:
@@ -32606,26 +32619,26 @@ func (m *StockMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRemark(v)
 		return nil
-	case stock.FieldStoreID:
+	case stock.FieldSn:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSn(v)
+		return nil
+	case stock.FieldInboundStoreID:
 		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetStoreID(v)
+		m.SetInboundStoreID(v)
 		return nil
-	case stock.FieldUUID:
-		v, ok := value.(uuid.UUID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUUID(v)
-		return nil
-	case stock.FieldFromStoreID:
+	case stock.FieldOutboundStoreID:
 		v, ok := value.(uint64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetFromStoreID(v)
+		m.SetOutboundStoreID(v)
 		return nil
 	case stock.FieldName:
 		v, ok := value.(string)
@@ -32717,8 +32730,11 @@ func (m *StockMutation) ClearedFields() []string {
 	if m.FieldCleared(stock.FieldRemark) {
 		fields = append(fields, stock.FieldRemark)
 	}
-	if m.FieldCleared(stock.FieldFromStoreID) {
-		fields = append(fields, stock.FieldFromStoreID)
+	if m.FieldCleared(stock.FieldInboundStoreID) {
+		fields = append(fields, stock.FieldInboundStoreID)
+	}
+	if m.FieldCleared(stock.FieldOutboundStoreID) {
+		fields = append(fields, stock.FieldOutboundStoreID)
 	}
 	if m.FieldCleared(stock.FieldVoltage) {
 		fields = append(fields, stock.FieldVoltage)
@@ -32749,8 +32765,11 @@ func (m *StockMutation) ClearField(name string) error {
 	case stock.FieldRemark:
 		m.ClearRemark()
 		return nil
-	case stock.FieldFromStoreID:
-		m.ClearFromStoreID()
+	case stock.FieldInboundStoreID:
+		m.ClearInboundStoreID()
+		return nil
+	case stock.FieldOutboundStoreID:
+		m.ClearOutboundStoreID()
 		return nil
 	case stock.FieldVoltage:
 		m.ClearVoltage()
@@ -32781,14 +32800,14 @@ func (m *StockMutation) ResetField(name string) error {
 	case stock.FieldRemark:
 		m.ResetRemark()
 		return nil
-	case stock.FieldStoreID:
-		m.ResetStoreID()
+	case stock.FieldSn:
+		m.ResetSn()
 		return nil
-	case stock.FieldUUID:
-		m.ResetUUID()
+	case stock.FieldInboundStoreID:
+		m.ResetInboundStoreID()
 		return nil
-	case stock.FieldFromStoreID:
-		m.ResetFromStoreID()
+	case stock.FieldOutboundStoreID:
+		m.ResetOutboundStoreID()
 		return nil
 	case stock.FieldName:
 		m.ResetName()
@@ -32806,11 +32825,11 @@ func (m *StockMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *StockMutation) AddedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.store != nil {
-		edges = append(edges, stock.EdgeStore)
+	if m.inbound_store != nil {
+		edges = append(edges, stock.EdgeInboundStore)
 	}
-	if m.fromStore != nil {
-		edges = append(edges, stock.EdgeFromStore)
+	if m.outbound_store != nil {
+		edges = append(edges, stock.EdgeOutboundStore)
 	}
 	return edges
 }
@@ -32819,12 +32838,12 @@ func (m *StockMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *StockMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case stock.EdgeStore:
-		if id := m.store; id != nil {
+	case stock.EdgeInboundStore:
+		if id := m.inbound_store; id != nil {
 			return []ent.Value{*id}
 		}
-	case stock.EdgeFromStore:
-		if id := m.fromStore; id != nil {
+	case stock.EdgeOutboundStore:
+		if id := m.outbound_store; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -32848,11 +32867,11 @@ func (m *StockMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *StockMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.clearedstore {
-		edges = append(edges, stock.EdgeStore)
+	if m.clearedinbound_store {
+		edges = append(edges, stock.EdgeInboundStore)
 	}
-	if m.clearedfromStore {
-		edges = append(edges, stock.EdgeFromStore)
+	if m.clearedoutbound_store {
+		edges = append(edges, stock.EdgeOutboundStore)
 	}
 	return edges
 }
@@ -32861,10 +32880,10 @@ func (m *StockMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *StockMutation) EdgeCleared(name string) bool {
 	switch name {
-	case stock.EdgeStore:
-		return m.clearedstore
-	case stock.EdgeFromStore:
-		return m.clearedfromStore
+	case stock.EdgeInboundStore:
+		return m.clearedinbound_store
+	case stock.EdgeOutboundStore:
+		return m.clearedoutbound_store
 	}
 	return false
 }
@@ -32873,11 +32892,11 @@ func (m *StockMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *StockMutation) ClearEdge(name string) error {
 	switch name {
-	case stock.EdgeStore:
-		m.ClearStore()
+	case stock.EdgeInboundStore:
+		m.ClearInboundStore()
 		return nil
-	case stock.EdgeFromStore:
-		m.ClearFromStore()
+	case stock.EdgeOutboundStore:
+		m.ClearOutboundStore()
 		return nil
 	}
 	return fmt.Errorf("unknown Stock unique edge %s", name)
@@ -32887,11 +32906,11 @@ func (m *StockMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *StockMutation) ResetEdge(name string) error {
 	switch name {
-	case stock.EdgeStore:
-		m.ResetStore()
+	case stock.EdgeInboundStore:
+		m.ResetInboundStore()
 		return nil
-	case stock.EdgeFromStore:
-		m.ResetFromStore()
+	case stock.EdgeOutboundStore:
+		m.ResetOutboundStore()
 		return nil
 	}
 	return fmt.Errorf("unknown Stock edge %s", name)
@@ -32900,33 +32919,33 @@ func (m *StockMutation) ResetEdge(name string) error {
 // StoreMutation represents an operation that mutates the Store nodes in the graph.
 type StoreMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *uint64
-	created_at      *time.Time
-	updated_at      *time.Time
-	deleted_at      *time.Time
-	creator         **model.Modifier
-	last_modifier   **model.Modifier
-	remark          *string
-	sn              *string
-	name            *string
-	status          *uint8
-	addstatus       *int8
-	clearedFields   map[string]struct{}
-	branch          *uint64
-	clearedbranch   bool
-	employee        *uint64
-	clearedemployee bool
-	stocks          map[uint64]struct{}
-	removedstocks   map[uint64]struct{}
-	clearedstocks   bool
-	toStocks        map[uint64]struct{}
-	removedtoStocks map[uint64]struct{}
-	clearedtoStocks bool
-	done            bool
-	oldValue        func(context.Context) (*Store, error)
-	predicates      []predicate.Store
+	op                    Op
+	typ                   string
+	id                    *uint64
+	created_at            *time.Time
+	updated_at            *time.Time
+	deleted_at            *time.Time
+	creator               **model.Modifier
+	last_modifier         **model.Modifier
+	remark                *string
+	sn                    *string
+	name                  *string
+	status                *uint8
+	addstatus             *int8
+	clearedFields         map[string]struct{}
+	branch                *uint64
+	clearedbranch         bool
+	employee              *uint64
+	clearedemployee       bool
+	inboundStocks         map[uint64]struct{}
+	removedinboundStocks  map[uint64]struct{}
+	clearedinboundStocks  bool
+	outboundStocks        map[uint64]struct{}
+	removedoutboundStocks map[uint64]struct{}
+	clearedoutboundStocks bool
+	done                  bool
+	oldValue              func(context.Context) (*Store, error)
+	predicates            []predicate.Store
 }
 
 var _ ent.Mutation = (*StoreMutation)(nil)
@@ -33560,112 +33579,112 @@ func (m *StoreMutation) ResetEmployee() {
 	m.clearedemployee = false
 }
 
-// AddStockIDs adds the "stocks" edge to the Stock entity by ids.
-func (m *StoreMutation) AddStockIDs(ids ...uint64) {
-	if m.stocks == nil {
-		m.stocks = make(map[uint64]struct{})
+// AddInboundStockIDs adds the "inboundStocks" edge to the Stock entity by ids.
+func (m *StoreMutation) AddInboundStockIDs(ids ...uint64) {
+	if m.inboundStocks == nil {
+		m.inboundStocks = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		m.stocks[ids[i]] = struct{}{}
+		m.inboundStocks[ids[i]] = struct{}{}
 	}
 }
 
-// ClearStocks clears the "stocks" edge to the Stock entity.
-func (m *StoreMutation) ClearStocks() {
-	m.clearedstocks = true
+// ClearInboundStocks clears the "inboundStocks" edge to the Stock entity.
+func (m *StoreMutation) ClearInboundStocks() {
+	m.clearedinboundStocks = true
 }
 
-// StocksCleared reports if the "stocks" edge to the Stock entity was cleared.
-func (m *StoreMutation) StocksCleared() bool {
-	return m.clearedstocks
+// InboundStocksCleared reports if the "inboundStocks" edge to the Stock entity was cleared.
+func (m *StoreMutation) InboundStocksCleared() bool {
+	return m.clearedinboundStocks
 }
 
-// RemoveStockIDs removes the "stocks" edge to the Stock entity by IDs.
-func (m *StoreMutation) RemoveStockIDs(ids ...uint64) {
-	if m.removedstocks == nil {
-		m.removedstocks = make(map[uint64]struct{})
+// RemoveInboundStockIDs removes the "inboundStocks" edge to the Stock entity by IDs.
+func (m *StoreMutation) RemoveInboundStockIDs(ids ...uint64) {
+	if m.removedinboundStocks == nil {
+		m.removedinboundStocks = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		delete(m.stocks, ids[i])
-		m.removedstocks[ids[i]] = struct{}{}
+		delete(m.inboundStocks, ids[i])
+		m.removedinboundStocks[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedStocks returns the removed IDs of the "stocks" edge to the Stock entity.
-func (m *StoreMutation) RemovedStocksIDs() (ids []uint64) {
-	for id := range m.removedstocks {
+// RemovedInboundStocks returns the removed IDs of the "inboundStocks" edge to the Stock entity.
+func (m *StoreMutation) RemovedInboundStocksIDs() (ids []uint64) {
+	for id := range m.removedinboundStocks {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// StocksIDs returns the "stocks" edge IDs in the mutation.
-func (m *StoreMutation) StocksIDs() (ids []uint64) {
-	for id := range m.stocks {
+// InboundStocksIDs returns the "inboundStocks" edge IDs in the mutation.
+func (m *StoreMutation) InboundStocksIDs() (ids []uint64) {
+	for id := range m.inboundStocks {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetStocks resets all changes to the "stocks" edge.
-func (m *StoreMutation) ResetStocks() {
-	m.stocks = nil
-	m.clearedstocks = false
-	m.removedstocks = nil
+// ResetInboundStocks resets all changes to the "inboundStocks" edge.
+func (m *StoreMutation) ResetInboundStocks() {
+	m.inboundStocks = nil
+	m.clearedinboundStocks = false
+	m.removedinboundStocks = nil
 }
 
-// AddToStockIDs adds the "toStocks" edge to the Stock entity by ids.
-func (m *StoreMutation) AddToStockIDs(ids ...uint64) {
-	if m.toStocks == nil {
-		m.toStocks = make(map[uint64]struct{})
+// AddOutboundStockIDs adds the "outboundStocks" edge to the Stock entity by ids.
+func (m *StoreMutation) AddOutboundStockIDs(ids ...uint64) {
+	if m.outboundStocks == nil {
+		m.outboundStocks = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		m.toStocks[ids[i]] = struct{}{}
+		m.outboundStocks[ids[i]] = struct{}{}
 	}
 }
 
-// ClearToStocks clears the "toStocks" edge to the Stock entity.
-func (m *StoreMutation) ClearToStocks() {
-	m.clearedtoStocks = true
+// ClearOutboundStocks clears the "outboundStocks" edge to the Stock entity.
+func (m *StoreMutation) ClearOutboundStocks() {
+	m.clearedoutboundStocks = true
 }
 
-// ToStocksCleared reports if the "toStocks" edge to the Stock entity was cleared.
-func (m *StoreMutation) ToStocksCleared() bool {
-	return m.clearedtoStocks
+// OutboundStocksCleared reports if the "outboundStocks" edge to the Stock entity was cleared.
+func (m *StoreMutation) OutboundStocksCleared() bool {
+	return m.clearedoutboundStocks
 }
 
-// RemoveToStockIDs removes the "toStocks" edge to the Stock entity by IDs.
-func (m *StoreMutation) RemoveToStockIDs(ids ...uint64) {
-	if m.removedtoStocks == nil {
-		m.removedtoStocks = make(map[uint64]struct{})
+// RemoveOutboundStockIDs removes the "outboundStocks" edge to the Stock entity by IDs.
+func (m *StoreMutation) RemoveOutboundStockIDs(ids ...uint64) {
+	if m.removedoutboundStocks == nil {
+		m.removedoutboundStocks = make(map[uint64]struct{})
 	}
 	for i := range ids {
-		delete(m.toStocks, ids[i])
-		m.removedtoStocks[ids[i]] = struct{}{}
+		delete(m.outboundStocks, ids[i])
+		m.removedoutboundStocks[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedToStocks returns the removed IDs of the "toStocks" edge to the Stock entity.
-func (m *StoreMutation) RemovedToStocksIDs() (ids []uint64) {
-	for id := range m.removedtoStocks {
+// RemovedOutboundStocks returns the removed IDs of the "outboundStocks" edge to the Stock entity.
+func (m *StoreMutation) RemovedOutboundStocksIDs() (ids []uint64) {
+	for id := range m.removedoutboundStocks {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ToStocksIDs returns the "toStocks" edge IDs in the mutation.
-func (m *StoreMutation) ToStocksIDs() (ids []uint64) {
-	for id := range m.toStocks {
+// OutboundStocksIDs returns the "outboundStocks" edge IDs in the mutation.
+func (m *StoreMutation) OutboundStocksIDs() (ids []uint64) {
+	for id := range m.outboundStocks {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetToStocks resets all changes to the "toStocks" edge.
-func (m *StoreMutation) ResetToStocks() {
-	m.toStocks = nil
-	m.clearedtoStocks = false
-	m.removedtoStocks = nil
+// ResetOutboundStocks resets all changes to the "outboundStocks" edge.
+func (m *StoreMutation) ResetOutboundStocks() {
+	m.outboundStocks = nil
+	m.clearedoutboundStocks = false
+	m.removedoutboundStocks = nil
 }
 
 // Where appends a list predicates to the StoreMutation builder.
@@ -34011,11 +34030,11 @@ func (m *StoreMutation) AddedEdges() []string {
 	if m.employee != nil {
 		edges = append(edges, store.EdgeEmployee)
 	}
-	if m.stocks != nil {
-		edges = append(edges, store.EdgeStocks)
+	if m.inboundStocks != nil {
+		edges = append(edges, store.EdgeInboundStocks)
 	}
-	if m.toStocks != nil {
-		edges = append(edges, store.EdgeToStocks)
+	if m.outboundStocks != nil {
+		edges = append(edges, store.EdgeOutboundStocks)
 	}
 	return edges
 }
@@ -34032,15 +34051,15 @@ func (m *StoreMutation) AddedIDs(name string) []ent.Value {
 		if id := m.employee; id != nil {
 			return []ent.Value{*id}
 		}
-	case store.EdgeStocks:
-		ids := make([]ent.Value, 0, len(m.stocks))
-		for id := range m.stocks {
+	case store.EdgeInboundStocks:
+		ids := make([]ent.Value, 0, len(m.inboundStocks))
+		for id := range m.inboundStocks {
 			ids = append(ids, id)
 		}
 		return ids
-	case store.EdgeToStocks:
-		ids := make([]ent.Value, 0, len(m.toStocks))
-		for id := range m.toStocks {
+	case store.EdgeOutboundStocks:
+		ids := make([]ent.Value, 0, len(m.outboundStocks))
+		for id := range m.outboundStocks {
 			ids = append(ids, id)
 		}
 		return ids
@@ -34051,11 +34070,11 @@ func (m *StoreMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *StoreMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 4)
-	if m.removedstocks != nil {
-		edges = append(edges, store.EdgeStocks)
+	if m.removedinboundStocks != nil {
+		edges = append(edges, store.EdgeInboundStocks)
 	}
-	if m.removedtoStocks != nil {
-		edges = append(edges, store.EdgeToStocks)
+	if m.removedoutboundStocks != nil {
+		edges = append(edges, store.EdgeOutboundStocks)
 	}
 	return edges
 }
@@ -34064,15 +34083,15 @@ func (m *StoreMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *StoreMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case store.EdgeStocks:
-		ids := make([]ent.Value, 0, len(m.removedstocks))
-		for id := range m.removedstocks {
+	case store.EdgeInboundStocks:
+		ids := make([]ent.Value, 0, len(m.removedinboundStocks))
+		for id := range m.removedinboundStocks {
 			ids = append(ids, id)
 		}
 		return ids
-	case store.EdgeToStocks:
-		ids := make([]ent.Value, 0, len(m.removedtoStocks))
-		for id := range m.removedtoStocks {
+	case store.EdgeOutboundStocks:
+		ids := make([]ent.Value, 0, len(m.removedoutboundStocks))
+		for id := range m.removedoutboundStocks {
 			ids = append(ids, id)
 		}
 		return ids
@@ -34089,11 +34108,11 @@ func (m *StoreMutation) ClearedEdges() []string {
 	if m.clearedemployee {
 		edges = append(edges, store.EdgeEmployee)
 	}
-	if m.clearedstocks {
-		edges = append(edges, store.EdgeStocks)
+	if m.clearedinboundStocks {
+		edges = append(edges, store.EdgeInboundStocks)
 	}
-	if m.clearedtoStocks {
-		edges = append(edges, store.EdgeToStocks)
+	if m.clearedoutboundStocks {
+		edges = append(edges, store.EdgeOutboundStocks)
 	}
 	return edges
 }
@@ -34106,10 +34125,10 @@ func (m *StoreMutation) EdgeCleared(name string) bool {
 		return m.clearedbranch
 	case store.EdgeEmployee:
 		return m.clearedemployee
-	case store.EdgeStocks:
-		return m.clearedstocks
-	case store.EdgeToStocks:
-		return m.clearedtoStocks
+	case store.EdgeInboundStocks:
+		return m.clearedinboundStocks
+	case store.EdgeOutboundStocks:
+		return m.clearedoutboundStocks
 	}
 	return false
 }
@@ -34138,11 +34157,11 @@ func (m *StoreMutation) ResetEdge(name string) error {
 	case store.EdgeEmployee:
 		m.ResetEmployee()
 		return nil
-	case store.EdgeStocks:
-		m.ResetStocks()
+	case store.EdgeInboundStocks:
+		m.ResetInboundStocks()
 		return nil
-	case store.EdgeToStocks:
-		m.ResetToStocks()
+	case store.EdgeOutboundStocks:
+		m.ResetOutboundStocks()
 		return nil
 	}
 	return fmt.Errorf("unknown Store edge %s", name)

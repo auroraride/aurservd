@@ -677,18 +677,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Stock",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			stock.FieldCreatedAt:    {Type: field.TypeTime, Column: stock.FieldCreatedAt},
-			stock.FieldUpdatedAt:    {Type: field.TypeTime, Column: stock.FieldUpdatedAt},
-			stock.FieldDeletedAt:    {Type: field.TypeTime, Column: stock.FieldDeletedAt},
-			stock.FieldCreator:      {Type: field.TypeJSON, Column: stock.FieldCreator},
-			stock.FieldLastModifier: {Type: field.TypeJSON, Column: stock.FieldLastModifier},
-			stock.FieldRemark:       {Type: field.TypeString, Column: stock.FieldRemark},
-			stock.FieldStoreID:      {Type: field.TypeUint64, Column: stock.FieldStoreID},
-			stock.FieldUUID:         {Type: field.TypeUUID, Column: stock.FieldUUID},
-			stock.FieldFromStoreID:  {Type: field.TypeUint64, Column: stock.FieldFromStoreID},
-			stock.FieldName:         {Type: field.TypeString, Column: stock.FieldName},
-			stock.FieldVoltage:      {Type: field.TypeFloat64, Column: stock.FieldVoltage},
-			stock.FieldNum:          {Type: field.TypeInt, Column: stock.FieldNum},
+			stock.FieldCreatedAt:       {Type: field.TypeTime, Column: stock.FieldCreatedAt},
+			stock.FieldUpdatedAt:       {Type: field.TypeTime, Column: stock.FieldUpdatedAt},
+			stock.FieldDeletedAt:       {Type: field.TypeTime, Column: stock.FieldDeletedAt},
+			stock.FieldCreator:         {Type: field.TypeJSON, Column: stock.FieldCreator},
+			stock.FieldLastModifier:    {Type: field.TypeJSON, Column: stock.FieldLastModifier},
+			stock.FieldRemark:          {Type: field.TypeString, Column: stock.FieldRemark},
+			stock.FieldSn:              {Type: field.TypeString, Column: stock.FieldSn},
+			stock.FieldInboundStoreID:  {Type: field.TypeUint64, Column: stock.FieldInboundStoreID},
+			stock.FieldOutboundStoreID: {Type: field.TypeUint64, Column: stock.FieldOutboundStoreID},
+			stock.FieldName:            {Type: field.TypeString, Column: stock.FieldName},
+			stock.FieldVoltage:         {Type: field.TypeFloat64, Column: stock.FieldVoltage},
+			stock.FieldNum:             {Type: field.TypeInt, Column: stock.FieldNum},
 		},
 	}
 	graph.Nodes[25] = &sqlgraph.Node{
@@ -1573,24 +1573,24 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Subscribe",
 	)
 	graph.MustAddE(
-		"store",
+		"inbound_store",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   stock.StoreTable,
-			Columns: []string{stock.StoreColumn},
+			Table:   stock.InboundStoreTable,
+			Columns: []string{stock.InboundStoreColumn},
 			Bidi:    false,
 		},
 		"Stock",
 		"Store",
 	)
 	graph.MustAddE(
-		"fromStore",
+		"outbound_store",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   stock.FromStoreTable,
-			Columns: []string{stock.FromStoreColumn},
+			Table:   stock.OutboundStoreTable,
+			Columns: []string{stock.OutboundStoreColumn},
 			Bidi:    false,
 		},
 		"Stock",
@@ -1621,24 +1621,24 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Employee",
 	)
 	graph.MustAddE(
-		"stocks",
+		"inboundStocks",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   store.StocksTable,
-			Columns: []string{store.StocksColumn},
+			Table:   store.InboundStocksTable,
+			Columns: []string{store.InboundStocksColumn},
 			Bidi:    false,
 		},
 		"Store",
 		"Stock",
 	)
 	graph.MustAddE(
-		"toStocks",
+		"outboundStocks",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   store.ToStocksTable,
-			Columns: []string{store.ToStocksColumn},
+			Table:   store.OutboundStocksTable,
+			Columns: []string{store.OutboundStocksColumn},
 			Bidi:    false,
 		},
 		"Store",
@@ -5350,19 +5350,19 @@ func (f *StockFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(stock.FieldRemark))
 }
 
-// WhereStoreID applies the entql uint64 predicate on the store_id field.
-func (f *StockFilter) WhereStoreID(p entql.Uint64P) {
-	f.Where(p.Field(stock.FieldStoreID))
+// WhereSn applies the entql string predicate on the sn field.
+func (f *StockFilter) WhereSn(p entql.StringP) {
+	f.Where(p.Field(stock.FieldSn))
 }
 
-// WhereUUID applies the entql [16]byte predicate on the uuid field.
-func (f *StockFilter) WhereUUID(p entql.ValueP) {
-	f.Where(p.Field(stock.FieldUUID))
+// WhereInboundStoreID applies the entql uint64 predicate on the inbound_store_id field.
+func (f *StockFilter) WhereInboundStoreID(p entql.Uint64P) {
+	f.Where(p.Field(stock.FieldInboundStoreID))
 }
 
-// WhereFromStoreID applies the entql uint64 predicate on the from_store_id field.
-func (f *StockFilter) WhereFromStoreID(p entql.Uint64P) {
-	f.Where(p.Field(stock.FieldFromStoreID))
+// WhereOutboundStoreID applies the entql uint64 predicate on the outbound_store_id field.
+func (f *StockFilter) WhereOutboundStoreID(p entql.Uint64P) {
+	f.Where(p.Field(stock.FieldOutboundStoreID))
 }
 
 // WhereName applies the entql string predicate on the name field.
@@ -5380,28 +5380,28 @@ func (f *StockFilter) WhereNum(p entql.IntP) {
 	f.Where(p.Field(stock.FieldNum))
 }
 
-// WhereHasStore applies a predicate to check if query has an edge store.
-func (f *StockFilter) WhereHasStore() {
-	f.Where(entql.HasEdge("store"))
+// WhereHasInboundStore applies a predicate to check if query has an edge inbound_store.
+func (f *StockFilter) WhereHasInboundStore() {
+	f.Where(entql.HasEdge("inbound_store"))
 }
 
-// WhereHasStoreWith applies a predicate to check if query has an edge store with a given conditions (other predicates).
-func (f *StockFilter) WhereHasStoreWith(preds ...predicate.Store) {
-	f.Where(entql.HasEdgeWith("store", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasInboundStoreWith applies a predicate to check if query has an edge inbound_store with a given conditions (other predicates).
+func (f *StockFilter) WhereHasInboundStoreWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("inbound_store", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
 	})))
 }
 
-// WhereHasFromStore applies a predicate to check if query has an edge fromStore.
-func (f *StockFilter) WhereHasFromStore() {
-	f.Where(entql.HasEdge("fromStore"))
+// WhereHasOutboundStore applies a predicate to check if query has an edge outbound_store.
+func (f *StockFilter) WhereHasOutboundStore() {
+	f.Where(entql.HasEdge("outbound_store"))
 }
 
-// WhereHasFromStoreWith applies a predicate to check if query has an edge fromStore with a given conditions (other predicates).
-func (f *StockFilter) WhereHasFromStoreWith(preds ...predicate.Store) {
-	f.Where(entql.HasEdgeWith("fromStore", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasOutboundStoreWith applies a predicate to check if query has an edge outbound_store with a given conditions (other predicates).
+func (f *StockFilter) WhereHasOutboundStoreWith(preds ...predicate.Store) {
+	f.Where(entql.HasEdgeWith("outbound_store", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -5531,28 +5531,28 @@ func (f *StoreFilter) WhereHasEmployeeWith(preds ...predicate.Employee) {
 	})))
 }
 
-// WhereHasStocks applies a predicate to check if query has an edge stocks.
-func (f *StoreFilter) WhereHasStocks() {
-	f.Where(entql.HasEdge("stocks"))
+// WhereHasInboundStocks applies a predicate to check if query has an edge inboundStocks.
+func (f *StoreFilter) WhereHasInboundStocks() {
+	f.Where(entql.HasEdge("inboundStocks"))
 }
 
-// WhereHasStocksWith applies a predicate to check if query has an edge stocks with a given conditions (other predicates).
-func (f *StoreFilter) WhereHasStocksWith(preds ...predicate.Stock) {
-	f.Where(entql.HasEdgeWith("stocks", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasInboundStocksWith applies a predicate to check if query has an edge inboundStocks with a given conditions (other predicates).
+func (f *StoreFilter) WhereHasInboundStocksWith(preds ...predicate.Stock) {
+	f.Where(entql.HasEdgeWith("inboundStocks", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
 	})))
 }
 
-// WhereHasToStocks applies a predicate to check if query has an edge toStocks.
-func (f *StoreFilter) WhereHasToStocks() {
-	f.Where(entql.HasEdge("toStocks"))
+// WhereHasOutboundStocks applies a predicate to check if query has an edge outboundStocks.
+func (f *StoreFilter) WhereHasOutboundStocks() {
+	f.Where(entql.HasEdge("outboundStocks"))
 }
 
-// WhereHasToStocksWith applies a predicate to check if query has an edge toStocks with a given conditions (other predicates).
-func (f *StoreFilter) WhereHasToStocksWith(preds ...predicate.Stock) {
-	f.Where(entql.HasEdgeWith("toStocks", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasOutboundStocksWith applies a predicate to check if query has an edge outboundStocks with a given conditions (other predicates).
+func (f *StoreFilter) WhereHasOutboundStocksWith(preds ...predicate.Stock) {
+	f.Where(entql.HasEdgeWith("outboundStocks", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
