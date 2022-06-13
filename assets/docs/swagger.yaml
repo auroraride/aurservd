@@ -1945,6 +1945,48 @@ definitions:
       status:
         type: boolean
     type: object
+  model.StockListRes:
+    properties:
+      batteries:
+        description: 电池详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      batteryTotal:
+        description: 电池总数
+        type: integer
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      materials:
+        description: 非电池物资详情
+        items:
+          $ref: '#/definitions/model.StockMaterial'
+        type: array
+      store:
+        allOf:
+        - $ref: '#/definitions/model.Store'
+        description: 门店
+    type: object
+  model.StockMaterial:
+    properties:
+      exception:
+        description: 异常数量
+        type: integer
+      inbound:
+        description: 入库数量
+        type: integer
+      name:
+        description: 物资名称
+        type: string
+      outbound:
+        description: 出库数量
+        type: integer
+      surplus:
+        description: 剩余
+        type: integer
+    type: object
   model.StockOverview:
     properties:
       exception:
@@ -4217,7 +4259,14 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.StatusResponse'
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.StockListRes'
+                  type: array
+              type: object
       summary: M1017 门店物资详细
       tags:
       - '[M]管理接口'

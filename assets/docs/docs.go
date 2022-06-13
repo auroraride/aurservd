@@ -2998,7 +2998,22 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.StockListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -7459,6 +7474,70 @@ const docTemplate = `{
             "properties": {
                 "status": {
                     "type": "boolean"
+                }
+            }
+        },
+        "model.StockListRes": {
+            "type": "object",
+            "properties": {
+                "batteries": {
+                    "description": "电池详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.StockMaterial"
+                    }
+                },
+                "batteryTotal": {
+                    "description": "电池总数",
+                    "type": "integer"
+                },
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "materials": {
+                    "description": "非电池物资详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.StockMaterial"
+                    }
+                },
+                "store": {
+                    "description": "门店",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Store"
+                        }
+                    ]
+                }
+            }
+        },
+        "model.StockMaterial": {
+            "type": "object",
+            "properties": {
+                "exception": {
+                    "description": "异常数量",
+                    "type": "integer"
+                },
+                "inbound": {
+                    "description": "入库数量",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "物资名称",
+                    "type": "string"
+                },
+                "outbound": {
+                    "description": "出库数量",
+                    "type": "integer"
+                },
+                "surplus": {
+                    "description": "剩余",
+                    "type": "integer"
                 }
             }
         },

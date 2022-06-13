@@ -41,7 +41,7 @@ func (*stock) Create(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        query  query   model.StockListReq  true  "desc"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Success      200  {object}  model.PaginationRes{items=[]model.StockListRes}  "请求成功"
 func (*stock) List(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.StockListReq](c)
     return ctx.SendResponse(service.NewStockWithModifier(ctx.Modifier).List(req))
