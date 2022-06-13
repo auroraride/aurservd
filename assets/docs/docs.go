@@ -311,6 +311,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/employee/v1/subscribe/detail": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E2001 待激活骑士卡详情",
+                "operationId": "EmployeeSubscribeDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "二维码详情, 可带` + "`" + `SUBSCRIBE:` + "`" + `, 也可不带",
+                        "name": "qrcode",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.SubscribeActiveInfo"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/battery/model": {
             "get": {
                 "consumes": [
@@ -4204,7 +4243,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "desc",
+                        "description": "电池选择请求",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -7781,6 +7820,32 @@ const docTemplate = `{
                 },
                 "voltage": {
                     "description": "可用电压型号",
+                    "type": "number"
+                }
+            }
+        },
+        "model.SubscribeActiveInfo": {
+            "type": "object",
+            "properties": {
+                "enterpriseId": {
+                    "description": "企业ID, 团签用户判定依据, 非团签用户此字段不存在",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "订阅ID",
+                    "type": "integer"
+                },
+                "order": {
+                    "$ref": "#/definitions/model.SubscribeOrderInfo"
+                },
+                "plan": {
+                    "$ref": "#/definitions/model.Plan"
+                },
+                "rider": {
+                    "$ref": "#/definitions/model.RiderBasic"
+                },
+                "voltage": {
+                    "description": "电池电压型号",
                     "type": "number"
                 }
             }

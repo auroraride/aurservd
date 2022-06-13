@@ -4,6 +4,7 @@
 
 - [E1003 打卡预检](http://localhost:5533/docs#tag/E/operation/EmployeeAttendancePrecheck)
 - [E1004 考勤打卡](http://localhost:5533/docs#tag/E/operation/EmployeeAttendanceCreate)
+- [E2001 待激活骑士卡详情](http://localhost:5533/docs#tag/E/operation/EmployeeSubscribeDetail)
 
 
 

@@ -39,7 +39,7 @@ func (*enterprise) ListVoltage(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        body  body  model.EnterpriseRiderSubscribeChooseReq  true  "desc"
+// @Param        body  body     model.EnterpriseRiderSubscribeChooseReq  true  "电池选择请求"
 // @Success      200  {object}  model.EnterpriseRiderSubscribeChooseRes  "请求成功"
 func (*enterprise) Subscribe(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.EnterpriseRiderSubscribeChooseReq](c)

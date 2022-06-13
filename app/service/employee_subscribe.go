@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/golang-module/carbon/v2"
     "strconv"
     "strings"
     "time"
@@ -51,13 +52,15 @@ func NewEmployeeSubscribeWithEmployee(e *ent.Employee) *employeeSubscribeService
     return s
 }
 
-// Active 激活订单
-// TODO 后续逻辑
-func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
+// Inactive 获取骑手待激活订阅详情
+func (s *employeeSubscribeService) Inactive(qr string) *model.SubscribeActiveInfo {
     if s.employee.Edges.Store == nil {
         snag.Panic("你未上班")
     }
-    id, _ := strconv.ParseUint(strings.TrimSpace(strings.ReplaceAll(req.Qrcode, "SUBSCRIBE:", "")), 10, 64)
+    if strings.HasPrefix(qr, "SUBSCRIBE:") {
+        qr = strings.ReplaceAll(qr, "SUBSCRIBE:", "")
+    }
+    id, _ := strconv.ParseUint(strings.TrimSpace(qr), 10, 64)
     // 查询订单状态
     sub, _ := ar.Ent.Subscribe.QueryNotDeleted().
         Where(
@@ -68,22 +71,89 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
                 subscribe.Type(0),
                 subscribe.TypeIn(model.OrderTypeNewly, model.OrderTypeAgain),
             ),
+            subscribe.Status(model.SubscribeStatusInactive),
         ).
-        WithInitialOrder().
+        WithInitialOrder(func(oq *ent.OrderQuery) {
+            oq.WithPlan().WithCommission()
+        }).
+        WithRider(func(rq *ent.RiderQuery) {
+            rq.WithPerson()
+        }).
         Only(s.ctx)
+
     if sub == nil {
-        snag.Panic("未找到骑士卡")
+        snag.Panic("未找到待激活骑士卡")
     }
-    if sub.EnterpriseID == nil && sub.Edges.InitialOrder.Status == model.OrderStatusRefundPending {
-        snag.Panic("骑士卡已申请退款")
+
+    r := sub.Edges.Rider
+    if r == nil {
+        snag.Panic("骑手信息获取失败")
     }
-    sub.Update().
+
+    p := sub.Edges.Rider.Edges.Person
+    if p.Status != model.PersonAuthenticated.Raw() {
+        snag.Panic("骑手还未认证")
+    }
+
+    res := &model.SubscribeActiveInfo{
+        ID:           sub.ID,
+        EnterpriseID: sub.EnterpriseID,
+        Voltage:      sub.Voltage,
+        CommissionID: nil,
+        Rider: model.RiderBasic{
+            ID:    r.ID,
+            Phone: r.Phone,
+            Name:  p.Name,
+        },
+    }
+
+    if sub.EnterpriseID == nil {
+        o := sub.Edges.InitialOrder
+        if o == nil || o.Status != model.OrderStatusPaid {
+            snag.Panic("订单状态异常") // TODO 退款被拒绝的如何操作
+        }
+        res.Order = model.SubscribeOrderInfo{
+            ID:      o.ID,
+            Status:  o.Status,
+            PayAt:   o.CreatedAt.Format(carbon.DateTimeLayout),
+            Payway:  o.Payway,
+            Amount:  o.Amount,
+            Deposit: o.Total - o.Amount,
+            Total:   o.Total,
+        }
+    }
+
+    c := sub.Edges.InitialOrder.Edges.Commission
+    if c != nil {
+        res.CommissionID = &c.ID
+    }
+    return res
+}
+
+// Active 激活订单
+func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
+    info := s.Inactive(req.Qrcode)
+
+    tx, _ := ar.Ent.Tx(s.ctx)
+
+    _, err := tx.Subscribe.UpdateOneID(info.ID).
         SetStatus(model.SubscribeStatusUsing).
         SetStartAt(time.Now()).
         SetEmployeeID(s.employee.ID).
         SetStoreID(s.employee.Edges.Store.ID).
-        SaveX(s.ctx)
-    if sub.EnterpriseID != nil {
-        _, _ = NewEnterpriseStatement().Current(*sub.EnterpriseID).Update().AddRiderNumber(1).Save(s.ctx)
+        Save(s.ctx)
+    snag.PanicIfErrorX(err, tx.Rollback)
+
+    if info.EnterpriseID != nil {
+        sm := NewEnterpriseStatement().Current(*info.EnterpriseID)
+        _, err = tx.EnterpriseStatement.UpdateOne(sm).AddRiderNumber(1).Save(s.ctx)
+        snag.PanicIfErrorX(err, tx.Rollback)
     }
+
+    // 提成
+    if info.CommissionID != nil {
+        _, _ = tx.Commission.UpdateOneID(*info.CommissionID).SetEmployeeID(s.employee.ID).Save(s.ctx)
+    }
+
+    _ = tx.Commit()
 }

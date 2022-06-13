@@ -82,3 +82,7 @@ type IDQueryReq struct {
 type QRPostReq struct {
     Qrcode string `json:"qrcode" validate:"required" trans:"二维码"`
 }
+
+type QRQueryReq struct {
+    Qrcode string `json:"qrcode" query:"qrcode" validate:"required" trans:"二维码"`
+}

@@ -74,3 +74,14 @@ type SubscribeAlter struct {
     Days   int    `json:"days" validate:"required"`   // 调整天数, 正加负减
     Reason string `json:"reason" validate:"required"` // 调整理由
 }
+
+type SubscribeActiveInfo struct {
+    ID           uint64  `json:"id"`                     // 订阅ID
+    Voltage      float64 `json:"voltage"`                // 电池电压型号
+    EnterpriseID *uint64 `json:"enterpriseId,omitempty"` // 企业ID, 团签用户判定依据, 非团签用户此字段不存在
+    Rider        RiderBasic
+    Plan         Plan
+    Order        SubscribeOrderInfo
+
+    CommissionID *uint64 `json:"-"`
+}
