@@ -1,3 +1,15 @@
+## 2022-06-13
+
+#### 接口新增
+
+- [M1016 物资管理概览](http://localhost:5533/docs#tag/M/operation/ManagerStockOverview)
+
+
+
+
+
+<br />
+
 ## 2022-06-12
 
 #### 接口调整

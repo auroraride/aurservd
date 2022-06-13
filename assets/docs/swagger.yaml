@@ -1870,6 +1870,21 @@ definitions:
       status:
         type: boolean
     type: object
+  model.StockOverview:
+    properties:
+      exception:
+        description: 电池异常数
+        type: integer
+      inbound:
+        description: 电池库存数
+        type: integer
+      outbound:
+        description: 电池出库数
+        type: integer
+      total:
+        description: 电池总数
+        type: integer
+    type: object
   model.StockTransferReq:
     properties:
       inboundId:
@@ -4070,6 +4085,27 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M1015 调拨物资
+      tags:
+      - '[M]管理接口'
+  /manager/v1/stock/overview:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerStockOverview
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StockOverview'
+      summary: M1016 物资管理概览
       tags:
       - '[M]管理接口'
   /manager/v1/store:

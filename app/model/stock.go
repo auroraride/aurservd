@@ -23,10 +23,11 @@ type StockListReq struct {
 }
 
 type StockMaterial struct {
-    Name     string `json:"name"`     // 物资名称
-    Outbound int    `json:"outbound"` // 出库数量
-    Inbound  int    `json:"inbound"`  // 入库数量
-    Surplus  int    `json:"surplus"`  // 剩余
+    Name      string `json:"name"`      // 物资名称
+    Outbound  int    `json:"outbound"`  // 出库数量
+    Inbound   int    `json:"inbound"`   // 入库数量
+    Surplus   int    `json:"surplus"`   // 剩余
+    Exception int    `json:"exception"` // 异常数量
 }
 
 type StockListRes struct {
@@ -35,4 +36,11 @@ type StockListRes struct {
     BatteryTotal int              `json:"batteryTotal"` // 电池总数
     Batteries    []*StockMaterial `json:"batteries"`    // 电池详情
     Materials    []*StockMaterial `json:"materials"`    // 非电池物资详情
+}
+
+type StockOverview struct {
+    Total     int `json:"total"`     // 电池总数
+    Outbound  int `json:"outbound"`  // 电池出库数
+    Inbound   int `json:"inbound"`   // 电池库存数
+    Exception int `json:"exception"` // 电池异常数
 }

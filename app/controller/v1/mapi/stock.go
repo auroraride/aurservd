@@ -46,3 +46,17 @@ func (*stock) List(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.StockListReq](c)
     return ctx.SendResponse(service.NewStockWithModifier(ctx.Modifier).List(req))
 }
+
+// Overview
+// @ID           ManagerStockOverview
+// @Router       /manager/v1/stock/overview [GET]
+// @Summary      M1016 物资管理概览
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Success      200  {object}  model.StockOverview  "请求成功"
+func (*stock) Overview(c echo.Context) (err error) {
+    ctx := app.Context(c)
+    return ctx.SendResponse(service.NewStock().Overview())
+}

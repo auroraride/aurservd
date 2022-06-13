@@ -7,6 +7,7 @@ package service
 
 import (
     "context"
+    stdsql "database/sql"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
@@ -20,6 +21,7 @@ import (
     log "github.com/sirupsen/logrus"
     "math"
     "sort"
+    "strconv"
     "strings"
 )
 
@@ -276,4 +278,44 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
     snag.PanicIfErrorX(err, tx.Rollback)
 
     _ = tx.Commit()
+}
+
+func (s *stockService) Overview() (res model.StockOverview) {
+    rows, err := ar.Ent.QueryContext(s.ctx, `SELECT DISTINCT ABS(SUM(num)) AS sum,
+                inbound_store_id IS NULL AND NOT outbound_store_id IS NULL AS outbound,
+                NOT inbound_store_id IS NULL AND outbound_store_id IS NULL AS inbound,
+                inbound_store_id IS NULL AND outbound_store_id IS NULL     AS plaform
+FROM stock
+WHERE voltage IS NOT NULL AND deleted_at IS NULL
+GROUP BY outbound, inbound, plaform`)
+
+    if err != nil {
+        log.Error(err)
+        snag.Panic("请求失败")
+    }
+
+    defer func(rows *stdsql.Rows) {
+        _ = rows.Close()
+    }(rows)
+
+    for rows.Next() {
+        var sum string
+        var outbound, inbound, plaform bool
+        err = rows.Scan(&sum, &outbound, &inbound, &plaform)
+        if err != nil {
+            log.Error(err)
+            break
+        }
+        total, _ := strconv.Atoi(sum)
+        if outbound {
+            res.Outbound = total
+        }
+        if inbound {
+            res.Inbound = total
+        }
+        if plaform {
+            res.Total = total
+        }
+    }
+    return
 }

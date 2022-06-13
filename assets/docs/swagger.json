@@ -2915,6 +2915,38 @@
                 }
             }
         },
+        "/manager/v1/stock/overview": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M1016 物资管理概览",
+                "operationId": "ManagerStockOverview",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StockOverview"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/store": {
             "get": {
                 "consumes": [
@@ -7192,6 +7224,27 @@
             "properties": {
                 "status": {
                     "type": "boolean"
+                }
+            }
+        },
+        "model.StockOverview": {
+            "type": "object",
+            "properties": {
+                "exception": {
+                    "description": "电池异常数",
+                    "type": "integer"
+                },
+                "inbound": {
+                    "description": "电池库存数",
+                    "type": "integer"
+                },
+                "outbound": {
+                    "description": "电池出库数",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "电池总数",
+                    "type": "integer"
                 }
             }
         },
