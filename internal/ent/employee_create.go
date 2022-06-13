@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -148,6 +149,21 @@ func (ec *EmployeeCreate) SetNillableStoreID(id *uint64) *EmployeeCreate {
 // SetStore sets the "store" edge to the Store entity.
 func (ec *EmployeeCreate) SetStore(s *Store) *EmployeeCreate {
 	return ec.SetStoreID(s.ID)
+}
+
+// AddAttendanceIDs adds the "attendances" edge to the Attendance entity by IDs.
+func (ec *EmployeeCreate) AddAttendanceIDs(ids ...uint64) *EmployeeCreate {
+	ec.mutation.AddAttendanceIDs(ids...)
+	return ec
+}
+
+// AddAttendances adds the "attendances" edges to the Attendance entity.
+func (ec *EmployeeCreate) AddAttendances(a ...*Attendance) *EmployeeCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ec.AddAttendanceIDs(ids...)
 }
 
 // Mutation returns the EmployeeMutation object of the builder.
@@ -397,6 +413,25 @@ func (ec *EmployeeCreate) createSpec() (*Employee, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.AttendancesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.AttendancesTable,
+			Columns: []string{employee.AttendancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: attendance.FieldID,
 				},
 			},
 		}

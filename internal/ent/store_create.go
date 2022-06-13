@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -178,6 +179,21 @@ func (sc *StoreCreate) AddOutboundStocks(s ...*Stock) *StoreCreate {
 		ids[i] = s[i].ID
 	}
 	return sc.AddOutboundStockIDs(ids...)
+}
+
+// AddAttendanceIDs adds the "attendances" edge to the Attendance entity by IDs.
+func (sc *StoreCreate) AddAttendanceIDs(ids ...uint64) *StoreCreate {
+	sc.mutation.AddAttendanceIDs(ids...)
+	return sc
+}
+
+// AddAttendances adds the "attendances" edges to the Attendance entity.
+func (sc *StoreCreate) AddAttendances(a ...*Attendance) *StoreCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return sc.AddAttendanceIDs(ids...)
 }
 
 // Mutation returns the StoreMutation object of the builder.
@@ -440,7 +456,7 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.EmployeeID = nodes[0]
+		_node.EmployeeID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := sc.mutation.InboundStocksIDs(); len(nodes) > 0 {
@@ -473,6 +489,25 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.AttendancesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.AttendancesTable,
+			Columns: []string{store.AttendancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: attendance.FieldID,
 				},
 			},
 		}

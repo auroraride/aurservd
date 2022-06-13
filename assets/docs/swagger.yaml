@@ -15,6 +15,61 @@ definitions:
       stsToken:
         type: string
     type: object
+  model.AttendanceCreateReq:
+    properties:
+      address:
+        description: '详细地址 '
+        type: string
+      duty:
+        description: 上下班 `true`上班 `false`下班
+        type: boolean
+      inventory:
+        additionalProperties:
+          type: integer
+        description: 物资盘点清单 格式为 [名称]:数量
+        type: object
+      lat:
+        description: '纬度 '
+        type: number
+      lng:
+        description: '经度 '
+        type: number
+      photo:
+        description: 上班照片
+        type: string
+      sn:
+        description: '门店编号 '
+        type: string
+    required:
+    - address
+    - inventory
+    - lat
+    - lng
+    - sn
+    type: object
+  model.AttendancePrecheck:
+    properties:
+      address:
+        description: '详细地址 '
+        type: string
+      duty:
+        description: 上下班 `true`上班 `false`下班
+        type: boolean
+      lat:
+        description: '纬度 '
+        type: number
+      lng:
+        description: '经度 '
+        type: number
+      sn:
+        description: '门店编号 '
+        type: string
+    required:
+    - address
+    - lat
+    - lng
+    - sn
+    type: object
   model.BatteryModel:
     properties:
       capacity:
@@ -707,12 +762,19 @@ definitions:
       name:
         description: 姓名
         type: string
+      onduty:
+        description: 是否上班
+        type: boolean
       phone:
         description: 电话
         type: string
       qrcode:
         description: 二维码, 未上班或外出中二维码失效
         type: string
+      store:
+        allOf:
+        - $ref: '#/definitions/model.Store'
+        description: 上班门店, 未上班为空, 业务办理禁止进入
       token:
         description: 认证token
         type: string
@@ -1154,6 +1216,15 @@ definitions:
     required:
     - name
     type: object
+  model.InventoryItem:
+    properties:
+      battery:
+        description: 是否电池
+        type: boolean
+      name:
+        description: 物资名称
+        type: string
+    type: object
   model.ItemListRes:
     properties:
       items:
@@ -1581,6 +1652,10 @@ definitions:
       authStatus:
         description: 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
         type: integer
+      contact:
+        allOf:
+        - $ref: '#/definitions/model.RiderContact'
+        description: 紧急联系人, 有可能不存在
       contract:
         description: 合同(有可能不存在)
         type: string
@@ -1950,6 +2025,9 @@ definitions:
       name:
         description: 门店名称
         type: string
+      qrcode:
+        description: 门店二维码
+        type: string
       status:
         description: 状态
         type: integer
@@ -2230,13 +2308,69 @@ paths:
       summary: C3.获取阿里云oss临时凭证
       tags:
       - '[C]公共接口'
+  /employee/v1/attendance:
+    post:
+      consumes:
+      - application/json
+      operationId: EmployeeAttendanceCreate
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 打卡信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AttendanceCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: E1004 考勤打卡
+      tags:
+      - '[E]店员接口'
+  /employee/v1/attendance/precheck:
+    post:
+      consumes:
+      - application/json
+      operationId: EmployeeAttendancePrecheck
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 预检请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AttendancePrecheck'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 需盘点物资清单
+          schema:
+            items:
+              $ref: '#/definitions/model.InventoryItem'
+            type: array
+      summary: E1003 打卡预检
+      tags:
+      - '[E]店员接口'
   /employee/v1/qrcode:
     get:
       consumes:
       - application/json
-      operationId: ManagerEmployeeQrcode
+      operationId: EmployeeEmployeeQrcode
       parameters:
-      - description: 管理员校验token
+      - description: 店员校验token
         in: header
         name: X-Employee-Token
         required: true
@@ -2255,14 +2389,14 @@ paths:
     post:
       consumes:
       - application/json
-      operationId: ManagerEmployeeSignin
+      operationId: EmployeeEmployeeSignin
       parameters:
-      - description: 管理员校验token
+      - description: 店员校验token
         in: header
         name: X-Employee-Token
         required: true
         type: string
-      - description: desc
+      - description: 店员登录请求
         in: body
         name: body
         required: true
@@ -2272,7 +2406,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: 请求成功
+          description: 店员登录信息
           schema:
             $ref: '#/definitions/model.EmployeeProfile'
       summary: E1001 登录
@@ -2909,7 +3043,7 @@ paths:
       tags:
       - '[M]管理接口'
   /manager/v1/deposit:
-    get:
+    post:
       consumes:
       - application/json
       operationId: ManagerSubscribeDeposit
@@ -3508,6 +3642,29 @@ paths:
       summary: M1012 物资设定创建或更新
       tags:
       - '[M]管理接口'
+  /manager/v1/inventory/transferable:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerInventoryTransferable
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.InventoryItem'
+            type: array
+      summary: M1018 可调拨物资清单
+      tags:
+      - '[M]管理接口'
   /manager/v1/order:
     get:
       consumes:
@@ -3938,7 +4095,7 @@ paths:
       tags:
       - '[M]管理接口'
   /manager/v1/rider/modify:
-    get:
+    post:
       consumes:
       - application/json
       operationId: ManagerSubscribeModify

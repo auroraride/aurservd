@@ -58,9 +58,11 @@ type EmployeeEdges struct {
 	City *City `json:"city,omitempty"`
 	// Store holds the value of the store edge.
 	Store *Store `json:"store,omitempty"`
+	// Attendances holds the value of the attendances edge.
+	Attendances []*Attendance `json:"attendances,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -89,6 +91,15 @@ func (e EmployeeEdges) StoreOrErr() (*Store, error) {
 		return e.Store, nil
 	}
 	return nil, &NotLoadedError{edge: "store"}
+}
+
+// AttendancesOrErr returns the Attendances value or an error if the edge
+// was not loaded in eager-loading.
+func (e EmployeeEdges) AttendancesOrErr() ([]*Attendance, error) {
+	if e.loadedTypes[2] {
+		return e.Attendances, nil
+	}
+	return nil, &NotLoadedError{edge: "attendances"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -205,6 +216,11 @@ func (e *Employee) QueryCity() *CityQuery {
 // QueryStore queries the "store" edge of the Employee entity.
 func (e *Employee) QueryStore() *StoreQuery {
 	return (&EmployeeClient{config: e.config}).QueryStore(e)
+}
+
+// QueryAttendances queries the "attendances" edge of the Employee entity.
+func (e *Employee) QueryAttendances() *AttendanceQuery {
+	return (&EmployeeClient{config: e.config}).QueryAttendances(e)
 }
 
 // Update returns a builder for updating this Employee.

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -183,6 +184,21 @@ func (su *StoreUpdate) AddOutboundStocks(s ...*Stock) *StoreUpdate {
 	return su.AddOutboundStockIDs(ids...)
 }
 
+// AddAttendanceIDs adds the "attendances" edge to the Attendance entity by IDs.
+func (su *StoreUpdate) AddAttendanceIDs(ids ...uint64) *StoreUpdate {
+	su.mutation.AddAttendanceIDs(ids...)
+	return su
+}
+
+// AddAttendances adds the "attendances" edges to the Attendance entity.
+func (su *StoreUpdate) AddAttendances(a ...*Attendance) *StoreUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return su.AddAttendanceIDs(ids...)
+}
+
 // Mutation returns the StoreMutation object of the builder.
 func (su *StoreUpdate) Mutation() *StoreMutation {
 	return su.mutation
@@ -240,6 +256,27 @@ func (su *StoreUpdate) RemoveOutboundStocks(s ...*Stock) *StoreUpdate {
 		ids[i] = s[i].ID
 	}
 	return su.RemoveOutboundStockIDs(ids...)
+}
+
+// ClearAttendances clears all "attendances" edges to the Attendance entity.
+func (su *StoreUpdate) ClearAttendances() *StoreUpdate {
+	su.mutation.ClearAttendances()
+	return su
+}
+
+// RemoveAttendanceIDs removes the "attendances" edge to Attendance entities by IDs.
+func (su *StoreUpdate) RemoveAttendanceIDs(ids ...uint64) *StoreUpdate {
+	su.mutation.RemoveAttendanceIDs(ids...)
+	return su
+}
+
+// RemoveAttendances removes "attendances" edges to Attendance entities.
+func (su *StoreUpdate) RemoveAttendances(a ...*Attendance) *StoreUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return su.RemoveAttendanceIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -594,6 +631,60 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if su.mutation.AttendancesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.AttendancesTable,
+			Columns: []string{store.AttendancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: attendance.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.RemovedAttendancesIDs(); len(nodes) > 0 && !su.mutation.AttendancesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.AttendancesTable,
+			Columns: []string{store.AttendancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: attendance.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.AttendancesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.AttendancesTable,
+			Columns: []string{store.AttendancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: attendance.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{store.Label}
@@ -764,6 +855,21 @@ func (suo *StoreUpdateOne) AddOutboundStocks(s ...*Stock) *StoreUpdateOne {
 	return suo.AddOutboundStockIDs(ids...)
 }
 
+// AddAttendanceIDs adds the "attendances" edge to the Attendance entity by IDs.
+func (suo *StoreUpdateOne) AddAttendanceIDs(ids ...uint64) *StoreUpdateOne {
+	suo.mutation.AddAttendanceIDs(ids...)
+	return suo
+}
+
+// AddAttendances adds the "attendances" edges to the Attendance entity.
+func (suo *StoreUpdateOne) AddAttendances(a ...*Attendance) *StoreUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return suo.AddAttendanceIDs(ids...)
+}
+
 // Mutation returns the StoreMutation object of the builder.
 func (suo *StoreUpdateOne) Mutation() *StoreMutation {
 	return suo.mutation
@@ -821,6 +927,27 @@ func (suo *StoreUpdateOne) RemoveOutboundStocks(s ...*Stock) *StoreUpdateOne {
 		ids[i] = s[i].ID
 	}
 	return suo.RemoveOutboundStockIDs(ids...)
+}
+
+// ClearAttendances clears all "attendances" edges to the Attendance entity.
+func (suo *StoreUpdateOne) ClearAttendances() *StoreUpdateOne {
+	suo.mutation.ClearAttendances()
+	return suo
+}
+
+// RemoveAttendanceIDs removes the "attendances" edge to Attendance entities by IDs.
+func (suo *StoreUpdateOne) RemoveAttendanceIDs(ids ...uint64) *StoreUpdateOne {
+	suo.mutation.RemoveAttendanceIDs(ids...)
+	return suo
+}
+
+// RemoveAttendances removes "attendances" edges to Attendance entities.
+func (suo *StoreUpdateOne) RemoveAttendances(a ...*Attendance) *StoreUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return suo.RemoveAttendanceIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1197,6 +1324,60 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.AttendancesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.AttendancesTable,
+			Columns: []string{store.AttendancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: attendance.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.RemovedAttendancesIDs(); len(nodes) > 0 && !suo.mutation.AttendancesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.AttendancesTable,
+			Columns: []string{store.AttendancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: attendance.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.AttendancesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.AttendancesTable,
+			Columns: []string{store.AttendancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: attendance.FieldID,
 				},
 			},
 		}

@@ -165,6 +165,30 @@ func DenyMutationOperationRule(op ent.Op) MutationRule {
 	return OnMutationOperation(rule, op)
 }
 
+// The AttendanceQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type AttendanceQueryRuleFunc func(context.Context, *ent.AttendanceQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f AttendanceQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.AttendanceQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.AttendanceQuery", q)
+}
+
+// The AttendanceMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type AttendanceMutationRuleFunc func(context.Context, *ent.AttendanceMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f AttendanceMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.AttendanceMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AttendanceMutation", m)
+}
+
 // The BatteryModelQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type BatteryModelQueryRuleFunc func(context.Context, *ent.BatteryModelQuery) error
@@ -896,6 +920,8 @@ var _ QueryMutationRule = FilterFunc(nil)
 
 func queryFilter(q ent.Query) (Filter, error) {
 	switch q := q.(type) {
+	case *ent.AttendanceQuery:
+		return q.Filter(), nil
 	case *ent.BatteryModelQuery:
 		return q.Filter(), nil
 	case *ent.BranchQuery:
@@ -961,6 +987,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 
 func mutationFilter(m ent.Mutation) (Filter, error) {
 	switch m := m.(type) {
+	case *ent.AttendanceMutation:
+		return m.Filter(), nil
 	case *ent.BatteryModelMutation:
 		return m.Filter(), nil
 	case *ent.BranchMutation:

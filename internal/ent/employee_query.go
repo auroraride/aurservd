@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -27,9 +28,10 @@ type EmployeeQuery struct {
 	fields     []string
 	predicates []predicate.Employee
 	// eager-loading edges.
-	withCity  *CityQuery
-	withStore *StoreQuery
-	modifiers []func(*sql.Selector)
+	withCity        *CityQuery
+	withStore       *StoreQuery
+	withAttendances *AttendanceQuery
+	modifiers       []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -103,6 +105,28 @@ func (eq *EmployeeQuery) QueryStore() *StoreQuery {
 			sqlgraph.From(employee.Table, employee.FieldID, selector),
 			sqlgraph.To(store.Table, store.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, employee.StoreTable, employee.StoreColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAttendances chains the current query on the "attendances" edge.
+func (eq *EmployeeQuery) QueryAttendances() *AttendanceQuery {
+	query := &AttendanceQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, selector),
+			sqlgraph.To(attendance.Table, attendance.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, employee.AttendancesTable, employee.AttendancesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -286,13 +310,14 @@ func (eq *EmployeeQuery) Clone() *EmployeeQuery {
 		return nil
 	}
 	return &EmployeeQuery{
-		config:     eq.config,
-		limit:      eq.limit,
-		offset:     eq.offset,
-		order:      append([]OrderFunc{}, eq.order...),
-		predicates: append([]predicate.Employee{}, eq.predicates...),
-		withCity:   eq.withCity.Clone(),
-		withStore:  eq.withStore.Clone(),
+		config:          eq.config,
+		limit:           eq.limit,
+		offset:          eq.offset,
+		order:           append([]OrderFunc{}, eq.order...),
+		predicates:      append([]predicate.Employee{}, eq.predicates...),
+		withCity:        eq.withCity.Clone(),
+		withStore:       eq.withStore.Clone(),
+		withAttendances: eq.withAttendances.Clone(),
 		// clone intermediate query.
 		sql:    eq.sql.Clone(),
 		path:   eq.path,
@@ -319,6 +344,17 @@ func (eq *EmployeeQuery) WithStore(opts ...func(*StoreQuery)) *EmployeeQuery {
 		opt(query)
 	}
 	eq.withStore = query
+	return eq
+}
+
+// WithAttendances tells the query-builder to eager-load the nodes that are connected to
+// the "attendances" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EmployeeQuery) WithAttendances(opts ...func(*AttendanceQuery)) *EmployeeQuery {
+	query := &AttendanceQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withAttendances = query
 	return eq
 }
 
@@ -392,9 +428,10 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 	var (
 		nodes       = []*Employee{}
 		_spec       = eq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			eq.withCity != nil,
 			eq.withStore != nil,
+			eq.withAttendances != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -461,11 +498,39 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 		}
 		for _, n := range neighbors {
 			fk := n.EmployeeID
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "employee_id" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "employee_id" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Store = n
+		}
+	}
+
+	if query := eq.withAttendances; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Employee)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Attendances = []*Attendance{}
+		}
+		query.Where(predicate.Attendance(func(s *sql.Selector) {
+			s.Where(sql.InValues(employee.AttendancesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.EmployeeID
 			node, ok := nodeids[fk]
 			if !ok {
 				return nil, fmt.Errorf(`unexpected foreign-key "employee_id" returned %v for node %v`, fk, n.ID)
 			}
-			node.Edges.Store = n
+			node.Edges.Attendances = append(node.Edges.Attendances, n)
 		}
 	}
 

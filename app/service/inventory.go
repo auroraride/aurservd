@@ -11,6 +11,7 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/inventory"
+    "github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
 type inventoryService struct {
@@ -60,8 +61,23 @@ func (s *inventoryService) CreateOrModify(req *model.Inventory) {
         ExecX(s.ctx)
 }
 
-func (s *inventoryService) List() (items []model.Inventory) {
-    _ = s.orm.QueryNotDeleted().Select(inventory.FieldName, inventory.FieldPurchase, inventory.FieldTransfer, inventory.FieldCount).Scan(s.ctx, &items)
+func (s *inventoryService) List(params ...model.InventoryListReq) (items []model.Inventory) {
+    q := s.orm.QueryNotDeleted().Select(inventory.FieldName, inventory.FieldPurchase, inventory.FieldTransfer, inventory.FieldCount)
+    if len(params) > 0 {
+        req := params[0]
+        var or []predicate.Inventory
+        if req.Count {
+            or = append(or, inventory.Count(true))
+        }
+        if req.Transfer {
+            or = append(or, inventory.Transfer(true))
+        }
+        if req.Purchase {
+            or = append(or, inventory.Purchase(true))
+        }
+        q.Where(inventory.Or(or...))
+    }
+    _ = q.Scan(s.ctx, &items)
     if len(items) < 1 {
         items = make([]model.Inventory, 0)
     }
@@ -70,4 +86,22 @@ func (s *inventoryService) List() (items []model.Inventory) {
 
 func (s *inventoryService) Delete(req *model.InventoryDelete) {
     s.orm.SoftDelete().Where(inventory.Name(*req.Name)).SaveX(s.ctx)
+}
+
+// ListInventory 获取需物资列表
+func (s *inventoryService) ListInventory(model.InventoryListReq) (items []model.InventoryItem) {
+    // 电池型号列表
+    bs := NewBattery()
+    for _, v := range bs.ListVoltages() {
+        items = append(items, model.InventoryItem{
+            Name:    bs.VoltageName(v),
+            Battery: true,
+        })
+    }
+    for _, item := range s.List() {
+        if item.Count {
+            items = append(items, model.InventoryItem{Name: item.Name})
+        }
+    }
+    return
 }

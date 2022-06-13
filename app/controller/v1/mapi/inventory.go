@@ -61,3 +61,18 @@ func (*inventory) Delete(c echo.Context) (err error) {
     service.NewInventoryWithModifier(ctx.Modifier).Delete(req)
     return ctx.SendResponse()
 }
+
+
+// Transferable
+// @ID           ManagerInventoryTransferable
+// @Router       /manager/v1/inventory/transferable [GET]
+// @Summary      M1018 可调拨物资清单
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Success      200  {object}  []model.InventoryItem  "请求成功"
+func (*inventory) Transferable(c echo.Context) (err error) {
+    ctx := app.Context(c)
+    return ctx.SendResponse(service.NewInventory().ListInventory(model.InventoryListReq{Transfer: true}))
+}

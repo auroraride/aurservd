@@ -7,6 +7,7 @@ package service
 
 import (
     "context"
+    "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -15,6 +16,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/jinzhu/copier"
     "github.com/lithammer/shortuuid/v4"
+    "strings"
     "time"
 )
 
@@ -45,6 +47,9 @@ func (s *storeService) Query(id uint64) *ent.Store {
 }
 
 func (s *storeService) QuerySn(sn string) *ent.Store {
+    if strings.HasPrefix(sn, "STORE:") {
+        sn = strings.ReplaceAll(sn, "STORE:", "")
+    }
     item, err := s.orm.QueryNotDeleted().WithEmployee().Where(store.Sn(sn)).Only(s.ctx)
     if err != nil {
         snag.Panic("未找到有效门店")
@@ -99,6 +104,7 @@ func (s *storeService) Detail(id uint64) model.StoreItem {
         ID:     item.ID,
         Name:   item.Name,
         Status: item.Status,
+        QRCode: fmt.Sprintf("STORE:%s", item.Sn),
         City: model.City{
             ID:   city.ID,
             Name: city.Name,
@@ -145,6 +151,7 @@ func (s *storeService) List(req *model.StoreListReq) *model.PaginationRes {
                 Name: city.Name,
             }
         }
+        res.QRCode = fmt.Sprintf("STORE:%s", item.Sn)
         return
     })
 }

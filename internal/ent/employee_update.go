@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -152,6 +153,21 @@ func (eu *EmployeeUpdate) SetStore(s *Store) *EmployeeUpdate {
 	return eu.SetStoreID(s.ID)
 }
 
+// AddAttendanceIDs adds the "attendances" edge to the Attendance entity by IDs.
+func (eu *EmployeeUpdate) AddAttendanceIDs(ids ...uint64) *EmployeeUpdate {
+	eu.mutation.AddAttendanceIDs(ids...)
+	return eu
+}
+
+// AddAttendances adds the "attendances" edges to the Attendance entity.
+func (eu *EmployeeUpdate) AddAttendances(a ...*Attendance) *EmployeeUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return eu.AddAttendanceIDs(ids...)
+}
+
 // Mutation returns the EmployeeMutation object of the builder.
 func (eu *EmployeeUpdate) Mutation() *EmployeeMutation {
 	return eu.mutation
@@ -167,6 +183,27 @@ func (eu *EmployeeUpdate) ClearCity() *EmployeeUpdate {
 func (eu *EmployeeUpdate) ClearStore() *EmployeeUpdate {
 	eu.mutation.ClearStore()
 	return eu
+}
+
+// ClearAttendances clears all "attendances" edges to the Attendance entity.
+func (eu *EmployeeUpdate) ClearAttendances() *EmployeeUpdate {
+	eu.mutation.ClearAttendances()
+	return eu
+}
+
+// RemoveAttendanceIDs removes the "attendances" edge to Attendance entities by IDs.
+func (eu *EmployeeUpdate) RemoveAttendanceIDs(ids ...uint64) *EmployeeUpdate {
+	eu.mutation.RemoveAttendanceIDs(ids...)
+	return eu
+}
+
+// RemoveAttendances removes "attendances" edges to Attendance entities.
+func (eu *EmployeeUpdate) RemoveAttendances(a ...*Attendance) *EmployeeUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return eu.RemoveAttendanceIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -419,6 +456,60 @@ func (eu *EmployeeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if eu.mutation.AttendancesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.AttendancesTable,
+			Columns: []string{employee.AttendancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: attendance.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedAttendancesIDs(); len(nodes) > 0 && !eu.mutation.AttendancesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.AttendancesTable,
+			Columns: []string{employee.AttendancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: attendance.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.AttendancesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.AttendancesTable,
+			Columns: []string{employee.AttendancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: attendance.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{employee.Label}
@@ -558,6 +649,21 @@ func (euo *EmployeeUpdateOne) SetStore(s *Store) *EmployeeUpdateOne {
 	return euo.SetStoreID(s.ID)
 }
 
+// AddAttendanceIDs adds the "attendances" edge to the Attendance entity by IDs.
+func (euo *EmployeeUpdateOne) AddAttendanceIDs(ids ...uint64) *EmployeeUpdateOne {
+	euo.mutation.AddAttendanceIDs(ids...)
+	return euo
+}
+
+// AddAttendances adds the "attendances" edges to the Attendance entity.
+func (euo *EmployeeUpdateOne) AddAttendances(a ...*Attendance) *EmployeeUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return euo.AddAttendanceIDs(ids...)
+}
+
 // Mutation returns the EmployeeMutation object of the builder.
 func (euo *EmployeeUpdateOne) Mutation() *EmployeeMutation {
 	return euo.mutation
@@ -573,6 +679,27 @@ func (euo *EmployeeUpdateOne) ClearCity() *EmployeeUpdateOne {
 func (euo *EmployeeUpdateOne) ClearStore() *EmployeeUpdateOne {
 	euo.mutation.ClearStore()
 	return euo
+}
+
+// ClearAttendances clears all "attendances" edges to the Attendance entity.
+func (euo *EmployeeUpdateOne) ClearAttendances() *EmployeeUpdateOne {
+	euo.mutation.ClearAttendances()
+	return euo
+}
+
+// RemoveAttendanceIDs removes the "attendances" edge to Attendance entities by IDs.
+func (euo *EmployeeUpdateOne) RemoveAttendanceIDs(ids ...uint64) *EmployeeUpdateOne {
+	euo.mutation.RemoveAttendanceIDs(ids...)
+	return euo
+}
+
+// RemoveAttendances removes "attendances" edges to Attendance entities.
+func (euo *EmployeeUpdateOne) RemoveAttendances(a ...*Attendance) *EmployeeUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return euo.RemoveAttendanceIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -847,6 +974,60 @@ func (euo *EmployeeUpdateOne) sqlSave(ctx context.Context) (_node *Employee, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.AttendancesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.AttendancesTable,
+			Columns: []string{employee.AttendancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: attendance.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedAttendancesIDs(); len(nodes) > 0 && !euo.mutation.AttendancesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.AttendancesTable,
+			Columns: []string{employee.AttendancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: attendance.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.AttendancesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.AttendancesTable,
+			Columns: []string{employee.AttendancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: attendance.FieldID,
 				},
 			},
 		}

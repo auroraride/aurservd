@@ -9,6 +9,63 @@ import (
 )
 
 var (
+	// AttendanceColumns holds the columns for the "attendance" table.
+	AttendanceColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "inventory", Type: field.TypeJSON, Comment: "物资盘点", Nullable: true},
+		{Name: "photo", Type: field.TypeString, Comment: "上班照片", Nullable: true},
+		{Name: "duty", Type: field.TypeBool, Comment: "是否上班盘点"},
+		{Name: "date", Type: field.TypeTime, Comment: "日期", SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "lng", Type: field.TypeFloat64, Comment: "经度", Nullable: true},
+		{Name: "lat", Type: field.TypeFloat64, Comment: "纬度", Nullable: true},
+		{Name: "address", Type: field.TypeString, Comment: "详细地址", Nullable: true},
+		{Name: "distance", Type: field.TypeFloat64, Comment: "打卡距离", Nullable: true},
+		{Name: "employee_id", Type: field.TypeUint64},
+		{Name: "store_id", Type: field.TypeUint64},
+	}
+	// AttendanceTable holds the schema information for the "attendance" table.
+	AttendanceTable = &schema.Table{
+		Name:       "attendance",
+		Columns:    AttendanceColumns,
+		PrimaryKey: []*schema.Column{AttendanceColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "attendance_employee_attendances",
+				Columns:    []*schema.Column{AttendanceColumns[15]},
+				RefColumns: []*schema.Column{EmployeeColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "attendance_store_attendances",
+				Columns:    []*schema.Column{AttendanceColumns[16]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "attendance_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{AttendanceColumns[1]},
+			},
+			{
+				Name:    "attendance_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{AttendanceColumns[3]},
+			},
+			{
+				Name:    "attendance_date_duty",
+				Unique:  false,
+				Columns: []*schema.Column{AttendanceColumns[10], AttendanceColumns[9]},
+			},
+		},
+	}
 	// BatteryModelColumns holds the columns for the "battery_model" table.
 	BatteryModelColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -1456,7 +1513,7 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
-		{Name: "sn", Type: field.TypeString, Comment: "门店编号"},
+		{Name: "sn", Type: field.TypeString, Unique: true, Comment: "门店编号"},
 		{Name: "name", Type: field.TypeString, Comment: "门店名称"},
 		{Name: "status", Type: field.TypeUint8, Comment: "门店状态 0维护 1营业 2休息 3隐藏", Default: 0},
 		{Name: "branch_id", Type: field.TypeUint64},
@@ -1808,6 +1865,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AttendanceTable,
 		BatteryModelTable,
 		BranchTable,
 		BranchContractTable,
@@ -1844,6 +1902,11 @@ var (
 )
 
 func init() {
+	AttendanceTable.ForeignKeys[0].RefTable = EmployeeTable
+	AttendanceTable.ForeignKeys[1].RefTable = StoreTable
+	AttendanceTable.Annotation = &entsql.Annotation{
+		Table: "attendance",
+	}
 	BatteryModelTable.Annotation = &entsql.Annotation{
 		Table: "battery_model",
 	}

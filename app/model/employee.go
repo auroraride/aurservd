@@ -56,10 +56,12 @@ type EmployeeSignReq struct {
 
 type EmployeeProfile struct {
     ID     uint64 `json:"id"`
-    Token  string `json:"token"`  // 认证token
-    Qrcode string `json:"qrcode"` // 二维码, 未上班或外出中二维码失效
-    Phone  string `json:"phone"`  // 电话
-    Name   string `json:"name"`   // 姓名
+    Token  string `json:"token"`           // 认证token
+    Qrcode string `json:"qrcode"`          // 二维码, 未上班或外出中二维码失效
+    Phone  string `json:"phone"`           // 电话
+    Name   string `json:"name"`            // 姓名
+    Onduty bool   `json:"onduty"`          // 是否上班
+    Store  *Store `json:"store,omitempty"` // 上班门店, 未上班为空, 业务办理禁止进入
 }
 
 type EmployeeQrcodeRes struct {

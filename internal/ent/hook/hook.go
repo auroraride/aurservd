@@ -9,6 +9,19 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 )
 
+// The AttendanceFunc type is an adapter to allow the use of ordinary
+// function as Attendance mutator.
+type AttendanceFunc func(context.Context, *ent.AttendanceMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AttendanceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.AttendanceMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AttendanceMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The BatteryModelFunc type is an adapter to allow the use of ordinary
 // function as BatteryModel mutator.
 type BatteryModelFunc func(context.Context, *ent.BatteryModelMutation) (ent.Value, error)

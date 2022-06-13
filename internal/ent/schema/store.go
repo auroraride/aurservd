@@ -48,9 +48,9 @@ func (Store) Annotations() []schema.Annotation {
 // Fields of the Store.
 func (Store) Fields() []ent.Field {
     return []ent.Field{
-        field.Uint64("employee_id").Optional().Comment("上班员工ID"),
+        field.Uint64("employee_id").Optional().Nillable().Comment("上班员工ID"),
         field.Uint64("branch_id").Comment("网点ID"),
-        field.String("sn").Immutable().Comment("门店编号"),
+        field.String("sn").Immutable().Unique().Comment("门店编号"),
         field.String("name").Comment("门店名称"),
         field.Uint8("status").Default(0).Comment("门店状态 0维护 1营业 2休息 3隐藏"),
     }
@@ -64,6 +64,7 @@ func (Store) Edges() []ent.Edge {
 
         edge.To("inboundStocks", Stock.Type),
         edge.To("outboundStocks", Stock.Type),
+        edge.To("attendances", Attendance.Type),
     }
 }
 

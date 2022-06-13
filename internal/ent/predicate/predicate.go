@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Attendance is the predicate function for attendance builders.
+type Attendance func(*sql.Selector)
+
 // BatteryModel is the predicate function for batterymodel builders.
 type BatteryModel func(*sql.Selector)
 

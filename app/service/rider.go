@@ -339,7 +339,7 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
             sq.Order(ent.Desc(subscribe.FieldCreatedAt))
         }).
         WithContracts(func(cq *ent.ContractQuery) {
-            cq.Where(contract.DeletedAtIsNil())
+            cq.Where(contract.DeletedAtIsNil(), contract.Status(model.ContractStatusSuccess.Raw()))
         })
     if req.Keyword != nil {
         // 判定是否id字段
@@ -443,6 +443,7 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
                 Phone:      item.Phone,
                 Status:     model.RiderStatusNormal,
                 AuthStatus: model.PersonUnauthenticated,
+                Contact:    item.Contact,
             }
             if item.Blocked {
                 ri.Status = model.RiderStatusBlocked

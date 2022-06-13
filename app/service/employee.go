@@ -178,10 +178,12 @@ func (s *employeeService) Signin(req *model.EmployeeSignReq) model.EmployeeProfi
     if !debugPhones[req.Phone] && !NewSms().VerifyCode(req.SmsId, req.SmsCode) {
         snag.Panic("短信验证码校验失败")
     }
-    e, _ := s.orm.QueryNotDeleted().Where(employee.Phone(req.Phone)).First(s.ctx)
+    e, _ := s.orm.QueryNotDeleted().Where(employee.Phone(req.Phone)).WithStore().First(s.ctx)
     if e == nil {
         snag.Panic("未找到用户")
     }
+
+    st := e.Edges.Store
 
     // 生成token
     token := xid.New().String() + utils.RandTokenString()
@@ -197,13 +199,21 @@ func (s *employeeService) Signin(req *model.EmployeeSignReq) model.EmployeeProfi
     e = e.Update().SetSn(uuid.New()).SaveX(s.ctx)
 
     s.ExtendTokenTime(e.ID, token)
-    return model.EmployeeProfile{
+    res := model.EmployeeProfile{
         ID:     e.ID,
         Token:  token,
         Qrcode: fmt.Sprintf("EMPLOYEE:%s", e.Sn),
         Phone:  e.Phone,
         Name:   e.Name,
     }
+    if st != nil {
+        res.Onduty = true
+        res.Store = &model.Store{
+            ID:   st.ID,
+            Name: st.Name,
+        }
+    }
+    return res
 }
 
 // RefreshQrcode 重新生成二维码

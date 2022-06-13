@@ -32,6 +32,7 @@ type StoreItem struct {
     Name     string    `json:"name"`               // 门店名称
     Status   uint8     `json:"status"`             // 状态
     City     City      `json:"city"`               // 城市
+    QRCode   string    `json:"qrcode"`             // 门店二维码
     Employee *Employee `json:"employee,omitempty"` // 店员, 有可能不存在
 }
 

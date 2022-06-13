@@ -43,6 +43,8 @@ const (
 	EdgeInboundStocks = "inboundStocks"
 	// EdgeOutboundStocks holds the string denoting the outboundstocks edge name in mutations.
 	EdgeOutboundStocks = "outboundStocks"
+	// EdgeAttendances holds the string denoting the attendances edge name in mutations.
+	EdgeAttendances = "attendances"
 	// Table holds the table name of the store in the database.
 	Table = "store"
 	// BranchTable is the table that holds the branch relation/edge.
@@ -73,6 +75,13 @@ const (
 	OutboundStocksInverseTable = "stock"
 	// OutboundStocksColumn is the table column denoting the outboundStocks relation/edge.
 	OutboundStocksColumn = "outbound_store_id"
+	// AttendancesTable is the table that holds the attendances relation/edge.
+	AttendancesTable = "attendance"
+	// AttendancesInverseTable is the table name for the Attendance entity.
+	// It exists in this package in order to avoid circular dependency with the "attendance" package.
+	AttendancesInverseTable = "attendance"
+	// AttendancesColumn is the table column denoting the attendances relation/edge.
+	AttendancesColumn = "store_id"
 )
 
 // Columns holds all SQL columns for store fields.

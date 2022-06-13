@@ -8,7 +8,6 @@ package service
 import (
     "context"
     stdsql "database/sql"
-    "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -233,7 +232,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
     // 调出检查
     name := req.Name
     if req.Voltage != 0 {
-        name = fmt.Sprintf("%.2gV电池", req.Voltage)
+        name = NewBattery().VoltageName(req.Voltage)
     }
 
     if req.OutboundID > 0 && s.Fetch(req.OutboundID, name) < req.Num {

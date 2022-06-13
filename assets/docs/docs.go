@@ -112,6 +112,91 @@ const docTemplate = `{
                 }
             }
         },
+        "/employee/v1/attendance": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E1004 考勤打卡",
+                "operationId": "EmployeeAttendanceCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "打卡信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AttendanceCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/v1/attendance/precheck": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E1003 打卡预检",
+                "operationId": "EmployeeAttendancePrecheck",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "预检请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AttendancePrecheck"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "需盘点物资清单",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.InventoryItem"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/employee/v1/qrcode": {
             "get": {
                 "consumes": [
@@ -124,11 +209,11 @@ const docTemplate = `{
                     "[E]店员接口"
                 ],
                 "summary": "E1002 更换二维码",
-                "operationId": "ManagerEmployeeQrcode",
+                "operationId": "EmployeeEmployeeQrcode",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "管理员校验token",
+                        "description": "店员校验token",
                         "name": "X-Employee-Token",
                         "in": "header",
                         "required": true
@@ -156,17 +241,17 @@ const docTemplate = `{
                     "[E]店员接口"
                 ],
                 "summary": "E1001 登录",
-                "operationId": "ManagerEmployeeSignin",
+                "operationId": "EmployeeEmployeeSignin",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "管理员校验token",
+                        "description": "店员校验token",
                         "name": "X-Employee-Token",
                         "in": "header",
                         "required": true
                     },
                     {
-                        "description": "desc",
+                        "description": "店员登录请求",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -177,7 +262,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "请求成功",
+                        "description": "店员登录信息",
                         "schema": {
                             "$ref": "#/definitions/model.EmployeeProfile"
                         }
@@ -1123,7 +1208,7 @@ const docTemplate = `{
             }
         },
         "/manager/v1/deposit": {
-            "get": {
+            "post": {
                 "consumes": [
                     "application/json"
                 ],
@@ -2037,6 +2122,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/inventory/transferable": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M1018 可调拨物资清单",
+                "operationId": "ManagerInventoryTransferable",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.InventoryItem"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/order": {
             "get": {
                 "consumes": [
@@ -2693,7 +2813,7 @@ const docTemplate = `{
             }
         },
         "/manager/v1/rider/modify": {
-            "get": {
+            "post": {
                 "consumes": [
                     "application/json"
                 ],
@@ -4592,6 +4712,80 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AttendanceCreateReq": {
+            "type": "object",
+            "required": [
+                "address",
+                "inventory",
+                "lat",
+                "lng",
+                "sn"
+            ],
+            "properties": {
+                "address": {
+                    "description": "详细地址 ",
+                    "type": "string"
+                },
+                "duty": {
+                    "description": "上下班 ` + "`" + `true` + "`" + `上班 ` + "`" + `false` + "`" + `下班",
+                    "type": "boolean"
+                },
+                "inventory": {
+                    "description": "物资盘点清单 格式为 [名称]:数量",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
+                    }
+                },
+                "lat": {
+                    "description": "纬度 ",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度 ",
+                    "type": "number"
+                },
+                "photo": {
+                    "description": "上班照片",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "门店编号 ",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AttendancePrecheck": {
+            "type": "object",
+            "required": [
+                "address",
+                "lat",
+                "lng",
+                "sn"
+            ],
+            "properties": {
+                "address": {
+                    "description": "详细地址 ",
+                    "type": "string"
+                },
+                "duty": {
+                    "description": "上下班 ` + "`" + `true` + "`" + `上班 ` + "`" + `false` + "`" + `下班",
+                    "type": "boolean"
+                },
+                "lat": {
+                    "description": "纬度 ",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度 ",
+                    "type": "number"
+                },
+                "sn": {
+                    "description": "门店编号 ",
+                    "type": "string"
+                }
+            }
+        },
         "model.BatteryModel": {
             "type": "object",
             "properties": {
@@ -5567,6 +5761,10 @@ const docTemplate = `{
                     "description": "姓名",
                     "type": "string"
                 },
+                "onduty": {
+                    "description": "是否上班",
+                    "type": "boolean"
+                },
                 "phone": {
                     "description": "电话",
                     "type": "string"
@@ -5574,6 +5772,14 @@ const docTemplate = `{
                 "qrcode": {
                     "description": "二维码, 未上班或外出中二维码失效",
                     "type": "string"
+                },
+                "store": {
+                    "description": "上班门店, 未上班为空, 业务办理禁止进入",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Store"
+                        }
+                    ]
                 },
                 "token": {
                     "description": "认证token",
@@ -6189,6 +6395,19 @@ const docTemplate = `{
                 }
             }
         },
+        "model.InventoryItem": {
+            "type": "object",
+            "properties": {
+                "battery": {
+                    "description": "是否电池",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "物资名称",
+                    "type": "string"
+                }
+            }
+        },
         "model.ItemListRes": {
             "type": "object",
             "properties": {
@@ -6799,6 +7018,14 @@ const docTemplate = `{
                     "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
                     "type": "integer"
                 },
+                "contact": {
+                    "description": "紧急联系人, 有可能不存在",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderContact"
+                        }
+                    ]
+                },
                 "contract": {
                     "description": "合同(有可能不存在)",
                     "type": "string"
@@ -7349,6 +7576,10 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "门店名称",
+                    "type": "string"
+                },
+                "qrcode": {
+                    "description": "门店二维码",
                     "type": "string"
                 },
                 "status": {

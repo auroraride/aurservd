@@ -37,7 +37,7 @@ type Store struct {
 	Remark string `json:"remark,omitempty"`
 	// EmployeeID holds the value of the "employee_id" field.
 	// 上班员工ID
-	EmployeeID uint64 `json:"employee_id,omitempty"`
+	EmployeeID *uint64 `json:"employee_id,omitempty"`
 	// BranchID holds the value of the "branch_id" field.
 	// 网点ID
 	BranchID uint64 `json:"branch_id,omitempty"`
@@ -65,9 +65,11 @@ type StoreEdges struct {
 	InboundStocks []*Stock `json:"inboundStocks,omitempty"`
 	// OutboundStocks holds the value of the outboundStocks edge.
 	OutboundStocks []*Stock `json:"outboundStocks,omitempty"`
+	// Attendances holds the value of the attendances edge.
+	Attendances []*Attendance `json:"attendances,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 }
 
 // BranchOrErr returns the Branch value or an error if the edge
@@ -114,6 +116,15 @@ func (e StoreEdges) OutboundStocksOrErr() ([]*Stock, error) {
 		return e.OutboundStocks, nil
 	}
 	return nil, &NotLoadedError{edge: "outboundStocks"}
+}
+
+// AttendancesOrErr returns the Attendances value or an error if the edge
+// was not loaded in eager-loading.
+func (e StoreEdges) AttendancesOrErr() ([]*Attendance, error) {
+	if e.loadedTypes[4] {
+		return e.Attendances, nil
+	}
+	return nil, &NotLoadedError{edge: "attendances"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -195,7 +206,8 @@ func (s *Store) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field employee_id", values[i])
 			} else if value.Valid {
-				s.EmployeeID = uint64(value.Int64)
+				s.EmployeeID = new(uint64)
+				*s.EmployeeID = uint64(value.Int64)
 			}
 		case store.FieldBranchID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -246,6 +258,11 @@ func (s *Store) QueryOutboundStocks() *StockQuery {
 	return (&StoreClient{config: s.config}).QueryOutboundStocks(s)
 }
 
+// QueryAttendances queries the "attendances" edge of the Store entity.
+func (s *Store) QueryAttendances() *AttendanceQuery {
+	return (&StoreClient{config: s.config}).QueryAttendances(s)
+}
+
 // Update returns a builder for updating this Store.
 // Note that you need to call Store.Unwrap() before calling this method if this Store
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -283,8 +300,10 @@ func (s *Store) String() string {
 	builder.WriteString(fmt.Sprintf("%v", s.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(s.Remark)
-	builder.WriteString(", employee_id=")
-	builder.WriteString(fmt.Sprintf("%v", s.EmployeeID))
+	if v := s.EmployeeID; v != nil {
+		builder.WriteString(", employee_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", branch_id=")
 	builder.WriteString(fmt.Sprintf("%v", s.BranchID))
 	builder.WriteString(", sn=")

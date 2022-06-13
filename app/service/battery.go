@@ -7,6 +7,7 @@ package service
 
 import (
     "context"
+    "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -80,4 +81,9 @@ func (s *batteryService) ListVoltages() []float64 {
         GroupBy(batterymodel.FieldVoltage).
         ScanX(s.ctx, &items)
     return items
+}
+
+// VoltageName 获取电池电压型号名称
+func (s *batteryService) VoltageName(voltage float64) string {
+    return fmt.Sprintf("%.2gV电池", voltage)
 }

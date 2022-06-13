@@ -5,6 +5,7 @@ package runtime
 import (
 	"time"
 
+	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
@@ -41,6 +42,23 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	attendanceMixin := schema.Attendance{}.Mixin()
+	attendanceMixinHooks2 := attendanceMixin[2].Hooks()
+	attendance.Hooks[0] = attendanceMixinHooks2[0]
+	attendanceMixinFields0 := attendanceMixin[0].Fields()
+	_ = attendanceMixinFields0
+	attendanceFields := schema.Attendance{}.Fields()
+	_ = attendanceFields
+	// attendanceDescCreatedAt is the schema descriptor for created_at field.
+	attendanceDescCreatedAt := attendanceMixinFields0[0].Descriptor()
+	// attendance.DefaultCreatedAt holds the default value on creation for the created_at field.
+	attendance.DefaultCreatedAt = attendanceDescCreatedAt.Default.(func() time.Time)
+	// attendanceDescUpdatedAt is the schema descriptor for updated_at field.
+	attendanceDescUpdatedAt := attendanceMixinFields0[1].Descriptor()
+	// attendance.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	attendance.DefaultUpdatedAt = attendanceDescUpdatedAt.Default.(func() time.Time)
+	// attendance.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	attendance.UpdateDefaultUpdatedAt = attendanceDescUpdatedAt.UpdateDefault.(func() time.Time)
 	batterymodelMixin := schema.BatteryModel{}.Mixin()
 	batterymodelMixinHooks2 := batterymodelMixin[2].Hooks()
 	batterymodel.Hooks[0] = batterymodelMixinHooks2[0]

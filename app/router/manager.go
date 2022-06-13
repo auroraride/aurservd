@@ -26,6 +26,7 @@ func loadManagerRoutes() {
     g.POST("/inventory", mapi.Inventory.CreateOrModify)
     g.GET("/inventory", mapi.Inventory.List)
     g.DELETE("/inventory", mapi.Inventory.Delete)
+    g.GET("/inventory/transferable", mapi.Inventory.Transferable)
 
     // 城市
     g.GET("/city", mapi.City.List)       // 城市列表

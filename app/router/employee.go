@@ -18,4 +18,8 @@ func loadEmployeeRoutes() {
     g.GET("/qrcode", eapi.Employee.Qrcode)
 
     g.POST("/subscribe/active", eapi.Subscribe.Active)
+
+    // 打卡考勤
+    g.POST("/attendance/precheck", eapi.Attendance.Precheck)
+    g.POST("/attendance", eapi.Attendance.Create)
 }

@@ -6,6 +6,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
@@ -35,6 +36,46 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/subscribealter"
 	"github.com/auroraride/aurservd/internal/ent/subscribepause"
 )
+
+// SoftDelete returns an soft delete builder for Attendance.
+func (c *AttendanceClient) SoftDelete() *AttendanceUpdate {
+	mutation := newAttendanceMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &AttendanceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *AttendanceClient) SoftDeleteOne(a *Attendance) *AttendanceUpdateOne {
+	mutation := newAttendanceMutation(c.config, OpUpdateOne, withAttendance(a))
+	mutation.SetDeletedAt(time.Now())
+	return &AttendanceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *AttendanceClient) SoftDeleteOneID(id uint64) *AttendanceUpdateOne {
+	mutation := newAttendanceMutation(c.config, OpUpdateOne, withAttendanceID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &AttendanceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Attendance.
+func (c *AttendanceClient) QueryNotDeleted() *AttendanceQuery {
+	return c.Query().Where(attendance.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Attendance not deleted entity by its id.
+func (c *AttendanceClient) GetNotDeleted(ctx context.Context, id uint64) (*Attendance, error) {
+	return c.Query().Where(attendance.ID(id), attendance.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *AttendanceClient) GetNotDeletedX(ctx context.Context, id uint64) *Attendance {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
 
 // SoftDelete returns an soft delete builder for BatteryModel.
 func (c *BatteryModelClient) SoftDelete() *BatteryModelUpdate {

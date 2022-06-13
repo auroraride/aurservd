@@ -80,7 +80,7 @@ func (*rider) Log(c echo.Context) (err error) {
 
 // Deposit
 // @ID           ManagerSubscribeDeposit
-// @Router       /manager/v1/deposit [GET]
+// @Router       /manager/v1/deposit [POST]
 // @Summary      M7009 修改押金
 // @Tags         [M]管理接口
 // @Accept       json
@@ -96,7 +96,7 @@ func (*rider) Deposit(c echo.Context) (err error) {
 
 // Modify
 // @ID           ManagerSubscribeModify
-// @Router       /manager/v1/rider/modify [GET]
+// @Router       /manager/v1/rider/modify [POST]
 // @Summary      M7010 修改骑手资料
 // @Tags         [M]管理接口
 // @Accept       json

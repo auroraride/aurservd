@@ -9,6 +9,7 @@ import (
 
 	"github.com/auroraride/aurservd/internal/ent/migrate"
 
+	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
@@ -49,6 +50,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Attendance is the client for interacting with the Attendance builders.
+	Attendance *AttendanceClient
 	// BatteryModel is the client for interacting with the BatteryModel builders.
 	BatteryModel *BatteryModelClient
 	// Branch is the client for interacting with the Branch builders.
@@ -120,6 +123,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.Attendance = NewAttendanceClient(c.config)
 	c.BatteryModel = NewBatteryModelClient(c.config)
 	c.Branch = NewBranchClient(c.config)
 	c.BranchContract = NewBranchContractClient(c.config)
@@ -182,6 +186,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:                  ctx,
 		config:               cfg,
+		Attendance:           NewAttendanceClient(cfg),
 		BatteryModel:         NewBatteryModelClient(cfg),
 		Branch:               NewBranchClient(cfg),
 		BranchContract:       NewBranchContractClient(cfg),
@@ -230,6 +235,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:                  ctx,
 		config:               cfg,
+		Attendance:           NewAttendanceClient(cfg),
 		BatteryModel:         NewBatteryModelClient(cfg),
 		Branch:               NewBranchClient(cfg),
 		BranchContract:       NewBranchContractClient(cfg),
@@ -265,7 +271,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		BatteryModel.
+//		Attendance.
 //		Query().
 //		Count(ctx)
 //
@@ -288,6 +294,7 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.Attendance.Use(hooks...)
 	c.BatteryModel.Use(hooks...)
 	c.Branch.Use(hooks...)
 	c.BranchContract.Use(hooks...)
@@ -317,6 +324,129 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Subscribe.Use(hooks...)
 	c.SubscribeAlter.Use(hooks...)
 	c.SubscribePause.Use(hooks...)
+}
+
+// AttendanceClient is a client for the Attendance schema.
+type AttendanceClient struct {
+	config
+}
+
+// NewAttendanceClient returns a client for the Attendance from the given config.
+func NewAttendanceClient(c config) *AttendanceClient {
+	return &AttendanceClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `attendance.Hooks(f(g(h())))`.
+func (c *AttendanceClient) Use(hooks ...Hook) {
+	c.hooks.Attendance = append(c.hooks.Attendance, hooks...)
+}
+
+// Create returns a create builder for Attendance.
+func (c *AttendanceClient) Create() *AttendanceCreate {
+	mutation := newAttendanceMutation(c.config, OpCreate)
+	return &AttendanceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Attendance entities.
+func (c *AttendanceClient) CreateBulk(builders ...*AttendanceCreate) *AttendanceCreateBulk {
+	return &AttendanceCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Attendance.
+func (c *AttendanceClient) Update() *AttendanceUpdate {
+	mutation := newAttendanceMutation(c.config, OpUpdate)
+	return &AttendanceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AttendanceClient) UpdateOne(a *Attendance) *AttendanceUpdateOne {
+	mutation := newAttendanceMutation(c.config, OpUpdateOne, withAttendance(a))
+	return &AttendanceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AttendanceClient) UpdateOneID(id uint64) *AttendanceUpdateOne {
+	mutation := newAttendanceMutation(c.config, OpUpdateOne, withAttendanceID(id))
+	return &AttendanceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Attendance.
+func (c *AttendanceClient) Delete() *AttendanceDelete {
+	mutation := newAttendanceMutation(c.config, OpDelete)
+	return &AttendanceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *AttendanceClient) DeleteOne(a *Attendance) *AttendanceDeleteOne {
+	return c.DeleteOneID(a.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *AttendanceClient) DeleteOneID(id uint64) *AttendanceDeleteOne {
+	builder := c.Delete().Where(attendance.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AttendanceDeleteOne{builder}
+}
+
+// Query returns a query builder for Attendance.
+func (c *AttendanceClient) Query() *AttendanceQuery {
+	return &AttendanceQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Attendance entity by its id.
+func (c *AttendanceClient) Get(ctx context.Context, id uint64) (*Attendance, error) {
+	return c.Query().Where(attendance.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AttendanceClient) GetX(ctx context.Context, id uint64) *Attendance {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryStore queries the store edge of a Attendance.
+func (c *AttendanceClient) QueryStore(a *Attendance) *StoreQuery {
+	query := &StoreQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(attendance.Table, attendance.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, attendance.StoreTable, attendance.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEmployee queries the employee edge of a Attendance.
+func (c *AttendanceClient) QueryEmployee(a *Attendance) *EmployeeQuery {
+	query := &EmployeeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(attendance.Table, attendance.FieldID, id),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, attendance.EmployeeTable, attendance.EmployeeColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AttendanceClient) Hooks() []Hook {
+	hooks := c.hooks.Attendance
+	return append(hooks[:len(hooks):len(hooks)], attendance.Hooks[:]...)
 }
 
 // BatteryModelClient is a client for the BatteryModel schema.
@@ -1493,6 +1623,22 @@ func (c *EmployeeClient) QueryStore(e *Employee) *StoreQuery {
 			sqlgraph.From(employee.Table, employee.FieldID, id),
 			sqlgraph.To(store.Table, store.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, employee.StoreTable, employee.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAttendances queries the attendances edge of a Employee.
+func (c *EmployeeClient) QueryAttendances(e *Employee) *AttendanceQuery {
+	query := &AttendanceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, id),
+			sqlgraph.To(attendance.Table, attendance.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, employee.AttendancesTable, employee.AttendancesColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil
@@ -3792,6 +3938,22 @@ func (c *StoreClient) QueryOutboundStocks(s *Store) *StockQuery {
 			sqlgraph.From(store.Table, store.FieldID, id),
 			sqlgraph.To(stock.Table, stock.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, store.OutboundStocksTable, store.OutboundStocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAttendances queries the attendances edge of a Store.
+func (c *StoreClient) QueryAttendances(s *Store) *AttendanceQuery {
+	query := &AttendanceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, id),
+			sqlgraph.To(attendance.Table, attendance.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, store.AttendancesTable, store.AttendancesColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

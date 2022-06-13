@@ -3,6 +3,13 @@
 #### 接口新增
 
 - [M1016 物资管理概览](http://localhost:5533/docs#tag/M/operation/ManagerStockOverview)
+- [M1018 可调拨物资清单](http://localhost:5533/docs#tag/M/operation/ManagerInventoryTransferable) *调拨物资时使用*
+
+
+
+#### 接口调整
+
+- 门店相关接口返回门店二维码属性`qrcode`
 
 
 
