@@ -31,6 +31,8 @@ const (
 	FieldStoreID = "store_id"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
+	// FieldEmployeeID holds the string denoting the employee_id field in the database.
+	FieldEmployeeID = "employee_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldVoltage holds the string denoting the voltage field in the database.
@@ -41,6 +43,8 @@ const (
 	EdgeStore = "store"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
+	// EdgeEmployee holds the string denoting the employee edge name in mutations.
+	EdgeEmployee = "employee"
 	// Table holds the table name of the stock in the database.
 	Table = "stock"
 	// StoreTable is the table that holds the store relation/edge.
@@ -57,6 +61,13 @@ const (
 	RiderInverseTable = "rider"
 	// RiderColumn is the table column denoting the rider relation/edge.
 	RiderColumn = "rider_id"
+	// EmployeeTable is the table that holds the employee relation/edge.
+	EmployeeTable = "stock"
+	// EmployeeInverseTable is the table name for the Employee entity.
+	// It exists in this package in order to avoid circular dependency with the "employee" package.
+	EmployeeInverseTable = "employee"
+	// EmployeeColumn is the table column denoting the employee relation/edge.
+	EmployeeColumn = "employee_id"
 )
 
 // Columns holds all SQL columns for stock fields.
@@ -71,6 +82,7 @@ var Columns = []string{
 	FieldSn,
 	FieldStoreID,
 	FieldRiderID,
+	FieldEmployeeID,
 	FieldName,
 	FieldVoltage,
 	FieldNum,

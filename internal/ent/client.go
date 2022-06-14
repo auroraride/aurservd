@@ -1646,6 +1646,22 @@ func (c *EmployeeClient) QueryAttendances(e *Employee) *AttendanceQuery {
 	return query
 }
 
+// QueryStocks queries the stocks edge of a Employee.
+func (c *EmployeeClient) QueryStocks(e *Employee) *StockQuery {
+	query := &StockQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, employee.StocksTable, employee.StocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EmployeeClient) Hooks() []Hook {
 	hooks := c.hooks.Employee
@@ -3799,6 +3815,22 @@ func (c *StockClient) QueryRider(s *Stock) *RiderQuery {
 			sqlgraph.From(stock.Table, stock.FieldID, id),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, stock.RiderTable, stock.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEmployee queries the employee edge of a Stock.
+func (c *StockClient) QueryEmployee(s *Stock) *EmployeeQuery {
+	query := &EmployeeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.EmployeeTable, stock.EmployeeColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

@@ -28,7 +28,7 @@ type stockService struct {
     ctx      context.Context
     modifier *model.Modifier
     rider    *ent.Rider
-    employee *model.Employee
+    employee *ent.Employee
     orm      *ent.StockClient
 }
 
@@ -53,7 +53,7 @@ func NewStockWithModifier(m *model.Modifier) *stockService {
     return s
 }
 
-func NewStockWithEmployee(e *model.Employee) *stockService {
+func NewStockWithEmployee(e *ent.Employee) *stockService {
     s := NewStock()
     s.ctx = context.WithValue(s.ctx, "employee", e)
     s.employee = e
@@ -307,10 +307,21 @@ GROUP BY outbound, inbound, plaform`)
 }
 
 // BatteryOutboundWithRider 和骑手交互电池出库
-func (s *stockService) BatteryOutboundWithRider(riderID, storeID uint64, voltage float64, num int) {
+func (s *stockService) BatteryOutboundWithRider(cr *ent.StockCreate, riderID, storeID, employeeID uint64, voltage float64) error {
     name := NewBattery().VoltageName(voltage)
-    if num < s.Fetch(storeID, name) {
+    if s.Fetch(storeID, name) < 1 {
         snag.Panic("电池库存不足")
     }
-    // s.orm.Create().
+    _, err := cr.SetName(NewBattery().VoltageName(voltage)).
+        SetRiderID(riderID).
+        SetEmployeeID(employeeID).
+        SetStoreID(storeID).
+        SetVoltage(voltage).
+        SetNum(-1).
+        SetSn(tools.NewUnique().NewSN()).
+        Save(s.ctx)
+    if err != nil {
+        log.Error(err)
+    }
+    return err
 }

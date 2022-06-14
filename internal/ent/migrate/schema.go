@@ -1444,6 +1444,7 @@ var (
 		{Name: "name", Type: field.TypeString, Comment: "物资名称"},
 		{Name: "voltage", Type: field.TypeFloat64, Comment: "电池型号(电压)", Nullable: true},
 		{Name: "num", Type: field.TypeInt, Comment: "物资数量: 正值调入 / 负值调出"},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -1454,14 +1455,20 @@ var (
 		PrimaryKey: []*schema.Column{StockColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "stock_rider_stocks",
+				Symbol:     "stock_employee_stocks",
 				Columns:    []*schema.Column{StockColumns[11]},
+				RefColumns: []*schema.Column{EmployeeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "stock_rider_stocks",
+				Columns:    []*schema.Column{StockColumns[12]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "stock_store_stocks",
-				Columns:    []*schema.Column{StockColumns[12]},
+				Columns:    []*schema.Column{StockColumns[13]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2012,8 +2019,9 @@ func init() {
 	SettingTable.Annotation = &entsql.Annotation{
 		Table: "setting",
 	}
-	StockTable.ForeignKeys[0].RefTable = RiderTable
-	StockTable.ForeignKeys[1].RefTable = StoreTable
+	StockTable.ForeignKeys[0].RefTable = EmployeeTable
+	StockTable.ForeignKeys[1].RefTable = RiderTable
+	StockTable.ForeignKeys[2].RefTable = StoreTable
 	StockTable.Annotation = &entsql.Annotation{
 		Table: "stock",
 	}

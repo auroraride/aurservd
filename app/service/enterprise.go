@@ -330,7 +330,7 @@ func (s *enterpriseService) UpdateStatement(item *ent.Enterprise) {
         log.Errorf("[ENTERPRISE TASK] %d 更新失败: %v", item.ID, err)
     }
 
-    log.Infof("[ENTERPRISE TASK] %d 更新成功, 账期使用总天数: %d, 总费用: %v", item.ID, days, cost)
+    log.Infof("[ENTERPRISE TASK] EntperirseID:[%d] 更新成功, 总使用人数: %d, 账期使用总天数: %d, 总费用: %v", item.ID, len(subs), days, cost)
 }
 
 // Prepayment 预付费

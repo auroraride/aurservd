@@ -61,6 +61,7 @@ func (Employee) Edges() []ent.Edge {
         // edge.To("subscribes", Subscribe.Type),
         edge.To("store", Store.Type).Unique(),
         edge.To("attendances", Attendance.Type),
+        edge.To("stocks", Stock.Type),
     }
 }
 

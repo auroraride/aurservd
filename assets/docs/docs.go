@@ -292,7 +292,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "desc",
+                        "description": "二维码可带` + "`" + `SUBSCRIBE:` + "`" + `, 也可不带",
                         "name": "body",
                         "in": "body",
                         "required": true,
@@ -7827,6 +7827,14 @@ const docTemplate = `{
         "model.SubscribeActiveInfo": {
             "type": "object",
             "properties": {
+                "enterprise": {
+                    "description": "企业详情, 个签用户此字段不存在",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseBasic"
+                        }
+                    ]
+                },
                 "enterpriseId": {
                     "description": "企业ID, 团签用户判定依据, 非团签用户此字段不存在",
                     "type": "integer"
@@ -7836,13 +7844,28 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "order": {
-                    "$ref": "#/definitions/model.SubscribeOrderInfo"
+                    "description": "订单详情, 团签骑手此字段不存在",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.SubscribeOrderInfo"
+                        }
+                    ]
                 },
                 "plan": {
-                    "$ref": "#/definitions/model.Plan"
+                    "description": "套餐详情, 团签骑手此字段不存在",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Plan"
+                        }
+                    ]
                 },
                 "rider": {
-                    "$ref": "#/definitions/model.RiderBasic"
+                    "description": "骑手详情",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderBasic"
+                        }
+                    ]
                 },
                 "voltage": {
                     "description": "电池电压型号",

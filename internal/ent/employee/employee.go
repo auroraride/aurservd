@@ -39,6 +39,8 @@ const (
 	EdgeStore = "store"
 	// EdgeAttendances holds the string denoting the attendances edge name in mutations.
 	EdgeAttendances = "attendances"
+	// EdgeStocks holds the string denoting the stocks edge name in mutations.
+	EdgeStocks = "stocks"
 	// Table holds the table name of the employee in the database.
 	Table = "employee"
 	// CityTable is the table that holds the city relation/edge.
@@ -62,6 +64,13 @@ const (
 	AttendancesInverseTable = "attendance"
 	// AttendancesColumn is the table column denoting the attendances relation/edge.
 	AttendancesColumn = "employee_id"
+	// StocksTable is the table that holds the stocks relation/edge.
+	StocksTable = "stock"
+	// StocksInverseTable is the table name for the Stock entity.
+	// It exists in this package in order to avoid circular dependency with the "stock" package.
+	StocksInverseTable = "stock"
+	// StocksColumn is the table column denoting the stocks relation/edge.
+	StocksColumn = "employee_id"
 )
 
 // Columns holds all SQL columns for employee fields.

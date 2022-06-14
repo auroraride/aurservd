@@ -79,6 +79,7 @@ func (s *employeeSubscribeService) Inactive(qr string) *model.SubscribeActiveInf
         WithRider(func(rq *ent.RiderQuery) {
             rq.WithPerson()
         }).
+        WithEnterprise().
         Only(s.ctx)
 
     if sub == nil {
@@ -107,12 +108,13 @@ func (s *employeeSubscribeService) Inactive(qr string) *model.SubscribeActiveInf
         },
     }
 
+    // TODO 企业订单店员是否有提成?
     if sub.EnterpriseID == nil {
         o := sub.Edges.InitialOrder
         if o == nil || o.Status != model.OrderStatusPaid {
             snag.Panic("订单状态异常") // TODO 退款被拒绝的如何操作
         }
-        res.Order = model.SubscribeOrderInfo{
+        res.Order = &model.SubscribeOrderInfo{
             ID:      o.ID,
             Status:  o.Status,
             PayAt:   o.CreatedAt.Format(carbon.DateTimeLayout),
@@ -121,12 +123,18 @@ func (s *employeeSubscribeService) Inactive(qr string) *model.SubscribeActiveInf
             Deposit: o.Total - o.Amount,
             Total:   o.Total,
         }
+
+        c := sub.Edges.InitialOrder.Edges.Commission
+        if c != nil {
+            res.CommissionID = &c.ID
+        }
+    } else {
+        res.Enterprise = &model.EnterpriseBasic{
+            ID:   sub.Edges.Enterprise.ID,
+            Name: sub.Edges.Enterprise.Name,
+        }
     }
 
-    c := sub.Edges.InitialOrder.Edges.Commission
-    if c != nil {
-        res.CommissionID = &c.ID
-    }
     return res
 }
 
@@ -158,6 +166,10 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
     }
 
     // 调出库存
+    err = NewStockWithEmployee(s.employee).BatteryOutboundWithRider(tx.Stock.Create(), info.Rider.ID, s.employee.Edges.Store.ID, s.employee.ID, info.Voltage)
+    if err != nil {
+        snag.PanicIfErrorX(err, tx.Rollback)
+    }
 
     _ = tx.Commit()
 }

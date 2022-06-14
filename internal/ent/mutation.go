@@ -12560,6 +12560,9 @@ type EmployeeMutation struct {
 	attendances        map[uint64]struct{}
 	removedattendances map[uint64]struct{}
 	clearedattendances bool
+	stocks             map[uint64]struct{}
+	removedstocks      map[uint64]struct{}
+	clearedstocks      bool
 	done               bool
 	oldValue           func(context.Context) (*Employee, error)
 	predicates         []predicate.Employee
@@ -13207,6 +13210,60 @@ func (m *EmployeeMutation) ResetAttendances() {
 	m.removedattendances = nil
 }
 
+// AddStockIDs adds the "stocks" edge to the Stock entity by ids.
+func (m *EmployeeMutation) AddStockIDs(ids ...uint64) {
+	if m.stocks == nil {
+		m.stocks = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.stocks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearStocks clears the "stocks" edge to the Stock entity.
+func (m *EmployeeMutation) ClearStocks() {
+	m.clearedstocks = true
+}
+
+// StocksCleared reports if the "stocks" edge to the Stock entity was cleared.
+func (m *EmployeeMutation) StocksCleared() bool {
+	return m.clearedstocks
+}
+
+// RemoveStockIDs removes the "stocks" edge to the Stock entity by IDs.
+func (m *EmployeeMutation) RemoveStockIDs(ids ...uint64) {
+	if m.removedstocks == nil {
+		m.removedstocks = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.stocks, ids[i])
+		m.removedstocks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedStocks returns the removed IDs of the "stocks" edge to the Stock entity.
+func (m *EmployeeMutation) RemovedStocksIDs() (ids []uint64) {
+	for id := range m.removedstocks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// StocksIDs returns the "stocks" edge IDs in the mutation.
+func (m *EmployeeMutation) StocksIDs() (ids []uint64) {
+	for id := range m.stocks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetStocks resets all changes to the "stocks" edge.
+func (m *EmployeeMutation) ResetStocks() {
+	m.stocks = nil
+	m.clearedstocks = false
+	m.removedstocks = nil
+}
+
 // Where appends a list predicates to the EmployeeMutation builder.
 func (m *EmployeeMutation) Where(ps ...predicate.Employee) {
 	m.predicates = append(m.predicates, ps...)
@@ -13514,7 +13571,7 @@ func (m *EmployeeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EmployeeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.city != nil {
 		edges = append(edges, employee.EdgeCity)
 	}
@@ -13523,6 +13580,9 @@ func (m *EmployeeMutation) AddedEdges() []string {
 	}
 	if m.attendances != nil {
 		edges = append(edges, employee.EdgeAttendances)
+	}
+	if m.stocks != nil {
+		edges = append(edges, employee.EdgeStocks)
 	}
 	return edges
 }
@@ -13545,15 +13605,24 @@ func (m *EmployeeMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case employee.EdgeStocks:
+		ids := make([]ent.Value, 0, len(m.stocks))
+		for id := range m.stocks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EmployeeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedattendances != nil {
 		edges = append(edges, employee.EdgeAttendances)
+	}
+	if m.removedstocks != nil {
+		edges = append(edges, employee.EdgeStocks)
 	}
 	return edges
 }
@@ -13568,13 +13637,19 @@ func (m *EmployeeMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case employee.EdgeStocks:
+		ids := make([]ent.Value, 0, len(m.removedstocks))
+		for id := range m.removedstocks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EmployeeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedcity {
 		edges = append(edges, employee.EdgeCity)
 	}
@@ -13583,6 +13658,9 @@ func (m *EmployeeMutation) ClearedEdges() []string {
 	}
 	if m.clearedattendances {
 		edges = append(edges, employee.EdgeAttendances)
+	}
+	if m.clearedstocks {
+		edges = append(edges, employee.EdgeStocks)
 	}
 	return edges
 }
@@ -13597,6 +13675,8 @@ func (m *EmployeeMutation) EdgeCleared(name string) bool {
 		return m.clearedstore
 	case employee.EdgeAttendances:
 		return m.clearedattendances
+	case employee.EdgeStocks:
+		return m.clearedstocks
 	}
 	return false
 }
@@ -13627,6 +13707,9 @@ func (m *EmployeeMutation) ResetEdge(name string) error {
 		return nil
 	case employee.EdgeAttendances:
 		m.ResetAttendances()
+		return nil
+	case employee.EdgeStocks:
+		m.ResetStocks()
 		return nil
 	}
 	return fmt.Errorf("unknown Employee edge %s", name)
@@ -33395,29 +33478,31 @@ func (m *SettingMutation) ResetEdge(name string) error {
 // StockMutation represents an operation that mutates the Stock nodes in the graph.
 type StockMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint64
-	created_at    *time.Time
-	updated_at    *time.Time
-	deleted_at    *time.Time
-	creator       **model.Modifier
-	last_modifier **model.Modifier
-	remark        *string
-	sn            *string
-	name          *string
-	voltage       *float64
-	addvoltage    *float64
-	num           *int
-	addnum        *int
-	clearedFields map[string]struct{}
-	store         *uint64
-	clearedstore  bool
-	rider         *uint64
-	clearedrider  bool
-	done          bool
-	oldValue      func(context.Context) (*Stock, error)
-	predicates    []predicate.Stock
+	op              Op
+	typ             string
+	id              *uint64
+	created_at      *time.Time
+	updated_at      *time.Time
+	deleted_at      *time.Time
+	creator         **model.Modifier
+	last_modifier   **model.Modifier
+	remark          *string
+	sn              *string
+	name            *string
+	voltage         *float64
+	addvoltage      *float64
+	num             *int
+	addnum          *int
+	clearedFields   map[string]struct{}
+	store           *uint64
+	clearedstore    bool
+	rider           *uint64
+	clearedrider    bool
+	employee        *uint64
+	clearedemployee bool
+	done            bool
+	oldValue        func(context.Context) (*Stock, error)
+	predicates      []predicate.Stock
 }
 
 var _ ent.Mutation = (*StockMutation)(nil)
@@ -33920,6 +34005,55 @@ func (m *StockMutation) ResetRiderID() {
 	delete(m.clearedFields, stock.FieldRiderID)
 }
 
+// SetEmployeeID sets the "employee_id" field.
+func (m *StockMutation) SetEmployeeID(u uint64) {
+	m.employee = &u
+}
+
+// EmployeeID returns the value of the "employee_id" field in the mutation.
+func (m *StockMutation) EmployeeID() (r uint64, exists bool) {
+	v := m.employee
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmployeeID returns the old "employee_id" field's value of the Stock entity.
+// If the Stock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StockMutation) OldEmployeeID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmployeeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmployeeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmployeeID: %w", err)
+	}
+	return oldValue.EmployeeID, nil
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (m *StockMutation) ClearEmployeeID() {
+	m.employee = nil
+	m.clearedFields[stock.FieldEmployeeID] = struct{}{}
+}
+
+// EmployeeIDCleared returns if the "employee_id" field was cleared in this mutation.
+func (m *StockMutation) EmployeeIDCleared() bool {
+	_, ok := m.clearedFields[stock.FieldEmployeeID]
+	return ok
+}
+
+// ResetEmployeeID resets all changes to the "employee_id" field.
+func (m *StockMutation) ResetEmployeeID() {
+	m.employee = nil
+	delete(m.clearedFields, stock.FieldEmployeeID)
+}
+
 // SetName sets the "name" field.
 func (m *StockMutation) SetName(s string) {
 	m.name = &s
@@ -34134,6 +34268,32 @@ func (m *StockMutation) ResetRider() {
 	m.clearedrider = false
 }
 
+// ClearEmployee clears the "employee" edge to the Employee entity.
+func (m *StockMutation) ClearEmployee() {
+	m.clearedemployee = true
+}
+
+// EmployeeCleared reports if the "employee" edge to the Employee entity was cleared.
+func (m *StockMutation) EmployeeCleared() bool {
+	return m.EmployeeIDCleared() || m.clearedemployee
+}
+
+// EmployeeIDs returns the "employee" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EmployeeID instead. It exists only for internal usage by the builders.
+func (m *StockMutation) EmployeeIDs() (ids []uint64) {
+	if id := m.employee; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEmployee resets all changes to the "employee" edge.
+func (m *StockMutation) ResetEmployee() {
+	m.employee = nil
+	m.clearedemployee = false
+}
+
 // Where appends a list predicates to the StockMutation builder.
 func (m *StockMutation) Where(ps ...predicate.Stock) {
 	m.predicates = append(m.predicates, ps...)
@@ -34153,7 +34313,7 @@ func (m *StockMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StockMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, stock.FieldCreatedAt)
 	}
@@ -34180,6 +34340,9 @@ func (m *StockMutation) Fields() []string {
 	}
 	if m.rider != nil {
 		fields = append(fields, stock.FieldRiderID)
+	}
+	if m.employee != nil {
+		fields = append(fields, stock.FieldEmployeeID)
 	}
 	if m.name != nil {
 		fields = append(fields, stock.FieldName)
@@ -34216,6 +34379,8 @@ func (m *StockMutation) Field(name string) (ent.Value, bool) {
 		return m.StoreID()
 	case stock.FieldRiderID:
 		return m.RiderID()
+	case stock.FieldEmployeeID:
+		return m.EmployeeID()
 	case stock.FieldName:
 		return m.Name()
 	case stock.FieldVoltage:
@@ -34249,6 +34414,8 @@ func (m *StockMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldStoreID(ctx)
 	case stock.FieldRiderID:
 		return m.OldRiderID(ctx)
+	case stock.FieldEmployeeID:
+		return m.OldEmployeeID(ctx)
 	case stock.FieldName:
 		return m.OldName(ctx)
 	case stock.FieldVoltage:
@@ -34326,6 +34493,13 @@ func (m *StockMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRiderID(v)
+		return nil
+	case stock.FieldEmployeeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmployeeID(v)
 		return nil
 	case stock.FieldName:
 		v, ok := value.(string)
@@ -34423,6 +34597,9 @@ func (m *StockMutation) ClearedFields() []string {
 	if m.FieldCleared(stock.FieldRiderID) {
 		fields = append(fields, stock.FieldRiderID)
 	}
+	if m.FieldCleared(stock.FieldEmployeeID) {
+		fields = append(fields, stock.FieldEmployeeID)
+	}
 	if m.FieldCleared(stock.FieldVoltage) {
 		fields = append(fields, stock.FieldVoltage)
 	}
@@ -34457,6 +34634,9 @@ func (m *StockMutation) ClearField(name string) error {
 		return nil
 	case stock.FieldRiderID:
 		m.ClearRiderID()
+		return nil
+	case stock.FieldEmployeeID:
+		m.ClearEmployeeID()
 		return nil
 	case stock.FieldVoltage:
 		m.ClearVoltage()
@@ -34496,6 +34676,9 @@ func (m *StockMutation) ResetField(name string) error {
 	case stock.FieldRiderID:
 		m.ResetRiderID()
 		return nil
+	case stock.FieldEmployeeID:
+		m.ResetEmployeeID()
+		return nil
 	case stock.FieldName:
 		m.ResetName()
 		return nil
@@ -34511,12 +34694,15 @@ func (m *StockMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *StockMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.store != nil {
 		edges = append(edges, stock.EdgeStore)
 	}
 	if m.rider != nil {
 		edges = append(edges, stock.EdgeRider)
+	}
+	if m.employee != nil {
+		edges = append(edges, stock.EdgeEmployee)
 	}
 	return edges
 }
@@ -34533,13 +34719,17 @@ func (m *StockMutation) AddedIDs(name string) []ent.Value {
 		if id := m.rider; id != nil {
 			return []ent.Value{*id}
 		}
+	case stock.EdgeEmployee:
+		if id := m.employee; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *StockMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	return edges
 }
 
@@ -34553,12 +34743,15 @@ func (m *StockMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *StockMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedstore {
 		edges = append(edges, stock.EdgeStore)
 	}
 	if m.clearedrider {
 		edges = append(edges, stock.EdgeRider)
+	}
+	if m.clearedemployee {
+		edges = append(edges, stock.EdgeEmployee)
 	}
 	return edges
 }
@@ -34571,6 +34764,8 @@ func (m *StockMutation) EdgeCleared(name string) bool {
 		return m.clearedstore
 	case stock.EdgeRider:
 		return m.clearedrider
+	case stock.EdgeEmployee:
+		return m.clearedemployee
 	}
 	return false
 }
@@ -34585,6 +34780,9 @@ func (m *StockMutation) ClearEdge(name string) error {
 	case stock.EdgeRider:
 		m.ClearRider()
 		return nil
+	case stock.EdgeEmployee:
+		m.ClearEmployee()
+		return nil
 	}
 	return fmt.Errorf("unknown Stock unique edge %s", name)
 }
@@ -34598,6 +34796,9 @@ func (m *StockMutation) ResetEdge(name string) error {
 		return nil
 	case stock.EdgeRider:
 		m.ResetRider()
+		return nil
+	case stock.EdgeEmployee:
+		m.ResetEmployee()
 		return nil
 	}
 	return fmt.Errorf("unknown Stock edge %s", name)

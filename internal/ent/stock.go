@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -44,6 +45,9 @@ type Stock struct {
 	// RiderID holds the value of the "rider_id" field.
 	// 对应骑手ID
 	RiderID *uint64 `json:"rider_id,omitempty"`
+	// EmployeeID holds the value of the "employee_id" field.
+	// 操作店员ID
+	EmployeeID *uint64 `json:"employee_id,omitempty"`
 	// Name holds the value of the "name" field.
 	// 物资名称
 	Name string `json:"name,omitempty"`
@@ -64,9 +68,11 @@ type StockEdges struct {
 	Store *Store `json:"store,omitempty"`
 	// Rider holds the value of the rider edge.
 	Rider *Rider `json:"rider,omitempty"`
+	// Employee holds the value of the employee edge.
+	Employee *Employee `json:"employee,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // StoreOrErr returns the Store value or an error if the edge
@@ -97,6 +103,20 @@ func (e StockEdges) RiderOrErr() (*Rider, error) {
 	return nil, &NotLoadedError{edge: "rider"}
 }
 
+// EmployeeOrErr returns the Employee value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e StockEdges) EmployeeOrErr() (*Employee, error) {
+	if e.loadedTypes[2] {
+		if e.Employee == nil {
+			// The edge employee was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: employee.Label}
+		}
+		return e.Employee, nil
+	}
+	return nil, &NotLoadedError{edge: "employee"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Stock) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -106,7 +126,7 @@ func (*Stock) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case stock.FieldVoltage:
 			values[i] = new(sql.NullFloat64)
-		case stock.FieldID, stock.FieldStoreID, stock.FieldRiderID, stock.FieldNum:
+		case stock.FieldID, stock.FieldStoreID, stock.FieldRiderID, stock.FieldEmployeeID, stock.FieldNum:
 			values[i] = new(sql.NullInt64)
 		case stock.FieldRemark, stock.FieldSn, stock.FieldName:
 			values[i] = new(sql.NullString)
@@ -194,6 +214,13 @@ func (s *Stock) assignValues(columns []string, values []interface{}) error {
 				s.RiderID = new(uint64)
 				*s.RiderID = uint64(value.Int64)
 			}
+		case stock.FieldEmployeeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field employee_id", values[i])
+			} else if value.Valid {
+				s.EmployeeID = new(uint64)
+				*s.EmployeeID = uint64(value.Int64)
+			}
 		case stock.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -226,6 +253,11 @@ func (s *Stock) QueryStore() *StoreQuery {
 // QueryRider queries the "rider" edge of the Stock entity.
 func (s *Stock) QueryRider() *RiderQuery {
 	return (&StockClient{config: s.config}).QueryRider(s)
+}
+
+// QueryEmployee queries the "employee" edge of the Stock entity.
+func (s *Stock) QueryEmployee() *EmployeeQuery {
+	return (&StockClient{config: s.config}).QueryEmployee(s)
 }
 
 // Update returns a builder for updating this Stock.
@@ -273,6 +305,10 @@ func (s *Stock) String() string {
 	}
 	if v := s.RiderID; v != nil {
 		builder.WriteString(", rider_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := s.EmployeeID; v != nil {
+		builder.WriteString(", employee_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", name=")

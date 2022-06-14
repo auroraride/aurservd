@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -135,6 +136,26 @@ func (su *StockUpdate) ClearRiderID() *StockUpdate {
 	return su
 }
 
+// SetEmployeeID sets the "employee_id" field.
+func (su *StockUpdate) SetEmployeeID(u uint64) *StockUpdate {
+	su.mutation.SetEmployeeID(u)
+	return su
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (su *StockUpdate) SetNillableEmployeeID(u *uint64) *StockUpdate {
+	if u != nil {
+		su.SetEmployeeID(*u)
+	}
+	return su
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (su *StockUpdate) ClearEmployeeID() *StockUpdate {
+	su.mutation.ClearEmployeeID()
+	return su
+}
+
 // SetName sets the "name" field.
 func (su *StockUpdate) SetName(s string) *StockUpdate {
 	su.mutation.SetName(s)
@@ -191,6 +212,11 @@ func (su *StockUpdate) SetRider(r *Rider) *StockUpdate {
 	return su.SetRiderID(r.ID)
 }
 
+// SetEmployee sets the "employee" edge to the Employee entity.
+func (su *StockUpdate) SetEmployee(e *Employee) *StockUpdate {
+	return su.SetEmployeeID(e.ID)
+}
+
 // Mutation returns the StockMutation object of the builder.
 func (su *StockUpdate) Mutation() *StockMutation {
 	return su.mutation
@@ -205,6 +231,12 @@ func (su *StockUpdate) ClearStore() *StockUpdate {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (su *StockUpdate) ClearRider() *StockUpdate {
 	su.mutation.ClearRider()
+	return su
+}
+
+// ClearEmployee clears the "employee" edge to the Employee entity.
+func (su *StockUpdate) ClearEmployee() *StockUpdate {
+	su.mutation.ClearEmployee()
 	return su
 }
 
@@ -465,6 +497,41 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if su.mutation.EmployeeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.EmployeeTable,
+			Columns: []string{stock.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.EmployeeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.EmployeeTable,
+			Columns: []string{stock.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{stock.Label}
@@ -588,6 +655,26 @@ func (suo *StockUpdateOne) ClearRiderID() *StockUpdateOne {
 	return suo
 }
 
+// SetEmployeeID sets the "employee_id" field.
+func (suo *StockUpdateOne) SetEmployeeID(u uint64) *StockUpdateOne {
+	suo.mutation.SetEmployeeID(u)
+	return suo
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableEmployeeID(u *uint64) *StockUpdateOne {
+	if u != nil {
+		suo.SetEmployeeID(*u)
+	}
+	return suo
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (suo *StockUpdateOne) ClearEmployeeID() *StockUpdateOne {
+	suo.mutation.ClearEmployeeID()
+	return suo
+}
+
 // SetName sets the "name" field.
 func (suo *StockUpdateOne) SetName(s string) *StockUpdateOne {
 	suo.mutation.SetName(s)
@@ -644,6 +731,11 @@ func (suo *StockUpdateOne) SetRider(r *Rider) *StockUpdateOne {
 	return suo.SetRiderID(r.ID)
 }
 
+// SetEmployee sets the "employee" edge to the Employee entity.
+func (suo *StockUpdateOne) SetEmployee(e *Employee) *StockUpdateOne {
+	return suo.SetEmployeeID(e.ID)
+}
+
 // Mutation returns the StockMutation object of the builder.
 func (suo *StockUpdateOne) Mutation() *StockMutation {
 	return suo.mutation
@@ -658,6 +750,12 @@ func (suo *StockUpdateOne) ClearStore() *StockUpdateOne {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (suo *StockUpdateOne) ClearRider() *StockUpdateOne {
 	suo.mutation.ClearRider()
+	return suo
+}
+
+// ClearEmployee clears the "employee" edge to the Employee entity.
+func (suo *StockUpdateOne) ClearEmployee() *StockUpdateOne {
+	suo.mutation.ClearEmployee()
 	return suo
 }
 
@@ -940,6 +1038,41 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: rider.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.EmployeeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.EmployeeTable,
+			Columns: []string{stock.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.EmployeeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.EmployeeTable,
+			Columns: []string{stock.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
 				},
 			},
 		}

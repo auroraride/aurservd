@@ -41,7 +41,7 @@ func (*subscribe) Detail(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        body  body  model.QRPostReq  true  "desc"
+// @Param        body  body     model.QRPostReq  true  "二维码可带`SUBSCRIBE:`, 也可不带"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Active(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.QRPostReq](c)

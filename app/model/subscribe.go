@@ -76,12 +76,13 @@ type SubscribeAlter struct {
 }
 
 type SubscribeActiveInfo struct {
-    ID           uint64  `json:"id"`                     // 订阅ID
-    Voltage      float64 `json:"voltage"`                // 电池电压型号
-    EnterpriseID *uint64 `json:"enterpriseId,omitempty"` // 企业ID, 团签用户判定依据, 非团签用户此字段不存在
-    Rider        RiderBasic
-    Plan         Plan
-    Order        SubscribeOrderInfo
+    ID           uint64              `json:"id"`                     // 订阅ID
+    Voltage      float64             `json:"voltage"`                // 电池电压型号
+    EnterpriseID *uint64             `json:"enterpriseId,omitempty"` // 企业ID, 团签用户判定依据, 非团签用户此字段不存在
+    Rider        RiderBasic          `json:"rider"`                  // 骑手详情
+    Plan         *Plan               `json:"plan,omitempty"`         // 套餐详情, 团签骑手此字段不存在
+    Order        *SubscribeOrderInfo `json:"order,omitempty"`        // 订单详情, 团签骑手此字段不存在
+    Enterprise   *EnterpriseBasic    `json:"enterprise,omitempty"`   // 企业详情, 个签用户此字段不存在
 
-    CommissionID *uint64 `json:"-"`
+    CommissionID *uint64 `json:"-" swaggerignore:"true"`
 }

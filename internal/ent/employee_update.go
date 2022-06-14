@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/google/uuid"
 )
@@ -168,6 +169,21 @@ func (eu *EmployeeUpdate) AddAttendances(a ...*Attendance) *EmployeeUpdate {
 	return eu.AddAttendanceIDs(ids...)
 }
 
+// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
+func (eu *EmployeeUpdate) AddStockIDs(ids ...uint64) *EmployeeUpdate {
+	eu.mutation.AddStockIDs(ids...)
+	return eu
+}
+
+// AddStocks adds the "stocks" edges to the Stock entity.
+func (eu *EmployeeUpdate) AddStocks(s ...*Stock) *EmployeeUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return eu.AddStockIDs(ids...)
+}
+
 // Mutation returns the EmployeeMutation object of the builder.
 func (eu *EmployeeUpdate) Mutation() *EmployeeMutation {
 	return eu.mutation
@@ -204,6 +220,27 @@ func (eu *EmployeeUpdate) RemoveAttendances(a ...*Attendance) *EmployeeUpdate {
 		ids[i] = a[i].ID
 	}
 	return eu.RemoveAttendanceIDs(ids...)
+}
+
+// ClearStocks clears all "stocks" edges to the Stock entity.
+func (eu *EmployeeUpdate) ClearStocks() *EmployeeUpdate {
+	eu.mutation.ClearStocks()
+	return eu
+}
+
+// RemoveStockIDs removes the "stocks" edge to Stock entities by IDs.
+func (eu *EmployeeUpdate) RemoveStockIDs(ids ...uint64) *EmployeeUpdate {
+	eu.mutation.RemoveStockIDs(ids...)
+	return eu
+}
+
+// RemoveStocks removes "stocks" edges to Stock entities.
+func (eu *EmployeeUpdate) RemoveStocks(s ...*Stock) *EmployeeUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return eu.RemoveStockIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -510,6 +547,60 @@ func (eu *EmployeeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if eu.mutation.StocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.StocksTable,
+			Columns: []string{employee.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedStocksIDs(); len(nodes) > 0 && !eu.mutation.StocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.StocksTable,
+			Columns: []string{employee.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.StocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.StocksTable,
+			Columns: []string{employee.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{employee.Label}
@@ -664,6 +755,21 @@ func (euo *EmployeeUpdateOne) AddAttendances(a ...*Attendance) *EmployeeUpdateOn
 	return euo.AddAttendanceIDs(ids...)
 }
 
+// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
+func (euo *EmployeeUpdateOne) AddStockIDs(ids ...uint64) *EmployeeUpdateOne {
+	euo.mutation.AddStockIDs(ids...)
+	return euo
+}
+
+// AddStocks adds the "stocks" edges to the Stock entity.
+func (euo *EmployeeUpdateOne) AddStocks(s ...*Stock) *EmployeeUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return euo.AddStockIDs(ids...)
+}
+
 // Mutation returns the EmployeeMutation object of the builder.
 func (euo *EmployeeUpdateOne) Mutation() *EmployeeMutation {
 	return euo.mutation
@@ -700,6 +806,27 @@ func (euo *EmployeeUpdateOne) RemoveAttendances(a ...*Attendance) *EmployeeUpdat
 		ids[i] = a[i].ID
 	}
 	return euo.RemoveAttendanceIDs(ids...)
+}
+
+// ClearStocks clears all "stocks" edges to the Stock entity.
+func (euo *EmployeeUpdateOne) ClearStocks() *EmployeeUpdateOne {
+	euo.mutation.ClearStocks()
+	return euo
+}
+
+// RemoveStockIDs removes the "stocks" edge to Stock entities by IDs.
+func (euo *EmployeeUpdateOne) RemoveStockIDs(ids ...uint64) *EmployeeUpdateOne {
+	euo.mutation.RemoveStockIDs(ids...)
+	return euo
+}
+
+// RemoveStocks removes "stocks" edges to Stock entities.
+func (euo *EmployeeUpdateOne) RemoveStocks(s ...*Stock) *EmployeeUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return euo.RemoveStockIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1028,6 +1155,60 @@ func (euo *EmployeeUpdateOne) sqlSave(ctx context.Context) (_node *Employee, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: attendance.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.StocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.StocksTable,
+			Columns: []string{employee.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedStocksIDs(); len(nodes) > 0 && !euo.mutation.StocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.StocksTable,
+			Columns: []string{employee.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.StocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.StocksTable,
+			Columns: []string{employee.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
 				},
 			},
 		}

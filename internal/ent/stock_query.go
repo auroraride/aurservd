@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -26,9 +27,10 @@ type StockQuery struct {
 	fields     []string
 	predicates []predicate.Stock
 	// eager-loading edges.
-	withStore *StoreQuery
-	withRider *RiderQuery
-	modifiers []func(*sql.Selector)
+	withStore    *StoreQuery
+	withRider    *RiderQuery
+	withEmployee *EmployeeQuery
+	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -102,6 +104,28 @@ func (sq *StockQuery) QueryRider() *RiderQuery {
 			sqlgraph.From(stock.Table, stock.FieldID, selector),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, stock.RiderTable, stock.RiderColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEmployee chains the current query on the "employee" edge.
+func (sq *StockQuery) QueryEmployee() *EmployeeQuery {
+	query := &EmployeeQuery{config: sq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, selector),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.EmployeeTable, stock.EmployeeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -285,13 +309,14 @@ func (sq *StockQuery) Clone() *StockQuery {
 		return nil
 	}
 	return &StockQuery{
-		config:     sq.config,
-		limit:      sq.limit,
-		offset:     sq.offset,
-		order:      append([]OrderFunc{}, sq.order...),
-		predicates: append([]predicate.Stock{}, sq.predicates...),
-		withStore:  sq.withStore.Clone(),
-		withRider:  sq.withRider.Clone(),
+		config:       sq.config,
+		limit:        sq.limit,
+		offset:       sq.offset,
+		order:        append([]OrderFunc{}, sq.order...),
+		predicates:   append([]predicate.Stock{}, sq.predicates...),
+		withStore:    sq.withStore.Clone(),
+		withRider:    sq.withRider.Clone(),
+		withEmployee: sq.withEmployee.Clone(),
 		// clone intermediate query.
 		sql:    sq.sql.Clone(),
 		path:   sq.path,
@@ -318,6 +343,17 @@ func (sq *StockQuery) WithRider(opts ...func(*RiderQuery)) *StockQuery {
 		opt(query)
 	}
 	sq.withRider = query
+	return sq
+}
+
+// WithEmployee tells the query-builder to eager-load the nodes that are connected to
+// the "employee" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StockQuery) WithEmployee(opts ...func(*EmployeeQuery)) *StockQuery {
+	query := &EmployeeQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withEmployee = query
 	return sq
 }
 
@@ -391,9 +427,10 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 	var (
 		nodes       = []*Stock{}
 		_spec       = sq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			sq.withStore != nil,
 			sq.withRider != nil,
+			sq.withEmployee != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -472,6 +509,35 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 			}
 			for i := range nodes {
 				nodes[i].Edges.Rider = n
+			}
+		}
+	}
+
+	if query := sq.withEmployee; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Stock)
+		for i := range nodes {
+			if nodes[i].EmployeeID == nil {
+				continue
+			}
+			fk := *nodes[i].EmployeeID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(employee.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "employee_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Employee = n
 			}
 		}
 	}

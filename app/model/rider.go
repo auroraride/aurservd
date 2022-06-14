@@ -25,7 +25,7 @@ type RiderContext struct {
 }
 
 type RiderBasic struct {
-    ID    uint64
+    ID    uint64 `json:"id"`
     Phone string `json:"phone"` // 电话
     Name  string `json:"name"`  // 姓名
 }
