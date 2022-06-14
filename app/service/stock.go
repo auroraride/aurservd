@@ -247,6 +247,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
         SetNillableVoltage(v).
         SetNum(-req.Num).
         SetNillableStoreID(out).
+        SetType(model.StockTypeTransfer).
         SetSn(sn).
         Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
@@ -257,6 +258,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
         SetNillableVoltage(v).
         SetNum(req.Num).
         SetNillableStoreID(in).
+        SetType(model.StockTypeTransfer).
         SetSn(sn).
         Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
@@ -306,18 +308,30 @@ GROUP BY outbound, inbound, plaform`)
     return
 }
 
-// BatteryOutboundWithRider 和骑手交互电池出库
-func (s *stockService) BatteryOutboundWithRider(cr *ent.StockCreate, riderID, storeID, employeeID uint64, voltage float64) error {
+// BatteryOutboundWithRider 和骑手交互电池出入库
+func (s *stockService) BatteryOutboundWithRider(cr *ent.StockCreate, riderID, storeID, employeeID uint64, voltage float64, stockType uint8) error {
     name := NewBattery().VoltageName(voltage)
-    if s.Fetch(storeID, name) < 1 {
+
+    var num int
+    switch stockType {
+    case model.StockTypeRiderObtain:
+        num = -1
+        break
+    case model.StockTypeRiderPause, model.StockTypeRiderUnSubscribe:
+        num = 1
+        break
+    }
+
+    if s.Fetch(storeID, name) < int(math.Abs(float64(num))) {
         snag.Panic("电池库存不足")
     }
     _, err := cr.SetName(NewBattery().VoltageName(voltage)).
         SetRiderID(riderID).
         SetEmployeeID(employeeID).
         SetStoreID(storeID).
+        SetType(stockType).
         SetVoltage(voltage).
-        SetNum(-1).
+        SetNum(num).
         SetSn(tools.NewUnique().NewSN()).
         Save(s.ctx)
     if err != nil {

@@ -39,6 +39,9 @@ type Stock struct {
 	// Sn holds the value of the "sn" field.
 	// 调拨编号
 	Sn string `json:"sn,omitempty"`
+	// Type holds the value of the "type" field.
+	// 类型 0:调拨 1:领取电池 2:寄存电池 3:归还电池
+	Type uint8 `json:"type,omitempty"`
 	// StoreID holds the value of the "store_id" field.
 	// 入库至 或 出库自 门店ID
 	StoreID *uint64 `json:"store_id,omitempty"`
@@ -126,7 +129,7 @@ func (*Stock) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case stock.FieldVoltage:
 			values[i] = new(sql.NullFloat64)
-		case stock.FieldID, stock.FieldStoreID, stock.FieldRiderID, stock.FieldEmployeeID, stock.FieldNum:
+		case stock.FieldID, stock.FieldType, stock.FieldStoreID, stock.FieldRiderID, stock.FieldEmployeeID, stock.FieldNum:
 			values[i] = new(sql.NullInt64)
 		case stock.FieldRemark, stock.FieldSn, stock.FieldName:
 			values[i] = new(sql.NullString)
@@ -199,6 +202,12 @@ func (s *Stock) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field sn", values[i])
 			} else if value.Valid {
 				s.Sn = value.String
+			}
+		case stock.FieldType:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field type", values[i])
+			} else if value.Valid {
+				s.Type = uint8(value.Int64)
 			}
 		case stock.FieldStoreID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -299,6 +308,8 @@ func (s *Stock) String() string {
 	builder.WriteString(s.Remark)
 	builder.WriteString(", sn=")
 	builder.WriteString(s.Sn)
+	builder.WriteString(", type=")
+	builder.WriteString(fmt.Sprintf("%v", s.Type))
 	if v := s.StoreID; v != nil {
 		builder.WriteString(", store_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))

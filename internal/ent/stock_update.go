@@ -96,6 +96,27 @@ func (su *StockUpdate) SetSn(s string) *StockUpdate {
 	return su
 }
 
+// SetType sets the "type" field.
+func (su *StockUpdate) SetType(u uint8) *StockUpdate {
+	su.mutation.ResetType()
+	su.mutation.SetType(u)
+	return su
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (su *StockUpdate) SetNillableType(u *uint8) *StockUpdate {
+	if u != nil {
+		su.SetType(*u)
+	}
+	return su
+}
+
+// AddType adds u to the "type" field.
+func (su *StockUpdate) AddType(u int8) *StockUpdate {
+	su.mutation.AddType(u)
+	return su
+}
+
 // SetStoreID sets the "store_id" field.
 func (su *StockUpdate) SetStoreID(u uint64) *StockUpdate {
 	su.mutation.SetStoreID(u)
@@ -186,19 +207,6 @@ func (su *StockUpdate) AddVoltage(f float64) *StockUpdate {
 // ClearVoltage clears the value of the "voltage" field.
 func (su *StockUpdate) ClearVoltage() *StockUpdate {
 	su.mutation.ClearVoltage()
-	return su
-}
-
-// SetNum sets the "num" field.
-func (su *StockUpdate) SetNum(i int) *StockUpdate {
-	su.mutation.ResetNum()
-	su.mutation.SetNum(i)
-	return su
-}
-
-// AddNum adds i to the "num" field.
-func (su *StockUpdate) AddNum(i int) *StockUpdate {
-	su.mutation.AddNum(i)
 	return su
 }
 
@@ -386,6 +394,20 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: stock.FieldSn,
 		})
 	}
+	if value, ok := su.mutation.GetType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: stock.FieldType,
+		})
+	}
+	if value, ok := su.mutation.AddedType(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: stock.FieldType,
+		})
+	}
 	if value, ok := su.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -411,20 +433,6 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Column: stock.FieldVoltage,
-		})
-	}
-	if value, ok := su.mutation.Num(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: stock.FieldNum,
-		})
-	}
-	if value, ok := su.mutation.AddedNum(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: stock.FieldNum,
 		})
 	}
 	if su.mutation.StoreCleared() {
@@ -615,6 +623,27 @@ func (suo *StockUpdateOne) SetSn(s string) *StockUpdateOne {
 	return suo
 }
 
+// SetType sets the "type" field.
+func (suo *StockUpdateOne) SetType(u uint8) *StockUpdateOne {
+	suo.mutation.ResetType()
+	suo.mutation.SetType(u)
+	return suo
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableType(u *uint8) *StockUpdateOne {
+	if u != nil {
+		suo.SetType(*u)
+	}
+	return suo
+}
+
+// AddType adds u to the "type" field.
+func (suo *StockUpdateOne) AddType(u int8) *StockUpdateOne {
+	suo.mutation.AddType(u)
+	return suo
+}
+
 // SetStoreID sets the "store_id" field.
 func (suo *StockUpdateOne) SetStoreID(u uint64) *StockUpdateOne {
 	suo.mutation.SetStoreID(u)
@@ -705,19 +734,6 @@ func (suo *StockUpdateOne) AddVoltage(f float64) *StockUpdateOne {
 // ClearVoltage clears the value of the "voltage" field.
 func (suo *StockUpdateOne) ClearVoltage() *StockUpdateOne {
 	suo.mutation.ClearVoltage()
-	return suo
-}
-
-// SetNum sets the "num" field.
-func (suo *StockUpdateOne) SetNum(i int) *StockUpdateOne {
-	suo.mutation.ResetNum()
-	suo.mutation.SetNum(i)
-	return suo
-}
-
-// AddNum adds i to the "num" field.
-func (suo *StockUpdateOne) AddNum(i int) *StockUpdateOne {
-	suo.mutation.AddNum(i)
 	return suo
 }
 
@@ -935,6 +951,20 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 			Column: stock.FieldSn,
 		})
 	}
+	if value, ok := suo.mutation.GetType(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: stock.FieldType,
+		})
+	}
+	if value, ok := suo.mutation.AddedType(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: stock.FieldType,
+		})
+	}
 	if value, ok := suo.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -960,20 +990,6 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Column: stock.FieldVoltage,
-		})
-	}
-	if value, ok := suo.mutation.Num(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: stock.FieldNum,
-		})
-	}
-	if value, ok := suo.mutation.AddedNum(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: stock.FieldNum,
 		})
 	}
 	if suo.mutation.StoreCleared() {

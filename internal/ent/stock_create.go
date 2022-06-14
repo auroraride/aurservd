@@ -100,6 +100,20 @@ func (sc *StockCreate) SetSn(s string) *StockCreate {
 	return sc
 }
 
+// SetType sets the "type" field.
+func (sc *StockCreate) SetType(u uint8) *StockCreate {
+	sc.mutation.SetType(u)
+	return sc
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (sc *StockCreate) SetNillableType(u *uint8) *StockCreate {
+	if u != nil {
+		sc.SetType(*u)
+	}
+	return sc
+}
+
 // SetStoreID sets the "store_id" field.
 func (sc *StockCreate) SetStoreID(u uint64) *StockCreate {
 	sc.mutation.SetStoreID(u)
@@ -276,6 +290,10 @@ func (sc *StockCreate) defaults() error {
 		v := stock.DefaultUpdatedAt()
 		sc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := sc.mutation.GetType(); !ok {
+		v := stock.DefaultType
+		sc.mutation.SetType(v)
+	}
 	return nil
 }
 
@@ -289,6 +307,9 @@ func (sc *StockCreate) check() error {
 	}
 	if _, ok := sc.mutation.Sn(); !ok {
 		return &ValidationError{Name: "sn", err: errors.New(`ent: missing required field "Stock.sn"`)}
+	}
+	if _, ok := sc.mutation.GetType(); !ok {
+		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Stock.type"`)}
 	}
 	if _, ok := sc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Stock.name"`)}
@@ -379,6 +400,14 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 			Column: stock.FieldSn,
 		})
 		_node.Sn = value
+	}
+	if value, ok := sc.mutation.GetType(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: stock.FieldType,
+		})
+		_node.Type = value
 	}
 	if value, ok := sc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -626,6 +655,24 @@ func (u *StockUpsert) UpdateSn() *StockUpsert {
 	return u
 }
 
+// SetType sets the "type" field.
+func (u *StockUpsert) SetType(v uint8) *StockUpsert {
+	u.Set(stock.FieldType, v)
+	return u
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *StockUpsert) UpdateType() *StockUpsert {
+	u.SetExcluded(stock.FieldType)
+	return u
+}
+
+// AddType adds v to the "type" field.
+func (u *StockUpsert) AddType(v uint8) *StockUpsert {
+	u.Add(stock.FieldType, v)
+	return u
+}
+
 // SetStoreID sets the "store_id" field.
 func (u *StockUpsert) SetStoreID(v uint64) *StockUpsert {
 	u.Set(stock.FieldStoreID, v)
@@ -751,6 +798,9 @@ func (u *StockUpsertOne) UpdateNewValues() *StockUpsertOne {
 		}
 		if _, exists := u.create.mutation.Creator(); exists {
 			s.SetIgnore(stock.FieldCreator)
+		}
+		if _, exists := u.create.mutation.Num(); exists {
+			s.SetIgnore(stock.FieldNum)
 		}
 	}))
 	return u
@@ -907,6 +957,27 @@ func (u *StockUpsertOne) SetSn(v string) *StockUpsertOne {
 func (u *StockUpsertOne) UpdateSn() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
 		s.UpdateSn()
+	})
+}
+
+// SetType sets the "type" field.
+func (u *StockUpsertOne) SetType(v uint8) *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.SetType(v)
+	})
+}
+
+// AddType adds v to the "type" field.
+func (u *StockUpsertOne) AddType(v uint8) *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.AddType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *StockUpsertOne) UpdateType() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateType()
 	})
 }
 
@@ -1217,6 +1288,9 @@ func (u *StockUpsertBulk) UpdateNewValues() *StockUpsertBulk {
 			if _, exists := b.mutation.Creator(); exists {
 				s.SetIgnore(stock.FieldCreator)
 			}
+			if _, exists := b.mutation.Num(); exists {
+				s.SetIgnore(stock.FieldNum)
+			}
 		}
 	}))
 	return u
@@ -1373,6 +1447,27 @@ func (u *StockUpsertBulk) SetSn(v string) *StockUpsertBulk {
 func (u *StockUpsertBulk) UpdateSn() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
 		s.UpdateSn()
+	})
+}
+
+// SetType sets the "type" field.
+func (u *StockUpsertBulk) SetType(v uint8) *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.SetType(v)
+	})
+}
+
+// AddType adds v to the "type" field.
+func (u *StockUpsertBulk) AddType(v uint8) *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.AddType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *StockUpsertBulk) UpdateType() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateType()
 	})
 }
 

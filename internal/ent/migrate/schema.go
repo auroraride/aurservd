@@ -1441,6 +1441,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "sn", Type: field.TypeString, Comment: "调拨编号"},
+		{Name: "type", Type: field.TypeUint8, Comment: "类型 0:调拨 1:领取电池 2:寄存电池 3:归还电池", Default: 0},
 		{Name: "name", Type: field.TypeString, Comment: "物资名称"},
 		{Name: "voltage", Type: field.TypeFloat64, Comment: "电池型号(电压)", Nullable: true},
 		{Name: "num", Type: field.TypeInt, Comment: "物资数量: 正值调入 / 负值调出"},
@@ -1456,19 +1457,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "stock_employee_stocks",
-				Columns:    []*schema.Column{StockColumns[11]},
+				Columns:    []*schema.Column{StockColumns[12]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "stock_rider_stocks",
-				Columns:    []*schema.Column{StockColumns[12]},
+				Columns:    []*schema.Column{StockColumns[13]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "stock_store_stocks",
-				Columns:    []*schema.Column{StockColumns[13]},
+				Columns:    []*schema.Column{StockColumns[14]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1497,12 +1498,12 @@ var (
 			{
 				Name:    "stock_name",
 				Unique:  false,
-				Columns: []*schema.Column{StockColumns[8]},
+				Columns: []*schema.Column{StockColumns[9]},
 			},
 			{
 				Name:    "stock_voltage",
 				Unique:  false,
-				Columns: []*schema.Column{StockColumns[9]},
+				Columns: []*schema.Column{StockColumns[10]},
 			},
 			{
 				Name:    "stock_sn",

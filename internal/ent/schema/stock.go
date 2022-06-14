@@ -1,13 +1,18 @@
 package schema
 
 import (
+    "context"
     "entgo.io/ent"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
+    "github.com/auroraride/aurservd/app/model"
+    appEnt "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/hook"
     "github.com/auroraride/aurservd/internal/ent/internal"
+    "github.com/auroraride/aurservd/pkg/snag"
 )
 
 // Stock holds the schema definition for the Stock entity.
@@ -26,12 +31,13 @@ func (Stock) Annotations() []schema.Annotation {
 func (Stock) Fields() []ent.Field {
     return []ent.Field{
         field.String("sn").Comment("调拨编号"),
+        field.Uint8("type").Default(0).Comment("类型 0:调拨 1:领取电池 2:寄存电池 3:归还电池"),
         field.Uint64("store_id").Optional().Nillable().Comment("入库至 或 出库自 门店ID"),
         field.Uint64("rider_id").Optional().Nillable().Comment("对应骑手ID"),
         field.Uint64("employee_id").Optional().Nillable().Comment("操作店员ID"),
         field.String("name").Comment("物资名称"),
         field.Float("voltage").Optional().Nillable().Comment("电池型号(电压)"),
-        field.Int("num").Comment("物资数量: 正值调入 / 负值调出"),
+        field.Int("num").Immutable().Comment("物资数量: 正值调入 / 负值调出"),
     }
 }
 
@@ -59,5 +65,29 @@ func (Stock) Indexes() []ent.Index {
         index.Fields("name"),
         index.Fields("voltage"),
         index.Fields("sn"),
+    }
+}
+
+func (Stock) Hooks() []ent.Hook {
+    return []ent.Hook{
+        hook.On(func(next ent.Mutator) ent.Mutator {
+            return hook.StockFunc(func(ctx context.Context, m *appEnt.StockMutation) (ent.Value, error) {
+                n, _ := m.Num()
+                _, sok := m.StoreID()
+                if t, ok := m.GetType(); ok {
+                    switch t {
+                    case model.StockTypeRiderObtain:
+                        if !sok || n != -1 {
+                            snag.Panic("电池入库数量错误")
+                        }
+                    case model.StockTypeRiderUnSubscribe, model.StockTypeRiderPause:
+                        if !sok || n != 1 {
+                            snag.Panic("电池入库数量错误")
+                        }
+                    }
+                }
+                return next.Mutate(ctx, m)
+            })
+        }, ent.OpCreate),
     }
 }

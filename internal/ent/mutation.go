@@ -33488,6 +33488,8 @@ type StockMutation struct {
 	last_modifier   **model.Modifier
 	remark          *string
 	sn              *string
+	_type           *uint8
+	add_type        *int8
 	name            *string
 	voltage         *float64
 	addvoltage      *float64
@@ -33907,6 +33909,62 @@ func (m *StockMutation) ResetSn() {
 	m.sn = nil
 }
 
+// SetType sets the "type" field.
+func (m *StockMutation) SetType(u uint8) {
+	m._type = &u
+	m.add_type = nil
+}
+
+// GetType returns the value of the "type" field in the mutation.
+func (m *StockMutation) GetType() (r uint8, exists bool) {
+	v := m._type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "type" field's value of the Stock entity.
+// If the Stock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StockMutation) OldType(ctx context.Context) (v uint8, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// AddType adds u to the "type" field.
+func (m *StockMutation) AddType(u int8) {
+	if m.add_type != nil {
+		*m.add_type += u
+	} else {
+		m.add_type = &u
+	}
+}
+
+// AddedType returns the value that was added to the "type" field in this mutation.
+func (m *StockMutation) AddedType() (r int8, exists bool) {
+	v := m.add_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetType resets all changes to the "type" field.
+func (m *StockMutation) ResetType() {
+	m._type = nil
+	m.add_type = nil
+}
+
 // SetStoreID sets the "store_id" field.
 func (m *StockMutation) SetStoreID(u uint64) {
 	m.store = &u
@@ -34313,7 +34371,7 @@ func (m *StockMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StockMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.created_at != nil {
 		fields = append(fields, stock.FieldCreatedAt)
 	}
@@ -34334,6 +34392,9 @@ func (m *StockMutation) Fields() []string {
 	}
 	if m.sn != nil {
 		fields = append(fields, stock.FieldSn)
+	}
+	if m._type != nil {
+		fields = append(fields, stock.FieldType)
 	}
 	if m.store != nil {
 		fields = append(fields, stock.FieldStoreID)
@@ -34375,6 +34436,8 @@ func (m *StockMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case stock.FieldSn:
 		return m.Sn()
+	case stock.FieldType:
+		return m.GetType()
 	case stock.FieldStoreID:
 		return m.StoreID()
 	case stock.FieldRiderID:
@@ -34410,6 +34473,8 @@ func (m *StockMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldRemark(ctx)
 	case stock.FieldSn:
 		return m.OldSn(ctx)
+	case stock.FieldType:
+		return m.OldType(ctx)
 	case stock.FieldStoreID:
 		return m.OldStoreID(ctx)
 	case stock.FieldRiderID:
@@ -34480,6 +34545,13 @@ func (m *StockMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetSn(v)
 		return nil
+	case stock.FieldType:
+		v, ok := value.(uint8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
+		return nil
 	case stock.FieldStoreID:
 		v, ok := value.(uint64)
 		if !ok {
@@ -34530,6 +34602,9 @@ func (m *StockMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *StockMutation) AddedFields() []string {
 	var fields []string
+	if m.add_type != nil {
+		fields = append(fields, stock.FieldType)
+	}
 	if m.addvoltage != nil {
 		fields = append(fields, stock.FieldVoltage)
 	}
@@ -34544,6 +34619,8 @@ func (m *StockMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *StockMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case stock.FieldType:
+		return m.AddedType()
 	case stock.FieldVoltage:
 		return m.AddedVoltage()
 	case stock.FieldNum:
@@ -34557,6 +34634,13 @@ func (m *StockMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *StockMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case stock.FieldType:
+		v, ok := value.(int8)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddType(v)
+		return nil
 	case stock.FieldVoltage:
 		v, ok := value.(float64)
 		if !ok {
@@ -34669,6 +34753,9 @@ func (m *StockMutation) ResetField(name string) error {
 		return nil
 	case stock.FieldSn:
 		m.ResetSn()
+		return nil
+	case stock.FieldType:
+		m.ResetType()
 		return nil
 	case stock.FieldStoreID:
 		m.ResetStoreID()

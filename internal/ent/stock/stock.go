@@ -27,6 +27,8 @@ const (
 	FieldRemark = "remark"
 	// FieldSn holds the string denoting the sn field in the database.
 	FieldSn = "sn"
+	// FieldType holds the string denoting the type field in the database.
+	FieldType = "type"
 	// FieldStoreID holds the string denoting the store_id field in the database.
 	FieldStoreID = "store_id"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
@@ -80,6 +82,7 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldSn,
+	FieldType,
 	FieldStoreID,
 	FieldRiderID,
 	FieldEmployeeID,
@@ -105,11 +108,13 @@ func ValidColumn(column string) bool {
 //	import _ "github.com/auroraride/aurservd/internal/ent/runtime"
 //
 var (
-	Hooks [1]ent.Hook
+	Hooks [2]ent.Hook
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultType holds the default value on creation for the "type" field.
+	DefaultType uint8
 )

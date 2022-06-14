@@ -166,7 +166,14 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
     }
 
     // 调出库存
-    err = NewStockWithEmployee(s.employee).BatteryOutboundWithRider(tx.Stock.Create(), info.Rider.ID, s.employee.Edges.Store.ID, s.employee.ID, info.Voltage)
+    err = NewStockWithEmployee(s.employee).BatteryOutboundWithRider(
+        tx.Stock.Create(),
+        info.Rider.ID,
+        s.employee.Edges.Store.ID,
+        s.employee.ID,
+        info.Voltage,
+        model.StockTypeRiderObtain,
+    )
     if err != nil {
         snag.PanicIfErrorX(err, tx.Rollback)
     }

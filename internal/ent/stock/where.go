@@ -128,6 +128,13 @@ func Sn(v string) predicate.Stock {
 	})
 }
 
+// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
+func Type(v uint8) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldType), v))
+	})
+}
+
 // StoreID applies equality check predicate on the "store_id" field. It's identical to StoreIDEQ.
 func StoreID(v uint64) predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
@@ -673,6 +680,82 @@ func SnEqualFold(v string) predicate.Stock {
 func SnContainsFold(v string) predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldSn), v))
+	})
+}
+
+// TypeEQ applies the EQ predicate on the "type" field.
+func TypeEQ(v uint8) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldType), v))
+	})
+}
+
+// TypeNEQ applies the NEQ predicate on the "type" field.
+func TypeNEQ(v uint8) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldType), v))
+	})
+}
+
+// TypeIn applies the In predicate on the "type" field.
+func TypeIn(vs ...uint8) predicate.Stock {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Stock(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldType), v...))
+	})
+}
+
+// TypeNotIn applies the NotIn predicate on the "type" field.
+func TypeNotIn(vs ...uint8) predicate.Stock {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Stock(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldType), v...))
+	})
+}
+
+// TypeGT applies the GT predicate on the "type" field.
+func TypeGT(v uint8) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldType), v))
+	})
+}
+
+// TypeGTE applies the GTE predicate on the "type" field.
+func TypeGTE(v uint8) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldType), v))
+	})
+}
+
+// TypeLT applies the LT predicate on the "type" field.
+func TypeLT(v uint8) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldType), v))
+	})
+}
+
+// TypeLTE applies the LTE predicate on the "type" field.
+func TypeLTE(v uint8) predicate.Stock {
+	return predicate.Stock(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldType), v))
 	})
 }
 

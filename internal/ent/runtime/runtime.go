@@ -633,7 +633,9 @@ func init() {
 	setting.KeyValidator = settingDescKey.Validators[0].(func(string) error)
 	stockMixin := schema.Stock{}.Mixin()
 	stockMixinHooks2 := stockMixin[2].Hooks()
+	stockHooks := schema.Stock{}.Hooks()
 	stock.Hooks[0] = stockMixinHooks2[0]
+	stock.Hooks[1] = stockHooks[0]
 	stockMixinFields0 := stockMixin[0].Fields()
 	_ = stockMixinFields0
 	stockFields := schema.Stock{}.Fields()
@@ -648,6 +650,10 @@ func init() {
 	stock.DefaultUpdatedAt = stockDescUpdatedAt.Default.(func() time.Time)
 	// stock.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	stock.UpdateDefaultUpdatedAt = stockDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// stockDescType is the schema descriptor for type field.
+	stockDescType := stockFields[1].Descriptor()
+	// stock.DefaultType holds the default value on creation for the type field.
+	stock.DefaultType = stockDescType.Default.(uint8)
 	storeMixin := schema.Store{}.Mixin()
 	storeMixinHooks2 := storeMixin[2].Hooks()
 	store.Hooks[0] = storeMixinHooks2[0]

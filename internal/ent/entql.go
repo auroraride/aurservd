@@ -714,6 +714,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			stock.FieldLastModifier: {Type: field.TypeJSON, Column: stock.FieldLastModifier},
 			stock.FieldRemark:       {Type: field.TypeString, Column: stock.FieldRemark},
 			stock.FieldSn:           {Type: field.TypeString, Column: stock.FieldSn},
+			stock.FieldType:         {Type: field.TypeUint8, Column: stock.FieldType},
 			stock.FieldStoreID:      {Type: field.TypeUint64, Column: stock.FieldStoreID},
 			stock.FieldRiderID:      {Type: field.TypeUint64, Column: stock.FieldRiderID},
 			stock.FieldEmployeeID:   {Type: field.TypeUint64, Column: stock.FieldEmployeeID},
@@ -5646,6 +5647,11 @@ func (f *StockFilter) WhereRemark(p entql.StringP) {
 // WhereSn applies the entql string predicate on the sn field.
 func (f *StockFilter) WhereSn(p entql.StringP) {
 	f.Where(p.Field(stock.FieldSn))
+}
+
+// WhereType applies the entql uint8 predicate on the type field.
+func (f *StockFilter) WhereType(p entql.Uint8P) {
+	f.Where(p.Field(stock.FieldType))
 }
 
 // WhereStoreID applies the entql uint64 predicate on the store_id field.

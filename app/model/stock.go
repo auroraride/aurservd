@@ -5,6 +5,13 @@
 
 package model
 
+const (
+    StockTypeTransfer         uint8 = iota // 调拨 (出库入库)
+    StockTypeRiderObtain                   // 骑手领取电池 (出库)
+    StockTypeRiderPause                    // 骑手寄存电池 (入库)
+    StockTypeRiderUnSubscribe              // 骑手归还电池 (入库)
+)
+
 type StockTransferReq struct {
     Voltage    float64 `json:"voltage,omitempty"` // 电池型号 (和`物资名称`不能同时存在, 也不能同时为空)
     Name       string  `json:"name,omitempty"`    // 物资名称 (和`电池型号`不能同时存在, 也不能同时为空)
