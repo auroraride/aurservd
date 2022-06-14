@@ -30,6 +30,7 @@ const (
     OperateDeposit                     // 调整押金
     OperateProfile                     // 修改资料
     OperateRefund                      // 处理退款
+    OperateHalt                        // 强制退租
 )
 
 func (o Operate) String() string {
@@ -56,6 +57,8 @@ func (o Operate) String() string {
         return "修改资料"
     case OperateRefund:
         return "处理退款"
+    case OperateHalt:
+        return "强制退租"
     default:
         return "未知操作"
     }

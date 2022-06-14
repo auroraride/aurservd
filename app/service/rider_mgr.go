@@ -234,7 +234,7 @@ func (s *riderMgrService) HaltSubscribe(subscribeID uint64) {
     go logging.NewOperateLog().
         SetRef(sub.Edges.Rider).
         SetModifier(s.modifier).
-        SetOperate(model.OperateSubscribePause).
+        SetOperate(model.OperateHalt).
         SetDiff(before, "强制退租").
         Send()
 }
