@@ -171,6 +171,25 @@ func (s *employeeService) ExtendTokenTime(id uint64, token string) {
     cache.Set(ctx, token, id, 7*24*time.Hour)
 }
 
+// Profile 骑手资料获取
+func (s *employeeService) Profile(e *ent.Employee) model.EmployeeProfile {
+    st := e.Edges.Store
+    res := model.EmployeeProfile{
+        ID:     e.ID,
+        Qrcode: fmt.Sprintf("EMPLOYEE:%s", e.Sn),
+        Phone:  e.Phone,
+        Name:   e.Name,
+    }
+    if st != nil {
+        res.Onduty = true
+        res.Store = &model.Store{
+            ID:   st.ID,
+            Name: st.Name,
+        }
+    }
+    return res
+}
+
 // Signin 店员登录
 func (s *employeeService) Signin(req *model.EmployeeSignReq) model.EmployeeProfile {
     // 校验短信
@@ -182,8 +201,6 @@ func (s *employeeService) Signin(req *model.EmployeeSignReq) model.EmployeeProfi
     if e == nil {
         snag.Panic("未找到用户")
     }
-
-    st := e.Edges.Store
 
     // 生成token
     token := xid.New().String() + utils.RandTokenString()
@@ -199,20 +216,10 @@ func (s *employeeService) Signin(req *model.EmployeeSignReq) model.EmployeeProfi
     e = e.Update().SetSn(uuid.New()).SaveX(s.ctx)
 
     s.ExtendTokenTime(e.ID, token)
-    res := model.EmployeeProfile{
-        ID:     e.ID,
-        Token:  token,
-        Qrcode: fmt.Sprintf("EMPLOYEE:%s", e.Sn),
-        Phone:  e.Phone,
-        Name:   e.Name,
-    }
-    if st != nil {
-        res.Onduty = true
-        res.Store = &model.Store{
-            ID:   st.ID,
-            Name: st.Name,
-        }
-    }
+
+    res := s.Profile(e)
+    res.Token = token
+
     return res
 }
 

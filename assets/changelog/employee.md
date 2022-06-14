@@ -8,6 +8,7 @@
   - 当`status=2`寄存中的时候，办理寄存调整为`结束寄存`
 - [E2004 寄存电池](http://localhost:5533/docs#tag/E/operation/EmployeeBusinessPause)
 - [E2005 结束寄存电池](http://localhost:5533/docs#tag/E/operation/EmployeeBusinessContinue)
+- [E1005 店员资料](http://localhost:5533/docs#tag/E/operation/EmployeeEmployeeProfile)
 
 
 

@@ -2566,6 +2566,27 @@ paths:
       summary: E2003 骑手业务详情
       tags:
       - '[E]店员接口'
+  /employee/v1/profile:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeEmployeeProfile
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.EmployeeProfile'
+      summary: E1005 店员资料
+      tags:
+      - '[E]店员接口'
   /employee/v1/qrcode:
     get:
       consumes:

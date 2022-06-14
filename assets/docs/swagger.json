@@ -310,6 +310,38 @@
                 }
             }
         },
+        "/employee/v1/profile": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E1005 店员资料",
+                "operationId": "EmployeeEmployeeProfile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.EmployeeProfile"
+                        }
+                    }
+                }
+            }
+        },
         "/employee/v1/qrcode": {
             "get": {
                 "consumes": [
