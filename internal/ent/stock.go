@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
@@ -37,12 +38,12 @@ type Stock struct {
 	// Sn holds the value of the "sn" field.
 	// 调拨编号
 	Sn string `json:"sn,omitempty"`
-	// InboundStoreID holds the value of the "inbound_store_id" field.
-	// 所属门店ID
-	InboundStoreID *uint64 `json:"inbound_store_id,omitempty"`
-	// OutboundStoreID holds the value of the "outbound_store_id" field.
-	// 调入自门店ID
-	OutboundStoreID *uint64 `json:"outbound_store_id,omitempty"`
+	// StoreID holds the value of the "store_id" field.
+	// 入库至 或 出库自 门店ID
+	StoreID *uint64 `json:"store_id,omitempty"`
+	// RiderID holds the value of the "rider_id" field.
+	// 对应骑手ID
+	RiderID *uint64 `json:"rider_id,omitempty"`
 	// Name holds the value of the "name" field.
 	// 物资名称
 	Name string `json:"name,omitempty"`
@@ -59,41 +60,41 @@ type Stock struct {
 
 // StockEdges holds the relations/edges for other nodes in the graph.
 type StockEdges struct {
-	// InboundStore holds the value of the inbound_store edge.
-	InboundStore *Store `json:"inbound_store,omitempty"`
-	// OutboundStore holds the value of the outbound_store edge.
-	OutboundStore *Store `json:"outbound_store,omitempty"`
+	// Store holds the value of the store edge.
+	Store *Store `json:"store,omitempty"`
+	// Rider holds the value of the rider edge.
+	Rider *Rider `json:"rider,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
 }
 
-// InboundStoreOrErr returns the InboundStore value or an error if the edge
+// StoreOrErr returns the Store value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e StockEdges) InboundStoreOrErr() (*Store, error) {
+func (e StockEdges) StoreOrErr() (*Store, error) {
 	if e.loadedTypes[0] {
-		if e.InboundStore == nil {
-			// The edge inbound_store was loaded in eager-loading,
+		if e.Store == nil {
+			// The edge store was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: store.Label}
 		}
-		return e.InboundStore, nil
+		return e.Store, nil
 	}
-	return nil, &NotLoadedError{edge: "inbound_store"}
+	return nil, &NotLoadedError{edge: "store"}
 }
 
-// OutboundStoreOrErr returns the OutboundStore value or an error if the edge
+// RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e StockEdges) OutboundStoreOrErr() (*Store, error) {
+func (e StockEdges) RiderOrErr() (*Rider, error) {
 	if e.loadedTypes[1] {
-		if e.OutboundStore == nil {
-			// The edge outbound_store was loaded in eager-loading,
+		if e.Rider == nil {
+			// The edge rider was loaded in eager-loading,
 			// but was not found.
-			return nil, &NotFoundError{label: store.Label}
+			return nil, &NotFoundError{label: rider.Label}
 		}
-		return e.OutboundStore, nil
+		return e.Rider, nil
 	}
-	return nil, &NotLoadedError{edge: "outbound_store"}
+	return nil, &NotLoadedError{edge: "rider"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -105,7 +106,7 @@ func (*Stock) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case stock.FieldVoltage:
 			values[i] = new(sql.NullFloat64)
-		case stock.FieldID, stock.FieldInboundStoreID, stock.FieldOutboundStoreID, stock.FieldNum:
+		case stock.FieldID, stock.FieldStoreID, stock.FieldRiderID, stock.FieldNum:
 			values[i] = new(sql.NullInt64)
 		case stock.FieldRemark, stock.FieldSn, stock.FieldName:
 			values[i] = new(sql.NullString)
@@ -179,19 +180,19 @@ func (s *Stock) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.Sn = value.String
 			}
-		case stock.FieldInboundStoreID:
+		case stock.FieldStoreID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field inbound_store_id", values[i])
+				return fmt.Errorf("unexpected type %T for field store_id", values[i])
 			} else if value.Valid {
-				s.InboundStoreID = new(uint64)
-				*s.InboundStoreID = uint64(value.Int64)
+				s.StoreID = new(uint64)
+				*s.StoreID = uint64(value.Int64)
 			}
-		case stock.FieldOutboundStoreID:
+		case stock.FieldRiderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field outbound_store_id", values[i])
+				return fmt.Errorf("unexpected type %T for field rider_id", values[i])
 			} else if value.Valid {
-				s.OutboundStoreID = new(uint64)
-				*s.OutboundStoreID = uint64(value.Int64)
+				s.RiderID = new(uint64)
+				*s.RiderID = uint64(value.Int64)
 			}
 		case stock.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -217,14 +218,14 @@ func (s *Stock) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryInboundStore queries the "inbound_store" edge of the Stock entity.
-func (s *Stock) QueryInboundStore() *StoreQuery {
-	return (&StockClient{config: s.config}).QueryInboundStore(s)
+// QueryStore queries the "store" edge of the Stock entity.
+func (s *Stock) QueryStore() *StoreQuery {
+	return (&StockClient{config: s.config}).QueryStore(s)
 }
 
-// QueryOutboundStore queries the "outbound_store" edge of the Stock entity.
-func (s *Stock) QueryOutboundStore() *StoreQuery {
-	return (&StockClient{config: s.config}).QueryOutboundStore(s)
+// QueryRider queries the "rider" edge of the Stock entity.
+func (s *Stock) QueryRider() *RiderQuery {
+	return (&StockClient{config: s.config}).QueryRider(s)
 }
 
 // Update returns a builder for updating this Stock.
@@ -266,12 +267,12 @@ func (s *Stock) String() string {
 	builder.WriteString(s.Remark)
 	builder.WriteString(", sn=")
 	builder.WriteString(s.Sn)
-	if v := s.InboundStoreID; v != nil {
-		builder.WriteString(", inbound_store_id=")
+	if v := s.StoreID; v != nil {
+		builder.WriteString(", store_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
-	if v := s.OutboundStoreID; v != nil {
-		builder.WriteString(", outbound_store_id=")
+	if v := s.RiderID; v != nil {
+		builder.WriteString(", rider_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", name=")

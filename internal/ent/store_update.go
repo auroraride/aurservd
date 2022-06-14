@@ -154,34 +154,19 @@ func (su *StoreUpdate) SetEmployee(e *Employee) *StoreUpdate {
 	return su.SetEmployeeID(e.ID)
 }
 
-// AddInboundStockIDs adds the "inboundStocks" edge to the Stock entity by IDs.
-func (su *StoreUpdate) AddInboundStockIDs(ids ...uint64) *StoreUpdate {
-	su.mutation.AddInboundStockIDs(ids...)
+// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
+func (su *StoreUpdate) AddStockIDs(ids ...uint64) *StoreUpdate {
+	su.mutation.AddStockIDs(ids...)
 	return su
 }
 
-// AddInboundStocks adds the "inboundStocks" edges to the Stock entity.
-func (su *StoreUpdate) AddInboundStocks(s ...*Stock) *StoreUpdate {
+// AddStocks adds the "stocks" edges to the Stock entity.
+func (su *StoreUpdate) AddStocks(s ...*Stock) *StoreUpdate {
 	ids := make([]uint64, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
-	return su.AddInboundStockIDs(ids...)
-}
-
-// AddOutboundStockIDs adds the "outboundStocks" edge to the Stock entity by IDs.
-func (su *StoreUpdate) AddOutboundStockIDs(ids ...uint64) *StoreUpdate {
-	su.mutation.AddOutboundStockIDs(ids...)
-	return su
-}
-
-// AddOutboundStocks adds the "outboundStocks" edges to the Stock entity.
-func (su *StoreUpdate) AddOutboundStocks(s ...*Stock) *StoreUpdate {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
-	}
-	return su.AddOutboundStockIDs(ids...)
+	return su.AddStockIDs(ids...)
 }
 
 // AddAttendanceIDs adds the "attendances" edge to the Attendance entity by IDs.
@@ -216,46 +201,25 @@ func (su *StoreUpdate) ClearEmployee() *StoreUpdate {
 	return su
 }
 
-// ClearInboundStocks clears all "inboundStocks" edges to the Stock entity.
-func (su *StoreUpdate) ClearInboundStocks() *StoreUpdate {
-	su.mutation.ClearInboundStocks()
+// ClearStocks clears all "stocks" edges to the Stock entity.
+func (su *StoreUpdate) ClearStocks() *StoreUpdate {
+	su.mutation.ClearStocks()
 	return su
 }
 
-// RemoveInboundStockIDs removes the "inboundStocks" edge to Stock entities by IDs.
-func (su *StoreUpdate) RemoveInboundStockIDs(ids ...uint64) *StoreUpdate {
-	su.mutation.RemoveInboundStockIDs(ids...)
+// RemoveStockIDs removes the "stocks" edge to Stock entities by IDs.
+func (su *StoreUpdate) RemoveStockIDs(ids ...uint64) *StoreUpdate {
+	su.mutation.RemoveStockIDs(ids...)
 	return su
 }
 
-// RemoveInboundStocks removes "inboundStocks" edges to Stock entities.
-func (su *StoreUpdate) RemoveInboundStocks(s ...*Stock) *StoreUpdate {
+// RemoveStocks removes "stocks" edges to Stock entities.
+func (su *StoreUpdate) RemoveStocks(s ...*Stock) *StoreUpdate {
 	ids := make([]uint64, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
-	return su.RemoveInboundStockIDs(ids...)
-}
-
-// ClearOutboundStocks clears all "outboundStocks" edges to the Stock entity.
-func (su *StoreUpdate) ClearOutboundStocks() *StoreUpdate {
-	su.mutation.ClearOutboundStocks()
-	return su
-}
-
-// RemoveOutboundStockIDs removes the "outboundStocks" edge to Stock entities by IDs.
-func (su *StoreUpdate) RemoveOutboundStockIDs(ids ...uint64) *StoreUpdate {
-	su.mutation.RemoveOutboundStockIDs(ids...)
-	return su
-}
-
-// RemoveOutboundStocks removes "outboundStocks" edges to Stock entities.
-func (su *StoreUpdate) RemoveOutboundStocks(s ...*Stock) *StoreUpdate {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
-	}
-	return su.RemoveOutboundStockIDs(ids...)
+	return su.RemoveStockIDs(ids...)
 }
 
 // ClearAttendances clears all "attendances" edges to the Attendance entity.
@@ -523,12 +487,12 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if su.mutation.InboundStocksCleared() {
+	if su.mutation.StocksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   store.InboundStocksTable,
-			Columns: []string{store.InboundStocksColumn},
+			Table:   store.StocksTable,
+			Columns: []string{store.StocksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -539,12 +503,12 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := su.mutation.RemovedInboundStocksIDs(); len(nodes) > 0 && !su.mutation.InboundStocksCleared() {
+	if nodes := su.mutation.RemovedStocksIDs(); len(nodes) > 0 && !su.mutation.StocksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   store.InboundStocksTable,
-			Columns: []string{store.InboundStocksColumn},
+			Table:   store.StocksTable,
+			Columns: []string{store.StocksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -558,66 +522,12 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := su.mutation.InboundStocksIDs(); len(nodes) > 0 {
+	if nodes := su.mutation.StocksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   store.InboundStocksTable,
-			Columns: []string{store.InboundStocksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: stock.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if su.mutation.OutboundStocksCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   store.OutboundStocksTable,
-			Columns: []string{store.OutboundStocksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: stock.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := su.mutation.RemovedOutboundStocksIDs(); len(nodes) > 0 && !su.mutation.OutboundStocksCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   store.OutboundStocksTable,
-			Columns: []string{store.OutboundStocksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: stock.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := su.mutation.OutboundStocksIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   store.OutboundStocksTable,
-			Columns: []string{store.OutboundStocksColumn},
+			Table:   store.StocksTable,
+			Columns: []string{store.StocksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -825,34 +735,19 @@ func (suo *StoreUpdateOne) SetEmployee(e *Employee) *StoreUpdateOne {
 	return suo.SetEmployeeID(e.ID)
 }
 
-// AddInboundStockIDs adds the "inboundStocks" edge to the Stock entity by IDs.
-func (suo *StoreUpdateOne) AddInboundStockIDs(ids ...uint64) *StoreUpdateOne {
-	suo.mutation.AddInboundStockIDs(ids...)
+// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
+func (suo *StoreUpdateOne) AddStockIDs(ids ...uint64) *StoreUpdateOne {
+	suo.mutation.AddStockIDs(ids...)
 	return suo
 }
 
-// AddInboundStocks adds the "inboundStocks" edges to the Stock entity.
-func (suo *StoreUpdateOne) AddInboundStocks(s ...*Stock) *StoreUpdateOne {
+// AddStocks adds the "stocks" edges to the Stock entity.
+func (suo *StoreUpdateOne) AddStocks(s ...*Stock) *StoreUpdateOne {
 	ids := make([]uint64, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
-	return suo.AddInboundStockIDs(ids...)
-}
-
-// AddOutboundStockIDs adds the "outboundStocks" edge to the Stock entity by IDs.
-func (suo *StoreUpdateOne) AddOutboundStockIDs(ids ...uint64) *StoreUpdateOne {
-	suo.mutation.AddOutboundStockIDs(ids...)
-	return suo
-}
-
-// AddOutboundStocks adds the "outboundStocks" edges to the Stock entity.
-func (suo *StoreUpdateOne) AddOutboundStocks(s ...*Stock) *StoreUpdateOne {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
-	}
-	return suo.AddOutboundStockIDs(ids...)
+	return suo.AddStockIDs(ids...)
 }
 
 // AddAttendanceIDs adds the "attendances" edge to the Attendance entity by IDs.
@@ -887,46 +782,25 @@ func (suo *StoreUpdateOne) ClearEmployee() *StoreUpdateOne {
 	return suo
 }
 
-// ClearInboundStocks clears all "inboundStocks" edges to the Stock entity.
-func (suo *StoreUpdateOne) ClearInboundStocks() *StoreUpdateOne {
-	suo.mutation.ClearInboundStocks()
+// ClearStocks clears all "stocks" edges to the Stock entity.
+func (suo *StoreUpdateOne) ClearStocks() *StoreUpdateOne {
+	suo.mutation.ClearStocks()
 	return suo
 }
 
-// RemoveInboundStockIDs removes the "inboundStocks" edge to Stock entities by IDs.
-func (suo *StoreUpdateOne) RemoveInboundStockIDs(ids ...uint64) *StoreUpdateOne {
-	suo.mutation.RemoveInboundStockIDs(ids...)
+// RemoveStockIDs removes the "stocks" edge to Stock entities by IDs.
+func (suo *StoreUpdateOne) RemoveStockIDs(ids ...uint64) *StoreUpdateOne {
+	suo.mutation.RemoveStockIDs(ids...)
 	return suo
 }
 
-// RemoveInboundStocks removes "inboundStocks" edges to Stock entities.
-func (suo *StoreUpdateOne) RemoveInboundStocks(s ...*Stock) *StoreUpdateOne {
+// RemoveStocks removes "stocks" edges to Stock entities.
+func (suo *StoreUpdateOne) RemoveStocks(s ...*Stock) *StoreUpdateOne {
 	ids := make([]uint64, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
-	return suo.RemoveInboundStockIDs(ids...)
-}
-
-// ClearOutboundStocks clears all "outboundStocks" edges to the Stock entity.
-func (suo *StoreUpdateOne) ClearOutboundStocks() *StoreUpdateOne {
-	suo.mutation.ClearOutboundStocks()
-	return suo
-}
-
-// RemoveOutboundStockIDs removes the "outboundStocks" edge to Stock entities by IDs.
-func (suo *StoreUpdateOne) RemoveOutboundStockIDs(ids ...uint64) *StoreUpdateOne {
-	suo.mutation.RemoveOutboundStockIDs(ids...)
-	return suo
-}
-
-// RemoveOutboundStocks removes "outboundStocks" edges to Stock entities.
-func (suo *StoreUpdateOne) RemoveOutboundStocks(s ...*Stock) *StoreUpdateOne {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
-	}
-	return suo.RemoveOutboundStockIDs(ids...)
+	return suo.RemoveStockIDs(ids...)
 }
 
 // ClearAttendances clears all "attendances" edges to the Attendance entity.
@@ -1224,12 +1098,12 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if suo.mutation.InboundStocksCleared() {
+	if suo.mutation.StocksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   store.InboundStocksTable,
-			Columns: []string{store.InboundStocksColumn},
+			Table:   store.StocksTable,
+			Columns: []string{store.StocksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1240,12 +1114,12 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := suo.mutation.RemovedInboundStocksIDs(); len(nodes) > 0 && !suo.mutation.InboundStocksCleared() {
+	if nodes := suo.mutation.RemovedStocksIDs(); len(nodes) > 0 && !suo.mutation.StocksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   store.InboundStocksTable,
-			Columns: []string{store.InboundStocksColumn},
+			Table:   store.StocksTable,
+			Columns: []string{store.StocksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1259,66 +1133,12 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := suo.mutation.InboundStocksIDs(); len(nodes) > 0 {
+	if nodes := suo.mutation.StocksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   store.InboundStocksTable,
-			Columns: []string{store.InboundStocksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: stock.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if suo.mutation.OutboundStocksCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   store.OutboundStocksTable,
-			Columns: []string{store.OutboundStocksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: stock.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := suo.mutation.RemovedOutboundStocksIDs(); len(nodes) > 0 && !suo.mutation.OutboundStocksCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   store.OutboundStocksTable,
-			Columns: []string{store.OutboundStocksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: stock.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := suo.mutation.OutboundStocksIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   store.OutboundStocksTable,
-			Columns: []string{store.OutboundStocksColumn},
+			Table:   store.StocksTable,
+			Columns: []string{store.StocksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

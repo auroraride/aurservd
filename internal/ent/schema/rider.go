@@ -77,6 +77,8 @@ func (Rider) Edges() []ent.Edge {
 
         edge.To("exchanges", Exchange.Type).Comment("换电记录"),
         edge.To("subscribes", Subscribe.Type).Comment("订阅"),
+
+        edge.To("stocks", Stock.Type),
     }
 }
 

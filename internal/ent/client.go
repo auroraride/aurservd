@@ -3576,6 +3576,22 @@ func (c *RiderClient) QuerySubscribes(r *Rider) *SubscribeQuery {
 	return query
 }
 
+// QueryStocks queries the stocks edge of a Rider.
+func (c *RiderClient) QueryStocks(r *Rider) *StockQuery {
+	query := &StockQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rider.Table, rider.FieldID, id),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.StocksTable, rider.StocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *RiderClient) Hooks() []Hook {
 	hooks := c.hooks.Rider
@@ -3758,15 +3774,15 @@ func (c *StockClient) GetX(ctx context.Context, id uint64) *Stock {
 	return obj
 }
 
-// QueryInboundStore queries the inbound_store edge of a Stock.
-func (c *StockClient) QueryInboundStore(s *Stock) *StoreQuery {
+// QueryStore queries the store edge of a Stock.
+func (c *StockClient) QueryStore(s *Stock) *StoreQuery {
 	query := &StoreQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(stock.Table, stock.FieldID, id),
 			sqlgraph.To(store.Table, store.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, stock.InboundStoreTable, stock.InboundStoreColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.StoreTable, stock.StoreColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil
@@ -3774,15 +3790,15 @@ func (c *StockClient) QueryInboundStore(s *Stock) *StoreQuery {
 	return query
 }
 
-// QueryOutboundStore queries the outbound_store edge of a Stock.
-func (c *StockClient) QueryOutboundStore(s *Stock) *StoreQuery {
-	query := &StoreQuery{config: c.config}
+// QueryRider queries the rider edge of a Stock.
+func (c *StockClient) QueryRider(s *Stock) *RiderQuery {
+	query := &RiderQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(stock.Table, stock.FieldID, id),
-			sqlgraph.To(store.Table, store.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, stock.OutboundStoreTable, stock.OutboundStoreColumn),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.RiderTable, stock.RiderColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil
@@ -3913,31 +3929,15 @@ func (c *StoreClient) QueryEmployee(s *Store) *EmployeeQuery {
 	return query
 }
 
-// QueryInboundStocks queries the inboundStocks edge of a Store.
-func (c *StoreClient) QueryInboundStocks(s *Store) *StockQuery {
+// QueryStocks queries the stocks edge of a Store.
+func (c *StoreClient) QueryStocks(s *Store) *StockQuery {
 	query := &StockQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(store.Table, store.FieldID, id),
 			sqlgraph.To(stock.Table, stock.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, store.InboundStocksTable, store.InboundStocksColumn),
-		)
-		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryOutboundStocks queries the outboundStocks edge of a Store.
-func (c *StoreClient) QueryOutboundStocks(s *Store) *StockQuery {
-	query := &StockQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := s.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(store.Table, store.FieldID, id),
-			sqlgraph.To(stock.Table, stock.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, store.OutboundStocksTable, store.OutboundStocksColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, store.StocksTable, store.StocksColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

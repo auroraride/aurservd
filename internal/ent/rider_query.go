@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
@@ -41,6 +42,7 @@ type RiderQuery struct {
 	withOrders     *OrderQuery
 	withExchanges  *ExchangeQuery
 	withSubscribes *SubscribeQuery
+	withStocks     *StockQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -254,6 +256,28 @@ func (rq *RiderQuery) QuerySubscribes() *SubscribeQuery {
 	return query
 }
 
+// QueryStocks chains the current query on the "stocks" edge.
+func (rq *RiderQuery) QueryStocks() *StockQuery {
+	query := &StockQuery{config: rq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rider.Table, rider.FieldID, selector),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.StocksTable, rider.StocksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Rider entity from the query.
 // Returns a *NotFoundError when no Rider was found.
 func (rq *RiderQuery) First(ctx context.Context) (*Rider, error) {
@@ -443,6 +467,7 @@ func (rq *RiderQuery) Clone() *RiderQuery {
 		withOrders:     rq.withOrders.Clone(),
 		withExchanges:  rq.withExchanges.Clone(),
 		withSubscribes: rq.withSubscribes.Clone(),
+		withStocks:     rq.withStocks.Clone(),
 		// clone intermediate query.
 		sql:    rq.sql.Clone(),
 		path:   rq.path,
@@ -538,6 +563,17 @@ func (rq *RiderQuery) WithSubscribes(opts ...func(*SubscribeQuery)) *RiderQuery 
 	return rq
 }
 
+// WithStocks tells the query-builder to eager-load the nodes that are connected to
+// the "stocks" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RiderQuery) WithStocks(opts ...func(*StockQuery)) *RiderQuery {
+	query := &StockQuery{config: rq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withStocks = query
+	return rq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -608,7 +644,7 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 	var (
 		nodes       = []*Rider{}
 		_spec       = rq.querySpec()
-		loadedTypes = [8]bool{
+		loadedTypes = [9]bool{
 			rq.withStation != nil,
 			rq.withPerson != nil,
 			rq.withEnterprise != nil,
@@ -617,6 +653,7 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 			rq.withOrders != nil,
 			rq.withExchanges != nil,
 			rq.withSubscribes != nil,
+			rq.withStocks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -850,6 +887,34 @@ func (rq *RiderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rider,
 				return nil, fmt.Errorf(`unexpected foreign-key "rider_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Subscribes = append(node.Edges.Subscribes, n)
+		}
+	}
+
+	if query := rq.withStocks; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Rider)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Stocks = []*Stock{}
+		}
+		query.Where(predicate.Stock(func(s *sql.Selector) {
+			s.Where(sql.InValues(rider.StocksColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.RiderID
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "rider_id" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "rider_id" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Stocks = append(node.Edges.Stocks, n)
 		}
 	}
 

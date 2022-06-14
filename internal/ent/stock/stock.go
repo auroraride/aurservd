@@ -27,36 +27,36 @@ const (
 	FieldRemark = "remark"
 	// FieldSn holds the string denoting the sn field in the database.
 	FieldSn = "sn"
-	// FieldInboundStoreID holds the string denoting the inbound_store_id field in the database.
-	FieldInboundStoreID = "inbound_store_id"
-	// FieldOutboundStoreID holds the string denoting the outbound_store_id field in the database.
-	FieldOutboundStoreID = "outbound_store_id"
+	// FieldStoreID holds the string denoting the store_id field in the database.
+	FieldStoreID = "store_id"
+	// FieldRiderID holds the string denoting the rider_id field in the database.
+	FieldRiderID = "rider_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldVoltage holds the string denoting the voltage field in the database.
 	FieldVoltage = "voltage"
 	// FieldNum holds the string denoting the num field in the database.
 	FieldNum = "num"
-	// EdgeInboundStore holds the string denoting the inbound_store edge name in mutations.
-	EdgeInboundStore = "inbound_store"
-	// EdgeOutboundStore holds the string denoting the outbound_store edge name in mutations.
-	EdgeOutboundStore = "outbound_store"
+	// EdgeStore holds the string denoting the store edge name in mutations.
+	EdgeStore = "store"
+	// EdgeRider holds the string denoting the rider edge name in mutations.
+	EdgeRider = "rider"
 	// Table holds the table name of the stock in the database.
 	Table = "stock"
-	// InboundStoreTable is the table that holds the inbound_store relation/edge.
-	InboundStoreTable = "stock"
-	// InboundStoreInverseTable is the table name for the Store entity.
+	// StoreTable is the table that holds the store relation/edge.
+	StoreTable = "stock"
+	// StoreInverseTable is the table name for the Store entity.
 	// It exists in this package in order to avoid circular dependency with the "store" package.
-	InboundStoreInverseTable = "store"
-	// InboundStoreColumn is the table column denoting the inbound_store relation/edge.
-	InboundStoreColumn = "inbound_store_id"
-	// OutboundStoreTable is the table that holds the outbound_store relation/edge.
-	OutboundStoreTable = "stock"
-	// OutboundStoreInverseTable is the table name for the Store entity.
-	// It exists in this package in order to avoid circular dependency with the "store" package.
-	OutboundStoreInverseTable = "store"
-	// OutboundStoreColumn is the table column denoting the outbound_store relation/edge.
-	OutboundStoreColumn = "outbound_store_id"
+	StoreInverseTable = "store"
+	// StoreColumn is the table column denoting the store relation/edge.
+	StoreColumn = "store_id"
+	// RiderTable is the table that holds the rider relation/edge.
+	RiderTable = "stock"
+	// RiderInverseTable is the table name for the Rider entity.
+	// It exists in this package in order to avoid circular dependency with the "rider" package.
+	RiderInverseTable = "rider"
+	// RiderColumn is the table column denoting the rider relation/edge.
+	RiderColumn = "rider_id"
 )
 
 // Columns holds all SQL columns for stock fields.
@@ -69,8 +69,8 @@ var Columns = []string{
 	FieldLastModifier,
 	FieldRemark,
 	FieldSn,
-	FieldInboundStoreID,
-	FieldOutboundStoreID,
+	FieldStoreID,
+	FieldRiderID,
 	FieldName,
 	FieldVoltage,
 	FieldNum,

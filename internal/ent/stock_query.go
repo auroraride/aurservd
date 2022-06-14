@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
@@ -25,9 +26,9 @@ type StockQuery struct {
 	fields     []string
 	predicates []predicate.Stock
 	// eager-loading edges.
-	withInboundStore  *StoreQuery
-	withOutboundStore *StoreQuery
-	modifiers         []func(*sql.Selector)
+	withStore *StoreQuery
+	withRider *RiderQuery
+	modifiers []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -64,8 +65,8 @@ func (sq *StockQuery) Order(o ...OrderFunc) *StockQuery {
 	return sq
 }
 
-// QueryInboundStore chains the current query on the "inbound_store" edge.
-func (sq *StockQuery) QueryInboundStore() *StoreQuery {
+// QueryStore chains the current query on the "store" edge.
+func (sq *StockQuery) QueryStore() *StoreQuery {
 	query := &StoreQuery{config: sq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
@@ -78,7 +79,7 @@ func (sq *StockQuery) QueryInboundStore() *StoreQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(stock.Table, stock.FieldID, selector),
 			sqlgraph.To(store.Table, store.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, stock.InboundStoreTable, stock.InboundStoreColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.StoreTable, stock.StoreColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -86,9 +87,9 @@ func (sq *StockQuery) QueryInboundStore() *StoreQuery {
 	return query
 }
 
-// QueryOutboundStore chains the current query on the "outbound_store" edge.
-func (sq *StockQuery) QueryOutboundStore() *StoreQuery {
-	query := &StoreQuery{config: sq.config}
+// QueryRider chains the current query on the "rider" edge.
+func (sq *StockQuery) QueryRider() *RiderQuery {
+	query := &RiderQuery{config: sq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := sq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -99,8 +100,8 @@ func (sq *StockQuery) QueryOutboundStore() *StoreQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(stock.Table, stock.FieldID, selector),
-			sqlgraph.To(store.Table, store.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, stock.OutboundStoreTable, stock.OutboundStoreColumn),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.RiderTable, stock.RiderColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -284,13 +285,13 @@ func (sq *StockQuery) Clone() *StockQuery {
 		return nil
 	}
 	return &StockQuery{
-		config:            sq.config,
-		limit:             sq.limit,
-		offset:            sq.offset,
-		order:             append([]OrderFunc{}, sq.order...),
-		predicates:        append([]predicate.Stock{}, sq.predicates...),
-		withInboundStore:  sq.withInboundStore.Clone(),
-		withOutboundStore: sq.withOutboundStore.Clone(),
+		config:     sq.config,
+		limit:      sq.limit,
+		offset:     sq.offset,
+		order:      append([]OrderFunc{}, sq.order...),
+		predicates: append([]predicate.Stock{}, sq.predicates...),
+		withStore:  sq.withStore.Clone(),
+		withRider:  sq.withRider.Clone(),
 		// clone intermediate query.
 		sql:    sq.sql.Clone(),
 		path:   sq.path,
@@ -298,25 +299,25 @@ func (sq *StockQuery) Clone() *StockQuery {
 	}
 }
 
-// WithInboundStore tells the query-builder to eager-load the nodes that are connected to
-// the "inbound_store" edge. The optional arguments are used to configure the query builder of the edge.
-func (sq *StockQuery) WithInboundStore(opts ...func(*StoreQuery)) *StockQuery {
+// WithStore tells the query-builder to eager-load the nodes that are connected to
+// the "store" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StockQuery) WithStore(opts ...func(*StoreQuery)) *StockQuery {
 	query := &StoreQuery{config: sq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	sq.withInboundStore = query
+	sq.withStore = query
 	return sq
 }
 
-// WithOutboundStore tells the query-builder to eager-load the nodes that are connected to
-// the "outbound_store" edge. The optional arguments are used to configure the query builder of the edge.
-func (sq *StockQuery) WithOutboundStore(opts ...func(*StoreQuery)) *StockQuery {
-	query := &StoreQuery{config: sq.config}
+// WithRider tells the query-builder to eager-load the nodes that are connected to
+// the "rider" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StockQuery) WithRider(opts ...func(*RiderQuery)) *StockQuery {
+	query := &RiderQuery{config: sq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	sq.withOutboundStore = query
+	sq.withRider = query
 	return sq
 }
 
@@ -391,8 +392,8 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 		nodes       = []*Stock{}
 		_spec       = sq.querySpec()
 		loadedTypes = [2]bool{
-			sq.withInboundStore != nil,
-			sq.withOutboundStore != nil,
+			sq.withStore != nil,
+			sq.withRider != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -417,14 +418,14 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 		return nodes, nil
 	}
 
-	if query := sq.withInboundStore; query != nil {
+	if query := sq.withStore; query != nil {
 		ids := make([]uint64, 0, len(nodes))
 		nodeids := make(map[uint64][]*Stock)
 		for i := range nodes {
-			if nodes[i].InboundStoreID == nil {
+			if nodes[i].StoreID == nil {
 				continue
 			}
-			fk := *nodes[i].InboundStoreID
+			fk := *nodes[i].StoreID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
@@ -438,28 +439,28 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "inbound_store_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "store_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.InboundStore = n
+				nodes[i].Edges.Store = n
 			}
 		}
 	}
 
-	if query := sq.withOutboundStore; query != nil {
+	if query := sq.withRider; query != nil {
 		ids := make([]uint64, 0, len(nodes))
 		nodeids := make(map[uint64][]*Stock)
 		for i := range nodes {
-			if nodes[i].OutboundStoreID == nil {
+			if nodes[i].RiderID == nil {
 				continue
 			}
-			fk := *nodes[i].OutboundStoreID
+			fk := *nodes[i].RiderID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
 			nodeids[fk] = append(nodeids[fk], nodes[i])
 		}
-		query.Where(store.IDIn(ids...))
+		query.Where(rider.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
@@ -467,10 +468,10 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "outbound_store_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "rider_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.OutboundStore = n
+				nodes[i].Edges.Rider = n
 			}
 		}
 	}

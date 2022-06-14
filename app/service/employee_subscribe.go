@@ -136,6 +136,7 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
 
     tx, _ := ar.Ent.Tx(s.ctx)
 
+    // 激活
     _, err := tx.Subscribe.UpdateOneID(info.ID).
         SetStatus(model.SubscribeStatusUsing).
         SetStartAt(time.Now()).
@@ -144,6 +145,7 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
         Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
 
+    // 团签账单
     if info.EnterpriseID != nil {
         sm := NewEnterpriseStatement().Current(*info.EnterpriseID)
         _, err = tx.EnterpriseStatement.UpdateOne(sm).AddRiderNumber(1).Save(s.ctx)
@@ -154,6 +156,8 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
     if info.CommissionID != nil {
         _, _ = tx.Commission.UpdateOneID(*info.CommissionID).SetEmployeeID(s.employee.ID).Save(s.ctx)
     }
+
+    // 调出库存
 
     _ = tx.Commit()
 }

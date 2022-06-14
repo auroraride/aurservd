@@ -69,6 +69,8 @@ const (
 	EdgeExchanges = "exchanges"
 	// EdgeSubscribes holds the string denoting the subscribes edge name in mutations.
 	EdgeSubscribes = "subscribes"
+	// EdgeStocks holds the string denoting the stocks edge name in mutations.
+	EdgeStocks = "stocks"
 	// Table holds the table name of the rider in the database.
 	Table = "rider"
 	// StationTable is the table that holds the station relation/edge.
@@ -127,6 +129,13 @@ const (
 	SubscribesInverseTable = "subscribe"
 	// SubscribesColumn is the table column denoting the subscribes relation/edge.
 	SubscribesColumn = "rider_id"
+	// StocksTable is the table that holds the stocks relation/edge.
+	StocksTable = "stock"
+	// StocksInverseTable is the table name for the Stock entity.
+	// It exists in this package in order to avoid circular dependency with the "stock" package.
+	StocksInverseTable = "stock"
+	// StocksColumn is the table column denoting the stocks relation/edge.
+	StocksColumn = "rider_id"
 )
 
 // Columns holds all SQL columns for rider fields.

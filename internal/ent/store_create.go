@@ -151,34 +151,19 @@ func (sc *StoreCreate) SetEmployee(e *Employee) *StoreCreate {
 	return sc.SetEmployeeID(e.ID)
 }
 
-// AddInboundStockIDs adds the "inboundStocks" edge to the Stock entity by IDs.
-func (sc *StoreCreate) AddInboundStockIDs(ids ...uint64) *StoreCreate {
-	sc.mutation.AddInboundStockIDs(ids...)
+// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
+func (sc *StoreCreate) AddStockIDs(ids ...uint64) *StoreCreate {
+	sc.mutation.AddStockIDs(ids...)
 	return sc
 }
 
-// AddInboundStocks adds the "inboundStocks" edges to the Stock entity.
-func (sc *StoreCreate) AddInboundStocks(s ...*Stock) *StoreCreate {
+// AddStocks adds the "stocks" edges to the Stock entity.
+func (sc *StoreCreate) AddStocks(s ...*Stock) *StoreCreate {
 	ids := make([]uint64, len(s))
 	for i := range s {
 		ids[i] = s[i].ID
 	}
-	return sc.AddInboundStockIDs(ids...)
-}
-
-// AddOutboundStockIDs adds the "outboundStocks" edge to the Stock entity by IDs.
-func (sc *StoreCreate) AddOutboundStockIDs(ids ...uint64) *StoreCreate {
-	sc.mutation.AddOutboundStockIDs(ids...)
-	return sc
-}
-
-// AddOutboundStocks adds the "outboundStocks" edges to the Stock entity.
-func (sc *StoreCreate) AddOutboundStocks(s ...*Stock) *StoreCreate {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
-	}
-	return sc.AddOutboundStockIDs(ids...)
+	return sc.AddStockIDs(ids...)
 }
 
 // AddAttendanceIDs adds the "attendances" edge to the Attendance entity by IDs.
@@ -459,31 +444,12 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 		_node.EmployeeID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := sc.mutation.InboundStocksIDs(); len(nodes) > 0 {
+	if nodes := sc.mutation.StocksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   store.InboundStocksTable,
-			Columns: []string{store.InboundStocksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: stock.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := sc.mutation.OutboundStocksIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   store.OutboundStocksTable,
-			Columns: []string{store.OutboundStocksColumn},
+			Table:   store.StocksTable,
+			Columns: []string{store.StocksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

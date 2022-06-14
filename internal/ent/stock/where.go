@@ -128,17 +128,17 @@ func Sn(v string) predicate.Stock {
 	})
 }
 
-// InboundStoreID applies equality check predicate on the "inbound_store_id" field. It's identical to InboundStoreIDEQ.
-func InboundStoreID(v uint64) predicate.Stock {
+// StoreID applies equality check predicate on the "store_id" field. It's identical to StoreIDEQ.
+func StoreID(v uint64) predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldInboundStoreID), v))
+		s.Where(sql.EQ(s.C(FieldStoreID), v))
 	})
 }
 
-// OutboundStoreID applies equality check predicate on the "outbound_store_id" field. It's identical to OutboundStoreIDEQ.
-func OutboundStoreID(v uint64) predicate.Stock {
+// RiderID applies equality check predicate on the "rider_id" field. It's identical to RiderIDEQ.
+func RiderID(v uint64) predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOutboundStoreID), v))
+		s.Where(sql.EQ(s.C(FieldRiderID), v))
 	})
 }
 
@@ -669,22 +669,22 @@ func SnContainsFold(v string) predicate.Stock {
 	})
 }
 
-// InboundStoreIDEQ applies the EQ predicate on the "inbound_store_id" field.
-func InboundStoreIDEQ(v uint64) predicate.Stock {
+// StoreIDEQ applies the EQ predicate on the "store_id" field.
+func StoreIDEQ(v uint64) predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldInboundStoreID), v))
+		s.Where(sql.EQ(s.C(FieldStoreID), v))
 	})
 }
 
-// InboundStoreIDNEQ applies the NEQ predicate on the "inbound_store_id" field.
-func InboundStoreIDNEQ(v uint64) predicate.Stock {
+// StoreIDNEQ applies the NEQ predicate on the "store_id" field.
+func StoreIDNEQ(v uint64) predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldInboundStoreID), v))
+		s.Where(sql.NEQ(s.C(FieldStoreID), v))
 	})
 }
 
-// InboundStoreIDIn applies the In predicate on the "inbound_store_id" field.
-func InboundStoreIDIn(vs ...uint64) predicate.Stock {
+// StoreIDIn applies the In predicate on the "store_id" field.
+func StoreIDIn(vs ...uint64) predicate.Stock {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -696,12 +696,12 @@ func InboundStoreIDIn(vs ...uint64) predicate.Stock {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldInboundStoreID), v...))
+		s.Where(sql.In(s.C(FieldStoreID), v...))
 	})
 }
 
-// InboundStoreIDNotIn applies the NotIn predicate on the "inbound_store_id" field.
-func InboundStoreIDNotIn(vs ...uint64) predicate.Stock {
+// StoreIDNotIn applies the NotIn predicate on the "store_id" field.
+func StoreIDNotIn(vs ...uint64) predicate.Stock {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -713,40 +713,40 @@ func InboundStoreIDNotIn(vs ...uint64) predicate.Stock {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldInboundStoreID), v...))
+		s.Where(sql.NotIn(s.C(FieldStoreID), v...))
 	})
 }
 
-// InboundStoreIDIsNil applies the IsNil predicate on the "inbound_store_id" field.
-func InboundStoreIDIsNil() predicate.Stock {
+// StoreIDIsNil applies the IsNil predicate on the "store_id" field.
+func StoreIDIsNil() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldInboundStoreID)))
+		s.Where(sql.IsNull(s.C(FieldStoreID)))
 	})
 }
 
-// InboundStoreIDNotNil applies the NotNil predicate on the "inbound_store_id" field.
-func InboundStoreIDNotNil() predicate.Stock {
+// StoreIDNotNil applies the NotNil predicate on the "store_id" field.
+func StoreIDNotNil() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldInboundStoreID)))
+		s.Where(sql.NotNull(s.C(FieldStoreID)))
 	})
 }
 
-// OutboundStoreIDEQ applies the EQ predicate on the "outbound_store_id" field.
-func OutboundStoreIDEQ(v uint64) predicate.Stock {
+// RiderIDEQ applies the EQ predicate on the "rider_id" field.
+func RiderIDEQ(v uint64) predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOutboundStoreID), v))
+		s.Where(sql.EQ(s.C(FieldRiderID), v))
 	})
 }
 
-// OutboundStoreIDNEQ applies the NEQ predicate on the "outbound_store_id" field.
-func OutboundStoreIDNEQ(v uint64) predicate.Stock {
+// RiderIDNEQ applies the NEQ predicate on the "rider_id" field.
+func RiderIDNEQ(v uint64) predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldOutboundStoreID), v))
+		s.Where(sql.NEQ(s.C(FieldRiderID), v))
 	})
 }
 
-// OutboundStoreIDIn applies the In predicate on the "outbound_store_id" field.
-func OutboundStoreIDIn(vs ...uint64) predicate.Stock {
+// RiderIDIn applies the In predicate on the "rider_id" field.
+func RiderIDIn(vs ...uint64) predicate.Stock {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -758,12 +758,12 @@ func OutboundStoreIDIn(vs ...uint64) predicate.Stock {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldOutboundStoreID), v...))
+		s.Where(sql.In(s.C(FieldRiderID), v...))
 	})
 }
 
-// OutboundStoreIDNotIn applies the NotIn predicate on the "outbound_store_id" field.
-func OutboundStoreIDNotIn(vs ...uint64) predicate.Stock {
+// RiderIDNotIn applies the NotIn predicate on the "rider_id" field.
+func RiderIDNotIn(vs ...uint64) predicate.Stock {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -775,21 +775,21 @@ func OutboundStoreIDNotIn(vs ...uint64) predicate.Stock {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldOutboundStoreID), v...))
+		s.Where(sql.NotIn(s.C(FieldRiderID), v...))
 	})
 }
 
-// OutboundStoreIDIsNil applies the IsNil predicate on the "outbound_store_id" field.
-func OutboundStoreIDIsNil() predicate.Stock {
+// RiderIDIsNil applies the IsNil predicate on the "rider_id" field.
+func RiderIDIsNil() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldOutboundStoreID)))
+		s.Where(sql.IsNull(s.C(FieldRiderID)))
 	})
 }
 
-// OutboundStoreIDNotNil applies the NotNil predicate on the "outbound_store_id" field.
-func OutboundStoreIDNotNil() predicate.Stock {
+// RiderIDNotNil applies the NotNil predicate on the "rider_id" field.
+func RiderIDNotNil() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldOutboundStoreID)))
+		s.Where(sql.NotNull(s.C(FieldRiderID)))
 	})
 }
 
@@ -1070,25 +1070,25 @@ func NumLTE(v int) predicate.Stock {
 	})
 }
 
-// HasInboundStore applies the HasEdge predicate on the "inbound_store" edge.
-func HasInboundStore() predicate.Stock {
+// HasStore applies the HasEdge predicate on the "store" edge.
+func HasStore() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(InboundStoreTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, InboundStoreTable, InboundStoreColumn),
+			sqlgraph.To(StoreTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, StoreTable, StoreColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasInboundStoreWith applies the HasEdge predicate on the "inbound_store" edge with a given conditions (other predicates).
-func HasInboundStoreWith(preds ...predicate.Store) predicate.Stock {
+// HasStoreWith applies the HasEdge predicate on the "store" edge with a given conditions (other predicates).
+func HasStoreWith(preds ...predicate.Store) predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(InboundStoreInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, InboundStoreTable, InboundStoreColumn),
+			sqlgraph.To(StoreInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, StoreTable, StoreColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
@@ -1098,25 +1098,25 @@ func HasInboundStoreWith(preds ...predicate.Store) predicate.Stock {
 	})
 }
 
-// HasOutboundStore applies the HasEdge predicate on the "outbound_store" edge.
-func HasOutboundStore() predicate.Stock {
+// HasRider applies the HasEdge predicate on the "rider" edge.
+func HasRider() predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(OutboundStoreTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, OutboundStoreTable, OutboundStoreColumn),
+			sqlgraph.To(RiderTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasOutboundStoreWith applies the HasEdge predicate on the "outbound_store" edge with a given conditions (other predicates).
-func HasOutboundStoreWith(preds ...predicate.Store) predicate.Stock {
+// HasRiderWith applies the HasEdge predicate on the "rider" edge with a given conditions (other predicates).
+func HasRiderWith(preds ...predicate.Rider) predicate.Stock {
 	return predicate.Stock(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(OutboundStoreInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, OutboundStoreTable, OutboundStoreColumn),
+			sqlgraph.To(RiderInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, RiderTable, RiderColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

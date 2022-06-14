@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
@@ -94,43 +95,43 @@ func (su *StockUpdate) SetSn(s string) *StockUpdate {
 	return su
 }
 
-// SetInboundStoreID sets the "inbound_store_id" field.
-func (su *StockUpdate) SetInboundStoreID(u uint64) *StockUpdate {
-	su.mutation.SetInboundStoreID(u)
+// SetStoreID sets the "store_id" field.
+func (su *StockUpdate) SetStoreID(u uint64) *StockUpdate {
+	su.mutation.SetStoreID(u)
 	return su
 }
 
-// SetNillableInboundStoreID sets the "inbound_store_id" field if the given value is not nil.
-func (su *StockUpdate) SetNillableInboundStoreID(u *uint64) *StockUpdate {
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (su *StockUpdate) SetNillableStoreID(u *uint64) *StockUpdate {
 	if u != nil {
-		su.SetInboundStoreID(*u)
+		su.SetStoreID(*u)
 	}
 	return su
 }
 
-// ClearInboundStoreID clears the value of the "inbound_store_id" field.
-func (su *StockUpdate) ClearInboundStoreID() *StockUpdate {
-	su.mutation.ClearInboundStoreID()
+// ClearStoreID clears the value of the "store_id" field.
+func (su *StockUpdate) ClearStoreID() *StockUpdate {
+	su.mutation.ClearStoreID()
 	return su
 }
 
-// SetOutboundStoreID sets the "outbound_store_id" field.
-func (su *StockUpdate) SetOutboundStoreID(u uint64) *StockUpdate {
-	su.mutation.SetOutboundStoreID(u)
+// SetRiderID sets the "rider_id" field.
+func (su *StockUpdate) SetRiderID(u uint64) *StockUpdate {
+	su.mutation.SetRiderID(u)
 	return su
 }
 
-// SetNillableOutboundStoreID sets the "outbound_store_id" field if the given value is not nil.
-func (su *StockUpdate) SetNillableOutboundStoreID(u *uint64) *StockUpdate {
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (su *StockUpdate) SetNillableRiderID(u *uint64) *StockUpdate {
 	if u != nil {
-		su.SetOutboundStoreID(*u)
+		su.SetRiderID(*u)
 	}
 	return su
 }
 
-// ClearOutboundStoreID clears the value of the "outbound_store_id" field.
-func (su *StockUpdate) ClearOutboundStoreID() *StockUpdate {
-	su.mutation.ClearOutboundStoreID()
+// ClearRiderID clears the value of the "rider_id" field.
+func (su *StockUpdate) ClearRiderID() *StockUpdate {
+	su.mutation.ClearRiderID()
 	return su
 }
 
@@ -180,14 +181,14 @@ func (su *StockUpdate) AddNum(i int) *StockUpdate {
 	return su
 }
 
-// SetInboundStore sets the "inbound_store" edge to the Store entity.
-func (su *StockUpdate) SetInboundStore(s *Store) *StockUpdate {
-	return su.SetInboundStoreID(s.ID)
+// SetStore sets the "store" edge to the Store entity.
+func (su *StockUpdate) SetStore(s *Store) *StockUpdate {
+	return su.SetStoreID(s.ID)
 }
 
-// SetOutboundStore sets the "outbound_store" edge to the Store entity.
-func (su *StockUpdate) SetOutboundStore(s *Store) *StockUpdate {
-	return su.SetOutboundStoreID(s.ID)
+// SetRider sets the "rider" edge to the Rider entity.
+func (su *StockUpdate) SetRider(r *Rider) *StockUpdate {
+	return su.SetRiderID(r.ID)
 }
 
 // Mutation returns the StockMutation object of the builder.
@@ -195,15 +196,15 @@ func (su *StockUpdate) Mutation() *StockMutation {
 	return su.mutation
 }
 
-// ClearInboundStore clears the "inbound_store" edge to the Store entity.
-func (su *StockUpdate) ClearInboundStore() *StockUpdate {
-	su.mutation.ClearInboundStore()
+// ClearStore clears the "store" edge to the Store entity.
+func (su *StockUpdate) ClearStore() *StockUpdate {
+	su.mutation.ClearStore()
 	return su
 }
 
-// ClearOutboundStore clears the "outbound_store" edge to the Store entity.
-func (su *StockUpdate) ClearOutboundStore() *StockUpdate {
-	su.mutation.ClearOutboundStore()
+// ClearRider clears the "rider" edge to the Rider entity.
+func (su *StockUpdate) ClearRider() *StockUpdate {
+	su.mutation.ClearRider()
 	return su
 }
 
@@ -394,12 +395,12 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: stock.FieldNum,
 		})
 	}
-	if su.mutation.InboundStoreCleared() {
+	if su.mutation.StoreCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   stock.InboundStoreTable,
-			Columns: []string{stock.InboundStoreColumn},
+			Table:   stock.StoreTable,
+			Columns: []string{stock.StoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -410,12 +411,12 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := su.mutation.InboundStoreIDs(); len(nodes) > 0 {
+	if nodes := su.mutation.StoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   stock.InboundStoreTable,
-			Columns: []string{stock.InboundStoreColumn},
+			Table:   stock.StoreTable,
+			Columns: []string{stock.StoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -429,33 +430,33 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if su.mutation.OutboundStoreCleared() {
+	if su.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   stock.OutboundStoreTable,
-			Columns: []string{stock.OutboundStoreColumn},
+			Table:   stock.RiderTable,
+			Columns: []string{stock.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: store.FieldID,
+					Column: rider.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := su.mutation.OutboundStoreIDs(); len(nodes) > 0 {
+	if nodes := su.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   stock.OutboundStoreTable,
-			Columns: []string{stock.OutboundStoreColumn},
+			Table:   stock.RiderTable,
+			Columns: []string{stock.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: store.FieldID,
+					Column: rider.FieldID,
 				},
 			},
 		}
@@ -547,43 +548,43 @@ func (suo *StockUpdateOne) SetSn(s string) *StockUpdateOne {
 	return suo
 }
 
-// SetInboundStoreID sets the "inbound_store_id" field.
-func (suo *StockUpdateOne) SetInboundStoreID(u uint64) *StockUpdateOne {
-	suo.mutation.SetInboundStoreID(u)
+// SetStoreID sets the "store_id" field.
+func (suo *StockUpdateOne) SetStoreID(u uint64) *StockUpdateOne {
+	suo.mutation.SetStoreID(u)
 	return suo
 }
 
-// SetNillableInboundStoreID sets the "inbound_store_id" field if the given value is not nil.
-func (suo *StockUpdateOne) SetNillableInboundStoreID(u *uint64) *StockUpdateOne {
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableStoreID(u *uint64) *StockUpdateOne {
 	if u != nil {
-		suo.SetInboundStoreID(*u)
+		suo.SetStoreID(*u)
 	}
 	return suo
 }
 
-// ClearInboundStoreID clears the value of the "inbound_store_id" field.
-func (suo *StockUpdateOne) ClearInboundStoreID() *StockUpdateOne {
-	suo.mutation.ClearInboundStoreID()
+// ClearStoreID clears the value of the "store_id" field.
+func (suo *StockUpdateOne) ClearStoreID() *StockUpdateOne {
+	suo.mutation.ClearStoreID()
 	return suo
 }
 
-// SetOutboundStoreID sets the "outbound_store_id" field.
-func (suo *StockUpdateOne) SetOutboundStoreID(u uint64) *StockUpdateOne {
-	suo.mutation.SetOutboundStoreID(u)
+// SetRiderID sets the "rider_id" field.
+func (suo *StockUpdateOne) SetRiderID(u uint64) *StockUpdateOne {
+	suo.mutation.SetRiderID(u)
 	return suo
 }
 
-// SetNillableOutboundStoreID sets the "outbound_store_id" field if the given value is not nil.
-func (suo *StockUpdateOne) SetNillableOutboundStoreID(u *uint64) *StockUpdateOne {
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableRiderID(u *uint64) *StockUpdateOne {
 	if u != nil {
-		suo.SetOutboundStoreID(*u)
+		suo.SetRiderID(*u)
 	}
 	return suo
 }
 
-// ClearOutboundStoreID clears the value of the "outbound_store_id" field.
-func (suo *StockUpdateOne) ClearOutboundStoreID() *StockUpdateOne {
-	suo.mutation.ClearOutboundStoreID()
+// ClearRiderID clears the value of the "rider_id" field.
+func (suo *StockUpdateOne) ClearRiderID() *StockUpdateOne {
+	suo.mutation.ClearRiderID()
 	return suo
 }
 
@@ -633,14 +634,14 @@ func (suo *StockUpdateOne) AddNum(i int) *StockUpdateOne {
 	return suo
 }
 
-// SetInboundStore sets the "inbound_store" edge to the Store entity.
-func (suo *StockUpdateOne) SetInboundStore(s *Store) *StockUpdateOne {
-	return suo.SetInboundStoreID(s.ID)
+// SetStore sets the "store" edge to the Store entity.
+func (suo *StockUpdateOne) SetStore(s *Store) *StockUpdateOne {
+	return suo.SetStoreID(s.ID)
 }
 
-// SetOutboundStore sets the "outbound_store" edge to the Store entity.
-func (suo *StockUpdateOne) SetOutboundStore(s *Store) *StockUpdateOne {
-	return suo.SetOutboundStoreID(s.ID)
+// SetRider sets the "rider" edge to the Rider entity.
+func (suo *StockUpdateOne) SetRider(r *Rider) *StockUpdateOne {
+	return suo.SetRiderID(r.ID)
 }
 
 // Mutation returns the StockMutation object of the builder.
@@ -648,15 +649,15 @@ func (suo *StockUpdateOne) Mutation() *StockMutation {
 	return suo.mutation
 }
 
-// ClearInboundStore clears the "inbound_store" edge to the Store entity.
-func (suo *StockUpdateOne) ClearInboundStore() *StockUpdateOne {
-	suo.mutation.ClearInboundStore()
+// ClearStore clears the "store" edge to the Store entity.
+func (suo *StockUpdateOne) ClearStore() *StockUpdateOne {
+	suo.mutation.ClearStore()
 	return suo
 }
 
-// ClearOutboundStore clears the "outbound_store" edge to the Store entity.
-func (suo *StockUpdateOne) ClearOutboundStore() *StockUpdateOne {
-	suo.mutation.ClearOutboundStore()
+// ClearRider clears the "rider" edge to the Rider entity.
+func (suo *StockUpdateOne) ClearRider() *StockUpdateOne {
+	suo.mutation.ClearRider()
 	return suo
 }
 
@@ -877,12 +878,12 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 			Column: stock.FieldNum,
 		})
 	}
-	if suo.mutation.InboundStoreCleared() {
+	if suo.mutation.StoreCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   stock.InboundStoreTable,
-			Columns: []string{stock.InboundStoreColumn},
+			Table:   stock.StoreTable,
+			Columns: []string{stock.StoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -893,12 +894,12 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := suo.mutation.InboundStoreIDs(); len(nodes) > 0 {
+	if nodes := suo.mutation.StoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   stock.InboundStoreTable,
-			Columns: []string{stock.InboundStoreColumn},
+			Table:   stock.StoreTable,
+			Columns: []string{stock.StoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -912,33 +913,33 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if suo.mutation.OutboundStoreCleared() {
+	if suo.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   stock.OutboundStoreTable,
-			Columns: []string{stock.OutboundStoreColumn},
+			Table:   stock.RiderTable,
+			Columns: []string{stock.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: store.FieldID,
+					Column: rider.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := suo.mutation.OutboundStoreIDs(); len(nodes) > 0 {
+	if nodes := suo.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   stock.OutboundStoreTable,
-			Columns: []string{stock.OutboundStoreColumn},
+			Table:   stock.RiderTable,
+			Columns: []string{stock.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: store.FieldID,
+					Column: rider.FieldID,
 				},
 			},
 		}

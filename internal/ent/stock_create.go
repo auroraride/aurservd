@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
@@ -98,30 +99,30 @@ func (sc *StockCreate) SetSn(s string) *StockCreate {
 	return sc
 }
 
-// SetInboundStoreID sets the "inbound_store_id" field.
-func (sc *StockCreate) SetInboundStoreID(u uint64) *StockCreate {
-	sc.mutation.SetInboundStoreID(u)
+// SetStoreID sets the "store_id" field.
+func (sc *StockCreate) SetStoreID(u uint64) *StockCreate {
+	sc.mutation.SetStoreID(u)
 	return sc
 }
 
-// SetNillableInboundStoreID sets the "inbound_store_id" field if the given value is not nil.
-func (sc *StockCreate) SetNillableInboundStoreID(u *uint64) *StockCreate {
+// SetNillableStoreID sets the "store_id" field if the given value is not nil.
+func (sc *StockCreate) SetNillableStoreID(u *uint64) *StockCreate {
 	if u != nil {
-		sc.SetInboundStoreID(*u)
+		sc.SetStoreID(*u)
 	}
 	return sc
 }
 
-// SetOutboundStoreID sets the "outbound_store_id" field.
-func (sc *StockCreate) SetOutboundStoreID(u uint64) *StockCreate {
-	sc.mutation.SetOutboundStoreID(u)
+// SetRiderID sets the "rider_id" field.
+func (sc *StockCreate) SetRiderID(u uint64) *StockCreate {
+	sc.mutation.SetRiderID(u)
 	return sc
 }
 
-// SetNillableOutboundStoreID sets the "outbound_store_id" field if the given value is not nil.
-func (sc *StockCreate) SetNillableOutboundStoreID(u *uint64) *StockCreate {
+// SetNillableRiderID sets the "rider_id" field if the given value is not nil.
+func (sc *StockCreate) SetNillableRiderID(u *uint64) *StockCreate {
 	if u != nil {
-		sc.SetOutboundStoreID(*u)
+		sc.SetRiderID(*u)
 	}
 	return sc
 }
@@ -152,14 +153,14 @@ func (sc *StockCreate) SetNum(i int) *StockCreate {
 	return sc
 }
 
-// SetInboundStore sets the "inbound_store" edge to the Store entity.
-func (sc *StockCreate) SetInboundStore(s *Store) *StockCreate {
-	return sc.SetInboundStoreID(s.ID)
+// SetStore sets the "store" edge to the Store entity.
+func (sc *StockCreate) SetStore(s *Store) *StockCreate {
+	return sc.SetStoreID(s.ID)
 }
 
-// SetOutboundStore sets the "outbound_store" edge to the Store entity.
-func (sc *StockCreate) SetOutboundStore(s *Store) *StockCreate {
-	return sc.SetOutboundStoreID(s.ID)
+// SetRider sets the "rider" edge to the Rider entity.
+func (sc *StockCreate) SetRider(r *Rider) *StockCreate {
+	return sc.SetRiderID(r.ID)
 }
 
 // Mutation returns the StockMutation object of the builder.
@@ -383,12 +384,12 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 		})
 		_node.Num = value
 	}
-	if nodes := sc.mutation.InboundStoreIDs(); len(nodes) > 0 {
+	if nodes := sc.mutation.StoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   stock.InboundStoreTable,
-			Columns: []string{stock.InboundStoreColumn},
+			Table:   stock.StoreTable,
+			Columns: []string{stock.StoreColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -400,27 +401,27 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.InboundStoreID = &nodes[0]
+		_node.StoreID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := sc.mutation.OutboundStoreIDs(); len(nodes) > 0 {
+	if nodes := sc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   stock.OutboundStoreTable,
-			Columns: []string{stock.OutboundStoreColumn},
+			Table:   stock.RiderTable,
+			Columns: []string{stock.RiderColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
-					Column: store.FieldID,
+					Column: rider.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.OutboundStoreID = &nodes[0]
+		_node.RiderID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -585,39 +586,39 @@ func (u *StockUpsert) UpdateSn() *StockUpsert {
 	return u
 }
 
-// SetInboundStoreID sets the "inbound_store_id" field.
-func (u *StockUpsert) SetInboundStoreID(v uint64) *StockUpsert {
-	u.Set(stock.FieldInboundStoreID, v)
+// SetStoreID sets the "store_id" field.
+func (u *StockUpsert) SetStoreID(v uint64) *StockUpsert {
+	u.Set(stock.FieldStoreID, v)
 	return u
 }
 
-// UpdateInboundStoreID sets the "inbound_store_id" field to the value that was provided on create.
-func (u *StockUpsert) UpdateInboundStoreID() *StockUpsert {
-	u.SetExcluded(stock.FieldInboundStoreID)
+// UpdateStoreID sets the "store_id" field to the value that was provided on create.
+func (u *StockUpsert) UpdateStoreID() *StockUpsert {
+	u.SetExcluded(stock.FieldStoreID)
 	return u
 }
 
-// ClearInboundStoreID clears the value of the "inbound_store_id" field.
-func (u *StockUpsert) ClearInboundStoreID() *StockUpsert {
-	u.SetNull(stock.FieldInboundStoreID)
+// ClearStoreID clears the value of the "store_id" field.
+func (u *StockUpsert) ClearStoreID() *StockUpsert {
+	u.SetNull(stock.FieldStoreID)
 	return u
 }
 
-// SetOutboundStoreID sets the "outbound_store_id" field.
-func (u *StockUpsert) SetOutboundStoreID(v uint64) *StockUpsert {
-	u.Set(stock.FieldOutboundStoreID, v)
+// SetRiderID sets the "rider_id" field.
+func (u *StockUpsert) SetRiderID(v uint64) *StockUpsert {
+	u.Set(stock.FieldRiderID, v)
 	return u
 }
 
-// UpdateOutboundStoreID sets the "outbound_store_id" field to the value that was provided on create.
-func (u *StockUpsert) UpdateOutboundStoreID() *StockUpsert {
-	u.SetExcluded(stock.FieldOutboundStoreID)
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *StockUpsert) UpdateRiderID() *StockUpsert {
+	u.SetExcluded(stock.FieldRiderID)
 	return u
 }
 
-// ClearOutboundStoreID clears the value of the "outbound_store_id" field.
-func (u *StockUpsert) ClearOutboundStoreID() *StockUpsert {
-	u.SetNull(stock.FieldOutboundStoreID)
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *StockUpsert) ClearRiderID() *StockUpsert {
+	u.SetNull(stock.FieldRiderID)
 	return u
 }
 
@@ -851,45 +852,45 @@ func (u *StockUpsertOne) UpdateSn() *StockUpsertOne {
 	})
 }
 
-// SetInboundStoreID sets the "inbound_store_id" field.
-func (u *StockUpsertOne) SetInboundStoreID(v uint64) *StockUpsertOne {
+// SetStoreID sets the "store_id" field.
+func (u *StockUpsertOne) SetStoreID(v uint64) *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
-		s.SetInboundStoreID(v)
+		s.SetStoreID(v)
 	})
 }
 
-// UpdateInboundStoreID sets the "inbound_store_id" field to the value that was provided on create.
-func (u *StockUpsertOne) UpdateInboundStoreID() *StockUpsertOne {
+// UpdateStoreID sets the "store_id" field to the value that was provided on create.
+func (u *StockUpsertOne) UpdateStoreID() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
-		s.UpdateInboundStoreID()
+		s.UpdateStoreID()
 	})
 }
 
-// ClearInboundStoreID clears the value of the "inbound_store_id" field.
-func (u *StockUpsertOne) ClearInboundStoreID() *StockUpsertOne {
+// ClearStoreID clears the value of the "store_id" field.
+func (u *StockUpsertOne) ClearStoreID() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
-		s.ClearInboundStoreID()
+		s.ClearStoreID()
 	})
 }
 
-// SetOutboundStoreID sets the "outbound_store_id" field.
-func (u *StockUpsertOne) SetOutboundStoreID(v uint64) *StockUpsertOne {
+// SetRiderID sets the "rider_id" field.
+func (u *StockUpsertOne) SetRiderID(v uint64) *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
-		s.SetOutboundStoreID(v)
+		s.SetRiderID(v)
 	})
 }
 
-// UpdateOutboundStoreID sets the "outbound_store_id" field to the value that was provided on create.
-func (u *StockUpsertOne) UpdateOutboundStoreID() *StockUpsertOne {
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *StockUpsertOne) UpdateRiderID() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
-		s.UpdateOutboundStoreID()
+		s.UpdateRiderID()
 	})
 }
 
-// ClearOutboundStoreID clears the value of the "outbound_store_id" field.
-func (u *StockUpsertOne) ClearOutboundStoreID() *StockUpsertOne {
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *StockUpsertOne) ClearRiderID() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
-		s.ClearOutboundStoreID()
+		s.ClearRiderID()
 	})
 }
 
@@ -1296,45 +1297,45 @@ func (u *StockUpsertBulk) UpdateSn() *StockUpsertBulk {
 	})
 }
 
-// SetInboundStoreID sets the "inbound_store_id" field.
-func (u *StockUpsertBulk) SetInboundStoreID(v uint64) *StockUpsertBulk {
+// SetStoreID sets the "store_id" field.
+func (u *StockUpsertBulk) SetStoreID(v uint64) *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
-		s.SetInboundStoreID(v)
+		s.SetStoreID(v)
 	})
 }
 
-// UpdateInboundStoreID sets the "inbound_store_id" field to the value that was provided on create.
-func (u *StockUpsertBulk) UpdateInboundStoreID() *StockUpsertBulk {
+// UpdateStoreID sets the "store_id" field to the value that was provided on create.
+func (u *StockUpsertBulk) UpdateStoreID() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
-		s.UpdateInboundStoreID()
+		s.UpdateStoreID()
 	})
 }
 
-// ClearInboundStoreID clears the value of the "inbound_store_id" field.
-func (u *StockUpsertBulk) ClearInboundStoreID() *StockUpsertBulk {
+// ClearStoreID clears the value of the "store_id" field.
+func (u *StockUpsertBulk) ClearStoreID() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
-		s.ClearInboundStoreID()
+		s.ClearStoreID()
 	})
 }
 
-// SetOutboundStoreID sets the "outbound_store_id" field.
-func (u *StockUpsertBulk) SetOutboundStoreID(v uint64) *StockUpsertBulk {
+// SetRiderID sets the "rider_id" field.
+func (u *StockUpsertBulk) SetRiderID(v uint64) *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
-		s.SetOutboundStoreID(v)
+		s.SetRiderID(v)
 	})
 }
 
-// UpdateOutboundStoreID sets the "outbound_store_id" field to the value that was provided on create.
-func (u *StockUpsertBulk) UpdateOutboundStoreID() *StockUpsertBulk {
+// UpdateRiderID sets the "rider_id" field to the value that was provided on create.
+func (u *StockUpsertBulk) UpdateRiderID() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
-		s.UpdateOutboundStoreID()
+		s.UpdateRiderID()
 	})
 }
 
-// ClearOutboundStoreID clears the value of the "outbound_store_id" field.
-func (u *StockUpsertBulk) ClearOutboundStoreID() *StockUpsertBulk {
+// ClearRiderID clears the value of the "rider_id" field.
+func (u *StockUpsertBulk) ClearRiderID() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
-		s.ClearOutboundStoreID()
+		s.ClearRiderID()
 	})
 }
 

@@ -39,10 +39,8 @@ const (
 	EdgeBranch = "branch"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
 	EdgeEmployee = "employee"
-	// EdgeInboundStocks holds the string denoting the inboundstocks edge name in mutations.
-	EdgeInboundStocks = "inboundStocks"
-	// EdgeOutboundStocks holds the string denoting the outboundstocks edge name in mutations.
-	EdgeOutboundStocks = "outboundStocks"
+	// EdgeStocks holds the string denoting the stocks edge name in mutations.
+	EdgeStocks = "stocks"
 	// EdgeAttendances holds the string denoting the attendances edge name in mutations.
 	EdgeAttendances = "attendances"
 	// Table holds the table name of the store in the database.
@@ -61,20 +59,13 @@ const (
 	EmployeeInverseTable = "employee"
 	// EmployeeColumn is the table column denoting the employee relation/edge.
 	EmployeeColumn = "employee_id"
-	// InboundStocksTable is the table that holds the inboundStocks relation/edge.
-	InboundStocksTable = "stock"
-	// InboundStocksInverseTable is the table name for the Stock entity.
+	// StocksTable is the table that holds the stocks relation/edge.
+	StocksTable = "stock"
+	// StocksInverseTable is the table name for the Stock entity.
 	// It exists in this package in order to avoid circular dependency with the "stock" package.
-	InboundStocksInverseTable = "stock"
-	// InboundStocksColumn is the table column denoting the inboundStocks relation/edge.
-	InboundStocksColumn = "inbound_store_id"
-	// OutboundStocksTable is the table that holds the outboundStocks relation/edge.
-	OutboundStocksTable = "stock"
-	// OutboundStocksInverseTable is the table name for the Stock entity.
-	// It exists in this package in order to avoid circular dependency with the "stock" package.
-	OutboundStocksInverseTable = "stock"
-	// OutboundStocksColumn is the table column denoting the outboundStocks relation/edge.
-	OutboundStocksColumn = "outbound_store_id"
+	StocksInverseTable = "stock"
+	// StocksColumn is the table column denoting the stocks relation/edge.
+	StocksColumn = "store_id"
 	// AttendancesTable is the table that holds the attendances relation/edge.
 	AttendancesTable = "attendance"
 	// AttendancesInverseTable is the table name for the Attendance entity.

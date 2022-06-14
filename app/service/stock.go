@@ -64,15 +64,13 @@ func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
     q := ar.Ent.Store.QueryNotDeleted().
         Where(
             store.Or(
-                store.HasInboundStocks(),
-                store.HasOutboundStocks(),
+                store.HasStocks(),
             ),
         ).
         WithBranch(func(bq *ent.BranchQuery) {
             bq.WithCity()
         }).
-        WithInboundStocks().
-        WithOutboundStocks()
+        WithStocks()
     if req.Name != nil {
         q.Where(
             store.NameContainsFold(*req.Name),
@@ -90,8 +88,7 @@ func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
         }
         q.Where(
             store.Or(
-                store.HasInboundStocksWith(stock.CreatedAtGTE(start)),
-                store.HasOutboundStocksWith(stock.CreatedAtGTE(start)),
+                store.HasStocksWith(stock.CreatedAtGTE(start)),
             ),
         )
     }
@@ -102,8 +99,7 @@ func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
         }
         q.Where(
             store.Or(
-                store.HasInboundStocksWith(stock.CreatedAtLTE(end)),
-                store.HasOutboundStocksWith(stock.CreatedAtLTE(end)),
+                store.HasStocksWith(stock.CreatedAtLTE(end)),
             ),
         )
     }
@@ -130,18 +126,7 @@ func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
             materials := make(map[string]*model.StockMaterial)
 
             // 入库
-            for _, st := range item.Edges.InboundStocks {
-                if st.Voltage != nil {
-                    // 电池
-                    s.calculate(batteries, st)
-                } else {
-                    // 物资
-                    s.calculate(materials, st)
-                }
-            }
-
-            // 出库
-            for _, st := range item.Edges.OutboundStocks {
+            for _, st := range item.Edges.Stocks {
                 if st.Voltage != nil {
                     // 电池
                     s.calculate(batteries, st)
@@ -194,19 +179,19 @@ func (s *stockService) calculate(items map[string]*model.StockMaterial, st *ent.
 // Fetch 获取门店对应物资库存
 func (s *stockService) Fetch(storeID uint64, name string) int {
     var result []struct {
-        Sum            int    `json:"sum"`
-        InboundStoreID uint64 `json:"inbound_store_id"`
+        Sum     int    `json:"sum"`
+        StoreID uint64 `json:"store_id"`
     }
     q := s.orm.QueryNotDeleted().
-        Where(stock.Name(name), stock.InboundStoreID(storeID)).
-        GroupBy(stock.FieldInboundStoreID).
+        Where(stock.Name(name), stock.StoreID(storeID), stock.NumGT(0)).
+        GroupBy(stock.FieldStoreID).
         Aggregate(ent.Sum(stock.FieldNum))
     err := q.Scan(s.ctx, &result)
     if err != nil {
         log.Error(err)
         snag.Panic("物资数量获取失败")
     }
-    if len(result) < 0 {
+    if result == nil || len(result) < 0 {
         return 0
     }
     return result[0].Sum
@@ -261,7 +246,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
         SetName(name).
         SetNillableVoltage(v).
         SetNum(-req.Num).
-        SetNillableOutboundStoreID(out).
+        SetNillableStoreID(out).
         SetSn(sn).
         Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
@@ -271,7 +256,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
         SetName(name).
         SetNillableVoltage(v).
         SetNum(req.Num).
-        SetNillableInboundStoreID(in).
+        SetNillableStoreID(in).
         SetSn(sn).
         Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
@@ -281,9 +266,9 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
 
 func (s *stockService) Overview() (res model.StockOverview) {
     rows, err := ar.Ent.QueryContext(s.ctx, `SELECT DISTINCT ABS(SUM(num)) AS sum,
-                inbound_store_id IS NULL AND NOT outbound_store_id IS NULL AS outbound,
-                NOT inbound_store_id IS NULL AND outbound_store_id IS NULL AS inbound,
-                inbound_store_id IS NULL AND outbound_store_id IS NULL     AS plaform
+                NOT store_id IS NULL AND num < 0 AS outbound,
+                NOT store_id IS NULL AND num > 0 AS inbound,
+                store_id IS NULL                 AS plaform
 FROM stock
 WHERE voltage IS NOT NULL AND deleted_at IS NULL
 GROUP BY outbound, inbound, plaform`)
@@ -321,11 +306,11 @@ GROUP BY outbound, inbound, plaform`)
     return
 }
 
-// BatteryOutbound 电池出库
-func (s *stockService) BatteryOutbound(storeID uint64, voltage float64, num int) {
+// BatteryOutboundWithRider 和骑手交互电池出库
+func (s *stockService) BatteryOutboundWithRider(riderID, storeID uint64, voltage float64, num int) {
     name := NewBattery().VoltageName(voltage)
     if num < s.Fetch(storeID, name) {
         snag.Panic("电池库存不足")
     }
-
+    // s.orm.Create().
 }

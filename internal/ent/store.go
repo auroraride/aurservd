@@ -61,15 +61,13 @@ type StoreEdges struct {
 	Branch *Branch `json:"branch,omitempty"`
 	// Employee holds the value of the employee edge.
 	Employee *Employee `json:"employee,omitempty"`
-	// InboundStocks holds the value of the inboundStocks edge.
-	InboundStocks []*Stock `json:"inboundStocks,omitempty"`
-	// OutboundStocks holds the value of the outboundStocks edge.
-	OutboundStocks []*Stock `json:"outboundStocks,omitempty"`
+	// Stocks holds the value of the stocks edge.
+	Stocks []*Stock `json:"stocks,omitempty"`
 	// Attendances holds the value of the attendances edge.
 	Attendances []*Attendance `json:"attendances,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [4]bool
 }
 
 // BranchOrErr returns the Branch value or an error if the edge
@@ -100,28 +98,19 @@ func (e StoreEdges) EmployeeOrErr() (*Employee, error) {
 	return nil, &NotLoadedError{edge: "employee"}
 }
 
-// InboundStocksOrErr returns the InboundStocks value or an error if the edge
+// StocksOrErr returns the Stocks value or an error if the edge
 // was not loaded in eager-loading.
-func (e StoreEdges) InboundStocksOrErr() ([]*Stock, error) {
+func (e StoreEdges) StocksOrErr() ([]*Stock, error) {
 	if e.loadedTypes[2] {
-		return e.InboundStocks, nil
+		return e.Stocks, nil
 	}
-	return nil, &NotLoadedError{edge: "inboundStocks"}
-}
-
-// OutboundStocksOrErr returns the OutboundStocks value or an error if the edge
-// was not loaded in eager-loading.
-func (e StoreEdges) OutboundStocksOrErr() ([]*Stock, error) {
-	if e.loadedTypes[3] {
-		return e.OutboundStocks, nil
-	}
-	return nil, &NotLoadedError{edge: "outboundStocks"}
+	return nil, &NotLoadedError{edge: "stocks"}
 }
 
 // AttendancesOrErr returns the Attendances value or an error if the edge
 // was not loaded in eager-loading.
 func (e StoreEdges) AttendancesOrErr() ([]*Attendance, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[3] {
 		return e.Attendances, nil
 	}
 	return nil, &NotLoadedError{edge: "attendances"}
@@ -248,14 +237,9 @@ func (s *Store) QueryEmployee() *EmployeeQuery {
 	return (&StoreClient{config: s.config}).QueryEmployee(s)
 }
 
-// QueryInboundStocks queries the "inboundStocks" edge of the Store entity.
-func (s *Store) QueryInboundStocks() *StockQuery {
-	return (&StoreClient{config: s.config}).QueryInboundStocks(s)
-}
-
-// QueryOutboundStocks queries the "outboundStocks" edge of the Store entity.
-func (s *Store) QueryOutboundStocks() *StockQuery {
-	return (&StoreClient{config: s.config}).QueryOutboundStocks(s)
+// QueryStocks queries the "stocks" edge of the Store entity.
+func (s *Store) QueryStocks() *StockQuery {
+	return (&StoreClient{config: s.config}).QueryStocks(s)
 }
 
 // QueryAttendances queries the "attendances" edge of the Store entity.
