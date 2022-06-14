@@ -197,6 +197,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/employee/v1/business/rider": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E2003 骑手业务详情",
+                "operationId": "EmployeeBusinessRider",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "骑手二维码, 最好把` + "`" + `https://rider.auroraride.com/` + "`" + `删除",
+                        "name": "qrcode",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "业务详情返回",
+                        "schema": {
+                            "$ref": "#/definitions/model.SubscribeBusiness"
+                        }
+                    }
+                }
+            }
+        },
         "/employee/v1/qrcode": {
             "get": {
                 "consumes": [
@@ -7126,7 +7165,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "subscribe": {
-                    "description": "当前有效订阅信息, 若无此字段则代表当前无有效订阅(订阅 = 骑手骑士卡)",
+                    "description": "当前有效订阅信息, 若无此字段则代表当前无有效订阅 (订阅 = 骑手骑士卡)",
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.RiderItemSubscribe"
@@ -7734,6 +7773,10 @@ const docTemplate = `{
                     "description": "改动天数",
                     "type": "integer"
                 },
+                "business": {
+                    "description": "是否可办理业务",
+                    "type": "boolean"
+                },
                 "city": {
                     "description": "所属城市",
                     "allOf": [
@@ -7890,6 +7933,54 @@ const docTemplate = `{
                 "reason": {
                     "description": "调整理由",
                     "type": "string"
+                }
+            }
+        },
+        "model.SubscribeBusiness": {
+            "type": "object",
+            "properties": {
+                "business": {
+                    "description": "是否可办理业务",
+                    "type": "boolean"
+                },
+                "enterpriseName": {
+                    "description": "企业名称 (个签不存在)",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "骑手ID",
+                    "type": "integer"
+                },
+                "idCardNumber": {
+                    "description": "证件后四位",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "骑手姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "骑手电话",
+                    "type": "string"
+                },
+                "planName": {
+                    "description": "骑士卡名称 (团签不存在)",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态 0未激活 1计费中 2寄存中 3已逾期 4已退订 5已取消",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4
+                    ]
+                },
+                "voltage": {
+                    "description": "当前电池型号(电压)",
+                    "type": "number"
                 }
             }
         },

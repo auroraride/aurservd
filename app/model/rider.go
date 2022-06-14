@@ -106,7 +106,7 @@ type RiderItem struct {
     Contract   string           `json:"contract,omitempty"` // 合同(有可能不存在)
     // 团签企业信息, 若无此字段则为个签用户
     Enterprise *EnterpriseBasic `json:"enterprise,omitempty"`
-    // 当前有效订阅信息, 若无此字段则代表当前无有效订阅(订阅 = 骑手骑士卡)
+    // 当前有效订阅信息, 若无此字段则代表当前无有效订阅 (订阅 = 骑手骑士卡)
     Subscribe *RiderItemSubscribe `json:"subscribe,omitempty"`
     // 认证信息, 有可能不存在, 内部字段也有可能不存在
     Person *Person `json:"person,omitempty"`

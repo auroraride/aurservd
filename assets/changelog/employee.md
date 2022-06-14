@@ -1,3 +1,16 @@
+## 2022-06-14
+
+#### 接口新增
+
+- [E2003 骑手业务详情](http://localhost:5533/docs#tag/E/operation/EmployeeBusinessRider)
+  - 通过判定`enterpriseName`是否存在来判定骑手是否团签用户
+
+
+
+
+
+<br />
+
 ## 2022-06-13
 
 #### 接口新增

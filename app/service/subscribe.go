@@ -89,6 +89,7 @@ func (s *subscribeService) RecentDetail(riderID uint64) *model.Subscribe {
         InitialDays: sub.InitialDays,
         Remaining:   sub.Remaining,
         OverdueDays: sub.OverdueDays,
+        Business:    sub.Status == model.SubscribeStatusUsing,
         City: &model.City{
             ID:   sub.Edges.City.ID,
             Name: sub.Edges.City.Name,
@@ -147,11 +148,13 @@ func (s *subscribeService) RecentDetail(riderID uint64) *model.Subscribe {
         }
     }
 
-    if sub.Edges.Enterprise != nil {
+    e := sub.Edges.Enterprise
+    if e != nil {
         res.Enterprise = &model.EnterpriseBasic{
-            ID:   sub.Edges.Enterprise.ID,
-            Name: sub.Edges.Enterprise.Name,
+            ID:   e.ID,
+            Name: e.Name,
         }
+        res.Business = e.Status == model.EnterpriseStatusCollaborated
     }
 
     return res

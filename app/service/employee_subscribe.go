@@ -54,9 +54,6 @@ func NewEmployeeSubscribeWithEmployee(e *ent.Employee) *employeeSubscribeService
 
 // Inactive 获取骑手待激活订阅详情
 func (s *employeeSubscribeService) Inactive(qr string) *model.SubscribeActiveInfo {
-    if s.employee.Edges.Store == nil {
-        snag.Panic("你未上班")
-    }
     if strings.HasPrefix(qr, "SUBSCRIBE:") {
         qr = strings.ReplaceAll(qr, "SUBSCRIBE:", "")
     }

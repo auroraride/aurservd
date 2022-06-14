@@ -7,6 +7,7 @@ package service
 
 import (
     "context"
+    "errors"
     "fmt"
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/logging"
@@ -79,15 +80,20 @@ func (s *riderService) IsAuthed(u *ent.Rider) bool {
     return u.Edges.Person != nil && !model.PersonAuthStatus(u.Edges.Person.Status).RequireAuth()
 }
 
-// IsBanned 骑手是否被封禁
+// IsNewDevice 检查是否是新设备
+func (s *riderService) IsNewDevice(u *ent.Rider, device *model.Device) bool {
+    return u.LastDevice != device.Serial || u.IsNewDevice
+}
+
+// IsBanned 骑手是否被拉黑
 func (s *riderService) IsBanned(u *ent.Rider) bool {
     p := u.Edges.Person
     return p != nil && p.Banned
 }
 
-// IsNewDevice 检查是否是新设备
-func (s *riderService) IsNewDevice(u *ent.Rider, device *model.Device) bool {
-    return u.LastDevice != device.Serial || u.IsNewDevice
+// IsBlocked 骑手是否被封禁
+func (s *riderService) IsBlocked(u *ent.Rider) bool {
+    return u.Blocked
 }
 
 // Signin 骑手登录
@@ -500,6 +506,24 @@ func (s *riderService) Query(id uint64) *ent.Rider {
         snag.Panic("未找到骑手")
     }
     return item
+}
+
+// QueryForBusiness 查找骑手并判定是否满足业务办理条件
+func (s *riderService) QueryForBusiness(riderID uint64) (u *ent.Rider, err error) {
+    u = s.Query(riderID)
+    if u.IsNewDevice {
+        err = errors.New("骑手未人脸识别")
+    }
+    if !s.IsAuthed(u) {
+        err = errors.New("骑手未实名")
+    }
+    if s.IsBlocked(u) {
+        err = errors.New("骑手被封禁")
+    }
+    if s.IsBanned(u) {
+        err = errors.New("骑手被拉黑")
+    }
+    return
 }
 
 // Block 封锁/解封骑手账户

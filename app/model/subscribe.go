@@ -55,6 +55,7 @@ type Subscribe struct {
     Remaining   int     `json:"remaining"`                // 剩余天数 = 总天数 - 已过时间
     StartAt     string  `json:"startAt"`                  // 开始时间
     EndAt       string  `json:"endAt"`                    // 结束时间 / 预计套餐结束时间
+    Business    bool    `json:"business"`                 // 是否可办理业务
 
     City       *City               `json:"city,omitempty"`       // 所属城市
     Models     []BatteryModel      `json:"models,omitempty"`     // 可用电池型号, 显示为`72V30AH`即Voltage(V)+Capacity(AH), 逗号分隔
@@ -85,4 +86,17 @@ type SubscribeActiveInfo struct {
     Enterprise   *EnterpriseBasic    `json:"enterprise,omitempty"`   // 企业详情, 个签用户此字段不存在
 
     CommissionID *uint64 `json:"-" swaggerignore:"true"`
+}
+
+// SubscribeBusiness 骑手订阅业务详情
+type SubscribeBusiness struct {
+    ID             uint64  `json:"id"`                       // 骑手ID
+    Business       bool    `json:"business"`                 // 是否可办理业务
+    Status         uint8   `json:"status" enums:"0,1,2,3,4"` // 状态 0未激活 1计费中 2寄存中 3已逾期 4已退订 5已取消
+    Name           string  `json:"name"`                     // 骑手姓名
+    Phone          string  `json:"phone"`                    // 骑手电话
+    IDCardNumber   string  `json:"idCardNumber"`             // 证件后四位
+    Voltage        float64 `json:"voltage"`                  // 当前电池型号(电压)
+    EnterpriseName string  `json:"enterpriseName,omitempty"` // 企业名称 (个签不存在)
+    PlanName       string  `json:"planName,omitempty"`       // 骑士卡名称 (团签不存在)
 }

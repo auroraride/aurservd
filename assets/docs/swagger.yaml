@@ -1690,7 +1690,7 @@ definitions:
       subscribe:
         allOf:
         - $ref: '#/definitions/model.RiderItemSubscribe'
-        description: 当前有效订阅信息, 若无此字段则代表当前无有效订阅(订阅 = 骑手骑士卡)
+        description: 当前有效订阅信息, 若无此字段则代表当前无有效订阅 (订阅 = 骑手骑士卡)
     type: object
   model.RiderItemSubscribe:
     properties:
@@ -2096,6 +2096,9 @@ definitions:
       alterDays:
         description: 改动天数
         type: integer
+      business:
+        description: 是否可办理业务
+        type: boolean
       city:
         allOf:
         - $ref: '#/definitions/model.City'
@@ -2197,6 +2200,42 @@ definitions:
     - days
     - id
     - reason
+    type: object
+  model.SubscribeBusiness:
+    properties:
+      business:
+        description: 是否可办理业务
+        type: boolean
+      enterpriseName:
+        description: 企业名称 (个签不存在)
+        type: string
+      id:
+        description: 骑手ID
+        type: integer
+      idCardNumber:
+        description: 证件后四位
+        type: string
+      name:
+        description: 骑手姓名
+        type: string
+      phone:
+        description: 骑手电话
+        type: string
+      planName:
+        description: 骑士卡名称 (团签不存在)
+        type: string
+      status:
+        description: 状态 0未激活 1计费中 2寄存中 3已逾期 4已退订 5已取消
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        type: integer
+      voltage:
+        description: 当前电池型号(电压)
+        type: number
     type: object
   model.SubscribeOrderInfo:
     properties:
@@ -2432,6 +2471,32 @@ paths:
               $ref: '#/definitions/model.InventoryItem'
             type: array
       summary: E1003 打卡预检
+      tags:
+      - '[E]店员接口'
+  /employee/v1/business/rider:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeBusinessRider
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 骑手二维码, 最好把`https://rider.auroraride.com/`删除
+        in: query
+        name: qrcode
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 业务详情返回
+          schema:
+            $ref: '#/definitions/model.SubscribeBusiness'
+      summary: E2003 骑手业务详情
       tags:
       - '[E]店员接口'
   /employee/v1/qrcode:

@@ -68,6 +68,7 @@ func ContextX[T ContextWrapper](c any) *T {
     ctx, _ := c.(*T)
     return ctx
 }
+
 func ContextBindingX[K ContextWrapper, T any](c echo.Context) (*K, *T) {
     ctx := ContextX[K](c)
     req := new(T)

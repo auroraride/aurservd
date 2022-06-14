@@ -47,3 +47,15 @@ func EmployeeMiddleware() echo.MiddlewareFunc {
         }
     }
 }
+
+func EmployeeDutyMiddleware() echo.MiddlewareFunc {
+    return func(next echo.HandlerFunc) echo.HandlerFunc {
+        return func(c echo.Context) error {
+            ctx := app.ContextX[app.EmployeeContext](c)
+            if ctx.Employee.Edges.Store == nil {
+                snag.Panic("未上班, 无法处理业务")
+            }
+            return next(ctx)
+        }
+    }
+}
