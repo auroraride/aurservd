@@ -45,6 +45,7 @@ type SubscribeOrderInfo struct {
 
 type Subscribe struct {
     ID          uint64  `json:"id"`                       // 订阅ID
+    RiderID     uint64  `json:"riderId"`                  // 骑手ID
     Status      uint8   `json:"status" enums:"0,1,2,3,4"` // 状态 0未激活 1计费中 2寄存中 3已逾期 4已退订 5已取消
     Voltage     float64 `json:"voltage"`                  // 可用电压型号
     Days        int     `json:"days"`                     // 总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 续费天数 + 已缴纳逾期滞纳金天数

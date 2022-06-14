@@ -9,6 +9,7 @@
 - [E2004 寄存电池](http://localhost:5533/docs#tag/E/operation/EmployeeBusinessPause)
 - [E2005 结束寄存电池](http://localhost:5533/docs#tag/E/operation/EmployeeBusinessContinue)
 - [E1005 店员资料](http://localhost:5533/docs#tag/E/operation/EmployeeEmployeeProfile)
+- [E2006 退租](http://localhost:5533/docs#tag/E/operation/EmployeeBusinessUnSubscribe)
 
 
 

@@ -36530,6 +36530,7 @@ type SubscribeMutation struct {
 	start_at             *time.Time
 	end_at               *time.Time
 	refund_at            *time.Time
+	unsubscribe_reason   *string
 	clearedFields        map[string]struct{}
 	plan                 *uint64
 	clearedplan          bool
@@ -38058,6 +38059,55 @@ func (m *SubscribeMutation) ResetRefundAt() {
 	delete(m.clearedFields, subscribe.FieldRefundAt)
 }
 
+// SetUnsubscribeReason sets the "unsubscribe_reason" field.
+func (m *SubscribeMutation) SetUnsubscribeReason(s string) {
+	m.unsubscribe_reason = &s
+}
+
+// UnsubscribeReason returns the value of the "unsubscribe_reason" field in the mutation.
+func (m *SubscribeMutation) UnsubscribeReason() (r string, exists bool) {
+	v := m.unsubscribe_reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUnsubscribeReason returns the old "unsubscribe_reason" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldUnsubscribeReason(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUnsubscribeReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUnsubscribeReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUnsubscribeReason: %w", err)
+	}
+	return oldValue.UnsubscribeReason, nil
+}
+
+// ClearUnsubscribeReason clears the value of the "unsubscribe_reason" field.
+func (m *SubscribeMutation) ClearUnsubscribeReason() {
+	m.unsubscribe_reason = nil
+	m.clearedFields[subscribe.FieldUnsubscribeReason] = struct{}{}
+}
+
+// UnsubscribeReasonCleared returns if the "unsubscribe_reason" field was cleared in this mutation.
+func (m *SubscribeMutation) UnsubscribeReasonCleared() bool {
+	_, ok := m.clearedFields[subscribe.FieldUnsubscribeReason]
+	return ok
+}
+
+// ResetUnsubscribeReason resets all changes to the "unsubscribe_reason" field.
+func (m *SubscribeMutation) ResetUnsubscribeReason() {
+	m.unsubscribe_reason = nil
+	delete(m.clearedFields, subscribe.FieldUnsubscribeReason)
+}
+
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *SubscribeMutation) ClearPlan() {
 	m.clearedplan = true
@@ -38473,7 +38523,7 @@ func (m *SubscribeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribeMutation) Fields() []string {
-	fields := make([]string, 0, 28)
+	fields := make([]string, 0, 29)
 	if m.created_at != nil {
 		fields = append(fields, subscribe.FieldCreatedAt)
 	}
@@ -38558,6 +38608,9 @@ func (m *SubscribeMutation) Fields() []string {
 	if m.refund_at != nil {
 		fields = append(fields, subscribe.FieldRefundAt)
 	}
+	if m.unsubscribe_reason != nil {
+		fields = append(fields, subscribe.FieldUnsubscribeReason)
+	}
 	return fields
 }
 
@@ -38622,6 +38675,8 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.EndAt()
 	case subscribe.FieldRefundAt:
 		return m.RefundAt()
+	case subscribe.FieldUnsubscribeReason:
+		return m.UnsubscribeReason()
 	}
 	return nil, false
 }
@@ -38687,6 +38742,8 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldEndAt(ctx)
 	case subscribe.FieldRefundAt:
 		return m.OldRefundAt(ctx)
+	case subscribe.FieldUnsubscribeReason:
+		return m.OldUnsubscribeReason(ctx)
 	}
 	return nil, fmt.Errorf("unknown Subscribe field %s", name)
 }
@@ -38892,6 +38949,13 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRefundAt(v)
 		return nil
+	case subscribe.FieldUnsubscribeReason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUnsubscribeReason(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)
 }
@@ -39081,6 +39145,9 @@ func (m *SubscribeMutation) ClearedFields() []string {
 	if m.FieldCleared(subscribe.FieldRefundAt) {
 		fields = append(fields, subscribe.FieldRefundAt)
 	}
+	if m.FieldCleared(subscribe.FieldUnsubscribeReason) {
+		fields = append(fields, subscribe.FieldUnsubscribeReason)
+	}
 	return fields
 }
 
@@ -39142,6 +39209,9 @@ func (m *SubscribeMutation) ClearField(name string) error {
 		return nil
 	case subscribe.FieldRefundAt:
 		m.ClearRefundAt()
+		return nil
+	case subscribe.FieldUnsubscribeReason:
+		m.ClearUnsubscribeReason()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe nullable field %s", name)
@@ -39234,6 +39304,9 @@ func (m *SubscribeMutation) ResetField(name string) error {
 		return nil
 	case subscribe.FieldRefundAt:
 		m.ResetRefundAt()
+		return nil
+	case subscribe.FieldUnsubscribeReason:
+		m.ResetUnsubscribeReason()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)

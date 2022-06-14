@@ -496,6 +496,26 @@ func (su *SubscribeUpdate) ClearRefundAt() *SubscribeUpdate {
 	return su
 }
 
+// SetUnsubscribeReason sets the "unsubscribe_reason" field.
+func (su *SubscribeUpdate) SetUnsubscribeReason(s string) *SubscribeUpdate {
+	su.mutation.SetUnsubscribeReason(s)
+	return su
+}
+
+// SetNillableUnsubscribeReason sets the "unsubscribe_reason" field if the given value is not nil.
+func (su *SubscribeUpdate) SetNillableUnsubscribeReason(s *string) *SubscribeUpdate {
+	if s != nil {
+		su.SetUnsubscribeReason(*s)
+	}
+	return su
+}
+
+// ClearUnsubscribeReason clears the value of the "unsubscribe_reason" field.
+func (su *SubscribeUpdate) ClearUnsubscribeReason() *SubscribeUpdate {
+	su.mutation.ClearUnsubscribeReason()
+	return su
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (su *SubscribeUpdate) SetPlan(p *Plan) *SubscribeUpdate {
 	return su.SetPlanID(p.ID)
@@ -1032,6 +1052,19 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: subscribe.FieldRefundAt,
+		})
+	}
+	if value, ok := su.mutation.UnsubscribeReason(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: subscribe.FieldUnsubscribeReason,
+		})
+	}
+	if su.mutation.UnsubscribeReasonCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: subscribe.FieldUnsubscribeReason,
 		})
 	}
 	if su.mutation.PlanCleared() {
@@ -1986,6 +2019,26 @@ func (suo *SubscribeUpdateOne) ClearRefundAt() *SubscribeUpdateOne {
 	return suo
 }
 
+// SetUnsubscribeReason sets the "unsubscribe_reason" field.
+func (suo *SubscribeUpdateOne) SetUnsubscribeReason(s string) *SubscribeUpdateOne {
+	suo.mutation.SetUnsubscribeReason(s)
+	return suo
+}
+
+// SetNillableUnsubscribeReason sets the "unsubscribe_reason" field if the given value is not nil.
+func (suo *SubscribeUpdateOne) SetNillableUnsubscribeReason(s *string) *SubscribeUpdateOne {
+	if s != nil {
+		suo.SetUnsubscribeReason(*s)
+	}
+	return suo
+}
+
+// ClearUnsubscribeReason clears the value of the "unsubscribe_reason" field.
+func (suo *SubscribeUpdateOne) ClearUnsubscribeReason() *SubscribeUpdateOne {
+	suo.mutation.ClearUnsubscribeReason()
+	return suo
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (suo *SubscribeUpdateOne) SetPlan(p *Plan) *SubscribeUpdateOne {
 	return suo.SetPlanID(p.ID)
@@ -2552,6 +2605,19 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: subscribe.FieldRefundAt,
+		})
+	}
+	if value, ok := suo.mutation.UnsubscribeReason(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: subscribe.FieldUnsubscribeReason,
+		})
+	}
+	if suo.mutation.UnsubscribeReasonCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: subscribe.FieldUnsubscribeReason,
 		})
 	}
 	if suo.mutation.PlanCleared() {

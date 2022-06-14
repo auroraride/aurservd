@@ -56,10 +56,26 @@ func (*business) Pause(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Employee-Token  header  string  true  "店员校验token"
-// @Param        body  body     model.BusinessSubscribeID  true  "寄存请求"
+// @Param        body  body     model.BusinessSubscribeID  true  "结束寄存请求"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*business) Continue(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.BusinessSubscribeID](c)
     service.NewRiderMgrWithEmployee(ctx.Employee).ContinueSubscribe(req.SubscribeID)
+    return ctx.SendResponse()
+}
+
+// UnSubscribe
+// @ID           EmployeeBusinessUnSubscribe
+// @Router       /employee/v1/business/unsubscribe [POST]
+// @Summary      E2006 退租
+// @Tags         [E]店员接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Employee-Token   header  string  true  "店员校验token"
+// @Param        body  body     model.BusinessSubscribeID  true  "退租请求"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*business) UnSubscribe(c echo.Context) (err error) {
+    ctx, req := app.EmployeeContextAndBinding[model.BusinessSubscribeID](c)
+    service.NewRiderMgrWithEmployee(ctx.Employee).UnSubscribe(req.SubscribeID)
     return ctx.SendResponse()
 }

@@ -761,34 +761,35 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Subscribe",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			subscribe.FieldCreatedAt:      {Type: field.TypeTime, Column: subscribe.FieldCreatedAt},
-			subscribe.FieldUpdatedAt:      {Type: field.TypeTime, Column: subscribe.FieldUpdatedAt},
-			subscribe.FieldDeletedAt:      {Type: field.TypeTime, Column: subscribe.FieldDeletedAt},
-			subscribe.FieldCreator:        {Type: field.TypeJSON, Column: subscribe.FieldCreator},
-			subscribe.FieldLastModifier:   {Type: field.TypeJSON, Column: subscribe.FieldLastModifier},
-			subscribe.FieldRemark:         {Type: field.TypeString, Column: subscribe.FieldRemark},
-			subscribe.FieldPlanID:         {Type: field.TypeUint64, Column: subscribe.FieldPlanID},
-			subscribe.FieldEmployeeID:     {Type: field.TypeUint64, Column: subscribe.FieldEmployeeID},
-			subscribe.FieldCityID:         {Type: field.TypeUint64, Column: subscribe.FieldCityID},
-			subscribe.FieldStationID:      {Type: field.TypeUint64, Column: subscribe.FieldStationID},
-			subscribe.FieldStoreID:        {Type: field.TypeUint64, Column: subscribe.FieldStoreID},
-			subscribe.FieldRiderID:        {Type: field.TypeUint64, Column: subscribe.FieldRiderID},
-			subscribe.FieldInitialOrderID: {Type: field.TypeUint64, Column: subscribe.FieldInitialOrderID},
-			subscribe.FieldEnterpriseID:   {Type: field.TypeUint64, Column: subscribe.FieldEnterpriseID},
-			subscribe.FieldStatementID:    {Type: field.TypeUint64, Column: subscribe.FieldStatementID},
-			subscribe.FieldStatus:         {Type: field.TypeUint8, Column: subscribe.FieldStatus},
-			subscribe.FieldType:           {Type: field.TypeUint, Column: subscribe.FieldType},
-			subscribe.FieldVoltage:        {Type: field.TypeFloat64, Column: subscribe.FieldVoltage},
-			subscribe.FieldInitialDays:    {Type: field.TypeInt, Column: subscribe.FieldInitialDays},
-			subscribe.FieldAlterDays:      {Type: field.TypeInt, Column: subscribe.FieldAlterDays},
-			subscribe.FieldPauseDays:      {Type: field.TypeInt, Column: subscribe.FieldPauseDays},
-			subscribe.FieldRenewalDays:    {Type: field.TypeInt, Column: subscribe.FieldRenewalDays},
-			subscribe.FieldOverdueDays:    {Type: field.TypeInt, Column: subscribe.FieldOverdueDays},
-			subscribe.FieldRemaining:      {Type: field.TypeInt, Column: subscribe.FieldRemaining},
-			subscribe.FieldPausedAt:       {Type: field.TypeTime, Column: subscribe.FieldPausedAt},
-			subscribe.FieldStartAt:        {Type: field.TypeTime, Column: subscribe.FieldStartAt},
-			subscribe.FieldEndAt:          {Type: field.TypeTime, Column: subscribe.FieldEndAt},
-			subscribe.FieldRefundAt:       {Type: field.TypeTime, Column: subscribe.FieldRefundAt},
+			subscribe.FieldCreatedAt:         {Type: field.TypeTime, Column: subscribe.FieldCreatedAt},
+			subscribe.FieldUpdatedAt:         {Type: field.TypeTime, Column: subscribe.FieldUpdatedAt},
+			subscribe.FieldDeletedAt:         {Type: field.TypeTime, Column: subscribe.FieldDeletedAt},
+			subscribe.FieldCreator:           {Type: field.TypeJSON, Column: subscribe.FieldCreator},
+			subscribe.FieldLastModifier:      {Type: field.TypeJSON, Column: subscribe.FieldLastModifier},
+			subscribe.FieldRemark:            {Type: field.TypeString, Column: subscribe.FieldRemark},
+			subscribe.FieldPlanID:            {Type: field.TypeUint64, Column: subscribe.FieldPlanID},
+			subscribe.FieldEmployeeID:        {Type: field.TypeUint64, Column: subscribe.FieldEmployeeID},
+			subscribe.FieldCityID:            {Type: field.TypeUint64, Column: subscribe.FieldCityID},
+			subscribe.FieldStationID:         {Type: field.TypeUint64, Column: subscribe.FieldStationID},
+			subscribe.FieldStoreID:           {Type: field.TypeUint64, Column: subscribe.FieldStoreID},
+			subscribe.FieldRiderID:           {Type: field.TypeUint64, Column: subscribe.FieldRiderID},
+			subscribe.FieldInitialOrderID:    {Type: field.TypeUint64, Column: subscribe.FieldInitialOrderID},
+			subscribe.FieldEnterpriseID:      {Type: field.TypeUint64, Column: subscribe.FieldEnterpriseID},
+			subscribe.FieldStatementID:       {Type: field.TypeUint64, Column: subscribe.FieldStatementID},
+			subscribe.FieldStatus:            {Type: field.TypeUint8, Column: subscribe.FieldStatus},
+			subscribe.FieldType:              {Type: field.TypeUint, Column: subscribe.FieldType},
+			subscribe.FieldVoltage:           {Type: field.TypeFloat64, Column: subscribe.FieldVoltage},
+			subscribe.FieldInitialDays:       {Type: field.TypeInt, Column: subscribe.FieldInitialDays},
+			subscribe.FieldAlterDays:         {Type: field.TypeInt, Column: subscribe.FieldAlterDays},
+			subscribe.FieldPauseDays:         {Type: field.TypeInt, Column: subscribe.FieldPauseDays},
+			subscribe.FieldRenewalDays:       {Type: field.TypeInt, Column: subscribe.FieldRenewalDays},
+			subscribe.FieldOverdueDays:       {Type: field.TypeInt, Column: subscribe.FieldOverdueDays},
+			subscribe.FieldRemaining:         {Type: field.TypeInt, Column: subscribe.FieldRemaining},
+			subscribe.FieldPausedAt:          {Type: field.TypeTime, Column: subscribe.FieldPausedAt},
+			subscribe.FieldStartAt:           {Type: field.TypeTime, Column: subscribe.FieldStartAt},
+			subscribe.FieldEndAt:             {Type: field.TypeTime, Column: subscribe.FieldEndAt},
+			subscribe.FieldRefundAt:          {Type: field.TypeTime, Column: subscribe.FieldRefundAt},
+			subscribe.FieldUnsubscribeReason: {Type: field.TypeString, Column: subscribe.FieldUnsubscribeReason},
 		},
 	}
 	graph.Nodes[28] = &sqlgraph.Node{
@@ -6164,6 +6165,11 @@ func (f *SubscribeFilter) WhereEndAt(p entql.TimeP) {
 // WhereRefundAt applies the entql time.Time predicate on the refund_at field.
 func (f *SubscribeFilter) WhereRefundAt(p entql.TimeP) {
 	f.Where(p.Field(subscribe.FieldRefundAt))
+}
+
+// WhereUnsubscribeReason applies the entql string predicate on the unsubscribe_reason field.
+func (f *SubscribeFilter) WhereUnsubscribeReason(p entql.StringP) {
+	f.Where(p.Field(subscribe.FieldUnsubscribeReason))
 }
 
 // WhereHasPlan applies a predicate to check if query has an edge plan.

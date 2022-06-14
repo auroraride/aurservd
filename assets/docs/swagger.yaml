@@ -2147,6 +2147,9 @@ definitions:
       remaining:
         description: 剩余天数 = 总天数 - 已过时间
         type: integer
+      riderId:
+        description: 骑手ID
+        type: integer
       startAt:
         description: 开始时间
         type: string
@@ -2497,7 +2500,7 @@ paths:
         name: X-Employee-Token
         required: true
         type: string
-      - description: 寄存请求
+      - description: 结束寄存请求
         in: body
         name: body
         required: true
@@ -2564,6 +2567,33 @@ paths:
           schema:
             $ref: '#/definitions/model.SubscribeBusiness'
       summary: E2003 骑手业务详情
+      tags:
+      - '[E]店员接口'
+  /employee/v1/business/unsubscribe:
+    post:
+      consumes:
+      - application/json
+      operationId: EmployeeBusinessUnSubscribe
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 退租请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BusinessSubscribeID'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: E2006 退租
       tags:
       - '[E]店员接口'
   /employee/v1/profile:

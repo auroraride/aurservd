@@ -75,6 +75,6 @@ func (*subscribe) Continue(c echo.Context) (err error) {
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*subscribe) Halt(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.IDPostReq](c)
-    service.NewRiderMgrWithModifier(ctx.Modifier).HaltSubscribe(req.ID)
+    service.NewRiderMgrWithModifier(ctx.Modifier).UnSubscribe(req.ID)
     return ctx.SendResponse()
 }

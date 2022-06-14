@@ -69,6 +69,8 @@ const (
 	FieldEndAt = "end_at"
 	// FieldRefundAt holds the string denoting the refund_at field in the database.
 	FieldRefundAt = "refund_at"
+	// FieldUnsubscribeReason holds the string denoting the unsubscribe_reason field in the database.
+	FieldUnsubscribeReason = "unsubscribe_reason"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -212,6 +214,7 @@ var Columns = []string{
 	FieldStartAt,
 	FieldEndAt,
 	FieldRefundAt,
+	FieldUnsubscribeReason,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

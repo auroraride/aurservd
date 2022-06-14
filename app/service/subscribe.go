@@ -50,6 +50,34 @@ func NewSubscribeWithModifier(m *model.Modifier) *subscribeService {
     return s
 }
 
+func (s *subscribeService) QueryEdges(id uint64) *ent.Subscribe {
+    item, _ := s.orm.QueryNotDeleted().
+        Where(subscribe.ID(id)).
+        WithPlan(func(pq *ent.PlanQuery) {
+            pq.WithPms()
+        }).
+        WithCity().
+        // 查询初始订单和对应的押金订单
+        WithInitialOrder(func(ioq *ent.OrderQuery) {
+            ioq.WithChildren(func(doq *ent.OrderQuery) {
+                doq.Where(order.Type(model.OrderTypeDeposit))
+            })
+        }).
+        WithEnterprise().
+        First(s.ctx)
+    if item == nil {
+        snag.Panic("未找到有效订阅")
+    }
+    return item
+}
+
+// QueryAndDetail 根据订阅ID查询订阅以及计算详情
+func (s *subscribeService) QueryAndDetail(id uint64) (sub *ent.Subscribe, detail *model.Subscribe) {
+    sub = s.QueryEdges(id)
+    detail = s.Detail(sub)
+    return
+}
+
 // Recent 查询骑手最近的订阅
 func (s *subscribeService) Recent(riderID uint64) *ent.Subscribe {
     sub, _ := s.orm.QueryNotDeleted().
@@ -71,16 +99,15 @@ func (s *subscribeService) Recent(riderID uint64) *ent.Subscribe {
     return sub
 }
 
-// RecentDetail 获取骑手最近订阅详情
-func (s *subscribeService) RecentDetail(riderID uint64) *model.Subscribe {
-    sub := s.Recent(riderID)
-
+// Detail 获取订阅详情
+func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
     if sub == nil {
         return nil
     }
 
     res := &model.Subscribe{
         ID:          sub.ID,
+        RiderID:     sub.RiderID,
         Status:      sub.Status,
         Voltage:     sub.Voltage,
         Days:        sub.InitialDays + sub.PauseDays + sub.AlterDays + sub.OverdueDays,
@@ -158,6 +185,16 @@ func (s *subscribeService) RecentDetail(riderID uint64) *model.Subscribe {
     }
 
     return res
+}
+
+// RecentDetail 获取骑手最近订阅详情
+func (s *subscribeService) RecentDetail(riderID uint64) *model.Subscribe {
+    sub := s.Recent(riderID)
+
+    if sub == nil {
+        snag.Panic("未找到有效订阅")
+    }
+    return s.Detail(sub)
 }
 
 // QueryAllRidersEffective 获取所有骑手生效中的订阅

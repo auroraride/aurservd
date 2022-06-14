@@ -12,10 +12,9 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
 )
 
+// 门店业务处理专用
 type businessService struct {
     ctx      context.Context
-    modifier *model.Modifier
-    rider    *ent.Rider
     employee *ent.Employee
 }
 
@@ -23,20 +22,6 @@ func NewBusiness() *businessService {
     return &businessService{
         ctx: context.Background(),
     }
-}
-
-func NewBusinessWithRider(r *ent.Rider) *businessService {
-    s := NewBusiness()
-    s.ctx = context.WithValue(s.ctx, "rider", r)
-    s.rider = r
-    return s
-}
-
-func NewBusinessWithModifier(m *model.Modifier) *businessService {
-    s := NewBusiness()
-    s.ctx = context.WithValue(s.ctx, "modifier", m)
-    s.modifier = m
-    return s
 }
 
 func NewBusinessWithEmployee(e *ent.Employee) *businessService {

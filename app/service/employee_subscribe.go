@@ -80,11 +80,11 @@ func (s *employeeSubscribeService) Inactive(qr string) *model.SubscribeActiveInf
         WithCity().
         Only(s.ctx)
 
-    NewBusinessWithEmployee(s.employee).CheckCity(sub.CityID)
-
     if sub == nil {
         snag.Panic("未找到待激活骑士卡")
     }
+
+    NewBusinessWithEmployee(s.employee).CheckCity(sub.CityID)
 
     r := sub.Edges.Rider
     if r == nil {

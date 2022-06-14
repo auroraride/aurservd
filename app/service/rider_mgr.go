@@ -17,16 +17,16 @@ import (
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
-    log "github.com/sirupsen/logrus"
     "strings"
     "time"
 )
 
 type riderMgrService struct {
-    ctx      context.Context
-    modifier *model.Modifier
-    rider    *ent.Rider
-    employee *ent.Employee
+    ctx          context.Context
+    modifier     *model.Modifier
+    rider        *ent.Rider
+    employee     *ent.Employee
+    employeeInfo *model.Employee
 }
 
 func NewRiderMgr() *riderMgrService {
@@ -53,6 +53,11 @@ func NewRiderMgrWithEmployee(e *ent.Employee) *riderMgrService {
     s := NewRiderMgr()
     s.ctx = context.WithValue(s.ctx, "employee", e)
     s.employee = e
+    s.employeeInfo = &model.Employee{
+        ID:    s.employee.ID,
+        Name:  s.employee.Name,
+        Phone: s.employee.Phone,
+    }
     return s
 }
 
@@ -108,11 +113,7 @@ func (s *riderMgrService) PauseSubscribe(subscribeID uint64) {
         spc.SetEmployee(s.employee)
         stockReq.EmployeeID = s.employee.ID
         stockReq.StoreID = s.employee.Edges.Store.ID
-        lg.SetEmployee(&model.Employee{
-            ID:    s.employee.ID,
-            Name:  s.employee.Name,
-            Phone: s.employee.Phone,
-        })
+        lg.SetEmployee(s.employeeInfo)
     }
 
     _, err := spc.Save(s.ctx)
@@ -180,11 +181,7 @@ func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
         spu.SetContinueEmployee(s.employee)
         stockReq.EmployeeID = s.employee.ID
         stockReq.StoreID = s.employee.Edges.Store.ID
-        lg.SetEmployee(&model.Employee{
-            ID:    s.employee.ID,
-            Name:  s.employee.Name,
-            Phone: s.employee.Phone,
-        })
+        lg.SetEmployee(s.employeeInfo)
     }
 
     _, err := spu.Save(s.ctx)
@@ -209,20 +206,55 @@ func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
     go lg.Send()
 }
 
-// HaltSubscribe 强制退租
+// UnSubscribe 退租
 // 会抹去欠费情况
 // TODO 是否适用于团签骑手
-func (s *riderMgrService) HaltSubscribe(subscribeID uint64) {
+// TODO 管理端强制退组库存如何操作
+func (s *riderMgrService) UnSubscribe(subscribeID uint64) {
     sub := s.QuerySubscribeWithRider(subscribeID)
     if sub == nil || sub.EndAt != nil {
         snag.Panic("未找到订阅")
     }
 
-    _, err := sub.Update().SetEndAt(time.Now()).SetRemaining(0).SetStatus(model.SubscribeStatusCanceled).SetRemark("管理员操作强制退租").Save(s.ctx)
-    if err != nil {
-        log.Error(err)
-        snag.Panic("操作失败")
+    lgr := logging.NewOperateLog().SetEmployee(s.employeeInfo)
+    stockReq := &model.StockWithRiderReq{
+        RiderID:   sub.RiderID,
+        Voltage:   sub.Voltage,
+        StockType: model.StockTypeRiderUnSubscribe,
     }
+
+    var reason string
+    if s.modifier != nil {
+        reason = "管理员操作强制退租"
+        lgr.SetOperate(model.OperateHalt).SetModifier(s.modifier)
+        stockReq.ManagerID = s.modifier.ID
+    }
+    if s.employee != nil {
+        reason = "店员操作退租"
+        lgr.SetOperate(model.OperateUnsubscribe).SetEmployee(s.employeeInfo)
+        stockReq.EmployeeID = s.employeeInfo.ID
+        stockReq.StoreID = s.employee.Edges.Store.ID
+    }
+
+    tx, _ := ar.Ent.Tx(s.ctx)
+
+    _, err := tx.Subscribe.
+        UpdateOneID(sub.ID).
+        SetEndAt(time.Now()).
+        SetRemaining(0).
+        SetStatus(model.SubscribeStatusCanceled).
+        SetUnsubscribeReason(reason).
+        Save(s.ctx)
+
+    snag.PanicIfErrorX(err, tx.Rollback)
+
+    // 电池入库
+    snag.PanicIfErrorX(NewStockWithEmployee(s.employee).BatteryWithRider(
+        tx.Stock.Create(),
+        stockReq,
+    ), tx.Rollback)
+
+    _ = tx.Commit()
 
     before := fmt.Sprintf(
         "%s剩余天数: %d",
@@ -231,12 +263,7 @@ func (s *riderMgrService) HaltSubscribe(subscribeID uint64) {
     )
 
     // 记录日志
-    go logging.NewOperateLog().
-        SetRef(sub.Edges.Rider).
-        SetModifier(s.modifier).
-        SetOperate(model.OperateHalt).
-        SetDiff(before, "强制退租").
-        Send()
+    go lgr.SetDiff(before, reason).Send()
 }
 
 // Deposit 手动调整押金

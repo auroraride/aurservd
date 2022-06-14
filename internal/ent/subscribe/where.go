@@ -275,6 +275,13 @@ func RefundAt(v time.Time) predicate.Subscribe {
 	})
 }
 
+// UnsubscribeReason applies equality check predicate on the "unsubscribe_reason" field. It's identical to UnsubscribeReasonEQ.
+func UnsubscribeReason(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUnsubscribeReason), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
@@ -2255,6 +2262,131 @@ func RefundAtIsNil() predicate.Subscribe {
 func RefundAtNotNil() predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldRefundAt)))
+	})
+}
+
+// UnsubscribeReasonEQ applies the EQ predicate on the "unsubscribe_reason" field.
+func UnsubscribeReasonEQ(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldUnsubscribeReason), v))
+	})
+}
+
+// UnsubscribeReasonNEQ applies the NEQ predicate on the "unsubscribe_reason" field.
+func UnsubscribeReasonNEQ(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldUnsubscribeReason), v))
+	})
+}
+
+// UnsubscribeReasonIn applies the In predicate on the "unsubscribe_reason" field.
+func UnsubscribeReasonIn(vs ...string) predicate.Subscribe {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldUnsubscribeReason), v...))
+	})
+}
+
+// UnsubscribeReasonNotIn applies the NotIn predicate on the "unsubscribe_reason" field.
+func UnsubscribeReasonNotIn(vs ...string) predicate.Subscribe {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldUnsubscribeReason), v...))
+	})
+}
+
+// UnsubscribeReasonGT applies the GT predicate on the "unsubscribe_reason" field.
+func UnsubscribeReasonGT(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldUnsubscribeReason), v))
+	})
+}
+
+// UnsubscribeReasonGTE applies the GTE predicate on the "unsubscribe_reason" field.
+func UnsubscribeReasonGTE(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldUnsubscribeReason), v))
+	})
+}
+
+// UnsubscribeReasonLT applies the LT predicate on the "unsubscribe_reason" field.
+func UnsubscribeReasonLT(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldUnsubscribeReason), v))
+	})
+}
+
+// UnsubscribeReasonLTE applies the LTE predicate on the "unsubscribe_reason" field.
+func UnsubscribeReasonLTE(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldUnsubscribeReason), v))
+	})
+}
+
+// UnsubscribeReasonContains applies the Contains predicate on the "unsubscribe_reason" field.
+func UnsubscribeReasonContains(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldUnsubscribeReason), v))
+	})
+}
+
+// UnsubscribeReasonHasPrefix applies the HasPrefix predicate on the "unsubscribe_reason" field.
+func UnsubscribeReasonHasPrefix(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldUnsubscribeReason), v))
+	})
+}
+
+// UnsubscribeReasonHasSuffix applies the HasSuffix predicate on the "unsubscribe_reason" field.
+func UnsubscribeReasonHasSuffix(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldUnsubscribeReason), v))
+	})
+}
+
+// UnsubscribeReasonIsNil applies the IsNil predicate on the "unsubscribe_reason" field.
+func UnsubscribeReasonIsNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldUnsubscribeReason)))
+	})
+}
+
+// UnsubscribeReasonNotNil applies the NotNil predicate on the "unsubscribe_reason" field.
+func UnsubscribeReasonNotNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldUnsubscribeReason)))
+	})
+}
+
+// UnsubscribeReasonEqualFold applies the EqualFold predicate on the "unsubscribe_reason" field.
+func UnsubscribeReasonEqualFold(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldUnsubscribeReason), v))
+	})
+}
+
+// UnsubscribeReasonContainsFold applies the ContainsFold predicate on the "unsubscribe_reason" field.
+func UnsubscribeReasonContainsFold(v string) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldUnsubscribeReason), v))
 	})
 }
 

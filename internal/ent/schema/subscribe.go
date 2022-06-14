@@ -1,14 +1,17 @@
 package schema
 
 import (
+    "context"
     "entgo.io/ent"
     "entgo.io/ent/dialect/entsql"
+    "entgo.io/ent/entc/integration/ent/hook"
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
+    "github.com/auroraride/aurservd/pkg/snag"
 )
 
 // Subscribe holds the schema definition for the Subscribe entity.
@@ -46,6 +49,7 @@ func (Subscribe) Fields() []ent.Field {
         field.Time("start_at").Optional().Nillable().Comment("激活时间"),
         field.Time("end_at").Optional().Nillable().Comment("归还/团签结束时间"),
         field.Time("refund_at").Optional().Nillable().Comment("退款时间"),
+        field.String("unsubscribe_reason").Optional().Comment("退租理由"),
     }
 }
 
@@ -82,5 +86,27 @@ func (Subscribe) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("paused_at"),
         index.Fields("start_at", "end_at"),
+    }
+}
+
+func (Subscribe) Hooks() []ent.Hook {
+    type intr interface {
+        UnsubscribeReason() (r string, exists bool)
+        SetUnsubscribeReason(s string)
+    }
+    return []ent.Hook{
+        hook.On(
+            func(next ent.Mutator) ent.Mutator {
+                return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+                    if sub, ok := m.(intr); ok {
+                        if reason, _ := sub.UnsubscribeReason(); reason == "" {
+                            snag.Panic("退租理由必填")
+                        }
+                    }
+                    return next.Mutate(ctx, m)
+                })
+            },
+            ent.OpUpdate|ent.OpUpdateOne,
+        ),
     }
 }

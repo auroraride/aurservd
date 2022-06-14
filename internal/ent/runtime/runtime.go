@@ -633,7 +633,9 @@ func init() {
 	setting.KeyValidator = settingDescKey.Validators[0].(func(string) error)
 	stockMixin := schema.Stock{}.Mixin()
 	stockMixinHooks2 := stockMixin[2].Hooks()
+	stockHooks := schema.Stock{}.Hooks()
 	stock.Hooks[0] = stockMixinHooks2[0]
+	stock.Hooks[1] = stockHooks[0]
 	stockMixinFields0 := stockMixin[0].Fields()
 	_ = stockMixinFields0
 	stockFields := schema.Stock{}.Fields()

@@ -108,6 +108,9 @@ type Subscribe struct {
 	// RefundAt holds the value of the "refund_at" field.
 	// 退款时间
 	RefundAt *time.Time `json:"refund_at,omitempty"`
+	// UnsubscribeReason holds the value of the "unsubscribe_reason" field.
+	// 退租理由
+	UnsubscribeReason string `json:"unsubscribe_reason,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeQuery when eager-loading is set.
 	Edges SubscribeEdges `json:"edges"`
@@ -308,7 +311,7 @@ func (*Subscribe) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullFloat64)
 		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatementID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining:
 			values[i] = new(sql.NullInt64)
-		case subscribe.FieldRemark:
+		case subscribe.FieldRemark, subscribe.FieldUnsubscribeReason:
 			values[i] = new(sql.NullString)
 		case subscribe.FieldCreatedAt, subscribe.FieldUpdatedAt, subscribe.FieldDeletedAt, subscribe.FieldPausedAt, subscribe.FieldStartAt, subscribe.FieldEndAt, subscribe.FieldRefundAt:
 			values[i] = new(sql.NullTime)
@@ -513,6 +516,12 @@ func (s *Subscribe) assignValues(columns []string, values []interface{}) error {
 				s.RefundAt = new(time.Time)
 				*s.RefundAt = value.Time
 			}
+		case subscribe.FieldUnsubscribeReason:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field unsubscribe_reason", values[i])
+			} else if value.Valid {
+				s.UnsubscribeReason = value.String
+			}
 		}
 	}
 	return nil
@@ -673,6 +682,8 @@ func (s *Subscribe) String() string {
 		builder.WriteString(", refund_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", unsubscribe_reason=")
+	builder.WriteString(s.UnsubscribeReason)
 	builder.WriteByte(')')
 	return builder.String()
 }

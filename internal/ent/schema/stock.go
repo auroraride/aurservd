@@ -9,7 +9,7 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "github.com/auroraride/aurservd/app/model"
-    appEnt "github.com/auroraride/aurservd/internal/ent"
+    pEnt "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/hook"
     "github.com/auroraride/aurservd/internal/ent/internal"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -72,7 +72,7 @@ func (Stock) Indexes() []ent.Index {
 func (Stock) Hooks() []ent.Hook {
     return []ent.Hook{
         hook.On(func(next ent.Mutator) ent.Mutator {
-            return hook.StockFunc(func(ctx context.Context, m *appEnt.StockMutation) (ent.Value, error) {
+            return hook.StockFunc(func(ctx context.Context, m *pEnt.StockMutation) (ent.Value, error) {
                 n, _ := m.Num()
                 _, sok := m.StoreID()
                 if t, ok := m.GetType(); ok {

@@ -50,6 +50,12 @@ func (o *OperateLog) SetRef(ref model.Table) *OperateLog {
     return o
 }
 
+func (o *OperateLog) SetRefManually(table string, id uint64) *OperateLog {
+    o.RefTable = table
+    o.RefID = id
+    return o
+}
+
 func (o *OperateLog) SetOperate(operate model.Operate) *OperateLog {
     o.Operate = operate
     return o

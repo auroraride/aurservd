@@ -386,6 +386,20 @@ func (sc *SubscribeCreate) SetNillableRefundAt(t *time.Time) *SubscribeCreate {
 	return sc
 }
 
+// SetUnsubscribeReason sets the "unsubscribe_reason" field.
+func (sc *SubscribeCreate) SetUnsubscribeReason(s string) *SubscribeCreate {
+	sc.mutation.SetUnsubscribeReason(s)
+	return sc
+}
+
+// SetNillableUnsubscribeReason sets the "unsubscribe_reason" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableUnsubscribeReason(s *string) *SubscribeCreate {
+	if s != nil {
+		sc.SetUnsubscribeReason(*s)
+	}
+	return sc
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (sc *SubscribeCreate) SetPlan(p *Plan) *SubscribeCreate {
 	return sc.SetPlanID(p.ID)
@@ -823,6 +837,14 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 			Column: subscribe.FieldRefundAt,
 		})
 		_node.RefundAt = &value
+	}
+	if value, ok := sc.mutation.UnsubscribeReason(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: subscribe.FieldUnsubscribeReason,
+		})
+		_node.UnsubscribeReason = value
 	}
 	if nodes := sc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1601,6 +1623,24 @@ func (u *SubscribeUpsert) ClearRefundAt() *SubscribeUpsert {
 	return u
 }
 
+// SetUnsubscribeReason sets the "unsubscribe_reason" field.
+func (u *SubscribeUpsert) SetUnsubscribeReason(v string) *SubscribeUpsert {
+	u.Set(subscribe.FieldUnsubscribeReason, v)
+	return u
+}
+
+// UpdateUnsubscribeReason sets the "unsubscribe_reason" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateUnsubscribeReason() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldUnsubscribeReason)
+	return u
+}
+
+// ClearUnsubscribeReason clears the value of the "unsubscribe_reason" field.
+func (u *SubscribeUpsert) ClearUnsubscribeReason() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldUnsubscribeReason)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -2218,6 +2258,27 @@ func (u *SubscribeUpsertOne) UpdateRefundAt() *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) ClearRefundAt() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearRefundAt()
+	})
+}
+
+// SetUnsubscribeReason sets the "unsubscribe_reason" field.
+func (u *SubscribeUpsertOne) SetUnsubscribeReason(v string) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetUnsubscribeReason(v)
+	})
+}
+
+// UpdateUnsubscribeReason sets the "unsubscribe_reason" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateUnsubscribeReason() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateUnsubscribeReason()
+	})
+}
+
+// ClearUnsubscribeReason clears the value of the "unsubscribe_reason" field.
+func (u *SubscribeUpsertOne) ClearUnsubscribeReason() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearUnsubscribeReason()
 	})
 }
 
@@ -3002,6 +3063,27 @@ func (u *SubscribeUpsertBulk) UpdateRefundAt() *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) ClearRefundAt() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearRefundAt()
+	})
+}
+
+// SetUnsubscribeReason sets the "unsubscribe_reason" field.
+func (u *SubscribeUpsertBulk) SetUnsubscribeReason(v string) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetUnsubscribeReason(v)
+	})
+}
+
+// UpdateUnsubscribeReason sets the "unsubscribe_reason" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateUnsubscribeReason() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateUnsubscribeReason()
+	})
+}
+
+// ClearUnsubscribeReason clears the value of the "unsubscribe_reason" field.
+func (u *SubscribeUpsertBulk) ClearUnsubscribeReason() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearUnsubscribeReason()
 	})
 }
 
