@@ -54,6 +54,9 @@ type SubscribePause struct {
 	// Days holds the value of the "days" field.
 	// 暂停天数
 	Days int `json:"days,omitempty"`
+	// ContinueEmployeeID holds the value of the "continue_employee_id" field.
+	// 结束寄存店员ID
+	ContinueEmployeeID *uint64 `json:"continue_employee_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribePauseQuery when eager-loading is set.
 	Edges SubscribePauseEdges `json:"edges"`
@@ -67,9 +70,11 @@ type SubscribePauseEdges struct {
 	Employee *Employee `json:"employee,omitempty"`
 	// Subscribe holds the value of the subscribe edge.
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
+	// ContinueEmployee holds the value of the continue_employee edge.
+	ContinueEmployee *Employee `json:"continue_employee,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // RiderOrErr returns the Rider value or an error if the edge
@@ -114,6 +119,20 @@ func (e SubscribePauseEdges) SubscribeOrErr() (*Subscribe, error) {
 	return nil, &NotLoadedError{edge: "subscribe"}
 }
 
+// ContinueEmployeeOrErr returns the ContinueEmployee value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e SubscribePauseEdges) ContinueEmployeeOrErr() (*Employee, error) {
+	if e.loadedTypes[3] {
+		if e.ContinueEmployee == nil {
+			// The edge continue_employee was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: employee.Label}
+		}
+		return e.ContinueEmployee, nil
+	}
+	return nil, &NotLoadedError{edge: "continue_employee"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*SubscribePause) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -121,7 +140,7 @@ func (*SubscribePause) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case subscribepause.FieldCreator, subscribepause.FieldLastModifier:
 			values[i] = new([]byte)
-		case subscribepause.FieldID, subscribepause.FieldRiderID, subscribepause.FieldEmployeeID, subscribepause.FieldSubscribeID, subscribepause.FieldDays:
+		case subscribepause.FieldID, subscribepause.FieldRiderID, subscribepause.FieldEmployeeID, subscribepause.FieldSubscribeID, subscribepause.FieldDays, subscribepause.FieldContinueEmployeeID:
 			values[i] = new(sql.NullInt64)
 		case subscribepause.FieldRemark:
 			values[i] = new(sql.NullString)
@@ -225,6 +244,13 @@ func (sp *SubscribePause) assignValues(columns []string, values []interface{}) e
 			} else if value.Valid {
 				sp.Days = int(value.Int64)
 			}
+		case subscribepause.FieldContinueEmployeeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field continue_employee_id", values[i])
+			} else if value.Valid {
+				sp.ContinueEmployeeID = new(uint64)
+				*sp.ContinueEmployeeID = uint64(value.Int64)
+			}
 		}
 	}
 	return nil
@@ -243,6 +269,11 @@ func (sp *SubscribePause) QueryEmployee() *EmployeeQuery {
 // QuerySubscribe queries the "subscribe" edge of the SubscribePause entity.
 func (sp *SubscribePause) QuerySubscribe() *SubscribeQuery {
 	return (&SubscribePauseClient{config: sp.config}).QuerySubscribe(sp)
+}
+
+// QueryContinueEmployee queries the "continue_employee" edge of the SubscribePause entity.
+func (sp *SubscribePause) QueryContinueEmployee() *EmployeeQuery {
+	return (&SubscribePauseClient{config: sp.config}).QueryContinueEmployee(sp)
 }
 
 // Update returns a builder for updating this SubscribePause.
@@ -294,6 +325,10 @@ func (sp *SubscribePause) String() string {
 	builder.WriteString(sp.EndAt.Format(time.ANSIC))
 	builder.WriteString(", days=")
 	builder.WriteString(fmt.Sprintf("%v", sp.Days))
+	if v := sp.ContinueEmployeeID; v != nil {
+		builder.WriteString(", continue_employee_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -241,6 +241,7 @@ var (
 		{Name: "battery_num", Type: field.TypeUint, Comment: "电池总数", Default: 0},
 		{Name: "battery_full_num", Type: field.TypeUint, Comment: "满电电池数", Default: 0},
 		{Name: "branch_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// CabinetTable holds the schema information for the "cabinet" table.
 	CabinetTable = &schema.Table{
@@ -252,6 +253,12 @@ var (
 				Symbol:     "cabinet_branch_cabinets",
 				Columns:    []*schema.Column{CabinetColumns[18]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "cabinet_city_city",
+				Columns:    []*schema.Column{CabinetColumns[19]},
+				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -1533,6 +1540,7 @@ var (
 		{Name: "status", Type: field.TypeUint8, Comment: "门店状态 0维护 1营业 2休息 3隐藏", Default: 0},
 		{Name: "branch_id", Type: field.TypeUint64},
 		{Name: "employee_id", Type: field.TypeUint64, Unique: true, Nullable: true},
+		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// StoreTable holds the schema information for the "store" table.
 	StoreTable = &schema.Table{
@@ -1550,6 +1558,12 @@ var (
 				Symbol:     "store_employee_store",
 				Columns:    []*schema.Column{StoreColumns[11]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "store_city_city",
+				Columns:    []*schema.Column{StoreColumns[12]},
+				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -1764,6 +1778,7 @@ var (
 		{Name: "subscribe_id", Type: field.TypeUint64},
 		{Name: "rider_id", Type: field.TypeUint64},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "continue_employee_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// SubscribePauseTable holds the schema information for the "subscribe_pause" table.
 	SubscribePauseTable = &schema.Table{
@@ -1786,6 +1801,12 @@ var (
 			{
 				Symbol:     "subscribe_pause_employee_employee",
 				Columns:    []*schema.Column{SubscribePauseColumns[12]},
+				RefColumns: []*schema.Column{EmployeeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "subscribe_pause_employee_continue_employee",
+				Columns:    []*schema.Column{SubscribePauseColumns[13]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1934,6 +1955,7 @@ func init() {
 		Table: "branch_contract",
 	}
 	CabinetTable.ForeignKeys[0].RefTable = BranchTable
+	CabinetTable.ForeignKeys[1].RefTable = CityTable
 	CabinetTable.Annotation = &entsql.Annotation{
 		Table: "cabinet",
 	}
@@ -2036,6 +2058,7 @@ func init() {
 	}
 	StoreTable.ForeignKeys[0].RefTable = BranchTable
 	StoreTable.ForeignKeys[1].RefTable = EmployeeTable
+	StoreTable.ForeignKeys[2].RefTable = CityTable
 	StoreTable.Annotation = &entsql.Annotation{
 		Table: "store",
 	}
@@ -2060,6 +2083,7 @@ func init() {
 	SubscribePauseTable.ForeignKeys[0].RefTable = SubscribeTable
 	SubscribePauseTable.ForeignKeys[1].RefTable = RiderTable
 	SubscribePauseTable.ForeignKeys[2].RefTable = EmployeeTable
+	SubscribePauseTable.ForeignKeys[3].RefTable = EmployeeTable
 	SubscribePauseTable.Annotation = &entsql.Annotation{
 		Table: "subscribe_pause",
 	}

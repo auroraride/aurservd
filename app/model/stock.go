@@ -9,8 +9,21 @@ const (
     StockTypeTransfer         uint8 = iota // 调拨 (出库入库)
     StockTypeRiderObtain                   // 骑手领取电池 (出库)
     StockTypeRiderPause                    // 骑手寄存电池 (入库)
+    StockTypeRiderContinue                 // 骑手结束寄存电池 (出库)
     StockTypeRiderUnSubscribe              // 骑手归还电池 (入库)
 )
+
+func StockNumberOfRiderBusiness(typ uint8) (num int) {
+    switch typ {
+    case StockTypeRiderObtain, StockTypeRiderContinue:
+        num = -1
+        break
+    case StockTypeRiderPause, StockTypeRiderUnSubscribe:
+        num = 1
+        break
+    }
+    return
+}
 
 type StockTransferReq struct {
     Voltage    float64 `json:"voltage,omitempty"` // 电池型号 (和`物资名称`不能同时存在, 也不能同时为空)

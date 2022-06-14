@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -88,6 +89,26 @@ func (cu *CabinetUpdate) SetNillableRemark(s *string) *CabinetUpdate {
 // ClearRemark clears the value of the "remark" field.
 func (cu *CabinetUpdate) ClearRemark() *CabinetUpdate {
 	cu.mutation.ClearRemark()
+	return cu
+}
+
+// SetCityID sets the "city_id" field.
+func (cu *CabinetUpdate) SetCityID(u uint64) *CabinetUpdate {
+	cu.mutation.SetCityID(u)
+	return cu
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableCityID(u *uint64) *CabinetUpdate {
+	if u != nil {
+		cu.SetCityID(*u)
+	}
+	return cu
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (cu *CabinetUpdate) ClearCityID() *CabinetUpdate {
+	cu.mutation.ClearCityID()
 	return cu
 }
 
@@ -242,6 +263,11 @@ func (cu *CabinetUpdate) AddBatteryFullNum(u int) *CabinetUpdate {
 	return cu
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (cu *CabinetUpdate) SetCity(c *City) *CabinetUpdate {
+	return cu.SetCityID(c.ID)
+}
+
 // SetBranch sets the "branch" edge to the Branch entity.
 func (cu *CabinetUpdate) SetBranch(b *Branch) *CabinetUpdate {
 	return cu.SetBranchID(b.ID)
@@ -295,6 +321,12 @@ func (cu *CabinetUpdate) AddExchanges(e ...*Exchange) *CabinetUpdate {
 // Mutation returns the CabinetMutation object of the builder.
 func (cu *CabinetUpdate) Mutation() *CabinetMutation {
 	return cu.mutation
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (cu *CabinetUpdate) ClearCity() *CabinetUpdate {
+	cu.mutation.ClearCity()
+	return cu
 }
 
 // ClearBranch clears the "branch" edge to the Branch entity.
@@ -623,6 +655,41 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: cabinet.FieldBatteryFullNum,
 		})
 	}
+	if cu.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   cabinet.CityTable,
+			Columns: []string{cabinet.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   cabinet.CityTable,
+			Columns: []string{cabinet.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if cu.mutation.BranchCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -897,6 +964,26 @@ func (cuo *CabinetUpdateOne) ClearRemark() *CabinetUpdateOne {
 	return cuo
 }
 
+// SetCityID sets the "city_id" field.
+func (cuo *CabinetUpdateOne) SetCityID(u uint64) *CabinetUpdateOne {
+	cuo.mutation.SetCityID(u)
+	return cuo
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableCityID(u *uint64) *CabinetUpdateOne {
+	if u != nil {
+		cuo.SetCityID(*u)
+	}
+	return cuo
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (cuo *CabinetUpdateOne) ClearCityID() *CabinetUpdateOne {
+	cuo.mutation.ClearCityID()
+	return cuo
+}
+
 // SetBranchID sets the "branch_id" field.
 func (cuo *CabinetUpdateOne) SetBranchID(u uint64) *CabinetUpdateOne {
 	cuo.mutation.SetBranchID(u)
@@ -1048,6 +1135,11 @@ func (cuo *CabinetUpdateOne) AddBatteryFullNum(u int) *CabinetUpdateOne {
 	return cuo
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (cuo *CabinetUpdateOne) SetCity(c *City) *CabinetUpdateOne {
+	return cuo.SetCityID(c.ID)
+}
+
 // SetBranch sets the "branch" edge to the Branch entity.
 func (cuo *CabinetUpdateOne) SetBranch(b *Branch) *CabinetUpdateOne {
 	return cuo.SetBranchID(b.ID)
@@ -1101,6 +1193,12 @@ func (cuo *CabinetUpdateOne) AddExchanges(e ...*Exchange) *CabinetUpdateOne {
 // Mutation returns the CabinetMutation object of the builder.
 func (cuo *CabinetUpdateOne) Mutation() *CabinetMutation {
 	return cuo.mutation
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (cuo *CabinetUpdateOne) ClearCity() *CabinetUpdateOne {
+	cuo.mutation.ClearCity()
+	return cuo
 }
 
 // ClearBranch clears the "branch" edge to the Branch entity.
@@ -1458,6 +1556,41 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 			Value:  value,
 			Column: cabinet.FieldBatteryFullNum,
 		})
+	}
+	if cuo.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   cabinet.CityTable,
+			Columns: []string{cabinet.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   cabinet.CityTable,
+			Columns: []string{cabinet.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if cuo.mutation.BranchCleared() {
 		edge := &sqlgraph.EdgeSpec{

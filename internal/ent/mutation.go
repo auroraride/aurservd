@@ -5868,6 +5868,8 @@ type CabinetMutation struct {
 	battery_full_num    *uint
 	addbattery_full_num *int
 	clearedFields       map[string]struct{}
+	city                *uint64
+	clearedcity         bool
 	branch              *uint64
 	clearedbranch       bool
 	bms                 map[uint64]struct{}
@@ -6248,6 +6250,55 @@ func (m *CabinetMutation) RemarkCleared() bool {
 func (m *CabinetMutation) ResetRemark() {
 	m.remark = nil
 	delete(m.clearedFields, cabinet.FieldRemark)
+}
+
+// SetCityID sets the "city_id" field.
+func (m *CabinetMutation) SetCityID(u uint64) {
+	m.city = &u
+}
+
+// CityID returns the value of the "city_id" field in the mutation.
+func (m *CabinetMutation) CityID() (r uint64, exists bool) {
+	v := m.city
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCityID returns the old "city_id" field's value of the Cabinet entity.
+// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CabinetMutation) OldCityID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCityID: %w", err)
+	}
+	return oldValue.CityID, nil
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (m *CabinetMutation) ClearCityID() {
+	m.city = nil
+	m.clearedFields[cabinet.FieldCityID] = struct{}{}
+}
+
+// CityIDCleared returns if the "city_id" field was cleared in this mutation.
+func (m *CabinetMutation) CityIDCleared() bool {
+	_, ok := m.clearedFields[cabinet.FieldCityID]
+	return ok
+}
+
+// ResetCityID resets all changes to the "city_id" field.
+func (m *CabinetMutation) ResetCityID() {
+	m.city = nil
+	delete(m.clearedFields, cabinet.FieldCityID)
 }
 
 // SetBranchID sets the "branch_id" field.
@@ -6808,6 +6859,32 @@ func (m *CabinetMutation) ResetBatteryFullNum() {
 	m.addbattery_full_num = nil
 }
 
+// ClearCity clears the "city" edge to the City entity.
+func (m *CabinetMutation) ClearCity() {
+	m.clearedcity = true
+}
+
+// CityCleared reports if the "city" edge to the City entity was cleared.
+func (m *CabinetMutation) CityCleared() bool {
+	return m.CityIDCleared() || m.clearedcity
+}
+
+// CityIDs returns the "city" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CityID instead. It exists only for internal usage by the builders.
+func (m *CabinetMutation) CityIDs() (ids []uint64) {
+	if id := m.city; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCity resets all changes to the "city" edge.
+func (m *CabinetMutation) ResetCity() {
+	m.city = nil
+	m.clearedcity = false
+}
+
 // ClearBranch clears the "branch" edge to the Branch entity.
 func (m *CabinetMutation) ClearBranch() {
 	m.clearedbranch = true
@@ -7015,7 +7092,7 @@ func (m *CabinetMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CabinetMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, cabinet.FieldCreatedAt)
 	}
@@ -7033,6 +7110,9 @@ func (m *CabinetMutation) Fields() []string {
 	}
 	if m.remark != nil {
 		fields = append(fields, cabinet.FieldRemark)
+	}
+	if m.city != nil {
+		fields = append(fields, cabinet.FieldCityID)
 	}
 	if m.branch != nil {
 		fields = append(fields, cabinet.FieldBranchID)
@@ -7090,6 +7170,8 @@ func (m *CabinetMutation) Field(name string) (ent.Value, bool) {
 		return m.LastModifier()
 	case cabinet.FieldRemark:
 		return m.Remark()
+	case cabinet.FieldCityID:
+		return m.CityID()
 	case cabinet.FieldBranchID:
 		return m.BranchID()
 	case cabinet.FieldSn:
@@ -7135,6 +7217,8 @@ func (m *CabinetMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldLastModifier(ctx)
 	case cabinet.FieldRemark:
 		return m.OldRemark(ctx)
+	case cabinet.FieldCityID:
+		return m.OldCityID(ctx)
 	case cabinet.FieldBranchID:
 		return m.OldBranchID(ctx)
 	case cabinet.FieldSn:
@@ -7209,6 +7293,13 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRemark(v)
+		return nil
+	case cabinet.FieldCityID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCityID(v)
 		return nil
 	case cabinet.FieldBranchID:
 		v, ok := value.(uint64)
@@ -7399,6 +7490,9 @@ func (m *CabinetMutation) ClearedFields() []string {
 	if m.FieldCleared(cabinet.FieldRemark) {
 		fields = append(fields, cabinet.FieldRemark)
 	}
+	if m.FieldCleared(cabinet.FieldCityID) {
+		fields = append(fields, cabinet.FieldCityID)
+	}
 	if m.FieldCleared(cabinet.FieldBranchID) {
 		fields = append(fields, cabinet.FieldBranchID)
 	}
@@ -7431,6 +7525,9 @@ func (m *CabinetMutation) ClearField(name string) error {
 	case cabinet.FieldRemark:
 		m.ClearRemark()
 		return nil
+	case cabinet.FieldCityID:
+		m.ClearCityID()
+		return nil
 	case cabinet.FieldBranchID:
 		m.ClearBranchID()
 		return nil
@@ -7462,6 +7559,9 @@ func (m *CabinetMutation) ResetField(name string) error {
 		return nil
 	case cabinet.FieldRemark:
 		m.ResetRemark()
+		return nil
+	case cabinet.FieldCityID:
+		m.ResetCityID()
 		return nil
 	case cabinet.FieldBranchID:
 		m.ResetBranchID()
@@ -7505,7 +7605,10 @@ func (m *CabinetMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CabinetMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
+	if m.city != nil {
+		edges = append(edges, cabinet.EdgeCity)
+	}
 	if m.branch != nil {
 		edges = append(edges, cabinet.EdgeBranch)
 	}
@@ -7525,6 +7628,10 @@ func (m *CabinetMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *CabinetMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case cabinet.EdgeCity:
+		if id := m.city; id != nil {
+			return []ent.Value{*id}
+		}
 	case cabinet.EdgeBranch:
 		if id := m.branch; id != nil {
 			return []ent.Value{*id}
@@ -7553,7 +7660,7 @@ func (m *CabinetMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CabinetMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removedbms != nil {
 		edges = append(edges, cabinet.EdgeBms)
 	}
@@ -7594,7 +7701,10 @@ func (m *CabinetMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CabinetMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
+	if m.clearedcity {
+		edges = append(edges, cabinet.EdgeCity)
+	}
 	if m.clearedbranch {
 		edges = append(edges, cabinet.EdgeBranch)
 	}
@@ -7614,6 +7724,8 @@ func (m *CabinetMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *CabinetMutation) EdgeCleared(name string) bool {
 	switch name {
+	case cabinet.EdgeCity:
+		return m.clearedcity
 	case cabinet.EdgeBranch:
 		return m.clearedbranch
 	case cabinet.EdgeBms:
@@ -7630,6 +7742,9 @@ func (m *CabinetMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *CabinetMutation) ClearEdge(name string) error {
 	switch name {
+	case cabinet.EdgeCity:
+		m.ClearCity()
+		return nil
 	case cabinet.EdgeBranch:
 		m.ClearBranch()
 		return nil
@@ -7641,6 +7756,9 @@ func (m *CabinetMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *CabinetMutation) ResetEdge(name string) error {
 	switch name {
+	case cabinet.EdgeCity:
+		m.ResetCity()
+		return nil
 	case cabinet.EdgeBranch:
 		m.ResetBranch()
 		return nil
@@ -35026,6 +35144,8 @@ type StoreMutation struct {
 	status             *uint8
 	addstatus          *int8
 	clearedFields      map[string]struct{}
+	city               *uint64
+	clearedcity        bool
 	branch             *uint64
 	clearedbranch      bool
 	employee           *uint64
@@ -35407,6 +35527,55 @@ func (m *StoreMutation) ResetRemark() {
 	delete(m.clearedFields, store.FieldRemark)
 }
 
+// SetCityID sets the "city_id" field.
+func (m *StoreMutation) SetCityID(u uint64) {
+	m.city = &u
+}
+
+// CityID returns the value of the "city_id" field in the mutation.
+func (m *StoreMutation) CityID() (r uint64, exists bool) {
+	v := m.city
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCityID returns the old "city_id" field's value of the Store entity.
+// If the Store object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StoreMutation) OldCityID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCityID: %w", err)
+	}
+	return oldValue.CityID, nil
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (m *StoreMutation) ClearCityID() {
+	m.city = nil
+	m.clearedFields[store.FieldCityID] = struct{}{}
+}
+
+// CityIDCleared returns if the "city_id" field was cleared in this mutation.
+func (m *StoreMutation) CityIDCleared() bool {
+	_, ok := m.clearedFields[store.FieldCityID]
+	return ok
+}
+
+// ResetCityID resets all changes to the "city_id" field.
+func (m *StoreMutation) ResetCityID() {
+	m.city = nil
+	delete(m.clearedFields, store.FieldCityID)
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (m *StoreMutation) SetEmployeeID(u uint64) {
 	m.employee = &u
@@ -35620,6 +35789,32 @@ func (m *StoreMutation) ResetStatus() {
 	m.addstatus = nil
 }
 
+// ClearCity clears the "city" edge to the City entity.
+func (m *StoreMutation) ClearCity() {
+	m.clearedcity = true
+}
+
+// CityCleared reports if the "city" edge to the City entity was cleared.
+func (m *StoreMutation) CityCleared() bool {
+	return m.CityIDCleared() || m.clearedcity
+}
+
+// CityIDs returns the "city" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CityID instead. It exists only for internal usage by the builders.
+func (m *StoreMutation) CityIDs() (ids []uint64) {
+	if id := m.city; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCity resets all changes to the "city" edge.
+func (m *StoreMutation) ResetCity() {
+	m.city = nil
+	m.clearedcity = false
+}
+
 // ClearBranch clears the "branch" edge to the Branch entity.
 func (m *StoreMutation) ClearBranch() {
 	m.clearedbranch = true
@@ -35799,7 +35994,7 @@ func (m *StoreMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StoreMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.created_at != nil {
 		fields = append(fields, store.FieldCreatedAt)
 	}
@@ -35817,6 +36012,9 @@ func (m *StoreMutation) Fields() []string {
 	}
 	if m.remark != nil {
 		fields = append(fields, store.FieldRemark)
+	}
+	if m.city != nil {
+		fields = append(fields, store.FieldCityID)
 	}
 	if m.employee != nil {
 		fields = append(fields, store.FieldEmployeeID)
@@ -35853,6 +36051,8 @@ func (m *StoreMutation) Field(name string) (ent.Value, bool) {
 		return m.LastModifier()
 	case store.FieldRemark:
 		return m.Remark()
+	case store.FieldCityID:
+		return m.CityID()
 	case store.FieldEmployeeID:
 		return m.EmployeeID()
 	case store.FieldBranchID:
@@ -35884,6 +36084,8 @@ func (m *StoreMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldLastModifier(ctx)
 	case store.FieldRemark:
 		return m.OldRemark(ctx)
+	case store.FieldCityID:
+		return m.OldCityID(ctx)
 	case store.FieldEmployeeID:
 		return m.OldEmployeeID(ctx)
 	case store.FieldBranchID:
@@ -35944,6 +36146,13 @@ func (m *StoreMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRemark(v)
+		return nil
+	case store.FieldCityID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCityID(v)
 		return nil
 	case store.FieldEmployeeID:
 		v, ok := value.(uint64)
@@ -36037,6 +36246,9 @@ func (m *StoreMutation) ClearedFields() []string {
 	if m.FieldCleared(store.FieldRemark) {
 		fields = append(fields, store.FieldRemark)
 	}
+	if m.FieldCleared(store.FieldCityID) {
+		fields = append(fields, store.FieldCityID)
+	}
 	if m.FieldCleared(store.FieldEmployeeID) {
 		fields = append(fields, store.FieldEmployeeID)
 	}
@@ -36065,6 +36277,9 @@ func (m *StoreMutation) ClearField(name string) error {
 		return nil
 	case store.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case store.FieldCityID:
+		m.ClearCityID()
 		return nil
 	case store.FieldEmployeeID:
 		m.ClearEmployeeID()
@@ -36095,6 +36310,9 @@ func (m *StoreMutation) ResetField(name string) error {
 	case store.FieldRemark:
 		m.ResetRemark()
 		return nil
+	case store.FieldCityID:
+		m.ResetCityID()
+		return nil
 	case store.FieldEmployeeID:
 		m.ResetEmployeeID()
 		return nil
@@ -36116,7 +36334,10 @@ func (m *StoreMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *StoreMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
+	if m.city != nil {
+		edges = append(edges, store.EdgeCity)
+	}
 	if m.branch != nil {
 		edges = append(edges, store.EdgeBranch)
 	}
@@ -36136,6 +36357,10 @@ func (m *StoreMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *StoreMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case store.EdgeCity:
+		if id := m.city; id != nil {
+			return []ent.Value{*id}
+		}
 	case store.EdgeBranch:
 		if id := m.branch; id != nil {
 			return []ent.Value{*id}
@@ -36162,7 +36387,7 @@ func (m *StoreMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *StoreMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removedstocks != nil {
 		edges = append(edges, store.EdgeStocks)
 	}
@@ -36194,7 +36419,10 @@ func (m *StoreMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *StoreMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
+	if m.clearedcity {
+		edges = append(edges, store.EdgeCity)
+	}
 	if m.clearedbranch {
 		edges = append(edges, store.EdgeBranch)
 	}
@@ -36214,6 +36442,8 @@ func (m *StoreMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *StoreMutation) EdgeCleared(name string) bool {
 	switch name {
+	case store.EdgeCity:
+		return m.clearedcity
 	case store.EdgeBranch:
 		return m.clearedbranch
 	case store.EdgeEmployee:
@@ -36230,6 +36460,9 @@ func (m *StoreMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *StoreMutation) ClearEdge(name string) error {
 	switch name {
+	case store.EdgeCity:
+		m.ClearCity()
+		return nil
 	case store.EdgeBranch:
 		m.ClearBranch()
 		return nil
@@ -36244,6 +36477,9 @@ func (m *StoreMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *StoreMutation) ResetEdge(name string) error {
 	switch name {
+	case store.EdgeCity:
+		m.ResetCity()
+		return nil
 	case store.EdgeBranch:
 		m.ResetBranch()
 		return nil
@@ -40361,29 +40597,31 @@ func (m *SubscribeAlterMutation) ResetEdge(name string) error {
 // SubscribePauseMutation represents an operation that mutates the SubscribePause nodes in the graph.
 type SubscribePauseMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *uint64
-	created_at       *time.Time
-	updated_at       *time.Time
-	deleted_at       *time.Time
-	creator          **model.Modifier
-	last_modifier    **model.Modifier
-	remark           *string
-	start_at         *time.Time
-	end_at           *time.Time
-	days             *int
-	adddays          *int
-	clearedFields    map[string]struct{}
-	rider            *uint64
-	clearedrider     bool
-	employee         *uint64
-	clearedemployee  bool
-	subscribe        *uint64
-	clearedsubscribe bool
-	done             bool
-	oldValue         func(context.Context) (*SubscribePause, error)
-	predicates       []predicate.SubscribePause
+	op                       Op
+	typ                      string
+	id                       *uint64
+	created_at               *time.Time
+	updated_at               *time.Time
+	deleted_at               *time.Time
+	creator                  **model.Modifier
+	last_modifier            **model.Modifier
+	remark                   *string
+	start_at                 *time.Time
+	end_at                   *time.Time
+	days                     *int
+	adddays                  *int
+	clearedFields            map[string]struct{}
+	rider                    *uint64
+	clearedrider             bool
+	employee                 *uint64
+	clearedemployee          bool
+	subscribe                *uint64
+	clearedsubscribe         bool
+	continue_employee        *uint64
+	clearedcontinue_employee bool
+	done                     bool
+	oldValue                 func(context.Context) (*SubscribePause, error)
+	predicates               []predicate.SubscribePause
 }
 
 var _ ent.Mutation = (*SubscribePauseMutation)(nil)
@@ -41028,6 +41266,55 @@ func (m *SubscribePauseMutation) ResetDays() {
 	delete(m.clearedFields, subscribepause.FieldDays)
 }
 
+// SetContinueEmployeeID sets the "continue_employee_id" field.
+func (m *SubscribePauseMutation) SetContinueEmployeeID(u uint64) {
+	m.continue_employee = &u
+}
+
+// ContinueEmployeeID returns the value of the "continue_employee_id" field in the mutation.
+func (m *SubscribePauseMutation) ContinueEmployeeID() (r uint64, exists bool) {
+	v := m.continue_employee
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldContinueEmployeeID returns the old "continue_employee_id" field's value of the SubscribePause entity.
+// If the SubscribePause object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribePauseMutation) OldContinueEmployeeID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldContinueEmployeeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldContinueEmployeeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldContinueEmployeeID: %w", err)
+	}
+	return oldValue.ContinueEmployeeID, nil
+}
+
+// ClearContinueEmployeeID clears the value of the "continue_employee_id" field.
+func (m *SubscribePauseMutation) ClearContinueEmployeeID() {
+	m.continue_employee = nil
+	m.clearedFields[subscribepause.FieldContinueEmployeeID] = struct{}{}
+}
+
+// ContinueEmployeeIDCleared returns if the "continue_employee_id" field was cleared in this mutation.
+func (m *SubscribePauseMutation) ContinueEmployeeIDCleared() bool {
+	_, ok := m.clearedFields[subscribepause.FieldContinueEmployeeID]
+	return ok
+}
+
+// ResetContinueEmployeeID resets all changes to the "continue_employee_id" field.
+func (m *SubscribePauseMutation) ResetContinueEmployeeID() {
+	m.continue_employee = nil
+	delete(m.clearedFields, subscribepause.FieldContinueEmployeeID)
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *SubscribePauseMutation) ClearRider() {
 	m.clearedrider = true
@@ -41106,6 +41393,32 @@ func (m *SubscribePauseMutation) ResetSubscribe() {
 	m.clearedsubscribe = false
 }
 
+// ClearContinueEmployee clears the "continue_employee" edge to the Employee entity.
+func (m *SubscribePauseMutation) ClearContinueEmployee() {
+	m.clearedcontinue_employee = true
+}
+
+// ContinueEmployeeCleared reports if the "continue_employee" edge to the Employee entity was cleared.
+func (m *SubscribePauseMutation) ContinueEmployeeCleared() bool {
+	return m.ContinueEmployeeIDCleared() || m.clearedcontinue_employee
+}
+
+// ContinueEmployeeIDs returns the "continue_employee" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ContinueEmployeeID instead. It exists only for internal usage by the builders.
+func (m *SubscribePauseMutation) ContinueEmployeeIDs() (ids []uint64) {
+	if id := m.continue_employee; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetContinueEmployee resets all changes to the "continue_employee" edge.
+func (m *SubscribePauseMutation) ResetContinueEmployee() {
+	m.continue_employee = nil
+	m.clearedcontinue_employee = false
+}
+
 // Where appends a list predicates to the SubscribePauseMutation builder.
 func (m *SubscribePauseMutation) Where(ps ...predicate.SubscribePause) {
 	m.predicates = append(m.predicates, ps...)
@@ -41125,7 +41438,7 @@ func (m *SubscribePauseMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SubscribePauseMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, subscribepause.FieldCreatedAt)
 	}
@@ -41162,6 +41475,9 @@ func (m *SubscribePauseMutation) Fields() []string {
 	if m.days != nil {
 		fields = append(fields, subscribepause.FieldDays)
 	}
+	if m.continue_employee != nil {
+		fields = append(fields, subscribepause.FieldContinueEmployeeID)
+	}
 	return fields
 }
 
@@ -41194,6 +41510,8 @@ func (m *SubscribePauseMutation) Field(name string) (ent.Value, bool) {
 		return m.EndAt()
 	case subscribepause.FieldDays:
 		return m.Days()
+	case subscribepause.FieldContinueEmployeeID:
+		return m.ContinueEmployeeID()
 	}
 	return nil, false
 }
@@ -41227,6 +41545,8 @@ func (m *SubscribePauseMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldEndAt(ctx)
 	case subscribepause.FieldDays:
 		return m.OldDays(ctx)
+	case subscribepause.FieldContinueEmployeeID:
+		return m.OldContinueEmployeeID(ctx)
 	}
 	return nil, fmt.Errorf("unknown SubscribePause field %s", name)
 }
@@ -41320,6 +41640,13 @@ func (m *SubscribePauseMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDays(v)
 		return nil
+	case subscribepause.FieldContinueEmployeeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetContinueEmployeeID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown SubscribePause field %s", name)
 }
@@ -41386,6 +41713,9 @@ func (m *SubscribePauseMutation) ClearedFields() []string {
 	if m.FieldCleared(subscribepause.FieldDays) {
 		fields = append(fields, subscribepause.FieldDays)
 	}
+	if m.FieldCleared(subscribepause.FieldContinueEmployeeID) {
+		fields = append(fields, subscribepause.FieldContinueEmployeeID)
+	}
 	return fields
 }
 
@@ -41420,6 +41750,9 @@ func (m *SubscribePauseMutation) ClearField(name string) error {
 		return nil
 	case subscribepause.FieldDays:
 		m.ClearDays()
+		return nil
+	case subscribepause.FieldContinueEmployeeID:
+		m.ClearContinueEmployeeID()
 		return nil
 	}
 	return fmt.Errorf("unknown SubscribePause nullable field %s", name)
@@ -41465,13 +41798,16 @@ func (m *SubscribePauseMutation) ResetField(name string) error {
 	case subscribepause.FieldDays:
 		m.ResetDays()
 		return nil
+	case subscribepause.FieldContinueEmployeeID:
+		m.ResetContinueEmployeeID()
+		return nil
 	}
 	return fmt.Errorf("unknown SubscribePause field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SubscribePauseMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.rider != nil {
 		edges = append(edges, subscribepause.EdgeRider)
 	}
@@ -41480,6 +41816,9 @@ func (m *SubscribePauseMutation) AddedEdges() []string {
 	}
 	if m.subscribe != nil {
 		edges = append(edges, subscribepause.EdgeSubscribe)
+	}
+	if m.continue_employee != nil {
+		edges = append(edges, subscribepause.EdgeContinueEmployee)
 	}
 	return edges
 }
@@ -41500,13 +41839,17 @@ func (m *SubscribePauseMutation) AddedIDs(name string) []ent.Value {
 		if id := m.subscribe; id != nil {
 			return []ent.Value{*id}
 		}
+	case subscribepause.EdgeContinueEmployee:
+		if id := m.continue_employee; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SubscribePauseMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	return edges
 }
 
@@ -41520,7 +41863,7 @@ func (m *SubscribePauseMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SubscribePauseMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedrider {
 		edges = append(edges, subscribepause.EdgeRider)
 	}
@@ -41529,6 +41872,9 @@ func (m *SubscribePauseMutation) ClearedEdges() []string {
 	}
 	if m.clearedsubscribe {
 		edges = append(edges, subscribepause.EdgeSubscribe)
+	}
+	if m.clearedcontinue_employee {
+		edges = append(edges, subscribepause.EdgeContinueEmployee)
 	}
 	return edges
 }
@@ -41543,6 +41889,8 @@ func (m *SubscribePauseMutation) EdgeCleared(name string) bool {
 		return m.clearedemployee
 	case subscribepause.EdgeSubscribe:
 		return m.clearedsubscribe
+	case subscribepause.EdgeContinueEmployee:
+		return m.clearedcontinue_employee
 	}
 	return false
 }
@@ -41560,6 +41908,9 @@ func (m *SubscribePauseMutation) ClearEdge(name string) error {
 	case subscribepause.EdgeSubscribe:
 		m.ClearSubscribe()
 		return nil
+	case subscribepause.EdgeContinueEmployee:
+		m.ClearContinueEmployee()
+		return nil
 	}
 	return fmt.Errorf("unknown SubscribePause unique edge %s", name)
 }
@@ -41576,6 +41927,9 @@ func (m *SubscribePauseMutation) ResetEdge(name string) error {
 		return nil
 	case subscribepause.EdgeSubscribe:
 		m.ResetSubscribe()
+		return nil
+	case subscribepause.EdgeContinueEmployee:
+		m.ResetContinueEmployee()
 		return nil
 	}
 	return fmt.Errorf("unknown SubscribePause edge %s", name)

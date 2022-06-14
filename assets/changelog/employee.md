@@ -4,6 +4,8 @@
 
 - [E2003 骑手业务详情](http://localhost:5533/docs#tag/E/operation/EmployeeBusinessRider)
   - 通过判定`enterpriseName`是否存在来判定骑手是否团签用户
+- [E2004 寄存电池](http://localhost:5533/docs#tag/E/operation/EmployeeBusinessPause)
+- [E2005 结束寄存电池](http://localhost:5533/docs#tag/E/operation/EmployeeBusinessContinue)
 
 
 

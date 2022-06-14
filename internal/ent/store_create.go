@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/branch"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -95,6 +96,20 @@ func (sc *StoreCreate) SetNillableRemark(s *string) *StoreCreate {
 	return sc
 }
 
+// SetCityID sets the "city_id" field.
+func (sc *StoreCreate) SetCityID(u uint64) *StoreCreate {
+	sc.mutation.SetCityID(u)
+	return sc
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (sc *StoreCreate) SetNillableCityID(u *uint64) *StoreCreate {
+	if u != nil {
+		sc.SetCityID(*u)
+	}
+	return sc
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (sc *StoreCreate) SetEmployeeID(u uint64) *StoreCreate {
 	sc.mutation.SetEmployeeID(u)
@@ -139,6 +154,11 @@ func (sc *StoreCreate) SetNillableStatus(u *uint8) *StoreCreate {
 		sc.SetStatus(*u)
 	}
 	return sc
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (sc *StoreCreate) SetCity(c *City) *StoreCreate {
+	return sc.SetCityID(c.ID)
 }
 
 // SetBranch sets the "branch" edge to the Branch entity.
@@ -404,6 +424,26 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 		})
 		_node.Status = value
 	}
+	if nodes := sc.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   store.CityTable,
+			Columns: []string{store.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CityID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := sc.mutation.BranchIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -629,6 +669,24 @@ func (u *StoreUpsert) UpdateRemark() *StoreUpsert {
 // ClearRemark clears the value of the "remark" field.
 func (u *StoreUpsert) ClearRemark() *StoreUpsert {
 	u.SetNull(store.FieldRemark)
+	return u
+}
+
+// SetCityID sets the "city_id" field.
+func (u *StoreUpsert) SetCityID(v uint64) *StoreUpsert {
+	u.Set(store.FieldCityID, v)
+	return u
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *StoreUpsert) UpdateCityID() *StoreUpsert {
+	u.SetExcluded(store.FieldCityID)
+	return u
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *StoreUpsert) ClearCityID() *StoreUpsert {
+	u.SetNull(store.FieldCityID)
 	return u
 }
 
@@ -866,6 +924,27 @@ func (u *StoreUpsertOne) UpdateRemark() *StoreUpsertOne {
 func (u *StoreUpsertOne) ClearRemark() *StoreUpsertOne {
 	return u.Update(func(s *StoreUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetCityID sets the "city_id" field.
+func (u *StoreUpsertOne) SetCityID(v uint64) *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *StoreUpsertOne) UpdateCityID() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateCityID()
+	})
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *StoreUpsertOne) ClearCityID() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.ClearCityID()
 	})
 }
 
@@ -1279,6 +1358,27 @@ func (u *StoreUpsertBulk) UpdateRemark() *StoreUpsertBulk {
 func (u *StoreUpsertBulk) ClearRemark() *StoreUpsertBulk {
 	return u.Update(func(s *StoreUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetCityID sets the "city_id" field.
+func (u *StoreUpsertBulk) SetCityID(v uint64) *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *StoreUpsertBulk) UpdateCityID() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateCityID()
+	})
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *StoreUpsertBulk) ClearCityID() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.ClearCityID()
 	})
 }
 

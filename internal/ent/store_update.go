@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/branch"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -91,6 +92,26 @@ func (su *StoreUpdate) ClearRemark() *StoreUpdate {
 	return su
 }
 
+// SetCityID sets the "city_id" field.
+func (su *StoreUpdate) SetCityID(u uint64) *StoreUpdate {
+	su.mutation.SetCityID(u)
+	return su
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableCityID(u *uint64) *StoreUpdate {
+	if u != nil {
+		su.SetCityID(*u)
+	}
+	return su
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (su *StoreUpdate) ClearCityID() *StoreUpdate {
+	su.mutation.ClearCityID()
+	return su
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (su *StoreUpdate) SetEmployeeID(u uint64) *StoreUpdate {
 	su.mutation.SetEmployeeID(u)
@@ -144,6 +165,11 @@ func (su *StoreUpdate) AddStatus(u int8) *StoreUpdate {
 	return su
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (su *StoreUpdate) SetCity(c *City) *StoreUpdate {
+	return su.SetCityID(c.ID)
+}
+
 // SetBranch sets the "branch" edge to the Branch entity.
 func (su *StoreUpdate) SetBranch(b *Branch) *StoreUpdate {
 	return su.SetBranchID(b.ID)
@@ -187,6 +213,12 @@ func (su *StoreUpdate) AddAttendances(a ...*Attendance) *StoreUpdate {
 // Mutation returns the StoreMutation object of the builder.
 func (su *StoreUpdate) Mutation() *StoreMutation {
 	return su.mutation
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (su *StoreUpdate) ClearCity() *StoreUpdate {
+	su.mutation.ClearCity()
+	return su
 }
 
 // ClearBranch clears the "branch" edge to the Branch entity.
@@ -416,6 +448,41 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Value:  value,
 			Column: store.FieldStatus,
 		})
+	}
+	if su.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   store.CityTable,
+			Columns: []string{store.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   store.CityTable,
+			Columns: []string{store.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if su.mutation.BranchCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -672,6 +739,26 @@ func (suo *StoreUpdateOne) ClearRemark() *StoreUpdateOne {
 	return suo
 }
 
+// SetCityID sets the "city_id" field.
+func (suo *StoreUpdateOne) SetCityID(u uint64) *StoreUpdateOne {
+	suo.mutation.SetCityID(u)
+	return suo
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableCityID(u *uint64) *StoreUpdateOne {
+	if u != nil {
+		suo.SetCityID(*u)
+	}
+	return suo
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (suo *StoreUpdateOne) ClearCityID() *StoreUpdateOne {
+	suo.mutation.ClearCityID()
+	return suo
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (suo *StoreUpdateOne) SetEmployeeID(u uint64) *StoreUpdateOne {
 	suo.mutation.SetEmployeeID(u)
@@ -725,6 +812,11 @@ func (suo *StoreUpdateOne) AddStatus(u int8) *StoreUpdateOne {
 	return suo
 }
 
+// SetCity sets the "city" edge to the City entity.
+func (suo *StoreUpdateOne) SetCity(c *City) *StoreUpdateOne {
+	return suo.SetCityID(c.ID)
+}
+
 // SetBranch sets the "branch" edge to the Branch entity.
 func (suo *StoreUpdateOne) SetBranch(b *Branch) *StoreUpdateOne {
 	return suo.SetBranchID(b.ID)
@@ -768,6 +860,12 @@ func (suo *StoreUpdateOne) AddAttendances(a ...*Attendance) *StoreUpdateOne {
 // Mutation returns the StoreMutation object of the builder.
 func (suo *StoreUpdateOne) Mutation() *StoreMutation {
 	return suo.mutation
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (suo *StoreUpdateOne) ClearCity() *StoreUpdateOne {
+	suo.mutation.ClearCity()
+	return suo
 }
 
 // ClearBranch clears the "branch" edge to the Branch entity.
@@ -1027,6 +1125,41 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 			Value:  value,
 			Column: store.FieldStatus,
 		})
+	}
+	if suo.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   store.CityTable,
+			Columns: []string{store.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   store.CityTable,
+			Columns: []string{store.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if suo.mutation.BranchCleared() {
 		edge := &sqlgraph.EdgeSpec{

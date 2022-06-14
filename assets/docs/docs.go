@@ -197,6 +197,88 @@ const docTemplate = `{
                 }
             }
         },
+        "/employee/v1/business/continue": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E2005 结束寄存电池",
+                "operationId": "EmployeeBusinessContinue",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "寄存请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BusinessSubscribeID"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/v1/business/pause": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E2004 寄存电池",
+                "operationId": "EmployeeBusinessPause",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "寄存请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BusinessSubscribeID"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/employee/v1/business/rider": {
             "get": {
                 "consumes": [
@@ -220,7 +302,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "骑手二维码, 最好把` + "`" + `https://rider.auroraride.com/` + "`" + `删除",
+                        "description": "骑手二维码",
                         "name": "qrcode",
                         "in": "query",
                         "required": true
@@ -5220,6 +5302,15 @@ const docTemplate = `{
                 }
             }
         },
+        "model.BusinessSubscribeID": {
+            "type": "object",
+            "properties": {
+                "subscribeId": {
+                    "description": "订阅ID",
+                    "type": "integer"
+                }
+            }
+        },
         "model.CabinetBin": {
             "type": "object",
             "properties": {
@@ -7868,6 +7959,14 @@ const docTemplate = `{
         "model.SubscribeActiveInfo": {
             "type": "object",
             "properties": {
+                "city": {
+                    "description": "所在城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
                 "enterprise": {
                     "description": "企业详情, 个签用户此字段不存在",
                     "allOf": [
@@ -7977,6 +8076,10 @@ const docTemplate = `{
                         3,
                         4
                     ]
+                },
+                "subscribeId": {
+                    "description": "当前订阅ID",
+                    "type": "integer"
                 },
                 "voltage": {
                     "description": "当前电池型号(电压)",

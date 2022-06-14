@@ -67,9 +67,7 @@ func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
                 store.HasStocks(),
             ),
         ).
-        WithBranch(func(bq *ent.BranchQuery) {
-            bq.WithCity()
-        }).
+        WithCity().
         WithStocks()
     if req.Name != nil {
         q.Where(
@@ -113,8 +111,8 @@ func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
                     Name: item.Name,
                 },
                 City: model.City{
-                    ID:   item.Edges.Branch.Edges.City.ID,
-                    Name: item.Edges.Branch.Edges.City.Name,
+                    ID:   item.Edges.City.ID,
+                    Name: item.Edges.City.Name,
                 },
                 BatteryTotal: 0,
                 Batteries:    make([]*model.StockMaterial, 0),
@@ -308,19 +306,11 @@ GROUP BY outbound, inbound, plaform`)
     return
 }
 
-// BatteryOutboundWithRider 和骑手交互电池出入库
-func (s *stockService) BatteryOutboundWithRider(cr *ent.StockCreate, req *model.StockWithRiderReq) error {
+// BatteryWithRider 和骑手交互电池出入库
+func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockWithRiderReq) error {
     name := NewBattery().VoltageName(req.Voltage)
 
-    var num int
-    switch req.StockType {
-    case model.StockTypeRiderObtain:
-        num = -1
-        break
-    case model.StockTypeRiderPause, model.StockTypeRiderUnSubscribe:
-        num = 1
-        break
-    }
+    num := model.StockNumberOfRiderBusiness(req.StockType)
 
     // TODO 平台管理员可操作性时处理出入库逻辑
     if req.StoreID != 0 {

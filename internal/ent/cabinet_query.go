@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -29,6 +30,7 @@ type CabinetQuery struct {
 	fields     []string
 	predicates []predicate.Cabinet
 	// eager-loading edges.
+	withCity      *CityQuery
 	withBranch    *BranchQuery
 	withBms       *BatteryModelQuery
 	withFaults    *CabinetFaultQuery
@@ -68,6 +70,28 @@ func (cq *CabinetQuery) Unique(unique bool) *CabinetQuery {
 func (cq *CabinetQuery) Order(o ...OrderFunc) *CabinetQuery {
 	cq.order = append(cq.order, o...)
 	return cq
+}
+
+// QueryCity chains the current query on the "city" edge.
+func (cq *CabinetQuery) QueryCity() *CityQuery {
+	query := &CityQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, cabinet.CityTable, cabinet.CityColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryBranch chains the current query on the "branch" edge.
@@ -339,6 +363,7 @@ func (cq *CabinetQuery) Clone() *CabinetQuery {
 		offset:        cq.offset,
 		order:         append([]OrderFunc{}, cq.order...),
 		predicates:    append([]predicate.Cabinet{}, cq.predicates...),
+		withCity:      cq.withCity.Clone(),
 		withBranch:    cq.withBranch.Clone(),
 		withBms:       cq.withBms.Clone(),
 		withFaults:    cq.withFaults.Clone(),
@@ -348,6 +373,17 @@ func (cq *CabinetQuery) Clone() *CabinetQuery {
 		path:   cq.path,
 		unique: cq.unique,
 	}
+}
+
+// WithCity tells the query-builder to eager-load the nodes that are connected to
+// the "city" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CabinetQuery) WithCity(opts ...func(*CityQuery)) *CabinetQuery {
+	query := &CityQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withCity = query
+	return cq
 }
 
 // WithBranch tells the query-builder to eager-load the nodes that are connected to
@@ -464,7 +500,8 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 	var (
 		nodes       = []*Cabinet{}
 		_spec       = cq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
+			cq.withCity != nil,
 			cq.withBranch != nil,
 			cq.withBms != nil,
 			cq.withFaults != nil,
@@ -491,6 +528,32 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+
+	if query := cq.withCity; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Cabinet)
+		for i := range nodes {
+			fk := nodes[i].CityID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(city.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.City = n
+			}
+		}
 	}
 
 	if query := cq.withBranch; query != nil {

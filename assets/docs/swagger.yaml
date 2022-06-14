@@ -316,6 +316,12 @@ definitions:
       name:
         type: string
     type: object
+  model.BusinessSubscribeID:
+    properties:
+      subscribeId:
+        description: 订阅ID
+        type: integer
+    type: object
   model.CabinetBin:
     properties:
       battery:
@@ -2159,6 +2165,10 @@ definitions:
     type: object
   model.SubscribeActiveInfo:
     properties:
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 所在城市
       enterprise:
         allOf:
         - $ref: '#/definitions/model.EnterpriseBasic'
@@ -2232,6 +2242,9 @@ definitions:
         - 2
         - 3
         - 4
+        type: integer
+      subscribeId:
+        description: 当前订阅ID
         type: integer
       voltage:
         description: 当前电池型号(电压)
@@ -2473,6 +2486,60 @@ paths:
       summary: E1003 打卡预检
       tags:
       - '[E]店员接口'
+  /employee/v1/business/continue:
+    post:
+      consumes:
+      - application/json
+      operationId: EmployeeBusinessContinue
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 寄存请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BusinessSubscribeID'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: E2005 结束寄存电池
+      tags:
+      - '[E]店员接口'
+  /employee/v1/business/pause:
+    post:
+      consumes:
+      - application/json
+      operationId: EmployeeBusinessPause
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 寄存请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BusinessSubscribeID'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: E2004 寄存电池
+      tags:
+      - '[E]店员接口'
   /employee/v1/business/rider:
     get:
       consumes:
@@ -2484,7 +2551,7 @@ paths:
         name: X-Employee-Token
         required: true
         type: string
-      - description: 骑手二维码, 最好把`https://rider.auroraride.com/`删除
+      - description: 骑手二维码
         in: query
         name: qrcode
         required: true

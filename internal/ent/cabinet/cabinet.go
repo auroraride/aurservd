@@ -25,6 +25,8 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
+	// FieldCityID holds the string denoting the city_id field in the database.
+	FieldCityID = "city_id"
 	// FieldBranchID holds the string denoting the branch_id field in the database.
 	FieldBranchID = "branch_id"
 	// FieldSn holds the string denoting the sn field in the database.
@@ -49,6 +51,8 @@ const (
 	FieldBatteryNum = "battery_num"
 	// FieldBatteryFullNum holds the string denoting the battery_full_num field in the database.
 	FieldBatteryFullNum = "battery_full_num"
+	// EdgeCity holds the string denoting the city edge name in mutations.
+	EdgeCity = "city"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
 	EdgeBranch = "branch"
 	// EdgeBms holds the string denoting the bms edge name in mutations.
@@ -59,6 +63,13 @@ const (
 	EdgeExchanges = "exchanges"
 	// Table holds the table name of the cabinet in the database.
 	Table = "cabinet"
+	// CityTable is the table that holds the city relation/edge.
+	CityTable = "cabinet"
+	// CityInverseTable is the table name for the City entity.
+	// It exists in this package in order to avoid circular dependency with the "city" package.
+	CityInverseTable = "city"
+	// CityColumn is the table column denoting the city relation/edge.
+	CityColumn = "city_id"
 	// BranchTable is the table that holds the branch relation/edge.
 	BranchTable = "cabinet"
 	// BranchInverseTable is the table name for the Branch entity.
@@ -96,6 +107,7 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
+	FieldCityID,
 	FieldBranchID,
 	FieldSn,
 	FieldBrand,

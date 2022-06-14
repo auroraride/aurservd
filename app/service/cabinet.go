@@ -16,7 +16,6 @@ import (
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
-    "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
@@ -68,7 +67,8 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
         SetBrand(req.Brand.Value()).
         SetHealth(model.CabinetHealthStatusOffline)
     if req.BranchID != nil {
-        q.SetBranchID(*req.BranchID)
+        b := NewBranch().Query(*req.BranchID)
+        q.SetBranchID(*req.BranchID).SetCityID(b.CityID)
     }
 
     // 查询设置电池型号
@@ -93,11 +93,7 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
 
 // List 查询电柜
 func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.PaginationRes) {
-    q := s.orm.QueryNotDeleted().WithBranch(
-        func(bq *ent.BranchQuery) {
-            bq.WithCity()
-        },
-    )
+    q := s.orm.QueryNotDeleted().WithCity()
     if req.Serial != nil {
         q.Where(cabinet.SerialContainsFold(*req.Serial))
     }
@@ -105,7 +101,7 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
         q.Where(cabinet.NameContainsFold(*req.Name))
     }
     if req.CityId != nil {
-        q.Where(cabinet.HasBranchWith(branch.CityID(*req.CityId)))
+        q.Where(cabinet.CityID(*req.CityId))
     }
     if req.Brand != nil {
         q.Where(cabinet.Brand(*req.Brand))
@@ -116,8 +112,8 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
 
     return model.ParsePaginationResponse[model.CabinetItem, ent.Cabinet](q, req.PaginationReq, func(item *ent.Cabinet) (res model.CabinetItem) {
         _ = copier.Copy(&res, item)
-        if item.Edges.Branch != nil {
-            city := item.Edges.Branch.Edges.City
+        city := item.Edges.City
+        if city != nil {
             res.City = &model.City{
                 ID:   city.ID,
                 Name: city.Name,
@@ -147,7 +143,8 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
         q.SetModels(bms)
     }
     if req.BranchID != nil {
-        q.SetBranchID(*req.BranchID)
+        b := NewBranch().Query(*req.BranchID)
+        q.SetBranchID(*req.BranchID).SetCityID(b.CityID)
     }
     if req.Status != nil {
         q.SetStatus(*req.Status)

@@ -10,8 +10,6 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
     "github.com/labstack/echo/v4"
-    "strconv"
-    "strings"
 )
 
 type business struct{}
@@ -26,11 +24,42 @@ var Business = new(business)
 // @Accept       json
 // @Produce      json
 // @Param        X-Employee-Token   header  string  true  "店员校验token"
-// @Param        qrcode query       string  true  "骑手二维码, 最好把`https://rider.auroraride.com/`删除"
+// @Param        qrcode query       string  true  "骑手二维码"
 // @Success      200    {object}    model.SubscribeBusiness  "业务详情返回"
 func (*business) Rider(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.QRQueryReq](c)
-    qr := strings.ReplaceAll(req.Qrcode, "https://rider.auroraride.com/", "")
-    id, _ := strconv.ParseUint(qr, 10, 64)
+    id := service.NewRider().ParseQrcode(req.Qrcode)
     return ctx.SendResponse(service.NewBusinessWithEmployee(ctx.Employee).Detail(id))
+}
+
+// Pause
+// @ID           EmployeeBusinessPause
+// @Router       /employee/v1/business/pause [POST]
+// @Summary      E2004 寄存电池
+// @Tags         [E]店员接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Employee-Token  header  string  true  "店员校验token"
+// @Param        body  body     model.BusinessSubscribeID  true  "寄存请求"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*business) Pause(c echo.Context) (err error) {
+    ctx, req := app.EmployeeContextAndBinding[model.BusinessSubscribeID](c)
+    service.NewRiderMgrWithEmployee(ctx.Employee).PauseSubscribe(req.SubscribeID)
+    return ctx.SendResponse()
+}
+
+// Continue
+// @ID           EmployeeBusinessContinue
+// @Router       /employee/v1/business/continue [POST]
+// @Summary      E2005 结束寄存电池
+// @Tags         [E]店员接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Employee-Token  header  string  true  "店员校验token"
+// @Param        body  body     model.BusinessSubscribeID  true  "寄存请求"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*business) Continue(c echo.Context) (err error) {
+    ctx, req := app.EmployeeContextAndBinding[model.BusinessSubscribeID](c)
+    service.NewRiderMgrWithEmployee(ctx.Employee).ContinueSubscribe(req.SubscribeID)
+    return ctx.SendResponse()
 }

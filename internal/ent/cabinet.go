@@ -12,6 +12,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
+	"github.com/auroraride/aurservd/internal/ent/city"
 )
 
 // Cabinet is the model entity for the Cabinet schema.
@@ -34,6 +35,9 @@ type Cabinet struct {
 	// Remark holds the value of the "remark" field.
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
+	// CityID holds the value of the "city_id" field.
+	// 城市ID
+	CityID uint64 `json:"city_id,omitempty"`
 	// BranchID holds the value of the "branch_id" field.
 	// 网点
 	BranchID uint64 `json:"branch_id,omitempty"`
@@ -77,6 +81,8 @@ type Cabinet struct {
 
 // CabinetEdges holds the relations/edges for other nodes in the graph.
 type CabinetEdges struct {
+	// City holds the value of the city edge.
+	City *City `json:"city,omitempty"`
 	// Branch holds the value of the branch edge.
 	Branch *Branch `json:"branch,omitempty"`
 	// Bms holds the value of the bms edge.
@@ -87,13 +93,27 @@ type CabinetEdges struct {
 	Exchanges []*Exchange `json:"exchanges,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
+}
+
+// CityOrErr returns the City value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CabinetEdges) CityOrErr() (*City, error) {
+	if e.loadedTypes[0] {
+		if e.City == nil {
+			// The edge city was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: city.Label}
+		}
+		return e.City, nil
+	}
+	return nil, &NotLoadedError{edge: "city"}
 }
 
 // BranchOrErr returns the Branch value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CabinetEdges) BranchOrErr() (*Branch, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		if e.Branch == nil {
 			// The edge branch was loaded in eager-loading,
 			// but was not found.
@@ -107,7 +127,7 @@ func (e CabinetEdges) BranchOrErr() (*Branch, error) {
 // BmsOrErr returns the Bms value or an error if the edge
 // was not loaded in eager-loading.
 func (e CabinetEdges) BmsOrErr() ([]*BatteryModel, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.Bms, nil
 	}
 	return nil, &NotLoadedError{edge: "bms"}
@@ -116,7 +136,7 @@ func (e CabinetEdges) BmsOrErr() ([]*BatteryModel, error) {
 // FaultsOrErr returns the Faults value or an error if the edge
 // was not loaded in eager-loading.
 func (e CabinetEdges) FaultsOrErr() ([]*CabinetFault, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		return e.Faults, nil
 	}
 	return nil, &NotLoadedError{edge: "faults"}
@@ -125,7 +145,7 @@ func (e CabinetEdges) FaultsOrErr() ([]*CabinetFault, error) {
 // ExchangesOrErr returns the Exchanges value or an error if the edge
 // was not loaded in eager-loading.
 func (e CabinetEdges) ExchangesOrErr() ([]*Exchange, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		return e.Exchanges, nil
 	}
 	return nil, &NotLoadedError{edge: "exchanges"}
@@ -138,7 +158,7 @@ func (*Cabinet) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case cabinet.FieldCreator, cabinet.FieldLastModifier, cabinet.FieldModels, cabinet.FieldBin:
 			values[i] = new([]byte)
-		case cabinet.FieldID, cabinet.FieldBranchID, cabinet.FieldDoors, cabinet.FieldStatus, cabinet.FieldHealth, cabinet.FieldBatteryNum, cabinet.FieldBatteryFullNum:
+		case cabinet.FieldID, cabinet.FieldCityID, cabinet.FieldBranchID, cabinet.FieldDoors, cabinet.FieldStatus, cabinet.FieldHealth, cabinet.FieldBatteryNum, cabinet.FieldBatteryFullNum:
 			values[i] = new(sql.NullInt64)
 		case cabinet.FieldRemark, cabinet.FieldSn, cabinet.FieldBrand, cabinet.FieldSerial, cabinet.FieldName:
 			values[i] = new(sql.NullString)
@@ -205,6 +225,12 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field remark", values[i])
 			} else if value.Valid {
 				c.Remark = value.String
+			}
+		case cabinet.FieldCityID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field city_id", values[i])
+			} else if value.Valid {
+				c.CityID = uint64(value.Int64)
 			}
 		case cabinet.FieldBranchID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -287,6 +313,11 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
+// QueryCity queries the "city" edge of the Cabinet entity.
+func (c *Cabinet) QueryCity() *CityQuery {
+	return (&CabinetClient{config: c.config}).QueryCity(c)
+}
+
 // QueryBranch queries the "branch" edge of the Cabinet entity.
 func (c *Cabinet) QueryBranch() *BranchQuery {
 	return (&CabinetClient{config: c.config}).QueryBranch(c)
@@ -344,6 +375,8 @@ func (c *Cabinet) String() string {
 	builder.WriteString(fmt.Sprintf("%v", c.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(c.Remark)
+	builder.WriteString(", city_id=")
+	builder.WriteString(fmt.Sprintf("%v", c.CityID))
 	builder.WriteString(", branch_id=")
 	builder.WriteString(fmt.Sprintf("%v", c.BranchID))
 	builder.WriteString(", sn=")

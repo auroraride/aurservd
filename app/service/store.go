@@ -11,7 +11,6 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
-    "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/jinzhu/copier"
@@ -64,6 +63,7 @@ func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
         SetName(*req.Name).
         SetStatus(req.Status).
         SetBranch(b).
+        SetCityID(b.CityID).
         SetSn(shortuuid.New()).
         SaveX(s.ctx)
     return s.Detail(item.ID)
@@ -80,7 +80,8 @@ func (s *storeService) Modify(req *model.StoreModifyReq) model.StoreItem {
         q.SetName(*req.Name)
     }
     if req.BranchID != nil {
-        q.SetBranchID(*req.BranchID)
+        b := NewBranch().Query(*req.BranchID)
+        q.SetBranchID(*req.BranchID).SetCityID(b.CityID)
     }
     q.SaveX(s.ctx)
     return s.Detail(item.ID)
@@ -91,15 +92,13 @@ func (s *storeService) Modify(req *model.StoreModifyReq) model.StoreItem {
 func (s *storeService) Detail(id uint64) model.StoreItem {
     item, err := s.orm.QueryNotDeleted().
         Where(store.ID(id)).
-        WithBranch(func(bq *ent.BranchQuery) {
-            bq.WithCity()
-        }).
         WithEmployee().
+        WithCity().
         Only(s.ctx)
     if err != nil {
         snag.Panic("未找到有效门店")
     }
-    city := item.Edges.Branch.Edges.City
+    city := item.Edges.City
     res := model.StoreItem{
         ID:     item.ID,
         Name:   item.Name,
@@ -129,11 +128,9 @@ func (s *storeService) Delete(req *model.IDParamReq) {
 
 // List 列举门店
 func (s *storeService) List(req *model.StoreListReq) *model.PaginationRes {
-    q := s.orm.QueryNotDeleted().WithBranch(func(bq *ent.BranchQuery) {
-        bq.WithCity()
-    })
+    q := s.orm.QueryNotDeleted().WithCity()
     if req.CityID != nil {
-        q.Where(store.HasBranchWith(branch.CityID(*req.CityID)))
+        q.Where(store.CityID(*req.CityID))
     }
     if req.Name != nil {
         q.Where(store.NameContainsFold(*req.Name))
@@ -144,12 +141,10 @@ func (s *storeService) List(req *model.StoreListReq) *model.PaginationRes {
 
     return model.ParsePaginationResponse[model.StoreItem, ent.Store](q, req.PaginationReq, func(item *ent.Store) (res model.StoreItem) {
         _ = copier.Copy(&res, item)
-        if item.Edges.Branch != nil {
-            city := item.Edges.Branch.Edges.City
-            res.City = model.City{
-                ID:   city.ID,
-                Name: city.Name,
-            }
+        city := item.Edges.City
+        res.City = model.City{
+            ID:   city.ID,
+            Name: city.Name,
         }
         res.QRCode = fmt.Sprintf("STORE:%s", item.Sn)
         return

@@ -935,6 +935,22 @@ func (c *CabinetClient) GetX(ctx context.Context, id uint64) *Cabinet {
 	return obj
 }
 
+// QueryCity queries the city edge of a Cabinet.
+func (c *CabinetClient) QueryCity(ca *Cabinet) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinet.Table, cabinet.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, cabinet.CityTable, cabinet.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryBranch queries the branch edge of a Cabinet.
 func (c *CabinetClient) QueryBranch(ca *Cabinet) *BranchQuery {
 	query := &BranchQuery{config: c.config}
@@ -3945,6 +3961,22 @@ func (c *StoreClient) GetX(ctx context.Context, id uint64) *Store {
 	return obj
 }
 
+// QueryCity queries the city edge of a Store.
+func (c *StoreClient) QueryCity(s *Store) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, store.CityTable, store.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryBranch queries the branch edge of a Store.
 func (c *StoreClient) QueryBranch(s *Store) *BranchQuery {
 	query := &BranchQuery{config: c.config}
@@ -4563,6 +4595,22 @@ func (c *SubscribePauseClient) QuerySubscribe(sp *SubscribePause) *SubscribeQuer
 			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
 			sqlgraph.To(subscribe.Table, subscribe.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, subscribepause.SubscribeTable, subscribepause.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(sp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryContinueEmployee queries the continue_employee edge of a SubscribePause.
+func (c *SubscribePauseClient) QueryContinueEmployee(sp *SubscribePause) *EmployeeQuery {
+	query := &EmployeeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribepause.Table, subscribepause.FieldID, id),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, subscribepause.ContinueEmployeeTable, subscribepause.ContinueEmployeeColumn),
 		)
 		fromV = sqlgraph.Neighbors(sp.driver.Dialect(), step)
 		return fromV, nil

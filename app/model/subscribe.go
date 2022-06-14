@@ -81,6 +81,7 @@ type SubscribeActiveInfo struct {
     Voltage      float64             `json:"voltage"`                // 电池电压型号
     EnterpriseID *uint64             `json:"enterpriseId,omitempty"` // 企业ID, 团签用户判定依据, 非团签用户此字段不存在
     Rider        RiderBasic          `json:"rider"`                  // 骑手详情
+    City         City                `json:"city"`                   // 所在城市
     Plan         *Plan               `json:"plan,omitempty"`         // 套餐详情, 团签骑手此字段不存在
     Order        *SubscribeOrderInfo `json:"order,omitempty"`        // 订单详情, 团签骑手此字段不存在
     Enterprise   *EnterpriseBasic    `json:"enterprise,omitempty"`   // 企业详情, 个签用户此字段不存在
@@ -91,6 +92,7 @@ type SubscribeActiveInfo struct {
 // SubscribeBusiness 骑手订阅业务详情
 type SubscribeBusiness struct {
     ID             uint64  `json:"id"`                       // 骑手ID
+    SubscribeID    uint64  `json:"subscribeId"`              // 当前订阅ID
     Business       bool    `json:"business"`                 // 是否可办理业务
     Status         uint8   `json:"status" enums:"0,1,2,3,4"` // 状态 0未激活 1计费中 2寄存中 3已逾期 4已退订 5已取消
     Name           string  `json:"name"`                     // 骑手姓名

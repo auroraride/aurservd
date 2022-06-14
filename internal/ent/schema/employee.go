@@ -15,7 +15,8 @@ import (
 
 type EmployeeMixin struct {
     mixin.Schema
-    Optional bool
+    Optional  bool
+    Immutable bool
 }
 
 func (m EmployeeMixin) Fields() []ent.Field {

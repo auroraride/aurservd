@@ -28,6 +28,7 @@ func (SubscribePause) Fields() []ent.Field {
         field.Time("start_at").Comment("暂停开始时间"),
         field.Time("end_at").Optional().Comment("暂停结束时间"),
         field.Int("days").Optional().Comment("暂停天数"),
+        field.Uint64("continue_employee_id").Optional().Nillable().Comment("结束寄存店员ID"),
     }
 }
 
@@ -35,6 +36,7 @@ func (SubscribePause) Fields() []ent.Field {
 func (SubscribePause) Edges() []ent.Edge {
     return []ent.Edge{
         edge.From("subscribe", Subscribe.Type).Ref("pauses").Required().Unique().Field("subscribe_id").Comment("订阅"),
+        edge.To("continue_employee", Employee.Type).Unique().Field("continue_employee_id"),
     }
 }
 

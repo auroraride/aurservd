@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 )
 
@@ -91,6 +92,20 @@ func (cc *CabinetCreate) SetRemark(s string) *CabinetCreate {
 func (cc *CabinetCreate) SetNillableRemark(s *string) *CabinetCreate {
 	if s != nil {
 		cc.SetRemark(*s)
+	}
+	return cc
+}
+
+// SetCityID sets the "city_id" field.
+func (cc *CabinetCreate) SetCityID(u uint64) *CabinetCreate {
+	cc.mutation.SetCityID(u)
+	return cc
+}
+
+// SetNillableCityID sets the "city_id" field if the given value is not nil.
+func (cc *CabinetCreate) SetNillableCityID(u *uint64) *CabinetCreate {
+	if u != nil {
+		cc.SetCityID(*u)
 	}
 	return cc
 }
@@ -197,6 +212,11 @@ func (cc *CabinetCreate) SetNillableBatteryFullNum(u *uint) *CabinetCreate {
 		cc.SetBatteryFullNum(*u)
 	}
 	return cc
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (cc *CabinetCreate) SetCity(c *City) *CabinetCreate {
+	return cc.SetCityID(c.ID)
 }
 
 // SetBranch sets the "branch" edge to the Branch entity.
@@ -559,6 +579,26 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 		})
 		_node.BatteryFullNum = value
 	}
+	if nodes := cc.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   cabinet.CityTable,
+			Columns: []string{cabinet.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CityID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := cc.mutation.BranchIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -783,6 +823,24 @@ func (u *CabinetUpsert) UpdateRemark() *CabinetUpsert {
 // ClearRemark clears the value of the "remark" field.
 func (u *CabinetUpsert) ClearRemark() *CabinetUpsert {
 	u.SetNull(cabinet.FieldRemark)
+	return u
+}
+
+// SetCityID sets the "city_id" field.
+func (u *CabinetUpsert) SetCityID(v uint64) *CabinetUpsert {
+	u.Set(cabinet.FieldCityID, v)
+	return u
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateCityID() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldCityID)
+	return u
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *CabinetUpsert) ClearCityID() *CabinetUpsert {
+	u.SetNull(cabinet.FieldCityID)
 	return u
 }
 
@@ -1131,6 +1189,27 @@ func (u *CabinetUpsertOne) UpdateRemark() *CabinetUpsertOne {
 func (u *CabinetUpsertOne) ClearRemark() *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetCityID sets the "city_id" field.
+func (u *CabinetUpsertOne) SetCityID(v uint64) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateCityID() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateCityID()
+	})
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *CabinetUpsertOne) ClearCityID() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.ClearCityID()
 	})
 }
 
@@ -1674,6 +1753,27 @@ func (u *CabinetUpsertBulk) UpdateRemark() *CabinetUpsertBulk {
 func (u *CabinetUpsertBulk) ClearRemark() *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetCityID sets the "city_id" field.
+func (u *CabinetUpsertBulk) SetCityID(v uint64) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateCityID() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateCityID()
+	})
+}
+
+// ClearCityID clears the value of the "city_id" field.
+func (u *CabinetUpsertBulk) ClearCityID() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.ClearCityID()
 	})
 }
 

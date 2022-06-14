@@ -25,6 +25,8 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
+	// FieldCityID holds the string denoting the city_id field in the database.
+	FieldCityID = "city_id"
 	// FieldEmployeeID holds the string denoting the employee_id field in the database.
 	FieldEmployeeID = "employee_id"
 	// FieldBranchID holds the string denoting the branch_id field in the database.
@@ -35,6 +37,8 @@ const (
 	FieldName = "name"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// EdgeCity holds the string denoting the city edge name in mutations.
+	EdgeCity = "city"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
 	EdgeBranch = "branch"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -45,6 +49,13 @@ const (
 	EdgeAttendances = "attendances"
 	// Table holds the table name of the store in the database.
 	Table = "store"
+	// CityTable is the table that holds the city relation/edge.
+	CityTable = "store"
+	// CityInverseTable is the table name for the City entity.
+	// It exists in this package in order to avoid circular dependency with the "city" package.
+	CityInverseTable = "city"
+	// CityColumn is the table column denoting the city relation/edge.
+	CityColumn = "city_id"
 	// BranchTable is the table that holds the branch relation/edge.
 	BranchTable = "store"
 	// BranchInverseTable is the table name for the Branch entity.
@@ -84,6 +95,7 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
+	FieldCityID,
 	FieldEmployeeID,
 	FieldBranchID,
 	FieldSn,

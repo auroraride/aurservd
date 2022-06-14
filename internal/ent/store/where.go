@@ -121,6 +121,13 @@ func Remark(v string) predicate.Store {
 	})
 }
 
+// CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
+func CityID(v uint64) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCityID), v))
+	})
+}
+
 // EmployeeID applies equality check predicate on the "employee_id" field. It's identical to EmployeeIDEQ.
 func EmployeeID(v uint64) predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
@@ -551,6 +558,68 @@ func RemarkContainsFold(v string) predicate.Store {
 	})
 }
 
+// CityIDEQ applies the EQ predicate on the "city_id" field.
+func CityIDEQ(v uint64) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCityID), v))
+	})
+}
+
+// CityIDNEQ applies the NEQ predicate on the "city_id" field.
+func CityIDNEQ(v uint64) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldCityID), v))
+	})
+}
+
+// CityIDIn applies the In predicate on the "city_id" field.
+func CityIDIn(vs ...uint64) predicate.Store {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Store(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldCityID), v...))
+	})
+}
+
+// CityIDNotIn applies the NotIn predicate on the "city_id" field.
+func CityIDNotIn(vs ...uint64) predicate.Store {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Store(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldCityID), v...))
+	})
+}
+
+// CityIDIsNil applies the IsNil predicate on the "city_id" field.
+func CityIDIsNil() predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldCityID)))
+	})
+}
+
+// CityIDNotNil applies the NotNil predicate on the "city_id" field.
+func CityIDNotNil() predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldCityID)))
+	})
+}
+
 // EmployeeIDEQ applies the EQ predicate on the "employee_id" field.
 func EmployeeIDEQ(v uint64) predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
@@ -956,6 +1025,34 @@ func StatusLT(v uint8) predicate.Store {
 func StatusLTE(v uint8) predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldStatus), v))
+	})
+}
+
+// HasCity applies the HasEdge predicate on the "city" edge.
+func HasCity() predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CityTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCityWith applies the HasEdge predicate on the "city" edge with a given conditions (other predicates).
+func HasCityWith(preds ...predicate.City) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CityInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

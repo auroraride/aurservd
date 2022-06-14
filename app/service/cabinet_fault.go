@@ -50,23 +50,20 @@ func (s *cabinetFaultService) Query(id uint64) *ent.CabinetFault {
 func (s *cabinetFaultService) Report(rider *ent.Rider, req *model.CabinetFaultReportReq) bool {
     // 获取电柜信息
     ca, _ := ar.Ent.Cabinet.QueryNotDeleted().
-        Where(cabinet.ID(req.CabinetID)).
-        WithBranch(func(bq *ent.BranchQuery) {
-            bq.WithCity()
-        }).
+        Where(
+            cabinet.ID(req.CabinetID),
+            cabinet.Status(model.CabinetStatusNormal),
+        ).
+        WithCity().
         Only(s.ctx)
     if ca == nil {
-        snag.Panic("未找到电柜")
-    }
-    if ca.Edges.Branch == nil || ca.Edges.Branch.Edges.City == nil {
-        snag.Panic("电柜未投放, 无法上报")
+        snag.Panic("未找到运营中的电柜")
     }
     attachments := make([]string, 0)
     if len(req.Attachments) > 0 {
         attachments = req.Attachments
     }
-    branch := ca.Edges.Branch
-    city := branch.Edges.City
+    city := ca.Edges.City
     s.orm.Create().
         // SetBrand(ca.Brand).
         // SetCity(model.City{
@@ -74,7 +71,7 @@ func (s *cabinetFaultService) Report(rider *ent.Rider, req *model.CabinetFaultRe
         //     Name: city.Name,
         // }).
         SetCabinetID(ca.ID).
-        SetBranchID(branch.ID).
+        SetBranchID(ca.BranchID).
         SetRiderID(rider.ID).
         SetCityID(city.ID).
         // SetCabinetName(ca.Name).

@@ -77,7 +77,10 @@ func (s *employeeSubscribeService) Inactive(qr string) *model.SubscribeActiveInf
             rq.WithPerson()
         }).
         WithEnterprise().
+        WithCity().
         Only(s.ctx)
+
+    NewBusinessWithEmployee(s.employee).CheckCity(sub.CityID)
 
     if sub == nil {
         snag.Panic("未找到待激活骑士卡")
@@ -102,6 +105,10 @@ func (s *employeeSubscribeService) Inactive(qr string) *model.SubscribeActiveInf
             ID:    r.ID,
             Phone: r.Phone,
             Name:  p.Name,
+        },
+        City: model.City{
+            ID:   sub.Edges.City.ID,
+            Name: sub.Edges.City.Name,
         },
     }
 
@@ -138,6 +145,7 @@ func (s *employeeSubscribeService) Inactive(qr string) *model.SubscribeActiveInf
 // Active 激活订单
 func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
     info := s.Inactive(req.Qrcode)
+    NewBusinessWithEmployee(s.employee).CheckCity(info.City.ID)
 
     tx, _ := ar.Ent.Tx(s.ctx)
 
@@ -163,7 +171,7 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
     }
 
     // 调出库存
-    err = NewStockWithEmployee(s.employee).BatteryOutboundWithRider(
+    err = NewStockWithEmployee(s.employee).BatteryWithRider(
         tx.Stock.Create(),
         &model.StockWithRiderReq{
             RiderID:    info.Rider.ID,

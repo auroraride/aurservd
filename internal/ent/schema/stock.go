@@ -76,15 +76,8 @@ func (Stock) Hooks() []ent.Hook {
                 n, _ := m.Num()
                 _, sok := m.StoreID()
                 if t, ok := m.GetType(); ok {
-                    switch t {
-                    case model.StockTypeRiderObtain:
-                        if !sok || n != -1 {
-                            snag.Panic("电池入库数量错误")
-                        }
-                    case model.StockTypeRiderUnSubscribe, model.StockTypeRiderPause:
-                        if !sok || n != 1 {
-                            snag.Panic("电池入库数量错误")
-                        }
+                    if !sok || n != model.StockNumberOfRiderBusiness(t) {
+                        snag.Panic("电池数量错误")
                     }
                 }
                 return next.Mutate(ctx, m)

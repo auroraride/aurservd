@@ -171,6 +171,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			cabinet.FieldCreator:        {Type: field.TypeJSON, Column: cabinet.FieldCreator},
 			cabinet.FieldLastModifier:   {Type: field.TypeJSON, Column: cabinet.FieldLastModifier},
 			cabinet.FieldRemark:         {Type: field.TypeString, Column: cabinet.FieldRemark},
+			cabinet.FieldCityID:         {Type: field.TypeUint64, Column: cabinet.FieldCityID},
 			cabinet.FieldBranchID:       {Type: field.TypeUint64, Column: cabinet.FieldBranchID},
 			cabinet.FieldSn:             {Type: field.TypeString, Column: cabinet.FieldSn},
 			cabinet.FieldBrand:          {Type: field.TypeString, Column: cabinet.FieldBrand},
@@ -741,6 +742,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			store.FieldCreator:      {Type: field.TypeJSON, Column: store.FieldCreator},
 			store.FieldLastModifier: {Type: field.TypeJSON, Column: store.FieldLastModifier},
 			store.FieldRemark:       {Type: field.TypeString, Column: store.FieldRemark},
+			store.FieldCityID:       {Type: field.TypeUint64, Column: store.FieldCityID},
 			store.FieldEmployeeID:   {Type: field.TypeUint64, Column: store.FieldEmployeeID},
 			store.FieldBranchID:     {Type: field.TypeUint64, Column: store.FieldBranchID},
 			store.FieldSn:           {Type: field.TypeString, Column: store.FieldSn},
@@ -823,18 +825,19 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "SubscribePause",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			subscribepause.FieldCreatedAt:    {Type: field.TypeTime, Column: subscribepause.FieldCreatedAt},
-			subscribepause.FieldUpdatedAt:    {Type: field.TypeTime, Column: subscribepause.FieldUpdatedAt},
-			subscribepause.FieldDeletedAt:    {Type: field.TypeTime, Column: subscribepause.FieldDeletedAt},
-			subscribepause.FieldCreator:      {Type: field.TypeJSON, Column: subscribepause.FieldCreator},
-			subscribepause.FieldLastModifier: {Type: field.TypeJSON, Column: subscribepause.FieldLastModifier},
-			subscribepause.FieldRemark:       {Type: field.TypeString, Column: subscribepause.FieldRemark},
-			subscribepause.FieldRiderID:      {Type: field.TypeUint64, Column: subscribepause.FieldRiderID},
-			subscribepause.FieldEmployeeID:   {Type: field.TypeUint64, Column: subscribepause.FieldEmployeeID},
-			subscribepause.FieldSubscribeID:  {Type: field.TypeUint64, Column: subscribepause.FieldSubscribeID},
-			subscribepause.FieldStartAt:      {Type: field.TypeTime, Column: subscribepause.FieldStartAt},
-			subscribepause.FieldEndAt:        {Type: field.TypeTime, Column: subscribepause.FieldEndAt},
-			subscribepause.FieldDays:         {Type: field.TypeInt, Column: subscribepause.FieldDays},
+			subscribepause.FieldCreatedAt:          {Type: field.TypeTime, Column: subscribepause.FieldCreatedAt},
+			subscribepause.FieldUpdatedAt:          {Type: field.TypeTime, Column: subscribepause.FieldUpdatedAt},
+			subscribepause.FieldDeletedAt:          {Type: field.TypeTime, Column: subscribepause.FieldDeletedAt},
+			subscribepause.FieldCreator:            {Type: field.TypeJSON, Column: subscribepause.FieldCreator},
+			subscribepause.FieldLastModifier:       {Type: field.TypeJSON, Column: subscribepause.FieldLastModifier},
+			subscribepause.FieldRemark:             {Type: field.TypeString, Column: subscribepause.FieldRemark},
+			subscribepause.FieldRiderID:            {Type: field.TypeUint64, Column: subscribepause.FieldRiderID},
+			subscribepause.FieldEmployeeID:         {Type: field.TypeUint64, Column: subscribepause.FieldEmployeeID},
+			subscribepause.FieldSubscribeID:        {Type: field.TypeUint64, Column: subscribepause.FieldSubscribeID},
+			subscribepause.FieldStartAt:            {Type: field.TypeTime, Column: subscribepause.FieldStartAt},
+			subscribepause.FieldEndAt:              {Type: field.TypeTime, Column: subscribepause.FieldEndAt},
+			subscribepause.FieldDays:               {Type: field.TypeInt, Column: subscribepause.FieldDays},
+			subscribepause.FieldContinueEmployeeID: {Type: field.TypeUint64, Column: subscribepause.FieldContinueEmployeeID},
 		},
 	}
 	graph.MustAddE(
@@ -956,6 +959,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"BranchContract",
 		"Branch",
+	)
+	graph.MustAddE(
+		"city",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   cabinet.CityTable,
+			Columns: []string{cabinet.CityColumn},
+			Bidi:    false,
+		},
+		"Cabinet",
+		"City",
 	)
 	graph.MustAddE(
 		"branch",
@@ -1714,6 +1729,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Employee",
 	)
 	graph.MustAddE(
+		"city",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   store.CityTable,
+			Columns: []string{store.CityColumn},
+			Bidi:    false,
+		},
+		"Store",
+		"City",
+	)
+	graph.MustAddE(
 		"branch",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1976,6 +2003,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"SubscribePause",
 		"Subscribe",
+	)
+	graph.MustAddE(
+		"continue_employee",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   subscribepause.ContinueEmployeeTable,
+			Columns: []string{subscribepause.ContinueEmployeeColumn},
+			Bidi:    false,
+		},
+		"SubscribePause",
+		"Employee",
 	)
 	return graph
 }()
@@ -2646,6 +2685,11 @@ func (f *CabinetFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(cabinet.FieldRemark))
 }
 
+// WhereCityID applies the entql uint64 predicate on the city_id field.
+func (f *CabinetFilter) WhereCityID(p entql.Uint64P) {
+	f.Where(p.Field(cabinet.FieldCityID))
+}
+
 // WhereBranchID applies the entql uint64 predicate on the branch_id field.
 func (f *CabinetFilter) WhereBranchID(p entql.Uint64P) {
 	f.Where(p.Field(cabinet.FieldBranchID))
@@ -2704,6 +2748,20 @@ func (f *CabinetFilter) WhereBatteryNum(p entql.UintP) {
 // WhereBatteryFullNum applies the entql uint predicate on the battery_full_num field.
 func (f *CabinetFilter) WhereBatteryFullNum(p entql.UintP) {
 	f.Where(p.Field(cabinet.FieldBatteryFullNum))
+}
+
+// WhereHasCity applies a predicate to check if query has an edge city.
+func (f *CabinetFilter) WhereHasCity() {
+	f.Where(entql.HasEdge("city"))
+}
+
+// WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
+func (f *CabinetFilter) WhereHasCityWith(preds ...predicate.City) {
+	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // WhereHasBranch applies a predicate to check if query has an edge branch.
@@ -5828,6 +5886,11 @@ func (f *StoreFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(store.FieldRemark))
 }
 
+// WhereCityID applies the entql uint64 predicate on the city_id field.
+func (f *StoreFilter) WhereCityID(p entql.Uint64P) {
+	f.Where(p.Field(store.FieldCityID))
+}
+
 // WhereEmployeeID applies the entql uint64 predicate on the employee_id field.
 func (f *StoreFilter) WhereEmployeeID(p entql.Uint64P) {
 	f.Where(p.Field(store.FieldEmployeeID))
@@ -5851,6 +5914,20 @@ func (f *StoreFilter) WhereName(p entql.StringP) {
 // WhereStatus applies the entql uint8 predicate on the status field.
 func (f *StoreFilter) WhereStatus(p entql.Uint8P) {
 	f.Where(p.Field(store.FieldStatus))
+}
+
+// WhereHasCity applies a predicate to check if query has an edge city.
+func (f *StoreFilter) WhereHasCity() {
+	f.Where(entql.HasEdge("city"))
+}
+
+// WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
+func (f *StoreFilter) WhereHasCityWith(preds ...predicate.City) {
+	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // WhereHasBranch applies a predicate to check if query has an edge branch.
@@ -6489,6 +6566,11 @@ func (f *SubscribePauseFilter) WhereDays(p entql.IntP) {
 	f.Where(p.Field(subscribepause.FieldDays))
 }
 
+// WhereContinueEmployeeID applies the entql uint64 predicate on the continue_employee_id field.
+func (f *SubscribePauseFilter) WhereContinueEmployeeID(p entql.Uint64P) {
+	f.Where(p.Field(subscribepause.FieldContinueEmployeeID))
+}
+
 // WhereHasRider applies a predicate to check if query has an edge rider.
 func (f *SubscribePauseFilter) WhereHasRider() {
 	f.Where(entql.HasEdge("rider"))
@@ -6525,6 +6607,20 @@ func (f *SubscribePauseFilter) WhereHasSubscribe() {
 // WhereHasSubscribeWith applies a predicate to check if query has an edge subscribe with a given conditions (other predicates).
 func (f *SubscribePauseFilter) WhereHasSubscribeWith(preds ...predicate.Subscribe) {
 	f.Where(entql.HasEdgeWith("subscribe", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasContinueEmployee applies a predicate to check if query has an edge continue_employee.
+func (f *SubscribePauseFilter) WhereHasContinueEmployee() {
+	f.Where(entql.HasEdge("continue_employee"))
+}
+
+// WhereHasContinueEmployeeWith applies a predicate to check if query has an edge continue_employee with a given conditions (other predicates).
+func (f *SubscribePauseFilter) WhereHasContinueEmployeeWith(preds ...predicate.Employee) {
+	f.Where(entql.HasEdgeWith("continue_employee", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

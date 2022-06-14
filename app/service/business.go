@@ -46,6 +46,13 @@ func NewBusinessWithEmployee(e *ent.Employee) *businessService {
     return s
 }
 
+// CheckCity 检查城市
+func (s *businessService) CheckCity(cityID uint64) {
+    if s.employee.Edges.Store.CityID != cityID {
+        snag.Panic("不能跨城市操作")
+    }
+}
+
 // Detail 获取骑手订阅业务详情
 func (s *businessService) Detail(id uint64) (res model.SubscribeBusiness) {
     r, err := NewRider().QueryForBusiness(id)
@@ -55,6 +62,8 @@ func (s *businessService) Detail(id uint64) (res model.SubscribeBusiness) {
     // 获取最近的订阅
     sub := NewSubscribe().RecentDetail(r.ID)
 
+    s.CheckCity(sub.City.ID)
+
     ic := r.Edges.Person.IDCardNumber
     res = model.SubscribeBusiness{
         ID:           r.ID,
@@ -63,6 +72,7 @@ func (s *businessService) Detail(id uint64) (res model.SubscribeBusiness) {
         Phone:        r.Phone,
         IDCardNumber: ic[len(ic)-4:],
         Voltage:      sub.Voltage,
+        SubscribeID:  sub.ID,
     }
 
     if sub.Enterprise != nil {

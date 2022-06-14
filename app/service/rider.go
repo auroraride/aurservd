@@ -7,6 +7,7 @@ package service
 
 import (
     "context"
+    "encoding/base64"
     "errors"
     "fmt"
     "github.com/auroraride/aurservd/app"
@@ -569,6 +570,18 @@ func (s *riderService) Deposit(riderID uint64) float64 {
     return f
 }
 
+func (s *riderService) GetQrcode(id uint64) string {
+    b, _ := tools.NewAESCrypto().Encrypt([]byte(fmt.Sprintf("%d", id)))
+    return b
+}
+
+func (s *riderService) ParseQrcode(qrcode string) uint64 {
+    b, _ := base64.StdEncoding.DecodeString(qrcode)
+    str, _ := tools.NewAESCrypto().Decrypt(b)
+    id, _ := strconv.ParseUint(str, 10, 64)
+    return id
+}
+
 // Profile 获取用户资料
 func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string) *model.RiderSigninRes {
     sub := NewSubscribe().RecentDetail(u.ID)
@@ -579,7 +592,7 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string)
         IsContactFilled: u.Contact != nil,
         IsAuthed:        s.IsAuthed(u),
         Contact:         u.Contact,
-        Qrcode:          fmt.Sprintf("https://rider.auroraride.com/%d", u.ID),
+        Qrcode:          s.GetQrcode(u.ID),
         Token:           token,
         Subscribe:       sub,
     }
