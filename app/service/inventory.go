@@ -18,7 +18,7 @@ type inventoryService struct {
     ctx      context.Context
     modifier *model.Modifier
     rider    *ent.Rider
-    employee *model.Employee
+    employee *ent.Employee
     orm      *ent.InventoryClient
 }
 
@@ -43,7 +43,7 @@ func NewInventoryWithModifier(m *model.Modifier) *inventoryService {
     return s
 }
 
-func NewInventoryWithEmployee(e *model.Employee) *inventoryService {
+func NewInventoryWithEmployee(e *ent.Employee) *inventoryService {
     s := NewInventory()
     s.ctx = context.WithValue(s.ctx, "employee", e)
     s.employee = e

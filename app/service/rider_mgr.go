@@ -26,7 +26,7 @@ type riderMgrService struct {
     ctx      context.Context
     modifier *model.Modifier
     rider    *ent.Rider
-    employee *model.Employee
+    employee *ent.Employee
 }
 
 func NewRiderMgr() *riderMgrService {
@@ -49,7 +49,7 @@ func NewRiderMgrWithModifier(m *model.Modifier) *riderMgrService {
     return s
 }
 
-func NewRiderMgrWithEmployee(e *model.Employee) *riderMgrService {
+func NewRiderMgrWithEmployee(e *ent.Employee) *riderMgrService {
     s := NewRiderMgr()
     s.ctx = context.WithValue(s.ctx, "employee", e)
     s.employee = e
@@ -65,38 +65,86 @@ func (s *riderMgrService) QuerySubscribeWithRider(subscribeID uint64) *ent.Subsc
 }
 
 // PauseSubscribe 暂停计费
+// TODO 后台操作出入库怎么处理
 func (s *riderMgrService) PauseSubscribe(subscribeID uint64) {
+    if s.employee == nil && s.modifier == nil {
+        snag.Panic("操作权限校验失败")
+    }
+
     sub := s.QuerySubscribeWithRider(subscribeID)
+
     if sub == nil || sub.Status != model.SubscribeStatusUsing {
         snag.Panic("无生效订阅")
     }
     if sub.EnterpriseID != nil {
         snag.Panic("团签用户无法办理")
     }
+
+    var stockReq *model.StockWithRiderReq
+
     tx, _ := ar.Ent.Tx(s.ctx)
-    _, err := tx.SubscribePause.Create().
+
+    spc := tx.SubscribePause.Create().
         SetStartAt(time.Now()).
-        SetRemark("管理员操作").
         SetRiderID(sub.RiderID).
-        SetSubscribeID(sub.ID).
-        Save(s.ctx)
+        SetSubscribeID(sub.ID)
+
+    su := tx.Subscribe.UpdateOne(sub).
+        SetPausedAt(time.Now()).
+        SetStatus(model.SubscribeStatusPaused)
+
+    if s.modifier != nil {
+        spc.SetRemark("管理员操作")
+        su.SetRemark("管理员操作")
+        stockReq = &model.StockWithRiderReq{
+            RiderID:   sub.RiderID,
+            ManagerID: s.modifier.ID,
+            Voltage:   sub.Voltage,
+            StockType: model.StockTypeRiderPause,
+        }
+    }
+    if s.employee != nil {
+        spc.SetRemark("店员操作").SetEmployee(s.employee)
+        su.SetRemark("店员操作").SetEmployee(s.employee)
+        stockReq = &model.StockWithRiderReq{
+            RiderID:    sub.RiderID,
+            StoreID:    s.employee.Edges.Store.ID,
+            EmployeeID: s.employee.ID,
+            Voltage:    sub.Voltage,
+            StockType:  model.StockTypeRiderPause,
+        }
+    }
+
+    _, err := spc.Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
 
-    _, err = tx.Subscribe.UpdateOne(sub).
-        SetPausedAt(time.Now()).
-        SetStatus(model.SubscribeStatusPaused).
-        Save(s.ctx)
+    _, err = su.Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
+
+    // 电池入库
+    snag.PanicIfErrorX(NewStockWithEmployee(s.employee).BatteryOutboundWithRider(
+        tx.Stock.Create(),
+        stockReq,
+    ), tx.Rollback)
 
     _ = tx.Commit()
 
     // 记录日志
-    go logging.NewOperateLog().
+    lg := logging.NewOperateLog().
         SetRef(sub.Edges.Rider).
-        SetModifier(s.modifier).
         SetOperate(model.OperateSubscribePause).
-        SetDiff("计费中", "暂停计费").
-        Send()
+        SetDiff("计费中", "暂停计费")
+    if s.employee != nil {
+        lg.SetEmployee(&model.Employee{
+            ID:    s.employee.ID,
+            Name:  s.employee.Name,
+            Phone: s.employee.Phone,
+        })
+    } else {
+        lg.SetModifier(s.modifier)
+    }
+
+    go lg.Send()
 }
 
 // ContinueSubscribe 继续计费

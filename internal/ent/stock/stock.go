@@ -25,6 +25,8 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
+	// FieldManagerID holds the string denoting the manager_id field in the database.
+	FieldManagerID = "manager_id"
 	// FieldSn holds the string denoting the sn field in the database.
 	FieldSn = "sn"
 	// FieldType holds the string denoting the type field in the database.
@@ -41,6 +43,8 @@ const (
 	FieldVoltage = "voltage"
 	// FieldNum holds the string denoting the num field in the database.
 	FieldNum = "num"
+	// EdgeManager holds the string denoting the manager edge name in mutations.
+	EdgeManager = "manager"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
@@ -49,6 +53,13 @@ const (
 	EdgeEmployee = "employee"
 	// Table holds the table name of the stock in the database.
 	Table = "stock"
+	// ManagerTable is the table that holds the manager relation/edge.
+	ManagerTable = "stock"
+	// ManagerInverseTable is the table name for the Manager entity.
+	// It exists in this package in order to avoid circular dependency with the "manager" package.
+	ManagerInverseTable = "manager"
+	// ManagerColumn is the table column denoting the manager relation/edge.
+	ManagerColumn = "manager_id"
 	// StoreTable is the table that holds the store relation/edge.
 	StoreTable = "stock"
 	// StoreInverseTable is the table name for the Store entity.
@@ -81,6 +92,7 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
+	FieldManagerID,
 	FieldSn,
 	FieldType,
 	FieldStoreID,

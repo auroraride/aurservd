@@ -2483,6 +2483,31 @@ paths:
       tags:
       - '[E]店员接口'
   /employee/v1/subscribe/active:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeSubscribeInactive
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 二维码详情, 可带`SUBSCRIBE:`, 也可不带
+        in: query
+        name: qrcode
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.SubscribeActiveInfo'
+      summary: E2001 骑士卡详情
+      tags:
+      - '[E]店员接口'
     post:
       consumes:
       - application/json
@@ -2507,32 +2532,6 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: E2002 激活骑士卡
-      tags:
-      - '[E]店员接口'
-  /employee/v1/subscribe/detail:
-    get:
-      consumes:
-      - application/json
-      operationId: EmployeeSubscribeDetail
-      parameters:
-      - description: 店员校验token
-        in: header
-        name: X-Employee-Token
-        required: true
-        type: string
-      - description: 二维码详情, 可带`SUBSCRIBE:`, 也可不带
-        in: query
-        name: qrcode
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.SubscribeActiveInfo'
-      summary: E2001 待激活骑士卡详情
       tags:
       - '[E]店员接口'
   /manager/v1/{id}/contract:

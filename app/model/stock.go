@@ -52,3 +52,12 @@ type StockOverview struct {
     Inbound   int `json:"inbound"`   // 电池库存数
     Exception int `json:"exception"` // 电池异常数
 }
+
+type StockWithRiderReq struct {
+    RiderID    uint64  `json:"riderId"`    // 骑手ID
+    StoreID    uint64  `json:"storeId"`    // 门店ID
+    EmployeeID uint64  `json:"employeeId"` // 店员ID
+    ManagerID  uint64  `json:"managerId"`  // 管理员ID
+    Voltage    float64 `json:"voltage"`    // 电压型号
+    StockType  uint8   `json:"stockType"`  // 出入库类型
+}

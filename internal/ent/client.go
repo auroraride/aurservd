@@ -3790,6 +3790,22 @@ func (c *StockClient) GetX(ctx context.Context, id uint64) *Stock {
 	return obj
 }
 
+// QueryManager queries the manager edge of a Stock.
+func (c *StockClient) QueryManager(s *Stock) *ManagerQuery {
+	query := &ManagerQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, id),
+			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, stock.ManagerTable, stock.ManagerColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryStore queries the store edge of a Stock.
 func (c *StockClient) QueryStore(s *Stock) *StoreQuery {
 	query := &StoreQuery{config: c.config}

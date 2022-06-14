@@ -309,11 +309,11 @@ GROUP BY outbound, inbound, plaform`)
 }
 
 // BatteryOutboundWithRider 和骑手交互电池出入库
-func (s *stockService) BatteryOutboundWithRider(cr *ent.StockCreate, riderID, storeID, employeeID uint64, voltage float64, stockType uint8) error {
-    name := NewBattery().VoltageName(voltage)
+func (s *stockService) BatteryOutboundWithRider(cr *ent.StockCreate, req *model.StockWithRiderReq) error {
+    name := NewBattery().VoltageName(req.Voltage)
 
     var num int
-    switch stockType {
+    switch req.StockType {
     case model.StockTypeRiderObtain:
         num = -1
         break
@@ -322,18 +322,31 @@ func (s *stockService) BatteryOutboundWithRider(cr *ent.StockCreate, riderID, st
         break
     }
 
-    if s.Fetch(storeID, name) < int(math.Abs(float64(num))) {
-        snag.Panic("电池库存不足")
+    // TODO 平台管理员可操作性时处理出入库逻辑
+    if req.StoreID != 0 {
+        cr.SetStoreID(req.StoreID)
+        if num < 0 && s.Fetch(req.StoreID, name) < int(math.Abs(float64(num))) {
+            snag.Panic("电池库存不足")
+        }
     }
-    _, err := cr.SetName(NewBattery().VoltageName(voltage)).
-        SetRiderID(riderID).
-        SetEmployeeID(employeeID).
-        SetStoreID(storeID).
-        SetType(stockType).
-        SetVoltage(voltage).
+
+    if req.EmployeeID != 0 {
+        cr.SetEmployeeID(req.EmployeeID)
+    }
+
+    if req.ManagerID != 0 {
+        cr.SetManagerID(req.ManagerID)
+    }
+
+    cr.SetName(NewBattery().VoltageName(req.Voltage)).
+        SetRiderID(req.RiderID).
+        SetType(req.StockType).
+        SetVoltage(req.Voltage).
         SetNum(num).
-        SetSn(tools.NewUnique().NewSN()).
-        Save(s.ctx)
+        SetSn(tools.NewUnique().NewSN())
+
+    _, err := cr.Save(s.ctx)
+
     if err != nil {
         log.Error(err)
     }

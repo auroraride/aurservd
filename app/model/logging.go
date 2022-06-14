@@ -7,6 +7,17 @@ package model
 
 type Operate uint
 
+type OperatorType uint8
+
+const (
+    OperatorTypeManager  OperatorType = iota // 管理员
+    OperatorTypeEmployee                     // 门店店员
+)
+
+func (ot OperatorType) String() string {
+    return []string{"管理员", "店员"}[int(ot)]
+}
+
 const (
     OperatePersonBan            = iota // 封禁身份
     OperatePersonUnBan                 // 解封身份

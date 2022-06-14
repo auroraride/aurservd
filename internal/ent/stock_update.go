@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -87,6 +88,26 @@ func (su *StockUpdate) SetNillableRemark(s *string) *StockUpdate {
 // ClearRemark clears the value of the "remark" field.
 func (su *StockUpdate) ClearRemark() *StockUpdate {
 	su.mutation.ClearRemark()
+	return su
+}
+
+// SetManagerID sets the "manager_id" field.
+func (su *StockUpdate) SetManagerID(u uint64) *StockUpdate {
+	su.mutation.SetManagerID(u)
+	return su
+}
+
+// SetNillableManagerID sets the "manager_id" field if the given value is not nil.
+func (su *StockUpdate) SetNillableManagerID(u *uint64) *StockUpdate {
+	if u != nil {
+		su.SetManagerID(*u)
+	}
+	return su
+}
+
+// ClearManagerID clears the value of the "manager_id" field.
+func (su *StockUpdate) ClearManagerID() *StockUpdate {
+	su.mutation.ClearManagerID()
 	return su
 }
 
@@ -210,6 +231,11 @@ func (su *StockUpdate) ClearVoltage() *StockUpdate {
 	return su
 }
 
+// SetManager sets the "manager" edge to the Manager entity.
+func (su *StockUpdate) SetManager(m *Manager) *StockUpdate {
+	return su.SetManagerID(m.ID)
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (su *StockUpdate) SetStore(s *Store) *StockUpdate {
 	return su.SetStoreID(s.ID)
@@ -228,6 +254,12 @@ func (su *StockUpdate) SetEmployee(e *Employee) *StockUpdate {
 // Mutation returns the StockMutation object of the builder.
 func (su *StockUpdate) Mutation() *StockMutation {
 	return su.mutation
+}
+
+// ClearManager clears the "manager" edge to the Manager entity.
+func (su *StockUpdate) ClearManager() *StockUpdate {
+	su.mutation.ClearManager()
+	return su
 }
 
 // ClearStore clears the "store" edge to the Store entity.
@@ -435,6 +467,41 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: stock.FieldVoltage,
 		})
 	}
+	if su.mutation.ManagerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.ManagerTable,
+			Columns: []string{stock.ManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: manager.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.ManagerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.ManagerTable,
+			Columns: []string{stock.ManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: manager.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if su.mutation.StoreCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -617,6 +684,26 @@ func (suo *StockUpdateOne) ClearRemark() *StockUpdateOne {
 	return suo
 }
 
+// SetManagerID sets the "manager_id" field.
+func (suo *StockUpdateOne) SetManagerID(u uint64) *StockUpdateOne {
+	suo.mutation.SetManagerID(u)
+	return suo
+}
+
+// SetNillableManagerID sets the "manager_id" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableManagerID(u *uint64) *StockUpdateOne {
+	if u != nil {
+		suo.SetManagerID(*u)
+	}
+	return suo
+}
+
+// ClearManagerID clears the value of the "manager_id" field.
+func (suo *StockUpdateOne) ClearManagerID() *StockUpdateOne {
+	suo.mutation.ClearManagerID()
+	return suo
+}
+
 // SetSn sets the "sn" field.
 func (suo *StockUpdateOne) SetSn(s string) *StockUpdateOne {
 	suo.mutation.SetSn(s)
@@ -737,6 +824,11 @@ func (suo *StockUpdateOne) ClearVoltage() *StockUpdateOne {
 	return suo
 }
 
+// SetManager sets the "manager" edge to the Manager entity.
+func (suo *StockUpdateOne) SetManager(m *Manager) *StockUpdateOne {
+	return suo.SetManagerID(m.ID)
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (suo *StockUpdateOne) SetStore(s *Store) *StockUpdateOne {
 	return suo.SetStoreID(s.ID)
@@ -755,6 +847,12 @@ func (suo *StockUpdateOne) SetEmployee(e *Employee) *StockUpdateOne {
 // Mutation returns the StockMutation object of the builder.
 func (suo *StockUpdateOne) Mutation() *StockMutation {
 	return suo.mutation
+}
+
+// ClearManager clears the "manager" edge to the Manager entity.
+func (suo *StockUpdateOne) ClearManager() *StockUpdateOne {
+	suo.mutation.ClearManager()
+	return suo
 }
 
 // ClearStore clears the "store" edge to the Store entity.
@@ -991,6 +1089,41 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 			Type:   field.TypeFloat64,
 			Column: stock.FieldVoltage,
 		})
+	}
+	if suo.mutation.ManagerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.ManagerTable,
+			Columns: []string{stock.ManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: manager.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.ManagerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.ManagerTable,
+			Columns: []string{stock.ManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: manager.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if suo.mutation.StoreCleared() {
 		edge := &sqlgraph.EdgeSpec{

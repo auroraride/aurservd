@@ -26,9 +26,10 @@ type OperateLog struct {
     Before  string        `json:"before" sls:"操作前" index:"doc"`
     After   string        `json:"after" sls:"操作后" index:"doc"`
 
-    ManagerID    uint64 `json:"managerID" sls:"操作人ID" index:"doc"`
-    ManagerPhone string `json:"phone" sls:"操作人电话" index:"doc"`
-    ManagerName  string `json:"managerName" sls:"操作人" index:"doc"`
+    OperatorType  model.OperatorType `json:"operatorType" sls:"操作人类别" index:"doc"` // 0管理员 1员工
+    OperatorID    uint64             `json:"operatorId" sls:"操作人ID" index:"doc"`
+    OperatorPhone string             `json:"operatorPhone" sls:"操作人电话" index:"doc"`
+    OperatorName  string             `json:"operatorName" sls:"操作人" index:"doc"`
 
     Time string `json:"time" sls:"时间" index:"doc"`
 }
@@ -66,9 +67,18 @@ func (o *OperateLog) SetDiff(before, after string) *OperateLog {
 }
 
 func (o *OperateLog) SetModifier(m *model.Modifier) *OperateLog {
-    o.ManagerID = m.ID
-    o.ManagerPhone = m.Phone
-    o.ManagerName = m.Name
+    o.OperatorID = m.ID
+    o.OperatorPhone = m.Phone
+    o.OperatorName = m.Name
+    o.OperatorType = model.OperatorTypeManager
+    return o
+}
+
+func (o *OperateLog) SetEmployee(e *model.Employee) *OperateLog {
+    o.OperatorID = e.ID
+    o.OperatorPhone = e.Phone
+    o.OperatorName = e.Name
+    o.OperatorType = model.OperatorTypeEmployee
     return o
 }
 

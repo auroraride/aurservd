@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -36,6 +37,9 @@ type Stock struct {
 	// Remark holds the value of the "remark" field.
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
+	// ManagerID holds the value of the "manager_id" field.
+	// 管理人ID
+	ManagerID uint64 `json:"manager_id,omitempty"`
 	// Sn holds the value of the "sn" field.
 	// 调拨编号
 	Sn string `json:"sn,omitempty"`
@@ -67,6 +71,8 @@ type Stock struct {
 
 // StockEdges holds the relations/edges for other nodes in the graph.
 type StockEdges struct {
+	// Manager holds the value of the manager edge.
+	Manager *Manager `json:"manager,omitempty"`
 	// Store holds the value of the store edge.
 	Store *Store `json:"store,omitempty"`
 	// Rider holds the value of the rider edge.
@@ -75,13 +81,27 @@ type StockEdges struct {
 	Employee *Employee `json:"employee,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
+}
+
+// ManagerOrErr returns the Manager value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e StockEdges) ManagerOrErr() (*Manager, error) {
+	if e.loadedTypes[0] {
+		if e.Manager == nil {
+			// The edge manager was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: manager.Label}
+		}
+		return e.Manager, nil
+	}
+	return nil, &NotLoadedError{edge: "manager"}
 }
 
 // StoreOrErr returns the Store value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) StoreOrErr() (*Store, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		if e.Store == nil {
 			// The edge store was loaded in eager-loading,
 			// but was not found.
@@ -95,7 +115,7 @@ func (e StockEdges) StoreOrErr() (*Store, error) {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		if e.Rider == nil {
 			// The edge rider was loaded in eager-loading,
 			// but was not found.
@@ -109,7 +129,7 @@ func (e StockEdges) RiderOrErr() (*Rider, error) {
 // EmployeeOrErr returns the Employee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) EmployeeOrErr() (*Employee, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		if e.Employee == nil {
 			// The edge employee was loaded in eager-loading,
 			// but was not found.
@@ -129,7 +149,7 @@ func (*Stock) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case stock.FieldVoltage:
 			values[i] = new(sql.NullFloat64)
-		case stock.FieldID, stock.FieldType, stock.FieldStoreID, stock.FieldRiderID, stock.FieldEmployeeID, stock.FieldNum:
+		case stock.FieldID, stock.FieldManagerID, stock.FieldType, stock.FieldStoreID, stock.FieldRiderID, stock.FieldEmployeeID, stock.FieldNum:
 			values[i] = new(sql.NullInt64)
 		case stock.FieldRemark, stock.FieldSn, stock.FieldName:
 			values[i] = new(sql.NullString)
@@ -197,6 +217,12 @@ func (s *Stock) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.Remark = value.String
 			}
+		case stock.FieldManagerID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field manager_id", values[i])
+			} else if value.Valid {
+				s.ManagerID = uint64(value.Int64)
+			}
 		case stock.FieldSn:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field sn", values[i])
@@ -254,6 +280,11 @@ func (s *Stock) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
+// QueryManager queries the "manager" edge of the Stock entity.
+func (s *Stock) QueryManager() *ManagerQuery {
+	return (&StockClient{config: s.config}).QueryManager(s)
+}
+
 // QueryStore queries the "store" edge of the Stock entity.
 func (s *Stock) QueryStore() *StoreQuery {
 	return (&StockClient{config: s.config}).QueryStore(s)
@@ -306,6 +337,8 @@ func (s *Stock) String() string {
 	builder.WriteString(fmt.Sprintf("%v", s.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(s.Remark)
+	builder.WriteString(", manager_id=")
+	builder.WriteString(fmt.Sprintf("%v", s.ManagerID))
 	builder.WriteString(", sn=")
 	builder.WriteString(s.Sn)
 	builder.WriteString(", type=")

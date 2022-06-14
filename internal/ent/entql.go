@@ -713,6 +713,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			stock.FieldCreator:      {Type: field.TypeJSON, Column: stock.FieldCreator},
 			stock.FieldLastModifier: {Type: field.TypeJSON, Column: stock.FieldLastModifier},
 			stock.FieldRemark:       {Type: field.TypeString, Column: stock.FieldRemark},
+			stock.FieldManagerID:    {Type: field.TypeUint64, Column: stock.FieldManagerID},
 			stock.FieldSn:           {Type: field.TypeString, Column: stock.FieldSn},
 			stock.FieldType:         {Type: field.TypeUint8, Column: stock.FieldType},
 			stock.FieldStoreID:      {Type: field.TypeUint64, Column: stock.FieldStoreID},
@@ -1663,6 +1664,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Rider",
 		"Stock",
+	)
+	graph.MustAddE(
+		"manager",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.ManagerTable,
+			Columns: []string{stock.ManagerColumn},
+			Bidi:    false,
+		},
+		"Stock",
+		"Manager",
 	)
 	graph.MustAddE(
 		"store",
@@ -5644,6 +5657,11 @@ func (f *StockFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(stock.FieldRemark))
 }
 
+// WhereManagerID applies the entql uint64 predicate on the manager_id field.
+func (f *StockFilter) WhereManagerID(p entql.Uint64P) {
+	f.Where(p.Field(stock.FieldManagerID))
+}
+
 // WhereSn applies the entql string predicate on the sn field.
 func (f *StockFilter) WhereSn(p entql.StringP) {
 	f.Where(p.Field(stock.FieldSn))
@@ -5682,6 +5700,20 @@ func (f *StockFilter) WhereVoltage(p entql.Float64P) {
 // WhereNum applies the entql int predicate on the num field.
 func (f *StockFilter) WhereNum(p entql.IntP) {
 	f.Where(p.Field(stock.FieldNum))
+}
+
+// WhereHasManager applies a predicate to check if query has an edge manager.
+func (f *StockFilter) WhereHasManager() {
+	f.Where(entql.HasEdge("manager"))
+}
+
+// WhereHasManagerWith applies a predicate to check if query has an edge manager with a given conditions (other predicates).
+func (f *StockFilter) WhereHasManagerWith(preds ...predicate.Manager) {
+	f.Where(entql.HasEdgeWith("manager", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // WhereHasStore applies a predicate to check if query has an edge store.

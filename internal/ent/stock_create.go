@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -90,6 +91,20 @@ func (sc *StockCreate) SetRemark(s string) *StockCreate {
 func (sc *StockCreate) SetNillableRemark(s *string) *StockCreate {
 	if s != nil {
 		sc.SetRemark(*s)
+	}
+	return sc
+}
+
+// SetManagerID sets the "manager_id" field.
+func (sc *StockCreate) SetManagerID(u uint64) *StockCreate {
+	sc.mutation.SetManagerID(u)
+	return sc
+}
+
+// SetNillableManagerID sets the "manager_id" field if the given value is not nil.
+func (sc *StockCreate) SetNillableManagerID(u *uint64) *StockCreate {
+	if u != nil {
+		sc.SetManagerID(*u)
 	}
 	return sc
 }
@@ -180,6 +195,11 @@ func (sc *StockCreate) SetNillableVoltage(f *float64) *StockCreate {
 func (sc *StockCreate) SetNum(i int) *StockCreate {
 	sc.mutation.SetNum(i)
 	return sc
+}
+
+// SetManager sets the "manager" edge to the Manager entity.
+func (sc *StockCreate) SetManager(m *Manager) *StockCreate {
+	return sc.SetManagerID(m.ID)
 }
 
 // SetStore sets the "store" edge to the Store entity.
@@ -433,6 +453,26 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 		})
 		_node.Num = value
 	}
+	if nodes := sc.mutation.ManagerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   stock.ManagerTable,
+			Columns: []string{stock.ManagerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: manager.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.ManagerID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := sc.mutation.StoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -640,6 +680,24 @@ func (u *StockUpsert) UpdateRemark() *StockUpsert {
 // ClearRemark clears the value of the "remark" field.
 func (u *StockUpsert) ClearRemark() *StockUpsert {
 	u.SetNull(stock.FieldRemark)
+	return u
+}
+
+// SetManagerID sets the "manager_id" field.
+func (u *StockUpsert) SetManagerID(v uint64) *StockUpsert {
+	u.Set(stock.FieldManagerID, v)
+	return u
+}
+
+// UpdateManagerID sets the "manager_id" field to the value that was provided on create.
+func (u *StockUpsert) UpdateManagerID() *StockUpsert {
+	u.SetExcluded(stock.FieldManagerID)
+	return u
+}
+
+// ClearManagerID clears the value of the "manager_id" field.
+func (u *StockUpsert) ClearManagerID() *StockUpsert {
+	u.SetNull(stock.FieldManagerID)
 	return u
 }
 
@@ -943,6 +1001,27 @@ func (u *StockUpsertOne) UpdateRemark() *StockUpsertOne {
 func (u *StockUpsertOne) ClearRemark() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetManagerID sets the "manager_id" field.
+func (u *StockUpsertOne) SetManagerID(v uint64) *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.SetManagerID(v)
+	})
+}
+
+// UpdateManagerID sets the "manager_id" field to the value that was provided on create.
+func (u *StockUpsertOne) UpdateManagerID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateManagerID()
+	})
+}
+
+// ClearManagerID clears the value of the "manager_id" field.
+func (u *StockUpsertOne) ClearManagerID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearManagerID()
 	})
 }
 
@@ -1433,6 +1512,27 @@ func (u *StockUpsertBulk) UpdateRemark() *StockUpsertBulk {
 func (u *StockUpsertBulk) ClearRemark() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetManagerID sets the "manager_id" field.
+func (u *StockUpsertBulk) SetManagerID(v uint64) *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.SetManagerID(v)
+	})
+}
+
+// UpdateManagerID sets the "manager_id" field to the value that was provided on create.
+func (u *StockUpsertBulk) UpdateManagerID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateManagerID()
+	})
+}
+
+// ClearManagerID clears the value of the "manager_id" field.
+func (u *StockUpsertBulk) ClearManagerID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearManagerID()
 	})
 }
 

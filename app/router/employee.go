@@ -17,7 +17,7 @@ func loadEmployeeRoutes() {
     g.POST("/signin", eapi.Employee.Signin)
     g.GET("/qrcode", eapi.Employee.Qrcode)
 
-    g.GET("/subscribe/detail", eapi.Subscribe.Detail)
+    g.GET("/subscribe/active", eapi.Subscribe.Inactive)
     g.POST("/subscribe/active", eapi.Subscribe.Active)
 
     // 打卡考勤

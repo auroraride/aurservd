@@ -1447,6 +1447,7 @@ var (
 		{Name: "num", Type: field.TypeInt, Comment: "物资数量: 正值调入 / 负值调出"},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "manager_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// StockTable holds the schema information for the "stock" table.
@@ -1468,8 +1469,14 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "stock_store_stocks",
+				Symbol:     "stock_manager_manager",
 				Columns:    []*schema.Column{StockColumns[14]},
+				RefColumns: []*schema.Column{ManagerColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "stock_store_stocks",
+				Columns:    []*schema.Column{StockColumns[15]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2022,7 +2029,8 @@ func init() {
 	}
 	StockTable.ForeignKeys[0].RefTable = EmployeeTable
 	StockTable.ForeignKeys[1].RefTable = RiderTable
-	StockTable.ForeignKeys[2].RefTable = StoreTable
+	StockTable.ForeignKeys[2].RefTable = ManagerTable
+	StockTable.ForeignKeys[3].RefTable = StoreTable
 	StockTable.Annotation = &entsql.Annotation{
 		Table: "stock",
 	}

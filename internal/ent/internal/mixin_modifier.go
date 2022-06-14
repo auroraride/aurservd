@@ -13,7 +13,6 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
-    "fmt"
     "github.com/auroraride/aurservd/app/model"
 )
 
@@ -48,17 +47,16 @@ func (Modifier) Hooks() []ent.Hook {
         func(next ent.Mutator) ent.Mutator {
             return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
                 ml, ok := m.(model.ModifierLogger)
-                if !ok {
-                    return nil, fmt.Errorf("unexpected audit-log call from mutation type %T", m)
-                }
-                mod := model.GetModifierFromContext(ctx)
-                if mod != nil {
-                    switch op := m.Op(); {
-                    case op.Is(ent.OpCreate):
-                        ml.SetCreator(mod)
-                        ml.SetLastModifier(mod)
-                    case op.Is(ent.OpUpdateOne | ent.OpUpdate):
-                        ml.SetLastModifier(mod)
+                if ok {
+                    mod := model.GetModifierFromContext(ctx)
+                    if mod != nil {
+                        switch op := m.Op(); {
+                        case op.Is(ent.OpCreate):
+                            ml.SetCreator(mod)
+                            ml.SetLastModifier(mod)
+                        case op.Is(ent.OpUpdateOne | ent.OpUpdate):
+                            ml.SetLastModifier(mod)
+                        }
                     }
                 }
                 return next.Mutate(ctx, m)

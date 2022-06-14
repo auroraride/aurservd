@@ -24,7 +24,7 @@ type refundService struct {
     ctx      context.Context
     modifier *model.Modifier
     rider    *ent.Rider
-    employee *model.Employee
+    employee *ent.Employee
 }
 
 func NewRefund() *refundService {
@@ -47,7 +47,7 @@ func NewRefundWithModifier(m *model.Modifier) *refundService {
     return s
 }
 
-func NewRefundWithEmployee(e *model.Employee) *refundService {
+func NewRefundWithEmployee(e *ent.Employee) *refundService {
     s := NewRefund()
     s.ctx = context.WithValue(s.ctx, "employee", e)
     s.employee = e

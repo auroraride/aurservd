@@ -16,17 +16,17 @@ type subscribe struct{}
 
 var Subscribe = new(subscribe)
 
-// Detail
-// @ID           EmployeeSubscribeDetail
-// @Router       /employee/v1/subscribe/detail [GET]
-// @Summary      E2001 待激活骑士卡详情
+// Inactive
+// @ID           EmployeeSubscribeInactive
+// @Router       /employee/v1/subscribe/active [GET]
+// @Summary      E2001 骑士卡详情
 // @Tags         [E]店员接口
 // @Accept       json
 // @Produce      json
 // @Param        X-Employee-Token  header  string  true  "店员校验token"
 // @Param        qrcode  query  string  true  "二维码详情, 可带`SUBSCRIBE:`, 也可不带"
 // @Success      200  {object}  model.SubscribeActiveInfo  "请求成功"
-func (*subscribe) Detail(c echo.Context) (err error) {
+func (*subscribe) Inactive(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.QRQueryReq](c)
     return ctx.SendResponse(
         service.NewEmployeeSubscribeWithEmployee(ctx.Employee).Inactive(req.Qrcode),
