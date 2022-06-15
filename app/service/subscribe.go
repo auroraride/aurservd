@@ -355,6 +355,6 @@ func (s *subscribeService) OverdueFee(riderID uint64, remaining float64) (fee fl
     days := p.Days
     fee, _ = decimal.NewFromFloat(price).Div(decimal.NewFromInt(int64(days))).Mul(decimal.NewFromFloat(remaining)).Float64()
 
-    formula = fmt.Sprintf("(上次购买骑士卡价格 %.2f元 ÷ 天数 %d天) × 逾期天数 %f天 = 逾期费用 %.2f元", price, days, remaining, fee)
+    formula = fmt.Sprintf("(上次购买骑士卡价格 %.2f元 ÷ 天数 %d天) × 逾期天数 %d天 = 逾期费用 %.2f元", price, days, int(remaining), fee)
     return
 }
