@@ -11,20 +11,14 @@ import (
 )
 
 const (
-    PaymentCacheTypePlan   uint = iota + 1 // 购买骑士卡订单
-    PaymentCacheTypeRefund                 // 退款订单
+    PaymentCacheTypePlan       uint = iota + 1 // 购买骑士卡订单
+    PaymentCacheTypeRefund                     // 退款订单
+    PaymentCacheTypeOverdueFee                 // 欠费订单
 )
-
-// PaymentCache 支付缓存
-type PaymentCache struct {
-    CacheType uint              `json:"cacheType"`        // 订单类型
-    Subscribe *PaymentSubscribe `json:"create,omitempty"` // 购买骑士卡订单
-    Refund    *PaymentRefund    `json:"refund,omitempty"` // 退款订单
-}
 
 // PaymentSubscribe 购买骑士卡订单
 type PaymentSubscribe struct {
-    CityID      uint64    `json:"cityID"`            // 城市ID
+    CityID      uint64    `json:"cityId"`            // 逾期时城市ID
     OrderType   uint      `json:"orderType"`         // 订单类型
     OutTradeNo  string    `json:"outTradeNo"`        // 订单号
     RiderID     uint64    `json:"riderId"`           // 骑手ID
@@ -43,14 +37,6 @@ type PaymentSubscribe struct {
     SubscribeID *uint64   `json:"subscribeId"`       // 续费订单携带订阅ID
 }
 
-func (pc *PaymentCache) MarshalBinary() ([]byte, error) {
-    return jsoniter.Marshal(pc)
-}
-
-func (pc *PaymentCache) UnmarshalBinary(data []byte) error {
-    return jsoniter.Unmarshal(data, pc)
-}
-
 // PaymentRefund 退款详情
 type PaymentRefund struct {
     OrderID      uint64  `json:"orderId"`      // 原始订单ID
@@ -64,4 +50,36 @@ type PaymentRefund struct {
     Request bool      `json:"request"` // 是否申请成功
     Success bool      `json:"success"` // 是否退款成功
     Time    time.Time `json:"time"`    // 退款时间
+}
+
+type PaymentOverdueFee struct {
+    OutTradeNo string  `json:"outTradeNo"` // 订单号
+    OrderType  uint    `json:"orderType"`  // 订单类型
+    Days       int     `json:"days"`       // 逾期天数
+    Amount     float64 `json:"amount"`     // 逾期费用
+    Payway     uint8   `json:"payway"`     // 支付方式
+
+    RiderID     uint64 `json:"riderId"`     // 骑手ID
+    PlanID      uint64 `json:"planId"`      // 逾期时套餐ID
+    OrderID     uint64 `json:"orderId"`     // 逾期时订单ID
+    SubscribeID uint64 `json:"subscribeId"` // 逾期时订阅ID
+    CityID      uint64 `json:"cityId"`      // 逾期时城市ID
+
+    TradeNo string `json:"tradeNo,omitempty"` // 平台单号
+}
+
+// PaymentCache 支付缓存
+type PaymentCache struct {
+    CacheType  uint               `json:"cacheType"`            // 订单类型
+    Subscribe  *PaymentSubscribe  `json:"create,omitempty"`     // 购买骑士卡订单
+    Refund     *PaymentRefund     `json:"refund,omitempty"`     // 退款订单
+    OverDueFee *PaymentOverdueFee `json:"overDueFee,omitempty"` // 逾期费用订单
+}
+
+func (pc *PaymentCache) MarshalBinary() ([]byte, error) {
+    return jsoniter.Marshal(pc)
+}
+
+func (pc *PaymentCache) UnmarshalBinary(data []byte) error {
+    return jsoniter.Unmarshal(data, pc)
 }

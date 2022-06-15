@@ -103,7 +103,13 @@ func (s *orderService) PreconditionRenewal(sub *model.Subscribe) {
 
 // Create 创建订单
 // TODO 需要做更改电池逻辑, 退款 + 推送订单
-func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCreateRes) {
+func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCreateRes) {
+    if req.OrderType == model.OrderTypeFee {
+        return s.CreateFee(s.rider.ID, req.Payway)
+    }
+
+    result = new(model.OrderCreateRes)
+
     // 查询套餐是否存在
     op := NewPlan().QueryEffectiveWithID(req.PlanID)
 
@@ -194,6 +200,43 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
         },
     }
 
+    s.Prepay(req.Payway, no, prepay, result)
+
+    return
+}
+
+func (s *orderService) CreateFee(riderID uint64, payway uint8) *model.OrderCreateRes {
+    result := new(model.OrderCreateRes)
+
+    sub, _ := NewSubscribe().QueryEffective(riderID)
+    if sub == nil || sub.Remaining < 0 {
+        snag.Panic("为找到逾期骑士卡信息")
+    }
+
+    fee, _, o := NewSubscribe().OverdueFee(riderID, sub.Remaining)
+    no := tools.NewUnique().NewSN28()
+    prepay := &model.PaymentCache{
+        CacheType: model.PaymentCacheTypeOverdueFee,
+        OverDueFee: &model.PaymentOverdueFee{
+            OutTradeNo:  no,
+            OrderType:   model.OrderTypeFee,
+            Days:        0 - sub.Remaining,
+            Amount:      fee,
+            RiderID:     riderID,
+            PlanID:      sub.PlanID,
+            OrderID:     o.ID,
+            SubscribeID: sub.ID,
+            CityID:      sub.CityID,
+            Payway:      payway,
+        },
+    }
+
+    s.Prepay(payway, no, prepay, result)
+
+    return result
+}
+
+func (s *orderService) Prepay(payway uint8, no string, prepay *model.PaymentCache, result *model.OrderCreateRes) {
     // 订单缓存
     err := cache.Set(s.ctx, no, prepay, 20*time.Minute).Err()
     if err != nil {
@@ -201,7 +244,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
         snag.Panic("订单创建失败")
     }
     var str string
-    switch req.Payway {
+    switch payway {
     case model.OrderPaywayAlipay:
         // 使用支付宝支付
         str, err = payment.NewAlipay().AppPay(prepay)
@@ -224,7 +267,6 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
         snag.Panic("支付方式错误")
         break
     }
-    return
 }
 
 // DoPayment 处理支付
@@ -238,7 +280,63 @@ func (s *orderService) DoPayment(pc *model.PaymentCache) {
         break
     case model.PaymentCacheTypeRefund:
         s.RefundSuccess(pc.Refund)
+        break
+    case model.PaymentCacheTypeOverdueFee:
+        s.FeePaid(pc.OverDueFee)
+        break
     }
+}
+
+func (s *orderService) FeePaid(trade *model.PaymentOverdueFee) {
+
+    // 查询欠费订单是否已存在
+    if exists, err := ar.Ent.Order.Query().Where(order.OutTradeNo(trade.OutTradeNo)).Exist(s.ctx); err == nil && exists {
+        return
+    }
+
+    j, _ := json.MarshalIndent(trade, "", "  ")
+    log.Infof("[FEE PAID %s] %s", trade.OutTradeNo, j)
+
+    ctx := context.Background()
+    tx, _ := ar.Ent.Tx(ctx)
+
+    _, err := tx.Order.Create().
+        SetPayway(trade.Payway).
+        SetPlanID(trade.PlanID).
+        SetParentID(trade.OrderID).
+        SetAmount(trade.Amount).
+        SetOutTradeNo(trade.OutTradeNo).
+        SetTradeNo(trade.TradeNo).
+        SetTotal(trade.Amount).
+        SetCityID(trade.CityID).
+        SetSubscribeID(trade.SubscribeID).
+        SetType(trade.OrderType).
+        SetInitialDays(trade.Days).
+        SetRiderID(trade.RiderID).
+        Save(ctx)
+    if err != nil {
+        log.Errorf("[FEE PAID %s ERROR]: %s", trade.OutTradeNo, err.Error())
+        _ = tx.Rollback()
+        return
+    }
+
+    // 更新订阅
+    _, err = tx.Subscribe.
+        UpdateOneID(trade.SubscribeID).
+        SetStatus(model.SubscribeStatusUsing).
+        SetRemaining(0).
+        SetOverdueDays(trade.Days).
+        Save(ctx)
+    if err != nil {
+        log.Errorf("[FEE PAID %s SUBSCRIBE(%d) ERROR]: %s", trade.OutTradeNo, trade.SubscribeID, err.Error())
+        _ = tx.Rollback()
+        return
+    }
+
+    _ = tx.Commit()
+
+    // 删除缓存
+    cache.Del(context.Background(), trade.OutTradeNo)
 }
 
 // OrderPaid 订单成功支付

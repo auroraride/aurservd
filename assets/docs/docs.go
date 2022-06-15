@@ -4751,7 +4751,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "desc",
+                        "description": "订单创建请求",
                         "name": "body",
                         "in": "body",
                         "required": true,

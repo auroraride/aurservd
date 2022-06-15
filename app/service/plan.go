@@ -363,7 +363,7 @@ func (s *planService) RiderListRenewal() model.RiderPlanRenewalRes {
     var formula string
 
     if sub.Remaining < 0 {
-        fee, formula = NewSubscribe().OverdueFee(s.rider.ID, sub.Remaining)
+        fee, formula, _ = NewSubscribe().OverdueFee(s.rider.ID, sub.Remaining)
     }
 
     min := uint(0 - sub.Remaining)

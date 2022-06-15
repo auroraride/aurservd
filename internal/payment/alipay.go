@@ -150,10 +150,12 @@ func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
         pc.Refund.Request = true
         pc.Refund.Time = carbon.Parse(result.GmtRefund).Carbon2Time()
         return pc
+    case model.PaymentCacheTypeOverdueFee:
+        if result.TradeStatus == alipay.TradeStatusSuccess {
+            pc.OverDueFee.TradeNo = result.TradeNo
+        }
+        return pc
     }
-
-    b, _ = jsoniter.MarshalIndent(pc, "", "  ")
-    log.Infof("支付宝支付缓存更新: %s", b)
 
     return nil
 }

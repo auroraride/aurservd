@@ -24,7 +24,7 @@ var Order = new(order)
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        body  body  model.OrderCreateReq  true  "desc"
+// @Param        body  body     model.OrderCreateReq  true  "订单创建请求"
 // @Success      200  {object}  model.OrderCreateRes  "请求成功"
 func (*order) Create(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.OrderCreateReq](c)

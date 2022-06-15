@@ -174,11 +174,20 @@ func (c *wechatClient) Notification(req *http.Request) *model.PaymentCache {
     log.Infof("获取到微信支付回调缓存: %s", b)
 
     state := transaction.TradeState
-    if pc.CacheType != model.PaymentCacheTypePlan || *state != "SUCCESS" {
+    if *state != "SUCCESS" {
         return nil
     }
 
-    pc.Subscribe.TradeNo = *(transaction.TransactionId)
+    switch pc.CacheType {
+    case model.PaymentCacheTypePlan:
+        pc.Subscribe.TradeNo = *(transaction.TransactionId)
+        break
+    case model.PaymentCacheTypeOverdueFee:
+        pc.OverDueFee.TradeNo = *(transaction.TransactionId)
+        break
+    default:
+        return nil
+    }
 
     b, _ = jsoniter.MarshalIndent(pc, "", "  ")
     log.Infof("微信支付缓存更新: %s", b)

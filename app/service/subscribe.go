@@ -344,12 +344,12 @@ func (s *subscribeService) PausedDays(start time.Time, end time.Time) int {
 }
 
 // OverdueFee 计算逾期费用
-func (s *subscribeService) OverdueFee(riderID uint64, remaining int) (fee float64, formula string) {
+func (s *subscribeService) OverdueFee(riderID uint64, remaining int) (fee float64, formula string, o *ent.Order) {
     if remaining > 0 {
         return
     }
 
-    o, _ := NewOrder().RencentSubscribeOrder(riderID)
+    o, _ = NewOrder().RencentSubscribeOrder(riderID)
     p := o.Edges.Plan
     if p == nil {
         snag.Panic("上次购买骑士卡获取失败")

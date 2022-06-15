@@ -5481,7 +5481,7 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
-      - description: desc
+      - description: 订单创建请求
         in: body
         name: body
         required: true
