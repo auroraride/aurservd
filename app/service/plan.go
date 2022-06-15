@@ -15,7 +15,6 @@ import (
     "github.com/auroraride/aurservd/internal/ent/plan"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
-    "math"
     "sort"
     "time"
 )
@@ -326,6 +325,7 @@ func (s *planService) RiderList(req *model.PlanListRiderReq) (res []model.RiderP
             plan.StartLTE(now),
             plan.EndGTE(now),
             plan.HasPmsWith(batterymodel.Voltage(req.Voltage)),
+            plan.DaysGTE(req.Min),
         ).
         Order(ent.Asc(plan.FieldDays)).
         AllX(s.ctx)
@@ -359,20 +359,20 @@ func (s *planService) RiderListRenewal() model.RiderPlanRenewalRes {
         snag.Panic("骑手无生效中的订阅, 无法续费")
     }
 
-    var fee, remaining float64
+    var fee float64
     var formula string
 
-    remaining = math.Abs(float64(sub.Remaining))
-
     if sub.Remaining < 0 {
-        fee, formula = NewSubscribe().OverdueFee(s.rider.ID, remaining)
+        fee, formula = NewSubscribe().OverdueFee(s.rider.ID, sub.Remaining)
     }
+
+    min := uint(0 - sub.Remaining)
 
     return model.RiderPlanRenewalRes{
         Overdue: sub.Remaining < 0,
         Fee:     fee,
         Formula: formula,
-        Days:    remaining,
+        Days:    min,
         Items: s.RiderList(&model.PlanListRiderReq{
             CityID:  sub.CityID,
             Voltage: sub.Voltage,

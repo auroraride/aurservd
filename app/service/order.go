@@ -99,14 +99,14 @@ func (s *orderService) PreconditionRenewal(sub *model.Subscribe) {
         sub.Status == model.SubscribeStatusCanceled {
         snag.Panic("当前无使用中的骑士卡")
     }
-    if sub.Remaining < 0 {
-        snag.Panic("请先缴纳逾期费用")
-    }
 }
 
 // Create 创建订单
 // TODO 需要做更改电池逻辑, 退款 + 推送订单
 func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCreateRes) {
+    // 查询套餐是否存在
+    op := NewPlan().QueryEffectiveWithID(req.PlanID)
+
     // 查询是否企业骑手
     if s.rider.EnterpriseID != nil {
         snag.Panic("团签用户无法购买")
@@ -138,6 +138,9 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
     case model.OrderTypeRenewal:
         // 续签判定
         s.PreconditionRenewal(sub)
+        if sub.Remaining < 0 && int(op.Days)+sub.Remaining < 0 {
+            snag.Panic("无法继续, 逾期天数大于套餐天数")
+        }
         subID = tools.NewPointer().UInt64(sub.ID)
         orderID = tools.NewPointer().UInt64(sub.Order.ID)
         break
@@ -145,9 +148,6 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
         snag.Panic("未知的支付请求")
         break
     }
-
-    // 查询套餐是否存在
-    op := NewPlan().QueryEffectiveWithID(req.PlanID)
 
     // 距离上次订阅过去的时间(从退订的第二天0点开始计算,不满一天算0天)
     var pastDays int
@@ -304,7 +304,6 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
     // 新签或重签
     if trade.OrderType == model.OrderTypeNewly || trade.OrderType == model.OrderTypeAgain {
         // 创建subscribe
-        // var sub *ent.Subscribe
         sc := tx.Subscribe.Create().
             SetType(trade.OrderType).
             SetRiderID(trade.RiderID).
@@ -329,7 +328,10 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 
     // 续签
     if trade.OrderType == model.OrderTypeRenewal {
-        _, err = tx.Subscribe.UpdateOneID(*trade.SubscribeID).AddRenewalDays(int(trade.Days)).AddRemaining(int(trade.Days)).Save(ctx)
+        _, err = tx.Subscribe.UpdateOneID(*trade.SubscribeID).
+            AddRenewalDays(int(trade.Days)).
+            AddRemaining(int(trade.Days)).
+            Save(ctx)
         if err != nil {
             log.Errorf("[ORDER PAID %s SUBSCRIBE(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
             _ = tx.Rollback()

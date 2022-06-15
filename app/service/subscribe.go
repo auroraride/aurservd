@@ -344,7 +344,11 @@ func (s *subscribeService) PausedDays(start time.Time, end time.Time) int {
 }
 
 // OverdueFee 计算逾期费用
-func (s *subscribeService) OverdueFee(riderID uint64, remaining float64) (fee float64, formula string) {
+func (s *subscribeService) OverdueFee(riderID uint64, remaining int) (fee float64, formula string) {
+    if remaining > 0 {
+        return
+    }
+
     o, _ := NewOrder().RencentSubscribeOrder(riderID)
     p := o.Edges.Plan
     if p == nil {
@@ -353,8 +357,8 @@ func (s *subscribeService) OverdueFee(riderID uint64, remaining float64) (fee fl
 
     price := p.Price
     days := p.Days
-    fee, _ = decimal.NewFromFloat(price).Div(decimal.NewFromInt(int64(days))).Mul(decimal.NewFromFloat(remaining)).Float64()
+    fee, _ = decimal.NewFromFloat(price).Div(decimal.NewFromInt(int64(days))).Mul(decimal.NewFromInt(int64(remaining)).Neg()).Float64()
 
-    formula = fmt.Sprintf("(上次购买骑士卡价格 %.2f元 ÷ 天数 %d天) × 逾期天数 %d天 = 逾期费用 %.2f元", price, days, int(remaining), fee)
+    formula = fmt.Sprintf("(上次购买骑士卡价格 %.2f元 ÷ 天数 %d天) × 逾期天数 %d天 = 逾期费用 %.2f元", price, days, remaining, fee)
     return
 }
