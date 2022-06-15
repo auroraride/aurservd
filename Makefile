@@ -8,7 +8,7 @@ endef
 
 .PHONY: dev
 dev:
-	$(call deploy,latest)
+	$(call deploy,dev)
 
 .PHONY: prod
 prod:
