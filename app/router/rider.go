@@ -54,6 +54,7 @@ func loadRideRoutes() {
     // 业务
     g.GET("/battery/voltage", rapi.Battery.ListVoltage)
     g.GET("/plan", rapi.Plan.List)
+    g.GET("/plan/renewly", rapi.Plan.Renewly)
     g.POST("/order", rapi.Order.Create)
     g.POST("/order/refund", rapi.Order.Refund) // 申请退款
     g.GET("/order", rapi.Order.List)

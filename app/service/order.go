@@ -57,6 +57,19 @@ func NewOrderWithModifier(m *model.Modifier) *orderService {
     return s
 }
 
+// RencentSubscribeOrder 获取骑手最近的骑士卡订单
+func (s *orderService) RencentSubscribeOrder(riderID uint64) (*ent.Order, error) {
+    return s.orm.QueryNotDeleted().
+        Where(
+            order.RiderID(riderID),
+            order.TypeIn(model.OrderTypeNewly, model.OrderTypeRenewal, model.OrderTypeAgain, model.OrderTypeTransform),
+            order.Status(model.OrderStatusPaid),
+        ).
+        Order(ent.Desc(order.FieldCreatedAt)).
+        WithPlan().
+        First(s.ctx)
+}
+
 // PreconditionNewly 新签订单前置条件判定
 // 返回值为最终判定的订单类型(有可能是重签)
 func (s *orderService) PreconditionNewly(sub *model.Subscribe) (state uint) {

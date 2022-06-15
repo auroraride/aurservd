@@ -359,6 +359,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/employee/v1/plan/renewly": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R3003 续费骑士卡",
+                "operationId": "RiderPlanRenewly",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderPlanRenewalRes"
+                        }
+                    }
+                }
+            }
+        },
         "/employee/v1/profile": {
             "get": {
                 "consumes": [
@@ -4829,7 +4861,7 @@ const docTemplate = `{
                 "tags": [
                     "[R]骑手接口"
                 ],
-                "summary": "R3002 获取骑士卡",
+                "summary": "R3002 新购骑士卡",
                 "operationId": "RiderPlanList",
                 "parameters": [
                     {
@@ -7526,6 +7558,30 @@ const docTemplate = `{
                 "price": {
                     "description": "价格",
                     "type": "number"
+                }
+            }
+        },
+        "model.RiderPlanRenewalRes": {
+            "type": "object",
+            "properties": {
+                "fee": {
+                    "description": "逾期费用, 可能为空",
+                    "type": "number"
+                },
+                "formula": {
+                    "description": "逾期费用计算公式, 可能为空",
+                    "type": "string"
+                },
+                "items": {
+                    "description": "骑士卡列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.RiderPlanItem"
+                    }
+                },
+                "overdue": {
+                    "description": "是否需要支付逾期费用",
+                    "type": "boolean"
                 }
             }
         },

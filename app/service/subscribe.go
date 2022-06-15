@@ -18,6 +18,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
+    "github.com/shopspring/decimal"
     log "github.com/sirupsen/logrus"
     "math"
     "time"
@@ -203,6 +204,20 @@ func (s *subscribeService) RecentDetail(riderID uint64) *model.Subscribe {
     return s.Detail(sub)
 }
 
+// QueryEffective 获取骑手当前生效中的订阅
+func (s *subscribeService) QueryEffective(riderID uint64) (*ent.Subscribe, error) {
+    return ar.Ent.Subscribe.QueryNotDeleted().
+        Where(
+            subscribe.RiderID(riderID),
+            subscribe.StatusIn(
+                model.SubscribeStatusInactive,
+                model.SubscribeStatusUsing,
+                model.SubscribeStatusPaused,
+                model.SubscribeStatusOverdue,
+            ),
+        ).First(s.ctx)
+}
+
 // QueryAllRidersEffective 获取所有骑手生效中的订阅
 func (s *subscribeService) QueryAllRidersEffective() []*ent.Subscribe {
     items, _ := ar.Ent.Subscribe.Query().
@@ -326,4 +341,20 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
 // 寄存天数 = 结束寄存当天0点 - 寄存当日24点(第二天0点)
 func (s *subscribeService) PausedDays(start time.Time, end time.Time) int {
     return int(math.Abs(float64(carbon.Time2Carbon(start).StartOfDay().AddDay().DiffInDays(carbon.Time2Carbon(end).StartOfDay()))))
+}
+
+// OverdueFee 计算逾期费用
+func (s *subscribeService) OverdueFee(riderID uint64, remaining float64) (fee float64, formula string) {
+    o, _ := NewOrder().RencentSubscribeOrder(riderID)
+    p := o.Edges.Plan
+    if p == nil {
+        snag.Panic("上次购买骑士卡获取失败")
+    }
+
+    price := p.Price
+    days := p.Days
+    fee, _ = decimal.NewFromFloat(price).Div(decimal.NewFromInt(int64(days))).Mul(decimal.NewFromFloat(remaining)).Float64()
+
+    formula = fmt.Sprintf("(上次购买骑士卡价格%.2f ÷ 天数%d) × 逾期天数%f = 逾期费用%.2f", price, days, remaining, fee)
+    return
 }

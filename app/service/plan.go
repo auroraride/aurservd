@@ -15,6 +15,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/plan"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
+    "math"
     "sort"
     "time"
 )
@@ -324,7 +325,7 @@ func (s *planService) RiderList(req *model.PlanListRiderReq) (res []model.RiderP
             plan.Enable(true),
             plan.StartLTE(now),
             plan.EndGTE(now),
-            plan.HasPmsWith(batterymodel.Voltage(*req.Voltage)),
+            plan.HasPmsWith(batterymodel.Voltage(req.Voltage)),
         ).
         Order(ent.Asc(plan.FieldDays)).
         AllX(s.ctx)
@@ -340,4 +341,37 @@ func (s *planService) RiderList(req *model.PlanListRiderReq) (res []model.RiderP
         }
     }
     return
+}
+
+// RiderListNewly 获取新购骑士卡列表
+func (s *planService) RiderListNewly(req *model.PlanListRiderReq) []model.RiderPlanItem {
+    if sub, _ := NewSubscribe().QueryEffective(s.rider.ID); sub != nil {
+        snag.Panic("骑手有生效中的订阅, 无法新购")
+    }
+
+    return s.RiderList(req)
+}
+
+// RiderListRenewal 获取续费骑士卡列表
+func (s *planService) RiderListRenewal() model.RiderPlanRenewalRes {
+    sub, _ := NewSubscribe().QueryEffective(s.rider.ID)
+    if sub == nil {
+        snag.Panic("骑手无生效中的订阅, 无法续费")
+    }
+
+    var fee float64
+    var formula string
+    if sub.Remaining < 0 {
+        fee, formula = NewSubscribe().OverdueFee(s.rider.ID, math.Abs(float64(sub.Remaining)))
+    }
+
+    return model.RiderPlanRenewalRes{
+        Overdue: sub.Remaining < 0,
+        Fee:     fee,
+        Formula: formula,
+        Items: s.RiderList(&model.PlanListRiderReq{
+            CityID:  sub.CityID,
+            Voltage: sub.Voltage,
+        }),
+    }
 }

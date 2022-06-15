@@ -1824,6 +1824,23 @@ definitions:
         description: 价格
         type: number
     type: object
+  model.RiderPlanRenewalRes:
+    properties:
+      fee:
+        description: 逾期费用, 可能为空
+        type: number
+      formula:
+        description: 逾期费用计算公式, 可能为空
+        type: string
+      items:
+        description: 骑士卡列表
+        items:
+          $ref: '#/definitions/model.RiderPlanItem'
+        type: array
+      overdue:
+        description: 是否需要支付逾期费用
+        type: boolean
+    type: object
   model.RiderSampleInfo:
     properties:
       id:
@@ -2597,6 +2614,27 @@ paths:
       summary: E2006 退租
       tags:
       - '[E]店员接口'
+  /employee/v1/plan/renewly:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderPlanRenewly
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderPlanRenewalRes'
+      summary: R3003 续费骑士卡
+      tags:
+      - '[R]骑手接口'
   /employee/v1/profile:
     get:
       consumes:
@@ -5539,7 +5577,7 @@ paths:
             items:
               $ref: '#/definitions/model.RiderPlanItem'
             type: array
-      summary: R3002 获取骑士卡
+      summary: R3002 新购骑士卡
       tags:
       - '[R]骑手接口'
   /rider/v1/profile:

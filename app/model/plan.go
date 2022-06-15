@@ -64,8 +64,8 @@ type PlanWithComplexes struct {
 
 // PlanListRiderReq 骑士套餐列表请求
 type PlanListRiderReq struct {
-    CityID  uint64   `json:"cityId" query:"cityId" validate:"required" trans:"城市ID"`
-    Voltage *float64 `json:"voltage" query:"voltage" validate:"required" trans:"电压型号"`
+    CityID  uint64  `json:"cityId" query:"cityId" validate:"required" trans:"城市ID"`
+    Voltage float64 `json:"voltage" query:"voltage" validate:"required" trans:"电压型号"`
 }
 
 // RiderPlanItem 骑士返回数据
@@ -76,6 +76,13 @@ type RiderPlanItem struct {
     Days     uint    `json:"days"`     // 天数
     Original float64 `json:"original"` // 原价
     Desc     string  `json:"desc"`     // 优惠信息
+}
+
+type RiderPlanRenewalRes struct {
+    Items   []RiderPlanItem `json:"items"`             // 骑士卡列表
+    Overdue bool            `json:"overdue"`           // 是否需要支付逾期费用
+    Fee     float64         `json:"fee,omitempty"`     // 逾期费用, 可能为空
+    Formula string          `json:"formula,omitempty"` // 逾期费用计算公式, 可能为空
 }
 
 // // PlanItem 单项骑士卡详情(用做订单备份)
