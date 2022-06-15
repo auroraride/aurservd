@@ -192,8 +192,9 @@ func (s *subscribeService) RecentDetail(riderID uint64) *model.Subscribe {
     sub := s.Recent(riderID)
 
     if sub == nil {
-        snag.Panic("未找到有效订阅")
+        return nil
     }
+
     return s.Detail(sub)
 }
 

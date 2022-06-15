@@ -47,6 +47,10 @@ func (s *businessService) Detail(id uint64) (res model.SubscribeBusiness) {
     // 获取最近的订阅
     sub := NewSubscribe().RecentDetail(r.ID)
 
+    if sub == nil {
+        snag.Panic("未找到有效订阅")
+    }
+
     s.CheckCity(sub.City.ID)
 
     ic := r.Edges.Person.IDCardNumber

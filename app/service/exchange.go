@@ -70,6 +70,10 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
     // 获取套餐
     o := NewSubscribe().RecentDetail(s.rider.ID)
 
+    if o == nil {
+        snag.Panic("未找到有效订阅")
+    }
+
     // TODO 判定门店物资是否匹配电压型号
     if o.Status != model.SubscribeStatusUsing {
         snag.Panic("骑士卡状态异常")
