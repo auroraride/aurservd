@@ -4,13 +4,12 @@ import (
     "context"
     "entgo.io/ent"
     "entgo.io/ent/dialect/entsql"
+    "entgo.io/ent/entc/integration/ent/hook"
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "github.com/auroraride/aurservd/app/model"
-    pEnt "github.com/auroraride/aurservd/internal/ent"
-    "github.com/auroraride/aurservd/internal/ent/hook"
     "github.com/auroraride/aurservd/internal/ent/internal"
     "github.com/auroraride/aurservd/pkg/snag"
 )
@@ -70,18 +69,29 @@ func (Stock) Indexes() []ent.Index {
 }
 
 func (Stock) Hooks() []ent.Hook {
+    type intr interface {
+        Num() (r int, exists bool)
+        StoreID() (r uint64, exists bool)
+        GetType() (r uint8, exists bool)
+    }
+
     return []ent.Hook{
-        hook.On(func(next ent.Mutator) ent.Mutator {
-            return hook.StockFunc(func(ctx context.Context, m *pEnt.StockMutation) (ent.Value, error) {
-                n, _ := m.Num()
-                _, sok := m.StoreID()
-                if t, ok := m.GetType(); ok {
-                    if !sok || n != model.StockNumberOfRiderBusiness(t) {
-                        snag.Panic("电池数量错误")
+        hook.On(
+            func(next ent.Mutator) ent.Mutator {
+                return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+                    if st, ok := m.(intr); ok {
+                        n, _ := st.Num()
+                        _, sok := st.StoreID()
+                        if t, ok := st.GetType(); ok {
+                            if !sok || n != model.StockNumberOfRiderBusiness(t) {
+                                snag.Panic("电池数量错误")
+                            }
+                        }
                     }
-                }
-                return next.Mutate(ctx, m)
-            })
-        }, ent.OpCreate),
+                    return next.Mutate(ctx, m)
+                })
+            },
+            ent.OpCreate,
+        ),
     }
 }

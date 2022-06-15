@@ -677,7 +677,9 @@ func init() {
 	store.DefaultStatus = storeDescStatus.Default.(uint8)
 	subscribeMixin := schema.Subscribe{}.Mixin()
 	subscribeMixinHooks2 := subscribeMixin[2].Hooks()
+	subscribeHooks := schema.Subscribe{}.Hooks()
 	subscribe.Hooks[0] = subscribeMixinHooks2[0]
+	subscribe.Hooks[1] = subscribeHooks[0]
 	subscribeMixinFields0 := subscribeMixin[0].Fields()
 	_ = subscribeMixinFields0
 	subscribeFields := schema.Subscribe{}.Fields()

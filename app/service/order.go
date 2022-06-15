@@ -345,6 +345,11 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
 func (s *orderService) RefundSuccess(req *model.PaymentRefund) {
     ctx := context.Background()
 
+    // 删除缓存
+    cache.Del(ctx, req.OutRefundNo)
+
+    log.Infof("%s(OrderID:%d) [退款]退款完成, 实际退款时间: %s", req.OutRefundNo, req.OrderID, req.Time)
+
     // 更新订单
     _, err := ar.Ent.Order.UpdateOneID(req.OrderID).
         SetStatus(model.OrderStatusRefundSuccess).
@@ -353,6 +358,7 @@ func (s *orderService) RefundSuccess(req *model.PaymentRefund) {
     if err != nil {
         log.Error(err)
     }
+    log.Infof("%s(OrderID:%d) [退款]原订单更新完成", req.OutRefundNo, req.OrderID)
 
     // 更新退款订单
     _, err = ar.Ent.OrderRefund.Update().
@@ -363,21 +369,21 @@ func (s *orderService) RefundSuccess(req *model.PaymentRefund) {
     if err != nil {
         log.Error(err)
     }
+    log.Infof("%s(OrderID:%d) [退款]退款订单更新完成", req.OutRefundNo, req.OrderID)
 
     // 更新骑士卡
     _, err = ar.Ent.Subscribe.Update().Where(subscribe.InitialOrderID(req.OrderID)).SetRefundAt(req.Time).SetStatus(model.SubscribeStatusCanceled).Save(ctx)
     if err != nil {
         log.Error(err)
     }
+    log.Infof("%s(OrderID:%d) [退款]骑士卡更新完成", req.OutRefundNo, req.OrderID)
 
     // 删除提成订单
     err = ar.Ent.Commission.SoftDelete().Where(commission.OrderID(req.OrderID)).SetRemark("用户已退款").Exec(ctx)
     if err != nil {
         log.Error(err)
     }
-
-    // 删除缓存
-    cache.Del(ctx, req.OutRefundNo)
+    log.Infof("%s(OrderID:%d) [退款]提成订单更新完成", req.OutRefundNo, req.OrderID)
 }
 
 // List 获取订单列表
@@ -395,7 +401,8 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
         }).
         WithSubscribe(func(sq *ent.SubscribeQuery) {
             sq.WithEmployee().WithStore()
-        })
+        }).
+        WithRefund()
     if req.RiderID != nil {
         q.Where(order.RiderID(*req.RiderID))
     }

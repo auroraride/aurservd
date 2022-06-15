@@ -170,6 +170,7 @@ func (s *riderOrderService) Query(riderID, orderID uint64) *ent.Order {
         WithSubscribe(func(sq *ent.SubscribeQuery) {
             sq.WithEmployee().WithStore()
         }).
+        WithRefund().
         First(s.ctx)
     if item == nil {
         snag.Panic("未找到订单")

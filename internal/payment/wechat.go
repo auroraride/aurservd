@@ -170,12 +170,18 @@ func (c *wechatClient) Notification(req *http.Request) *model.PaymentCache {
         return nil
     }
 
+    b, _ = jsoniter.MarshalIndent(pc, "", "  ")
+    log.Infof("获取到微信支付回调缓存: %s", b)
+
     state := transaction.TradeState
     if pc.CacheType != model.PaymentCacheTypePlan || *state != "SUCCESS" {
         return nil
     }
 
     pc.Subscribe.TradeNo = *(transaction.TransactionId)
+
+    b, _ = jsoniter.MarshalIndent(pc, "", "  ")
+    log.Infof("微信支付缓存更新: %s", b)
 
     return pc
 }
@@ -219,6 +225,9 @@ func (c *wechatClient) RefundNotification(req *http.Request) *model.PaymentCache
         return nil
     }
 
+    b, _ = jsoniter.MarshalIndent(pc, "", "  ")
+    log.Infof("获取到微信退款回调缓存: %s", b)
+
     if transaction.RefundStatus != "SUCCESS" {
         return nil
     }
@@ -226,6 +235,9 @@ func (c *wechatClient) RefundNotification(req *http.Request) *model.PaymentCache
     pc.Refund.Success = true
     pc.Refund.Request = true
     pc.Refund.Time = transaction.SuccessTime
+
+    b, _ = jsoniter.MarshalIndent(pc, "", "  ")
+    log.Infof("微信退款缓存更新: %s", b)
 
     return pc
 }

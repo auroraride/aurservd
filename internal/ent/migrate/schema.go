@@ -1395,16 +1395,16 @@ var (
 				Name:    "rider_phone",
 				Unique:  false,
 				Columns: []*schema.Column{RiderColumns[7]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
 			},
 			{
 				Name:    "rider_last_device",
 				Unique:  false,
 				Columns: []*schema.Column{RiderColumns[10]},
-			},
-			{
-				Name:    "rider_phone",
-				Unique:  false,
-				Columns: []*schema.Column{RiderColumns[7]},
 			},
 			{
 				Name:    "rider_push_id",

@@ -2161,6 +2161,7 @@ definitions:
         - 2
         - 3
         - 4
+        - 5
         type: integer
       voltage:
         description: 可用电压型号

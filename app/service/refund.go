@@ -150,18 +150,19 @@ func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
     var os uint8
     after := "同意退款"
 
+    prepay := &model.PaymentCache{
+        CacheType: model.PaymentCacheTypeRefund,
+        Refund: &model.PaymentRefund{
+            OrderID:      o.ID,
+            TradeNo:      o.TradeNo,
+            Total:        o.Total,
+            RefundAmount: or.Amount,
+            Reason:       or.Reason,
+            OutRefundNo:  or.OutRefundNo,
+        },
+    }
+
     if req.Status == 1 {
-        prepay := &model.PaymentCache{
-            CacheType: model.PaymentCacheTypeRefund,
-            Refund: &model.PaymentRefund{
-                OrderID:      o.ID,
-                TradeNo:      o.TradeNo,
-                Total:        o.Total,
-                RefundAmount: or.Amount,
-                Reason:       or.Reason,
-                OutRefundNo:  or.OutRefundNo,
-            },
-        }
 
         // 订单缓存 (原始订单号key)
         err := cache.Set(s.ctx, o.OutTradeNo, prepay, 20*time.Minute).Err()
@@ -191,14 +192,19 @@ func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
         after = "拒绝退款"
     }
 
-    tx, _ := ar.Ent.Tx(s.ctx)
-    _, err := tx.OrderRefund.UpdateOne(or).SetStatus(status).SetRemark(req.Remark).Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
+    // 判定退款是否成功 (支付宝同步返回有可能比异步慢)
+    if prepay.Refund.Success {
+        NewOrder().RefundSuccess(prepay.Refund)
+    } else {
+        tx, _ := ar.Ent.Tx(s.ctx)
+        _, err := tx.OrderRefund.UpdateOne(or).SetStatus(status).SetRemark(req.Remark).Save(s.ctx)
+        snag.PanicIfErrorX(err, tx.Rollback)
 
-    _, err = tx.Order.UpdateOne(o).SetStatus(os).Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
+        _, err = tx.Order.UpdateOne(o).SetStatus(os).Save(s.ctx)
+        snag.PanicIfErrorX(err, tx.Rollback)
 
-    _ = tx.Commit()
+        _ = tx.Commit()
+    }
 
     // 记录日志
     go logging.NewOperateLog().

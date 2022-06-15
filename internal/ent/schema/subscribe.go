@@ -93,14 +93,17 @@ func (Subscribe) Hooks() []ent.Hook {
     type intr interface {
         UnsubscribeReason() (r string, exists bool)
         SetUnsubscribeReason(s string)
+        Status() (r uint8, exists bool)
     }
     return []ent.Hook{
         hook.On(
             func(next ent.Mutator) ent.Mutator {
                 return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
                     if sub, ok := m.(intr); ok {
-                        if reason, _ := sub.UnsubscribeReason(); reason == "" {
-                            snag.Panic("退租理由必填")
+                        if status, ok := sub.Status(); ok && status == model.SubscribeStatusUnSubscribed {
+                            if reason, _ := sub.UnsubscribeReason(); reason == "" {
+                                snag.Panic("退租理由必填")
+                            }
                         }
                     }
                     return next.Mutate(ctx, m)

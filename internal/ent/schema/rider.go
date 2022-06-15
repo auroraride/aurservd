@@ -100,7 +100,6 @@ func (Rider) Indexes() []ent.Index {
             }),
         ),
         index.Fields("last_device"),
-        index.Fields("phone"),
         index.Fields("push_id"),
     }
 }

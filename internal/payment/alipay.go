@@ -108,6 +108,7 @@ func (c *alipayClient) Refund(req *model.PaymentRefund) {
         snag.Panic(result.Content.Msg)
         return
     }
+
     req.Request = true
     if result.Content.FundChange == "Y" {
         req.Success = true
@@ -135,6 +136,9 @@ func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
         return nil
     }
 
+    b, _ = jsoniter.MarshalIndent(pc, "", "  ")
+    log.Infof("获取到支付宝支付缓存: %s", b)
+
     switch pc.CacheType {
     case model.PaymentCacheTypePlan:
         if result.TradeStatus == alipay.TradeStatusSuccess {
@@ -147,6 +151,9 @@ func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
         pc.Refund.Time = carbon.Parse(result.GmtRefund).Carbon2Time()
         return pc
     }
+
+    b, _ = jsoniter.MarshalIndent(pc, "", "  ")
+    log.Infof("支付宝支付缓存更新: %s", b)
 
     return nil
 }

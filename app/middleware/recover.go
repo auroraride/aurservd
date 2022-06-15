@@ -22,6 +22,7 @@ func Recover() echo.MiddlewareFunc {
                     switch r.(type) {
                     case *snag.Error:
                         c.Error(r.(*snag.Error))
+                        log.Error(r)
                     case *ent.ValidationError:
                         log.Error(string(debug.Stack()))
                         c.Error(r.(*ent.ValidationError).Unwrap())
