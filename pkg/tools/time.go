@@ -19,29 +19,45 @@ func NewTime() *timeTool {
     return &timeTool{}
 }
 
-// DiffDaysOfStart 获取两个日期相差天数(a - b), 计算方式为a / b都转换为当日的0天(不将当日计算在内)
-func (t *timeTool) DiffDaysOfStart(after, before time.Time) int {
+// DiffDays 按照标准时间计算天数 b hh:mm:ss -> a hh:mm:ss
+// 用来计算[寄存时间]
+func (t *timeTool) DiffDays(after, before time.Time) int {
+    return int(carbon.Time2Carbon(before).DiffInDays(carbon.Time2Carbon(after)))
+}
+
+func (t *timeTool) DiffDaysToNow(before time.Time) int {
+    return t.DiffDays(time.Now(), before)
+}
+
+func (t *timeTool) DiffDaysToNowString(before string) int {
+    return int(carbon.Parse(before).DiffInDays(carbon.Time2Carbon(time.Now())))
+}
+
+// LastDays 获取两个日期相差天数(a - b), b 00:00:00 -> a 00:00:00
+// 用来计算[剩余时间]
+func (t *timeTool) LastDays(after, before time.Time) int {
     return int(carbon.Time2Carbon(before).StartOfDay().DiffInDays(carbon.Time2Carbon(after).StartOfDay()))
 }
 
-func (t *timeTool) DiffDaysOfStartToNow(before time.Time) int {
+func (t *timeTool) LastDaysToNow(before time.Time) int {
     return int(carbon.Time2Carbon(before).StartOfDay().DiffInDays(carbon.Now().StartOfDay()))
 }
 
-func (t *timeTool) DiffDaysOfStartToNowString(before string) int {
+func (t *timeTool) LastDaysToNowString(before string) int {
     return int(carbon.Parse(before).StartOfDay().DiffInDays(carbon.Now().StartOfDay()))
 }
 
-// DiffDaysOfNextDay 获取两个日期相差天数(a - b), 计算方式为a转换为当日的0天, b转换为第二天的0天(将当日计算在内)
-func (t *timeTool) DiffDaysOfNextDay(after, before time.Time) int {
+// UsedDays 获取两个日期相差天数(a - b), b 00:00:00 -> a+1 00:00:00
+// 用来计算[已使用时间]
+func (t *timeTool) UsedDays(after, before time.Time) int {
     return int(carbon.Time2Carbon(before).StartOfDay().DiffInDays(carbon.Time2Carbon(after).StartOfDay().AddDay()))
 }
 
-func (t *timeTool) DiffDaysOfNextDayToNow(before time.Time) int {
+func (t *timeTool) UsedDaysToNow(before time.Time) int {
     return int(carbon.Time2Carbon(before).StartOfDay().DiffInDays(carbon.Now().StartOfDay().AddDay()))
 }
 
-func (t *timeTool) DiffDaysOfNextDayToNowString(before string) int {
+func (t *timeTool) UsedDaysToNowString(before string) int {
     return int(carbon.Parse(before).StartOfDay().DiffInDays(carbon.Now().StartOfDay().AddDay()))
 }
 

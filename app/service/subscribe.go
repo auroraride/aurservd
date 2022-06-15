@@ -226,12 +226,14 @@ func (s *subscribeService) QueryAllRidersEffective() []*ent.Subscribe {
 func (s *subscribeService) UpdateStatus(item *ent.Subscribe) {
     tt := tools.NewTime()
     pauseDays := item.PauseDays
-    pastDays := tt.DiffDaysOfNextDayToNow(*item.StartAt)
+    // 已用天数
+    pastDays := tt.UsedDaysToNow(*item.StartAt)
     status := model.SubscribeStatusUsing
     // 寄存中
     if item.PausedAt != nil && item.Edges.Pauses != nil {
         p := item.Edges.Pauses[0]
-        diff := tt.DiffDaysOfNextDayToNow(p.StartAt)
+        // 寄存已过时间需要尽可能的少算
+        diff := tt.DiffDaysToNow(p.StartAt)
         pauseDays += diff
     }
     // 剩余天数

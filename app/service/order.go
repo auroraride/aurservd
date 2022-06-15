@@ -23,6 +23,7 @@ import (
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
+    "github.com/golang-module/carbon/v2"
     "github.com/shopspring/decimal"
     log "github.com/sirupsen/logrus"
     "time"
@@ -135,10 +136,10 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result model.OrderCrea
     // 查询套餐是否存在
     op := NewPlan().QueryEffectiveWithID(req.PlanID)
 
-    // 距离上次订阅过去的时间
+    // 距离上次订阅过去的时间(从退订的第二天0点开始计算,不满一天算0天)
     var pastDays int
     if otype == model.OrderTypeAgain {
-        pastDays = tools.NewTime().DiffDaysOfStartToNowString(sub.EndAt)
+        pastDays = int(carbon.Parse(sub.EndAt).AddDay().DiffInDays(carbon.Now()))
     }
 
     // 判定用户是否需要缴纳押金

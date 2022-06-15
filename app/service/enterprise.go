@@ -287,10 +287,10 @@ func (s *enterpriseService) UpdateStatement(item *ent.Enterprise) {
         var used int
         // 判定是否退订
         if sub.EndAt != nil {
-            used = tt.DiffDaysOfStart(*sub.EndAt, *sub.StartAt)
+            used = tt.UsedDays(*sub.EndAt, *sub.StartAt)
         } else {
-            // 排除当前时间当日0点
-            used = tt.DiffDaysOfStartToNow(*sub.StartAt)
+            // 计算已使用天数
+            used = tt.UsedDaysToNow(*sub.StartAt)
         }
 
         // 总天数

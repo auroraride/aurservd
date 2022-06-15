@@ -17,6 +17,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
+    "github.com/golang-module/carbon/v2"
     "strings"
     "time"
 )
@@ -155,7 +156,8 @@ func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
 
     now := time.Now()
 
-    days := tools.NewTime().DiffDaysOfStart(now, sp.StartAt)
+    // 已暂停天数
+    days := tools.NewTime().DiffDays(now, sp.StartAt)
 
     spu := tx.SubscribePause.UpdateOne(sp).SetDays(days).SetEndAt(now)
 
@@ -168,7 +170,7 @@ func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
     lg := logging.NewOperateLog().
         SetRef(sub.Edges.Rider).
         SetOperate(model.OperateSubscribeContinue).
-        SetDiff(fmt.Sprintf("暂停计费 (共%d天)", tools.NewTime().DiffDaysOfNextDayToNow(*sub.PausedAt)), "计费中")
+        SetDiff(fmt.Sprintf("暂停计费 (%s - %s 共%d天)", sp.StartAt.Format(carbon.DateTimeLayout), now.Format(carbon.DateTimeLayout), days), "计费中")
 
     if s.modifier != nil {
         stockReq.ManagerID = s.modifier.ID

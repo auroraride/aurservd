@@ -162,7 +162,7 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
                         after = *sub.EndAt
                     }
 
-                    days = tt.DiffDaysOfNextDay(after, before)
+                    days = tt.UsedDays(after, before)
 
                     // 总天数
                     res.Days += days
