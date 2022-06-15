@@ -509,8 +509,8 @@ func (s *riderService) Query(id uint64) *ent.Rider {
     return item
 }
 
-// QueryForBusiness 查找骑手并判定是否满足业务办理条件
-func (s *riderService) QueryForBusiness(riderID uint64) (u *ent.Rider, err error) {
+// QueryForBusinessID 查找骑手并判定是否满足业务办理条件
+func (s *riderService) QueryForBusinessID(riderID uint64) (u *ent.Rider, err error) {
     u = s.Query(riderID)
     if u.IsNewDevice {
         err = errors.New("骑手未人脸识别")
@@ -525,6 +525,21 @@ func (s *riderService) QueryForBusiness(riderID uint64) (u *ent.Rider, err error
         err = errors.New("骑手被拉黑")
     }
     return
+}
+
+func (s *riderService) CheckForBusiness(u *ent.Rider) {
+    if u.IsNewDevice {
+        snag.Panic("骑手未人脸识别")
+    }
+    if !s.IsAuthed(u) {
+        snag.Panic("骑手未实名")
+    }
+    if s.IsBlocked(u) {
+        snag.Panic("骑手被封禁")
+    }
+    if s.IsBanned(u) {
+        snag.Panic("骑手被拉黑")
+    }
 }
 
 // Block 封锁/解封骑手账户

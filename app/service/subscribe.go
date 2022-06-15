@@ -50,8 +50,8 @@ func NewSubscribeWithModifier(m *model.Modifier) *subscribeService {
     return s
 }
 
-func (s *subscribeService) QueryEdges(id uint64) *ent.Subscribe {
-    item, _ := s.orm.QueryNotDeleted().
+func (s *subscribeService) QueryEdges(id uint64) (*ent.Subscribe, error) {
+    return s.orm.QueryNotDeleted().
         Where(subscribe.ID(id)).
         WithPlan(func(pq *ent.PlanQuery) {
             pq.WithPms()
@@ -65,15 +65,19 @@ func (s *subscribeService) QueryEdges(id uint64) *ent.Subscribe {
         }).
         WithEnterprise().
         First(s.ctx)
+}
+
+func (s *subscribeService) QueryEdgesX(id uint64) *ent.Subscribe {
+    item, _ := s.QueryEdges(id)
     if item == nil {
         snag.Panic("未找到有效订阅")
     }
     return item
 }
 
-// QueryAndDetail 根据订阅ID查询订阅以及计算详情
-func (s *subscribeService) QueryAndDetail(id uint64) (sub *ent.Subscribe, detail *model.Subscribe) {
-    sub = s.QueryEdges(id)
+// QueryAndDetailX 根据订阅ID查询订阅以及计算详情
+func (s *subscribeService) QueryAndDetailX(id uint64) (sub *ent.Subscribe, detail *model.Subscribe) {
+    sub = s.QueryEdgesX(id)
     detail = s.Detail(sub)
     return
 }

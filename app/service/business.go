@@ -40,7 +40,7 @@ func (s *businessService) CheckCity(cityID uint64) {
 
 // Detail 获取骑手订阅业务详情
 func (s *businessService) Detail(id uint64) (res model.SubscribeBusiness) {
-    r, err := NewRider().QueryForBusiness(id)
+    r, err := NewRider().QueryForBusinessID(id)
     if err != nil {
         snag.Panic(err)
     }
@@ -74,4 +74,19 @@ func (s *businessService) Detail(id uint64) (res model.SubscribeBusiness) {
 
     res.Business = sub.Business
     return
+}
+
+func (s *businessService) Plans(subscribeID uint64) {
+    sub := NewSubscribe().QueryEdgesX(subscribeID)
+
+    s.CheckCity(sub.CityID)
+    NewRider().CheckForBusiness(sub.Edges.Rider)
+
+    if sub.Status != model.SubscribeStatusUsing {
+        snag.Panic("当前为非使用中")
+    }
+
+    // 获取全部的电压列表
+    // vs := NewBattery().ListVoltages(sub.Voltage)
+    // 获取全部的
 }
