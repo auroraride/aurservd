@@ -156,8 +156,8 @@ func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
 
     now := time.Now()
 
-    // 已暂停天数
-    days := tools.NewTime().DiffDays(now, sp.StartAt)
+    // 已寄存天数
+    days := NewSubscribe().PausedDays(sp.StartAt, now)
 
     spu := tx.SubscribePause.UpdateOne(sp).SetDays(days).SetEndAt(now)
 

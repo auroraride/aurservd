@@ -19,6 +19,7 @@ import (
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     log "github.com/sirupsen/logrus"
+    "math"
     "time"
 )
 
@@ -233,7 +234,7 @@ func (s *subscribeService) UpdateStatus(item *ent.Subscribe) {
     if item.PausedAt != nil && item.Edges.Pauses != nil {
         p := item.Edges.Pauses[0]
         // 寄存已过时间需要尽可能的少算
-        diff := tt.DiffDaysToNow(p.StartAt)
+        diff := s.PausedDays(p.StartAt, time.Now())
         pauseDays += diff
     }
     // 剩余天数
@@ -319,4 +320,10 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
         Remaining: sub.Remaining,
         Voltage:   sub.Voltage,
     }
+}
+
+// PausedDays 计算寄存天数
+// 寄存天数 = 结束寄存当天0点 - 寄存当日24点(第二天0点)
+func (s *subscribeService) PausedDays(start time.Time, end time.Time) int {
+    return int(math.Abs(float64(carbon.Time2Carbon(start).StartOfDay().AddDay().DiffInDays(carbon.Time2Carbon(end).StartOfDay()))))
 }
