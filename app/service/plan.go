@@ -359,16 +359,20 @@ func (s *planService) RiderListRenewal() model.RiderPlanRenewalRes {
         snag.Panic("骑手无生效中的订阅, 无法续费")
     }
 
-    var fee float64
+    var fee, remaining float64
     var formula string
+
+    remaining = math.Abs(float64(sub.Remaining))
+
     if sub.Remaining < 0 {
-        fee, formula = NewSubscribe().OverdueFee(s.rider.ID, math.Abs(float64(sub.Remaining)))
+        fee, formula = NewSubscribe().OverdueFee(s.rider.ID, remaining)
     }
 
     return model.RiderPlanRenewalRes{
         Overdue: sub.Remaining < 0,
         Fee:     fee,
         Formula: formula,
+        Days:    remaining,
         Items: s.RiderList(&model.PlanListRiderReq{
             CityID:  sub.CityID,
             Voltage: sub.Voltage,

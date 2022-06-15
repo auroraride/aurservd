@@ -7564,6 +7564,10 @@ const docTemplate = `{
         "model.RiderPlanRenewalRes": {
             "type": "object",
             "properties": {
+                "days": {
+                    "description": "逾期天数, 可能为空",
+                    "type": "number"
+                },
                 "fee": {
                     "description": "逾期费用, 可能为空",
                     "type": "number"

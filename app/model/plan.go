@@ -81,6 +81,7 @@ type RiderPlanItem struct {
 type RiderPlanRenewalRes struct {
     Items   []RiderPlanItem `json:"items"`             // 骑士卡列表
     Overdue bool            `json:"overdue"`           // 是否需要支付逾期费用
+    Days    float64         `json:"days,omitempty"`    // 逾期天数, 可能为空
     Fee     float64         `json:"fee,omitempty"`     // 逾期费用, 可能为空
     Formula string          `json:"formula,omitempty"` // 逾期费用计算公式, 可能为空
 }
