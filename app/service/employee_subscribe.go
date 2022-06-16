@@ -169,7 +169,8 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
 
     // 提成
     if info.CommissionID != nil {
-        _, _ = tx.Commission.UpdateOneID(*info.CommissionID).SetEmployeeID(s.employee.ID).Save(s.ctx)
+        _, err = tx.Commission.UpdateOneID(*info.CommissionID).SetEmployeeID(s.employee.ID).Save(s.ctx)
+        snag.PanicIfErrorX(err, tx.Rollback)
     }
 
     // 调出库存

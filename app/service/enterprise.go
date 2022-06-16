@@ -98,8 +98,11 @@ func (s *enterpriseService) Modify(req *model.EnterpriseDetailWithID) {
     e, err = tx.Enterprise.ModifyOne(e, req.EnterpriseDetail).Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
 
-    tx.EnterprisePrice.Delete().Where(enterpriseprice.EnterpriseID(e.ID)).ExecX(s.ctx)
-    tx.EnterpriseContract.Delete().Where(enterprisecontract.EnterpriseID(e.ID)).ExecX(s.ctx)
+    _, err = tx.EnterprisePrice.Delete().Where(enterpriseprice.EnterpriseID(e.ID)).Exec(s.ctx)
+    snag.PanicIfErrorX(err, tx.Rollback)
+
+    _, err = tx.EnterpriseContract.Delete().Where(enterprisecontract.EnterpriseID(e.ID)).Exec(s.ctx)
+    snag.PanicIfErrorX(err, tx.Rollback)
 
     s.SaveEnterprise(tx, e, req.EnterpriseDetail)
     _ = tx.Commit()

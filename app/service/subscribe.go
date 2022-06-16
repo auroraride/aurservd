@@ -303,6 +303,7 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
         Save(s.ctx)
     if err != nil {
         log.Error(err)
+        _ = tx.Rollback()
         snag.Panic("时间修改失败")
     }
 
