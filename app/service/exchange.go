@@ -14,7 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
-    "github.com/google/uuid"
+    "github.com/lithammer/shortuuid/v4"
     "strings"
     "time"
 )
@@ -83,12 +83,12 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
     }
 
     // 存储
-    uid := uuid.New().String()
+    uid := shortuuid.New()
     s.orm.Create().
         SetEmployee(ee).
         SetRider(s.rider).
         SetSuccess(true).
-        SetStore(item).
+        SetStoreID(item.ID).
         SetCityID(subd.City.ID).
         SetUUID(uid).
         SetVoltage(subd.Voltage).

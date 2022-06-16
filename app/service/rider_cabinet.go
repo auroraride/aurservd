@@ -13,7 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
-    "github.com/google/uuid"
+    "github.com/lithammer/shortuuid/v4"
     log "github.com/sirupsen/logrus"
     "time"
 )
@@ -88,7 +88,7 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
         snag.Panic("电柜目前不可用")
     }
 
-    uid := uuid.New().String()
+    uid := shortuuid.New()
     res := &model.RiderCabinetInfo{
         ID:                         cab.ID,
         UUID:                       uid,
