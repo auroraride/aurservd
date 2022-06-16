@@ -81,9 +81,10 @@ func (Stock) Hooks() []ent.Hook {
                 return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
                     if st, ok := m.(intr); ok {
                         n, _ := st.Num()
-                        _, sok := st.StoreID()
                         if t, ok := st.GetType(); ok {
-                            if !sok || n != model.StockNumberOfRiderBusiness(t) {
+                            // 骑手业务是否满足调拨电池数量要求
+                            x := model.StockNumberOfRiderBusiness(t)
+                            if x != 0 && n != x {
                                 snag.Panic("电池数量错误")
                             }
                         }

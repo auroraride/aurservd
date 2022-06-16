@@ -2605,7 +2605,12 @@ paths:
         in: query
         name: start
         type: string
-      - description: 筛选业务类别
+      - description: 筛选业务类别 active:激活 pause:寄存 continue:结束寄存 unsubscribe:退订
+        enum:
+        - active
+        - pause
+        - continue
+        - unsubscribe
         in: query
         name: type
         type: string
@@ -2783,6 +2788,27 @@ paths:
                   type: array
               type: object
       summary: E2008 换电记录
+      tags:
+      - '[E]店员接口'
+  /employee/v1/order:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeOrderList
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: E2009 订单记录
       tags:
       - '[E]店员接口'
   /employee/v1/plan/renewly:

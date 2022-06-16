@@ -34,6 +34,7 @@ type orderService struct {
     modifier *model.Modifier
     rider    *ent.Rider
     orm      *ent.OrderClient
+    employee *ent.Employee
 }
 
 func NewOrder() *orderService {
@@ -54,6 +55,13 @@ func NewOrderWithModifier(m *model.Modifier) *orderService {
     s := NewOrder()
     s.ctx = context.WithValue(s.ctx, "modifier", m)
     s.modifier = m
+    return s
+}
+
+func NewOrderWithEmployee(e *ent.Employee) *orderService {
+    s := NewOrder()
+    s.ctx = context.WithValue(s.ctx, "employee", e)
+    s.employee = e
     return s
 }
 

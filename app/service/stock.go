@@ -8,6 +8,7 @@ package service
 import (
     "context"
     stdsql "database/sql"
+    "errors"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -181,7 +182,7 @@ func (s *stockService) Fetch(storeID uint64, name string) int {
         StoreID uint64 `json:"store_id"`
     }
     q := s.orm.QueryNotDeleted().
-        Where(stock.Name(name), stock.StoreID(storeID), stock.NumGT(0)).
+        Where(stock.Name(name), stock.StoreID(storeID)).
         GroupBy(stock.FieldStoreID).
         Aggregate(ent.Sum(stock.FieldNum))
     err := q.Scan(s.ctx, &result)
@@ -225,7 +226,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
     sn := tools.NewUnique().NewSN()
 
     in := &req.InboundID
-    if req.InboundID < 0 {
+    if req.InboundID == 0 {
         in = nil
     }
 
@@ -316,7 +317,7 @@ func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockWit
     if req.StoreID != 0 {
         cr.SetStoreID(req.StoreID)
         if num < 0 && s.Fetch(req.StoreID, name) < int(math.Abs(float64(num))) {
-            snag.Panic("电池库存不足")
+            return errors.New("电池库存不足")
         }
     }
 

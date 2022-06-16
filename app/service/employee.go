@@ -213,10 +213,12 @@ func (s *employeeService) Signin(req *model.EmployeeSignReq) model.EmployeeProfi
     }
 
     // 生成UUID
-    e = e.Update().SetSn(uuid.New()).SaveX(s.ctx)
+    sn := uuid.New()
+    e.Update().SetSn(sn).SaveX(s.ctx)
 
     s.ExtendTokenTime(e.ID, token)
 
+    e.Sn = sn
     res := s.Profile(e)
     res.Token = token
 

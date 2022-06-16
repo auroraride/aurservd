@@ -255,8 +255,14 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            "active",
+                            "pause",
+                            "continue",
+                            "unsubscribe"
+                        ],
                         "type": "string",
-                        "description": "筛选业务类别",
+                        "description": "筛选业务类别 active:激活 pause:寄存 continue:结束寄存 unsubscribe:退订",
                         "name": "type",
                         "in": "query"
                     }
@@ -526,6 +532,38 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/v1/order": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E2009 订单记录",
+                "operationId": "EmployeeOrderList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }

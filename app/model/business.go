@@ -22,7 +22,8 @@ type BusinessListReq struct {
     Start   *string `json:"start"`   // 筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01
     End     *string `json:"end"`     // 筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01
     Keyword *string `json:"keyword"` // 筛选骑手姓名或电话
-    Type    *string `json:"type"`    // 筛选业务类别
+    // 筛选业务类别 active:激活 pause:寄存 continue:结束寄存 unsubscribe:退订
+    Type *string `json:"type" enums:"active,pause,continue,unsubscribe"`
 }
 
 type BusinessEmployeeListRes struct {

@@ -149,13 +149,14 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
     NewBusinessWithEmployee(s.employee).CheckCity(info.City.ID)
 
     tx, _ := ar.Ent.Tx(s.ctx)
+    storeID := s.employee.Edges.Store.ID
 
     // 激活
     _, err := tx.Subscribe.UpdateOneID(info.ID).
         SetStatus(model.SubscribeStatusUsing).
         SetStartAt(time.Now()).
         SetEmployeeID(s.employee.ID).
-        SetStoreID(s.employee.Edges.Store.ID).
+        SetStoreID(storeID).
         Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
 
@@ -176,7 +177,7 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
         tx.Stock.Create(),
         &model.StockWithRiderReq{
             RiderID:    info.Rider.ID,
-            StoreID:    s.employee.Edges.Store.ID,
+            StoreID:    storeID,
             EmployeeID: s.employee.ID,
             Voltage:    info.Voltage,
             StockType:  model.StockTypeRiderObtain,
