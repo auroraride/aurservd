@@ -28,9 +28,8 @@ var Subscribe = new(subscribe)
 // @Success      200  {object}  model.SubscribeActiveInfo  "请求成功"
 func (*subscribe) Inactive(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.QRQueryReq](c)
-    return ctx.SendResponse(
-        service.NewEmployeeSubscribeWithEmployee(ctx.Employee).Inactive(req.Qrcode),
-    )
+    detail, _ := service.NewEmployeeSubscribeWithEmployee(ctx.Employee).Inactive(req.Qrcode)
+    return ctx.SendResponse(detail)
 }
 
 // Active
