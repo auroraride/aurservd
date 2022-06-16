@@ -9,6 +9,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
+	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -110,6 +111,23 @@ func init() {
 	branchcontract.DefaultUpdatedAt = branchcontractDescUpdatedAt.Default.(func() time.Time)
 	// branchcontract.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	branchcontract.UpdateDefaultUpdatedAt = branchcontractDescUpdatedAt.UpdateDefault.(func() time.Time)
+	businessMixin := schema.Business{}.Mixin()
+	businessMixinHooks2 := businessMixin[2].Hooks()
+	business.Hooks[0] = businessMixinHooks2[0]
+	businessMixinFields0 := businessMixin[0].Fields()
+	_ = businessMixinFields0
+	businessFields := schema.Business{}.Fields()
+	_ = businessFields
+	// businessDescCreatedAt is the schema descriptor for created_at field.
+	businessDescCreatedAt := businessMixinFields0[0].Descriptor()
+	// business.DefaultCreatedAt holds the default value on creation for the created_at field.
+	business.DefaultCreatedAt = businessDescCreatedAt.Default.(func() time.Time)
+	// businessDescUpdatedAt is the schema descriptor for updated_at field.
+	businessDescUpdatedAt := businessMixinFields0[1].Descriptor()
+	// business.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	business.DefaultUpdatedAt = businessDescUpdatedAt.Default.(func() time.Time)
+	// business.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	business.UpdateDefaultUpdatedAt = businessDescUpdatedAt.UpdateDefault.(func() time.Time)
 	cabinetMixin := schema.Cabinet{}.Mixin()
 	cabinetMixinHooks2 := cabinetMixin[2].Hooks()
 	cabinet.Hooks[0] = cabinetMixinHooks2[0]

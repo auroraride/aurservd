@@ -20,7 +20,7 @@ type PlanMixin struct {
 func (m PlanMixin) Fields() []ent.Field {
     f := field.Uint64("plan_id").Comment("骑士卡ID")
     if m.Optional {
-        f.Optional()
+        f.Optional().Nillable()
     }
     return []ent.Field{f}
 }

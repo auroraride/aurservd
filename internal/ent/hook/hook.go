@@ -61,6 +61,19 @@ func (f BranchContractFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 	return f(ctx, mv)
 }
 
+// The BusinessFunc type is an adapter to allow the use of ordinary
+// function as Business mutator.
+type BusinessFunc func(context.Context, *ent.BusinessMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f BusinessFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.BusinessMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BusinessMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The CabinetFunc type is an adapter to allow the use of ordinary
 // function as Cabinet mutator.
 type CabinetFunc func(context.Context, *ent.CabinetMutation) (ent.Value, error)

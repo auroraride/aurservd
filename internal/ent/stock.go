@@ -39,7 +39,7 @@ type Stock struct {
 	Remark string `json:"remark,omitempty"`
 	// ManagerID holds the value of the "manager_id" field.
 	// 管理人ID
-	ManagerID uint64 `json:"manager_id,omitempty"`
+	ManagerID *uint64 `json:"manager_id,omitempty"`
 	// Sn holds the value of the "sn" field.
 	// 调拨编号
 	Sn string `json:"sn,omitempty"`
@@ -221,7 +221,8 @@ func (s *Stock) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field manager_id", values[i])
 			} else if value.Valid {
-				s.ManagerID = uint64(value.Int64)
+				s.ManagerID = new(uint64)
+				*s.ManagerID = uint64(value.Int64)
 			}
 		case stock.FieldSn:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -337,8 +338,10 @@ func (s *Stock) String() string {
 	builder.WriteString(fmt.Sprintf("%v", s.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(s.Remark)
-	builder.WriteString(", manager_id=")
-	builder.WriteString(fmt.Sprintf("%v", s.ManagerID))
+	if v := s.ManagerID; v != nil {
+		builder.WriteString(", manager_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", sn=")
 	builder.WriteString(s.Sn)
 	builder.WriteString(", type=")

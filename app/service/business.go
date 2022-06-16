@@ -33,7 +33,7 @@ func NewBusinessWithEmployee(e *ent.Employee) *businessService {
 
 // CheckCity 检查城市
 func (s *businessService) CheckCity(cityID uint64) {
-    if s.employee.Edges.Store.CityID != cityID {
+    if *s.employee.Edges.Store.CityID != cityID {
         snag.Panic("不能跨城市操作")
     }
 }
@@ -76,6 +76,8 @@ func (s *businessService) Detail(id uint64) (res model.SubscribeBusiness) {
     return
 }
 
+// Plans 获取更换电池型号允许的套餐列表
+// TODO 更换电池型号
 func (s *businessService) Plans(subscribeID uint64) {
     sub := NewSubscribe().QueryEdgesX(subscribeID)
 

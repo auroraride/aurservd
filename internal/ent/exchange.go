@@ -43,10 +43,10 @@ type Exchange struct {
 	CityID uint64 `json:"city_id,omitempty"`
 	// EmployeeID holds the value of the "employee_id" field.
 	// 店员ID
-	EmployeeID uint64 `json:"employee_id,omitempty"`
+	EmployeeID *uint64 `json:"employee_id,omitempty"`
 	// StoreID holds the value of the "store_id" field.
 	// 门店ID
-	StoreID uint64 `json:"store_id,omitempty"`
+	StoreID *uint64 `json:"store_id,omitempty"`
 	// RiderID holds the value of the "rider_id" field.
 	// 骑手ID
 	RiderID uint64 `json:"rider_id,omitempty"`
@@ -240,13 +240,15 @@ func (e *Exchange) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field employee_id", values[i])
 			} else if value.Valid {
-				e.EmployeeID = uint64(value.Int64)
+				e.EmployeeID = new(uint64)
+				*e.EmployeeID = uint64(value.Int64)
 			}
 		case exchange.FieldStoreID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field store_id", values[i])
 			} else if value.Valid {
-				e.StoreID = uint64(value.Int64)
+				e.StoreID = new(uint64)
+				*e.StoreID = uint64(value.Int64)
 			}
 		case exchange.FieldRiderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -349,10 +351,14 @@ func (e *Exchange) String() string {
 	builder.WriteString(e.Remark)
 	builder.WriteString(", city_id=")
 	builder.WriteString(fmt.Sprintf("%v", e.CityID))
-	builder.WriteString(", employee_id=")
-	builder.WriteString(fmt.Sprintf("%v", e.EmployeeID))
-	builder.WriteString(", store_id=")
-	builder.WriteString(fmt.Sprintf("%v", e.StoreID))
+	if v := e.EmployeeID; v != nil {
+		builder.WriteString(", employee_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := e.StoreID; v != nil {
+		builder.WriteString(", store_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", rider_id=")
 	builder.WriteString(fmt.Sprintf("%v", e.RiderID))
 	builder.WriteString(", uuid=")

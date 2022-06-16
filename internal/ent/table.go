@@ -42,6 +42,16 @@ func (bc *BranchContract) GetID() uint64 {
 	return bc.ID
 }
 
+// GetTableName returns table name for Business.
+func (b *Business) GetTableName() string {
+	return "business"
+}
+
+// GetID returns id for Business.
+func (b *Business) GetID() uint64 {
+	return b.ID
+}
+
 // GetTableName returns table name for Cabinet.
 func (c *Cabinet) GetTableName() string {
 	return "cabinet"

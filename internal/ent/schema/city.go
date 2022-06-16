@@ -19,7 +19,7 @@ type CityMixin struct {
 func (m CityMixin) Fields() []ent.Field {
     f := field.Uint64("city_id").Comment("城市ID")
     if m.Optional {
-        f.Optional()
+        f.Optional().Nillable()
     }
     return []ent.Field{f}
 }

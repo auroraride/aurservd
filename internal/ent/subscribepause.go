@@ -41,7 +41,7 @@ type SubscribePause struct {
 	RiderID uint64 `json:"rider_id,omitempty"`
 	// EmployeeID holds the value of the "employee_id" field.
 	// 店员ID
-	EmployeeID uint64 `json:"employee_id,omitempty"`
+	EmployeeID *uint64 `json:"employee_id,omitempty"`
 	// SubscribeID holds the value of the "subscribe_id" field.
 	// 订阅ID
 	SubscribeID uint64 `json:"subscribe_id,omitempty"`
@@ -218,7 +218,8 @@ func (sp *SubscribePause) assignValues(columns []string, values []interface{}) e
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field employee_id", values[i])
 			} else if value.Valid {
-				sp.EmployeeID = uint64(value.Int64)
+				sp.EmployeeID = new(uint64)
+				*sp.EmployeeID = uint64(value.Int64)
 			}
 		case subscribepause.FieldSubscribeID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -315,8 +316,10 @@ func (sp *SubscribePause) String() string {
 	builder.WriteString(sp.Remark)
 	builder.WriteString(", rider_id=")
 	builder.WriteString(fmt.Sprintf("%v", sp.RiderID))
-	builder.WriteString(", employee_id=")
-	builder.WriteString(fmt.Sprintf("%v", sp.EmployeeID))
+	if v := sp.EmployeeID; v != nil {
+		builder.WriteString(", employee_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", subscribe_id=")
 	builder.WriteString(fmt.Sprintf("%v", sp.SubscribeID))
 	builder.WriteString(", start_at=")

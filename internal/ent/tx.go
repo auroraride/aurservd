@@ -22,6 +22,8 @@ type Tx struct {
 	Branch *BranchClient
 	// BranchContract is the client for interacting with the BranchContract builders.
 	BranchContract *BranchContractClient
+	// Business is the client for interacting with the Business builders.
+	Business *BusinessClient
 	// Cabinet is the client for interacting with the Cabinet builders.
 	Cabinet *CabinetClient
 	// CabinetFault is the client for interacting with the CabinetFault builders.
@@ -213,6 +215,7 @@ func (tx *Tx) init() {
 	tx.BatteryModel = NewBatteryModelClient(tx.config)
 	tx.Branch = NewBranchClient(tx.config)
 	tx.BranchContract = NewBranchContractClient(tx.config)
+	tx.Business = NewBusinessClient(tx.config)
 	tx.Cabinet = NewCabinetClient(tx.config)
 	tx.CabinetFault = NewCabinetFaultClient(tx.config)
 	tx.City = NewCityClient(tx.config)

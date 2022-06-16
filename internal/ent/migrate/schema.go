@@ -220,6 +220,98 @@ var (
 			},
 		},
 	}
+	// BusinessColumns holds the columns for the "business" table.
+	BusinessColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "type", Type: field.TypeEnum, Comment: "业务类型", Enums: []string{"active", "pause", "continue", "unsubscribe"}},
+		{Name: "rider_id", Type: field.TypeUint64},
+		{Name: "city_id", Type: field.TypeUint64},
+		{Name: "subscribe_id", Type: field.TypeUint64},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
+	}
+	// BusinessTable holds the schema information for the "business" table.
+	BusinessTable = &schema.Table{
+		Name:       "business",
+		Columns:    BusinessColumns,
+		PrimaryKey: []*schema.Column{BusinessColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "business_rider_rider",
+				Columns:    []*schema.Column{BusinessColumns[8]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "business_city_city",
+				Columns:    []*schema.Column{BusinessColumns[9]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "business_subscribe_subscribe",
+				Columns:    []*schema.Column{BusinessColumns[10]},
+				RefColumns: []*schema.Column{SubscribeColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "business_employee_employee",
+				Columns:    []*schema.Column{BusinessColumns[11]},
+				RefColumns: []*schema.Column{EmployeeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "business_store_store",
+				Columns:    []*schema.Column{BusinessColumns[12]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "business_plan_plan",
+				Columns:    []*schema.Column{BusinessColumns[13]},
+				RefColumns: []*schema.Column{PlanColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "business_enterprise_enterprise",
+				Columns:    []*schema.Column{BusinessColumns[14]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "business_enterprise_station_station",
+				Columns:    []*schema.Column{BusinessColumns[15]},
+				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "business_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{BusinessColumns[1]},
+			},
+			{
+				Name:    "business_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{BusinessColumns[3]},
+			},
+			{
+				Name:    "business_type",
+				Unique:  false,
+				Columns: []*schema.Column{BusinessColumns[7]},
+			},
+		},
+	}
 	// CabinetColumns holds the columns for the "cabinet" table.
 	CabinetColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -1078,7 +1170,7 @@ var (
 		{Name: "amount", Type: field.TypeFloat64, Comment: "子订单金额(拆分项此条订单)"},
 		{Name: "total", Type: field.TypeFloat64, Comment: "此次支付总金额(包含所有子订单的总支付)", Default: 0},
 		{Name: "refund_at", Type: field.TypeTime, Comment: "退款时间", Nullable: true},
-		{Name: "initial_days", Type: field.TypeInt, Comment: "初始骑士卡天数", Nullable: true},
+		{Name: "initial_days", Type: field.TypeInt, Comment: "所购骑士卡天数(也可能为补缴欠费天数)", Nullable: true},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "parent_id", Type: field.TypeUint64, Nullable: true},
@@ -1906,6 +1998,7 @@ var (
 		BatteryModelTable,
 		BranchTable,
 		BranchContractTable,
+		BusinessTable,
 		CabinetTable,
 		CabinetFaultTable,
 		CityTable,
@@ -1954,6 +2047,17 @@ func init() {
 	BranchContractTable.ForeignKeys[0].RefTable = BranchTable
 	BranchContractTable.Annotation = &entsql.Annotation{
 		Table: "branch_contract",
+	}
+	BusinessTable.ForeignKeys[0].RefTable = RiderTable
+	BusinessTable.ForeignKeys[1].RefTable = CityTable
+	BusinessTable.ForeignKeys[2].RefTable = SubscribeTable
+	BusinessTable.ForeignKeys[3].RefTable = EmployeeTable
+	BusinessTable.ForeignKeys[4].RefTable = StoreTable
+	BusinessTable.ForeignKeys[5].RefTable = PlanTable
+	BusinessTable.ForeignKeys[6].RefTable = EnterpriseTable
+	BusinessTable.ForeignKeys[7].RefTable = EnterpriseStationTable
+	BusinessTable.Annotation = &entsql.Annotation{
+		Table: "business",
 	}
 	CabinetTable.ForeignKeys[0].RefTable = BranchTable
 	CabinetTable.ForeignKeys[1].RefTable = CityTable

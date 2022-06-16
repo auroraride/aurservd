@@ -20,7 +20,7 @@ type EnterpriseMixin struct {
 func (m EnterpriseMixin) Fields() []ent.Field {
     f := field.Uint64("enterprise_id").Comment("企业ID")
     if m.Optional {
-        f.Optional()
+        f.Optional().Nillable()
     }
     return []ent.Field{f}
 }

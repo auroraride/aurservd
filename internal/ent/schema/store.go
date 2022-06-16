@@ -20,7 +20,7 @@ type StoreMixin struct {
 func (m StoreMixin) Fields() []ent.Field {
     f := field.Uint64("store_id").Comment("门店ID")
     if m.Optional {
-        f.Optional()
+        f.Optional().Nillable()
     }
     return []ent.Field{f}
 }

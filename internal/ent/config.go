@@ -32,6 +32,7 @@ type hooks struct {
 	BatteryModel         []ent.Hook
 	Branch               []ent.Hook
 	BranchContract       []ent.Hook
+	Business             []ent.Hook
 	Cabinet              []ent.Hook
 	CabinetFault         []ent.Hook
 	City                 []ent.Hook

@@ -643,7 +643,10 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 		ids := make([]uint64, 0, len(nodes))
 		nodeids := make(map[uint64][]*Order)
 		for i := range nodes {
-			fk := nodes[i].PlanID
+			if nodes[i].PlanID == nil {
+				continue
+			}
+			fk := *nodes[i].PlanID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
@@ -669,7 +672,10 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 		ids := make([]uint64, 0, len(nodes))
 		nodeids := make(map[uint64][]*Order)
 		for i := range nodes {
-			fk := nodes[i].CityID
+			if nodes[i].CityID == nil {
+				continue
+			}
+			fk := *nodes[i].CityID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}

@@ -261,6 +261,30 @@ func (f BranchContractMutationRuleFunc) EvalMutation(ctx context.Context, m ent.
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.BranchContractMutation", m)
 }
 
+// The BusinessQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type BusinessQueryRuleFunc func(context.Context, *ent.BusinessQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f BusinessQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.BusinessQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.BusinessQuery", q)
+}
+
+// The BusinessMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type BusinessMutationRuleFunc func(context.Context, *ent.BusinessMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f BusinessMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.BusinessMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.BusinessMutation", m)
+}
+
 // The CabinetQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type CabinetQueryRuleFunc func(context.Context, *ent.CabinetQuery) error
@@ -928,6 +952,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.BranchContractQuery:
 		return q.Filter(), nil
+	case *ent.BusinessQuery:
+		return q.Filter(), nil
 	case *ent.CabinetQuery:
 		return q.Filter(), nil
 	case *ent.CabinetFaultQuery:
@@ -994,6 +1020,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.BranchMutation:
 		return m.Filter(), nil
 	case *ent.BranchContractMutation:
+		return m.Filter(), nil
+	case *ent.BusinessMutation:
 		return m.Filter(), nil
 	case *ent.CabinetMutation:
 		return m.Filter(), nil

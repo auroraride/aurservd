@@ -38,7 +38,7 @@ type Store struct {
 	Remark string `json:"remark,omitempty"`
 	// CityID holds the value of the "city_id" field.
 	// 城市ID
-	CityID uint64 `json:"city_id,omitempty"`
+	CityID *uint64 `json:"city_id,omitempty"`
 	// EmployeeID holds the value of the "employee_id" field.
 	// 上班员工ID
 	EmployeeID *uint64 `json:"employee_id,omitempty"`
@@ -215,7 +215,8 @@ func (s *Store) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field city_id", values[i])
 			} else if value.Valid {
-				s.CityID = uint64(value.Int64)
+				s.CityID = new(uint64)
+				*s.CityID = uint64(value.Int64)
 			}
 		case store.FieldEmployeeID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -315,8 +316,10 @@ func (s *Store) String() string {
 	builder.WriteString(fmt.Sprintf("%v", s.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(s.Remark)
-	builder.WriteString(", city_id=")
-	builder.WriteString(fmt.Sprintf("%v", s.CityID))
+	if v := s.CityID; v != nil {
+		builder.WriteString(", city_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	if v := s.EmployeeID; v != nil {
 		builder.WriteString(", employee_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))

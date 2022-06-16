@@ -56,6 +56,7 @@ func NewExchangeWithEmployee(e *ent.Employee) *exchangeService {
 }
 
 // Store 扫门店二维码换电
+// 换电操作有出库和入库, 所以不记录
 func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStoreRes {
     qr := strings.ReplaceAll(req.Code, "STORE:", req.Code)
     item := NewStore().QuerySn(qr)
@@ -70,18 +71,16 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
     }
 
     // 获取套餐
-    o := NewSubscribe().RecentDetail(s.rider.ID)
+    sub := NewSubscribe().RecentDetail(s.rider.ID)
 
-    if o == nil {
+    if sub == nil {
         snag.Panic("未找到有效订阅")
     }
 
     // TODO 判定门店物资是否匹配电压型号
-    if o.Status != model.SubscribeStatusUsing {
+    if sub.Status != model.SubscribeStatusUsing {
         snag.Panic("骑士卡状态异常")
     }
-
-    // TODO 门店出库
 
     // 存储
     uid := uuid.New().String()
@@ -90,12 +89,12 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
         SetRider(s.rider).
         SetSuccess(true).
         SetStore(item).
-        SetCityID(o.City.ID).
+        SetCityID(sub.City.ID).
         SetUUID(uid).
         SaveX(s.ctx)
 
     return &model.ExchangeStoreRes{
-        Voltage:   o.Voltage,
+        Voltage:   sub.Voltage,
         StoreName: item.Name,
         Time:      time.Now().Unix(),
         UUID:      uid,

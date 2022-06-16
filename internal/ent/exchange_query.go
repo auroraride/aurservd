@@ -559,7 +559,10 @@ func (eq *ExchangeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Exc
 		ids := make([]uint64, 0, len(nodes))
 		nodeids := make(map[uint64][]*Exchange)
 		for i := range nodes {
-			fk := nodes[i].EmployeeID
+			if nodes[i].EmployeeID == nil {
+				continue
+			}
+			fk := *nodes[i].EmployeeID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
@@ -585,7 +588,10 @@ func (eq *ExchangeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Exc
 		ids := make([]uint64, 0, len(nodes))
 		nodeids := make(map[uint64][]*Exchange)
 		for i := range nodes {
-			fk := nodes[i].StoreID
+			if nodes[i].StoreID == nil {
+				continue
+			}
+			fk := *nodes[i].StoreID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}

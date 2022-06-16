@@ -792,7 +792,10 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 		ids := make([]uint64, 0, len(nodes))
 		nodeids := make(map[uint64][]*Subscribe)
 		for i := range nodes {
-			fk := nodes[i].PlanID
+			if nodes[i].PlanID == nil {
+				continue
+			}
+			fk := *nodes[i].PlanID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
@@ -818,7 +821,10 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 		ids := make([]uint64, 0, len(nodes))
 		nodeids := make(map[uint64][]*Subscribe)
 		for i := range nodes {
-			fk := nodes[i].EmployeeID
+			if nodes[i].EmployeeID == nil {
+				continue
+			}
+			fk := *nodes[i].EmployeeID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
@@ -899,7 +905,10 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 		ids := make([]uint64, 0, len(nodes))
 		nodeids := make(map[uint64][]*Subscribe)
 		for i := range nodes {
-			fk := nodes[i].StoreID
+			if nodes[i].StoreID == nil {
+				continue
+			}
+			fk := *nodes[i].StoreID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}

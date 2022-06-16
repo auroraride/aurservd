@@ -96,6 +96,28 @@ func (bcq *BranchContractQuery) PaginationResult(req model.PaginationReq) model.
 	}
 }
 
+// Pagination returns pagination query builder for BusinessQuery.
+func (bq *BusinessQuery) Pagination(req model.PaginationReq) *BusinessQuery {
+	bq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return bq
+}
+
+// PaginationItems returns pagination query builder for BusinessQuery.
+func (bq *BusinessQuery) PaginationItemsX(req model.PaginationReq) any {
+	return bq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for BusinessQuery.
+func (bq *BusinessQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := bq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for CabinetQuery.
 func (cq *CabinetQuery) Pagination(req model.PaginationReq) *CabinetQuery {
 	cq.Offset(req.GetOffset()).Limit(req.GetLimit())

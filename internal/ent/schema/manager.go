@@ -20,11 +20,9 @@ type ManagerMixin struct {
 func (mmm ManagerMixin) Fields() []ent.Field {
     f := field.Uint64("manager_id").Comment("管理人ID")
     if mmm.Optional {
-        f.Optional()
+        f.Optional().Nillable()
     }
-    return []ent.Field{
-        f,
-    }
+    return []ent.Field{f}
 }
 
 func (mmm ManagerMixin) Edges() []ent.Edge {

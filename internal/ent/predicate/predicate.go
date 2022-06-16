@@ -18,6 +18,9 @@ type Branch func(*sql.Selector)
 // BranchContract is the predicate function for branchcontract builders.
 type BranchContract func(*sql.Selector)
 
+// Business is the predicate function for business builders.
+type Business func(*sql.Selector)
+
 // Cabinet is the predicate function for cabinet builders.
 type Cabinet func(*sql.Selector)
 

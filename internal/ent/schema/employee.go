@@ -22,7 +22,7 @@ type EmployeeMixin struct {
 func (m EmployeeMixin) Fields() []ent.Field {
     f := field.Uint64("employee_id").Comment("店员ID")
     if m.Optional {
-        f.Optional()
+        f.Optional().Nillable()
     }
     return []ent.Field{f}
 }

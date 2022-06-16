@@ -13,6 +13,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/branchcontract"
+	"github.com/auroraride/aurservd/internal/ent/business"
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/cabinetfault"
 	"github.com/auroraride/aurservd/internal/ent/city"
@@ -58,6 +59,8 @@ type Client struct {
 	Branch *BranchClient
 	// BranchContract is the client for interacting with the BranchContract builders.
 	BranchContract *BranchContractClient
+	// Business is the client for interacting with the Business builders.
+	Business *BusinessClient
 	// Cabinet is the client for interacting with the Cabinet builders.
 	Cabinet *CabinetClient
 	// CabinetFault is the client for interacting with the CabinetFault builders.
@@ -127,6 +130,7 @@ func (c *Client) init() {
 	c.BatteryModel = NewBatteryModelClient(c.config)
 	c.Branch = NewBranchClient(c.config)
 	c.BranchContract = NewBranchContractClient(c.config)
+	c.Business = NewBusinessClient(c.config)
 	c.Cabinet = NewCabinetClient(c.config)
 	c.CabinetFault = NewCabinetFaultClient(c.config)
 	c.City = NewCityClient(c.config)
@@ -190,6 +194,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		BatteryModel:         NewBatteryModelClient(cfg),
 		Branch:               NewBranchClient(cfg),
 		BranchContract:       NewBranchContractClient(cfg),
+		Business:             NewBusinessClient(cfg),
 		Cabinet:              NewCabinetClient(cfg),
 		CabinetFault:         NewCabinetFaultClient(cfg),
 		City:                 NewCityClient(cfg),
@@ -239,6 +244,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		BatteryModel:         NewBatteryModelClient(cfg),
 		Branch:               NewBranchClient(cfg),
 		BranchContract:       NewBranchContractClient(cfg),
+		Business:             NewBusinessClient(cfg),
 		Cabinet:              NewCabinetClient(cfg),
 		CabinetFault:         NewCabinetFaultClient(cfg),
 		City:                 NewCityClient(cfg),
@@ -298,6 +304,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.BatteryModel.Use(hooks...)
 	c.Branch.Use(hooks...)
 	c.BranchContract.Use(hooks...)
+	c.Business.Use(hooks...)
 	c.Cabinet.Use(hooks...)
 	c.CabinetFault.Use(hooks...)
 	c.City.Use(hooks...)
@@ -848,6 +855,225 @@ func (c *BranchContractClient) QueryBranch(bc *BranchContract) *BranchQuery {
 func (c *BranchContractClient) Hooks() []Hook {
 	hooks := c.hooks.BranchContract
 	return append(hooks[:len(hooks):len(hooks)], branchcontract.Hooks[:]...)
+}
+
+// BusinessClient is a client for the Business schema.
+type BusinessClient struct {
+	config
+}
+
+// NewBusinessClient returns a client for the Business from the given config.
+func NewBusinessClient(c config) *BusinessClient {
+	return &BusinessClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `business.Hooks(f(g(h())))`.
+func (c *BusinessClient) Use(hooks ...Hook) {
+	c.hooks.Business = append(c.hooks.Business, hooks...)
+}
+
+// Create returns a create builder for Business.
+func (c *BusinessClient) Create() *BusinessCreate {
+	mutation := newBusinessMutation(c.config, OpCreate)
+	return &BusinessCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Business entities.
+func (c *BusinessClient) CreateBulk(builders ...*BusinessCreate) *BusinessCreateBulk {
+	return &BusinessCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Business.
+func (c *BusinessClient) Update() *BusinessUpdate {
+	mutation := newBusinessMutation(c.config, OpUpdate)
+	return &BusinessUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *BusinessClient) UpdateOne(b *Business) *BusinessUpdateOne {
+	mutation := newBusinessMutation(c.config, OpUpdateOne, withBusiness(b))
+	return &BusinessUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *BusinessClient) UpdateOneID(id uint64) *BusinessUpdateOne {
+	mutation := newBusinessMutation(c.config, OpUpdateOne, withBusinessID(id))
+	return &BusinessUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Business.
+func (c *BusinessClient) Delete() *BusinessDelete {
+	mutation := newBusinessMutation(c.config, OpDelete)
+	return &BusinessDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *BusinessClient) DeleteOne(b *Business) *BusinessDeleteOne {
+	return c.DeleteOneID(b.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *BusinessClient) DeleteOneID(id uint64) *BusinessDeleteOne {
+	builder := c.Delete().Where(business.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &BusinessDeleteOne{builder}
+}
+
+// Query returns a query builder for Business.
+func (c *BusinessClient) Query() *BusinessQuery {
+	return &BusinessQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Business entity by its id.
+func (c *BusinessClient) Get(ctx context.Context, id uint64) (*Business, error) {
+	return c.Query().Where(business.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *BusinessClient) GetX(ctx context.Context, id uint64) *Business {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryRider queries the rider edge of a Business.
+func (c *BusinessClient) QueryRider(b *Business) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, business.RiderTable, business.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCity queries the city edge of a Business.
+func (c *BusinessClient) QueryCity(b *Business) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, business.CityTable, business.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySubscribe queries the subscribe edge of a Business.
+func (c *BusinessClient) QuerySubscribe(b *Business) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, business.SubscribeTable, business.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEmployee queries the employee edge of a Business.
+func (c *BusinessClient) QueryEmployee(b *Business) *EmployeeQuery {
+	query := &EmployeeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, business.EmployeeTable, business.EmployeeColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStore queries the store edge of a Business.
+func (c *BusinessClient) QueryStore(b *Business) *StoreQuery {
+	query := &StoreQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, business.StoreTable, business.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlan queries the plan edge of a Business.
+func (c *BusinessClient) QueryPlan(b *Business) *PlanQuery {
+	query := &PlanQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(plan.Table, plan.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, business.PlanTable, business.PlanColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEnterprise queries the enterprise edge of a Business.
+func (c *BusinessClient) QueryEnterprise(b *Business) *EnterpriseQuery {
+	query := &EnterpriseQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, business.EnterpriseTable, business.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStation queries the station edge of a Business.
+func (c *BusinessClient) QueryStation(b *Business) *EnterpriseStationQuery {
+	query := &EnterpriseStationQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, business.StationTable, business.StationColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *BusinessClient) Hooks() []Hook {
+	hooks := c.hooks.Business
+	return append(hooks[:len(hooks):len(hooks)], business.Hooks[:]...)
 }
 
 // CabinetClient is a client for the Cabinet schema.

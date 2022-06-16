@@ -79,6 +79,13 @@ func (c *BranchContractClient) ModifyOne(old *BranchContract, data any) *BranchC
 	return EntitySetAttributes[BranchContractUpdateOne, BranchContract](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for Business.
+func (c *BusinessClient) ModifyOne(old *Business, data any) *BusinessUpdateOne {
+	mutation := newBusinessMutation(c.config, OpUpdateOne, withBusiness(old))
+	up := &BusinessUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[BusinessUpdateOne, Business](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Cabinet.
 func (c *CabinetClient) ModifyOne(old *Cabinet, data any) *CabinetUpdateOne {
 	mutation := newCabinetMutation(c.config, OpUpdateOne, withCabinet(old))

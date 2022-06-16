@@ -496,7 +496,10 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 		ids := make([]uint64, 0, len(nodes))
 		nodeids := make(map[uint64][]*Stock)
 		for i := range nodes {
-			fk := nodes[i].ManagerID
+			if nodes[i].ManagerID == nil {
+				continue
+			}
+			fk := *nodes[i].ManagerID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}

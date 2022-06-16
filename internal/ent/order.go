@@ -41,10 +41,10 @@ type Order struct {
 	Remark string `json:"remark,omitempty"`
 	// PlanID holds the value of the "plan_id" field.
 	// 骑士卡ID
-	PlanID uint64 `json:"plan_id,omitempty"`
+	PlanID *uint64 `json:"plan_id,omitempty"`
 	// CityID holds the value of the "city_id" field.
 	// 城市ID
-	CityID uint64 `json:"city_id,omitempty"`
+	CityID *uint64 `json:"city_id,omitempty"`
 	// RiderID holds the value of the "rider_id" field.
 	// 骑手ID
 	RiderID uint64 `json:"rider_id,omitempty"`
@@ -79,7 +79,7 @@ type Order struct {
 	// 退款时间
 	RefundAt *time.Time `json:"refund_at,omitempty"`
 	// InitialDays holds the value of the "initial_days" field.
-	// 初始骑士卡天数
+	// 所购骑士卡天数(也可能为补缴欠费天数)
 	InitialDays int `json:"initial_days,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrderQuery when eager-loading is set.
@@ -297,13 +297,15 @@ func (o *Order) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field plan_id", values[i])
 			} else if value.Valid {
-				o.PlanID = uint64(value.Int64)
+				o.PlanID = new(uint64)
+				*o.PlanID = uint64(value.Int64)
 			}
 		case order.FieldCityID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field city_id", values[i])
 			} else if value.Valid {
-				o.CityID = uint64(value.Int64)
+				o.CityID = new(uint64)
+				*o.CityID = uint64(value.Int64)
 			}
 		case order.FieldRiderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -460,10 +462,14 @@ func (o *Order) String() string {
 	builder.WriteString(fmt.Sprintf("%v", o.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(o.Remark)
-	builder.WriteString(", plan_id=")
-	builder.WriteString(fmt.Sprintf("%v", o.PlanID))
-	builder.WriteString(", city_id=")
-	builder.WriteString(fmt.Sprintf("%v", o.CityID))
+	if v := o.PlanID; v != nil {
+		builder.WriteString(", plan_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := o.CityID; v != nil {
+		builder.WriteString(", city_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", rider_id=")
 	builder.WriteString(fmt.Sprintf("%v", o.RiderID))
 	builder.WriteString(", parent_id=")

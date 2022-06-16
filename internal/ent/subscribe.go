@@ -44,10 +44,10 @@ type Subscribe struct {
 	Remark string `json:"remark,omitempty"`
 	// PlanID holds the value of the "plan_id" field.
 	// 骑士卡ID
-	PlanID uint64 `json:"plan_id,omitempty"`
+	PlanID *uint64 `json:"plan_id,omitempty"`
 	// EmployeeID holds the value of the "employee_id" field.
 	// 店员ID
-	EmployeeID uint64 `json:"employee_id,omitempty"`
+	EmployeeID *uint64 `json:"employee_id,omitempty"`
 	// CityID holds the value of the "city_id" field.
 	// 城市ID
 	CityID uint64 `json:"city_id,omitempty"`
@@ -56,7 +56,7 @@ type Subscribe struct {
 	StationID *uint64 `json:"station_id,omitempty"`
 	// StoreID holds the value of the "store_id" field.
 	// 门店ID
-	StoreID uint64 `json:"store_id,omitempty"`
+	StoreID *uint64 `json:"store_id,omitempty"`
 	// RiderID holds the value of the "rider_id" field.
 	// 骑手ID
 	RiderID uint64 `json:"rider_id,omitempty"`
@@ -381,13 +381,15 @@ func (s *Subscribe) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field plan_id", values[i])
 			} else if value.Valid {
-				s.PlanID = uint64(value.Int64)
+				s.PlanID = new(uint64)
+				*s.PlanID = uint64(value.Int64)
 			}
 		case subscribe.FieldEmployeeID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field employee_id", values[i])
 			} else if value.Valid {
-				s.EmployeeID = uint64(value.Int64)
+				s.EmployeeID = new(uint64)
+				*s.EmployeeID = uint64(value.Int64)
 			}
 		case subscribe.FieldCityID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -406,7 +408,8 @@ func (s *Subscribe) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field store_id", values[i])
 			} else if value.Valid {
-				s.StoreID = uint64(value.Int64)
+				s.StoreID = new(uint64)
+				*s.StoreID = uint64(value.Int64)
 			}
 		case subscribe.FieldRiderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -624,18 +627,24 @@ func (s *Subscribe) String() string {
 	builder.WriteString(fmt.Sprintf("%v", s.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(s.Remark)
-	builder.WriteString(", plan_id=")
-	builder.WriteString(fmt.Sprintf("%v", s.PlanID))
-	builder.WriteString(", employee_id=")
-	builder.WriteString(fmt.Sprintf("%v", s.EmployeeID))
+	if v := s.PlanID; v != nil {
+		builder.WriteString(", plan_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := s.EmployeeID; v != nil {
+		builder.WriteString(", employee_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", city_id=")
 	builder.WriteString(fmt.Sprintf("%v", s.CityID))
 	if v := s.StationID; v != nil {
 		builder.WriteString(", station_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
-	builder.WriteString(", store_id=")
-	builder.WriteString(fmt.Sprintf("%v", s.StoreID))
+	if v := s.StoreID; v != nil {
+		builder.WriteString(", store_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", rider_id=")
 	builder.WriteString(fmt.Sprintf("%v", s.RiderID))
 	builder.WriteString(", initial_order_id=")

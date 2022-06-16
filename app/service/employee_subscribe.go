@@ -10,6 +10,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
@@ -53,7 +54,7 @@ func NewEmployeeSubscribeWithEmployee(e *ent.Employee) *employeeSubscribeService
 }
 
 // Inactive 获取骑手待激活订阅详情
-func (s *employeeSubscribeService) Inactive(qr string) *model.SubscribeActiveInfo {
+func (s *employeeSubscribeService) Inactive(qr string) (*model.SubscribeActiveInfo, *ent.Subscribe) {
     if strings.HasPrefix(qr, "SUBSCRIBE:") {
         qr = strings.ReplaceAll(qr, "SUBSCRIBE:", "")
     }
@@ -139,12 +140,12 @@ func (s *employeeSubscribeService) Inactive(qr string) *model.SubscribeActiveInf
         }
     }
 
-    return res
+    return res, sub
 }
 
-// Active 激活订单
+// Active 激活订阅
 func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
-    info := s.Inactive(req.Qrcode)
+    info, sub := s.Inactive(req.Qrcode)
     NewBusinessWithEmployee(s.employee).CheckCity(info.City.ID)
 
     tx, _ := ar.Ent.Tx(s.ctx)
@@ -184,4 +185,7 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
     snag.PanicIfErrorX(err, tx.Rollback)
 
     _ = tx.Commit()
+
+    // 保存业务日志
+    NewBusinessLogWithEmployee(s.employee, sub).SaveAsync(business.TypeActive)
 }

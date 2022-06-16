@@ -21,7 +21,7 @@ type RiderMixin struct {
 func (m RiderMixin) Fields() []ent.Field {
     f := field.Uint64("rider_id").Comment("骑手ID")
     if m.Optional {
-        f.Optional()
+        f.Optional().Nillable()
     }
     return []ent.Field{f}
 }

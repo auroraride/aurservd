@@ -223,7 +223,7 @@ func (s *orderService) CreateFee(riderID uint64, payway uint8) *model.OrderCreat
             Days:        0 - sub.Remaining,
             Amount:      fee,
             RiderID:     riderID,
-            PlanID:      sub.PlanID,
+            PlanID:      *sub.PlanID,
             OrderID:     o.ID,
             SubscribeID: sub.ID,
             CityID:      sub.CityID,

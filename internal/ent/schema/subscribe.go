@@ -9,10 +9,32 @@ import (
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
+    "entgo.io/ent/schema/mixin"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
     "github.com/auroraride/aurservd/pkg/snag"
 )
+
+type SubscribeMixin struct {
+    mixin.Schema
+    Optional bool
+}
+
+func (m SubscribeMixin) Fields() []ent.Field {
+    f := field.Uint64("subscribe_id")
+    if m.Optional {
+        f.Optional().Nillable()
+    }
+    return []ent.Field{f}
+}
+
+func (m SubscribeMixin) Edges() []ent.Edge {
+    e := edge.To("subscribe", Subscribe.Type).Unique().Field("subscribe_id")
+    if !m.Optional {
+        e.Required()
+    }
+    return []ent.Edge{e}
+}
 
 // Subscribe holds the schema definition for the Subscribe entity.
 type Subscribe struct {

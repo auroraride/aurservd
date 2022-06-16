@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
@@ -77,6 +78,8 @@ func (s *riderMgrService) PauseSubscribe(subscribeID uint64) {
         snag.Panic("操作权限校验失败")
     }
 
+    var bls *businessLogService
+
     sub := s.QuerySubscribeWithRider(subscribeID)
 
     if sub == nil || sub.Status != model.SubscribeStatusUsing {
@@ -107,6 +110,7 @@ func (s *riderMgrService) PauseSubscribe(subscribeID uint64) {
     if s.modifier != nil {
         stockReq.ManagerID = s.modifier.ID
         lg.SetModifier(s.modifier)
+        bls = NewBusinessLogWithModifier(s.modifier, sub)
     }
 
     if s.employee != nil {
@@ -115,6 +119,7 @@ func (s *riderMgrService) PauseSubscribe(subscribeID uint64) {
         stockReq.EmployeeID = s.employee.ID
         stockReq.StoreID = s.employee.Edges.Store.ID
         lg.SetEmployee(s.employeeInfo)
+        bls = NewBusinessLogWithEmployee(s.employee, sub)
     }
 
     _, err := spc.Save(s.ctx)
@@ -136,11 +141,16 @@ func (s *riderMgrService) PauseSubscribe(subscribeID uint64) {
 
     // 记录日志
     go lg.Send()
+
+    // 记录业务日志
+    bls.SaveAsync(business.TypePause)
 }
 
 // ContinueSubscribe 继续计费
 // TODO 后台操作出库怎么处理
 func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
+    var bls *businessLogService
+
     sub := s.QuerySubscribeWithRider(subscribeID)
 
     sp, _ := ar.Ent.SubscribePause.QueryNotDeleted().
@@ -175,6 +185,7 @@ func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
     if s.modifier != nil {
         stockReq.ManagerID = s.modifier.ID
         lg.SetModifier(s.modifier)
+        bls = NewBusinessLogWithModifier(s.modifier, sub)
     }
 
     if s.employee != nil {
@@ -184,6 +195,8 @@ func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
         stockReq.EmployeeID = s.employee.ID
         stockReq.StoreID = s.employee.Edges.Store.ID
         lg.SetEmployee(s.employeeInfo)
+
+        bls = NewBusinessLogWithEmployee(s.employee, sub)
     }
 
     _, err := spu.Save(s.ctx)
@@ -206,6 +219,9 @@ func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
 
     // 记录日志
     go lg.Send()
+
+    // 记录业务日志
+    bls.SaveAsync(business.TypeContinue)
 }
 
 // UnSubscribe 退租
@@ -213,6 +229,8 @@ func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
 // TODO 是否适用于团签骑手
 // TODO 管理端强制退组库存如何操作
 func (s *riderMgrService) UnSubscribe(subscribeID uint64) {
+    var bls *businessLogService
+
     sub := s.QuerySubscribeWithRider(subscribeID)
     if sub == nil || sub.EndAt != nil {
         snag.Panic("未找到订阅")
@@ -230,12 +248,16 @@ func (s *riderMgrService) UnSubscribe(subscribeID uint64) {
         reason = "管理员操作强制退租"
         lgr.SetOperate(model.OperateHalt).SetModifier(s.modifier)
         stockReq.ManagerID = s.modifier.ID
+
+        bls = NewBusinessLogWithModifier(s.modifier, sub)
     }
     if s.employee != nil {
         reason = "店员操作退租"
         lgr.SetOperate(model.OperateUnsubscribe).SetEmployee(s.employeeInfo)
         stockReq.EmployeeID = s.employeeInfo.ID
         stockReq.StoreID = s.employee.Edges.Store.ID
+
+        bls = NewBusinessLogWithEmployee(s.employee, sub)
     }
 
     tx, _ := ar.Ent.Tx(s.ctx)
@@ -266,6 +288,9 @@ func (s *riderMgrService) UnSubscribe(subscribeID uint64) {
 
     // 记录日志
     go lgr.SetDiff(before, reason).Send()
+
+    // 记录业务日志
+    bls.SaveAsync(business.TypeUnsubscribe)
 }
 
 // Deposit 手动调整押金
