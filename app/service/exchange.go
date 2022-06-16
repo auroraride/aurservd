@@ -15,6 +15,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
     "github.com/google/uuid"
+    "strings"
     "time"
 )
 
@@ -56,7 +57,8 @@ func NewExchangeWithEmployee(e *ent.Employee) *exchangeService {
 
 // Store 扫门店二维码换电
 func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStoreRes {
-    item := NewStore().QuerySn(req.Code[6:])
+    qr := strings.ReplaceAll(req.Code, "STORE:", req.Code)
+    item := NewStore().QuerySn(qr)
     // 门店状态
     if item.Status != model.StoreStatusOpen {
         snag.Panic("门店未营业")
