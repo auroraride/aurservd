@@ -508,6 +508,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			exchange.FieldCabinetID:    {Type: field.TypeUint64, Column: exchange.FieldCabinetID},
 			exchange.FieldSuccess:      {Type: field.TypeBool, Column: exchange.FieldSuccess},
 			exchange.FieldDetail:       {Type: field.TypeJSON, Column: exchange.FieldDetail},
+			exchange.FieldVoltage:      {Type: field.TypeFloat64, Column: exchange.FieldVoltage},
 		},
 	}
 	graph.Nodes[18] = &sqlgraph.Node{
@@ -4724,6 +4725,11 @@ func (f *ExchangeFilter) WhereSuccess(p entql.BoolP) {
 // WhereDetail applies the entql json.RawMessage predicate on the detail field.
 func (f *ExchangeFilter) WhereDetail(p entql.BytesP) {
 	f.Where(p.Field(exchange.FieldDetail))
+}
+
+// WhereVoltage applies the entql float64 predicate on the voltage field.
+func (f *ExchangeFilter) WhereVoltage(p entql.Float64P) {
+	f.Where(p.Field(exchange.FieldVoltage))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.

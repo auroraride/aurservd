@@ -91,6 +91,7 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
         SetStore(item).
         SetCityID(sub.City.ID).
         SetUUID(uid).
+        SetVoltage(sub.Voltage).
         SaveX(s.ctx)
 
     return &model.ExchangeStoreRes{

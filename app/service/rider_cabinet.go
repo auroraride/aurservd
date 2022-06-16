@@ -161,6 +161,7 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
         FullIndex:   index,
         Serial:      info.Serial,
         Electricity: be,
+        Voltage:     info.Voltage,
     })
 }
 
@@ -194,6 +195,7 @@ func (s *riderCabinetService) ProcessStepEnd(req *model.RiderCabinetOperating) {
         SetUUID(req.UUID).
         SetCabinetID(req.ID).
         SetSuccess(res.Status == model.RiderCabinetOperateStatusSuccess && res.Step == model.RiderCabinetOperateStepClose).
+        SetVoltage(req.Voltage).
         Save(s.ctx)
 }
 

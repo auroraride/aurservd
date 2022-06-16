@@ -170,6 +170,13 @@ func Success(v bool) predicate.Exchange {
 	})
 }
 
+// Voltage applies equality check predicate on the "voltage" field. It's identical to VoltageEQ.
+func Voltage(v float64) predicate.Exchange {
+	return predicate.Exchange(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldVoltage), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Exchange {
 	return predicate.Exchange(func(s *sql.Selector) {
@@ -983,6 +990,82 @@ func DetailIsNil() predicate.Exchange {
 func DetailNotNil() predicate.Exchange {
 	return predicate.Exchange(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldDetail)))
+	})
+}
+
+// VoltageEQ applies the EQ predicate on the "voltage" field.
+func VoltageEQ(v float64) predicate.Exchange {
+	return predicate.Exchange(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldVoltage), v))
+	})
+}
+
+// VoltageNEQ applies the NEQ predicate on the "voltage" field.
+func VoltageNEQ(v float64) predicate.Exchange {
+	return predicate.Exchange(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldVoltage), v))
+	})
+}
+
+// VoltageIn applies the In predicate on the "voltage" field.
+func VoltageIn(vs ...float64) predicate.Exchange {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Exchange(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldVoltage), v...))
+	})
+}
+
+// VoltageNotIn applies the NotIn predicate on the "voltage" field.
+func VoltageNotIn(vs ...float64) predicate.Exchange {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Exchange(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldVoltage), v...))
+	})
+}
+
+// VoltageGT applies the GT predicate on the "voltage" field.
+func VoltageGT(v float64) predicate.Exchange {
+	return predicate.Exchange(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldVoltage), v))
+	})
+}
+
+// VoltageGTE applies the GTE predicate on the "voltage" field.
+func VoltageGTE(v float64) predicate.Exchange {
+	return predicate.Exchange(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldVoltage), v))
+	})
+}
+
+// VoltageLT applies the LT predicate on the "voltage" field.
+func VoltageLT(v float64) predicate.Exchange {
+	return predicate.Exchange(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldVoltage), v))
+	})
+}
+
+// VoltageLTE applies the LTE predicate on the "voltage" field.
+func VoltageLTE(v float64) predicate.Exchange {
+	return predicate.Exchange(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldVoltage), v))
 	})
 }
 

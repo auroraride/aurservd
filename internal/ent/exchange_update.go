@@ -196,6 +196,19 @@ func (eu *ExchangeUpdate) ClearDetail() *ExchangeUpdate {
 	return eu
 }
 
+// SetVoltage sets the "voltage" field.
+func (eu *ExchangeUpdate) SetVoltage(f float64) *ExchangeUpdate {
+	eu.mutation.ResetVoltage()
+	eu.mutation.SetVoltage(f)
+	return eu
+}
+
+// AddVoltage adds f to the "voltage" field.
+func (eu *ExchangeUpdate) AddVoltage(f float64) *ExchangeUpdate {
+	eu.mutation.AddVoltage(f)
+	return eu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (eu *ExchangeUpdate) SetCity(c *City) *ExchangeUpdate {
 	return eu.SetCityID(c.ID)
@@ -437,6 +450,20 @@ func (eu *ExchangeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: exchange.FieldDetail,
+		})
+	}
+	if value, ok := eu.mutation.Voltage(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: exchange.FieldVoltage,
+		})
+	}
+	if value, ok := eu.mutation.AddedVoltage(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: exchange.FieldVoltage,
 		})
 	}
 	if eu.mutation.CityCleared() {
@@ -795,6 +822,19 @@ func (euo *ExchangeUpdateOne) ClearDetail() *ExchangeUpdateOne {
 	return euo
 }
 
+// SetVoltage sets the "voltage" field.
+func (euo *ExchangeUpdateOne) SetVoltage(f float64) *ExchangeUpdateOne {
+	euo.mutation.ResetVoltage()
+	euo.mutation.SetVoltage(f)
+	return euo
+}
+
+// AddVoltage adds f to the "voltage" field.
+func (euo *ExchangeUpdateOne) AddVoltage(f float64) *ExchangeUpdateOne {
+	euo.mutation.AddVoltage(f)
+	return euo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (euo *ExchangeUpdateOne) SetCity(c *City) *ExchangeUpdateOne {
 	return euo.SetCityID(c.ID)
@@ -1066,6 +1106,20 @@ func (euo *ExchangeUpdateOne) sqlSave(ctx context.Context) (_node *Exchange, err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeJSON,
 			Column: exchange.FieldDetail,
+		})
+	}
+	if value, ok := euo.mutation.Voltage(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: exchange.FieldVoltage,
+		})
+	}
+	if value, ok := euo.mutation.AddedVoltage(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: exchange.FieldVoltage,
 		})
 	}
 	if euo.mutation.CityCleared() {

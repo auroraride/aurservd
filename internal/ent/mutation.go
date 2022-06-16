@@ -22525,6 +22525,8 @@ type ExchangeMutation struct {
 	uuid            *string
 	success         *bool
 	detail          **model.ExchangeCabinet
+	voltage         *float64
+	addvoltage      *float64
 	clearedFields   map[string]struct{}
 	city            *uint64
 	clearedcity     bool
@@ -23247,6 +23249,62 @@ func (m *ExchangeMutation) ResetDetail() {
 	delete(m.clearedFields, exchange.FieldDetail)
 }
 
+// SetVoltage sets the "voltage" field.
+func (m *ExchangeMutation) SetVoltage(f float64) {
+	m.voltage = &f
+	m.addvoltage = nil
+}
+
+// Voltage returns the value of the "voltage" field in the mutation.
+func (m *ExchangeMutation) Voltage() (r float64, exists bool) {
+	v := m.voltage
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVoltage returns the old "voltage" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldVoltage(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVoltage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVoltage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVoltage: %w", err)
+	}
+	return oldValue.Voltage, nil
+}
+
+// AddVoltage adds f to the "voltage" field.
+func (m *ExchangeMutation) AddVoltage(f float64) {
+	if m.addvoltage != nil {
+		*m.addvoltage += f
+	} else {
+		m.addvoltage = &f
+	}
+}
+
+// AddedVoltage returns the value that was added to the "voltage" field in this mutation.
+func (m *ExchangeMutation) AddedVoltage() (r float64, exists bool) {
+	v := m.addvoltage
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVoltage resets all changes to the "voltage" field.
+func (m *ExchangeMutation) ResetVoltage() {
+	m.voltage = nil
+	m.addvoltage = nil
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *ExchangeMutation) ClearCity() {
 	m.clearedcity = true
@@ -23396,7 +23454,7 @@ func (m *ExchangeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ExchangeMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 15)
 	if m.created_at != nil {
 		fields = append(fields, exchange.FieldCreatedAt)
 	}
@@ -23439,6 +23497,9 @@ func (m *ExchangeMutation) Fields() []string {
 	if m.detail != nil {
 		fields = append(fields, exchange.FieldDetail)
 	}
+	if m.voltage != nil {
+		fields = append(fields, exchange.FieldVoltage)
+	}
 	return fields
 }
 
@@ -23475,6 +23536,8 @@ func (m *ExchangeMutation) Field(name string) (ent.Value, bool) {
 		return m.Success()
 	case exchange.FieldDetail:
 		return m.Detail()
+	case exchange.FieldVoltage:
+		return m.Voltage()
 	}
 	return nil, false
 }
@@ -23512,6 +23575,8 @@ func (m *ExchangeMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldSuccess(ctx)
 	case exchange.FieldDetail:
 		return m.OldDetail(ctx)
+	case exchange.FieldVoltage:
+		return m.OldVoltage(ctx)
 	}
 	return nil, fmt.Errorf("unknown Exchange field %s", name)
 }
@@ -23619,6 +23684,13 @@ func (m *ExchangeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDetail(v)
 		return nil
+	case exchange.FieldVoltage:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVoltage(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Exchange field %s", name)
 }
@@ -23627,6 +23699,9 @@ func (m *ExchangeMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *ExchangeMutation) AddedFields() []string {
 	var fields []string
+	if m.addvoltage != nil {
+		fields = append(fields, exchange.FieldVoltage)
+	}
 	return fields
 }
 
@@ -23635,6 +23710,8 @@ func (m *ExchangeMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *ExchangeMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case exchange.FieldVoltage:
+		return m.AddedVoltage()
 	}
 	return nil, false
 }
@@ -23644,6 +23721,13 @@ func (m *ExchangeMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *ExchangeMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case exchange.FieldVoltage:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVoltage(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Exchange numeric field %s", name)
 }
@@ -23763,6 +23847,9 @@ func (m *ExchangeMutation) ResetField(name string) error {
 		return nil
 	case exchange.FieldDetail:
 		m.ResetDetail()
+		return nil
+	case exchange.FieldVoltage:
+		m.ResetVoltage()
 		return nil
 	}
 	return fmt.Errorf("unknown Exchange field %s", name)

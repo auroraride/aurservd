@@ -85,6 +85,7 @@ type RiderCabinetOperateReq struct {
 type RiderCabinetOperating struct {
     UUID        string             `json:"uuid"`
     Serial      string             `json:"serial"`
+    Voltage     float64            `json:"voltage"`     // 电压型号
     ID          uint64             `json:"id"`          // 电柜ID
     EmptyIndex  int                `json:"emptyIndex"`  // 空店仓
     FullIndex   int                `json:"fullIndex"`   // 满电仓

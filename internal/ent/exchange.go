@@ -61,6 +61,9 @@ type Exchange struct {
 	// Detail holds the value of the "detail" field.
 	// 电柜换电信息
 	Detail *model.ExchangeCabinet `json:"detail,omitempty"`
+	// Voltage holds the value of the "voltage" field.
+	// 电池电压型号
+	Voltage float64 `json:"voltage,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ExchangeQuery when eager-loading is set.
 	Edges ExchangeEdges `json:"edges"`
@@ -162,6 +165,8 @@ func (*Exchange) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case exchange.FieldSuccess:
 			values[i] = new(sql.NullBool)
+		case exchange.FieldVoltage:
+			values[i] = new(sql.NullFloat64)
 		case exchange.FieldID, exchange.FieldCityID, exchange.FieldEmployeeID, exchange.FieldStoreID, exchange.FieldRiderID, exchange.FieldCabinetID:
 			values[i] = new(sql.NullInt64)
 		case exchange.FieldRemark, exchange.FieldUUID:
@@ -282,6 +287,12 @@ func (e *Exchange) assignValues(columns []string, values []interface{}) error {
 					return fmt.Errorf("unmarshal field detail: %w", err)
 				}
 			}
+		case exchange.FieldVoltage:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field voltage", values[i])
+			} else if value.Valid {
+				e.Voltage = value.Float64
+			}
 		}
 	}
 	return nil
@@ -369,6 +380,8 @@ func (e *Exchange) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.Success))
 	builder.WriteString(", detail=")
 	builder.WriteString(fmt.Sprintf("%v", e.Detail))
+	builder.WriteString(", voltage=")
+	builder.WriteString(fmt.Sprintf("%v", e.Voltage))
 	builder.WriteByte(')')
 	return builder.String()
 }
