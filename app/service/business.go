@@ -8,8 +8,12 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
+    "github.com/golang-module/carbon/v2"
 )
 
 // 门店业务处理专用
@@ -91,4 +95,77 @@ func (s *businessService) Plans(subscribeID uint64) {
     // 获取全部的电压列表
     // vs := NewBattery().ListVoltages(sub.Voltage)
     // 获取全部的
+}
+
+// listBasicQuery 列表基础查询语句
+func (s *businessService) listBasicQuery(req *model.BusinessListReq) *ent.BusinessQuery {
+    tt := tools.NewTime()
+
+    q := ar.Ent.Business.
+        QueryNotDeleted().
+        WithRider(func(rq *ent.RiderQuery) {
+            rq.WithPerson()
+        }).
+        WithEnterprise().
+        WithPlan()
+
+    if req.Type != nil {
+        q.Where(business.TypeEQ(business.Type(*req.Type)))
+    }
+
+    if req.Start != nil {
+        q.Where(business.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
+    }
+
+    if req.End != nil {
+        q.Where(business.CreatedAtLTE(tt.ParseDateStringX(*req.End)))
+    }
+
+    switch req.Aimed {
+    case model.BusinessAimedPersonal:
+        q.Where(business.EnterpriseIDIsNil())
+        break
+    case model.BusinessAimedEnterprise:
+        q.Where(business.EnterpriseIDNotNil())
+        break
+    }
+
+    return q
+}
+
+// ListEmployee 业务列表 - 门店
+func (s *businessService) ListEmployee(req *model.BusinessListReq) *model.PaginationRes {
+    q := s.listBasicQuery(req).Where(business.EmployeeID(s.employee.ID))
+
+    return model.ParsePaginationResponse(
+        q,
+        req.PaginationReq,
+        func(item *ent.Business) (res model.BusinessEmployeeListRes) {
+            res = model.BusinessEmployeeListRes{
+                ID:    item.ID,
+                Name:  item.Edges.Rider.Edges.Person.Name,
+                Phone: item.Edges.Rider.Phone,
+                Type:  item.Type.String(),
+                Time:  item.CreatedAt.Format(carbon.DateTimeLayout),
+            }
+            p := item.Edges.Plan
+            if p != nil {
+                res.Plan = &model.Plan{
+                    ID:   p.ID,
+                    Name: p.Name,
+                    Days: p.Days,
+                }
+            }
+
+            e := item.Edges.Enterprise
+            if e != nil {
+                res.Enterprise = &model.EnterpriseBasic{
+                    ID:   e.ID,
+                    Name: e.Name,
+                }
+            }
+
+            return
+        },
+    )
 }

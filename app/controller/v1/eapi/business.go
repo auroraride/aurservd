@@ -79,3 +79,18 @@ func (*business) UnSubscribe(c echo.Context) (err error) {
     service.NewRiderMgrWithEmployee(ctx.Employee).UnSubscribe(req.SubscribeID)
     return ctx.SendResponse()
 }
+
+// List
+// @ID           EmployeeBusinessList
+// @Router       /employee/v1/business [GET]
+// @Summary      E2007 业务记录
+// @Tags         [E]店员接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Employee-Token  header  string  true  "店员校验token"
+// @Param        query  query   model.BusinessListReq  true  "列表请求筛选参数"
+// @Success      200  {object}  model.PaginationRes{items=[]model.BusinessEmployeeListRes}  "请求成功"
+func (*business) List(c echo.Context) (err error) {
+    ctx, req := app.EmployeeContextAndBinding[model.BusinessListReq](c)
+    return ctx.SendResponse(service.NewBusinessWithEmployee(ctx.Employee).ListEmployee(req))
+}

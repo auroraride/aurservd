@@ -316,6 +316,31 @@ definitions:
       name:
         type: string
     type: object
+  model.BusinessEmployeeListRes:
+    properties:
+      enterprise:
+        allOf:
+        - $ref: '#/definitions/model.EnterpriseBasic'
+        description: 团签企业, 个签无此字段
+      id:
+        type: integer
+      name:
+        description: 骑手姓名
+        type: string
+      phone:
+        description: 骑手电话
+        type: string
+      plan:
+        allOf:
+        - $ref: '#/definitions/model.Plan'
+        description: 骑士卡, 团签无此字段
+      time:
+        description: 业务时间
+        type: string
+      type:
+        description: 业务类别
+        type: string
+    type: object
   model.BusinessSubscribeID:
     properties:
       subscribeId:
@@ -2521,6 +2546,62 @@ paths:
               $ref: '#/definitions/model.InventoryItem'
             type: array
       summary: E1003 打卡预检
+      tags:
+      - '[E]店员接口'
+  /employee/v1/business:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeBusinessList
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 筛选业务对象 0:全部 1:个签 2:团签
+        in: query
+        name: aimed
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: '筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
+        in: query
+        name: end
+        type: string
+      - description: 筛选骑手姓名或电话
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: '筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
+        in: query
+        name: start
+        type: string
+      - description: 筛选业务类别
+        in: query
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.BusinessEmployeeListRes'
+                  type: array
+              type: object
+      summary: E2007 业务记录
       tags:
       - '[E]店员接口'
   /employee/v1/business/continue:

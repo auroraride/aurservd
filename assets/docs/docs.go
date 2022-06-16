@@ -197,6 +197,95 @@ const docTemplate = `{
                 }
             }
         },
+        "/employee/v1/business": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E2007 业务记录",
+                "operationId": "EmployeeBusinessList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "筛选业务对象 0:全部 1:个签 2:团签",
+                        "name": "aimed",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选骑手姓名或电话",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选业务类别",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.BusinessEmployeeListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/employee/v1/business/continue": {
             "post": {
                 "consumes": [
@@ -5444,6 +5533,46 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.BusinessEmployeeListRes": {
+            "type": "object",
+            "properties": {
+                "enterprise": {
+                    "description": "团签企业, 个签无此字段",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseBasic"
+                        }
+                    ]
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "骑手姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "骑手电话",
+                    "type": "string"
+                },
+                "plan": {
+                    "description": "骑士卡, 团签无此字段",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Plan"
+                        }
+                    ]
+                },
+                "time": {
+                    "description": "业务时间",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "业务类别",
                     "type": "string"
                 }
             }
