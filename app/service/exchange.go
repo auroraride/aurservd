@@ -81,6 +81,8 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
         snag.Panic("骑士卡状态异常")
     }
 
+    // TODO 门店出库
+
     // 存储
     uid := uuid.New().String()
     s.orm.Create().
