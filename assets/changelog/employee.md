@@ -4,6 +4,7 @@
 
 - [E1006 切换门店状态](http://localhost:5533/docs#tag/E/operation/EmployeeStoreStatus)
 - [E2006 业务记录](http://localhost:5533/docs#tag/E/operation/EmployeeBusinessList)
+- [E2008 换电记录](http://localhost:5533/docs#tag/E/operation/EmployeeExchangeList)
 
 
 

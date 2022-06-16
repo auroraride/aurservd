@@ -1074,6 +1074,11 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{ExchangeColumns[8]},
 			},
+			{
+				Name:    "exchange_voltage",
+				Unique:  false,
+				Columns: []*schema.Column{ExchangeColumns[10]},
+			},
 		},
 	}
 	// InventoryColumns holds the columns for the "inventory" table.

@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     "github.com/lithammer/shortuuid/v4"
     "strings"
@@ -161,6 +162,74 @@ func (s *exchangeService) RiderList(riderID uint64, req *model.PaginationReq) *m
     )
 }
 
-func (s *exchangeService) EmployeeList() {
+// listBasicQuery 列表基础查询语句
+func (s *exchangeService) listBasicQuery(req *model.ExchangeListReq) *ent.ExchangeQuery {
+    tt := tools.NewTime()
 
+    q := ar.Ent.Exchange.
+        QueryNotDeleted().
+        WithRider(func(rq *ent.RiderQuery) {
+            rq.WithPerson()
+        }).
+        WithEnterprise().
+        WithSubscribe(func(sq *ent.SubscribeQuery) {
+            sq.WithPlan()
+        })
+
+    if req.Start != nil {
+        q.Where(exchange.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
+    }
+
+    if req.End != nil {
+        q.Where(exchange.CreatedAtLTE(tt.ParseDateStringX(*req.End)))
+    }
+
+    switch req.Aimed {
+    case model.BusinessAimedPersonal:
+        q.Where(exchange.EnterpriseIDIsNil())
+        break
+    case model.BusinessAimedEnterprise:
+        q.Where(exchange.EnterpriseIDNotNil())
+        break
+    }
+
+    return q
+}
+
+func (s *exchangeService) EmployeeList(req *model.ExchangeListReq) *model.PaginationRes {
+    q := s.listBasicQuery(req).Where(exchange.EmployeeID(s.employee.ID))
+
+    return model.ParsePaginationResponse(
+        q,
+        req.PaginationReq,
+        func(item *ent.Exchange) (res model.ExchangeEmployeeListRes) {
+            res = model.ExchangeEmployeeListRes{
+                ID:    item.ID,
+                Name:  item.Edges.Rider.Edges.Person.Name,
+                Phone: item.Edges.Rider.Phone,
+                Time:  item.CreatedAt.Format(carbon.DateTimeLayout),
+            }
+            sub := item.Edges.Subscribe
+            if sub != nil {
+                p := sub.Edges.Plan
+                if p != nil {
+                    res.Plan = &model.Plan{
+                        ID:   p.ID,
+                        Name: p.Name,
+                        Days: p.Days,
+                    }
+                }
+            }
+
+            e := item.Edges.Enterprise
+            if e != nil {
+                res.Enterprise = &model.EnterpriseBasic{
+                    ID:   e.ID,
+                    Name: e.Name,
+                }
+            }
+
+            return
+        },
+    )
 }

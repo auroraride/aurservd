@@ -47,5 +47,21 @@ type ExchangeRiderListRes struct {
     BinInfo ExchangeLogBinInfo `json:"binInfo"` // 仓位信息
 }
 
+type ExchangeListReq struct {
+    PaginationReq
+
+    Aimed   uint8   `json:"aimed"`   // 筛选对象 0:全部 1:个签 2:团签
+    Start   *string `json:"start"`   // 筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01
+    End     *string `json:"end"`     // 筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01
+    Keyword *string `json:"keyword"` // 筛选骑手姓名或电话
+}
+
 type ExchangeEmployeeListRes struct {
+    ID         uint64           `json:"id"`
+    Name       string           `json:"name"`                 // 骑手姓名
+    Phone      string           `json:"phone"`                // 骑手电话
+    Time       string           `json:"time"`                 // 换电时间
+    Voltage    float64          `json:"voltage"`              // 换电型号
+    Enterprise *EnterpriseBasic `json:"enterprise,omitempty"` // 团签企业, 个签无此字段
+    Plan       *Plan            `json:"plan,omitempty"`       // 骑士卡, 团签无此字段
 }

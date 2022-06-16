@@ -448,6 +448,89 @@ const docTemplate = `{
                 }
             }
         },
+        "/employee/v1/exchange": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E2008 换电记录",
+                "operationId": "EmployeeExchangeList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "筛选对象 0:全部 1:个签 2:团签",
+                        "name": "aimed",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选骑手姓名或电话",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+                        "name": "start",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.ExchangeEmployeeListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/employee/v1/plan/renewly": {
             "get": {
                 "consumes": [
@@ -6757,6 +6840,46 @@ const docTemplate = `{
                 "name": {
                     "description": "站点名称 ",
                     "type": "string"
+                }
+            }
+        },
+        "model.ExchangeEmployeeListRes": {
+            "type": "object",
+            "properties": {
+                "enterprise": {
+                    "description": "团签企业, 个签无此字段",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseBasic"
+                        }
+                    ]
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "骑手姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "骑手电话",
+                    "type": "string"
+                },
+                "plan": {
+                    "description": "骑士卡, 团签无此字段",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Plan"
+                        }
+                    ]
+                },
+                "time": {
+                    "description": "换电时间",
+                    "type": "string"
+                },
+                "voltage": {
+                    "description": "换电型号",
+                    "type": "number"
                 }
             }
         },
