@@ -15,9 +15,12 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // ExchangeCreate is the builder for creating a Exchange entity.
@@ -96,6 +99,12 @@ func (ec *ExchangeCreate) SetNillableRemark(s *string) *ExchangeCreate {
 	return ec
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (ec *ExchangeCreate) SetSubscribeID(u uint64) *ExchangeCreate {
+	ec.mutation.SetSubscribeID(u)
+	return ec
+}
+
 // SetCityID sets the "city_id" field.
 func (ec *ExchangeCreate) SetCityID(u uint64) *ExchangeCreate {
 	ec.mutation.SetCityID(u)
@@ -126,6 +135,34 @@ func (ec *ExchangeCreate) SetStoreID(u uint64) *ExchangeCreate {
 func (ec *ExchangeCreate) SetNillableStoreID(u *uint64) *ExchangeCreate {
 	if u != nil {
 		ec.SetStoreID(*u)
+	}
+	return ec
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (ec *ExchangeCreate) SetEnterpriseID(u uint64) *ExchangeCreate {
+	ec.mutation.SetEnterpriseID(u)
+	return ec
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (ec *ExchangeCreate) SetNillableEnterpriseID(u *uint64) *ExchangeCreate {
+	if u != nil {
+		ec.SetEnterpriseID(*u)
+	}
+	return ec
+}
+
+// SetStationID sets the "station_id" field.
+func (ec *ExchangeCreate) SetStationID(u uint64) *ExchangeCreate {
+	ec.mutation.SetStationID(u)
+	return ec
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (ec *ExchangeCreate) SetNillableStationID(u *uint64) *ExchangeCreate {
+	if u != nil {
+		ec.SetStationID(*u)
 	}
 	return ec
 }
@@ -182,6 +219,11 @@ func (ec *ExchangeCreate) SetVoltage(f float64) *ExchangeCreate {
 	return ec
 }
 
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (ec *ExchangeCreate) SetSubscribe(s *Subscribe) *ExchangeCreate {
+	return ec.SetSubscribeID(s.ID)
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (ec *ExchangeCreate) SetCity(c *City) *ExchangeCreate {
 	return ec.SetCityID(c.ID)
@@ -195,6 +237,16 @@ func (ec *ExchangeCreate) SetEmployee(e *Employee) *ExchangeCreate {
 // SetStore sets the "store" edge to the Store entity.
 func (ec *ExchangeCreate) SetStore(s *Store) *ExchangeCreate {
 	return ec.SetStoreID(s.ID)
+}
+
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (ec *ExchangeCreate) SetEnterprise(e *Enterprise) *ExchangeCreate {
+	return ec.SetEnterpriseID(e.ID)
+}
+
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (ec *ExchangeCreate) SetStation(e *EnterpriseStation) *ExchangeCreate {
+	return ec.SetStationID(e.ID)
 }
 
 // SetCabinet sets the "cabinet" edge to the Cabinet entity.
@@ -315,6 +367,9 @@ func (ec *ExchangeCreate) check() error {
 	if _, ok := ec.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Exchange.updated_at"`)}
 	}
+	if _, ok := ec.mutation.SubscribeID(); !ok {
+		return &ValidationError{Name: "subscribe_id", err: errors.New(`ent: missing required field "Exchange.subscribe_id"`)}
+	}
 	if _, ok := ec.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city_id", err: errors.New(`ent: missing required field "Exchange.city_id"`)}
 	}
@@ -329,6 +384,9 @@ func (ec *ExchangeCreate) check() error {
 	}
 	if _, ok := ec.mutation.Voltage(); !ok {
 		return &ValidationError{Name: "voltage", err: errors.New(`ent: missing required field "Exchange.voltage"`)}
+	}
+	if _, ok := ec.mutation.SubscribeID(); !ok {
+		return &ValidationError{Name: "subscribe", err: errors.New(`ent: missing required edge "Exchange.subscribe"`)}
 	}
 	if _, ok := ec.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Exchange.city"`)}
@@ -444,6 +502,26 @@ func (ec *ExchangeCreate) createSpec() (*Exchange, *sqlgraph.CreateSpec) {
 		})
 		_node.Voltage = value
 	}
+	if nodes := ec.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.SubscribeTable,
+			Columns: []string{exchange.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.SubscribeID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := ec.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -502,6 +580,46 @@ func (ec *ExchangeCreate) createSpec() (*Exchange, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.StoreID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.EnterpriseTable,
+			Columns: []string{exchange.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprise.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EnterpriseID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.StationTable,
+			Columns: []string{exchange.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.StationID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ec.mutation.CabinetIDs(); len(nodes) > 0 {
@@ -694,6 +812,18 @@ func (u *ExchangeUpsert) ClearRemark() *ExchangeUpsert {
 	return u
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *ExchangeUpsert) SetSubscribeID(v uint64) *ExchangeUpsert {
+	u.Set(exchange.FieldSubscribeID, v)
+	return u
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateSubscribeID() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldSubscribeID)
+	return u
+}
+
 // SetCityID sets the "city_id" field.
 func (u *ExchangeUpsert) SetCityID(v uint64) *ExchangeUpsert {
 	u.Set(exchange.FieldCityID, v)
@@ -739,6 +869,42 @@ func (u *ExchangeUpsert) UpdateStoreID() *ExchangeUpsert {
 // ClearStoreID clears the value of the "store_id" field.
 func (u *ExchangeUpsert) ClearStoreID() *ExchangeUpsert {
 	u.SetNull(exchange.FieldStoreID)
+	return u
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (u *ExchangeUpsert) SetEnterpriseID(v uint64) *ExchangeUpsert {
+	u.Set(exchange.FieldEnterpriseID, v)
+	return u
+}
+
+// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateEnterpriseID() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldEnterpriseID)
+	return u
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (u *ExchangeUpsert) ClearEnterpriseID() *ExchangeUpsert {
+	u.SetNull(exchange.FieldEnterpriseID)
+	return u
+}
+
+// SetStationID sets the "station_id" field.
+func (u *ExchangeUpsert) SetStationID(v uint64) *ExchangeUpsert {
+	u.Set(exchange.FieldStationID, v)
+	return u
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateStationID() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldStationID)
+	return u
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *ExchangeUpsert) ClearStationID() *ExchangeUpsert {
+	u.SetNull(exchange.FieldStationID)
 	return u
 }
 
@@ -994,6 +1160,20 @@ func (u *ExchangeUpsertOne) ClearRemark() *ExchangeUpsertOne {
 	})
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *ExchangeUpsertOne) SetSubscribeID(v uint64) *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateSubscribeID() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
 // SetCityID sets the "city_id" field.
 func (u *ExchangeUpsertOne) SetCityID(v uint64) *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
@@ -1047,6 +1227,48 @@ func (u *ExchangeUpsertOne) UpdateStoreID() *ExchangeUpsertOne {
 func (u *ExchangeUpsertOne) ClearStoreID() *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.ClearStoreID()
+	})
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (u *ExchangeUpsertOne) SetEnterpriseID(v uint64) *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetEnterpriseID(v)
+	})
+}
+
+// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateEnterpriseID() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateEnterpriseID()
+	})
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (u *ExchangeUpsertOne) ClearEnterpriseID() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearEnterpriseID()
+	})
+}
+
+// SetStationID sets the "station_id" field.
+func (u *ExchangeUpsertOne) SetStationID(v uint64) *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetStationID(v)
+	})
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateStationID() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateStationID()
+	})
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *ExchangeUpsertOne) ClearStationID() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearStationID()
 	})
 }
 
@@ -1481,6 +1703,20 @@ func (u *ExchangeUpsertBulk) ClearRemark() *ExchangeUpsertBulk {
 	})
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *ExchangeUpsertBulk) SetSubscribeID(v uint64) *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateSubscribeID() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
 // SetCityID sets the "city_id" field.
 func (u *ExchangeUpsertBulk) SetCityID(v uint64) *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
@@ -1534,6 +1770,48 @@ func (u *ExchangeUpsertBulk) UpdateStoreID() *ExchangeUpsertBulk {
 func (u *ExchangeUpsertBulk) ClearStoreID() *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.ClearStoreID()
+	})
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (u *ExchangeUpsertBulk) SetEnterpriseID(v uint64) *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetEnterpriseID(v)
+	})
+}
+
+// UpdateEnterpriseID sets the "enterprise_id" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateEnterpriseID() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateEnterpriseID()
+	})
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (u *ExchangeUpsertBulk) ClearEnterpriseID() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearEnterpriseID()
+	})
+}
+
+// SetStationID sets the "station_id" field.
+func (u *ExchangeUpsertBulk) SetStationID(v uint64) *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetStationID(v)
+	})
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateStationID() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateStationID()
+	})
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *ExchangeUpsertBulk) ClearStationID() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearStationID()
 	})
 }
 

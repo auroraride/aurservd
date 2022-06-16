@@ -194,14 +194,14 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
 }
 
 // RecentDetail 获取骑手最近订阅详情
-func (s *subscribeService) RecentDetail(riderID uint64) *model.Subscribe {
+func (s *subscribeService) RecentDetail(riderID uint64) (*model.Subscribe, *ent.Subscribe) {
     sub := s.Recent(riderID)
 
     if sub == nil {
-        return nil
+        return nil, nil
     }
 
-    return s.Detail(sub)
+    return s.Detail(sub), sub
 }
 
 // QueryEffective 获取骑手当前生效中的订阅

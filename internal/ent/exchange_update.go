@@ -15,10 +15,13 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // ExchangeUpdate is the builder for updating Exchange entities.
@@ -92,6 +95,12 @@ func (eu *ExchangeUpdate) ClearRemark() *ExchangeUpdate {
 	return eu
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (eu *ExchangeUpdate) SetSubscribeID(u uint64) *ExchangeUpdate {
+	eu.mutation.SetSubscribeID(u)
+	return eu
+}
+
 // SetCityID sets the "city_id" field.
 func (eu *ExchangeUpdate) SetCityID(u uint64) *ExchangeUpdate {
 	eu.mutation.SetCityID(u)
@@ -135,6 +144,46 @@ func (eu *ExchangeUpdate) SetNillableStoreID(u *uint64) *ExchangeUpdate {
 // ClearStoreID clears the value of the "store_id" field.
 func (eu *ExchangeUpdate) ClearStoreID() *ExchangeUpdate {
 	eu.mutation.ClearStoreID()
+	return eu
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (eu *ExchangeUpdate) SetEnterpriseID(u uint64) *ExchangeUpdate {
+	eu.mutation.SetEnterpriseID(u)
+	return eu
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (eu *ExchangeUpdate) SetNillableEnterpriseID(u *uint64) *ExchangeUpdate {
+	if u != nil {
+		eu.SetEnterpriseID(*u)
+	}
+	return eu
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (eu *ExchangeUpdate) ClearEnterpriseID() *ExchangeUpdate {
+	eu.mutation.ClearEnterpriseID()
+	return eu
+}
+
+// SetStationID sets the "station_id" field.
+func (eu *ExchangeUpdate) SetStationID(u uint64) *ExchangeUpdate {
+	eu.mutation.SetStationID(u)
+	return eu
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (eu *ExchangeUpdate) SetNillableStationID(u *uint64) *ExchangeUpdate {
+	if u != nil {
+		eu.SetStationID(*u)
+	}
+	return eu
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (eu *ExchangeUpdate) ClearStationID() *ExchangeUpdate {
+	eu.mutation.ClearStationID()
 	return eu
 }
 
@@ -209,6 +258,11 @@ func (eu *ExchangeUpdate) AddVoltage(f float64) *ExchangeUpdate {
 	return eu
 }
 
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (eu *ExchangeUpdate) SetSubscribe(s *Subscribe) *ExchangeUpdate {
+	return eu.SetSubscribeID(s.ID)
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (eu *ExchangeUpdate) SetCity(c *City) *ExchangeUpdate {
 	return eu.SetCityID(c.ID)
@@ -222,6 +276,16 @@ func (eu *ExchangeUpdate) SetEmployee(e *Employee) *ExchangeUpdate {
 // SetStore sets the "store" edge to the Store entity.
 func (eu *ExchangeUpdate) SetStore(s *Store) *ExchangeUpdate {
 	return eu.SetStoreID(s.ID)
+}
+
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (eu *ExchangeUpdate) SetEnterprise(e *Enterprise) *ExchangeUpdate {
+	return eu.SetEnterpriseID(e.ID)
+}
+
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (eu *ExchangeUpdate) SetStation(e *EnterpriseStation) *ExchangeUpdate {
+	return eu.SetStationID(e.ID)
 }
 
 // SetCabinet sets the "cabinet" edge to the Cabinet entity.
@@ -239,6 +303,12 @@ func (eu *ExchangeUpdate) Mutation() *ExchangeMutation {
 	return eu.mutation
 }
 
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (eu *ExchangeUpdate) ClearSubscribe() *ExchangeUpdate {
+	eu.mutation.ClearSubscribe()
+	return eu
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (eu *ExchangeUpdate) ClearCity() *ExchangeUpdate {
 	eu.mutation.ClearCity()
@@ -254,6 +324,18 @@ func (eu *ExchangeUpdate) ClearEmployee() *ExchangeUpdate {
 // ClearStore clears the "store" edge to the Store entity.
 func (eu *ExchangeUpdate) ClearStore() *ExchangeUpdate {
 	eu.mutation.ClearStore()
+	return eu
+}
+
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (eu *ExchangeUpdate) ClearEnterprise() *ExchangeUpdate {
+	eu.mutation.ClearEnterprise()
+	return eu
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (eu *ExchangeUpdate) ClearStation() *ExchangeUpdate {
+	eu.mutation.ClearStation()
 	return eu
 }
 
@@ -346,6 +428,9 @@ func (eu *ExchangeUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (eu *ExchangeUpdate) check() error {
+	if _, ok := eu.mutation.SubscribeID(); eu.mutation.SubscribeCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Exchange.subscribe"`)
+	}
 	if _, ok := eu.mutation.CityID(); eu.mutation.CityCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Exchange.city"`)
 	}
@@ -466,6 +551,41 @@ func (eu *ExchangeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: exchange.FieldVoltage,
 		})
 	}
+	if eu.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.SubscribeTable,
+			Columns: []string{exchange.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.SubscribeTable,
+			Columns: []string{exchange.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if eu.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -563,6 +683,76 @@ func (eu *ExchangeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.EnterpriseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.EnterpriseTable,
+			Columns: []string{exchange.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprise.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.EnterpriseTable,
+			Columns: []string{exchange.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprise.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if eu.mutation.StationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.StationTable,
+			Columns: []string{exchange.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.StationTable,
+			Columns: []string{exchange.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
 				},
 			},
 		}
@@ -718,6 +908,12 @@ func (euo *ExchangeUpdateOne) ClearRemark() *ExchangeUpdateOne {
 	return euo
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (euo *ExchangeUpdateOne) SetSubscribeID(u uint64) *ExchangeUpdateOne {
+	euo.mutation.SetSubscribeID(u)
+	return euo
+}
+
 // SetCityID sets the "city_id" field.
 func (euo *ExchangeUpdateOne) SetCityID(u uint64) *ExchangeUpdateOne {
 	euo.mutation.SetCityID(u)
@@ -761,6 +957,46 @@ func (euo *ExchangeUpdateOne) SetNillableStoreID(u *uint64) *ExchangeUpdateOne {
 // ClearStoreID clears the value of the "store_id" field.
 func (euo *ExchangeUpdateOne) ClearStoreID() *ExchangeUpdateOne {
 	euo.mutation.ClearStoreID()
+	return euo
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (euo *ExchangeUpdateOne) SetEnterpriseID(u uint64) *ExchangeUpdateOne {
+	euo.mutation.SetEnterpriseID(u)
+	return euo
+}
+
+// SetNillableEnterpriseID sets the "enterprise_id" field if the given value is not nil.
+func (euo *ExchangeUpdateOne) SetNillableEnterpriseID(u *uint64) *ExchangeUpdateOne {
+	if u != nil {
+		euo.SetEnterpriseID(*u)
+	}
+	return euo
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (euo *ExchangeUpdateOne) ClearEnterpriseID() *ExchangeUpdateOne {
+	euo.mutation.ClearEnterpriseID()
+	return euo
+}
+
+// SetStationID sets the "station_id" field.
+func (euo *ExchangeUpdateOne) SetStationID(u uint64) *ExchangeUpdateOne {
+	euo.mutation.SetStationID(u)
+	return euo
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (euo *ExchangeUpdateOne) SetNillableStationID(u *uint64) *ExchangeUpdateOne {
+	if u != nil {
+		euo.SetStationID(*u)
+	}
+	return euo
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (euo *ExchangeUpdateOne) ClearStationID() *ExchangeUpdateOne {
+	euo.mutation.ClearStationID()
 	return euo
 }
 
@@ -835,6 +1071,11 @@ func (euo *ExchangeUpdateOne) AddVoltage(f float64) *ExchangeUpdateOne {
 	return euo
 }
 
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (euo *ExchangeUpdateOne) SetSubscribe(s *Subscribe) *ExchangeUpdateOne {
+	return euo.SetSubscribeID(s.ID)
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (euo *ExchangeUpdateOne) SetCity(c *City) *ExchangeUpdateOne {
 	return euo.SetCityID(c.ID)
@@ -848,6 +1089,16 @@ func (euo *ExchangeUpdateOne) SetEmployee(e *Employee) *ExchangeUpdateOne {
 // SetStore sets the "store" edge to the Store entity.
 func (euo *ExchangeUpdateOne) SetStore(s *Store) *ExchangeUpdateOne {
 	return euo.SetStoreID(s.ID)
+}
+
+// SetEnterprise sets the "enterprise" edge to the Enterprise entity.
+func (euo *ExchangeUpdateOne) SetEnterprise(e *Enterprise) *ExchangeUpdateOne {
+	return euo.SetEnterpriseID(e.ID)
+}
+
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (euo *ExchangeUpdateOne) SetStation(e *EnterpriseStation) *ExchangeUpdateOne {
+	return euo.SetStationID(e.ID)
 }
 
 // SetCabinet sets the "cabinet" edge to the Cabinet entity.
@@ -865,6 +1116,12 @@ func (euo *ExchangeUpdateOne) Mutation() *ExchangeMutation {
 	return euo.mutation
 }
 
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (euo *ExchangeUpdateOne) ClearSubscribe() *ExchangeUpdateOne {
+	euo.mutation.ClearSubscribe()
+	return euo
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (euo *ExchangeUpdateOne) ClearCity() *ExchangeUpdateOne {
 	euo.mutation.ClearCity()
@@ -880,6 +1137,18 @@ func (euo *ExchangeUpdateOne) ClearEmployee() *ExchangeUpdateOne {
 // ClearStore clears the "store" edge to the Store entity.
 func (euo *ExchangeUpdateOne) ClearStore() *ExchangeUpdateOne {
 	euo.mutation.ClearStore()
+	return euo
+}
+
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (euo *ExchangeUpdateOne) ClearEnterprise() *ExchangeUpdateOne {
+	euo.mutation.ClearEnterprise()
+	return euo
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (euo *ExchangeUpdateOne) ClearStation() *ExchangeUpdateOne {
+	euo.mutation.ClearStation()
 	return euo
 }
 
@@ -985,6 +1254,9 @@ func (euo *ExchangeUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (euo *ExchangeUpdateOne) check() error {
+	if _, ok := euo.mutation.SubscribeID(); euo.mutation.SubscribeCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Exchange.subscribe"`)
+	}
 	if _, ok := euo.mutation.CityID(); euo.mutation.CityCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Exchange.city"`)
 	}
@@ -1122,6 +1394,41 @@ func (euo *ExchangeUpdateOne) sqlSave(ctx context.Context) (_node *Exchange, err
 			Column: exchange.FieldVoltage,
 		})
 	}
+	if euo.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.SubscribeTable,
+			Columns: []string{exchange.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.SubscribeTable,
+			Columns: []string{exchange.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if euo.mutation.CityCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1219,6 +1526,76 @@ func (euo *ExchangeUpdateOne) sqlSave(ctx context.Context) (_node *Exchange, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.EnterpriseCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.EnterpriseTable,
+			Columns: []string{exchange.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprise.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.EnterpriseIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.EnterpriseTable,
+			Columns: []string{exchange.EnterpriseColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprise.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.StationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.StationTable,
+			Columns: []string{exchange.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.StationTable,
+			Columns: []string{exchange.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
 				},
 			},
 		}

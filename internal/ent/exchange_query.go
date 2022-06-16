@@ -13,10 +13,13 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // ExchangeQuery is the builder for querying Exchange entities.
@@ -29,12 +32,15 @@ type ExchangeQuery struct {
 	fields     []string
 	predicates []predicate.Exchange
 	// eager-loading edges.
-	withCity     *CityQuery
-	withEmployee *EmployeeQuery
-	withStore    *StoreQuery
-	withCabinet  *CabinetQuery
-	withRider    *RiderQuery
-	modifiers    []func(*sql.Selector)
+	withSubscribe  *SubscribeQuery
+	withCity       *CityQuery
+	withEmployee   *EmployeeQuery
+	withStore      *StoreQuery
+	withEnterprise *EnterpriseQuery
+	withStation    *EnterpriseStationQuery
+	withCabinet    *CabinetQuery
+	withRider      *RiderQuery
+	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -69,6 +75,28 @@ func (eq *ExchangeQuery) Unique(unique bool) *ExchangeQuery {
 func (eq *ExchangeQuery) Order(o ...OrderFunc) *ExchangeQuery {
 	eq.order = append(eq.order, o...)
 	return eq
+}
+
+// QuerySubscribe chains the current query on the "subscribe" edge.
+func (eq *ExchangeQuery) QuerySubscribe() *SubscribeQuery {
+	query := &SubscribeQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(exchange.Table, exchange.FieldID, selector),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, exchange.SubscribeTable, exchange.SubscribeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryCity chains the current query on the "city" edge.
@@ -130,6 +158,50 @@ func (eq *ExchangeQuery) QueryStore() *StoreQuery {
 			sqlgraph.From(exchange.Table, exchange.FieldID, selector),
 			sqlgraph.To(store.Table, store.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, exchange.StoreTable, exchange.StoreColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEnterprise chains the current query on the "enterprise" edge.
+func (eq *ExchangeQuery) QueryEnterprise() *EnterpriseQuery {
+	query := &EnterpriseQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(exchange.Table, exchange.FieldID, selector),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, exchange.EnterpriseTable, exchange.EnterpriseColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStation chains the current query on the "station" edge.
+func (eq *ExchangeQuery) QueryStation() *EnterpriseStationQuery {
+	query := &EnterpriseStationQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(exchange.Table, exchange.FieldID, selector),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, exchange.StationTable, exchange.StationColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -357,21 +429,35 @@ func (eq *ExchangeQuery) Clone() *ExchangeQuery {
 		return nil
 	}
 	return &ExchangeQuery{
-		config:       eq.config,
-		limit:        eq.limit,
-		offset:       eq.offset,
-		order:        append([]OrderFunc{}, eq.order...),
-		predicates:   append([]predicate.Exchange{}, eq.predicates...),
-		withCity:     eq.withCity.Clone(),
-		withEmployee: eq.withEmployee.Clone(),
-		withStore:    eq.withStore.Clone(),
-		withCabinet:  eq.withCabinet.Clone(),
-		withRider:    eq.withRider.Clone(),
+		config:         eq.config,
+		limit:          eq.limit,
+		offset:         eq.offset,
+		order:          append([]OrderFunc{}, eq.order...),
+		predicates:     append([]predicate.Exchange{}, eq.predicates...),
+		withSubscribe:  eq.withSubscribe.Clone(),
+		withCity:       eq.withCity.Clone(),
+		withEmployee:   eq.withEmployee.Clone(),
+		withStore:      eq.withStore.Clone(),
+		withEnterprise: eq.withEnterprise.Clone(),
+		withStation:    eq.withStation.Clone(),
+		withCabinet:    eq.withCabinet.Clone(),
+		withRider:      eq.withRider.Clone(),
 		// clone intermediate query.
 		sql:    eq.sql.Clone(),
 		path:   eq.path,
 		unique: eq.unique,
 	}
+}
+
+// WithSubscribe tells the query-builder to eager-load the nodes that are connected to
+// the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *ExchangeQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *ExchangeQuery {
+	query := &SubscribeQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withSubscribe = query
+	return eq
 }
 
 // WithCity tells the query-builder to eager-load the nodes that are connected to
@@ -404,6 +490,28 @@ func (eq *ExchangeQuery) WithStore(opts ...func(*StoreQuery)) *ExchangeQuery {
 		opt(query)
 	}
 	eq.withStore = query
+	return eq
+}
+
+// WithEnterprise tells the query-builder to eager-load the nodes that are connected to
+// the "enterprise" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *ExchangeQuery) WithEnterprise(opts ...func(*EnterpriseQuery)) *ExchangeQuery {
+	query := &EnterpriseQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withEnterprise = query
+	return eq
+}
+
+// WithStation tells the query-builder to eager-load the nodes that are connected to
+// the "station" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *ExchangeQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *ExchangeQuery {
+	query := &EnterpriseStationQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withStation = query
 	return eq
 }
 
@@ -499,10 +607,13 @@ func (eq *ExchangeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Exc
 	var (
 		nodes       = []*Exchange{}
 		_spec       = eq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [8]bool{
+			eq.withSubscribe != nil,
 			eq.withCity != nil,
 			eq.withEmployee != nil,
 			eq.withStore != nil,
+			eq.withEnterprise != nil,
+			eq.withStation != nil,
 			eq.withCabinet != nil,
 			eq.withRider != nil,
 		}
@@ -527,6 +638,32 @@ func (eq *ExchangeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Exc
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+
+	if query := eq.withSubscribe; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Exchange)
+		for i := range nodes {
+			fk := nodes[i].SubscribeID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(subscribe.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Subscribe = n
+			}
+		}
 	}
 
 	if query := eq.withCity; query != nil {
@@ -609,6 +746,64 @@ func (eq *ExchangeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Exc
 			}
 			for i := range nodes {
 				nodes[i].Edges.Store = n
+			}
+		}
+	}
+
+	if query := eq.withEnterprise; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Exchange)
+		for i := range nodes {
+			if nodes[i].EnterpriseID == nil {
+				continue
+			}
+			fk := *nodes[i].EnterpriseID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(enterprise.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Enterprise = n
+			}
+		}
+	}
+
+	if query := eq.withStation; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Exchange)
+		for i := range nodes {
+			if nodes[i].StationID == nil {
+				continue
+			}
+			fk := *nodes[i].StationID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(enterprisestation.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "station_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Station = n
 			}
 		}
 	}

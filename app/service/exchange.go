@@ -71,14 +71,14 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
     }
 
     // 获取套餐
-    sub := NewSubscribe().RecentDetail(s.rider.ID)
+    subd, sub := NewSubscribe().RecentDetail(s.rider.ID)
 
-    if sub == nil {
+    if subd == nil {
         snag.Panic("未找到有效订阅")
     }
 
     // TODO 判定门店物资是否匹配电压型号
-    if sub.Status != model.SubscribeStatusUsing {
+    if subd.Status != model.SubscribeStatusUsing {
         snag.Panic("骑士卡状态异常")
     }
 
@@ -89,13 +89,16 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
         SetRider(s.rider).
         SetSuccess(true).
         SetStore(item).
-        SetCityID(sub.City.ID).
+        SetCityID(subd.City.ID).
         SetUUID(uid).
-        SetVoltage(sub.Voltage).
+        SetVoltage(subd.Voltage).
+        SetNillableEnterpriseID(sub.EnterpriseID).
+        SetNillableStationID(sub.StationID).
+        SetSubscribeID(sub.ID).
         SaveX(s.ctx)
 
     return &model.ExchangeStoreRes{
-        Voltage:   sub.Voltage,
+        Voltage:   subd.Voltage,
         StoreName: item.Name,
         Time:      time.Now().Unix(),
         UUID:      uid,

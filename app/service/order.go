@@ -132,23 +132,23 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
         snag.Panic("当前有退款中的订单")
     }
 
-    sub := NewSubscribe().RecentDetail(s.rider.ID)
+    subd, _ := NewSubscribe().RecentDetail(s.rider.ID)
     // 判定类型条件
     var subID, orderID *uint64
     otype := req.OrderType
     switch otype {
     case model.OrderTypeNewly:
         // 新签判定
-        otype = s.PreconditionNewly(sub)
+        otype = s.PreconditionNewly(subd)
         break
     case model.OrderTypeRenewal:
         // 续签判定
-        s.PreconditionRenewal(sub)
-        if sub.Remaining < 0 && int(op.Days)+sub.Remaining < 0 {
+        s.PreconditionRenewal(subd)
+        if subd.Remaining < 0 && int(op.Days)+subd.Remaining < 0 {
             snag.Panic("无法继续, 逾期天数大于套餐天数")
         }
-        subID = tools.NewPointer().UInt64(sub.ID)
-        orderID = tools.NewPointer().UInt64(sub.Order.ID)
+        subID = tools.NewPointer().UInt64(subd.ID)
+        orderID = tools.NewPointer().UInt64(subd.Order.ID)
         break
     default:
         snag.Panic("未知的支付请求")
@@ -158,7 +158,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
     // 距离上次订阅过去的时间(从退订的第二天0点开始计算,不满一天算0天)
     var pastDays int
     if otype == model.OrderTypeAgain {
-        pastDays = int(carbon.Parse(sub.EndAt).AddDay().DiffInDays(carbon.Now()))
+        pastDays = int(carbon.Parse(subd.EndAt).AddDay().DiffInDays(carbon.Now()))
     }
 
     // 判定用户是否需要缴纳押金

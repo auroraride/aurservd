@@ -49,34 +49,34 @@ func (s *businessService) Detail(id uint64) (res model.SubscribeBusiness) {
         snag.Panic(err)
     }
     // 获取最近的订阅
-    sub := NewSubscribe().RecentDetail(r.ID)
+    subd, _ := NewSubscribe().RecentDetail(r.ID)
 
-    if sub == nil {
+    if subd == nil {
         snag.Panic("未找到有效订阅")
     }
 
-    s.CheckCity(sub.City.ID)
+    s.CheckCity(subd.City.ID)
 
     ic := r.Edges.Person.IDCardNumber
     res = model.SubscribeBusiness{
         ID:           r.ID,
-        Status:       sub.Status,
+        Status:       subd.Status,
         Name:         r.Edges.Person.Name,
         Phone:        r.Phone,
         IDCardNumber: ic[len(ic)-4:],
-        Voltage:      sub.Voltage,
-        SubscribeID:  sub.ID,
+        Voltage:      subd.Voltage,
+        SubscribeID:  subd.ID,
     }
 
-    if sub.Enterprise != nil {
-        res.EnterpriseName = sub.Enterprise.Name
+    if subd.Enterprise != nil {
+        res.EnterpriseName = subd.Enterprise.Name
     }
 
-    if sub.Plan != nil {
-        res.PlanName = sub.Plan.Name
+    if subd.Plan != nil {
+        res.PlanName = subd.Plan.Name
     }
 
-    res.Business = sub.Business
+    res.Business = subd.Business
     return
 }
 

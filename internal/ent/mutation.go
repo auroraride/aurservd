@@ -22513,34 +22513,40 @@ func (m *EnterpriseStationMutation) ResetEdge(name string) error {
 // ExchangeMutation represents an operation that mutates the Exchange nodes in the graph.
 type ExchangeMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *uint64
-	created_at      *time.Time
-	updated_at      *time.Time
-	deleted_at      *time.Time
-	creator         **model.Modifier
-	last_modifier   **model.Modifier
-	remark          *string
-	uuid            *string
-	success         *bool
-	detail          **model.ExchangeCabinet
-	voltage         *float64
-	addvoltage      *float64
-	clearedFields   map[string]struct{}
-	city            *uint64
-	clearedcity     bool
-	employee        *uint64
-	clearedemployee bool
-	store           *uint64
-	clearedstore    bool
-	cabinet         *uint64
-	clearedcabinet  bool
-	rider           *uint64
-	clearedrider    bool
-	done            bool
-	oldValue        func(context.Context) (*Exchange, error)
-	predicates      []predicate.Exchange
+	op                Op
+	typ               string
+	id                *uint64
+	created_at        *time.Time
+	updated_at        *time.Time
+	deleted_at        *time.Time
+	creator           **model.Modifier
+	last_modifier     **model.Modifier
+	remark            *string
+	uuid              *string
+	success           *bool
+	detail            **model.ExchangeCabinet
+	voltage           *float64
+	addvoltage        *float64
+	clearedFields     map[string]struct{}
+	subscribe         *uint64
+	clearedsubscribe  bool
+	city              *uint64
+	clearedcity       bool
+	employee          *uint64
+	clearedemployee   bool
+	store             *uint64
+	clearedstore      bool
+	enterprise        *uint64
+	clearedenterprise bool
+	station           *uint64
+	clearedstation    bool
+	cabinet           *uint64
+	clearedcabinet    bool
+	rider             *uint64
+	clearedrider      bool
+	done              bool
+	oldValue          func(context.Context) (*Exchange, error)
+	predicates        []predicate.Exchange
 }
 
 var _ ent.Mutation = (*ExchangeMutation)(nil)
@@ -22909,6 +22915,42 @@ func (m *ExchangeMutation) ResetRemark() {
 	delete(m.clearedFields, exchange.FieldRemark)
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (m *ExchangeMutation) SetSubscribeID(u uint64) {
+	m.subscribe = &u
+}
+
+// SubscribeID returns the value of the "subscribe_id" field in the mutation.
+func (m *ExchangeMutation) SubscribeID() (r uint64, exists bool) {
+	v := m.subscribe
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubscribeID returns the old "subscribe_id" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldSubscribeID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubscribeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubscribeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubscribeID: %w", err)
+	}
+	return oldValue.SubscribeID, nil
+}
+
+// ResetSubscribeID resets all changes to the "subscribe_id" field.
+func (m *ExchangeMutation) ResetSubscribeID() {
+	m.subscribe = nil
+}
+
 // SetCityID sets the "city_id" field.
 func (m *ExchangeMutation) SetCityID(u uint64) {
 	m.city = &u
@@ -23041,6 +23083,104 @@ func (m *ExchangeMutation) StoreIDCleared() bool {
 func (m *ExchangeMutation) ResetStoreID() {
 	m.store = nil
 	delete(m.clearedFields, exchange.FieldStoreID)
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (m *ExchangeMutation) SetEnterpriseID(u uint64) {
+	m.enterprise = &u
+}
+
+// EnterpriseID returns the value of the "enterprise_id" field in the mutation.
+func (m *ExchangeMutation) EnterpriseID() (r uint64, exists bool) {
+	v := m.enterprise
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEnterpriseID returns the old "enterprise_id" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldEnterpriseID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEnterpriseID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEnterpriseID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEnterpriseID: %w", err)
+	}
+	return oldValue.EnterpriseID, nil
+}
+
+// ClearEnterpriseID clears the value of the "enterprise_id" field.
+func (m *ExchangeMutation) ClearEnterpriseID() {
+	m.enterprise = nil
+	m.clearedFields[exchange.FieldEnterpriseID] = struct{}{}
+}
+
+// EnterpriseIDCleared returns if the "enterprise_id" field was cleared in this mutation.
+func (m *ExchangeMutation) EnterpriseIDCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldEnterpriseID]
+	return ok
+}
+
+// ResetEnterpriseID resets all changes to the "enterprise_id" field.
+func (m *ExchangeMutation) ResetEnterpriseID() {
+	m.enterprise = nil
+	delete(m.clearedFields, exchange.FieldEnterpriseID)
+}
+
+// SetStationID sets the "station_id" field.
+func (m *ExchangeMutation) SetStationID(u uint64) {
+	m.station = &u
+}
+
+// StationID returns the value of the "station_id" field in the mutation.
+func (m *ExchangeMutation) StationID() (r uint64, exists bool) {
+	v := m.station
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStationID returns the old "station_id" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldStationID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStationID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStationID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStationID: %w", err)
+	}
+	return oldValue.StationID, nil
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (m *ExchangeMutation) ClearStationID() {
+	m.station = nil
+	m.clearedFields[exchange.FieldStationID] = struct{}{}
+}
+
+// StationIDCleared returns if the "station_id" field was cleared in this mutation.
+func (m *ExchangeMutation) StationIDCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldStationID]
+	return ok
+}
+
+// ResetStationID resets all changes to the "station_id" field.
+func (m *ExchangeMutation) ResetStationID() {
+	m.station = nil
+	delete(m.clearedFields, exchange.FieldStationID)
 }
 
 // SetRiderID sets the "rider_id" field.
@@ -23305,6 +23445,32 @@ func (m *ExchangeMutation) ResetVoltage() {
 	m.addvoltage = nil
 }
 
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (m *ExchangeMutation) ClearSubscribe() {
+	m.clearedsubscribe = true
+}
+
+// SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
+func (m *ExchangeMutation) SubscribeCleared() bool {
+	return m.clearedsubscribe
+}
+
+// SubscribeIDs returns the "subscribe" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// SubscribeID instead. It exists only for internal usage by the builders.
+func (m *ExchangeMutation) SubscribeIDs() (ids []uint64) {
+	if id := m.subscribe; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetSubscribe resets all changes to the "subscribe" edge.
+func (m *ExchangeMutation) ResetSubscribe() {
+	m.subscribe = nil
+	m.clearedsubscribe = false
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *ExchangeMutation) ClearCity() {
 	m.clearedcity = true
@@ -23383,6 +23549,58 @@ func (m *ExchangeMutation) ResetStore() {
 	m.clearedstore = false
 }
 
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (m *ExchangeMutation) ClearEnterprise() {
+	m.clearedenterprise = true
+}
+
+// EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
+func (m *ExchangeMutation) EnterpriseCleared() bool {
+	return m.EnterpriseIDCleared() || m.clearedenterprise
+}
+
+// EnterpriseIDs returns the "enterprise" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EnterpriseID instead. It exists only for internal usage by the builders.
+func (m *ExchangeMutation) EnterpriseIDs() (ids []uint64) {
+	if id := m.enterprise; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEnterprise resets all changes to the "enterprise" edge.
+func (m *ExchangeMutation) ResetEnterprise() {
+	m.enterprise = nil
+	m.clearedenterprise = false
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (m *ExchangeMutation) ClearStation() {
+	m.clearedstation = true
+}
+
+// StationCleared reports if the "station" edge to the EnterpriseStation entity was cleared.
+func (m *ExchangeMutation) StationCleared() bool {
+	return m.StationIDCleared() || m.clearedstation
+}
+
+// StationIDs returns the "station" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// StationID instead. It exists only for internal usage by the builders.
+func (m *ExchangeMutation) StationIDs() (ids []uint64) {
+	if id := m.station; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetStation resets all changes to the "station" edge.
+func (m *ExchangeMutation) ResetStation() {
+	m.station = nil
+	m.clearedstation = false
+}
+
 // ClearCabinet clears the "cabinet" edge to the Cabinet entity.
 func (m *ExchangeMutation) ClearCabinet() {
 	m.clearedcabinet = true
@@ -23454,7 +23672,7 @@ func (m *ExchangeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ExchangeMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, exchange.FieldCreatedAt)
 	}
@@ -23473,6 +23691,9 @@ func (m *ExchangeMutation) Fields() []string {
 	if m.remark != nil {
 		fields = append(fields, exchange.FieldRemark)
 	}
+	if m.subscribe != nil {
+		fields = append(fields, exchange.FieldSubscribeID)
+	}
 	if m.city != nil {
 		fields = append(fields, exchange.FieldCityID)
 	}
@@ -23481,6 +23702,12 @@ func (m *ExchangeMutation) Fields() []string {
 	}
 	if m.store != nil {
 		fields = append(fields, exchange.FieldStoreID)
+	}
+	if m.enterprise != nil {
+		fields = append(fields, exchange.FieldEnterpriseID)
+	}
+	if m.station != nil {
+		fields = append(fields, exchange.FieldStationID)
 	}
 	if m.rider != nil {
 		fields = append(fields, exchange.FieldRiderID)
@@ -23520,12 +23747,18 @@ func (m *ExchangeMutation) Field(name string) (ent.Value, bool) {
 		return m.LastModifier()
 	case exchange.FieldRemark:
 		return m.Remark()
+	case exchange.FieldSubscribeID:
+		return m.SubscribeID()
 	case exchange.FieldCityID:
 		return m.CityID()
 	case exchange.FieldEmployeeID:
 		return m.EmployeeID()
 	case exchange.FieldStoreID:
 		return m.StoreID()
+	case exchange.FieldEnterpriseID:
+		return m.EnterpriseID()
+	case exchange.FieldStationID:
+		return m.StationID()
 	case exchange.FieldRiderID:
 		return m.RiderID()
 	case exchange.FieldUUID:
@@ -23559,12 +23792,18 @@ func (m *ExchangeMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldLastModifier(ctx)
 	case exchange.FieldRemark:
 		return m.OldRemark(ctx)
+	case exchange.FieldSubscribeID:
+		return m.OldSubscribeID(ctx)
 	case exchange.FieldCityID:
 		return m.OldCityID(ctx)
 	case exchange.FieldEmployeeID:
 		return m.OldEmployeeID(ctx)
 	case exchange.FieldStoreID:
 		return m.OldStoreID(ctx)
+	case exchange.FieldEnterpriseID:
+		return m.OldEnterpriseID(ctx)
+	case exchange.FieldStationID:
+		return m.OldStationID(ctx)
 	case exchange.FieldRiderID:
 		return m.OldRiderID(ctx)
 	case exchange.FieldUUID:
@@ -23628,6 +23867,13 @@ func (m *ExchangeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRemark(v)
 		return nil
+	case exchange.FieldSubscribeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubscribeID(v)
+		return nil
 	case exchange.FieldCityID:
 		v, ok := value.(uint64)
 		if !ok {
@@ -23648,6 +23894,20 @@ func (m *ExchangeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStoreID(v)
+		return nil
+	case exchange.FieldEnterpriseID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEnterpriseID(v)
+		return nil
+	case exchange.FieldStationID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStationID(v)
 		return nil
 	case exchange.FieldRiderID:
 		v, ok := value.(uint64)
@@ -23754,6 +24014,12 @@ func (m *ExchangeMutation) ClearedFields() []string {
 	if m.FieldCleared(exchange.FieldStoreID) {
 		fields = append(fields, exchange.FieldStoreID)
 	}
+	if m.FieldCleared(exchange.FieldEnterpriseID) {
+		fields = append(fields, exchange.FieldEnterpriseID)
+	}
+	if m.FieldCleared(exchange.FieldStationID) {
+		fields = append(fields, exchange.FieldStationID)
+	}
 	if m.FieldCleared(exchange.FieldCabinetID) {
 		fields = append(fields, exchange.FieldCabinetID)
 	}
@@ -23792,6 +24058,12 @@ func (m *ExchangeMutation) ClearField(name string) error {
 	case exchange.FieldStoreID:
 		m.ClearStoreID()
 		return nil
+	case exchange.FieldEnterpriseID:
+		m.ClearEnterpriseID()
+		return nil
+	case exchange.FieldStationID:
+		m.ClearStationID()
+		return nil
 	case exchange.FieldCabinetID:
 		m.ClearCabinetID()
 		return nil
@@ -23824,6 +24096,9 @@ func (m *ExchangeMutation) ResetField(name string) error {
 	case exchange.FieldRemark:
 		m.ResetRemark()
 		return nil
+	case exchange.FieldSubscribeID:
+		m.ResetSubscribeID()
+		return nil
 	case exchange.FieldCityID:
 		m.ResetCityID()
 		return nil
@@ -23832,6 +24107,12 @@ func (m *ExchangeMutation) ResetField(name string) error {
 		return nil
 	case exchange.FieldStoreID:
 		m.ResetStoreID()
+		return nil
+	case exchange.FieldEnterpriseID:
+		m.ResetEnterpriseID()
+		return nil
+	case exchange.FieldStationID:
+		m.ResetStationID()
 		return nil
 	case exchange.FieldRiderID:
 		m.ResetRiderID()
@@ -23857,7 +24138,10 @@ func (m *ExchangeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ExchangeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 8)
+	if m.subscribe != nil {
+		edges = append(edges, exchange.EdgeSubscribe)
+	}
 	if m.city != nil {
 		edges = append(edges, exchange.EdgeCity)
 	}
@@ -23866,6 +24150,12 @@ func (m *ExchangeMutation) AddedEdges() []string {
 	}
 	if m.store != nil {
 		edges = append(edges, exchange.EdgeStore)
+	}
+	if m.enterprise != nil {
+		edges = append(edges, exchange.EdgeEnterprise)
+	}
+	if m.station != nil {
+		edges = append(edges, exchange.EdgeStation)
 	}
 	if m.cabinet != nil {
 		edges = append(edges, exchange.EdgeCabinet)
@@ -23880,6 +24170,10 @@ func (m *ExchangeMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *ExchangeMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case exchange.EdgeSubscribe:
+		if id := m.subscribe; id != nil {
+			return []ent.Value{*id}
+		}
 	case exchange.EdgeCity:
 		if id := m.city; id != nil {
 			return []ent.Value{*id}
@@ -23890,6 +24184,14 @@ func (m *ExchangeMutation) AddedIDs(name string) []ent.Value {
 		}
 	case exchange.EdgeStore:
 		if id := m.store; id != nil {
+			return []ent.Value{*id}
+		}
+	case exchange.EdgeEnterprise:
+		if id := m.enterprise; id != nil {
+			return []ent.Value{*id}
+		}
+	case exchange.EdgeStation:
+		if id := m.station; id != nil {
 			return []ent.Value{*id}
 		}
 	case exchange.EdgeCabinet:
@@ -23906,7 +24208,7 @@ func (m *ExchangeMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ExchangeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 8)
 	return edges
 }
 
@@ -23920,7 +24222,10 @@ func (m *ExchangeMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ExchangeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 8)
+	if m.clearedsubscribe {
+		edges = append(edges, exchange.EdgeSubscribe)
+	}
 	if m.clearedcity {
 		edges = append(edges, exchange.EdgeCity)
 	}
@@ -23929,6 +24234,12 @@ func (m *ExchangeMutation) ClearedEdges() []string {
 	}
 	if m.clearedstore {
 		edges = append(edges, exchange.EdgeStore)
+	}
+	if m.clearedenterprise {
+		edges = append(edges, exchange.EdgeEnterprise)
+	}
+	if m.clearedstation {
+		edges = append(edges, exchange.EdgeStation)
 	}
 	if m.clearedcabinet {
 		edges = append(edges, exchange.EdgeCabinet)
@@ -23943,12 +24254,18 @@ func (m *ExchangeMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *ExchangeMutation) EdgeCleared(name string) bool {
 	switch name {
+	case exchange.EdgeSubscribe:
+		return m.clearedsubscribe
 	case exchange.EdgeCity:
 		return m.clearedcity
 	case exchange.EdgeEmployee:
 		return m.clearedemployee
 	case exchange.EdgeStore:
 		return m.clearedstore
+	case exchange.EdgeEnterprise:
+		return m.clearedenterprise
+	case exchange.EdgeStation:
+		return m.clearedstation
 	case exchange.EdgeCabinet:
 		return m.clearedcabinet
 	case exchange.EdgeRider:
@@ -23961,6 +24278,9 @@ func (m *ExchangeMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *ExchangeMutation) ClearEdge(name string) error {
 	switch name {
+	case exchange.EdgeSubscribe:
+		m.ClearSubscribe()
+		return nil
 	case exchange.EdgeCity:
 		m.ClearCity()
 		return nil
@@ -23969,6 +24289,12 @@ func (m *ExchangeMutation) ClearEdge(name string) error {
 		return nil
 	case exchange.EdgeStore:
 		m.ClearStore()
+		return nil
+	case exchange.EdgeEnterprise:
+		m.ClearEnterprise()
+		return nil
+	case exchange.EdgeStation:
+		m.ClearStation()
 		return nil
 	case exchange.EdgeCabinet:
 		m.ClearCabinet()
@@ -23984,6 +24310,9 @@ func (m *ExchangeMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *ExchangeMutation) ResetEdge(name string) error {
 	switch name {
+	case exchange.EdgeSubscribe:
+		m.ResetSubscribe()
+		return nil
 	case exchange.EdgeCity:
 		m.ResetCity()
 		return nil
@@ -23992,6 +24321,12 @@ func (m *ExchangeMutation) ResetEdge(name string) error {
 		return nil
 	case exchange.EdgeStore:
 		m.ResetStore()
+		return nil
+	case exchange.EdgeEnterprise:
+		m.ResetEnterprise()
+		return nil
+	case exchange.EdgeStation:
+		m.ResetStation()
 		return nil
 	case exchange.EdgeCabinet:
 		m.ResetCabinet()

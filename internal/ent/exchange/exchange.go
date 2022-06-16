@@ -25,12 +25,18 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
+	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
+	FieldSubscribeID = "subscribe_id"
 	// FieldCityID holds the string denoting the city_id field in the database.
 	FieldCityID = "city_id"
 	// FieldEmployeeID holds the string denoting the employee_id field in the database.
 	FieldEmployeeID = "employee_id"
 	// FieldStoreID holds the string denoting the store_id field in the database.
 	FieldStoreID = "store_id"
+	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
+	FieldEnterpriseID = "enterprise_id"
+	// FieldStationID holds the string denoting the station_id field in the database.
+	FieldStationID = "station_id"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
 	// FieldUUID holds the string denoting the uuid field in the database.
@@ -43,18 +49,31 @@ const (
 	FieldDetail = "detail"
 	// FieldVoltage holds the string denoting the voltage field in the database.
 	FieldVoltage = "voltage"
+	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
+	EdgeSubscribe = "subscribe"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
 	EdgeEmployee = "employee"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
+	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
+	EdgeEnterprise = "enterprise"
+	// EdgeStation holds the string denoting the station edge name in mutations.
+	EdgeStation = "station"
 	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
 	EdgeCabinet = "cabinet"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// Table holds the table name of the exchange in the database.
 	Table = "exchange"
+	// SubscribeTable is the table that holds the subscribe relation/edge.
+	SubscribeTable = "exchange"
+	// SubscribeInverseTable is the table name for the Subscribe entity.
+	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
+	SubscribeInverseTable = "subscribe"
+	// SubscribeColumn is the table column denoting the subscribe relation/edge.
+	SubscribeColumn = "subscribe_id"
 	// CityTable is the table that holds the city relation/edge.
 	CityTable = "exchange"
 	// CityInverseTable is the table name for the City entity.
@@ -76,6 +95,20 @@ const (
 	StoreInverseTable = "store"
 	// StoreColumn is the table column denoting the store relation/edge.
 	StoreColumn = "store_id"
+	// EnterpriseTable is the table that holds the enterprise relation/edge.
+	EnterpriseTable = "exchange"
+	// EnterpriseInverseTable is the table name for the Enterprise entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprise" package.
+	EnterpriseInverseTable = "enterprise"
+	// EnterpriseColumn is the table column denoting the enterprise relation/edge.
+	EnterpriseColumn = "enterprise_id"
+	// StationTable is the table that holds the station relation/edge.
+	StationTable = "exchange"
+	// StationInverseTable is the table name for the EnterpriseStation entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisestation" package.
+	StationInverseTable = "enterprise_station"
+	// StationColumn is the table column denoting the station relation/edge.
+	StationColumn = "station_id"
 	// CabinetTable is the table that holds the cabinet relation/edge.
 	CabinetTable = "exchange"
 	// CabinetInverseTable is the table name for the Cabinet entity.
@@ -101,9 +134,12 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
+	FieldSubscribeID,
 	FieldCityID,
 	FieldEmployeeID,
 	FieldStoreID,
+	FieldEnterpriseID,
+	FieldStationID,
 	FieldRiderID,
 	FieldUUID,
 	FieldCabinetID,

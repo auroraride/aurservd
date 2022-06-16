@@ -995,9 +995,12 @@ var (
 		{Name: "detail", Type: field.TypeJSON, Comment: "电柜换电信息", Nullable: true},
 		{Name: "voltage", Type: field.TypeFloat64, Comment: "电池电压型号"},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "subscribe_id", Type: field.TypeUint64},
 		{Name: "city_id", Type: field.TypeUint64},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64},
 	}
 	// ExchangeTable holds the schema information for the "exchange" table.
@@ -1013,26 +1016,44 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "exchange_city_city",
+				Symbol:     "exchange_subscribe_subscribe",
 				Columns:    []*schema.Column{ExchangeColumns[12]},
+				RefColumns: []*schema.Column{SubscribeColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "exchange_city_city",
+				Columns:    []*schema.Column{ExchangeColumns[13]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "exchange_employee_employee",
-				Columns:    []*schema.Column{ExchangeColumns[13]},
+				Columns:    []*schema.Column{ExchangeColumns[14]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "exchange_store_store",
-				Columns:    []*schema.Column{ExchangeColumns[14]},
+				Columns:    []*schema.Column{ExchangeColumns[15]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
+				Symbol:     "exchange_enterprise_enterprise",
+				Columns:    []*schema.Column{ExchangeColumns[16]},
+				RefColumns: []*schema.Column{EnterpriseColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "exchange_enterprise_station_station",
+				Columns:    []*schema.Column{ExchangeColumns[17]},
+				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
 				Symbol:     "exchange_rider_exchanges",
-				Columns:    []*schema.Column{ExchangeColumns[15]},
+				Columns:    []*schema.Column{ExchangeColumns[18]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -2114,10 +2135,13 @@ func init() {
 		Table: "enterprise_station",
 	}
 	ExchangeTable.ForeignKeys[0].RefTable = CabinetTable
-	ExchangeTable.ForeignKeys[1].RefTable = CityTable
-	ExchangeTable.ForeignKeys[2].RefTable = EmployeeTable
-	ExchangeTable.ForeignKeys[3].RefTable = StoreTable
-	ExchangeTable.ForeignKeys[4].RefTable = RiderTable
+	ExchangeTable.ForeignKeys[1].RefTable = SubscribeTable
+	ExchangeTable.ForeignKeys[2].RefTable = CityTable
+	ExchangeTable.ForeignKeys[3].RefTable = EmployeeTable
+	ExchangeTable.ForeignKeys[4].RefTable = StoreTable
+	ExchangeTable.ForeignKeys[5].RefTable = EnterpriseTable
+	ExchangeTable.ForeignKeys[6].RefTable = EnterpriseStationTable
+	ExchangeTable.ForeignKeys[7].RefTable = RiderTable
 	ExchangeTable.Annotation = &entsql.Annotation{
 		Table: "exchange",
 	}

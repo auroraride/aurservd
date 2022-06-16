@@ -32,6 +32,8 @@ type riderCabinetService struct {
     PutInElectricity model.BatteryElectricity
     Alternative      bool
     Info             *model.RiderCabinetInfo
+
+    subscribe *ent.Subscribe
 }
 
 func NewRiderCabinet() *riderCabinetService {
@@ -63,8 +65,8 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
     }
 
     // 是否有生效中套餐
-    o := NewSubscribe().RecentDetail(s.rider.ID)
-    if o == nil || o.Status != model.SubscribeStatusUsing {
+    subd, _ := NewSubscribe().RecentDetail(s.rider.ID)
+    if subd == nil || subd.Status != model.SubscribeStatusUsing {
         snag.Panic("无生效中的骑行卡")
     }
 
@@ -73,7 +75,7 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
     cab := cs.QueryWithSerial(req.Serial)
 
     // 检查可用电池型号
-    if !cs.VoltageInclude(cab, o.Voltage) {
+    if !cs.VoltageInclude(cab, subd.Voltage) {
         snag.Panic("电池型号不兼容")
     }
 
@@ -98,8 +100,8 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
         BatteryNum:                 cab.BatteryNum,
         BatteryFullNum:             cab.BatteryFullNum,
         RiderCabinetOperateProcess: info,
-        Voltage:                    o.Voltage,
-        CityID:                     o.City.ID,
+        Voltage:                    subd.Voltage,
+        CityID:                     subd.City.ID,
     }
     err := cache.Set(s.ctx, uid, res, s.maxTime).Err()
     if err != nil {
@@ -117,6 +119,14 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
     if err != nil || info == nil || info.EmptyBin == nil {
         snag.Panic("未找到信息, 请重新操作")
     }
+
+    // 是否有生效中套餐
+    subd, sub := NewSubscribe().RecentDetail(s.rider.ID)
+    if subd == nil || subd.Status != model.SubscribeStatusUsing {
+        snag.Panic("无生效中的骑行卡")
+    }
+
+    s.subscribe = sub
 
     cab := NewCabinet().QueryOne(info.ID)
     index := -1
@@ -196,6 +206,10 @@ func (s *riderCabinetService) ProcessStepEnd(req *model.RiderCabinetOperating) {
         SetCabinetID(req.ID).
         SetSuccess(res.Status == model.RiderCabinetOperateStatusSuccess && res.Step == model.RiderCabinetOperateStepClose).
         SetVoltage(req.Voltage).
+        SetVoltage(s.subscribe.Voltage).
+        SetNillableEnterpriseID(s.subscribe.EnterpriseID).
+        SetNillableStationID(s.subscribe.StationID).
+        SetSubscribeID(s.subscribe.ID).
         Save(s.ctx)
 }
 

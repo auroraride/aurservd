@@ -599,7 +599,7 @@ func (s *riderService) ParseQrcode(qrcode string) uint64 {
 
 // Profile 获取用户资料
 func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string) *model.RiderSigninRes {
-    sub := NewSubscribe().RecentDetail(u.ID)
+    subd, _ := NewSubscribe().RecentDetail(u.ID)
     profile := &model.RiderSigninRes{
         ID:              u.ID,
         Phone:           u.Phone,
@@ -609,7 +609,7 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string)
         Contact:         u.Contact,
         Qrcode:          s.GetQrcode(u.ID),
         Token:           token,
-        Subscribe:       sub,
+        Subscribe:       subd,
     }
     if u.Edges.Person != nil {
         profile.Name = u.Edges.Person.Name
@@ -620,8 +620,8 @@ func (s *riderService) Profile(u *ent.Rider, device *model.Device, token string)
             Name: u.Edges.Enterprise.Name,
         }
     } else {
-        profile.Subscribe = sub
-        profile.OrderNotActived = tools.NewPointer().Bool(sub != nil && sub.Status == model.SubscribeStatusInactive)
+        profile.Subscribe = subd
+        profile.OrderNotActived = tools.NewPointer().Bool(subd != nil && subd.Status == model.SubscribeStatusInactive)
         profile.Deposit = s.Deposit(u.ID)
     }
     return profile

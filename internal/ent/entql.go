@@ -500,9 +500,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 			exchange.FieldCreator:      {Type: field.TypeJSON, Column: exchange.FieldCreator},
 			exchange.FieldLastModifier: {Type: field.TypeJSON, Column: exchange.FieldLastModifier},
 			exchange.FieldRemark:       {Type: field.TypeString, Column: exchange.FieldRemark},
+			exchange.FieldSubscribeID:  {Type: field.TypeUint64, Column: exchange.FieldSubscribeID},
 			exchange.FieldCityID:       {Type: field.TypeUint64, Column: exchange.FieldCityID},
 			exchange.FieldEmployeeID:   {Type: field.TypeUint64, Column: exchange.FieldEmployeeID},
 			exchange.FieldStoreID:      {Type: field.TypeUint64, Column: exchange.FieldStoreID},
+			exchange.FieldEnterpriseID: {Type: field.TypeUint64, Column: exchange.FieldEnterpriseID},
+			exchange.FieldStationID:    {Type: field.TypeUint64, Column: exchange.FieldStationID},
 			exchange.FieldRiderID:      {Type: field.TypeUint64, Column: exchange.FieldRiderID},
 			exchange.FieldUUID:         {Type: field.TypeString, Column: exchange.FieldUUID},
 			exchange.FieldCabinetID:    {Type: field.TypeUint64, Column: exchange.FieldCabinetID},
@@ -1472,6 +1475,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Enterprise",
 	)
 	graph.MustAddE(
+		"subscribe",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.SubscribeTable,
+			Columns: []string{exchange.SubscribeColumn},
+			Bidi:    false,
+		},
+		"Exchange",
+		"Subscribe",
+	)
+	graph.MustAddE(
 		"city",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1506,6 +1521,30 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Exchange",
 		"Store",
+	)
+	graph.MustAddE(
+		"enterprise",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.EnterpriseTable,
+			Columns: []string{exchange.EnterpriseColumn},
+			Bidi:    false,
+		},
+		"Exchange",
+		"Enterprise",
+	)
+	graph.MustAddE(
+		"station",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   exchange.StationTable,
+			Columns: []string{exchange.StationColumn},
+			Bidi:    false,
+		},
+		"Exchange",
+		"EnterpriseStation",
 	)
 	graph.MustAddE(
 		"cabinet",
@@ -4687,6 +4726,11 @@ func (f *ExchangeFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(exchange.FieldRemark))
 }
 
+// WhereSubscribeID applies the entql uint64 predicate on the subscribe_id field.
+func (f *ExchangeFilter) WhereSubscribeID(p entql.Uint64P) {
+	f.Where(p.Field(exchange.FieldSubscribeID))
+}
+
 // WhereCityID applies the entql uint64 predicate on the city_id field.
 func (f *ExchangeFilter) WhereCityID(p entql.Uint64P) {
 	f.Where(p.Field(exchange.FieldCityID))
@@ -4700,6 +4744,16 @@ func (f *ExchangeFilter) WhereEmployeeID(p entql.Uint64P) {
 // WhereStoreID applies the entql uint64 predicate on the store_id field.
 func (f *ExchangeFilter) WhereStoreID(p entql.Uint64P) {
 	f.Where(p.Field(exchange.FieldStoreID))
+}
+
+// WhereEnterpriseID applies the entql uint64 predicate on the enterprise_id field.
+func (f *ExchangeFilter) WhereEnterpriseID(p entql.Uint64P) {
+	f.Where(p.Field(exchange.FieldEnterpriseID))
+}
+
+// WhereStationID applies the entql uint64 predicate on the station_id field.
+func (f *ExchangeFilter) WhereStationID(p entql.Uint64P) {
+	f.Where(p.Field(exchange.FieldStationID))
 }
 
 // WhereRiderID applies the entql uint64 predicate on the rider_id field.
@@ -4730,6 +4784,20 @@ func (f *ExchangeFilter) WhereDetail(p entql.BytesP) {
 // WhereVoltage applies the entql float64 predicate on the voltage field.
 func (f *ExchangeFilter) WhereVoltage(p entql.Float64P) {
 	f.Where(p.Field(exchange.FieldVoltage))
+}
+
+// WhereHasSubscribe applies a predicate to check if query has an edge subscribe.
+func (f *ExchangeFilter) WhereHasSubscribe() {
+	f.Where(entql.HasEdge("subscribe"))
+}
+
+// WhereHasSubscribeWith applies a predicate to check if query has an edge subscribe with a given conditions (other predicates).
+func (f *ExchangeFilter) WhereHasSubscribeWith(preds ...predicate.Subscribe) {
+	f.Where(entql.HasEdgeWith("subscribe", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.
@@ -4768,6 +4836,34 @@ func (f *ExchangeFilter) WhereHasStore() {
 // WhereHasStoreWith applies a predicate to check if query has an edge store with a given conditions (other predicates).
 func (f *ExchangeFilter) WhereHasStoreWith(preds ...predicate.Store) {
 	f.Where(entql.HasEdgeWith("store", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasEnterprise applies a predicate to check if query has an edge enterprise.
+func (f *ExchangeFilter) WhereHasEnterprise() {
+	f.Where(entql.HasEdge("enterprise"))
+}
+
+// WhereHasEnterpriseWith applies a predicate to check if query has an edge enterprise with a given conditions (other predicates).
+func (f *ExchangeFilter) WhereHasEnterpriseWith(preds ...predicate.Enterprise) {
+	f.Where(entql.HasEdgeWith("enterprise", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasStation applies a predicate to check if query has an edge station.
+func (f *ExchangeFilter) WhereHasStation() {
+	f.Where(entql.HasEdge("station"))
+}
+
+// WhereHasStationWith applies a predicate to check if query has an edge station with a given conditions (other predicates).
+func (f *ExchangeFilter) WhereHasStationWith(preds ...predicate.EnterpriseStation) {
+	f.Where(entql.HasEdgeWith("station", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

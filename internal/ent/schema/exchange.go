@@ -49,14 +49,19 @@ func (Exchange) Mixin() []ent.Mixin {
         internal.DeleteMixin{},
         internal.Modifier{},
 
+        SubscribeMixin{},
         CityMixin{},
+
         EmployeeMixin{Optional: true},
         StoreMixin{Optional: true},
+        EnterpriseMixin{Optional: true},
+        StationMixin{Optional: true},
     }
 }
 
 func (Exchange) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("success"),
+        index.Fields("voltage"),
     }
 }

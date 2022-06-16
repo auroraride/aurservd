@@ -13,9 +13,12 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/store"
+	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // Exchange is the model entity for the Exchange schema.
@@ -38,6 +41,8 @@ type Exchange struct {
 	// Remark holds the value of the "remark" field.
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
+	// SubscribeID holds the value of the "subscribe_id" field.
+	SubscribeID uint64 `json:"subscribe_id,omitempty"`
 	// CityID holds the value of the "city_id" field.
 	// 城市ID
 	CityID uint64 `json:"city_id,omitempty"`
@@ -47,6 +52,12 @@ type Exchange struct {
 	// StoreID holds the value of the "store_id" field.
 	// 门店ID
 	StoreID *uint64 `json:"store_id,omitempty"`
+	// EnterpriseID holds the value of the "enterprise_id" field.
+	// 企业ID
+	EnterpriseID *uint64 `json:"enterprise_id,omitempty"`
+	// StationID holds the value of the "station_id" field.
+	// 站点ID
+	StationID *uint64 `json:"station_id,omitempty"`
 	// RiderID holds the value of the "rider_id" field.
 	// 骑手ID
 	RiderID uint64 `json:"rider_id,omitempty"`
@@ -71,25 +82,45 @@ type Exchange struct {
 
 // ExchangeEdges holds the relations/edges for other nodes in the graph.
 type ExchangeEdges struct {
+	// Subscribe holds the value of the subscribe edge.
+	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// City holds the value of the city edge.
 	City *City `json:"city,omitempty"`
 	// Employee holds the value of the employee edge.
 	Employee *Employee `json:"employee,omitempty"`
 	// Store holds the value of the store edge.
 	Store *Store `json:"store,omitempty"`
+	// Enterprise holds the value of the enterprise edge.
+	Enterprise *Enterprise `json:"enterprise,omitempty"`
+	// Station holds the value of the station edge.
+	Station *EnterpriseStation `json:"station,omitempty"`
 	// Cabinet holds the value of the cabinet edge.
 	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// Rider holds the value of the rider edge.
 	Rider *Rider `json:"rider,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [8]bool
+}
+
+// SubscribeOrErr returns the Subscribe value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ExchangeEdges) SubscribeOrErr() (*Subscribe, error) {
+	if e.loadedTypes[0] {
+		if e.Subscribe == nil {
+			// The edge subscribe was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: subscribe.Label}
+		}
+		return e.Subscribe, nil
+	}
+	return nil, &NotLoadedError{edge: "subscribe"}
 }
 
 // CityOrErr returns the City value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ExchangeEdges) CityOrErr() (*City, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		if e.City == nil {
 			// The edge city was loaded in eager-loading,
 			// but was not found.
@@ -103,7 +134,7 @@ func (e ExchangeEdges) CityOrErr() (*City, error) {
 // EmployeeOrErr returns the Employee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ExchangeEdges) EmployeeOrErr() (*Employee, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		if e.Employee == nil {
 			// The edge employee was loaded in eager-loading,
 			// but was not found.
@@ -117,7 +148,7 @@ func (e ExchangeEdges) EmployeeOrErr() (*Employee, error) {
 // StoreOrErr returns the Store value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ExchangeEdges) StoreOrErr() (*Store, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		if e.Store == nil {
 			// The edge store was loaded in eager-loading,
 			// but was not found.
@@ -128,10 +159,38 @@ func (e ExchangeEdges) StoreOrErr() (*Store, error) {
 	return nil, &NotLoadedError{edge: "store"}
 }
 
+// EnterpriseOrErr returns the Enterprise value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ExchangeEdges) EnterpriseOrErr() (*Enterprise, error) {
+	if e.loadedTypes[4] {
+		if e.Enterprise == nil {
+			// The edge enterprise was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: enterprise.Label}
+		}
+		return e.Enterprise, nil
+	}
+	return nil, &NotLoadedError{edge: "enterprise"}
+}
+
+// StationOrErr returns the Station value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ExchangeEdges) StationOrErr() (*EnterpriseStation, error) {
+	if e.loadedTypes[5] {
+		if e.Station == nil {
+			// The edge station was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: enterprisestation.Label}
+		}
+		return e.Station, nil
+	}
+	return nil, &NotLoadedError{edge: "station"}
+}
+
 // CabinetOrErr returns the Cabinet value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ExchangeEdges) CabinetOrErr() (*Cabinet, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[6] {
 		if e.Cabinet == nil {
 			// The edge cabinet was loaded in eager-loading,
 			// but was not found.
@@ -145,7 +204,7 @@ func (e ExchangeEdges) CabinetOrErr() (*Cabinet, error) {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ExchangeEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[7] {
 		if e.Rider == nil {
 			// The edge rider was loaded in eager-loading,
 			// but was not found.
@@ -167,7 +226,7 @@ func (*Exchange) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case exchange.FieldVoltage:
 			values[i] = new(sql.NullFloat64)
-		case exchange.FieldID, exchange.FieldCityID, exchange.FieldEmployeeID, exchange.FieldStoreID, exchange.FieldRiderID, exchange.FieldCabinetID:
+		case exchange.FieldID, exchange.FieldSubscribeID, exchange.FieldCityID, exchange.FieldEmployeeID, exchange.FieldStoreID, exchange.FieldEnterpriseID, exchange.FieldStationID, exchange.FieldRiderID, exchange.FieldCabinetID:
 			values[i] = new(sql.NullInt64)
 		case exchange.FieldRemark, exchange.FieldUUID:
 			values[i] = new(sql.NullString)
@@ -235,6 +294,12 @@ func (e *Exchange) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				e.Remark = value.String
 			}
+		case exchange.FieldSubscribeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field subscribe_id", values[i])
+			} else if value.Valid {
+				e.SubscribeID = uint64(value.Int64)
+			}
 		case exchange.FieldCityID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field city_id", values[i])
@@ -254,6 +319,20 @@ func (e *Exchange) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				e.StoreID = new(uint64)
 				*e.StoreID = uint64(value.Int64)
+			}
+		case exchange.FieldEnterpriseID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field enterprise_id", values[i])
+			} else if value.Valid {
+				e.EnterpriseID = new(uint64)
+				*e.EnterpriseID = uint64(value.Int64)
+			}
+		case exchange.FieldStationID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field station_id", values[i])
+			} else if value.Valid {
+				e.StationID = new(uint64)
+				*e.StationID = uint64(value.Int64)
 			}
 		case exchange.FieldRiderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -298,6 +377,11 @@ func (e *Exchange) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
+// QuerySubscribe queries the "subscribe" edge of the Exchange entity.
+func (e *Exchange) QuerySubscribe() *SubscribeQuery {
+	return (&ExchangeClient{config: e.config}).QuerySubscribe(e)
+}
+
 // QueryCity queries the "city" edge of the Exchange entity.
 func (e *Exchange) QueryCity() *CityQuery {
 	return (&ExchangeClient{config: e.config}).QueryCity(e)
@@ -311,6 +395,16 @@ func (e *Exchange) QueryEmployee() *EmployeeQuery {
 // QueryStore queries the "store" edge of the Exchange entity.
 func (e *Exchange) QueryStore() *StoreQuery {
 	return (&ExchangeClient{config: e.config}).QueryStore(e)
+}
+
+// QueryEnterprise queries the "enterprise" edge of the Exchange entity.
+func (e *Exchange) QueryEnterprise() *EnterpriseQuery {
+	return (&ExchangeClient{config: e.config}).QueryEnterprise(e)
+}
+
+// QueryStation queries the "station" edge of the Exchange entity.
+func (e *Exchange) QueryStation() *EnterpriseStationQuery {
+	return (&ExchangeClient{config: e.config}).QueryStation(e)
 }
 
 // QueryCabinet queries the "cabinet" edge of the Exchange entity.
@@ -360,6 +454,8 @@ func (e *Exchange) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(e.Remark)
+	builder.WriteString(", subscribe_id=")
+	builder.WriteString(fmt.Sprintf("%v", e.SubscribeID))
 	builder.WriteString(", city_id=")
 	builder.WriteString(fmt.Sprintf("%v", e.CityID))
 	if v := e.EmployeeID; v != nil {
@@ -368,6 +464,14 @@ func (e *Exchange) String() string {
 	}
 	if v := e.StoreID; v != nil {
 		builder.WriteString(", store_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := e.EnterpriseID; v != nil {
+		builder.WriteString(", enterprise_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := e.StationID; v != nil {
+		builder.WriteString(", station_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", rider_id=")

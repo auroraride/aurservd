@@ -2765,6 +2765,22 @@ func (c *ExchangeClient) GetX(ctx context.Context, id uint64) *Exchange {
 	return obj
 }
 
+// QuerySubscribe queries the subscribe edge of a Exchange.
+func (c *ExchangeClient) QuerySubscribe(e *Exchange) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(exchange.Table, exchange.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, exchange.SubscribeTable, exchange.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryCity queries the city edge of a Exchange.
 func (c *ExchangeClient) QueryCity(e *Exchange) *CityQuery {
 	query := &CityQuery{config: c.config}
@@ -2806,6 +2822,38 @@ func (c *ExchangeClient) QueryStore(e *Exchange) *StoreQuery {
 			sqlgraph.From(exchange.Table, exchange.FieldID, id),
 			sqlgraph.To(store.Table, store.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, exchange.StoreTable, exchange.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEnterprise queries the enterprise edge of a Exchange.
+func (c *ExchangeClient) QueryEnterprise(e *Exchange) *EnterpriseQuery {
+	query := &EnterpriseQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(exchange.Table, exchange.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, exchange.EnterpriseTable, exchange.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStation queries the station edge of a Exchange.
+func (c *ExchangeClient) QueryStation(e *Exchange) *EnterpriseStationQuery {
+	query := &EnterpriseStationQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(exchange.Table, exchange.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, exchange.StationTable, exchange.StationColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil
