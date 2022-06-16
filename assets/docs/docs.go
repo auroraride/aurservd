@@ -496,6 +496,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/employee/v1/store/status": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E1006 切换门店状态",
+                "operationId": "EmployeeStoreStatus",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "状态请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.StoreSwtichStatusReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/employee/v1/subscribe/active": {
             "get": {
                 "consumes": [
@@ -7986,6 +8027,24 @@ const docTemplate = `{
                         1,
                         2,
                         3
+                    ]
+                }
+            }
+        },
+        "model.StoreSwtichStatusReq": {
+            "type": "object",
+            "required": [
+                "status"
+            ],
+            "properties": {
+                "status": {
+                    "description": "状态 1:营业中 2:休息中",
+                    "type": "integer",
+                    "maximum": 2,
+                    "minimum": 1,
+                    "enum": [
+                        1,
+                        2
                     ]
                 }
             }

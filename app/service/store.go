@@ -20,8 +20,9 @@ import (
 )
 
 type storeService struct {
-    ctx context.Context
-    orm *ent.StoreClient
+    ctx      context.Context
+    orm      *ent.StoreClient
+    employee *ent.Employee
 }
 
 func NewStore() *storeService {
@@ -34,6 +35,13 @@ func NewStore() *storeService {
 func NewStoreWithModifier(m *model.Modifier) *storeService {
     s := NewStore()
     s.ctx = context.WithValue(s.ctx, "modifier", m)
+    return s
+}
+
+func NewStoreWithEmployee(e *ent.Employee) *storeService {
+    s := NewStore()
+    s.ctx = context.WithValue(s.ctx, "employee", e)
+    s.employee = e
     return s
 }
 
@@ -149,4 +157,15 @@ func (s *storeService) List(req *model.StoreListReq) *model.PaginationRes {
         res.QRCode = fmt.Sprintf("STORE:%s", item.Sn)
         return
     })
+}
+
+func (s *storeService) SwitchStatus(req *model.StoreSwtichStatusReq) {
+    st := s.employee.Edges.Store
+    if st == nil {
+        snag.Panic("当前未上班")
+    }
+    _, err := st.Update().SetStatus(req.Status).Save(s.ctx)
+    if err != nil {
+        snag.Panic(err)
+    }
 }

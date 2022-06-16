@@ -48,3 +48,7 @@ type StoreListReq struct {
     Name   *string `json:"name" query:"name"`     // 门店名称
     Status *uint8  `json:"status" query:"status"` // 门店状态
 }
+
+type StoreSwtichStatusReq struct {
+    Status uint8 `json:"status" validate:"required,gte=1,lte=2" enums:"1,2"` // 状态 1:营业中 2:休息中
+}

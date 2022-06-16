@@ -17,6 +17,7 @@ func loadEmployeeRoutes() {
     g.POST("/signin", eapi.Employee.Signin)
     g.GET("/qrcode", eapi.Employee.Qrcode)
     g.GET("/profile", eapi.Employee.Profile)
+    g.POST("/store/status", eapi.Store.Status)
 
     g.GET("/subscribe/active", eapi.Subscribe.Inactive, middleware.EmployeeDutyMiddleware())
     g.POST("/subscribe/active", eapi.Subscribe.Active, middleware.EmployeeDutyMiddleware())

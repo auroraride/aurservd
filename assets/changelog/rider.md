@@ -1,3 +1,15 @@
+## 2022-06-16
+
+#### 接口新增
+
+- [E1006 切换门店状态](http://localhost:5533/docs#tag/E/operation/EmployeeStoreStatus)
+
+
+
+
+
+<br />
+
 ## 2022-06-15
 
 #### 接口调整
