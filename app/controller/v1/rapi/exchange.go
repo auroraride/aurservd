@@ -57,5 +57,5 @@ func (*exchange) Overview(c echo.Context) (err error) {
 func (*exchange) Log(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.PaginationReq](c)
 
-    return ctx.SendResponse(service.NewExchange().Log(ctx.Rider.ID, req))
+    return ctx.SendResponse(service.NewExchange().RiderList(ctx.Rider.ID, req))
 }

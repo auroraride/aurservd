@@ -5647,7 +5647,6 @@
             "type": "object",
             "required": [
                 "brand",
-                "doors",
                 "models",
                 "name",
                 "serial"
@@ -5666,7 +5665,7 @@
                     ]
                 },
                 "doors": {
-                    "description": "柜门数量 ",
+                    "description": "柜门数量",
                     "type": "integer"
                 },
                 "models": {
@@ -5703,7 +5702,6 @@
             "type": "object",
             "required": [
                 "brand",
-                "doors",
                 "name",
                 "serial"
             ],
@@ -5740,7 +5738,7 @@
                     "type": "string"
                 },
                 "doors": {
-                    "description": "柜门数量 ",
+                    "description": "柜门数量",
                     "type": "integer"
                 },
                 "id": {
@@ -5947,7 +5945,6 @@
             "type": "object",
             "required": [
                 "brand",
-                "doors",
                 "name",
                 "serial"
             ],
@@ -5977,7 +5974,7 @@
                     "type": "string"
                 },
                 "doors": {
-                    "description": "柜门数量 ",
+                    "description": "柜门数量",
                     "type": "integer"
                 },
                 "id": {

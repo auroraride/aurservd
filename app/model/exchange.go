@@ -37,7 +37,7 @@ type ExchangeLogBinInfo struct {
     FullIndex  int `json:"fullIndex"`  // 满电仓位
 }
 
-type ExchangeLogRes struct {
+type ExchangeRiderListRes struct {
     ID      uint64             `json:"id"`
     Name    string             `json:"name"`    // 门店或电柜名称
     Type    string             `json:"type"`    // 门店或电柜
@@ -45,4 +45,7 @@ type ExchangeLogRes struct {
     Success bool               `json:"success"` // 是否成功
     City    City               `json:"city"`    // 城市
     BinInfo ExchangeLogBinInfo `json:"binInfo"` // 仓位信息
+}
+
+type ExchangeEmployeeListRes struct {
 }

@@ -56,7 +56,7 @@ type Cabinet struct {
     Brand    CabinetBrand `json:"brand" validate:"required" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
     Serial   string       `json:"serial" validate:"required" trans:"电柜原始编码"`
     Name     string       `json:"name" validate:"required" trans:"电柜名称"`
-    Doors    uint         `json:"doors" validate:"required" trans:"柜门数量"`
+    Doors    uint         `json:"doors"` // 柜门数量
     Remark   *string      `json:"remark" trans:"备注"`
 }
 

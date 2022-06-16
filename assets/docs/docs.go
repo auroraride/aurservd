@@ -5655,7 +5655,6 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "brand",
-                "doors",
                 "models",
                 "name",
                 "serial"
@@ -5674,7 +5673,7 @@ const docTemplate = `{
                     ]
                 },
                 "doors": {
-                    "description": "柜门数量 ",
+                    "description": "柜门数量",
                     "type": "integer"
                 },
                 "models": {
@@ -5711,7 +5710,6 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "brand",
-                "doors",
                 "name",
                 "serial"
             ],
@@ -5748,7 +5746,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "doors": {
-                    "description": "柜门数量 ",
+                    "description": "柜门数量",
                     "type": "integer"
                 },
                 "id": {
@@ -5955,7 +5953,6 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "brand",
-                "doors",
                 "name",
                 "serial"
             ],
@@ -5985,7 +5982,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "doors": {
-                    "description": "柜门数量 ",
+                    "description": "柜门数量",
                     "type": "integer"
                 },
                 "id": {

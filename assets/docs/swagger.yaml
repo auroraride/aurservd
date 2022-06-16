@@ -406,7 +406,7 @@ definitions:
         - YUNDONG
         type: string
       doors:
-        description: '柜门数量 '
+        description: 柜门数量
         type: integer
       models:
         description: '电池型号 '
@@ -431,7 +431,6 @@ definitions:
         type: integer
     required:
     - brand
-    - doors
     - models
     - name
     - serial
@@ -460,7 +459,7 @@ definitions:
         description: 创建时间
         type: string
       doors:
-        description: '柜门数量 '
+        description: 柜门数量
         type: integer
       id:
         description: 电柜ID
@@ -491,7 +490,6 @@ definitions:
         type: integer
     required:
     - brand
-    - doors
     - name
     - serial
     type: object
@@ -626,7 +624,7 @@ definitions:
         description: 创建时间
         type: string
       doors:
-        description: '柜门数量 '
+        description: 柜门数量
         type: integer
       id:
         description: 电柜ID
@@ -657,7 +655,6 @@ definitions:
         type: integer
     required:
     - brand
-    - doors
     - name
     - serial
     type: object

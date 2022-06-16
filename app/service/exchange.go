@@ -122,14 +122,14 @@ func (s *exchangeService) Overview(riderID uint64) (res model.ExchangeOverview) 
     return
 }
 
-// Log 换电记录
-func (s *exchangeService) Log(riderID uint64, req *model.PaginationReq) *model.PaginationRes {
+// RiderList 换电记录
+func (s *exchangeService) RiderList(riderID uint64, req *model.PaginationReq) *model.PaginationRes {
     q := s.orm.QueryNotDeleted().Where(exchange.RiderID(riderID), exchange.Success(true)).WithStore().WithCity().WithCabinet()
-    return model.ParsePaginationResponse[model.ExchangeLogRes, ent.Exchange](
+    return model.ParsePaginationResponse[model.ExchangeRiderListRes, ent.Exchange](
         q,
         *req,
-        func(item *ent.Exchange) (res model.ExchangeLogRes) {
-            res = model.ExchangeLogRes{
+        func(item *ent.Exchange) (res model.ExchangeRiderListRes) {
+            res = model.ExchangeRiderListRes{
                 ID:      item.ID,
                 Time:    item.CreatedAt.Format(carbon.DateTimeLayout),
                 Success: item.Success,
@@ -159,4 +159,8 @@ func (s *exchangeService) Log(riderID uint64, req *model.PaginationReq) *model.P
             return res
         },
     )
+}
+
+func (s *exchangeService) EmployeeList() {
+
 }
