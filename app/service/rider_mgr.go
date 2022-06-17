@@ -404,7 +404,7 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
 }
 
 func (s *riderMgrService) QueryPhone(phone string) model.RiderEmployeeSearchRes {
-    r, _ := ar.Ent.Rider.QueryNotDeleted().WithPerson().Where(rider.Phone(phone)).First(s.ctx)
+    r, _ := ar.Ent.Rider.QueryNotDeleted().WithPerson().Where(rider.Phone(phone)).WithEnterprise().First(s.ctx)
     if r == nil {
         snag.Panic("未找到骑手")
     }
@@ -412,10 +412,11 @@ func (s *riderMgrService) QueryPhone(phone string) model.RiderEmployeeSearchRes 
     subd, _ := NewSubscribe().RecentDetail(r.ID)
 
     res := model.RiderEmployeeSearchRes{
-        ID:       r.ID,
-        Phone:    r.Phone,
-        Overview: NewExchange().Overview(r.ID),
-        Status:   NewRider().Status(r),
+        ID:              r.ID,
+        Phone:           r.Phone,
+        Overview:        NewExchange().Overview(r.ID),
+        Status:          NewRider().Status(r),
+        SubscribeStatus: subd.Status,
     }
 
     p := r.Edges.Person
@@ -423,7 +424,15 @@ func (s *riderMgrService) QueryPhone(phone string) model.RiderEmployeeSearchRes 
         res.Name = p.Name
         res.AuthStatus = model.PersonAuthStatus(p.Status)
     }
-    res.Enterprise = subd.Enterprise
+
+    e := r.Edges.Enterprise
+    if e != nil {
+        res.Enterprise = &model.EnterpriseBasic{
+            ID:   e.ID,
+            Name: e.Name,
+        }
+    }
+
     res.Plan = subd.Plan
 
     return res

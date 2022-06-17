@@ -8046,7 +8046,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "enterprise": {
-                    "description": "团签企业, 个签无此字段",
+                    "description": "团签企业, 团签骑手判定依据(非空是团签), 个签无此字段",
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.EnterpriseBasic"
@@ -8082,6 +8082,10 @@ const docTemplate = `{
                 },
                 "status": {
                     "description": "用户状态, 优先显示状态值大的 1:正常 2:已禁用 3:黑名单",
+                    "type": "integer"
+                },
+                "subscribeStatus": {
+                    "description": "骑手订阅状态",
                     "type": "integer"
                 }
             }
