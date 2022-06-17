@@ -99,6 +99,8 @@ func (s *riderService) IsBlocked(u *ent.Rider) bool {
 
 // Signin 骑手登录
 func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (res *model.RiderSigninRes, err error) {
+    debugPhones := ar.Config.App.Debug.Phone
+
     ctx := context.Background()
     orm := ar.Ent.Rider
     var u *ent.Rider
@@ -131,7 +133,7 @@ func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (
     }
 
     // 更新设备
-    if u.LastDevice != device.Serial {
+    if !debugPhones[req.Phone] && u.LastDevice != device.Serial {
         s.SetNewDevice(u, device)
     }
 

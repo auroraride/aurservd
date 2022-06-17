@@ -25,7 +25,7 @@ var Branch = new(branch)
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        query  query  model.BranchWithDistanceReq  true  "desc"
+// @Param        query  query   model.BranchWithDistanceReq  true  "根据距离获取网点请求参数"
 // @Success      200  {object}  []model.BranchWithDistanceRes  "请求成功"
 func (*branch) List(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.BranchWithDistanceReq](c)

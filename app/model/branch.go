@@ -111,14 +111,15 @@ type BranchFacility struct {
 
 // BranchWithDistanceRes 根据距离获取网点结果
 type BranchWithDistanceRes struct {
-    ID       uint64           `json:"id"`
-    Distance float64          `json:"distance"`
-    Name     string           `json:"name"`
-    Lng      float64          `json:"lng"`
-    Lat      float64          `json:"lat"`
-    Image    string           `json:"image"`
-    Address  string           `json:"address"`
-    Facility []BranchFacility `json:"facility"`
+    ID          uint64                     `json:"id"`
+    Distance    float64                    `json:"distance"`
+    Name        string                     `json:"name"`
+    Lng         float64                    `json:"lng"`
+    Lat         float64                    `json:"lat"`
+    Image       string                     `json:"image"`
+    Address     string                     `json:"address"`
+    Facility    []*BranchFacility          `json:"facility"`
+    FacilityMap map[string]*BranchFacility `json:"-" swaggerignore:"true"`
 }
 
 // BranchRidingReq 骑行规划时间请求

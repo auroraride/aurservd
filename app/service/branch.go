@@ -226,6 +226,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
     }
     err := q.Scan(s.ctx, &temps)
     items = make([]*model.BranchWithDistanceRes, 0)
+    // 三种设备类别
     itemsMap := make(map[uint64]*model.BranchWithDistanceRes, len(temps))
     if err != nil || len(temps) == 0 {
         return
@@ -234,14 +235,15 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
     for i, temp := range temps {
         ids[i] = temp.ID
         itemsMap[temp.ID] = &model.BranchWithDistanceRes{
-            ID:       temp.ID,
-            Distance: temp.Distance,
-            Name:     temp.Name,
-            Lng:      temp.Lng,
-            Lat:      temp.Lat,
-            Image:    temp.Image,
-            Address:  temp.Address,
-            Facility: make([]model.BranchFacility, 0),
+            ID:          temp.ID,
+            Distance:    temp.Distance,
+            Name:        temp.Name,
+            Lng:         temp.Lng,
+            Lat:         temp.Lat,
+            Image:       temp.Image,
+            Address:     temp.Address,
+            Facility:    make([]*model.BranchFacility, 0),
+            FacilityMap: make(map[string]*model.BranchFacility),
         }
     }
 
@@ -250,7 +252,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
     stores := ar.Ent.Store.QueryNotDeleted().Where(store.BranchIDIn(ids...)).AllX(s.ctx)
     for _, es := range stores {
         if es.Status == model.StoreStatusOpen {
-            itemsMap[es.BranchID].Facility = append(itemsMap[es.BranchID].Facility, model.BranchFacility{
+            s.facility(itemsMap[es.BranchID].FacilityMap, model.BranchFacility{
                 ID:    es.ID,
                 Type:  model.BranchFacilityTypeStore,
                 Name:  es.Name,
@@ -289,12 +291,28 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
             if c.Models[0].Voltage == 60 {
                 fa.Type = model.BranchFacilityTypeV60
             }
-            itemsMap[c.BranchID].Facility = append(itemsMap[c.BranchID].Facility, fa)
+            s.facility(itemsMap[c.BranchID].FacilityMap, fa)
         }
     }
 
     for _, m := range itemsMap {
+        for _, fa := range m.FacilityMap {
+            m.Facility = append(m.Facility, fa)
+        }
         items = append(items, m)
     }
     return
+}
+
+func (s *branchService) facility(mp map[string]*model.BranchFacility, info model.BranchFacility) {
+    fa, ok := mp[info.Type]
+    if ok {
+        // 合并电柜满电数量
+        if info.Type != model.BranchFacilityTypeStore {
+            fa.Num += info.Num
+        }
+    } else {
+        fa = &info
+        mp[info.Type] = fa
+    }
 }
