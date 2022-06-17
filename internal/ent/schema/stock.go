@@ -30,7 +30,7 @@ func (Stock) Annotations() []schema.Annotation {
 func (Stock) Fields() []ent.Field {
     return []ent.Field{
         field.String("sn").Comment("调拨编号"),
-        field.Uint8("type").Default(0).Comment("类型 0:调拨 1:领取电池 2:寄存电池 3:归还电池"),
+        field.Uint8("type").Default(0).Comment("类型 0:调拨 1:领取电池 2:寄存电池 3:结束寄存 4:归还电池"),
         field.Uint64("store_id").Optional().Nillable().Comment("入库至 或 出库自 门店ID"),
         field.Uint64("rider_id").Optional().Nillable().Comment("对应骑手ID"),
         field.Uint64("employee_id").Optional().Nillable().Comment("操作店员ID"),

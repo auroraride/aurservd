@@ -1,3 +1,15 @@
+## 2022-06-17
+
+#### 接口新增
+
+- [E2009 物资概览](http://localhost:5533/docs#tag/E/operation/EmployeeStockOverview)
+
+
+
+
+
+<br />
+
 ## 2022-06-16
 
 #### 接口新增

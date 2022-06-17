@@ -34,6 +34,8 @@ type StoreItem struct {
     City     City      `json:"city"`               // 城市
     QRCode   string    `json:"qrcode"`             // 门店二维码
     Employee *Employee `json:"employee,omitempty"` // 店员, 有可能不存在
+    BranchID uint64    `json:"branchId"`           // 网点ID
+    Branch   BranchItem
 }
 
 type Store struct {

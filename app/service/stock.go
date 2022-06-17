@@ -343,3 +343,66 @@ func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockWit
     }
     return err
 }
+
+// EmployeeOverview 店员物资概览
+func (s *stockService) EmployeeOverview() (res model.StockEmployeeOverview) {
+    st := s.employee.Edges.Store
+    if st == nil {
+        snag.Panic("未上班")
+    }
+
+    start := carbon.Now().StartOfDay().Timestamp()
+
+    res = model.StockEmployeeOverview{
+        Batteries: make([]*model.StockEmployeeOverviewBattery, 0),
+        Materials: make([]*model.StockEmployeeOverviewMaterial, 0),
+    }
+
+    // 计算所有物资
+    batteries := make(map[string]*model.StockEmployeeOverviewBattery)
+    materials := make(map[string]*model.StockEmployeeOverviewMaterial)
+
+    items, _ := s.orm.QueryNotDeleted().Where(stock.StoreID(st.ID)).All(s.ctx)
+    for _, item := range items {
+        name := st.Name
+        if item.Voltage != nil {
+            if _, ok := batteries[name]; !ok {
+                batteries[name] = &model.StockEmployeeOverviewBattery{
+                    Outbound: 0,
+                    Inbound:  0,
+                    Surplus:  0,
+                    Voltage:  *item.Voltage,
+                }
+            }
+            // 判断是否今日
+            if item.CreatedAt.Unix() > start {
+                if item.Num > 0 {
+                    batteries[name].Inbound += item.Num
+                } else {
+                    batteries[name].Outbound += int(math.Abs(float64(item.Num)))
+                }
+            }
+            batteries[name].Surplus += item.Num
+        } else {
+            materials[name].Surplus += item.Num
+        }
+    }
+
+    for _, battery := range batteries {
+        res.Batteries = append(res.Batteries, battery)
+    }
+
+    for _, material := range materials {
+        res.Materials = append(res.Materials, material)
+    }
+
+    // 排序
+    sort.Slice(res.Batteries, func(i, j int) bool {
+        return res.Batteries[i].Voltage < res.Batteries[j].Voltage
+    })
+    sort.Slice(res.Materials, func(i, j int) bool {
+        return strings.Compare(res.Materials[i].Name, res.Materials[j].Name) < 0
+    })
+
+    return
+}

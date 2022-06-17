@@ -2018,6 +2018,43 @@ definitions:
       status:
         type: boolean
     type: object
+  model.StockEmployeeOverview:
+    properties:
+      batteries:
+        description: 电池
+        items:
+          $ref: '#/definitions/model.StockEmployeeOverviewBattery'
+        type: array
+      materials:
+        description: 非电池物资
+        items:
+          $ref: '#/definitions/model.StockEmployeeOverviewMaterial'
+        type: array
+    type: object
+  model.StockEmployeeOverviewBattery:
+    properties:
+      inbound:
+        description: 今日入库
+        type: integer
+      outbound:
+        description: 今日出库
+        type: integer
+      surplus:
+        description: 库存电池
+        type: integer
+      voltage:
+        description: 电压型号
+        type: number
+    type: object
+  model.StockEmployeeOverviewMaterial:
+    properties:
+      name:
+        description: 物资名称
+        type: string
+      surplus:
+        description: 库存数量
+        type: integer
+    type: object
   model.StockListRes:
     properties:
       batteries:
@@ -2127,6 +2164,11 @@ definitions:
     type: object
   model.StoreItem:
     properties:
+      branch:
+        $ref: '#/definitions/model.BranchItem'
+      branchId:
+        description: 网点ID
+        type: integer
       city:
         allOf:
         - $ref: '#/definitions/model.City'
@@ -2790,27 +2832,6 @@ paths:
       summary: E2008 换电记录
       tags:
       - '[E]店员接口'
-  /employee/v1/order:
-    get:
-      consumes:
-      - application/json
-      operationId: EmployeeOrderList
-      parameters:
-      - description: 店员校验token
-        in: header
-        name: X-Employee-Token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: E2009 订单记录
-      tags:
-      - '[E]店员接口'
   /employee/v1/plan/renewly:
     get:
       consumes:
@@ -2899,6 +2920,27 @@ paths:
           schema:
             $ref: '#/definitions/model.EmployeeProfile'
       summary: E1001 登录
+      tags:
+      - '[E]店员接口'
+  /employee/v1/stock/overview:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeStockOverview
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StockEmployeeOverview'
+      summary: E2009 物资概览
       tags:
       - '[E]店员接口'
   /employee/v1/store/status:

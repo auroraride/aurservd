@@ -74,3 +74,20 @@ type StockWithRiderReq struct {
     Voltage    float64 `json:"voltage"`    // 电压型号
     StockType  uint8   `json:"stockType"`  // 出入库类型
 }
+
+type StockEmployeeOverviewBattery struct {
+    Voltage  float64 `json:"voltage"`  // 电压型号
+    Surplus  int     `json:"surplus"`  // 库存电池
+    Outbound int     `json:"outbound"` // 今日出库
+    Inbound  int     `json:"inbound"`  // 今日入库
+}
+
+type StockEmployeeOverviewMaterial struct {
+    Name    string `json:"name"`    // 物资名称
+    Surplus int    `json:"surplus"` // 库存数量
+}
+
+type StockEmployeeOverview struct {
+    Batteries []*StockEmployeeOverviewBattery  `json:"batteries"` // 电池
+    Materials []*StockEmployeeOverviewMaterial `json:"materials"` // 非电池物资
+}

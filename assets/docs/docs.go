@@ -537,38 +537,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/employee/v1/order": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[E]店员接口"
-                ],
-                "summary": "E2009 订单记录",
-                "operationId": "EmployeeOrderList",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "店员校验token",
-                        "name": "X-Employee-Token",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/employee/v1/plan/renewly": {
             "get": {
                 "consumes": [
@@ -701,6 +669,38 @@ const docTemplate = `{
                         "description": "店员登录信息",
                         "schema": {
                             "$ref": "#/definitions/model.EmployeeProfile"
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/v1/stock/overview": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E2009 物资概览",
+                "operationId": "EmployeeStockOverview",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StockEmployeeOverview"
                         }
                     }
                 }
@@ -8105,6 +8105,59 @@ const docTemplate = `{
                 }
             }
         },
+        "model.StockEmployeeOverview": {
+            "type": "object",
+            "properties": {
+                "batteries": {
+                    "description": "电池",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.StockEmployeeOverviewBattery"
+                    }
+                },
+                "materials": {
+                    "description": "非电池物资",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.StockEmployeeOverviewMaterial"
+                    }
+                }
+            }
+        },
+        "model.StockEmployeeOverviewBattery": {
+            "type": "object",
+            "properties": {
+                "inbound": {
+                    "description": "今日入库",
+                    "type": "integer"
+                },
+                "outbound": {
+                    "description": "今日出库",
+                    "type": "integer"
+                },
+                "surplus": {
+                    "description": "库存电池",
+                    "type": "integer"
+                },
+                "voltage": {
+                    "description": "电压型号",
+                    "type": "number"
+                }
+            }
+        },
+        "model.StockEmployeeOverviewMaterial": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "物资名称",
+                    "type": "string"
+                },
+                "surplus": {
+                    "description": "库存数量",
+                    "type": "integer"
+                }
+            }
+        },
         "model.StockListRes": {
             "type": "object",
             "properties": {
@@ -8262,6 +8315,13 @@ const docTemplate = `{
         "model.StoreItem": {
             "type": "object",
             "properties": {
+                "branch": {
+                    "$ref": "#/definitions/model.BranchItem"
+                },
+                "branchId": {
+                    "description": "网点ID",
+                    "type": "integer"
+                },
                 "city": {
                     "description": "城市",
                     "allOf": [
