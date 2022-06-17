@@ -433,18 +433,19 @@ func (s *stockService) listBasicQuery(req *model.StockEmployeeListReq) *ent.Stoc
     return q
 }
 
-func (s *stockService) EmployeeList(req *model.StockEmployeeListReq) *model.PaginationRes {
+func (s *stockService) EmployeeList(req *model.StockEmployeeListReq) model.StockEmployeeListRes {
     st := s.employee.Edges.Store
     if st == nil {
         snag.Panic("未上班")
     }
     q := s.listBasicQuery(req).Where(stock.StoreID(st.ID))
-    return model.ParsePaginationResponse(
+
+    res := model.ParsePaginationResponse(
         q,
         req.PaginationReq,
-        func(item *ent.Stock) model.StockEmployeeListRes {
+        func(item *ent.Stock) model.StockEmployeeListResItem {
             r := item.Edges.Rider
-            res := model.StockEmployeeListRes{
+            res := model.StockEmployeeListResItem{
                 ID:      item.ID,
                 Type:    item.Type,
                 Voltage: item.Voltage,
@@ -460,4 +461,34 @@ func (s *stockService) EmployeeList(req *model.StockEmployeeListReq) *model.Pagi
             return res
         },
     )
+
+    var today *int
+
+    if res.Pagination.Current == 1 {
+        today = new(int)
+        // 获取今日数量
+        var result []struct {
+            ID  uint64 `json:"id"`
+            Sum int    `json:"sum"`
+        }
+        cq := s.orm.QueryNotDeleted().Where(
+            stock.CreatedAtGTE(carbon.Now().StartOfDay().Carbon2Time()),
+            stock.StoreID(st.ID),
+        )
+        if req.Outbound {
+            cq.Where(stock.NumLT(0))
+        } else {
+            cq.Where(stock.NumGT(0))
+        }
+        _ = cq.Modify().GroupBy(stock.FieldID).Aggregate(ent.Sum(stock.FieldNum)).Scan(s.ctx, &result)
+
+        if len(result) > 0 {
+            today = &result[0].Sum
+        }
+    }
+
+    return model.StockEmployeeListRes{
+        Today:         today,
+        PaginationRes: res,
+    }
 }

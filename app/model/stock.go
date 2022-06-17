@@ -100,7 +100,7 @@ type StockEmployeeListReq struct {
     Outbound bool    `json:"outbound" query:"outbound"` // 是否筛选出库, false(默认):入库 true:出库
 }
 
-type StockEmployeeListRes struct {
+type StockEmployeeListResItem struct {
     ID      uint64   `json:"id"`
     Type    uint8    `json:"type"`            // 出入库类型 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租
     Name    string   `json:"name,omitempty"`  // 骑手姓名, 平台调拨此字段不存在
@@ -108,4 +108,10 @@ type StockEmployeeListRes struct {
     Num     int      `json:"num"`             // 数量, 正数为入库, 负数为出库(前端显示正数)
     Voltage *float64 `json:"voltage"`         // 电压
     Time    string   `json:"time"`            // 时间
+}
+
+type StockEmployeeListRes struct {
+    Today *int `json:"today,omitempty"` // 今日出库/入库数量, 仅第一页请求时会返回
+
+    *PaginationRes
 }
