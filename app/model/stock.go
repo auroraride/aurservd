@@ -105,7 +105,7 @@ type StockEmployeeListRes struct {
     Type    uint8    `json:"type"`            // 出入库类型 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租
     Name    string   `json:"name,omitempty"`  // 骑手姓名, 平台调拨此字段不存在
     Phone   string   `json:"phone,omitempty"` // 骑手电话, 平台调拨此字段不存在
-    Num     int      `json:"num"`             // 数量, 正数为入库, 负数为出库
+    Num     int      `json:"num"`             // 数量, 正数为入库, 负数为出库(前端显示正数)
     Voltage *float64 `json:"voltage"`         // 电压
     Time    string   `json:"time"`            // 时间
 }
