@@ -47,6 +47,8 @@ const (
 	EdgeStocks = "stocks"
 	// EdgeAttendances holds the string denoting the attendances edge name in mutations.
 	EdgeAttendances = "attendances"
+	// EdgeExceptions holds the string denoting the exceptions edge name in mutations.
+	EdgeExceptions = "exceptions"
 	// Table holds the table name of the store in the database.
 	Table = "store"
 	// CityTable is the table that holds the city relation/edge.
@@ -84,6 +86,13 @@ const (
 	AttendancesInverseTable = "attendance"
 	// AttendancesColumn is the table column denoting the attendances relation/edge.
 	AttendancesColumn = "store_id"
+	// ExceptionsTable is the table that holds the exceptions relation/edge.
+	ExceptionsTable = "exception"
+	// ExceptionsInverseTable is the table name for the Exception entity.
+	// It exists in this package in order to avoid circular dependency with the "exception" package.
+	ExceptionsInverseTable = "exception"
+	// ExceptionsColumn is the table column denoting the exceptions relation/edge.
+	ExceptionsColumn = "store_id"
 )
 
 // Columns holds all SQL columns for store fields.

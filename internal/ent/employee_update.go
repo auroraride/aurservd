@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -184,6 +185,21 @@ func (eu *EmployeeUpdate) AddStocks(s ...*Stock) *EmployeeUpdate {
 	return eu.AddStockIDs(ids...)
 }
 
+// AddExchangeIDs adds the "exchanges" edge to the Exchange entity by IDs.
+func (eu *EmployeeUpdate) AddExchangeIDs(ids ...uint64) *EmployeeUpdate {
+	eu.mutation.AddExchangeIDs(ids...)
+	return eu
+}
+
+// AddExchanges adds the "exchanges" edges to the Exchange entity.
+func (eu *EmployeeUpdate) AddExchanges(e ...*Exchange) *EmployeeUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return eu.AddExchangeIDs(ids...)
+}
+
 // Mutation returns the EmployeeMutation object of the builder.
 func (eu *EmployeeUpdate) Mutation() *EmployeeMutation {
 	return eu.mutation
@@ -241,6 +257,27 @@ func (eu *EmployeeUpdate) RemoveStocks(s ...*Stock) *EmployeeUpdate {
 		ids[i] = s[i].ID
 	}
 	return eu.RemoveStockIDs(ids...)
+}
+
+// ClearExchanges clears all "exchanges" edges to the Exchange entity.
+func (eu *EmployeeUpdate) ClearExchanges() *EmployeeUpdate {
+	eu.mutation.ClearExchanges()
+	return eu
+}
+
+// RemoveExchangeIDs removes the "exchanges" edge to Exchange entities by IDs.
+func (eu *EmployeeUpdate) RemoveExchangeIDs(ids ...uint64) *EmployeeUpdate {
+	eu.mutation.RemoveExchangeIDs(ids...)
+	return eu
+}
+
+// RemoveExchanges removes "exchanges" edges to Exchange entities.
+func (eu *EmployeeUpdate) RemoveExchanges(e ...*Exchange) *EmployeeUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return eu.RemoveExchangeIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -601,6 +638,60 @@ func (eu *EmployeeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if eu.mutation.ExchangesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.ExchangesTable,
+			Columns: []string{employee.ExchangesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: exchange.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedExchangesIDs(); len(nodes) > 0 && !eu.mutation.ExchangesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.ExchangesTable,
+			Columns: []string{employee.ExchangesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: exchange.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.ExchangesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.ExchangesTable,
+			Columns: []string{employee.ExchangesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: exchange.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{employee.Label}
@@ -770,6 +861,21 @@ func (euo *EmployeeUpdateOne) AddStocks(s ...*Stock) *EmployeeUpdateOne {
 	return euo.AddStockIDs(ids...)
 }
 
+// AddExchangeIDs adds the "exchanges" edge to the Exchange entity by IDs.
+func (euo *EmployeeUpdateOne) AddExchangeIDs(ids ...uint64) *EmployeeUpdateOne {
+	euo.mutation.AddExchangeIDs(ids...)
+	return euo
+}
+
+// AddExchanges adds the "exchanges" edges to the Exchange entity.
+func (euo *EmployeeUpdateOne) AddExchanges(e ...*Exchange) *EmployeeUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return euo.AddExchangeIDs(ids...)
+}
+
 // Mutation returns the EmployeeMutation object of the builder.
 func (euo *EmployeeUpdateOne) Mutation() *EmployeeMutation {
 	return euo.mutation
@@ -827,6 +933,27 @@ func (euo *EmployeeUpdateOne) RemoveStocks(s ...*Stock) *EmployeeUpdateOne {
 		ids[i] = s[i].ID
 	}
 	return euo.RemoveStockIDs(ids...)
+}
+
+// ClearExchanges clears all "exchanges" edges to the Exchange entity.
+func (euo *EmployeeUpdateOne) ClearExchanges() *EmployeeUpdateOne {
+	euo.mutation.ClearExchanges()
+	return euo
+}
+
+// RemoveExchangeIDs removes the "exchanges" edge to Exchange entities by IDs.
+func (euo *EmployeeUpdateOne) RemoveExchangeIDs(ids ...uint64) *EmployeeUpdateOne {
+	euo.mutation.RemoveExchangeIDs(ids...)
+	return euo
+}
+
+// RemoveExchanges removes "exchanges" edges to Exchange entities.
+func (euo *EmployeeUpdateOne) RemoveExchanges(e ...*Exchange) *EmployeeUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return euo.RemoveExchangeIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1209,6 +1336,60 @@ func (euo *EmployeeUpdateOne) sqlSave(ctx context.Context) (_node *Employee, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.ExchangesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.ExchangesTable,
+			Columns: []string{employee.ExchangesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: exchange.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedExchangesIDs(); len(nodes) > 0 && !euo.mutation.ExchangesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.ExchangesTable,
+			Columns: []string{employee.ExchangesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: exchange.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.ExchangesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.ExchangesTable,
+			Columns: []string{employee.ExchangesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: exchange.FieldID,
 				},
 			},
 		}

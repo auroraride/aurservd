@@ -64,6 +64,7 @@ func (Store) Edges() []ent.Edge {
 
         edge.To("stocks", Stock.Type),
         edge.To("attendances", Attendance.Type),
+        edge.To("exceptions", Exception.Type),
     }
 }
 

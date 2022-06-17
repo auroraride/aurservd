@@ -767,10 +767,10 @@ definitions:
   model.EmployeeListRes:
     properties:
       assistanceMiles:
-        description: 救援里程(米)
+        description: '救援里程(米) TODO: 待实现'
         type: number
       assistanceTimes:
-        description: 救援次数
+        description: '救援次数 TODO: 待实现'
         type: integer
       city:
         allOf:
@@ -1257,6 +1257,15 @@ definitions:
       voltage:
         description: 换电型号
         type: number
+    type: object
+  model.ExchangeOverview:
+    properties:
+      days:
+        description: 换电天数
+        type: integer
+      times:
+        description: 换电次数
+        type: integer
     type: object
   model.ExchangeStoreReq:
     properties:
@@ -1749,6 +1758,33 @@ definitions:
     - name
     - phone
     - relation
+    type: object
+  model.RiderEmployeeSearchRes:
+    properties:
+      authStatus:
+        description: 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
+        type: integer
+      enterprise:
+        allOf:
+        - $ref: '#/definitions/model.EnterpriseBasic'
+        description: 团签企业, 个签无此字段
+      name:
+        description: 骑手姓名
+        type: string
+      overview:
+        allOf:
+        - $ref: '#/definitions/model.ExchangeOverview'
+        description: 换电预览
+      phone:
+        description: 骑手电话
+        type: string
+      plan:
+        allOf:
+        - $ref: '#/definitions/model.Plan'
+        description: 骑行卡, 个签才有此字段, 团签无
+      status:
+        description: 用户状态, 优先显示状态值大的 1:正常 2:已禁用 3:黑名单
+        type: integer
     type: object
   model.RiderItem:
     properties:
@@ -2994,6 +3030,32 @@ paths:
           schema:
             $ref: '#/definitions/model.EmployeeQrcodeRes'
       summary: E1002 更换二维码
+      tags:
+      - '[E]店员接口'
+  /employee/v1/rider:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeRiderDetail
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 骑手手机号
+        in: query
+        name: phone
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderEmployeeSearchRes'
+      summary: E4001 获取骑手信息
       tags:
       - '[E]店员接口'
   /employee/v1/signin:

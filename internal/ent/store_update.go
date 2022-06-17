@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -210,6 +211,21 @@ func (su *StoreUpdate) AddAttendances(a ...*Attendance) *StoreUpdate {
 	return su.AddAttendanceIDs(ids...)
 }
 
+// AddExceptionIDs adds the "exceptions" edge to the Exception entity by IDs.
+func (su *StoreUpdate) AddExceptionIDs(ids ...uint64) *StoreUpdate {
+	su.mutation.AddExceptionIDs(ids...)
+	return su
+}
+
+// AddExceptions adds the "exceptions" edges to the Exception entity.
+func (su *StoreUpdate) AddExceptions(e ...*Exception) *StoreUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return su.AddExceptionIDs(ids...)
+}
+
 // Mutation returns the StoreMutation object of the builder.
 func (su *StoreUpdate) Mutation() *StoreMutation {
 	return su.mutation
@@ -273,6 +289,27 @@ func (su *StoreUpdate) RemoveAttendances(a ...*Attendance) *StoreUpdate {
 		ids[i] = a[i].ID
 	}
 	return su.RemoveAttendanceIDs(ids...)
+}
+
+// ClearExceptions clears all "exceptions" edges to the Exception entity.
+func (su *StoreUpdate) ClearExceptions() *StoreUpdate {
+	su.mutation.ClearExceptions()
+	return su
+}
+
+// RemoveExceptionIDs removes the "exceptions" edge to Exception entities by IDs.
+func (su *StoreUpdate) RemoveExceptionIDs(ids ...uint64) *StoreUpdate {
+	su.mutation.RemoveExceptionIDs(ids...)
+	return su
+}
+
+// RemoveExceptions removes "exceptions" edges to Exception entities.
+func (su *StoreUpdate) RemoveExceptions(e ...*Exception) *StoreUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return su.RemoveExceptionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -662,6 +699,60 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if su.mutation.ExceptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.ExceptionsTable,
+			Columns: []string{store.ExceptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: exception.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.RemovedExceptionsIDs(); len(nodes) > 0 && !su.mutation.ExceptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.ExceptionsTable,
+			Columns: []string{store.ExceptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: exception.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.ExceptionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.ExceptionsTable,
+			Columns: []string{store.ExceptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: exception.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{store.Label}
@@ -857,6 +948,21 @@ func (suo *StoreUpdateOne) AddAttendances(a ...*Attendance) *StoreUpdateOne {
 	return suo.AddAttendanceIDs(ids...)
 }
 
+// AddExceptionIDs adds the "exceptions" edge to the Exception entity by IDs.
+func (suo *StoreUpdateOne) AddExceptionIDs(ids ...uint64) *StoreUpdateOne {
+	suo.mutation.AddExceptionIDs(ids...)
+	return suo
+}
+
+// AddExceptions adds the "exceptions" edges to the Exception entity.
+func (suo *StoreUpdateOne) AddExceptions(e ...*Exception) *StoreUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return suo.AddExceptionIDs(ids...)
+}
+
 // Mutation returns the StoreMutation object of the builder.
 func (suo *StoreUpdateOne) Mutation() *StoreMutation {
 	return suo.mutation
@@ -920,6 +1026,27 @@ func (suo *StoreUpdateOne) RemoveAttendances(a ...*Attendance) *StoreUpdateOne {
 		ids[i] = a[i].ID
 	}
 	return suo.RemoveAttendanceIDs(ids...)
+}
+
+// ClearExceptions clears all "exceptions" edges to the Exception entity.
+func (suo *StoreUpdateOne) ClearExceptions() *StoreUpdateOne {
+	suo.mutation.ClearExceptions()
+	return suo
+}
+
+// RemoveExceptionIDs removes the "exceptions" edge to Exception entities by IDs.
+func (suo *StoreUpdateOne) RemoveExceptionIDs(ids ...uint64) *StoreUpdateOne {
+	suo.mutation.RemoveExceptionIDs(ids...)
+	return suo
+}
+
+// RemoveExceptions removes "exceptions" edges to Exception entities.
+func (suo *StoreUpdateOne) RemoveExceptions(e ...*Exception) *StoreUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return suo.RemoveExceptionIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1331,6 +1458,60 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: attendance.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.ExceptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.ExceptionsTable,
+			Columns: []string{store.ExceptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: exception.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.RemovedExceptionsIDs(); len(nodes) > 0 && !suo.mutation.ExceptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.ExceptionsTable,
+			Columns: []string{store.ExceptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: exception.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.ExceptionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.ExceptionsTable,
+			Columns: []string{store.ExceptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: exception.FieldID,
 				},
 			},
 		}

@@ -40,8 +40,8 @@ type EmployeeListRes struct {
     City            City    `json:"city"`            // 城市
     Store           *Store  `json:"store,omitempty"` // 当前上班门店, 字段为空的时候是休息状态
     ExchangeTimes   int     `json:"exchangeTimes"`   // 换电次数
-    AssistanceTimes int     `json:"assistanceTimes"` // 救援次数
-    AssistanceMiles float64 `json:"assistanceMiles"` // 救援里程(米)
+    AssistanceTimes int     `json:"assistanceTimes"` // 救援次数 TODO: 待实现
+    AssistanceMiles float64 `json:"assistanceMiles"` // 救援里程(米) TODO: 待实现
 }
 
 type EmployeeDeleteReq struct {

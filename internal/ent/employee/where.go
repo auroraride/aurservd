@@ -1017,6 +1017,34 @@ func HasStocksWith(preds ...predicate.Stock) predicate.Employee {
 	})
 }
 
+// HasExchanges applies the HasEdge predicate on the "exchanges" edge.
+func HasExchanges() predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ExchangesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ExchangesTable, ExchangesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasExchangesWith applies the HasEdge predicate on the "exchanges" edge with a given conditions (other predicates).
+func HasExchangesWith(preds ...predicate.Exchange) predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ExchangesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ExchangesTable, ExchangesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Employee) predicate.Employee {
 	return predicate.Employee(func(s *sql.Selector) {

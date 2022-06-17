@@ -4,8 +4,10 @@ import (
     "entgo.io/ent"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
+    "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -24,6 +26,8 @@ func (Exception) Annotations() []schema.Annotation {
 // Fields of the Exception.
 func (Exception) Fields() []ent.Field {
     return []ent.Field{
+        field.Uint8("status").Default(model.ExceptionStatusPending).Comment("异常状态"),
+        field.Uint64("store_id").Comment("门店ID"),
         field.String("name").Comment("物资名称"),
         field.Float("voltage").Optional().Nillable().Comment("电池型号(电压)"),
         field.Int("num").Immutable().Comment("异常数量"),
@@ -35,7 +39,9 @@ func (Exception) Fields() []ent.Field {
 
 // Edges of the Exception.
 func (Exception) Edges() []ent.Edge {
-    return []ent.Edge{}
+    return []ent.Edge{
+        edge.From("store", Store.Type).Required().Unique().Ref("exceptions").Field("store_id"),
+    }
 }
 
 func (Exception) Mixin() []ent.Mixin {
@@ -46,7 +52,6 @@ func (Exception) Mixin() []ent.Mixin {
 
         CityMixin{},
         EmployeeMixin{},
-        StoreMixin{},
     }
 }
 

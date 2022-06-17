@@ -5,6 +5,11 @@
 
 package model
 
+const (
+    ExceptionStatusPending uint8 = iota // 异常未处理
+    ExceptionStatusDone                 // 异常已处理
+)
+
 type ExceptionEmployeeSetting struct {
     Items   []InventoryItem `json:"items"`   // 物资列表
     Reasons []interface{}   `json:"reasons"` // 异常项

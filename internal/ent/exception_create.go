@@ -106,6 +106,20 @@ func (ec *ExceptionCreate) SetEmployeeID(u uint64) *ExceptionCreate {
 	return ec
 }
 
+// SetStatus sets the "status" field.
+func (ec *ExceptionCreate) SetStatus(u uint8) *ExceptionCreate {
+	ec.mutation.SetStatus(u)
+	return ec
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (ec *ExceptionCreate) SetNillableStatus(u *uint8) *ExceptionCreate {
+	if u != nil {
+		ec.SetStatus(*u)
+	}
+	return ec
+}
+
 // SetStoreID sets the "store_id" field.
 func (ec *ExceptionCreate) SetStoreID(u uint64) *ExceptionCreate {
 	ec.mutation.SetStoreID(u)
@@ -272,6 +286,10 @@ func (ec *ExceptionCreate) defaults() error {
 		v := exception.DefaultUpdatedAt()
 		ec.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := ec.mutation.Status(); !ok {
+		v := exception.DefaultStatus
+		ec.mutation.SetStatus(v)
+	}
 	return nil
 }
 
@@ -288,6 +306,9 @@ func (ec *ExceptionCreate) check() error {
 	}
 	if _, ok := ec.mutation.EmployeeID(); !ok {
 		return &ValidationError{Name: "employee_id", err: errors.New(`ent: missing required field "Exception.employee_id"`)}
+	}
+	if _, ok := ec.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Exception.status"`)}
 	}
 	if _, ok := ec.mutation.StoreID(); !ok {
 		return &ValidationError{Name: "store_id", err: errors.New(`ent: missing required field "Exception.store_id"`)}
@@ -386,6 +407,14 @@ func (ec *ExceptionCreate) createSpec() (*Exception, *sqlgraph.CreateSpec) {
 		})
 		_node.Remark = value
 	}
+	if value, ok := ec.mutation.Status(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: exception.FieldStatus,
+		})
+		_node.Status = value
+	}
 	if value, ok := ec.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -477,7 +506,7 @@ func (ec *ExceptionCreate) createSpec() (*Exception, *sqlgraph.CreateSpec) {
 	if nodes := ec.mutation.StoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   exception.StoreTable,
 			Columns: []string{exception.StoreColumn},
 			Bidi:    false,
@@ -665,6 +694,24 @@ func (u *ExceptionUpsert) SetEmployeeID(v uint64) *ExceptionUpsert {
 // UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
 func (u *ExceptionUpsert) UpdateEmployeeID() *ExceptionUpsert {
 	u.SetExcluded(exception.FieldEmployeeID)
+	return u
+}
+
+// SetStatus sets the "status" field.
+func (u *ExceptionUpsert) SetStatus(v uint8) *ExceptionUpsert {
+	u.Set(exception.FieldStatus, v)
+	return u
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *ExceptionUpsert) UpdateStatus() *ExceptionUpsert {
+	u.SetExcluded(exception.FieldStatus)
+	return u
+}
+
+// AddStatus adds v to the "status" field.
+func (u *ExceptionUpsert) AddStatus(v uint8) *ExceptionUpsert {
+	u.Add(exception.FieldStatus, v)
 	return u
 }
 
@@ -972,6 +1019,27 @@ func (u *ExceptionUpsertOne) SetEmployeeID(v uint64) *ExceptionUpsertOne {
 func (u *ExceptionUpsertOne) UpdateEmployeeID() *ExceptionUpsertOne {
 	return u.Update(func(s *ExceptionUpsert) {
 		s.UpdateEmployeeID()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *ExceptionUpsertOne) SetStatus(v uint8) *ExceptionUpsertOne {
+	return u.Update(func(s *ExceptionUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// AddStatus adds v to the "status" field.
+func (u *ExceptionUpsertOne) AddStatus(v uint8) *ExceptionUpsertOne {
+	return u.Update(func(s *ExceptionUpsert) {
+		s.AddStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *ExceptionUpsertOne) UpdateStatus() *ExceptionUpsertOne {
+	return u.Update(func(s *ExceptionUpsert) {
+		s.UpdateStatus()
 	})
 }
 
@@ -1462,6 +1530,27 @@ func (u *ExceptionUpsertBulk) SetEmployeeID(v uint64) *ExceptionUpsertBulk {
 func (u *ExceptionUpsertBulk) UpdateEmployeeID() *ExceptionUpsertBulk {
 	return u.Update(func(s *ExceptionUpsert) {
 		s.UpdateEmployeeID()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *ExceptionUpsertBulk) SetStatus(v uint8) *ExceptionUpsertBulk {
+	return u.Update(func(s *ExceptionUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// AddStatus adds v to the "status" field.
+func (u *ExceptionUpsertBulk) AddStatus(v uint8) *ExceptionUpsertBulk {
+	return u.Update(func(s *ExceptionUpsert) {
+		s.AddStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *ExceptionUpsertBulk) UpdateStatus() *ExceptionUpsertBulk {
+	return u.Update(func(s *ExceptionUpsert) {
+		s.UpdateStatus()
 	})
 }
 

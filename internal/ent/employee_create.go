@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 	"github.com/google/uuid"
@@ -180,6 +181,21 @@ func (ec *EmployeeCreate) AddStocks(s ...*Stock) *EmployeeCreate {
 		ids[i] = s[i].ID
 	}
 	return ec.AddStockIDs(ids...)
+}
+
+// AddExchangeIDs adds the "exchanges" edge to the Exchange entity by IDs.
+func (ec *EmployeeCreate) AddExchangeIDs(ids ...uint64) *EmployeeCreate {
+	ec.mutation.AddExchangeIDs(ids...)
+	return ec
+}
+
+// AddExchanges adds the "exchanges" edges to the Exchange entity.
+func (ec *EmployeeCreate) AddExchanges(e ...*Exchange) *EmployeeCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return ec.AddExchangeIDs(ids...)
 }
 
 // Mutation returns the EmployeeMutation object of the builder.
@@ -467,6 +483,25 @@ func (ec *EmployeeCreate) createSpec() (*Employee, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.ExchangesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.ExchangesTable,
+			Columns: []string{employee.ExchangesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: exchange.FieldID,
 				},
 			},
 		}

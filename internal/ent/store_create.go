@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
 )
@@ -199,6 +200,21 @@ func (sc *StoreCreate) AddAttendances(a ...*Attendance) *StoreCreate {
 		ids[i] = a[i].ID
 	}
 	return sc.AddAttendanceIDs(ids...)
+}
+
+// AddExceptionIDs adds the "exceptions" edge to the Exception entity by IDs.
+func (sc *StoreCreate) AddExceptionIDs(ids ...uint64) *StoreCreate {
+	sc.mutation.AddExceptionIDs(ids...)
+	return sc
+}
+
+// AddExceptions adds the "exceptions" edges to the Exception entity.
+func (sc *StoreCreate) AddExceptions(e ...*Exception) *StoreCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return sc.AddExceptionIDs(ids...)
 }
 
 // Mutation returns the StoreMutation object of the builder.
@@ -514,6 +530,25 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: attendance.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.ExceptionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.ExceptionsTable,
+			Columns: []string{store.ExceptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: exception.FieldID,
 				},
 			},
 		}

@@ -107,26 +107,6 @@ func (eu *ExchangeUpdate) SetCityID(u uint64) *ExchangeUpdate {
 	return eu
 }
 
-// SetEmployeeID sets the "employee_id" field.
-func (eu *ExchangeUpdate) SetEmployeeID(u uint64) *ExchangeUpdate {
-	eu.mutation.SetEmployeeID(u)
-	return eu
-}
-
-// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
-func (eu *ExchangeUpdate) SetNillableEmployeeID(u *uint64) *ExchangeUpdate {
-	if u != nil {
-		eu.SetEmployeeID(*u)
-	}
-	return eu
-}
-
-// ClearEmployeeID clears the value of the "employee_id" field.
-func (eu *ExchangeUpdate) ClearEmployeeID() *ExchangeUpdate {
-	eu.mutation.ClearEmployeeID()
-	return eu
-}
-
 // SetStoreID sets the "store_id" field.
 func (eu *ExchangeUpdate) SetStoreID(u uint64) *ExchangeUpdate {
 	eu.mutation.SetStoreID(u)
@@ -190,6 +170,26 @@ func (eu *ExchangeUpdate) ClearStationID() *ExchangeUpdate {
 // SetRiderID sets the "rider_id" field.
 func (eu *ExchangeUpdate) SetRiderID(u uint64) *ExchangeUpdate {
 	eu.mutation.SetRiderID(u)
+	return eu
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (eu *ExchangeUpdate) SetEmployeeID(u uint64) *ExchangeUpdate {
+	eu.mutation.SetEmployeeID(u)
+	return eu
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (eu *ExchangeUpdate) SetNillableEmployeeID(u *uint64) *ExchangeUpdate {
+	if u != nil {
+		eu.SetEmployeeID(*u)
+	}
+	return eu
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (eu *ExchangeUpdate) ClearEmployeeID() *ExchangeUpdate {
+	eu.mutation.ClearEmployeeID()
 	return eu
 }
 
@@ -268,11 +268,6 @@ func (eu *ExchangeUpdate) SetCity(c *City) *ExchangeUpdate {
 	return eu.SetCityID(c.ID)
 }
 
-// SetEmployee sets the "employee" edge to the Employee entity.
-func (eu *ExchangeUpdate) SetEmployee(e *Employee) *ExchangeUpdate {
-	return eu.SetEmployeeID(e.ID)
-}
-
 // SetStore sets the "store" edge to the Store entity.
 func (eu *ExchangeUpdate) SetStore(s *Store) *ExchangeUpdate {
 	return eu.SetStoreID(s.ID)
@@ -298,6 +293,11 @@ func (eu *ExchangeUpdate) SetRider(r *Rider) *ExchangeUpdate {
 	return eu.SetRiderID(r.ID)
 }
 
+// SetEmployee sets the "employee" edge to the Employee entity.
+func (eu *ExchangeUpdate) SetEmployee(e *Employee) *ExchangeUpdate {
+	return eu.SetEmployeeID(e.ID)
+}
+
 // Mutation returns the ExchangeMutation object of the builder.
 func (eu *ExchangeUpdate) Mutation() *ExchangeMutation {
 	return eu.mutation
@@ -312,12 +312,6 @@ func (eu *ExchangeUpdate) ClearSubscribe() *ExchangeUpdate {
 // ClearCity clears the "city" edge to the City entity.
 func (eu *ExchangeUpdate) ClearCity() *ExchangeUpdate {
 	eu.mutation.ClearCity()
-	return eu
-}
-
-// ClearEmployee clears the "employee" edge to the Employee entity.
-func (eu *ExchangeUpdate) ClearEmployee() *ExchangeUpdate {
-	eu.mutation.ClearEmployee()
 	return eu
 }
 
@@ -348,6 +342,12 @@ func (eu *ExchangeUpdate) ClearCabinet() *ExchangeUpdate {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (eu *ExchangeUpdate) ClearRider() *ExchangeUpdate {
 	eu.mutation.ClearRider()
+	return eu
+}
+
+// ClearEmployee clears the "employee" edge to the Employee entity.
+func (eu *ExchangeUpdate) ClearEmployee() *ExchangeUpdate {
+	eu.mutation.ClearEmployee()
 	return eu
 }
 
@@ -621,41 +621,6 @@ func (eu *ExchangeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if eu.mutation.EmployeeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   exchange.EmployeeTable,
-			Columns: []string{exchange.EmployeeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := eu.mutation.EmployeeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   exchange.EmployeeTable,
-			Columns: []string{exchange.EmployeeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if eu.mutation.StoreCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -831,6 +796,41 @@ func (eu *ExchangeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if eu.mutation.EmployeeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   exchange.EmployeeTable,
+			Columns: []string{exchange.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.EmployeeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   exchange.EmployeeTable,
+			Columns: []string{exchange.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{exchange.Label}
@@ -920,26 +920,6 @@ func (euo *ExchangeUpdateOne) SetCityID(u uint64) *ExchangeUpdateOne {
 	return euo
 }
 
-// SetEmployeeID sets the "employee_id" field.
-func (euo *ExchangeUpdateOne) SetEmployeeID(u uint64) *ExchangeUpdateOne {
-	euo.mutation.SetEmployeeID(u)
-	return euo
-}
-
-// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
-func (euo *ExchangeUpdateOne) SetNillableEmployeeID(u *uint64) *ExchangeUpdateOne {
-	if u != nil {
-		euo.SetEmployeeID(*u)
-	}
-	return euo
-}
-
-// ClearEmployeeID clears the value of the "employee_id" field.
-func (euo *ExchangeUpdateOne) ClearEmployeeID() *ExchangeUpdateOne {
-	euo.mutation.ClearEmployeeID()
-	return euo
-}
-
 // SetStoreID sets the "store_id" field.
 func (euo *ExchangeUpdateOne) SetStoreID(u uint64) *ExchangeUpdateOne {
 	euo.mutation.SetStoreID(u)
@@ -1003,6 +983,26 @@ func (euo *ExchangeUpdateOne) ClearStationID() *ExchangeUpdateOne {
 // SetRiderID sets the "rider_id" field.
 func (euo *ExchangeUpdateOne) SetRiderID(u uint64) *ExchangeUpdateOne {
 	euo.mutation.SetRiderID(u)
+	return euo
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (euo *ExchangeUpdateOne) SetEmployeeID(u uint64) *ExchangeUpdateOne {
+	euo.mutation.SetEmployeeID(u)
+	return euo
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (euo *ExchangeUpdateOne) SetNillableEmployeeID(u *uint64) *ExchangeUpdateOne {
+	if u != nil {
+		euo.SetEmployeeID(*u)
+	}
+	return euo
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (euo *ExchangeUpdateOne) ClearEmployeeID() *ExchangeUpdateOne {
+	euo.mutation.ClearEmployeeID()
 	return euo
 }
 
@@ -1081,11 +1081,6 @@ func (euo *ExchangeUpdateOne) SetCity(c *City) *ExchangeUpdateOne {
 	return euo.SetCityID(c.ID)
 }
 
-// SetEmployee sets the "employee" edge to the Employee entity.
-func (euo *ExchangeUpdateOne) SetEmployee(e *Employee) *ExchangeUpdateOne {
-	return euo.SetEmployeeID(e.ID)
-}
-
 // SetStore sets the "store" edge to the Store entity.
 func (euo *ExchangeUpdateOne) SetStore(s *Store) *ExchangeUpdateOne {
 	return euo.SetStoreID(s.ID)
@@ -1111,6 +1106,11 @@ func (euo *ExchangeUpdateOne) SetRider(r *Rider) *ExchangeUpdateOne {
 	return euo.SetRiderID(r.ID)
 }
 
+// SetEmployee sets the "employee" edge to the Employee entity.
+func (euo *ExchangeUpdateOne) SetEmployee(e *Employee) *ExchangeUpdateOne {
+	return euo.SetEmployeeID(e.ID)
+}
+
 // Mutation returns the ExchangeMutation object of the builder.
 func (euo *ExchangeUpdateOne) Mutation() *ExchangeMutation {
 	return euo.mutation
@@ -1125,12 +1125,6 @@ func (euo *ExchangeUpdateOne) ClearSubscribe() *ExchangeUpdateOne {
 // ClearCity clears the "city" edge to the City entity.
 func (euo *ExchangeUpdateOne) ClearCity() *ExchangeUpdateOne {
 	euo.mutation.ClearCity()
-	return euo
-}
-
-// ClearEmployee clears the "employee" edge to the Employee entity.
-func (euo *ExchangeUpdateOne) ClearEmployee() *ExchangeUpdateOne {
-	euo.mutation.ClearEmployee()
 	return euo
 }
 
@@ -1161,6 +1155,12 @@ func (euo *ExchangeUpdateOne) ClearCabinet() *ExchangeUpdateOne {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (euo *ExchangeUpdateOne) ClearRider() *ExchangeUpdateOne {
 	euo.mutation.ClearRider()
+	return euo
+}
+
+// ClearEmployee clears the "employee" edge to the Employee entity.
+func (euo *ExchangeUpdateOne) ClearEmployee() *ExchangeUpdateOne {
+	euo.mutation.ClearEmployee()
 	return euo
 }
 
@@ -1464,41 +1464,6 @@ func (euo *ExchangeUpdateOne) sqlSave(ctx context.Context) (_node *Exchange, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if euo.mutation.EmployeeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   exchange.EmployeeTable,
-			Columns: []string{exchange.EmployeeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := euo.mutation.EmployeeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   exchange.EmployeeTable,
-			Columns: []string{exchange.EmployeeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if euo.mutation.StoreCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1666,6 +1631,41 @@ func (euo *ExchangeUpdateOne) sqlSave(ctx context.Context) (_node *Exchange, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: rider.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.EmployeeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   exchange.EmployeeTable,
+			Columns: []string{exchange.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.EmployeeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   exchange.EmployeeTable,
+			Columns: []string{exchange.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
 				},
 			},
 		}

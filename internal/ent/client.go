@@ -1911,6 +1911,22 @@ func (c *EmployeeClient) QueryStocks(e *Employee) *StockQuery {
 	return query
 }
 
+// QueryExchanges queries the exchanges edge of a Employee.
+func (c *EmployeeClient) QueryExchanges(e *Employee) *ExchangeQuery {
+	query := &ExchangeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, id),
+			sqlgraph.To(exchange.Table, exchange.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, employee.ExchangesTable, employee.ExchangesColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EmployeeClient) Hooks() []Hook {
 	hooks := c.hooks.Employee
@@ -2812,7 +2828,7 @@ func (c *ExceptionClient) QueryStore(e *Exception) *StoreQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(exception.Table, exception.FieldID, id),
 			sqlgraph.To(store.Table, store.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, exception.StoreTable, exception.StoreColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, exception.StoreTable, exception.StoreColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil
@@ -2943,22 +2959,6 @@ func (c *ExchangeClient) QueryCity(e *Exchange) *CityQuery {
 	return query
 }
 
-// QueryEmployee queries the employee edge of a Exchange.
-func (c *ExchangeClient) QueryEmployee(e *Exchange) *EmployeeQuery {
-	query := &EmployeeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := e.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(exchange.Table, exchange.FieldID, id),
-			sqlgraph.To(employee.Table, employee.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, exchange.EmployeeTable, exchange.EmployeeColumn),
-		)
-		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryStore queries the store edge of a Exchange.
 func (c *ExchangeClient) QueryStore(e *Exchange) *StoreQuery {
 	query := &StoreQuery{config: c.config}
@@ -3032,6 +3032,22 @@ func (c *ExchangeClient) QueryRider(e *Exchange) *RiderQuery {
 			sqlgraph.From(exchange.Table, exchange.FieldID, id),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, exchange.RiderTable, exchange.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEmployee queries the employee edge of a Exchange.
+func (c *ExchangeClient) QueryEmployee(e *Exchange) *EmployeeQuery {
+	query := &EmployeeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(exchange.Table, exchange.FieldID, id),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, exchange.EmployeeTable, exchange.EmployeeColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil
@@ -4454,6 +4470,22 @@ func (c *StoreClient) QueryAttendances(s *Store) *AttendanceQuery {
 			sqlgraph.From(store.Table, store.FieldID, id),
 			sqlgraph.To(attendance.Table, attendance.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, store.AttendancesTable, store.AttendancesColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryExceptions queries the exceptions edge of a Store.
+func (c *StoreClient) QueryExceptions(s *Store) *ExceptionQuery {
+	query := &ExceptionQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, id),
+			sqlgraph.To(exception.Table, exception.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, store.ExceptionsTable, store.ExceptionsColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

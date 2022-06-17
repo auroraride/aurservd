@@ -122,7 +122,7 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
         InitialDays: sub.InitialDays,
         Remaining:   sub.Remaining,
         OverdueDays: sub.OverdueDays,
-        Business:    sub.Status == model.SubscribeStatusUsing,
+        Business:    model.SubscribeBusinessable(sub.Status),
         City: &model.City{
             ID:   sub.Edges.City.ID,
             Name: sub.Edges.City.Name,

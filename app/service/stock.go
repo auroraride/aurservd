@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/branch"
+    "github.com/auroraride/aurservd/internal/ent/exception"
     "github.com/auroraride/aurservd/internal/ent/stock"
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -69,7 +70,10 @@ func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
             ),
         ).
         WithCity().
-        WithStocks()
+        WithStocks().
+        WithExceptions(func(eq *ent.ExceptionQuery) {
+            eq.Where(exception.Status(model.ExceptionStatusPending))
+        })
     if req.Name != nil {
         q.Where(
             store.NameContainsFold(*req.Name),
@@ -135,6 +139,14 @@ func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
                 }
             }
 
+            for _, ex := range item.Edges.Exceptions {
+                if ex.Voltage != nil {
+                    s.calculateMaterial(batteries, ex)
+                } else {
+                    s.calculateMaterial(materials, ex)
+                }
+            }
+
             for _, battery := range batteries {
                 res.Batteries = append(res.Batteries, battery)
                 res.BatteryTotal += battery.Surplus
@@ -155,6 +167,19 @@ func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
             return res
         },
     )
+}
+
+func (s *stockService) calculateMaterial(items map[string]*model.StockMaterial, ex *ent.Exception) {
+    name := ex.Name
+    if _, ok := items[name]; !ok {
+        items[name] = &model.StockMaterial{
+            Name:     name,
+            Outbound: 0,
+            Inbound:  0,
+            Surplus:  0,
+        }
+    }
+    items[name].Exception += ex.Num
 }
 
 func (s *stockService) calculate(items map[string]*model.StockMaterial, st *ent.Stock) {

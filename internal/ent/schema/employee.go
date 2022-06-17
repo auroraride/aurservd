@@ -63,6 +63,7 @@ func (Employee) Edges() []ent.Edge {
         edge.To("store", Store.Type).Unique(),
         edge.To("attendances", Attendance.Type),
         edge.To("stocks", Stock.Type),
+        edge.To("exchanges", Exchange.Type),
     }
 }
 

@@ -450,6 +450,10 @@ func init() {
 	exception.DefaultUpdatedAt = exceptionDescUpdatedAt.Default.(func() time.Time)
 	// exception.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	exception.UpdateDefaultUpdatedAt = exceptionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// exceptionDescStatus is the schema descriptor for status field.
+	exceptionDescStatus := exceptionFields[0].Descriptor()
+	// exception.DefaultStatus holds the default value on creation for the status field.
+	exception.DefaultStatus = exceptionDescStatus.Default.(uint8)
 	exchangeMixin := schema.Exchange{}.Mixin()
 	exchangeMixinHooks2 := exchangeMixin[2].Hooks()
 	exchange.Hooks[0] = exchangeMixinHooks2[0]
@@ -468,7 +472,7 @@ func init() {
 	// exchange.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	exchange.UpdateDefaultUpdatedAt = exchangeDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// exchangeDescSuccess is the schema descriptor for success field.
-	exchangeDescSuccess := exchangeFields[3].Descriptor()
+	exchangeDescSuccess := exchangeFields[4].Descriptor()
 	// exchange.DefaultSuccess holds the default value on creation for the success field.
 	exchange.DefaultSuccess = exchangeDescSuccess.Default.(bool)
 	inventoryMixin := schema.Inventory{}.Mixin()

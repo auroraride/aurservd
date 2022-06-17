@@ -14,6 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/internal/ent/order"
+    "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -400,4 +401,29 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
         SetOperate(model.OperateProfile).
         SetDiff(strings.Join(before, "\n"), strings.Join(after, "\n")).
         Send()
+}
+
+func (s *riderMgrService) QueryPhone(phone string) model.RiderEmployeeSearchRes {
+    r, _ := ar.Ent.Rider.QueryNotDeleted().WithPerson().Where(rider.Phone(phone)).First(s.ctx)
+    if r == nil {
+        snag.Panic("未找到骑手")
+    }
+
+    subd, _ := NewSubscribe().RecentDetail(r.ID)
+
+    res := model.RiderEmployeeSearchRes{
+        Phone:    r.Phone,
+        Overview: NewExchange().Overview(r.ID),
+        Status:   NewRider().Status(r),
+    }
+
+    p := r.Edges.Person
+    if p != nil {
+        res.Name = p.Name
+        res.AuthStatus = model.PersonAuthStatus(p.Status)
+    }
+    res.Enterprise = subd.Enterprise
+    res.Plan = subd.Plan
+
+    return res
 }

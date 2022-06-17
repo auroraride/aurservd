@@ -46,9 +46,6 @@ type Exchange struct {
 	// CityID holds the value of the "city_id" field.
 	// 城市ID
 	CityID uint64 `json:"city_id,omitempty"`
-	// EmployeeID holds the value of the "employee_id" field.
-	// 店员ID
-	EmployeeID *uint64 `json:"employee_id,omitempty"`
 	// StoreID holds the value of the "store_id" field.
 	// 门店ID
 	StoreID *uint64 `json:"store_id,omitempty"`
@@ -61,6 +58,9 @@ type Exchange struct {
 	// RiderID holds the value of the "rider_id" field.
 	// 骑手ID
 	RiderID uint64 `json:"rider_id,omitempty"`
+	// EmployeeID holds the value of the "employee_id" field.
+	// 店员ID
+	EmployeeID *uint64 `json:"employee_id,omitempty"`
 	// UUID holds the value of the "uuid" field.
 	UUID string `json:"uuid,omitempty"`
 	// CabinetID holds the value of the "cabinet_id" field.
@@ -86,8 +86,6 @@ type ExchangeEdges struct {
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// City holds the value of the city edge.
 	City *City `json:"city,omitempty"`
-	// Employee holds the value of the employee edge.
-	Employee *Employee `json:"employee,omitempty"`
 	// Store holds the value of the store edge.
 	Store *Store `json:"store,omitempty"`
 	// Enterprise holds the value of the enterprise edge.
@@ -98,6 +96,8 @@ type ExchangeEdges struct {
 	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// Rider holds the value of the rider edge.
 	Rider *Rider `json:"rider,omitempty"`
+	// Employee holds the value of the employee edge.
+	Employee *Employee `json:"employee,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [8]bool
@@ -131,24 +131,10 @@ func (e ExchangeEdges) CityOrErr() (*City, error) {
 	return nil, &NotLoadedError{edge: "city"}
 }
 
-// EmployeeOrErr returns the Employee value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e ExchangeEdges) EmployeeOrErr() (*Employee, error) {
-	if e.loadedTypes[2] {
-		if e.Employee == nil {
-			// The edge employee was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: employee.Label}
-		}
-		return e.Employee, nil
-	}
-	return nil, &NotLoadedError{edge: "employee"}
-}
-
 // StoreOrErr returns the Store value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ExchangeEdges) StoreOrErr() (*Store, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[2] {
 		if e.Store == nil {
 			// The edge store was loaded in eager-loading,
 			// but was not found.
@@ -162,7 +148,7 @@ func (e ExchangeEdges) StoreOrErr() (*Store, error) {
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ExchangeEdges) EnterpriseOrErr() (*Enterprise, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[3] {
 		if e.Enterprise == nil {
 			// The edge enterprise was loaded in eager-loading,
 			// but was not found.
@@ -176,7 +162,7 @@ func (e ExchangeEdges) EnterpriseOrErr() (*Enterprise, error) {
 // StationOrErr returns the Station value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ExchangeEdges) StationOrErr() (*EnterpriseStation, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[4] {
 		if e.Station == nil {
 			// The edge station was loaded in eager-loading,
 			// but was not found.
@@ -190,7 +176,7 @@ func (e ExchangeEdges) StationOrErr() (*EnterpriseStation, error) {
 // CabinetOrErr returns the Cabinet value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ExchangeEdges) CabinetOrErr() (*Cabinet, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[5] {
 		if e.Cabinet == nil {
 			// The edge cabinet was loaded in eager-loading,
 			// but was not found.
@@ -204,7 +190,7 @@ func (e ExchangeEdges) CabinetOrErr() (*Cabinet, error) {
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ExchangeEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[6] {
 		if e.Rider == nil {
 			// The edge rider was loaded in eager-loading,
 			// but was not found.
@@ -213,6 +199,20 @@ func (e ExchangeEdges) RiderOrErr() (*Rider, error) {
 		return e.Rider, nil
 	}
 	return nil, &NotLoadedError{edge: "rider"}
+}
+
+// EmployeeOrErr returns the Employee value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ExchangeEdges) EmployeeOrErr() (*Employee, error) {
+	if e.loadedTypes[7] {
+		if e.Employee == nil {
+			// The edge employee was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: employee.Label}
+		}
+		return e.Employee, nil
+	}
+	return nil, &NotLoadedError{edge: "employee"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -226,7 +226,7 @@ func (*Exchange) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case exchange.FieldVoltage:
 			values[i] = new(sql.NullFloat64)
-		case exchange.FieldID, exchange.FieldSubscribeID, exchange.FieldCityID, exchange.FieldEmployeeID, exchange.FieldStoreID, exchange.FieldEnterpriseID, exchange.FieldStationID, exchange.FieldRiderID, exchange.FieldCabinetID:
+		case exchange.FieldID, exchange.FieldSubscribeID, exchange.FieldCityID, exchange.FieldStoreID, exchange.FieldEnterpriseID, exchange.FieldStationID, exchange.FieldRiderID, exchange.FieldEmployeeID, exchange.FieldCabinetID:
 			values[i] = new(sql.NullInt64)
 		case exchange.FieldRemark, exchange.FieldUUID:
 			values[i] = new(sql.NullString)
@@ -306,13 +306,6 @@ func (e *Exchange) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				e.CityID = uint64(value.Int64)
 			}
-		case exchange.FieldEmployeeID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field employee_id", values[i])
-			} else if value.Valid {
-				e.EmployeeID = new(uint64)
-				*e.EmployeeID = uint64(value.Int64)
-			}
 		case exchange.FieldStoreID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field store_id", values[i])
@@ -339,6 +332,13 @@ func (e *Exchange) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field rider_id", values[i])
 			} else if value.Valid {
 				e.RiderID = uint64(value.Int64)
+			}
+		case exchange.FieldEmployeeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field employee_id", values[i])
+			} else if value.Valid {
+				e.EmployeeID = new(uint64)
+				*e.EmployeeID = uint64(value.Int64)
 			}
 		case exchange.FieldUUID:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -387,11 +387,6 @@ func (e *Exchange) QueryCity() *CityQuery {
 	return (&ExchangeClient{config: e.config}).QueryCity(e)
 }
 
-// QueryEmployee queries the "employee" edge of the Exchange entity.
-func (e *Exchange) QueryEmployee() *EmployeeQuery {
-	return (&ExchangeClient{config: e.config}).QueryEmployee(e)
-}
-
 // QueryStore queries the "store" edge of the Exchange entity.
 func (e *Exchange) QueryStore() *StoreQuery {
 	return (&ExchangeClient{config: e.config}).QueryStore(e)
@@ -415,6 +410,11 @@ func (e *Exchange) QueryCabinet() *CabinetQuery {
 // QueryRider queries the "rider" edge of the Exchange entity.
 func (e *Exchange) QueryRider() *RiderQuery {
 	return (&ExchangeClient{config: e.config}).QueryRider(e)
+}
+
+// QueryEmployee queries the "employee" edge of the Exchange entity.
+func (e *Exchange) QueryEmployee() *EmployeeQuery {
+	return (&ExchangeClient{config: e.config}).QueryEmployee(e)
 }
 
 // Update returns a builder for updating this Exchange.
@@ -458,10 +458,6 @@ func (e *Exchange) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.SubscribeID))
 	builder.WriteString(", city_id=")
 	builder.WriteString(fmt.Sprintf("%v", e.CityID))
-	if v := e.EmployeeID; v != nil {
-		builder.WriteString(", employee_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
 	if v := e.StoreID; v != nil {
 		builder.WriteString(", store_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -476,6 +472,10 @@ func (e *Exchange) String() string {
 	}
 	builder.WriteString(", rider_id=")
 	builder.WriteString(fmt.Sprintf("%v", e.RiderID))
+	if v := e.EmployeeID; v != nil {
+		builder.WriteString(", employee_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", uuid=")
 	builder.WriteString(e.UUID)
 	builder.WriteString(", cabinet_id=")

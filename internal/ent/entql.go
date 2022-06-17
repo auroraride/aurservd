@@ -503,6 +503,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			exception.FieldRemark:       {Type: field.TypeString, Column: exception.FieldRemark},
 			exception.FieldCityID:       {Type: field.TypeUint64, Column: exception.FieldCityID},
 			exception.FieldEmployeeID:   {Type: field.TypeUint64, Column: exception.FieldEmployeeID},
+			exception.FieldStatus:       {Type: field.TypeUint8, Column: exception.FieldStatus},
 			exception.FieldStoreID:      {Type: field.TypeUint64, Column: exception.FieldStoreID},
 			exception.FieldName:         {Type: field.TypeString, Column: exception.FieldName},
 			exception.FieldVoltage:      {Type: field.TypeFloat64, Column: exception.FieldVoltage},
@@ -531,11 +532,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 			exchange.FieldRemark:       {Type: field.TypeString, Column: exchange.FieldRemark},
 			exchange.FieldSubscribeID:  {Type: field.TypeUint64, Column: exchange.FieldSubscribeID},
 			exchange.FieldCityID:       {Type: field.TypeUint64, Column: exchange.FieldCityID},
-			exchange.FieldEmployeeID:   {Type: field.TypeUint64, Column: exchange.FieldEmployeeID},
 			exchange.FieldStoreID:      {Type: field.TypeUint64, Column: exchange.FieldStoreID},
 			exchange.FieldEnterpriseID: {Type: field.TypeUint64, Column: exchange.FieldEnterpriseID},
 			exchange.FieldStationID:    {Type: field.TypeUint64, Column: exchange.FieldStationID},
 			exchange.FieldRiderID:      {Type: field.TypeUint64, Column: exchange.FieldRiderID},
+			exchange.FieldEmployeeID:   {Type: field.TypeUint64, Column: exchange.FieldEmployeeID},
 			exchange.FieldUUID:         {Type: field.TypeString, Column: exchange.FieldUUID},
 			exchange.FieldCabinetID:    {Type: field.TypeUint64, Column: exchange.FieldCabinetID},
 			exchange.FieldSuccess:      {Type: field.TypeBool, Column: exchange.FieldSuccess},
@@ -1336,6 +1337,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Stock",
 	)
 	graph.MustAddE(
+		"exchanges",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.ExchangesTable,
+			Columns: []string{employee.ExchangesColumn},
+			Bidi:    false,
+		},
+		"Employee",
+		"Exchange",
+	)
+	graph.MustAddE(
 		"city",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1531,7 +1544,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"store",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   exception.StoreTable,
 			Columns: []string{exception.StoreColumn},
 			Bidi:    false,
@@ -1562,18 +1575,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Exchange",
 		"City",
-	)
-	graph.MustAddE(
-		"employee",
-		&sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   exchange.EmployeeTable,
-			Columns: []string{exchange.EmployeeColumn},
-			Bidi:    false,
-		},
-		"Exchange",
-		"Employee",
 	)
 	graph.MustAddE(
 		"store",
@@ -1634,6 +1635,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Exchange",
 		"Rider",
+	)
+	graph.MustAddE(
+		"employee",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   exchange.EmployeeTable,
+			Columns: []string{exchange.EmployeeColumn},
+			Bidi:    false,
+		},
+		"Exchange",
+		"Employee",
 	)
 	graph.MustAddE(
 		"plan",
@@ -2018,6 +2031,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Store",
 		"Attendance",
+	)
+	graph.MustAddE(
+		"exceptions",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   store.ExceptionsTable,
+			Columns: []string{store.ExceptionsColumn},
+			Bidi:    false,
+		},
+		"Store",
+		"Exception",
 	)
 	graph.MustAddE(
 		"plan",
@@ -3950,6 +3975,20 @@ func (f *EmployeeFilter) WhereHasStocksWith(preds ...predicate.Stock) {
 	})))
 }
 
+// WhereHasExchanges applies a predicate to check if query has an edge exchanges.
+func (f *EmployeeFilter) WhereHasExchanges() {
+	f.Where(entql.HasEdge("exchanges"))
+}
+
+// WhereHasExchangesWith applies a predicate to check if query has an edge exchanges with a given conditions (other predicates).
+func (f *EmployeeFilter) WhereHasExchangesWith(preds ...predicate.Exchange) {
+	f.Where(entql.HasEdgeWith("exchanges", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (eq *EnterpriseQuery) addPredicate(pred func(s *sql.Selector)) {
 	eq.predicates = append(eq.predicates, pred)
@@ -4801,6 +4840,11 @@ func (f *ExceptionFilter) WhereEmployeeID(p entql.Uint64P) {
 	f.Where(p.Field(exception.FieldEmployeeID))
 }
 
+// WhereStatus applies the entql uint8 predicate on the status field.
+func (f *ExceptionFilter) WhereStatus(p entql.Uint8P) {
+	f.Where(p.Field(exception.FieldStatus))
+}
+
 // WhereStoreID applies the entql uint64 predicate on the store_id field.
 func (f *ExceptionFilter) WhereStoreID(p entql.Uint64P) {
 	f.Where(p.Field(exception.FieldStoreID))
@@ -4958,11 +5002,6 @@ func (f *ExchangeFilter) WhereCityID(p entql.Uint64P) {
 	f.Where(p.Field(exchange.FieldCityID))
 }
 
-// WhereEmployeeID applies the entql uint64 predicate on the employee_id field.
-func (f *ExchangeFilter) WhereEmployeeID(p entql.Uint64P) {
-	f.Where(p.Field(exchange.FieldEmployeeID))
-}
-
 // WhereStoreID applies the entql uint64 predicate on the store_id field.
 func (f *ExchangeFilter) WhereStoreID(p entql.Uint64P) {
 	f.Where(p.Field(exchange.FieldStoreID))
@@ -4981,6 +5020,11 @@ func (f *ExchangeFilter) WhereStationID(p entql.Uint64P) {
 // WhereRiderID applies the entql uint64 predicate on the rider_id field.
 func (f *ExchangeFilter) WhereRiderID(p entql.Uint64P) {
 	f.Where(p.Field(exchange.FieldRiderID))
+}
+
+// WhereEmployeeID applies the entql uint64 predicate on the employee_id field.
+func (f *ExchangeFilter) WhereEmployeeID(p entql.Uint64P) {
+	f.Where(p.Field(exchange.FieldEmployeeID))
 }
 
 // WhereUUID applies the entql string predicate on the uuid field.
@@ -5030,20 +5074,6 @@ func (f *ExchangeFilter) WhereHasCity() {
 // WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
 func (f *ExchangeFilter) WhereHasCityWith(preds ...predicate.City) {
 	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
-		for _, p := range preds {
-			p(s)
-		}
-	})))
-}
-
-// WhereHasEmployee applies a predicate to check if query has an edge employee.
-func (f *ExchangeFilter) WhereHasEmployee() {
-	f.Where(entql.HasEdge("employee"))
-}
-
-// WhereHasEmployeeWith applies a predicate to check if query has an edge employee with a given conditions (other predicates).
-func (f *ExchangeFilter) WhereHasEmployeeWith(preds ...predicate.Employee) {
-	f.Where(entql.HasEdgeWith("employee", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -5114,6 +5144,20 @@ func (f *ExchangeFilter) WhereHasRider() {
 // WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
 func (f *ExchangeFilter) WhereHasRiderWith(preds ...predicate.Rider) {
 	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasEmployee applies a predicate to check if query has an edge employee.
+func (f *ExchangeFilter) WhereHasEmployee() {
+	f.Where(entql.HasEdge("employee"))
+}
+
+// WhereHasEmployeeWith applies a predicate to check if query has an edge employee with a given conditions (other predicates).
+func (f *ExchangeFilter) WhereHasEmployeeWith(preds ...predicate.Employee) {
+	f.Where(entql.HasEdgeWith("employee", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -6657,6 +6701,20 @@ func (f *StoreFilter) WhereHasAttendances() {
 // WhereHasAttendancesWith applies a predicate to check if query has an edge attendances with a given conditions (other predicates).
 func (f *StoreFilter) WhereHasAttendancesWith(preds ...predicate.Attendance) {
 	f.Where(entql.HasEdgeWith("attendances", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasExceptions applies a predicate to check if query has an edge exceptions.
+func (f *StoreFilter) WhereHasExceptions() {
+	f.Where(entql.HasEdge("exceptions"))
+}
+
+// WhereHasExceptionsWith applies a predicate to check if query has an edge exceptions with a given conditions (other predicates).
+func (f *StoreFilter) WhereHasExceptionsWith(preds ...predicate.Exception) {
+	f.Where(entql.HasEdgeWith("exceptions", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

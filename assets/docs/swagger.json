@@ -698,6 +698,45 @@
                 }
             }
         },
+        "/employee/v1/rider": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E4001 获取骑手信息",
+                "operationId": "EmployeeRiderDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "骑手手机号",
+                        "name": "phone",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderEmployeeSearchRes"
+                        }
+                    }
+                }
+            }
+        },
         "/employee/v1/signin": {
             "post": {
                 "consumes": [
@@ -6437,11 +6476,11 @@
             "type": "object",
             "properties": {
                 "assistanceMiles": {
-                    "description": "救援里程(米)",
+                    "description": "救援里程(米) TODO: 待实现",
                     "type": "number"
                 },
                 "assistanceTimes": {
-                    "description": "救援次数",
+                    "description": "救援次数 TODO: 待实现",
                     "type": "integer"
                 },
                 "city": {
@@ -7125,6 +7164,19 @@
                 "voltage": {
                     "description": "换电型号",
                     "type": "number"
+                }
+            }
+        },
+        "model.ExchangeOverview": {
+            "type": "object",
+            "properties": {
+                "days": {
+                    "description": "换电天数",
+                    "type": "integer"
+                },
+                "times": {
+                    "description": "换电次数",
+                    "type": "integer"
                 }
             }
         },
@@ -7830,6 +7882,51 @@
                 "relation": {
                     "description": "关系 ",
                     "type": "string"
+                }
+            }
+        },
+        "model.RiderEmployeeSearchRes": {
+            "type": "object",
+            "properties": {
+                "authStatus": {
+                    "description": "认证状态 0:未认证 1:认证中 2:已认证 3:认证失败",
+                    "type": "integer"
+                },
+                "enterprise": {
+                    "description": "团签企业, 个签无此字段",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseBasic"
+                        }
+                    ]
+                },
+                "name": {
+                    "description": "骑手姓名",
+                    "type": "string"
+                },
+                "overview": {
+                    "description": "换电预览",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.ExchangeOverview"
+                        }
+                    ]
+                },
+                "phone": {
+                    "description": "骑手电话",
+                    "type": "string"
+                },
+                "plan": {
+                    "description": "骑行卡, 个签才有此字段, 团签无",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Plan"
+                        }
+                    ]
+                },
+                "status": {
+                    "description": "用户状态, 优先显示状态值大的 1:正常 2:已禁用 3:黑名单",
+                    "type": "integer"
                 }
             }
         },

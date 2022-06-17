@@ -34,12 +34,12 @@ type ExchangeQuery struct {
 	// eager-loading edges.
 	withSubscribe  *SubscribeQuery
 	withCity       *CityQuery
-	withEmployee   *EmployeeQuery
 	withStore      *StoreQuery
 	withEnterprise *EnterpriseQuery
 	withStation    *EnterpriseStationQuery
 	withCabinet    *CabinetQuery
 	withRider      *RiderQuery
+	withEmployee   *EmployeeQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -114,28 +114,6 @@ func (eq *ExchangeQuery) QueryCity() *CityQuery {
 			sqlgraph.From(exchange.Table, exchange.FieldID, selector),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, exchange.CityTable, exchange.CityColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryEmployee chains the current query on the "employee" edge.
-func (eq *ExchangeQuery) QueryEmployee() *EmployeeQuery {
-	query := &EmployeeQuery{config: eq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := eq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := eq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(exchange.Table, exchange.FieldID, selector),
-			sqlgraph.To(employee.Table, employee.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, exchange.EmployeeTable, exchange.EmployeeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -246,6 +224,28 @@ func (eq *ExchangeQuery) QueryRider() *RiderQuery {
 			sqlgraph.From(exchange.Table, exchange.FieldID, selector),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, exchange.RiderTable, exchange.RiderColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEmployee chains the current query on the "employee" edge.
+func (eq *ExchangeQuery) QueryEmployee() *EmployeeQuery {
+	query := &EmployeeQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(exchange.Table, exchange.FieldID, selector),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, exchange.EmployeeTable, exchange.EmployeeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -436,12 +436,12 @@ func (eq *ExchangeQuery) Clone() *ExchangeQuery {
 		predicates:     append([]predicate.Exchange{}, eq.predicates...),
 		withSubscribe:  eq.withSubscribe.Clone(),
 		withCity:       eq.withCity.Clone(),
-		withEmployee:   eq.withEmployee.Clone(),
 		withStore:      eq.withStore.Clone(),
 		withEnterprise: eq.withEnterprise.Clone(),
 		withStation:    eq.withStation.Clone(),
 		withCabinet:    eq.withCabinet.Clone(),
 		withRider:      eq.withRider.Clone(),
+		withEmployee:   eq.withEmployee.Clone(),
 		// clone intermediate query.
 		sql:    eq.sql.Clone(),
 		path:   eq.path,
@@ -468,17 +468,6 @@ func (eq *ExchangeQuery) WithCity(opts ...func(*CityQuery)) *ExchangeQuery {
 		opt(query)
 	}
 	eq.withCity = query
-	return eq
-}
-
-// WithEmployee tells the query-builder to eager-load the nodes that are connected to
-// the "employee" edge. The optional arguments are used to configure the query builder of the edge.
-func (eq *ExchangeQuery) WithEmployee(opts ...func(*EmployeeQuery)) *ExchangeQuery {
-	query := &EmployeeQuery{config: eq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	eq.withEmployee = query
 	return eq
 }
 
@@ -534,6 +523,17 @@ func (eq *ExchangeQuery) WithRider(opts ...func(*RiderQuery)) *ExchangeQuery {
 		opt(query)
 	}
 	eq.withRider = query
+	return eq
+}
+
+// WithEmployee tells the query-builder to eager-load the nodes that are connected to
+// the "employee" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *ExchangeQuery) WithEmployee(opts ...func(*EmployeeQuery)) *ExchangeQuery {
+	query := &EmployeeQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withEmployee = query
 	return eq
 }
 
@@ -610,12 +610,12 @@ func (eq *ExchangeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Exc
 		loadedTypes = [8]bool{
 			eq.withSubscribe != nil,
 			eq.withCity != nil,
-			eq.withEmployee != nil,
 			eq.withStore != nil,
 			eq.withEnterprise != nil,
 			eq.withStation != nil,
 			eq.withCabinet != nil,
 			eq.withRider != nil,
+			eq.withEmployee != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -688,35 +688,6 @@ func (eq *ExchangeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Exc
 			}
 			for i := range nodes {
 				nodes[i].Edges.City = n
-			}
-		}
-	}
-
-	if query := eq.withEmployee; query != nil {
-		ids := make([]uint64, 0, len(nodes))
-		nodeids := make(map[uint64][]*Exchange)
-		for i := range nodes {
-			if nodes[i].EmployeeID == nil {
-				continue
-			}
-			fk := *nodes[i].EmployeeID
-			if _, ok := nodeids[fk]; !ok {
-				ids = append(ids, fk)
-			}
-			nodeids[fk] = append(nodeids[fk], nodes[i])
-		}
-		query.Where(employee.IDIn(ids...))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "employee_id" returned %v`, n.ID)
-			}
-			for i := range nodes {
-				nodes[i].Edges.Employee = n
 			}
 		}
 	}
@@ -856,6 +827,35 @@ func (eq *ExchangeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Exc
 			}
 			for i := range nodes {
 				nodes[i].Edges.Rider = n
+			}
+		}
+	}
+
+	if query := eq.withEmployee; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Exchange)
+		for i := range nodes {
+			if nodes[i].EmployeeID == nil {
+				continue
+			}
+			fk := *nodes[i].EmployeeID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(employee.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "employee_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Employee = n
 			}
 		}
 	}

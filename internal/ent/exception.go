@@ -42,6 +42,9 @@ type Exception struct {
 	// EmployeeID holds the value of the "employee_id" field.
 	// 店员ID
 	EmployeeID uint64 `json:"employee_id,omitempty"`
+	// Status holds the value of the "status" field.
+	// 异常状态
+	Status uint8 `json:"status,omitempty"`
 	// StoreID holds the value of the "store_id" field.
 	// 门店ID
 	StoreID uint64 `json:"store_id,omitempty"`
@@ -132,7 +135,7 @@ func (*Exception) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case exception.FieldVoltage:
 			values[i] = new(sql.NullFloat64)
-		case exception.FieldID, exception.FieldCityID, exception.FieldEmployeeID, exception.FieldStoreID, exception.FieldNum:
+		case exception.FieldID, exception.FieldCityID, exception.FieldEmployeeID, exception.FieldStatus, exception.FieldStoreID, exception.FieldNum:
 			values[i] = new(sql.NullInt64)
 		case exception.FieldRemark, exception.FieldName, exception.FieldReason, exception.FieldDescription:
 			values[i] = new(sql.NullString)
@@ -211,6 +214,12 @@ func (e *Exception) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field employee_id", values[i])
 			} else if value.Valid {
 				e.EmployeeID = uint64(value.Int64)
+			}
+		case exception.FieldStatus:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				e.Status = uint8(value.Int64)
 			}
 		case exception.FieldStoreID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -318,6 +327,8 @@ func (e *Exception) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.CityID))
 	builder.WriteString(", employee_id=")
 	builder.WriteString(fmt.Sprintf("%v", e.EmployeeID))
+	builder.WriteString(", status=")
+	builder.WriteString(fmt.Sprintf("%v", e.Status))
 	builder.WriteString(", store_id=")
 	builder.WriteString(fmt.Sprintf("%v", e.StoreID))
 	builder.WriteString(", name=")

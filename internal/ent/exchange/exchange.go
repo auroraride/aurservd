@@ -29,8 +29,6 @@ const (
 	FieldSubscribeID = "subscribe_id"
 	// FieldCityID holds the string denoting the city_id field in the database.
 	FieldCityID = "city_id"
-	// FieldEmployeeID holds the string denoting the employee_id field in the database.
-	FieldEmployeeID = "employee_id"
 	// FieldStoreID holds the string denoting the store_id field in the database.
 	FieldStoreID = "store_id"
 	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
@@ -39,6 +37,8 @@ const (
 	FieldStationID = "station_id"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
+	// FieldEmployeeID holds the string denoting the employee_id field in the database.
+	FieldEmployeeID = "employee_id"
 	// FieldUUID holds the string denoting the uuid field in the database.
 	FieldUUID = "uuid"
 	// FieldCabinetID holds the string denoting the cabinet_id field in the database.
@@ -53,8 +53,6 @@ const (
 	EdgeSubscribe = "subscribe"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
-	// EdgeEmployee holds the string denoting the employee edge name in mutations.
-	EdgeEmployee = "employee"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
@@ -65,6 +63,8 @@ const (
 	EdgeCabinet = "cabinet"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
+	// EdgeEmployee holds the string denoting the employee edge name in mutations.
+	EdgeEmployee = "employee"
 	// Table holds the table name of the exchange in the database.
 	Table = "exchange"
 	// SubscribeTable is the table that holds the subscribe relation/edge.
@@ -81,13 +81,6 @@ const (
 	CityInverseTable = "city"
 	// CityColumn is the table column denoting the city relation/edge.
 	CityColumn = "city_id"
-	// EmployeeTable is the table that holds the employee relation/edge.
-	EmployeeTable = "exchange"
-	// EmployeeInverseTable is the table name for the Employee entity.
-	// It exists in this package in order to avoid circular dependency with the "employee" package.
-	EmployeeInverseTable = "employee"
-	// EmployeeColumn is the table column denoting the employee relation/edge.
-	EmployeeColumn = "employee_id"
 	// StoreTable is the table that holds the store relation/edge.
 	StoreTable = "exchange"
 	// StoreInverseTable is the table name for the Store entity.
@@ -123,6 +116,13 @@ const (
 	RiderInverseTable = "rider"
 	// RiderColumn is the table column denoting the rider relation/edge.
 	RiderColumn = "rider_id"
+	// EmployeeTable is the table that holds the employee relation/edge.
+	EmployeeTable = "exchange"
+	// EmployeeInverseTable is the table name for the Employee entity.
+	// It exists in this package in order to avoid circular dependency with the "employee" package.
+	EmployeeInverseTable = "employee"
+	// EmployeeColumn is the table column denoting the employee relation/edge.
+	EmployeeColumn = "employee_id"
 )
 
 // Columns holds all SQL columns for exchange fields.
@@ -136,11 +136,11 @@ var Columns = []string{
 	FieldRemark,
 	FieldSubscribeID,
 	FieldCityID,
-	FieldEmployeeID,
 	FieldStoreID,
 	FieldEnterpriseID,
 	FieldStationID,
 	FieldRiderID,
+	FieldEmployeeID,
 	FieldUUID,
 	FieldCabinetID,
 	FieldSuccess,

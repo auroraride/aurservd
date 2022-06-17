@@ -157,3 +157,8 @@ type RiderLogReq struct {
     ID   uint64 `json:"id" query:"id" validate:"required" trans:"骑手ID"`
     Type uint8  `json:"type" enums:"0,1,2,3,4" query:"type"` // 操作类别 0:全部 1:状态 2:资料 3:时长 4:押金
 }
+
+// RiderPhoneSearchReq 使用手机号查询骑手请求
+type RiderPhoneSearchReq struct {
+    Phone string `json:"phone" validate:"required" trans:"手机号" query:"phone"` // 精准匹配
+}

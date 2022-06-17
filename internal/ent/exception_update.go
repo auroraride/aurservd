@@ -102,6 +102,27 @@ func (eu *ExceptionUpdate) SetEmployeeID(u uint64) *ExceptionUpdate {
 	return eu
 }
 
+// SetStatus sets the "status" field.
+func (eu *ExceptionUpdate) SetStatus(u uint8) *ExceptionUpdate {
+	eu.mutation.ResetStatus()
+	eu.mutation.SetStatus(u)
+	return eu
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (eu *ExceptionUpdate) SetNillableStatus(u *uint8) *ExceptionUpdate {
+	if u != nil {
+		eu.SetStatus(*u)
+	}
+	return eu
+}
+
+// AddStatus adds u to the "status" field.
+func (eu *ExceptionUpdate) AddStatus(u int8) *ExceptionUpdate {
+	eu.mutation.AddStatus(u)
+	return eu
+}
+
 // SetStoreID sets the "store_id" field.
 func (eu *ExceptionUpdate) SetStoreID(u uint64) *ExceptionUpdate {
 	eu.mutation.SetStoreID(u)
@@ -376,6 +397,20 @@ func (eu *ExceptionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: exception.FieldRemark,
 		})
 	}
+	if value, ok := eu.mutation.Status(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: exception.FieldStatus,
+		})
+	}
+	if value, ok := eu.mutation.AddedStatus(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: exception.FieldStatus,
+		})
+	}
 	if value, ok := eu.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -509,7 +544,7 @@ func (eu *ExceptionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if eu.mutation.StoreCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   exception.StoreTable,
 			Columns: []string{exception.StoreColumn},
 			Bidi:    false,
@@ -525,7 +560,7 @@ func (eu *ExceptionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := eu.mutation.StoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   exception.StoreTable,
 			Columns: []string{exception.StoreColumn},
 			Bidi:    false,
@@ -627,6 +662,27 @@ func (euo *ExceptionUpdateOne) SetCityID(u uint64) *ExceptionUpdateOne {
 // SetEmployeeID sets the "employee_id" field.
 func (euo *ExceptionUpdateOne) SetEmployeeID(u uint64) *ExceptionUpdateOne {
 	euo.mutation.SetEmployeeID(u)
+	return euo
+}
+
+// SetStatus sets the "status" field.
+func (euo *ExceptionUpdateOne) SetStatus(u uint8) *ExceptionUpdateOne {
+	euo.mutation.ResetStatus()
+	euo.mutation.SetStatus(u)
+	return euo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (euo *ExceptionUpdateOne) SetNillableStatus(u *uint8) *ExceptionUpdateOne {
+	if u != nil {
+		euo.SetStatus(*u)
+	}
+	return euo
+}
+
+// AddStatus adds u to the "status" field.
+func (euo *ExceptionUpdateOne) AddStatus(u int8) *ExceptionUpdateOne {
+	euo.mutation.AddStatus(u)
 	return euo
 }
 
@@ -934,6 +990,20 @@ func (euo *ExceptionUpdateOne) sqlSave(ctx context.Context) (_node *Exception, e
 			Column: exception.FieldRemark,
 		})
 	}
+	if value, ok := euo.mutation.Status(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: exception.FieldStatus,
+		})
+	}
+	if value, ok := euo.mutation.AddedStatus(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeUint8,
+			Value:  value,
+			Column: exception.FieldStatus,
+		})
+	}
 	if value, ok := euo.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -1067,7 +1137,7 @@ func (euo *ExceptionUpdateOne) sqlSave(ctx context.Context) (_node *Exception, e
 	if euo.mutation.StoreCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   exception.StoreTable,
 			Columns: []string{exception.StoreColumn},
 			Bidi:    false,
@@ -1083,7 +1153,7 @@ func (euo *ExceptionUpdateOne) sqlSave(ctx context.Context) (_node *Exception, e
 	if nodes := euo.mutation.StoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   exception.StoreTable,
 			Columns: []string{exception.StoreColumn},
 			Bidi:    false,

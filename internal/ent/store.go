@@ -71,9 +71,11 @@ type StoreEdges struct {
 	Stocks []*Stock `json:"stocks,omitempty"`
 	// Attendances holds the value of the attendances edge.
 	Attendances []*Attendance `json:"attendances,omitempty"`
+	// Exceptions holds the value of the exceptions edge.
+	Exceptions []*Exception `json:"exceptions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -134,6 +136,15 @@ func (e StoreEdges) AttendancesOrErr() ([]*Attendance, error) {
 		return e.Attendances, nil
 	}
 	return nil, &NotLoadedError{edge: "attendances"}
+}
+
+// ExceptionsOrErr returns the Exceptions value or an error if the edge
+// was not loaded in eager-loading.
+func (e StoreEdges) ExceptionsOrErr() ([]*Exception, error) {
+	if e.loadedTypes[5] {
+		return e.Exceptions, nil
+	}
+	return nil, &NotLoadedError{edge: "exceptions"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -277,6 +288,11 @@ func (s *Store) QueryStocks() *StockQuery {
 // QueryAttendances queries the "attendances" edge of the Store entity.
 func (s *Store) QueryAttendances() *AttendanceQuery {
 	return (&StoreClient{config: s.config}).QueryAttendances(s)
+}
+
+// QueryExceptions queries the "exceptions" edge of the Store entity.
+func (s *Store) QueryExceptions() *ExceptionQuery {
+	return (&StoreClient{config: s.config}).QueryExceptions(s)
 }
 
 // Update returns a builder for updating this Store.

@@ -125,7 +125,7 @@ func (eq *ExceptionQuery) QueryStore() *StoreQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(exception.Table, exception.FieldID, selector),
 			sqlgraph.To(store.Table, store.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, exception.StoreTable, exception.StoreColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, exception.StoreTable, exception.StoreColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil

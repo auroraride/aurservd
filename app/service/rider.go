@@ -331,6 +331,20 @@ func (*riderService) GetRiderSampleInfo(rider *ent.Rider) model.RiderSampleInfo 
     }
 }
 
+func (s *riderService) Status(u *ent.Rider) uint8 {
+    status := model.RiderStatusNormal
+    if u.Blocked {
+        status = model.RiderStatusBlocked
+    }
+    p := u.Edges.Person
+    if p != nil {
+        if p.Banned {
+            status = model.RiderStatusBanned
+        }
+    }
+    return status
+}
+
 // List 骑手列表
 func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
     q := ar.Ent.Rider.

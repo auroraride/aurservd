@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -33,6 +34,7 @@ type EmployeeQuery struct {
 	withStore       *StoreQuery
 	withAttendances *AttendanceQuery
 	withStocks      *StockQuery
+	withExchanges   *ExchangeQuery
 	modifiers       []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -151,6 +153,28 @@ func (eq *EmployeeQuery) QueryStocks() *StockQuery {
 			sqlgraph.From(employee.Table, employee.FieldID, selector),
 			sqlgraph.To(stock.Table, stock.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, employee.StocksTable, employee.StocksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryExchanges chains the current query on the "exchanges" edge.
+func (eq *EmployeeQuery) QueryExchanges() *ExchangeQuery {
+	query := &ExchangeQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, selector),
+			sqlgraph.To(exchange.Table, exchange.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, employee.ExchangesTable, employee.ExchangesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -343,6 +367,7 @@ func (eq *EmployeeQuery) Clone() *EmployeeQuery {
 		withStore:       eq.withStore.Clone(),
 		withAttendances: eq.withAttendances.Clone(),
 		withStocks:      eq.withStocks.Clone(),
+		withExchanges:   eq.withExchanges.Clone(),
 		// clone intermediate query.
 		sql:    eq.sql.Clone(),
 		path:   eq.path,
@@ -391,6 +416,17 @@ func (eq *EmployeeQuery) WithStocks(opts ...func(*StockQuery)) *EmployeeQuery {
 		opt(query)
 	}
 	eq.withStocks = query
+	return eq
+}
+
+// WithExchanges tells the query-builder to eager-load the nodes that are connected to
+// the "exchanges" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EmployeeQuery) WithExchanges(opts ...func(*ExchangeQuery)) *EmployeeQuery {
+	query := &ExchangeQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withExchanges = query
 	return eq
 }
 
@@ -464,11 +500,12 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 	var (
 		nodes       = []*Employee{}
 		_spec       = eq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			eq.withCity != nil,
 			eq.withStore != nil,
 			eq.withAttendances != nil,
 			eq.withStocks != nil,
+			eq.withExchanges != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -596,6 +633,34 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 				return nil, fmt.Errorf(`unexpected foreign-key "employee_id" returned %v for node %v`, *fk, n.ID)
 			}
 			node.Edges.Stocks = append(node.Edges.Stocks, n)
+		}
+	}
+
+	if query := eq.withExchanges; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Employee)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Exchanges = []*Exchange{}
+		}
+		query.Where(predicate.Exchange(func(s *sql.Selector) {
+			s.Where(sql.InValues(employee.ExchangesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.EmployeeID
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "employee_id" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "employee_id" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Exchanges = append(node.Edges.Exchanges, n)
 		}
 	}
 

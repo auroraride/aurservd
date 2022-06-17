@@ -27,6 +27,7 @@ func (Exchange) Annotations() []schema.Annotation {
 func (Exchange) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("rider_id").Comment("骑手ID"),
+        field.Uint64("employee_id").Optional().Nillable().Comment("店员ID"),
         field.String("uuid").Unique(),
         field.Uint64("cabinet_id").Optional().Comment("电柜ID"),
         field.Bool("success").Default(true).Comment("是否成功"),
@@ -40,6 +41,7 @@ func (Exchange) Edges() []ent.Edge {
     return []ent.Edge{
         edge.From("cabinet", Cabinet.Type).Unique().Ref("exchanges").Field("cabinet_id"),
         edge.From("rider", Rider.Type).Unique().Required().Ref("exchanges").Field("rider_id"),
+        edge.From("employee", Employee.Type).Unique().Ref("exchanges").Field("employee_id"),
     }
 }
 
@@ -52,7 +54,6 @@ func (Exchange) Mixin() []ent.Mixin {
         SubscribeMixin{},
         CityMixin{},
 
-        EmployeeMixin{Optional: true},
         StoreMixin{Optional: true},
         EnterpriseMixin{Optional: true},
         StationMixin{Optional: true},

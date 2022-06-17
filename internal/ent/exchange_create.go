@@ -111,20 +111,6 @@ func (ec *ExchangeCreate) SetCityID(u uint64) *ExchangeCreate {
 	return ec
 }
 
-// SetEmployeeID sets the "employee_id" field.
-func (ec *ExchangeCreate) SetEmployeeID(u uint64) *ExchangeCreate {
-	ec.mutation.SetEmployeeID(u)
-	return ec
-}
-
-// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
-func (ec *ExchangeCreate) SetNillableEmployeeID(u *uint64) *ExchangeCreate {
-	if u != nil {
-		ec.SetEmployeeID(*u)
-	}
-	return ec
-}
-
 // SetStoreID sets the "store_id" field.
 func (ec *ExchangeCreate) SetStoreID(u uint64) *ExchangeCreate {
 	ec.mutation.SetStoreID(u)
@@ -170,6 +156,20 @@ func (ec *ExchangeCreate) SetNillableStationID(u *uint64) *ExchangeCreate {
 // SetRiderID sets the "rider_id" field.
 func (ec *ExchangeCreate) SetRiderID(u uint64) *ExchangeCreate {
 	ec.mutation.SetRiderID(u)
+	return ec
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (ec *ExchangeCreate) SetEmployeeID(u uint64) *ExchangeCreate {
+	ec.mutation.SetEmployeeID(u)
+	return ec
+}
+
+// SetNillableEmployeeID sets the "employee_id" field if the given value is not nil.
+func (ec *ExchangeCreate) SetNillableEmployeeID(u *uint64) *ExchangeCreate {
+	if u != nil {
+		ec.SetEmployeeID(*u)
+	}
 	return ec
 }
 
@@ -229,11 +229,6 @@ func (ec *ExchangeCreate) SetCity(c *City) *ExchangeCreate {
 	return ec.SetCityID(c.ID)
 }
 
-// SetEmployee sets the "employee" edge to the Employee entity.
-func (ec *ExchangeCreate) SetEmployee(e *Employee) *ExchangeCreate {
-	return ec.SetEmployeeID(e.ID)
-}
-
 // SetStore sets the "store" edge to the Store entity.
 func (ec *ExchangeCreate) SetStore(s *Store) *ExchangeCreate {
 	return ec.SetStoreID(s.ID)
@@ -257,6 +252,11 @@ func (ec *ExchangeCreate) SetCabinet(c *Cabinet) *ExchangeCreate {
 // SetRider sets the "rider" edge to the Rider entity.
 func (ec *ExchangeCreate) SetRider(r *Rider) *ExchangeCreate {
 	return ec.SetRiderID(r.ID)
+}
+
+// SetEmployee sets the "employee" edge to the Employee entity.
+func (ec *ExchangeCreate) SetEmployee(e *Employee) *ExchangeCreate {
+	return ec.SetEmployeeID(e.ID)
 }
 
 // Mutation returns the ExchangeMutation object of the builder.
@@ -542,26 +542,6 @@ func (ec *ExchangeCreate) createSpec() (*Exchange, *sqlgraph.CreateSpec) {
 		_node.CityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ec.mutation.EmployeeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   exchange.EmployeeTable,
-			Columns: []string{exchange.EmployeeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: employee.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.EmployeeID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := ec.mutation.StoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -660,6 +640,26 @@ func (ec *ExchangeCreate) createSpec() (*Exchange, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.RiderID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.EmployeeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   exchange.EmployeeTable,
+			Columns: []string{exchange.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EmployeeID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -836,24 +836,6 @@ func (u *ExchangeUpsert) UpdateCityID() *ExchangeUpsert {
 	return u
 }
 
-// SetEmployeeID sets the "employee_id" field.
-func (u *ExchangeUpsert) SetEmployeeID(v uint64) *ExchangeUpsert {
-	u.Set(exchange.FieldEmployeeID, v)
-	return u
-}
-
-// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
-func (u *ExchangeUpsert) UpdateEmployeeID() *ExchangeUpsert {
-	u.SetExcluded(exchange.FieldEmployeeID)
-	return u
-}
-
-// ClearEmployeeID clears the value of the "employee_id" field.
-func (u *ExchangeUpsert) ClearEmployeeID() *ExchangeUpsert {
-	u.SetNull(exchange.FieldEmployeeID)
-	return u
-}
-
 // SetStoreID sets the "store_id" field.
 func (u *ExchangeUpsert) SetStoreID(v uint64) *ExchangeUpsert {
 	u.Set(exchange.FieldStoreID, v)
@@ -917,6 +899,24 @@ func (u *ExchangeUpsert) SetRiderID(v uint64) *ExchangeUpsert {
 // UpdateRiderID sets the "rider_id" field to the value that was provided on create.
 func (u *ExchangeUpsert) UpdateRiderID() *ExchangeUpsert {
 	u.SetExcluded(exchange.FieldRiderID)
+	return u
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (u *ExchangeUpsert) SetEmployeeID(v uint64) *ExchangeUpsert {
+	u.Set(exchange.FieldEmployeeID, v)
+	return u
+}
+
+// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateEmployeeID() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldEmployeeID)
+	return u
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (u *ExchangeUpsert) ClearEmployeeID() *ExchangeUpsert {
+	u.SetNull(exchange.FieldEmployeeID)
 	return u
 }
 
@@ -1188,27 +1188,6 @@ func (u *ExchangeUpsertOne) UpdateCityID() *ExchangeUpsertOne {
 	})
 }
 
-// SetEmployeeID sets the "employee_id" field.
-func (u *ExchangeUpsertOne) SetEmployeeID(v uint64) *ExchangeUpsertOne {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.SetEmployeeID(v)
-	})
-}
-
-// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
-func (u *ExchangeUpsertOne) UpdateEmployeeID() *ExchangeUpsertOne {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.UpdateEmployeeID()
-	})
-}
-
-// ClearEmployeeID clears the value of the "employee_id" field.
-func (u *ExchangeUpsertOne) ClearEmployeeID() *ExchangeUpsertOne {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.ClearEmployeeID()
-	})
-}
-
 // SetStoreID sets the "store_id" field.
 func (u *ExchangeUpsertOne) SetStoreID(v uint64) *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
@@ -1283,6 +1262,27 @@ func (u *ExchangeUpsertOne) SetRiderID(v uint64) *ExchangeUpsertOne {
 func (u *ExchangeUpsertOne) UpdateRiderID() *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.UpdateRiderID()
+	})
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (u *ExchangeUpsertOne) SetEmployeeID(v uint64) *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetEmployeeID(v)
+	})
+}
+
+// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateEmployeeID() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateEmployeeID()
+	})
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (u *ExchangeUpsertOne) ClearEmployeeID() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearEmployeeID()
 	})
 }
 
@@ -1731,27 +1731,6 @@ func (u *ExchangeUpsertBulk) UpdateCityID() *ExchangeUpsertBulk {
 	})
 }
 
-// SetEmployeeID sets the "employee_id" field.
-func (u *ExchangeUpsertBulk) SetEmployeeID(v uint64) *ExchangeUpsertBulk {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.SetEmployeeID(v)
-	})
-}
-
-// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
-func (u *ExchangeUpsertBulk) UpdateEmployeeID() *ExchangeUpsertBulk {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.UpdateEmployeeID()
-	})
-}
-
-// ClearEmployeeID clears the value of the "employee_id" field.
-func (u *ExchangeUpsertBulk) ClearEmployeeID() *ExchangeUpsertBulk {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.ClearEmployeeID()
-	})
-}
-
 // SetStoreID sets the "store_id" field.
 func (u *ExchangeUpsertBulk) SetStoreID(v uint64) *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
@@ -1826,6 +1805,27 @@ func (u *ExchangeUpsertBulk) SetRiderID(v uint64) *ExchangeUpsertBulk {
 func (u *ExchangeUpsertBulk) UpdateRiderID() *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.UpdateRiderID()
+	})
+}
+
+// SetEmployeeID sets the "employee_id" field.
+func (u *ExchangeUpsertBulk) SetEmployeeID(v uint64) *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetEmployeeID(v)
+	})
+}
+
+// UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateEmployeeID() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateEmployeeID()
+	})
+}
+
+// ClearEmployeeID clears the value of the "employee_id" field.
+func (u *ExchangeUpsertBulk) ClearEmployeeID() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearEmployeeID()
 	})
 }
 

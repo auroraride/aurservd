@@ -16,3 +16,13 @@ type RiderMgrModifyReq struct {
     AuthStatus *PersonAuthStatus `json:"authStatus" enums:"0,1,2,3"` // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
     Contact    *RiderContact     `json:"contact"`                    // 联系人
 }
+
+type RiderEmployeeSearchRes struct {
+    Name       string           `json:"name"`                 // 骑手姓名
+    Status     uint8            `json:"status"`               // 用户状态, 优先显示状态值大的 1:正常 2:已禁用 3:黑名单
+    AuthStatus PersonAuthStatus `json:"authStatus"`           // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
+    Phone      string           `json:"phone"`                // 骑手电话
+    Enterprise *EnterpriseBasic `json:"enterprise,omitempty"` // 团签企业, 个签无此字段
+    Plan       *Plan            `json:"plan,omitempty"`       // 骑行卡, 个签才有此字段, 团签无
+    Overview   ExchangeOverview `json:"overview"`             // 换电预览
+}

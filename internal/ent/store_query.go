@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/branch"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
+	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -35,6 +36,7 @@ type StoreQuery struct {
 	withEmployee    *EmployeeQuery
 	withStocks      *StockQuery
 	withAttendances *AttendanceQuery
+	withExceptions  *ExceptionQuery
 	modifiers       []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -175,6 +177,28 @@ func (sq *StoreQuery) QueryAttendances() *AttendanceQuery {
 			sqlgraph.From(store.Table, store.FieldID, selector),
 			sqlgraph.To(attendance.Table, attendance.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, store.AttendancesTable, store.AttendancesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryExceptions chains the current query on the "exceptions" edge.
+func (sq *StoreQuery) QueryExceptions() *ExceptionQuery {
+	query := &ExceptionQuery{config: sq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(store.Table, store.FieldID, selector),
+			sqlgraph.To(exception.Table, exception.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, store.ExceptionsTable, store.ExceptionsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -368,6 +392,7 @@ func (sq *StoreQuery) Clone() *StoreQuery {
 		withEmployee:    sq.withEmployee.Clone(),
 		withStocks:      sq.withStocks.Clone(),
 		withAttendances: sq.withAttendances.Clone(),
+		withExceptions:  sq.withExceptions.Clone(),
 		// clone intermediate query.
 		sql:    sq.sql.Clone(),
 		path:   sq.path,
@@ -427,6 +452,17 @@ func (sq *StoreQuery) WithAttendances(opts ...func(*AttendanceQuery)) *StoreQuer
 		opt(query)
 	}
 	sq.withAttendances = query
+	return sq
+}
+
+// WithExceptions tells the query-builder to eager-load the nodes that are connected to
+// the "exceptions" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StoreQuery) WithExceptions(opts ...func(*ExceptionQuery)) *StoreQuery {
+	query := &ExceptionQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withExceptions = query
 	return sq
 }
 
@@ -500,12 +536,13 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 	var (
 		nodes       = []*Store{}
 		_spec       = sq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			sq.withCity != nil,
 			sq.withBranch != nil,
 			sq.withEmployee != nil,
 			sq.withStocks != nil,
 			sq.withAttendances != nil,
+			sq.withExceptions != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -664,6 +701,31 @@ func (sq *StoreQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Store,
 				return nil, fmt.Errorf(`unexpected foreign-key "store_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Attendances = append(node.Edges.Attendances, n)
+		}
+	}
+
+	if query := sq.withExceptions; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Store)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Exceptions = []*Exception{}
+		}
+		query.Where(predicate.Exception(func(s *sql.Selector) {
+			s.Where(sql.InValues(store.ExceptionsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.StoreID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "store_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Exceptions = append(node.Edges.Exceptions, n)
 		}
 	}
 

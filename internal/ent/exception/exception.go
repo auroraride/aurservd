@@ -29,6 +29,8 @@ const (
 	FieldCityID = "city_id"
 	// FieldEmployeeID holds the string denoting the employee_id field in the database.
 	FieldEmployeeID = "employee_id"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
 	// FieldStoreID holds the string denoting the store_id field in the database.
 	FieldStoreID = "store_id"
 	// FieldName holds the string denoting the name field in the database.
@@ -85,6 +87,7 @@ var Columns = []string{
 	FieldRemark,
 	FieldCityID,
 	FieldEmployeeID,
+	FieldStatus,
 	FieldStoreID,
 	FieldName,
 	FieldVoltage,
@@ -118,4 +121,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultStatus holds the default value on creation for the "status" field.
+	DefaultStatus uint8
 )

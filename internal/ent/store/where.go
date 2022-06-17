@@ -1168,6 +1168,34 @@ func HasAttendancesWith(preds ...predicate.Attendance) predicate.Store {
 	})
 }
 
+// HasExceptions applies the HasEdge predicate on the "exceptions" edge.
+func HasExceptions() predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ExceptionsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ExceptionsTable, ExceptionsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasExceptionsWith applies the HasEdge predicate on the "exceptions" edge with a given conditions (other predicates).
+func HasExceptionsWith(preds ...predicate.Exception) predicate.Store {
+	return predicate.Store(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ExceptionsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ExceptionsTable, ExceptionsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Store) predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {

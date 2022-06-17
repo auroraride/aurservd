@@ -109,7 +109,10 @@ func (s *employeeService) Modify(req *model.EmployeeModifyReq) {
 
 // List 列举骑手
 func (s *employeeService) List(req *model.EmployeeListReq) *model.PaginationRes {
-    q := s.orm.QueryNotDeleted().WithStore().WithCity()
+    q := s.orm.QueryNotDeleted().
+        WithStore().
+        WithCity().
+        WithExchanges()
     if req.Keyword != nil {
         q.Where(
             employee.Or(
@@ -127,11 +130,12 @@ func (s *employeeService) List(req *model.EmployeeListReq) *model.PaginationRes 
         q.Where(employee.CityID(*req.CityID))
     }
 
-    return model.ParsePaginationResponse[model.EmployeeListRes, ent.Employee](q, req.PaginationReq, func(item *ent.Employee) model.EmployeeListRes {
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Employee) model.EmployeeListRes {
         res := model.EmployeeListRes{
-            ID:    item.ID,
-            Name:  item.Name,
-            Phone: item.Phone,
+            ID:            item.ID,
+            Name:          item.Name,
+            Phone:         item.Phone,
+            ExchangeTimes: len(item.Edges.Exchanges),
         }
 
         ec := item.Edges.City

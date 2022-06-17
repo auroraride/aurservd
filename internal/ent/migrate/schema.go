@@ -990,6 +990,7 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "status", Type: field.TypeUint8, Comment: "异常状态", Default: 0},
 		{Name: "name", Type: field.TypeString, Comment: "物资名称"},
 		{Name: "voltage", Type: field.TypeFloat64, Comment: "电池型号(电压)", Nullable: true},
 		{Name: "num", Type: field.TypeInt, Comment: "异常数量"},
@@ -1008,19 +1009,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "exception_city_city",
-				Columns:    []*schema.Column{ExceptionColumns[13]},
+				Columns:    []*schema.Column{ExceptionColumns[14]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "exception_employee_employee",
-				Columns:    []*schema.Column{ExceptionColumns[14]},
+				Columns:    []*schema.Column{ExceptionColumns[15]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "exception_store_store",
-				Columns:    []*schema.Column{ExceptionColumns[15]},
+				Symbol:     "exception_store_exceptions",
+				Columns:    []*schema.Column{ExceptionColumns[16]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -1039,17 +1040,17 @@ var (
 			{
 				Name:    "exception_name",
 				Unique:  false,
-				Columns: []*schema.Column{ExceptionColumns[7]},
+				Columns: []*schema.Column{ExceptionColumns[8]},
 			},
 			{
 				Name:    "exception_voltage",
 				Unique:  false,
-				Columns: []*schema.Column{ExceptionColumns[8]},
+				Columns: []*schema.Column{ExceptionColumns[9]},
 			},
 			{
 				Name:    "exception_num",
 				Unique:  false,
-				Columns: []*schema.Column{ExceptionColumns[9]},
+				Columns: []*schema.Column{ExceptionColumns[10]},
 			},
 		},
 	}
@@ -1067,9 +1068,9 @@ var (
 		{Name: "detail", Type: field.TypeJSON, Comment: "电柜换电信息", Nullable: true},
 		{Name: "voltage", Type: field.TypeFloat64, Comment: "电池电压型号"},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "subscribe_id", Type: field.TypeUint64},
 		{Name: "city_id", Type: field.TypeUint64},
-		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
@@ -1088,22 +1089,22 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "exchange_subscribe_subscribe",
+				Symbol:     "exchange_employee_exchanges",
 				Columns:    []*schema.Column{ExchangeColumns[12]},
+				RefColumns: []*schema.Column{EmployeeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "exchange_subscribe_subscribe",
+				Columns:    []*schema.Column{ExchangeColumns[13]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "exchange_city_city",
-				Columns:    []*schema.Column{ExchangeColumns[13]},
+				Columns:    []*schema.Column{ExchangeColumns[14]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
-			},
-			{
-				Symbol:     "exchange_employee_employee",
-				Columns:    []*schema.Column{ExchangeColumns[14]},
-				RefColumns: []*schema.Column{EmployeeColumns[0]},
-				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "exchange_store_store",
@@ -2219,9 +2220,9 @@ func init() {
 		Table: "exception",
 	}
 	ExchangeTable.ForeignKeys[0].RefTable = CabinetTable
-	ExchangeTable.ForeignKeys[1].RefTable = SubscribeTable
-	ExchangeTable.ForeignKeys[2].RefTable = CityTable
-	ExchangeTable.ForeignKeys[3].RefTable = EmployeeTable
+	ExchangeTable.ForeignKeys[1].RefTable = EmployeeTable
+	ExchangeTable.ForeignKeys[2].RefTable = SubscribeTable
+	ExchangeTable.ForeignKeys[3].RefTable = CityTable
 	ExchangeTable.ForeignKeys[4].RefTable = StoreTable
 	ExchangeTable.ForeignKeys[5].RefTable = EnterpriseTable
 	ExchangeTable.ForeignKeys[6].RefTable = EnterpriseStationTable

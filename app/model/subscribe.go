@@ -14,6 +14,10 @@ const (
     SubscribeStatusCanceled                  // 已取消, 已退款
 )
 
+func SubscribeBusinessable(status uint8) bool {
+    return status == SubscribeStatusUsing || status == SubscribeStatusPaused
+}
+
 func SubscribeStatusText(status uint8) string {
     switch status {
     case SubscribeStatusInactive:

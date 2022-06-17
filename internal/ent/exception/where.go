@@ -135,6 +135,13 @@ func EmployeeID(v uint64) predicate.Exception {
 	})
 }
 
+// Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
+func Status(v uint8) predicate.Exception {
+	return predicate.Exception(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStatus), v))
+	})
+}
+
 // StoreID applies equality check predicate on the "store_id" field. It's identical to StoreIDEQ.
 func StoreID(v uint64) predicate.Exception {
 	return predicate.Exception(func(s *sql.Selector) {
@@ -665,6 +672,82 @@ func EmployeeIDNotIn(vs ...uint64) predicate.Exception {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldEmployeeID), v...))
+	})
+}
+
+// StatusEQ applies the EQ predicate on the "status" field.
+func StatusEQ(v uint8) predicate.Exception {
+	return predicate.Exception(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStatus), v))
+	})
+}
+
+// StatusNEQ applies the NEQ predicate on the "status" field.
+func StatusNEQ(v uint8) predicate.Exception {
+	return predicate.Exception(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldStatus), v))
+	})
+}
+
+// StatusIn applies the In predicate on the "status" field.
+func StatusIn(vs ...uint8) predicate.Exception {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Exception(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldStatus), v...))
+	})
+}
+
+// StatusNotIn applies the NotIn predicate on the "status" field.
+func StatusNotIn(vs ...uint8) predicate.Exception {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Exception(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldStatus), v...))
+	})
+}
+
+// StatusGT applies the GT predicate on the "status" field.
+func StatusGT(v uint8) predicate.Exception {
+	return predicate.Exception(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldStatus), v))
+	})
+}
+
+// StatusGTE applies the GTE predicate on the "status" field.
+func StatusGTE(v uint8) predicate.Exception {
+	return predicate.Exception(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldStatus), v))
+	})
+}
+
+// StatusLT applies the LT predicate on the "status" field.
+func StatusLT(v uint8) predicate.Exception {
+	return predicate.Exception(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldStatus), v))
+	})
+}
+
+// StatusLTE applies the LTE predicate on the "status" field.
+func StatusLTE(v uint8) predicate.Exception {
+	return predicate.Exception(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldStatus), v))
 	})
 }
 
@@ -1305,7 +1388,7 @@ func HasStore() predicate.Exception {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(StoreTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, StoreTable, StoreColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -1317,7 +1400,7 @@ func HasStoreWith(preds ...predicate.Store) predicate.Exception {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(StoreInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, StoreTable, StoreColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, StoreTable, StoreColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
