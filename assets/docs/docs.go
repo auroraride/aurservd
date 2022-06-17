@@ -5871,6 +5871,10 @@ const docTemplate = `{
                     "description": "柜门数量",
                     "type": "integer"
                 },
+                "health": {
+                    "description": "在线状态 0离线 1在线 2故障",
+                    "type": "boolean"
+                },
                 "models": {
                     "description": "电池型号 ",
                     "type": "array",
@@ -5943,6 +5947,10 @@ const docTemplate = `{
                 "doors": {
                     "description": "柜门数量",
                     "type": "integer"
+                },
+                "health": {
+                    "description": "在线状态 0离线 1在线 2故障",
+                    "type": "boolean"
                 },
                 "id": {
                     "description": "电柜ID",
@@ -6179,6 +6187,10 @@ const docTemplate = `{
                 "doors": {
                     "description": "柜门数量",
                     "type": "integer"
+                },
+                "health": {
+                    "description": "在线状态 0离线 1在线 2故障",
+                    "type": "boolean"
                 },
                 "id": {
                     "description": "电柜ID",

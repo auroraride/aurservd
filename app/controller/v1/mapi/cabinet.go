@@ -24,7 +24,7 @@ var Cabinet = new(cabinet)
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body  model.CabinetCreateReq  true  "电柜数据"
+// @Param        body  body     model.CabinetCreateReq  true  "电柜数据"
 // @Success      200  {object}  model.ItemRes{item=model.CabinetItem}  "请求成功"
 func (*cabinet) Create(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetCreateReq](c)
@@ -57,8 +57,8 @@ func (*cabinet) Query(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body  model.CabinetCreateReq  true  "电柜数据"
-// @Param        id    path  int  true  "电柜ID"
+// @Param        body  body     model.CabinetCreateReq  true  "电柜数据"
+// @Param        id    path     int  true  "电柜ID"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Modify(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetModifyReq](c)
