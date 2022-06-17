@@ -981,6 +981,78 @@ var (
 			},
 		},
 	}
+	// ExceptionColumns holds the columns for the "exception" table.
+	ExceptionColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "name", Type: field.TypeString, Comment: "物资名称"},
+		{Name: "voltage", Type: field.TypeFloat64, Comment: "电池型号(电压)", Nullable: true},
+		{Name: "num", Type: field.TypeInt, Comment: "异常数量"},
+		{Name: "reason", Type: field.TypeString, Comment: "异常原因"},
+		{Name: "description", Type: field.TypeString, Comment: "异常描述", Nullable: true},
+		{Name: "attachments", Type: field.TypeJSON, Comment: "附件", Nullable: true},
+		{Name: "city_id", Type: field.TypeUint64},
+		{Name: "employee_id", Type: field.TypeUint64},
+		{Name: "store_id", Type: field.TypeUint64},
+	}
+	// ExceptionTable holds the schema information for the "exception" table.
+	ExceptionTable = &schema.Table{
+		Name:       "exception",
+		Columns:    ExceptionColumns,
+		PrimaryKey: []*schema.Column{ExceptionColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "exception_city_city",
+				Columns:    []*schema.Column{ExceptionColumns[13]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "exception_employee_employee",
+				Columns:    []*schema.Column{ExceptionColumns[14]},
+				RefColumns: []*schema.Column{EmployeeColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "exception_store_store",
+				Columns:    []*schema.Column{ExceptionColumns[15]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "exception_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{ExceptionColumns[1]},
+			},
+			{
+				Name:    "exception_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{ExceptionColumns[3]},
+			},
+			{
+				Name:    "exception_name",
+				Unique:  false,
+				Columns: []*schema.Column{ExceptionColumns[7]},
+			},
+			{
+				Name:    "exception_voltage",
+				Unique:  false,
+				Columns: []*schema.Column{ExceptionColumns[8]},
+			},
+			{
+				Name:    "exception_num",
+				Unique:  false,
+				Columns: []*schema.Column{ExceptionColumns[9]},
+			},
+		},
+	}
 	// ExchangeColumns holds the columns for the "exchange" table.
 	ExchangeColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -1567,7 +1639,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "sn", Type: field.TypeString, Comment: "调拨编号"},
-		{Name: "type", Type: field.TypeUint8, Comment: "类型 0:调拨 1:领取电池 2:寄存电池 3:归还电池", Default: 0},
+		{Name: "type", Type: field.TypeUint8, Comment: "类型 0:调拨 1:领取电池 2:寄存电池 3:结束寄存 4:归还电池", Default: 0},
 		{Name: "name", Type: field.TypeString, Comment: "物资名称"},
 		{Name: "voltage", Type: field.TypeFloat64, Comment: "电池型号(电压)", Nullable: true},
 		{Name: "num", Type: field.TypeInt, Comment: "物资数量: 正值调入 / 负值调出"},
@@ -2038,6 +2110,7 @@ var (
 		EnterprisePriceTable,
 		EnterpriseStatementTable,
 		EnterpriseStationTable,
+		ExceptionTable,
 		ExchangeTable,
 		InventoryTable,
 		ManagerTable,
@@ -2138,6 +2211,12 @@ func init() {
 	EnterpriseStationTable.ForeignKeys[0].RefTable = EnterpriseTable
 	EnterpriseStationTable.Annotation = &entsql.Annotation{
 		Table: "enterprise_station",
+	}
+	ExceptionTable.ForeignKeys[0].RefTable = CityTable
+	ExceptionTable.ForeignKeys[1].RefTable = EmployeeTable
+	ExceptionTable.ForeignKeys[2].RefTable = StoreTable
+	ExceptionTable.Annotation = &entsql.Annotation{
+		Table: "exception",
 	}
 	ExchangeTable.ForeignKeys[0].RefTable = CabinetTable
 	ExchangeTable.ForeignKeys[1].RefTable = SubscribeTable

@@ -44,7 +44,7 @@ type Stock struct {
 	// 调拨编号
 	Sn string `json:"sn,omitempty"`
 	// Type holds the value of the "type" field.
-	// 类型 0:调拨 1:领取电池 2:寄存电池 3:归还电池
+	// 类型 0:调拨 1:领取电池 2:寄存电池 3:结束寄存 4:归还电池
 	Type uint8 `json:"type,omitempty"`
 	// StoreID holds the value of the "store_id" field.
 	// 入库至 或 出库自 门店ID

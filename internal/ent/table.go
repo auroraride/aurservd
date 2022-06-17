@@ -172,6 +172,16 @@ func (es *EnterpriseStation) GetID() uint64 {
 	return es.ID
 }
 
+// GetTableName returns table name for Exception.
+func (e *Exception) GetTableName() string {
+	return "exception"
+}
+
+// GetID returns id for Exception.
+func (e *Exception) GetID() uint64 {
+	return e.ID
+}
+
 // GetTableName returns table name for Exchange.
 func (e *Exchange) GetTableName() string {
 	return "exchange"

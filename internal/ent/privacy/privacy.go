@@ -573,6 +573,30 @@ func (f EnterpriseStationMutationRuleFunc) EvalMutation(ctx context.Context, m e
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.EnterpriseStationMutation", m)
 }
 
+// The ExceptionQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type ExceptionQueryRuleFunc func(context.Context, *ent.ExceptionQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f ExceptionQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.ExceptionQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.ExceptionQuery", q)
+}
+
+// The ExceptionMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type ExceptionMutationRuleFunc func(context.Context, *ent.ExceptionMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f ExceptionMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.ExceptionMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.ExceptionMutation", m)
+}
+
 // The ExchangeQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type ExchangeQueryRuleFunc func(context.Context, *ent.ExchangeQuery) error
@@ -978,6 +1002,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.EnterpriseStationQuery:
 		return q.Filter(), nil
+	case *ent.ExceptionQuery:
+		return q.Filter(), nil
 	case *ent.ExchangeQuery:
 		return q.Filter(), nil
 	case *ent.InventoryQuery:
@@ -1046,6 +1072,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.EnterpriseStatementMutation:
 		return m.Filter(), nil
 	case *ent.EnterpriseStationMutation:
+		return m.Filter(), nil
+	case *ent.ExceptionMutation:
 		return m.Filter(), nil
 	case *ent.ExchangeMutation:
 		return m.Filter(), nil

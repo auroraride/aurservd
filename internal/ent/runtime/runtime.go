@@ -22,6 +22,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -432,6 +433,23 @@ func init() {
 	enterprisestation.DefaultUpdatedAt = enterprisestationDescUpdatedAt.Default.(func() time.Time)
 	// enterprisestation.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	enterprisestation.UpdateDefaultUpdatedAt = enterprisestationDescUpdatedAt.UpdateDefault.(func() time.Time)
+	exceptionMixin := schema.Exception{}.Mixin()
+	exceptionMixinHooks2 := exceptionMixin[2].Hooks()
+	exception.Hooks[0] = exceptionMixinHooks2[0]
+	exceptionMixinFields0 := exceptionMixin[0].Fields()
+	_ = exceptionMixinFields0
+	exceptionFields := schema.Exception{}.Fields()
+	_ = exceptionFields
+	// exceptionDescCreatedAt is the schema descriptor for created_at field.
+	exceptionDescCreatedAt := exceptionMixinFields0[0].Descriptor()
+	// exception.DefaultCreatedAt holds the default value on creation for the created_at field.
+	exception.DefaultCreatedAt = exceptionDescCreatedAt.Default.(func() time.Time)
+	// exceptionDescUpdatedAt is the schema descriptor for updated_at field.
+	exceptionDescUpdatedAt := exceptionMixinFields0[1].Descriptor()
+	// exception.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	exception.DefaultUpdatedAt = exceptionDescUpdatedAt.Default.(func() time.Time)
+	// exception.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	exception.UpdateDefaultUpdatedAt = exceptionDescUpdatedAt.UpdateDefault.(func() time.Time)
 	exchangeMixin := schema.Exchange{}.Mixin()
 	exchangeMixinHooks2 := exchangeMixin[2].Hooks()
 	exchange.Hooks[0] = exchangeMixinHooks2[0]

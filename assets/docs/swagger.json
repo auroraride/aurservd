@@ -446,6 +446,47 @@
                 }
             }
         },
+        "/employee/v1/exception": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E3002 异常上报",
+                "operationId": "EmployeeExceptionCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "异常上报请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ExceptionEmployeeReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/employee/v1/exception/setting": {
             "get": {
                 "consumes": [
@@ -472,10 +513,7 @@
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.InventoryItem"
-                            }
+                            "$ref": "#/definitions/model.ExceptionEmployeeSetting"
                         }
                     }
                 }
@@ -6994,6 +7032,62 @@
                 }
             }
         },
+        "model.ExceptionEmployeeReq": {
+            "type": "object",
+            "required": [
+                "description",
+                "num",
+                "reason"
+            ],
+            "properties": {
+                "attachments": {
+                    "description": "附件, *注意, 门店端的附件需要以employee/开头*",
+                    "type": "array",
+                    "maxItems": 3,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "description": {
+                    "description": "描述 ",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "物资名称 (非电池物资, 和`voltage`不能同时存在, 也不能同时为空), 物资列表查看接口 `E3001 物资异常配置`",
+                    "type": "string"
+                },
+                "num": {
+                    "description": "异常数量 ",
+                    "type": "integer",
+                    "minimum": 1
+                },
+                "reason": {
+                    "description": "异常原因 异常原因查看接口 `E3001 物资异常配置`",
+                    "type": "string"
+                },
+                "voltage": {
+                    "description": "电压型号 (电池, 和`name`不能同时存在, 也不能同时为空)",
+                    "type": "number"
+                }
+            }
+        },
+        "model.ExceptionEmployeeSetting": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "description": "物资列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.InventoryItem"
+                    }
+                },
+                "reasons": {
+                    "description": "异常项",
+                    "type": "array",
+                    "items": {}
+                }
+            }
+        },
         "model.ExchangeEmployeeListRes": {
             "type": "object",
             "properties": {
@@ -7133,6 +7227,10 @@
                 "name": {
                     "description": "物资名称",
                     "type": "string"
+                },
+                "voltage": {
+                    "description": "电压型号",
+                    "type": "number"
                 }
             }
         },

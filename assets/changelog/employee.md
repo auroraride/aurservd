@@ -5,6 +5,7 @@
 - [E2009 物资概览](http://localhost:5533/docs#tag/E/operation/EmployeeStockOverview)
 - [E2010 电池出入库详情](http://localhost:5533/docs#tag/E/operation/EmployeeStockList)
 - [E3001 物资异常配置](http://localhost:5533/docs#tag/E/operation/EmployeeExceptionSetting)
+- [E3002 异常上报](http://localhost:5533/docs#tag/E/operation/EmployeeExceptionCreate)
 
 
 

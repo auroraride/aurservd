@@ -23,6 +23,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -711,6 +712,46 @@ func (c *EnterpriseStationClient) GetNotDeleted(ctx context.Context, id uint64) 
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *EnterpriseStationClient) GetNotDeletedX(ctx context.Context, id uint64) *EnterpriseStation {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for Exception.
+func (c *ExceptionClient) SoftDelete() *ExceptionUpdate {
+	mutation := newExceptionMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &ExceptionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *ExceptionClient) SoftDeleteOne(e *Exception) *ExceptionUpdateOne {
+	mutation := newExceptionMutation(c.config, OpUpdateOne, withException(e))
+	mutation.SetDeletedAt(time.Now())
+	return &ExceptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *ExceptionClient) SoftDeleteOneID(id uint64) *ExceptionUpdateOne {
+	mutation := newExceptionMutation(c.config, OpUpdateOne, withExceptionID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &ExceptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for Exception.
+func (c *ExceptionClient) QueryNotDeleted() *ExceptionQuery {
+	return c.Query().Where(exception.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a Exception not deleted entity by its id.
+func (c *ExceptionClient) GetNotDeleted(ctx context.Context, id uint64) (*Exception, error) {
+	return c.Query().Where(exception.ID(id), exception.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *ExceptionClient) GetNotDeletedX(ctx context.Context, id uint64) *Exception {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

@@ -14,6 +14,11 @@ func loadEmployeeRoutes() {
     g := root.Group("employee/v1")
 
     g.Use(middleware.EmployeeMiddleware())
+
+    // 打卡考勤
+    g.POST("/attendance/precheck", eapi.Attendance.Precheck)
+    g.POST("/attendance", eapi.Attendance.Create)
+
     g.POST("/signin", eapi.Employee.Signin)
     g.GET("/qrcode", eapi.Employee.Qrcode)
     g.GET("/profile", eapi.Employee.Profile)
@@ -30,10 +35,7 @@ func loadEmployeeRoutes() {
     g.GET("/stock/overview", eapi.Stock.Overview, middleware.EmployeeDutyMiddleware())
     g.GET("/stock", eapi.Stock.List, middleware.EmployeeDutyMiddleware())
 
-    // 打卡考勤
-    g.POST("/attendance/precheck", eapi.Attendance.Precheck)
-    g.POST("/attendance", eapi.Attendance.Create)
-
     // 物资
-    g.GET("/exception/setting", eapi.Exception.Setting)
+    g.GET("/exception/setting", eapi.Exception.Setting, middleware.EmployeeDutyMiddleware())
+    g.POST("/exception", eapi.Exception.Create, middleware.EmployeeDutyMiddleware())
 }

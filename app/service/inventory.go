@@ -96,6 +96,7 @@ func (s *inventoryService) ListInventory(req model.InventoryListReq) (items []mo
         items = append(items, model.InventoryItem{
             Name:    bs.VoltageName(v),
             Battery: true,
+            Voltage: &v,
         })
     }
     for _, item := range s.List(req) {

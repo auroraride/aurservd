@@ -57,6 +57,9 @@ type EnterpriseStatement func(*sql.Selector)
 // EnterpriseStation is the predicate function for enterprisestation builders.
 type EnterpriseStation func(*sql.Selector)
 
+// Exception is the predicate function for exception builders.
+type Exception func(*sql.Selector)
+
 // Exchange is the predicate function for exchange builders.
 type Exchange func(*sql.Selector)
 

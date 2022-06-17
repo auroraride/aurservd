@@ -1192,6 +1192,47 @@ definitions:
     required:
     - name
     type: object
+  model.ExceptionEmployeeReq:
+    properties:
+      attachments:
+        description: 附件, *注意, 门店端的附件需要以employee/开头*
+        items:
+          type: string
+        maxItems: 3
+        type: array
+      description:
+        description: '描述 '
+        type: string
+      name:
+        description: 物资名称 (非电池物资, 和`voltage`不能同时存在, 也不能同时为空), 物资列表查看接口 `E3001 物资异常配置`
+        type: string
+      num:
+        description: '异常数量 '
+        minimum: 1
+        type: integer
+      reason:
+        description: 异常原因 异常原因查看接口 `E3001 物资异常配置`
+        type: string
+      voltage:
+        description: 电压型号 (电池, 和`name`不能同时存在, 也不能同时为空)
+        type: number
+    required:
+    - description
+    - num
+    - reason
+    type: object
+  model.ExceptionEmployeeSetting:
+    properties:
+      items:
+        description: 物资列表
+        items:
+          $ref: '#/definitions/model.InventoryItem'
+        type: array
+      reasons:
+        description: 异常项
+        items: {}
+        type: array
+    type: object
   model.ExchangeEmployeeListRes:
     properties:
       enterprise:
@@ -1286,6 +1327,9 @@ definitions:
       name:
         description: 物资名称
         type: string
+      voltage:
+        description: 电压型号
+        type: number
     type: object
   model.ItemListRes:
     properties:
@@ -2789,6 +2833,33 @@ paths:
       summary: E2006 退租
       tags:
       - '[E]店员接口'
+  /employee/v1/exception:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeExceptionCreate
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 异常上报请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ExceptionEmployeeReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: E3002 异常上报
+      tags:
+      - '[E]店员接口'
   /employee/v1/exception/setting:
     get:
       consumes:
@@ -2806,9 +2877,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            items:
-              $ref: '#/definitions/model.InventoryItem'
-            type: array
+            $ref: '#/definitions/model.ExceptionEmployeeSetting'
       summary: E3001 物资异常配置
       tags:
       - '[E]店员接口'

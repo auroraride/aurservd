@@ -230,6 +230,19 @@ func (f EnterpriseStationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.
 	return f(ctx, mv)
 }
 
+// The ExceptionFunc type is an adapter to allow the use of ordinary
+// function as Exception mutator.
+type ExceptionFunc func(context.Context, *ent.ExceptionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ExceptionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ExceptionMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ExceptionMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The ExchangeFunc type is an adapter to allow the use of ordinary
 // function as Exchange mutator.
 type ExchangeFunc func(context.Context, *ent.ExchangeMutation) (ent.Value, error)

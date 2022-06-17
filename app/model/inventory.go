@@ -23,6 +23,7 @@ type InventoryListReq struct {
 }
 
 type InventoryItem struct {
-    Name    string `json:"name"`    // 物资名称
-    Battery bool   `json:"battery"` // 是否电池
+    Name    string   `json:"name"`              // 物资名称
+    Battery bool     `json:"battery"`           // 是否电池
+    Voltage *float64 `json:"voltage,omitempty"` // 电压型号
 }

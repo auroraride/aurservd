@@ -8,7 +8,9 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/pkg/snag"
 )
 
 type exceptionService struct {
@@ -16,11 +18,13 @@ type exceptionService struct {
     modifier *model.Modifier
     rider    *ent.Rider
     employee *ent.Employee
+    orm      *ent.ExceptionClient
 }
 
 func NewException() *exceptionService {
     return &exceptionService{
         ctx: context.Background(),
+        orm: ar.Ent.Exception,
     }
 }
 
@@ -55,4 +59,32 @@ func (s *exceptionService) Setting() model.ExceptionEmployeeSetting {
         }),
         Reasons: set.([]interface{}),
     }
+}
+
+func (s *exceptionService) Create(req *model.ExceptionEmployeeReq) {
+    if (req.Voltage == nil && req.Name == nil) || (req.Voltage != nil && req.Name != nil) {
+        snag.Panic("请求参数错误")
+    }
+
+    if s.employee.Edges.Store.CityID == nil {
+        snag.Panic("门店所在城市异常")
+    }
+
+    ec := s.orm.Create().
+        SetEmployee(s.employee).
+        SetStore(s.employee.Edges.Store).
+        SetCityID(*s.employee.Edges.Store.CityID).
+        SetNum(req.Num).
+        SetReason(req.Reason).
+        SetDescription(req.Description).
+        SetAttachments(req.Attachments)
+
+    if req.Name != nil {
+        ec.SetName(*req.Name)
+    }
+    if req.Voltage != nil {
+        ec.SetName(NewBattery().VoltageName(*req.Voltage)).SetVoltage(*req.Voltage)
+    }
+
+    ec.SaveX(s.ctx)
 }

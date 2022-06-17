@@ -170,6 +170,13 @@ func (c *EnterpriseStationClient) ModifyOne(old *EnterpriseStation, data any) *E
 	return EntitySetAttributes[EnterpriseStationUpdateOne, EnterpriseStation](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for Exception.
+func (c *ExceptionClient) ModifyOne(old *Exception, data any) *ExceptionUpdateOne {
+	mutation := newExceptionMutation(c.config, OpUpdateOne, withException(old))
+	up := &ExceptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[ExceptionUpdateOne, Exception](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Exchange.
 func (c *ExchangeClient) ModifyOne(old *Exchange, data any) *ExchangeUpdateOne {
 	mutation := newExchangeMutation(c.config, OpUpdateOne, withExchange(old))

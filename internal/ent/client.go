@@ -26,6 +26,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
+	"github.com/auroraride/aurservd/internal/ent/exception"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/inventory"
 	"github.com/auroraride/aurservd/internal/ent/manager"
@@ -85,6 +86,8 @@ type Client struct {
 	EnterpriseStatement *EnterpriseStatementClient
 	// EnterpriseStation is the client for interacting with the EnterpriseStation builders.
 	EnterpriseStation *EnterpriseStationClient
+	// Exception is the client for interacting with the Exception builders.
+	Exception *ExceptionClient
 	// Exchange is the client for interacting with the Exchange builders.
 	Exchange *ExchangeClient
 	// Inventory is the client for interacting with the Inventory builders.
@@ -143,6 +146,7 @@ func (c *Client) init() {
 	c.EnterprisePrice = NewEnterprisePriceClient(c.config)
 	c.EnterpriseStatement = NewEnterpriseStatementClient(c.config)
 	c.EnterpriseStation = NewEnterpriseStationClient(c.config)
+	c.Exception = NewExceptionClient(c.config)
 	c.Exchange = NewExchangeClient(c.config)
 	c.Inventory = NewInventoryClient(c.config)
 	c.Manager = NewManagerClient(c.config)
@@ -207,6 +211,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		EnterprisePrice:      NewEnterprisePriceClient(cfg),
 		EnterpriseStatement:  NewEnterpriseStatementClient(cfg),
 		EnterpriseStation:    NewEnterpriseStationClient(cfg),
+		Exception:            NewExceptionClient(cfg),
 		Exchange:             NewExchangeClient(cfg),
 		Inventory:            NewInventoryClient(cfg),
 		Manager:              NewManagerClient(cfg),
@@ -257,6 +262,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		EnterprisePrice:      NewEnterprisePriceClient(cfg),
 		EnterpriseStatement:  NewEnterpriseStatementClient(cfg),
 		EnterpriseStation:    NewEnterpriseStationClient(cfg),
+		Exception:            NewExceptionClient(cfg),
 		Exchange:             NewExchangeClient(cfg),
 		Inventory:            NewInventoryClient(cfg),
 		Manager:              NewManagerClient(cfg),
@@ -317,6 +323,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.EnterprisePrice.Use(hooks...)
 	c.EnterpriseStatement.Use(hooks...)
 	c.EnterpriseStation.Use(hooks...)
+	c.Exception.Use(hooks...)
 	c.Exchange.Use(hooks...)
 	c.Inventory.Use(hooks...)
 	c.Manager.Use(hooks...)
@@ -2678,6 +2685,145 @@ func (c *EnterpriseStationClient) QueryEnterprise(es *EnterpriseStation) *Enterp
 func (c *EnterpriseStationClient) Hooks() []Hook {
 	hooks := c.hooks.EnterpriseStation
 	return append(hooks[:len(hooks):len(hooks)], enterprisestation.Hooks[:]...)
+}
+
+// ExceptionClient is a client for the Exception schema.
+type ExceptionClient struct {
+	config
+}
+
+// NewExceptionClient returns a client for the Exception from the given config.
+func NewExceptionClient(c config) *ExceptionClient {
+	return &ExceptionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `exception.Hooks(f(g(h())))`.
+func (c *ExceptionClient) Use(hooks ...Hook) {
+	c.hooks.Exception = append(c.hooks.Exception, hooks...)
+}
+
+// Create returns a create builder for Exception.
+func (c *ExceptionClient) Create() *ExceptionCreate {
+	mutation := newExceptionMutation(c.config, OpCreate)
+	return &ExceptionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Exception entities.
+func (c *ExceptionClient) CreateBulk(builders ...*ExceptionCreate) *ExceptionCreateBulk {
+	return &ExceptionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Exception.
+func (c *ExceptionClient) Update() *ExceptionUpdate {
+	mutation := newExceptionMutation(c.config, OpUpdate)
+	return &ExceptionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ExceptionClient) UpdateOne(e *Exception) *ExceptionUpdateOne {
+	mutation := newExceptionMutation(c.config, OpUpdateOne, withException(e))
+	return &ExceptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ExceptionClient) UpdateOneID(id uint64) *ExceptionUpdateOne {
+	mutation := newExceptionMutation(c.config, OpUpdateOne, withExceptionID(id))
+	return &ExceptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Exception.
+func (c *ExceptionClient) Delete() *ExceptionDelete {
+	mutation := newExceptionMutation(c.config, OpDelete)
+	return &ExceptionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ExceptionClient) DeleteOne(e *Exception) *ExceptionDeleteOne {
+	return c.DeleteOneID(e.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ExceptionClient) DeleteOneID(id uint64) *ExceptionDeleteOne {
+	builder := c.Delete().Where(exception.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ExceptionDeleteOne{builder}
+}
+
+// Query returns a query builder for Exception.
+func (c *ExceptionClient) Query() *ExceptionQuery {
+	return &ExceptionQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Exception entity by its id.
+func (c *ExceptionClient) Get(ctx context.Context, id uint64) (*Exception, error) {
+	return c.Query().Where(exception.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ExceptionClient) GetX(ctx context.Context, id uint64) *Exception {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCity queries the city edge of a Exception.
+func (c *ExceptionClient) QueryCity(e *Exception) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(exception.Table, exception.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, exception.CityTable, exception.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEmployee queries the employee edge of a Exception.
+func (c *ExceptionClient) QueryEmployee(e *Exception) *EmployeeQuery {
+	query := &EmployeeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(exception.Table, exception.FieldID, id),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, exception.EmployeeTable, exception.EmployeeColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStore queries the store edge of a Exception.
+func (c *ExceptionClient) QueryStore(e *Exception) *StoreQuery {
+	query := &StoreQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(exception.Table, exception.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, exception.StoreTable, exception.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ExceptionClient) Hooks() []Hook {
+	hooks := c.hooks.Exception
+	return append(hooks[:len(hooks):len(hooks)], exception.Hooks[:]...)
 }
 
 // ExchangeClient is a client for the Exchange schema.
