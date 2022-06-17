@@ -25,9 +25,10 @@ type EnterpriseRider struct {
 }
 
 type EnterpriseRiderListReq struct {
-    EnterpriseID uint64  `json:"enterpriseId" validate:"required" query:"enterpriseId" trans:"企业ID"`
-    Keyword      *string `json:"keyword"` // 搜索关键词
-    Start        *string `json:"start"`   // 使用开始时间
-    End          *string `json:"end"`     // 使用结束时间
     PaginationReq
+
+    EnterpriseID uint64  `json:"enterpriseId" validate:"required" query:"enterpriseId" trans:"企业ID"`
+    Keyword      *string `json:"keyword" query:"keyword"` // 搜索关键词
+    Start        *string `json:"start" query:"start"`     // 使用开始时间
+    End          *string `json:"end" query:"end"`         // 使用结束时间
 }

@@ -2922,6 +2922,55 @@ paths:
       summary: E1001 登录
       tags:
       - '[E]店员接口'
+  /employee/v1/stock:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeStockList
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 业绩统计结束时间
+        in: query
+        name: end
+        type: string
+      - description: 查询店员电话或姓名
+        in: query
+        name: name
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 业绩统计开始时间
+        in: query
+        name: start
+        type: string
+      - description: 门店ID
+        in: query
+        name: storeId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: E2010 电池出入库详情
+      tags:
+      - '[E]店员接口'
   /employee/v1/stock/overview:
     get:
       consumes:

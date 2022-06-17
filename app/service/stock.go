@@ -406,3 +406,58 @@ func (s *stockService) EmployeeOverview() (res model.StockEmployeeOverview) {
 
     return
 }
+
+// listBasicQuery 列表基础查询语句
+func (s *stockService) listBasicQuery(req *model.StockEmployeeListReq) *ent.StockQuery {
+    tt := tools.NewTime()
+
+    q := s.orm.QueryNotDeleted().
+        WithRider(func(rq *ent.RiderQuery) {
+            rq.WithPerson()
+        })
+
+    if req.Outbound {
+        q.Where(stock.NumLT(0))
+    } else {
+        q.Where(stock.NumGT(0))
+    }
+
+    if req.Start != nil {
+        q.Where(stock.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
+    }
+
+    if req.End != nil {
+        q.Where(stock.CreatedAtLTE(tt.ParseDateStringX(*req.End)))
+    }
+
+    return q
+}
+
+func (s *stockService) EmployeeList(req *model.StockEmployeeListReq) *model.PaginationRes {
+    st := s.employee.Edges.Store
+    if st == nil {
+        snag.Panic("未上班")
+    }
+    q := s.listBasicQuery(req).Where(stock.StoreID(st.ID))
+    return model.ParsePaginationResponse(
+        q,
+        req.PaginationReq,
+        func(item *ent.Stock) model.StockEmployeeListRes {
+            r := item.Edges.Rider
+            res := model.StockEmployeeListRes{
+                ID:      item.ID,
+                Type:    item.Type,
+                Voltage: item.Voltage,
+                Num:     item.Num,
+                Time:    item.CreatedAt.Format(carbon.DateTimeLayout),
+            }
+            if r != nil {
+                res.Phone = r.Phone
+                if p := r.Edges.Person; p != nil {
+                    res.Name = p.Name
+                }
+            }
+            return res
+        },
+    )
+}

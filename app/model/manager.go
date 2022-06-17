@@ -27,7 +27,7 @@ type ManagerCreateReq struct {
 
 type ManagerListReq struct {
     PaginationReq
-    Keyword *string `json:"keyword"` // 搜索关键词 姓名/手机号
+    Keyword *string `json:"keyword" query:"keyword"` // 搜索关键词 姓名/手机号
 }
 
 type Role struct {

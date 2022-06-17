@@ -69,9 +69,9 @@ type OrderListReq struct {
 type OrderEmployeeListReq struct {
     PaginationReq
 
-    Aimed   uint8   `json:"aimed"`   // 筛选对象 0:全部 1:个签 2:团签
-    Start   *string `json:"start"`   // 筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01
-    End     *string `json:"end"`     // 筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01
-    Keyword *string `json:"keyword"` // 筛选骑手姓名或电话
-    Type    *string `json:"type"`    // 筛选订单类别
+    Aimed   uint8   `json:"aimed" query:"aimed"`     // 筛选对象 0:全部 1:个签 2:团签
+    Start   *string `json:"start" query:"start"`     // 筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01
+    End     *string `json:"end" query:"end"`         // 筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01
+    Keyword *string `json:"keyword" query:"keyword"` // 筛选骑手姓名或电话
+    Type    *string `json:"type" query:"type"`       // 筛选订单类别
 }

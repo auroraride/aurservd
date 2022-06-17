@@ -28,6 +28,7 @@ func loadEmployeeRoutes() {
     g.GET("/business", eapi.Business.List)
     g.GET("/exchange", eapi.Exchange.List)
     g.GET("/stock/overview", eapi.Stock.Overview, middleware.EmployeeDutyMiddleware())
+    g.GET("/stock", eapi.Stock.List, middleware.EmployeeDutyMiddleware())
 
     // 打卡考勤
     g.POST("/attendance/precheck", eapi.Attendance.Precheck)

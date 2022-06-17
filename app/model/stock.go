@@ -91,3 +91,21 @@ type StockEmployeeOverview struct {
     Batteries []*StockEmployeeOverviewBattery  `json:"batteries"` // 电池
     Materials []*StockEmployeeOverviewMaterial `json:"materials"` // 非电池物资
 }
+
+type StockEmployeeListReq struct {
+    PaginationReq
+
+    Start    *string `json:"start" query:"start"`       // 筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01
+    End      *string `json:"end" query:"end"`           // 筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01
+    Outbound bool    `json:"outbound" query:"outbound"` // 是否筛选出库, false(默认):入库 true:出库
+}
+
+type StockEmployeeListRes struct {
+    ID      uint64   `json:"id"`
+    Type    uint8    `json:"type"`            // 出入库类型 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租
+    Name    string   `json:"name,omitempty"`  // 骑手姓名, 平台调拨此字段不存在
+    Phone   string   `json:"phone,omitempty"` // 骑手电话, 平台调拨此字段不存在
+    Num     int      `json:"num"`             // 数量, 正数为入库, 负数为出库
+    Voltage *float64 `json:"voltage"`         // 电压
+    Time    string   `json:"time"`            // 时间
+}

@@ -26,11 +26,11 @@ type EmployeeModifyReq struct {
 
 type EmployeeListReq struct {
     PaginationReq
-    StoreID *uint64 `json:"storeId"` // 门店ID
-    Keyword *string `json:"name"`    // 查询店员电话或姓名
-    CityID  *uint64 `json:"cityId"`  // 城市ID
-    Start   *string `json:"start"`   // 业绩统计开始时间
-    End     *string `json:"end"`     // 业绩统计结束时间
+    StoreID *uint64 `json:"storeId" query:"storeId"` // 门店ID
+    Keyword *string `json:"name" query:"keyword"`    // 查询店员电话或姓名
+    CityID  *uint64 `json:"cityId" query:"cityId"`   // 城市ID
+    Start   *string `json:"start" query:"start"`     // 业绩统计开始时间
+    End     *string `json:"end" query:"end"`         // 业绩统计结束时间
 }
 
 type EmployeeListRes struct {

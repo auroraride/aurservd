@@ -7,6 +7,7 @@ package eapi
 
 import (
     "github.com/auroraride/aurservd/app"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
     "github.com/labstack/echo/v4"
 )
@@ -27,4 +28,21 @@ var Stock = new(stock)
 func (*stock) Overview(c echo.Context) (err error) {
     ctx := app.ContextX[app.EmployeeContext](c)
     return ctx.SendResponse(service.NewStockWithEmployee(ctx.Employee).EmployeeOverview())
+}
+
+// List
+// @ID           EmployeeStockList
+// @Router       /employee/v1/stock [GET]
+// @Summary      E2010 电池出入库详情
+// @Tags         [E]店员接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Employee-Token  header  string  true  "店员校验token"
+// @Param        query  query   model.EmployeeListReq  true  "电池出入库筛选请求"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*stock) List(c echo.Context) (err error) {
+    ctx, req := app.EmployeeContextAndBinding[model.StockEmployeeListReq](c)
+    return ctx.SendResponse(
+        service.NewStockWithEmployee(ctx.Employee).EmployeeList(req),
+    )
 }
