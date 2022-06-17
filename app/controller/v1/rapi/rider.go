@@ -28,8 +28,8 @@ type rider struct {
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
-// @Param        body  body  model.RiderSignupReq  true  "desc"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Param        body  body     model.RiderSignupReq  true  "desc"
+// @Success      200  {object}  model.RiderSigninRes  "请求成功"
 func (*rider) Signin(c echo.Context) (err error) {
     ctx, req := app.ContextBinding[model.RiderSignupReq](c)
 

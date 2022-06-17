@@ -39,7 +39,7 @@ func (*stock) Overview(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Employee-Token  header  string  true  "店员校验token"
 // @Param        query  query   model.EmployeeListReq  true  "电池出入库筛选请求"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Success      200  {object}  model.StockEmployeeListRes{items=[]model.StockEmployeeListResItem}  "请求成功"
 func (*stock) List(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.StockEmployeeListReq](c)
     return ctx.SendResponse(

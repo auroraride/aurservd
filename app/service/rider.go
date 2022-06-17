@@ -83,6 +83,9 @@ func (s *riderService) IsAuthed(u *ent.Rider) bool {
 
 // IsNewDevice 检查是否是新设备
 func (s *riderService) IsNewDevice(u *ent.Rider, device *model.Device) bool {
+    if ar.Config.App.Debug.Phone[u.Phone] {
+        return false
+    }
     return u.LastDevice != device.Serial || u.IsNewDevice
 }
 
@@ -99,8 +102,6 @@ func (s *riderService) IsBlocked(u *ent.Rider) bool {
 
 // Signin 骑手登录
 func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (res *model.RiderSigninRes, err error) {
-    debugPhones := ar.Config.App.Debug.Phone
-
     ctx := context.Background()
     orm := ar.Ent.Rider
     var u *ent.Rider
@@ -133,7 +134,7 @@ func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (
     }
 
     // 更新设备
-    if !debugPhones[req.Phone] && u.LastDevice != device.Serial {
+    if u.LastDevice != device.Serial {
         s.SetNewDevice(u, device)
     }
 

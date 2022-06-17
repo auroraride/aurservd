@@ -168,16 +168,18 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
     // 如果是未激活则查询支付信息
     if res.Status == model.SubscribeStatusInactive {
         o := sub.Edges.InitialOrder
-        res.Order = &model.SubscribeOrderInfo{
-            ID:     o.ID,
-            Status: o.Status,
-            PayAt:  o.CreatedAt.Format(carbon.DateTimeLayout),
-            Payway: o.Payway,
-            Amount: o.Amount,
-            Total:  o.Total,
-        }
-        if len(o.Edges.Children) > 0 {
-            res.Order.Deposit = o.Edges.Children[0].Amount
+        if o != nil {
+            res.Order = &model.SubscribeOrderInfo{
+                ID:     o.ID,
+                Status: o.Status,
+                PayAt:  o.CreatedAt.Format(carbon.DateTimeLayout),
+                Payway: o.Payway,
+                Amount: o.Amount,
+                Total:  o.Total,
+            }
+            if len(o.Edges.Children) > 0 {
+                res.Order.Deposit = o.Edges.Children[0].Amount
+            }
         }
     }
 

@@ -2146,6 +2146,41 @@ definitions:
       status:
         type: boolean
     type: object
+  model.StockEmployeeListRes:
+    properties:
+      items:
+        description: 返回数据
+      pagination:
+        allOf:
+        - $ref: '#/definitions/model.Pagination'
+        description: 分页属性
+      today:
+        description: 今日出库/入库数量, 仅第一页请求时会返回
+        type: integer
+    type: object
+  model.StockEmployeeListResItem:
+    properties:
+      id:
+        type: integer
+      name:
+        description: 骑手姓名, 平台调拨此字段不存在
+        type: string
+      num:
+        description: 数量, 正数为入库, 负数为出库(前端显示正数)
+        type: integer
+      phone:
+        description: 骑手电话, 平台调拨此字段不存在
+        type: string
+      time:
+        description: 时间
+        type: string
+      type:
+        description: 出入库类型 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租
+        type: integer
+      voltage:
+        description: 电压
+        type: number
+    type: object
   model.StockEmployeeOverview:
     properties:
       batteries:
@@ -2909,7 +2944,7 @@ paths:
       tags:
       - '[E]店员接口'
   /employee/v1/exception:
-    get:
+    post:
       consumes:
       - application/json
       operationId: EmployeeExceptionCreate
@@ -3209,7 +3244,14 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.StatusResponse'
+            allOf:
+            - $ref: '#/definitions/model.StockEmployeeListRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.StockEmployeeListResItem'
+                  type: array
+              type: object
       summary: E2010 电池出入库详情
       tags:
       - '[E]店员接口'
@@ -6191,7 +6233,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.StatusResponse'
+            $ref: '#/definitions/model.RiderSigninRes'
       summary: R1001 登录或注册
       tags:
       - '[R]骑手接口'

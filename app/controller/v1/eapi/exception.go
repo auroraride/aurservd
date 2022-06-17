@@ -34,7 +34,7 @@ func (*exception) Setting(c echo.Context) (err error) {
 
 // Create
 // @ID           EmployeeExceptionCreate
-// @Router       /employee/v1/exception [GET]
+// @Router       /employee/v1/exception [POST]
 // @Summary      E3002 异常上报
 // @Tags         [E]店员接口
 // @Accept       json
