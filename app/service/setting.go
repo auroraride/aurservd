@@ -14,6 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/setting"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
+    jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "strconv"
     "strings"
@@ -101,4 +102,29 @@ func (s *settingService) Modify(req *model.SettingReq) {
         SaveX(s.ctx)
 
     s.CacheSettings(sm)
+}
+
+// GetSetting 获取设置
+func (s *settingService) GetSetting(key string) (v any) {
+    d, ok := model.Settings[key]
+    if !ok {
+        snag.Panic("未找到设置")
+    }
+
+    set, err := s.orm.Query().Where(setting.Key(key)).First(s.ctx)
+    if err != nil {
+        log.Error(err)
+        snag.Panic("未找到设置")
+    }
+
+    if set == nil {
+        return d.Default
+    }
+
+    err = jsoniter.Unmarshal([]byte(set.Content), &d.Default)
+    if err != nil {
+        log.Error(err)
+    }
+
+    return d.Default
 }

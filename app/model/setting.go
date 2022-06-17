@@ -13,15 +13,14 @@ const (
     SettingRescueFee    = "RESCUE_FEE"    // 救援费用
     SettingOverdue      = "OVERDUE"       // 逾期通知
     SettingBatteryFull  = "BATTERY_FULL"  // 满电电量
+    SettingException    = "EXCEPTION"     // 物资异常
 )
 
 type SettingValueConvert func(content string) any
 
 type SettingItem struct {
-    Desc  string // 描述
-    Value string // 值
-
-    Default any // 默认值
+    Desc    string // 描述
+    Default any    // 默认值
 }
 
 type SettingOverdueNotice struct {
@@ -53,6 +52,10 @@ var Settings = map[string]SettingItem{
     SettingCabinetFault: {
         Desc:    "电柜故障",
         Default: []string{},
+    },
+    SettingException: {
+        Desc:    "物资异常",
+        Default: []string{"丢失", "故障"},
     },
     SettingRescueReason: {
         Desc:    "救援原因",

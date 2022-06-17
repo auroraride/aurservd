@@ -33,4 +33,7 @@ func loadEmployeeRoutes() {
     // 打卡考勤
     g.POST("/attendance/precheck", eapi.Attendance.Precheck)
     g.POST("/attendance", eapi.Attendance.Create)
+
+    // 物资
+    g.GET("/exception/setting", eapi.Exception.Setting)
 }

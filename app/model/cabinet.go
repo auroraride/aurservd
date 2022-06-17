@@ -58,7 +58,7 @@ type Cabinet struct {
     Name     string       `json:"name" validate:"required" trans:"电柜名称"`
     Doors    uint         `json:"doors"` // 柜门数量
     Remark   *string      `json:"remark" trans:"备注"`
-    Health   *bool        `json:"health"` // 在线状态 0离线 1在线 2故障
+    Health   *uint8       `json:"health"` // 在线状态 0离线 1在线 2故障
 }
 
 // CabinetCreateReq 电柜创建请求

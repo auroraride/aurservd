@@ -73,7 +73,7 @@ func (*cabinet) ProcessStatus(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        body  body  model.CabinetFaultReportReq  true  "desc"
+// @Param        body  body     model.CabinetFaultReportReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Report(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.CabinetFaultReportReq](c)

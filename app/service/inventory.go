@@ -89,7 +89,7 @@ func (s *inventoryService) Delete(req *model.InventoryDelete) {
 }
 
 // ListInventory 获取需物资列表
-func (s *inventoryService) ListInventory(model.InventoryListReq) (items []model.InventoryItem) {
+func (s *inventoryService) ListInventory(req model.InventoryListReq) (items []model.InventoryItem) {
     // 电池型号列表
     bs := NewBattery()
     for _, v := range bs.ListVoltages() {
@@ -98,7 +98,7 @@ func (s *inventoryService) ListInventory(model.InventoryListReq) (items []model.
             Battery: true,
         })
     }
-    for _, item := range s.List() {
+    for _, item := range s.List(req) {
         if item.Count {
             items = append(items, model.InventoryItem{Name: item.Name})
         }

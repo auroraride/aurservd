@@ -454,6 +454,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/employee/v1/exception/setting": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E3001 物资异常配置",
+                "operationId": "EmployeeExceptionSetting",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.InventoryItem"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/employee/v1/exchange": {
             "get": {
                 "consumes": [
@@ -5873,7 +5908,7 @@ const docTemplate = `{
                 },
                 "health": {
                     "description": "在线状态 0离线 1在线 2故障",
-                    "type": "boolean"
+                    "type": "integer"
                 },
                 "models": {
                     "description": "电池型号 ",
@@ -5950,7 +5985,7 @@ const docTemplate = `{
                 },
                 "health": {
                     "description": "在线状态 0离线 1在线 2故障",
-                    "type": "boolean"
+                    "type": "integer"
                 },
                 "id": {
                     "description": "电柜ID",
@@ -6190,7 +6225,7 @@ const docTemplate = `{
                 },
                 "health": {
                     "description": "在线状态 0离线 1在线 2故障",
-                    "type": "boolean"
+                    "type": "integer"
                 },
                 "id": {
                     "description": "电柜ID",

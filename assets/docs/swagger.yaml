@@ -410,7 +410,7 @@ definitions:
         type: integer
       health:
         description: 在线状态 0离线 1在线 2故障
-        type: boolean
+        type: integer
       models:
         description: '电池型号 '
         items:
@@ -466,7 +466,7 @@ definitions:
         type: integer
       health:
         description: 在线状态 0离线 1在线 2故障
-        type: boolean
+        type: integer
       id:
         description: 电柜ID
         type: integer
@@ -634,7 +634,7 @@ definitions:
         type: integer
       health:
         description: 在线状态 0离线 1在线 2故障
-        type: boolean
+        type: integer
       id:
         description: 电柜ID
         type: integer
@@ -2787,6 +2787,29 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: E2006 退租
+      tags:
+      - '[E]店员接口'
+  /employee/v1/exception/setting:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeExceptionSetting
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.InventoryItem'
+            type: array
+      summary: E3001 物资异常配置
       tags:
       - '[E]店员接口'
   /employee/v1/exchange:
