@@ -14,6 +14,14 @@ type PaginationReq struct {
     PageSize int `json:"pageSize,omitempty" query:"pageSize"` // 每页数据, 默认20
 }
 
+func PaginationReqFromPointer(req *PaginationReq) PaginationReq {
+    var pq PaginationReq
+    if req != nil {
+        pq = *req
+    }
+    return pq
+}
+
 type Pagination struct {
     Current int `json:"current"` // 当前页
     Pages   int `json:"pages"`   // 总页数

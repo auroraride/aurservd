@@ -57,13 +57,13 @@ func (*order) Refund(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        query  query  model.PaginationReq  true  "desc"
+// @Param        query  query   model.PaginationReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 // @Success      200  {object}  model.PaginationRes{items=[]model.RiderOrder}  "请求成功"
 func (*order) List(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.PaginationReq](c)
     return ctx.SendResponse(
-        service.NewRiderOrder().List(ctx.Rider.ID, req),
+        service.NewRiderOrder().List(ctx.Rider.ID, model.PaginationReqFromPointer(req)),
     )
 }
 

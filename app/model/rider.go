@@ -162,3 +162,9 @@ type RiderLogReq struct {
 type RiderPhoneSearchReq struct {
     Phone string `json:"phone" validate:"required" trans:"手机号" query:"phone"` // 精准匹配
 }
+
+type RiderExchangeReq struct {
+    PaginationReq
+
+    RiderID uint64 `json:"riderId" query:"RiderId" trans:"骑手ID"`
+}

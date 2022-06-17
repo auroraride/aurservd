@@ -412,6 +412,7 @@ func (s *riderMgrService) QueryPhone(phone string) model.RiderEmployeeSearchRes 
     subd, _ := NewSubscribe().RecentDetail(r.ID)
 
     res := model.RiderEmployeeSearchRes{
+        ID:       r.ID,
         Phone:    r.Phone,
         Overview: NewExchange().Overview(r.ID),
         Status:   NewRider().Status(r),

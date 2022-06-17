@@ -44,7 +44,7 @@ func NewRiderOrderWithModifier(m *model.Modifier) *riderOrderService {
 }
 
 // List 分页获取骑手订单
-func (s *riderOrderService) List(riderID uint64, req *model.PaginationReq) *model.PaginationRes {
+func (s *riderOrderService) List(riderID uint64, req model.PaginationReq) *model.PaginationRes {
     if req.PageSize > 10 {
         req.PageSize = 10
     }
@@ -66,7 +66,7 @@ func (s *riderOrderService) List(riderID uint64, req *model.PaginationReq) *mode
         })
     return model.ParsePaginationResponse[model.RiderOrder, ent.Order](
         q,
-        *req,
+        req,
         s.Detail,
     )
 }

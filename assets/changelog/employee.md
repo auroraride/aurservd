@@ -7,7 +7,7 @@
 - [E3001 物资异常配置](http://localhost:5533/docs#tag/E/operation/EmployeeExceptionSetting)
 - [E3002 异常上报](http://localhost:5533/docs#tag/E/operation/EmployeeExceptionCreate)
 - [E1007 获取骑手信息](http://localhost:5533/docs#tag/E/operation/EmployeeRiderDetail)
-- 
+- [E4002 骑手换电记录](http://localhost:5533/docs#tag/E/operation/EmployeeRiderExchange)
 
 
 

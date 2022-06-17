@@ -1258,6 +1258,15 @@ definitions:
         description: 换电型号
         type: number
     type: object
+  model.ExchangeLogBinInfo:
+    properties:
+      emptyIndex:
+        description: 空电仓位
+        type: integer
+      fullIndex:
+        description: 满电仓位
+        type: integer
+    type: object
   model.ExchangeOverview:
     properties:
       days:
@@ -1266,6 +1275,31 @@ definitions:
       times:
         description: 换电次数
         type: integer
+    type: object
+  model.ExchangeRiderListRes:
+    properties:
+      binInfo:
+        allOf:
+        - $ref: '#/definitions/model.ExchangeLogBinInfo'
+        description: 仓位信息
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      id:
+        type: integer
+      name:
+        description: 门店或电柜名称
+        type: string
+      success:
+        description: 是否成功
+        type: boolean
+      time:
+        description: 换电时间
+        type: string
+      type:
+        description: 门店或电柜
+        type: string
     type: object
   model.ExchangeStoreReq:
     properties:
@@ -1768,6 +1802,8 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.EnterpriseBasic'
         description: 团签企业, 个签无此字段
+      id:
+        type: integer
       name:
         description: 骑手姓名
         type: string
@@ -3056,6 +3092,46 @@ paths:
           schema:
             $ref: '#/definitions/model.RiderEmployeeSearchRes'
       summary: E4001 获取骑手信息
+      tags:
+      - '[E]店员接口'
+  /employee/v1/rider/exchange:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeRiderExchange
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: '骑手ID '
+        in: query
+        name: riderId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.ExchangeRiderListRes'
+                  type: array
+              type: object
+      summary: E4002 骑手换电记录
       tags:
       - '[E]店员接口'
   /employee/v1/signin:
@@ -5826,13 +5902,28 @@ paths:
         name: X-Rider-Token
         required: true
         type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
       produces:
       - application/json
       responses:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.StatusResponse'
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.ExchangeRiderListRes'
+                  type: array
+              type: object
       summary: R4007 换电记录
       tags:
       - '[R]骑手接口'
@@ -5853,7 +5944,7 @@ paths:
         "200":
           description: 请求成功
           schema:
-            $ref: '#/definitions/model.StatusResponse'
+            $ref: '#/definitions/model.ExchangeOverview'
       summary: R4006 换电概览
       tags:
       - '[R]骑手接口'

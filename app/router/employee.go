@@ -23,7 +23,6 @@ func loadEmployeeRoutes() {
     g.GET("/qrcode", eapi.Employee.Qrcode)
     g.GET("/profile", eapi.Employee.Profile)
     g.POST("/store/status", eapi.Store.Status)
-    g.GET("/rider", eapi.Rider.Detail)
 
     g.GET("/subscribe/active", eapi.Subscribe.Inactive, middleware.EmployeeDutyMiddleware())
     g.POST("/subscribe/active", eapi.Subscribe.Active, middleware.EmployeeDutyMiddleware())
@@ -40,4 +39,7 @@ func loadEmployeeRoutes() {
     g.GET("/exception/setting", eapi.Exception.Setting, middleware.EmployeeDutyMiddleware())
     g.POST("/exception", eapi.Exception.Create, middleware.EmployeeDutyMiddleware())
 
+    // 骑手
+    g.GET("/rider", eapi.Rider.Detail, middleware.EmployeeDutyMiddleware())
+    g.GET("/rider/exchange", eapi.Rider.Exchange, middleware.EmployeeDutyMiddleware())
 }

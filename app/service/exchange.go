@@ -124,11 +124,16 @@ func (s *exchangeService) Overview(riderID uint64) (res model.ExchangeOverview) 
 }
 
 // RiderList 换电记录
-func (s *exchangeService) RiderList(riderID uint64, req *model.PaginationReq) *model.PaginationRes {
-    q := s.orm.QueryNotDeleted().Where(exchange.RiderID(riderID), exchange.Success(true)).WithStore().WithCity().WithCabinet()
+func (s *exchangeService) RiderList(riderID uint64, req model.PaginationReq) *model.PaginationRes {
+    q := s.orm.QueryNotDeleted().
+        Where(exchange.RiderID(riderID), exchange.Success(true)).
+        WithStore().
+        WithCity().
+        WithCabinet().
+        Order(ent.Desc(exchange.FieldCreatedAt))
     return model.ParsePaginationResponse[model.ExchangeRiderListRes, ent.Exchange](
         q,
-        *req,
+        req,
         func(item *ent.Exchange) (res model.ExchangeRiderListRes) {
             res = model.ExchangeRiderListRes{
                 ID:      item.ID,

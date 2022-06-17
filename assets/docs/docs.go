@@ -745,6 +745,71 @@ const docTemplate = `{
                 }
             }
         },
+        "/employee/v1/rider/exchange": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E4002 骑手换电记录",
+                "operationId": "EmployeeRiderExchange",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑手ID ",
+                        "name": "riderId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.ExchangeRiderListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/employee/v1/signin": {
             "post": {
                 "consumes": [
@@ -4985,13 +5050,40 @@ const docTemplate = `{
                         "name": "X-Rider-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.ExchangeRiderListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -5023,7 +5115,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
+                            "$ref": "#/definitions/model.ExchangeOverview"
                         }
                     }
                 }
@@ -7175,6 +7267,19 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ExchangeLogBinInfo": {
+            "type": "object",
+            "properties": {
+                "emptyIndex": {
+                    "description": "空电仓位",
+                    "type": "integer"
+                },
+                "fullIndex": {
+                    "description": "满电仓位",
+                    "type": "integer"
+                }
+            }
+        },
         "model.ExchangeOverview": {
             "type": "object",
             "properties": {
@@ -7185,6 +7290,46 @@ const docTemplate = `{
                 "times": {
                     "description": "换电次数",
                     "type": "integer"
+                }
+            }
+        },
+        "model.ExchangeRiderListRes": {
+            "type": "object",
+            "properties": {
+                "binInfo": {
+                    "description": "仓位信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.ExchangeLogBinInfo"
+                        }
+                    ]
+                },
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "门店或电柜名称",
+                    "type": "string"
+                },
+                "success": {
+                    "description": "是否成功",
+                    "type": "boolean"
+                },
+                "time": {
+                    "description": "换电时间",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "门店或电柜",
+                    "type": "string"
                 }
             }
         },
@@ -7907,6 +8052,9 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.EnterpriseBasic"
                         }
                     ]
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "name": {
                     "description": "骑手姓名",

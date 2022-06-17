@@ -39,7 +39,7 @@ func (*exchange) Store(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Success      200  {object}  model.ExchangeOverview  "请求成功"
 func (*exchange) Overview(c echo.Context) (err error) {
     ctx := app.ContextX[app.RiderContext](c)
     return ctx.SendResponse(service.NewExchange().Overview(ctx.Rider.ID))
@@ -53,9 +53,9 @@ func (*exchange) Overview(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Param        query  query   model.PaginationReq  true  "分页请求参数"
+// @Success      200  {object}  model.PaginationRes{items=[]model.ExchangeRiderListRes}  "请求成功"
 func (*exchange) Log(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.PaginationReq](c)
-
-    return ctx.SendResponse(service.NewExchange().RiderList(ctx.Rider.ID, req))
+    return ctx.SendResponse(service.NewExchange().RiderList(ctx.Rider.ID, model.PaginationReqFromPointer(req)))
 }

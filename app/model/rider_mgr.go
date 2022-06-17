@@ -18,6 +18,7 @@ type RiderMgrModifyReq struct {
 }
 
 type RiderEmployeeSearchRes struct {
+    ID         uint64           `json:"id"`
     Name       string           `json:"name"`                 // 骑手姓名
     Status     uint8            `json:"status"`               // 用户状态, 优先显示状态值大的 1:正常 2:已禁用 3:黑名单
     AuthStatus PersonAuthStatus `json:"authStatus"`           // 认证状态 0:未认证 1:认证中 2:已认证 3:认证失败
