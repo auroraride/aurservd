@@ -118,6 +118,22 @@ const (
     CabinetBinDoorStatusBatteryEmpty                             // 电池未放入
 )
 
+func (bds CabinetBinDoorStatus) String() string {
+    switch bds {
+    case CabinetBinDoorStatusClose:
+        return "关闭"
+    case CabinetBinDoorStatusOpen:
+        return "开启"
+    case CabinetBinDoorStatusFail:
+        return "故障"
+    case CabinetBinDoorStatusBatteryFull:
+        return "电池未取出"
+    case CabinetBinDoorStatusBatteryEmpty:
+        return "电池未放入"
+    }
+    return "未知"
+}
+
 var CabinetBinDoorError = map[CabinetBinDoorStatus]string{
     CabinetBinDoorStatusUnknown:      "仓门状态未知",
     CabinetBinDoorStatusFail:         "仓门故障",
@@ -130,6 +146,7 @@ var CabinetBinDoorError = map[CabinetBinDoorStatus]string{
 // 1000mV = 1V
 // (锁定状态 / 备注信息) 需要携带到下次的状态更新中
 type CabinetBin struct {
+    Index         int                `json:"index"`         // 仓位index (从0开始)
     Name          string             `json:"name"`          // 柜门名称
     BatterySN     string             `json:"batterySN"`     // 电池序列号
     Full          bool               `json:"full"`          // 是否满电

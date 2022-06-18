@@ -6026,6 +6026,10 @@
                     "description": "是否满电",
                     "type": "boolean"
                 },
+                "index": {
+                    "description": "仓位index (从0开始)",
+                    "type": "integer"
+                },
                 "name": {
                     "description": "柜门名称",
                     "type": "string"

@@ -170,7 +170,7 @@ func (s *cabinetService) Delete(req *model.CabinetDeleteReq) {
 }
 
 // UpdateStatus 立即更新电柜状态
-func (s *cabinetService) UpdateStatus(item *ent.Cabinet) *ent.Cabinet {
+func (s *cabinetService) UpdateStatus(item *ent.Cabinet) {
     var prov provider.Provider
     if item.Brand == model.CabinetBrandKaixin.Value() {
         prov = provider.NewKaixin()
@@ -179,12 +179,17 @@ func (s *cabinetService) UpdateStatus(item *ent.Cabinet) *ent.Cabinet {
     }
     up := s.orm.UpdateOne(item)
     prov.UpdateStatus(up, item)
-    return up.SaveX(s.ctx)
+    v, err := up.Save(s.ctx)
+    if err != nil {
+        log.Errorf("电柜状态更新失败: %s", err)
+    } else {
+        *item = *v
+    }
 }
 
 // DoorOpenStatus 获取柜门状态
 func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int) model.CabinetBinDoorStatus {
-    item = s.UpdateStatus(item)
+    s.UpdateStatus(item)
     if len(item.Bin) < index {
         return model.CabinetBinDoorStatusUnknown
     }
@@ -206,7 +211,7 @@ func (s *cabinetService) Detail(id uint64) *model.CabinetDetailRes {
     if item == nil {
         snag.Panic("未找到电柜")
     }
-    item = s.UpdateStatus(item)
+    s.UpdateStatus(item)
     res := new(model.CabinetDetailRes)
     _ = copier.Copy(res, item)
     return res
@@ -272,7 +277,7 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
                     Serial:        item.Serial,
                     Name:          item.Bin[*req.Index].Name,
                     Operation:     req.Operation.String(),
-                    OperatorRole:  model.CabinetDoorOperatorRoleManager,
+                    OperatorRole:  operator.Role,
                     Success:       state,
                     Remark:        req.Remark,
                     Time:          now.Format(carbon.DateTimeLayout),
@@ -372,24 +377,28 @@ func (s *cabinetService) Usable(cab *ent.Cabinet) (op model.RiderCabinetOperateP
         return cab.Bin[i].Electricity.Value() > cab.Bin[j].Electricity.Value()
     })
     // 查看电柜是否有满电
-    for index, bin := range cab.Bin {
+    for _, bin := range cab.Bin {
+        // 若仓门不正常直接跳过
+        if !bin.DoorHealth {
+            continue
+        }
         if !bin.Battery && op.EmptyBin == nil {
             // 获取空仓
             op.EmptyBin = &model.CabinetBinBasicInfo{
-                Index:       index,
+                Index:       bin.Index,
                 Electricity: bin.Electricity,
             }
         }
-        if bin.Electricity.IsBatteryFull() && op.FullBin == nil {
+        if bin.Battery && bin.Electricity.IsBatteryFull() && op.FullBin == nil {
             op.FullBin = &model.CabinetBinBasicInfo{
-                Index:       index,
+                Index:       bin.Index,
                 Electricity: bin.Electricity,
             }
         }
     }
     if op.FullBin == nil {
         op.Alternative = &model.CabinetBinBasicInfo{
-            Index:       len(cab.Bin) - 1,
+            Index:       cab.Bin[len(cab.Bin)-1].Index,
             Electricity: cab.Bin[len(cab.Bin)-1].Electricity,
         }
     }

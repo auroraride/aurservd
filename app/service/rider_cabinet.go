@@ -7,12 +7,14 @@ package service
 
 import (
     "context"
+    "fmt"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/lithammer/shortuuid/v4"
     log "github.com/sirupsen/logrus"
     "time"
@@ -34,12 +36,14 @@ type riderCabinetService struct {
     Info             *model.RiderCabinetInfo
 
     subscribe *ent.Subscribe
+    debug     bool
 }
 
 func NewRiderCabinet() *riderCabinetService {
     return &riderCabinetService{
         ctx:     context.Background(),
         maxTime: 180 * time.Second,
+        debug:   ar.Config.Cabinet.Debug,
     }
 }
 
@@ -79,7 +83,7 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
         snag.Panic("电池型号不兼容")
     }
 
-    // 查询套餐
+    // 查询电柜
     if !cs.Health(cab) {
         snag.Panic("电柜目前不可用")
     }
@@ -103,6 +107,9 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
         Voltage:                    subd.Voltage,
         CityID:                     subd.City.ID,
     }
+
+    tools.NewLog().Infof("[换电信息] %s, %s", uid, res)
+
     err := cache.Set(s.ctx, uid, res, s.maxTime).Err()
     if err != nil {
         log.Error(err)
@@ -221,21 +228,25 @@ func (s *riderCabinetService) ProcessByStep(req *model.RiderCabinetOperating) {
     if !s.ProcessLog(req, s.ProcessOpenBin(req)) {
         return
     }
-    s.Step += 1
+    // 手动延时处理
+    time.Sleep(5 * time.Second)
 
     // 第二步: 长轮询判断仓门是否关闭
+    s.Step += 1
     if !s.ProcessLog(req, s.ProcessDoor(req)) {
         return
     }
-    s.Step += 1
 
     // 第三步: 开启满电仓
+    s.Step += 1
     if !s.ProcessLog(req, s.ProcessOpenBin(req)) {
         return
     }
-    s.Step += 1
+    // 手动延时处理
+    time.Sleep(5 * time.Second)
 
     // 第四步: 长轮询判断仓门是否关闭
+    s.Step += 1
     if !s.ProcessLog(req, s.ProcessDoor(req)) {
         return
     }
@@ -243,6 +254,19 @@ func (s *riderCabinetService) ProcessByStep(req *model.RiderCabinetOperating) {
 
 // ProcessDoorBatteryStatus 格式化仓门状态, 电池放入取出检测
 func (s *riderCabinetService) ProcessDoorBatteryStatus(req *model.RiderCabinetOperating) (ds model.CabinetBinDoorStatus) {
+    // DEBUG START
+    if s.debug {
+        start := time.Now()
+        ds = model.CabinetBinDoorStatusUnknown
+        for {
+            if time.Now().Sub(start).Seconds() > 2 {
+                return model.CabinetBinDoorStatusClose
+            }
+            time.Sleep(1 * time.Second)
+        }
+    }
+    // DEBUG END
+
     // 获取仓位index
     index := req.EmptyIndex
     step := s.Step
@@ -250,9 +274,18 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus(req *model.RiderCabinetOp
         index = req.FullIndex
     }
 
-    bin := s.Cabinet.Bin[index]
     // 获取仓门状态
     ds = NewCabinet().DoorOpenStatus(s.Cabinet, index)
+    bin := s.Cabinet.Bin[index]
+
+    log.Infof(`[换电步骤 - 仓门检测]: {step:%s} %s - %d, 仓门Index: %d, 仓门状态: %s, 是否有电池: %t`,
+        s.Step,
+        s.Cabinet.Serial,
+        index,
+        bin.Index,
+        ds,
+        bin.Battery,
+    )
 
     // 当仓门未关闭时跳过
     if ds != model.CabinetBinDoorStatusClose {
@@ -286,20 +319,9 @@ func (s *riderCabinetService) ProcessDoor(req *model.RiderCabinetOperating) (res
     s.ProcessStepStart(req)
     start := time.Now()
 
-    // TODO DEBUG START
-    ds := model.CabinetBinDoorStatusUnknown
     for {
-        if time.Now().Sub(start).Seconds() > 2 {
-            ds = model.CabinetBinDoorStatusClose
-            break
-        }
-        time.Sleep(1 * time.Second)
-    }
-    // TODO DEBUG END
-
-    for {
-        // TODO 上线
-        // ds := s.ProcessDoorBatteryStatus(req)
+        // 检测仓门/电池
+        ds := s.ProcessDoorBatteryStatus(req)
         switch ds {
         case model.CabinetBinDoorStatusClose:
             res.Status = model.RiderCabinetOperateStatusSuccess
@@ -333,50 +355,64 @@ func (s *riderCabinetService) ProcessOpenBin(req *model.RiderCabinetOperating) (
     }
     s.ProcessStepStart(req)
 
-    // TODO 上线
-    // 开始处理
-    // reason := model.RiderCabinetOperateReasonEmpty
-    // if step == model.RiderCabinetOperateStepOpenFull {
-    //     reason = model.RiderCabinetOperateReasonFull
-    // }
-    // r := s.rider
-    // operation := model.CabinetDoorOperateOpen
-    // status, err = NewCabinet().DoorOperate(&model.CabinetDoorOperateReq{
-    //     ID:        &id,
-    //     Index:     &index,
-    //     Remark:    fmt.Sprintf("骑手换电 - %s", reason),
-    //     Operation: &operation,
-    // }, model.CabinetDoorOperator{
-    //     ID:    r.ID,
-    //     Role:  model.CabinetDoorOperatorRoleRider,
-    //     Name:  r.Edges.Person.Name,
-    //     Phone: r.Phone,
-    // })
-    // if err != nil {
-    //     snag.Panic(err)
-    // }
-
-    // TODO DEBUG START
-    log.Println(id, index)
-    debug := time.Now()
     var status bool
     var err error
-    for {
-        if time.Now().Sub(debug).Seconds() > 2 {
-            status = true
-            err = nil
-            break
+
+    if s.debug {
+        // DEBUG START
+        log.Println(id, index)
+        debug := time.Now()
+        for {
+            if time.Now().Sub(debug).Seconds() > 2 {
+                status = true
+                err = nil
+                break
+            }
+            time.Sleep(1 * time.Second)
         }
-        time.Sleep(1 * time.Second)
+        // DEBUG END
+    } else {
+        // 开始处理
+        reason := model.RiderCabinetOperateReasonEmpty
+        if step == model.RiderCabinetOperateStepOpenFull {
+            reason = model.RiderCabinetOperateReasonFull
+        }
+        r := s.rider
+        operation := model.CabinetDoorOperateOpen
+        status, err = NewCabinet().DoorOperate(&model.CabinetDoorOperateReq{
+            ID:        &id,
+            Index:     &index,
+            Remark:    fmt.Sprintf("骑手换电 - %s", reason),
+            Operation: &operation,
+        }, model.CabinetDoorOperator{
+            ID:    r.ID,
+            Role:  model.CabinetDoorOperatorRoleRider,
+            Name:  r.Edges.Person.Name,
+            Phone: r.Phone,
+        })
+        if err != nil {
+            snag.Panic(err)
+        }
     }
-    // TODO DEBUG END
+
+    log.Infof(`[换电步骤 - 仓门检测]: {step:%s} %d, 仓门Index: %d, 操作反馈: %t`,
+        s.Step,
+        id,
+        index,
+        status,
+    )
 
     if status {
         res.Status = model.RiderCabinetOperateStatusSuccess
     } else {
+        log.Errorf("[ProcessOpenBin] 处理失败: %t -> %#v", status, err)
         // 发生故障处理
         res.Status = model.RiderCabinetOperateStatusFail
-        res.Message = err.Error()
+        if err != nil {
+            res.Message = err.Error()
+        } else {
+            res.Message = "柜门处理失败"
+        }
         res.Stop = true
     }
 
@@ -411,6 +447,9 @@ func (s *riderCabinetService) ProcessLog(req *model.RiderCabinetOperating, res *
         index = req.FullIndex
         be = req.Electricity
     }
+
+    tools.NewLog().Infof("[换电步骤] {step:%s} %s", s.Step, res)
+
     s.logger.Clone().
         SetBin(index).
         SetStatus(res.Status).

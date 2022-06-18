@@ -206,6 +206,7 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
             }
             errs := make([]string, 0)
             bin := model.CabinetBin{
+                Index:       index,
                 Name:        fmt.Sprintf("%d号仓", index+1),
                 BatterySN:   ds.BatterySN,
                 Full:        e.IsBatteryFull(),

@@ -26,10 +26,10 @@ type Provider interface {
     Reboot(code string, serial string) bool
 }
 
-func Run(start bool) {
+func Run() {
     yd := NewYundong()
     kx := NewKaixin()
-    if start {
+    if ar.Config.Cabinet.Provider {
         StartCabinetProvider(yd, kx)
     }
 }

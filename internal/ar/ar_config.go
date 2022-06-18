@@ -46,18 +46,23 @@ type EsignConfig struct {
 
 type config struct {
     App struct {
-        Address   string
-        Host      string
-        Mode      string
-        SQL       bool
-        BodyLimit string
-        RateLimit float64
-        Debug     struct {
+        Address      string
+        Host         string
+        Mode         string
+        SQL          bool
+        BodyLimit    string
+        RateLimit    float64
+        CabinetDebug bool
+        Debug        struct {
             Phone map[string]bool
         }
         Captcha struct {
             Names map[string]string
         }
+    }
+    Cabinet struct {
+        Debug    bool
+        Provider bool
     }
     Nsq struct {
         Url string

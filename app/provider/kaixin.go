@@ -189,6 +189,7 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
             }
             errs := GetChargerErrors(ds.Bft)
             bin := model.CabinetBin{
+                Index:       index,
                 Name:        fmt.Sprintf("%d号仓", index+1),
                 BatterySN:   ds.Bcd,
                 Full:        e.IsBatteryFull(),
@@ -223,7 +224,7 @@ type KXOperationRes KXRes[any]
 func (p *kaixin) DoorOperate(code, serial, operation string, door int) (state bool) {
     res := new(KXOperationRes)
     url := p.GetUrl(kaixinUrlDoorOperation)
-    d := strconv.Itoa(door)
+    d := strconv.Itoa(door + 1)
     client := resty.New().R().
         SetFormData(map[string]string{
             "user":      code,

@@ -13,9 +13,6 @@ import (
 )
 
 func serverCommand() *cobra.Command {
-    var (
-        provider bool
-    )
 
     cmd := &cobra.Command{
         Use:   "server",
@@ -23,7 +20,7 @@ func serverCommand() *cobra.Command {
         Run: func(cmd *cobra.Command, args []string) {
 
             // 启动电柜服务
-            go pvd.Run(provider)
+            go pvd.Run()
 
             // 启动subscribe task
             go task.NewSubscribe().Start()
@@ -35,8 +32,6 @@ func serverCommand() *cobra.Command {
             router.Run()
         },
     }
-
-    cmd.Flags().BoolVarP(&provider, "provider", "p", false, "启动电柜状态轮询")
 
     return cmd
 }
