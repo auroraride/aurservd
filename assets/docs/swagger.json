@@ -3625,6 +3625,209 @@
                 }
             }
         },
+        "/manager/v1/section/city": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MB005 筛选启用的城市",
+                "operationId": "ManagerSelectionCity",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/section/employee": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MB004 筛选店员",
+                "operationId": "ManagerSelectionEmployee",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/section/plan": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MB001 筛选骑士卡",
+                "operationId": "ManagerSelectionPlan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "筛选生效中 0:全部(默认) 1:生效中 2:未生效",
+                        "name": "effect",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "筛选状态 0:全部(默认) 1:启用 2:禁用",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel3"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/section/rider": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MB002 筛选骑手",
+                "operationId": "ManagerSelectionRider",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选骑手姓名或电话",
+                        "name": "keyword",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/section/store": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MB003 筛选门店",
+                "operationId": "ManagerSelectionStore",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/setting": {
             "get": {
                 "consumes": [
@@ -6445,6 +6648,46 @@
                 }
             }
         },
+        "model.CascaderOptionLevel2": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "description": "级联选择子项目",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.SelectOption"
+                    }
+                },
+                "label": {
+                    "description": "选择项名称",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "选择项值 (ID)",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.CascaderOptionLevel3": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "description": "级联选择子项目",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CascaderOptionLevel2"
+                    }
+                },
+                "label": {
+                    "description": "选择项名称",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "选择项值 (ID)",
+                    "type": "integer"
+                }
+            }
+        },
         "model.City": {
             "type": "object",
             "properties": {
@@ -8503,6 +8746,19 @@
                 "smsId": {
                     "description": "短信ID ",
                     "type": "string"
+                }
+            }
+        },
+        "model.SelectOption": {
+            "type": "object",
+            "properties": {
+                "label": {
+                    "description": "选择项名称",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "选择项值 (ID)",
+                    "type": "integer"
                 }
             }
         },

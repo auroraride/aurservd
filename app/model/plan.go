@@ -100,3 +100,8 @@ type RiderPlanRenewalRes struct {
 //     Desc       string  `json:"desc"`       // 优惠信息
 //     Commission float64 `json:"commission"` // 提成
 // }
+
+type PlanSelectionReq struct {
+    Effect *uint8 `json:"effect" query:"effect" enums:"0,1,2"` // 筛选生效中 0:全部(默认) 1:生效中 2:未生效
+    Status *uint8 `json:"status" query:"status" enums:"0,1,2"` // 筛选状态 0:全部(默认) 1:启用 2:禁用
+}

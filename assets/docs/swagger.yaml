@@ -670,6 +670,34 @@ definitions:
     - name
     - serial
     type: object
+  model.CascaderOptionLevel2:
+    properties:
+      children:
+        description: 级联选择子项目
+        items:
+          $ref: '#/definitions/model.SelectOption'
+        type: array
+      label:
+        description: 选择项名称
+        type: string
+      value:
+        description: 选择项值 (ID)
+        type: integer
+    type: object
+  model.CascaderOptionLevel3:
+    properties:
+      children:
+        description: 级联选择子项目
+        items:
+          $ref: '#/definitions/model.CascaderOptionLevel2'
+        type: array
+      label:
+        description: 选择项名称
+        type: string
+      value:
+        description: 选择项值 (ID)
+        type: integer
+    type: object
   model.City:
     properties:
       id:
@@ -2095,6 +2123,15 @@ definitions:
     - phone
     - smsCode
     - smsId
+    type: object
+  model.SelectOption:
+    properties:
+      label:
+        description: 选择项名称
+        type: string
+      value:
+        description: 选择项值 (ID)
+        type: integer
     type: object
   model.SettingReq:
     properties:
@@ -5038,6 +5075,141 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M7010 修改骑手资料
+      tags:
+      - '[M]管理接口'
+  /manager/v1/section/city:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionCity
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CascaderOptionLevel2'
+            type: array
+      summary: MB005 筛选启用的城市
+      tags:
+      - '[M]管理接口'
+  /manager/v1/section/employee:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionEmployee
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CascaderOptionLevel2'
+            type: array
+      summary: MB004 筛选店员
+      tags:
+      - '[M]管理接口'
+  /manager/v1/section/plan:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionPlan
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 筛选生效中 0:全部(默认) 1:生效中 2:未生效
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: effect
+        type: integer
+      - description: 筛选状态 0:全部(默认) 1:启用 2:禁用
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CascaderOptionLevel3'
+            type: array
+      summary: MB001 筛选骑士卡
+      tags:
+      - '[M]管理接口'
+  /manager/v1/section/rider:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionRider
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 筛选骑手姓名或电话
+        in: query
+        name: keyword
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SelectOption'
+            type: array
+      summary: MB002 筛选骑手
+      tags:
+      - '[M]管理接口'
+  /manager/v1/section/store:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionStore
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CascaderOptionLevel2'
+            type: array
+      summary: MB003 筛选门店
       tags:
       - '[M]管理接口'
   /manager/v1/setting:

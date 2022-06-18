@@ -53,3 +53,7 @@ func (*pointer) Int64(i int64) *int64 {
 func (*pointer) Int32(i int32) *int32 {
     return &i
 }
+
+func NewPointerInterface[T any](i T) *T {
+    return &i
+}

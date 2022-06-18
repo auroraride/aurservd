@@ -168,3 +168,7 @@ type RiderExchangeReq struct {
 
     RiderID uint64 `json:"riderId" query:"RiderId" trans:"骑手ID"`
 }
+
+type RiderSelectionReq struct {
+    Keyword *string `json:"keyword"` // 筛选骑手姓名或电话
+}

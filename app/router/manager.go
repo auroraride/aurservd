@@ -108,4 +108,11 @@ func loadManagerRoutes() {
     g.POST("/stock", mapi.Stock.Create)
     g.GET("/stock", mapi.Stock.List)
     g.GET("/stock/overview", mapi.Stock.Overview)
+
+    // 选择项目
+    g.GET("/selection/plan", mapi.Selection.Plan)
+    g.GET("/selection/rider", mapi.Selection.Rider)
+    g.GET("/selection/store", mapi.Selection.Store)
+    g.GET("/selection/employee", mapi.Selection.Employee)
+    g.GET("/selection/city", mapi.Selection.City)
 }

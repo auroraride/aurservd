@@ -86,3 +86,18 @@ type QRPostReq struct {
 type QRQueryReq struct {
     Qrcode string `json:"qrcode" query:"qrcode" validate:"required" trans:"二维码"`
 }
+
+type SelectOption struct {
+    Value uint64 `json:"value"` // 选择项值 (ID)
+    Label string `json:"label"` // 选择项名称
+}
+
+type CascaderOptionLevel2 struct {
+    SelectOption
+    Children []SelectOption `json:"children"` // 级联选择子项目
+}
+
+type CascaderOptionLevel3 struct {
+    SelectOption
+    Children *[]CascaderOptionLevel2 `json:"children"` // 级联选择子项目
+}

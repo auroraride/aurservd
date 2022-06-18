@@ -1,3 +1,19 @@
+## 2022-06-18
+
+#### 接口新增
+
+- [MB001 筛选骑士卡](http://localhost:5533/docs#tag/M/operation/ManagerSelectionPlan)
+- [MB002 筛选骑手](http://localhost:5533/docs#tag/M/operation/ManagerSelectionRider)
+- [MB003 筛选门店](http://localhost:5533/docs#tag/M/operation/ManagerSelectionStore)
+- [MB004 筛选店员](http://localhost:5533/docs#tag/M/operation/ManagerSelectionEmployee)
+- [MB005 筛选启用的城市](http://localhost:5533/docs#tag/M/operation/ManagerSelectionCity)
+
+
+
+
+
+<br />
+
 ## 2022-06-17
 
 #### 接口调整
