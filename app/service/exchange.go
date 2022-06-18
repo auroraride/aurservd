@@ -59,6 +59,9 @@ func NewExchangeWithEmployee(e *ent.Employee) *exchangeService {
 // Store 扫门店二维码换电
 // 换电操作有出库和入库, 所以不记录
 func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStoreRes {
+    // 检查用户是否可以办理业务
+    NewRiderPermissionWithRider(s.rider).BusinessX()
+
     qr := strings.ReplaceAll(req.Code, "STORE:", "")
     item := NewStore().QuerySn(qr)
     // 门店状态

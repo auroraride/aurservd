@@ -5077,7 +5077,7 @@ paths:
       summary: M7010 修改骑手资料
       tags:
       - '[M]管理接口'
-  /manager/v1/section/city:
+  /manager/v1/selection/city:
     get:
       consumes:
       - application/json
@@ -5100,7 +5100,7 @@ paths:
       summary: MB005 筛选启用的城市
       tags:
       - '[M]管理接口'
-  /manager/v1/section/employee:
+  /manager/v1/selection/employee:
     get:
       consumes:
       - application/json
@@ -5123,7 +5123,7 @@ paths:
       summary: MB004 筛选店员
       tags:
       - '[M]管理接口'
-  /manager/v1/section/plan:
+  /manager/v1/selection/plan:
     get:
       consumes:
       - application/json
@@ -5162,7 +5162,7 @@ paths:
       summary: MB001 筛选骑士卡
       tags:
       - '[M]管理接口'
-  /manager/v1/section/rider:
+  /manager/v1/selection/rider:
     get:
       consumes:
       - application/json
@@ -5189,7 +5189,7 @@ paths:
       summary: MB002 筛选骑手
       tags:
       - '[M]管理接口'
-  /manager/v1/section/store:
+  /manager/v1/selection/store:
     get:
       consumes:
       - application/json

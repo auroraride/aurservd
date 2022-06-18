@@ -7,6 +7,7 @@ package service
 
 import (
     "context"
+    "errors"
     "fmt"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
@@ -53,8 +54,12 @@ func NewEnterpriseWithModifier(m *model.Modifier) *enterpriseService {
     return s
 }
 
-func (s *enterpriseService) Query(id uint64) *ent.Enterprise {
-    e, _ := s.orm.QueryNotDeleted().Where(enterprise.ID(id)).Only(s.ctx)
+func (s *enterpriseService) Query(id uint64) (*ent.Enterprise, error) {
+    return s.orm.QueryNotDeleted().Where(enterprise.ID(id)).Only(s.ctx)
+}
+
+func (s *enterpriseService) QueryX(id uint64) *ent.Enterprise {
+    e, _ := s.Query(id)
     if e == nil {
         snag.Panic("未找到有效企业")
     }
@@ -81,7 +86,7 @@ func (s *enterpriseService) Create(req *model.EnterpriseDetail) uint64 {
 
 // Modify 修改企业
 func (s *enterpriseService) Modify(req *model.EnterpriseDetailWithID) {
-    e := s.Query(req.ID)
+    e := s.QueryX(req.ID)
     // 判定付费方式是否允许改变
     if *req.Payment != e.Payment {
         set := NewEnterpriseStatementWithModifier(s.modifier).Current(e.ID)
@@ -338,7 +343,7 @@ func (s *enterpriseService) UpdateStatement(item *ent.Enterprise) {
 
 // Prepayment 预付费
 func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float64 {
-    e := s.Query(req.ID)
+    e := s.QueryX(req.ID)
     if e.Payment == model.EnterprisePaymentPostPay {
         snag.Panic("该企业支付方式为后付费")
     }
@@ -375,4 +380,17 @@ func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float
 
     _ = tx.Commit()
     return b
+}
+
+// Business 企业是否可以办理业务
+func (s *enterpriseService) Business(e *ent.Enterprise) error {
+    if e == nil {
+        return errors.New("未找到企业信息")
+    }
+
+    if e.Payment == model.EnterprisePaymentPrepay && e.Balance < 0 {
+        return errors.New("企业已欠费")
+    }
+
+    return nil
 }

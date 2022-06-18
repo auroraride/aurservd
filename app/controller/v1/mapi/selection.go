@@ -19,7 +19,7 @@ var Selection = new(selection)
 
 // Plan
 // @ID           ManagerSelectionPlan
-// @Router       /manager/v1/section/plan [GET]
+// @Router       /manager/v1/selection/plan [GET]
 // @Summary      MB001 筛选骑士卡
 // @Tags         [M]管理接口
 // @Accept       json
@@ -34,7 +34,7 @@ func (*selection) Plan(c echo.Context) (err error) {
 
 // Rider
 // @ID           ManagerSelectionRider
-// @Router       /manager/v1/section/rider [GET]
+// @Router       /manager/v1/selection/rider [GET]
 // @Summary      MB002 筛选骑手
 // @Tags         [M]管理接口
 // @Accept       json
@@ -49,7 +49,7 @@ func (*selection) Rider(c echo.Context) (err error) {
 
 // Store
 // @ID           ManagerSelectionStore
-// @Router       /manager/v1/section/store [GET]
+// @Router       /manager/v1/selection/store [GET]
 // @Summary      MB003 筛选门店
 // @Tags         [M]管理接口
 // @Accept       json
@@ -63,7 +63,7 @@ func (*selection) Store(c echo.Context) (err error) {
 
 // Employee
 // @ID           ManagerSelectionEmployee
-// @Router       /manager/v1/section/employee [GET]
+// @Router       /manager/v1/selection/employee [GET]
 // @Summary      MB004 筛选店员
 // @Tags         [M]管理接口
 // @Accept       json
@@ -77,7 +77,7 @@ func (*selection) Employee(c echo.Context) (err error) {
 
 // City
 // @ID           ManagerSelectionCity
-// @Router       /manager/v1/section/city [GET]
+// @Router       /manager/v1/selection/city [GET]
 // @Summary      MB005 筛选启用的城市
 // @Tags         [M]管理接口
 // @Accept       json

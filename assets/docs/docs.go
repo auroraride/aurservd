@@ -3633,7 +3633,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/manager/v1/section/city": {
+        "/manager/v1/selection/city": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -3668,7 +3668,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/manager/v1/section/employee": {
+        "/manager/v1/selection/employee": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -3703,7 +3703,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/manager/v1/section/plan": {
+        "/manager/v1/selection/plan": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -3760,7 +3760,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/manager/v1/section/rider": {
+        "/manager/v1/selection/rider": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -3801,7 +3801,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/manager/v1/section/store": {
+        "/manager/v1/selection/store": {
             "get": {
                 "consumes": [
                     "application/json"

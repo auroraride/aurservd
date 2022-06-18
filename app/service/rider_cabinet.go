@@ -63,6 +63,9 @@ func NewRiderCabinetWithModifier(m *model.Modifier) *riderCabinetService {
 
 // GetProcess 获取待换电信息
 func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) *model.RiderCabinetInfo {
+    // 检查用户是否可以办理业务
+    NewRiderPermissionWithRider(s.rider).BusinessX()
+
     // 是否企业用户
     if s.rider.Edges.Enterprise != nil {
         // TODO 企业状态是否可以换电
@@ -120,6 +123,9 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
 
 // Process 处理换电
 func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
+    // 检查用户是否可以办理业务
+    NewRiderPermissionWithRider(s.rider).BusinessX()
+
     info := new(model.RiderCabinetInfo)
     uid := *req.UUID
     err := cache.Get(s.ctx, uid).Scan(info)
