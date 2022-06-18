@@ -39,7 +39,7 @@ func (*rider) List(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body  model.PersonBanReq  true  "desc"
+// @Param        body  body     model.PersonBanReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*rider) Ban(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.PersonBanReq](c)
@@ -55,7 +55,7 @@ func (*rider) Ban(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body  model.RiderBlockReq  true  "desc"
+// @Param        body  body     model.RiderBlockReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*rider) Block(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.RiderBlockReq](c)
@@ -71,7 +71,7 @@ func (*rider) Block(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        query  query  model.RiderLogReq  true  "desc"
+// @Param        query  query   model.RiderLogReq  true  "desc"
 // @Success      200  {object}  model.PaginationRes{items=[]model.LogOperate}  "请求成功"
 func (*rider) Log(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.RiderLogReq](c)
@@ -86,7 +86,7 @@ func (*rider) Log(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body  model.RiderMgrDepositReq  true  "desc"
+// @Param        body  body     model.RiderMgrDepositReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*rider) Deposit(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.RiderMgrDepositReq](c)
@@ -102,7 +102,7 @@ func (*rider) Deposit(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body  model.RiderMgrModifyReq  true  "desc"
+// @Param        body  body     model.RiderMgrModifyReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*rider) Modify(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.RiderMgrModifyReq](c)
