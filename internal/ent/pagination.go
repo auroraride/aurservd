@@ -272,6 +272,28 @@ func (eq *EnterpriseQuery) PaginationResult(req model.PaginationReq) model.Pagin
 	}
 }
 
+// Pagination returns pagination query builder for EnterpriseBillQuery.
+func (ebq *EnterpriseBillQuery) Pagination(req model.PaginationReq) *EnterpriseBillQuery {
+	ebq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return ebq
+}
+
+// PaginationItems returns pagination query builder for EnterpriseBillQuery.
+func (ebq *EnterpriseBillQuery) PaginationItemsX(req model.PaginationReq) any {
+	return ebq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for EnterpriseBillQuery.
+func (ebq *EnterpriseBillQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := ebq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for EnterpriseContractQuery.
 func (ecq *EnterpriseContractQuery) Pagination(req model.PaginationReq) *EnterpriseContractQuery {
 	ecq.Offset(req.GetOffset()).Limit(req.GetLimit())

@@ -167,8 +167,10 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
                     // 总天数
                     res.Days += days
                     // 判断是否已结算
-                    if sub.StatementID == nil {
+                    if sub.LastBillDate == nil {
                         res.Unsettled += days
+                    } else {
+                        res.Unsettled += tt.UsedDaysToNow(*sub.LastBillDate)
                     }
                 }
             }

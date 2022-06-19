@@ -40,14 +40,11 @@ type EnterpriseStatement struct {
 	// Cost holds the value of the "cost" field.
 	// 账单金额
 	Cost float64 `json:"cost,omitempty"`
-	// Amount holds the value of the "amount" field.
-	// 总预付金额
-	Amount float64 `json:"amount,omitempty"`
 	// Balance holds the value of the "balance" field.
 	// 预付剩余, 负数是欠费
 	Balance float64 `json:"balance,omitempty"`
 	// SettledAt holds the value of the "settled_at" field.
-	// 清账时间
+	// 结账时间
 	SettledAt *time.Time `json:"settled_at,omitempty"`
 	// Days holds the value of the "days" field.
 	// 账期内使用总天数
@@ -55,9 +52,15 @@ type EnterpriseStatement struct {
 	// RiderNumber holds the value of the "rider_number" field.
 	// 账期内使用总人数
 	RiderNumber int `json:"rider_number,omitempty"`
-	// BillTime holds the value of the "bill_time" field.
-	// 对账单计算日期(包含, 例如2022-06-05代表是2022-06-06日计算截止到2022-06-05的账单详情)
-	BillTime *time.Time `json:"bill_time,omitempty"`
+	// Date holds the value of the "date" field.
+	// 对账单计算日期(包含当日)
+	Date *time.Time `json:"date,omitempty"`
+	// Start holds the value of the "start" field.
+	// 账单开始日期
+	Start time.Time `json:"start,omitempty"`
+	// End holds the value of the "end" field.
+	// 账单结束日期
+	End *time.Time `json:"end,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterpriseStatementQuery when eager-loading is set.
 	Edges EnterpriseStatementEdges `json:"edges"`
@@ -65,28 +68,19 @@ type EnterpriseStatement struct {
 
 // EnterpriseStatementEdges holds the relations/edges for other nodes in the graph.
 type EnterpriseStatementEdges struct {
-	// Subscribes holds the value of the subscribes edge.
-	Subscribes []*Subscribe `json:"subscribes,omitempty"`
 	// Enterprise holds the value of the enterprise edge.
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
+	// Bills holds the value of the bills edge.
+	Bills []*EnterpriseBill `json:"bills,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
 }
 
-// SubscribesOrErr returns the Subscribes value or an error if the edge
-// was not loaded in eager-loading.
-func (e EnterpriseStatementEdges) SubscribesOrErr() ([]*Subscribe, error) {
-	if e.loadedTypes[0] {
-		return e.Subscribes, nil
-	}
-	return nil, &NotLoadedError{edge: "subscribes"}
-}
-
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterpriseStatementEdges) EnterpriseOrErr() (*Enterprise, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[0] {
 		if e.Enterprise == nil {
 			// The edge enterprise was loaded in eager-loading,
 			// but was not found.
@@ -97,6 +91,15 @@ func (e EnterpriseStatementEdges) EnterpriseOrErr() (*Enterprise, error) {
 	return nil, &NotLoadedError{edge: "enterprise"}
 }
 
+// BillsOrErr returns the Bills value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseStatementEdges) BillsOrErr() ([]*EnterpriseBill, error) {
+	if e.loadedTypes[1] {
+		return e.Bills, nil
+	}
+	return nil, &NotLoadedError{edge: "bills"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*EnterpriseStatement) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -104,13 +107,13 @@ func (*EnterpriseStatement) scanValues(columns []string) ([]interface{}, error) 
 		switch columns[i] {
 		case enterprisestatement.FieldCreator, enterprisestatement.FieldLastModifier:
 			values[i] = new([]byte)
-		case enterprisestatement.FieldCost, enterprisestatement.FieldAmount, enterprisestatement.FieldBalance:
+		case enterprisestatement.FieldCost, enterprisestatement.FieldBalance:
 			values[i] = new(sql.NullFloat64)
 		case enterprisestatement.FieldID, enterprisestatement.FieldEnterpriseID, enterprisestatement.FieldDays, enterprisestatement.FieldRiderNumber:
 			values[i] = new(sql.NullInt64)
 		case enterprisestatement.FieldRemark:
 			values[i] = new(sql.NullString)
-		case enterprisestatement.FieldCreatedAt, enterprisestatement.FieldUpdatedAt, enterprisestatement.FieldDeletedAt, enterprisestatement.FieldSettledAt, enterprisestatement.FieldBillTime:
+		case enterprisestatement.FieldCreatedAt, enterprisestatement.FieldUpdatedAt, enterprisestatement.FieldDeletedAt, enterprisestatement.FieldSettledAt, enterprisestatement.FieldDate, enterprisestatement.FieldStart, enterprisestatement.FieldEnd:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type EnterpriseStatement", columns[i])
@@ -186,12 +189,6 @@ func (es *EnterpriseStatement) assignValues(columns []string, values []interface
 			} else if value.Valid {
 				es.Cost = value.Float64
 			}
-		case enterprisestatement.FieldAmount:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field amount", values[i])
-			} else if value.Valid {
-				es.Amount = value.Float64
-			}
 		case enterprisestatement.FieldBalance:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field balance", values[i])
@@ -217,26 +214,39 @@ func (es *EnterpriseStatement) assignValues(columns []string, values []interface
 			} else if value.Valid {
 				es.RiderNumber = int(value.Int64)
 			}
-		case enterprisestatement.FieldBillTime:
+		case enterprisestatement.FieldDate:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field bill_time", values[i])
+				return fmt.Errorf("unexpected type %T for field date", values[i])
 			} else if value.Valid {
-				es.BillTime = new(time.Time)
-				*es.BillTime = value.Time
+				es.Date = new(time.Time)
+				*es.Date = value.Time
+			}
+		case enterprisestatement.FieldStart:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field start", values[i])
+			} else if value.Valid {
+				es.Start = value.Time
+			}
+		case enterprisestatement.FieldEnd:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field end", values[i])
+			} else if value.Valid {
+				es.End = new(time.Time)
+				*es.End = value.Time
 			}
 		}
 	}
 	return nil
 }
 
-// QuerySubscribes queries the "subscribes" edge of the EnterpriseStatement entity.
-func (es *EnterpriseStatement) QuerySubscribes() *SubscribeQuery {
-	return (&EnterpriseStatementClient{config: es.config}).QuerySubscribes(es)
-}
-
 // QueryEnterprise queries the "enterprise" edge of the EnterpriseStatement entity.
 func (es *EnterpriseStatement) QueryEnterprise() *EnterpriseQuery {
 	return (&EnterpriseStatementClient{config: es.config}).QueryEnterprise(es)
+}
+
+// QueryBills queries the "bills" edge of the EnterpriseStatement entity.
+func (es *EnterpriseStatement) QueryBills() *EnterpriseBillQuery {
+	return (&EnterpriseStatementClient{config: es.config}).QueryBills(es)
 }
 
 // Update returns a builder for updating this EnterpriseStatement.
@@ -280,8 +290,6 @@ func (es *EnterpriseStatement) String() string {
 	builder.WriteString(fmt.Sprintf("%v", es.EnterpriseID))
 	builder.WriteString(", cost=")
 	builder.WriteString(fmt.Sprintf("%v", es.Cost))
-	builder.WriteString(", amount=")
-	builder.WriteString(fmt.Sprintf("%v", es.Amount))
 	builder.WriteString(", balance=")
 	builder.WriteString(fmt.Sprintf("%v", es.Balance))
 	if v := es.SettledAt; v != nil {
@@ -292,8 +300,14 @@ func (es *EnterpriseStatement) String() string {
 	builder.WriteString(fmt.Sprintf("%v", es.Days))
 	builder.WriteString(", rider_number=")
 	builder.WriteString(fmt.Sprintf("%v", es.RiderNumber))
-	if v := es.BillTime; v != nil {
-		builder.WriteString(", bill_time=")
+	if v := es.Date; v != nil {
+		builder.WriteString(", date=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", start=")
+	builder.WriteString(es.Start.Format(time.ANSIC))
+	if v := es.End; v != nil {
+		builder.WriteString(", end=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteByte(')')

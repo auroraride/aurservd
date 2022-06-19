@@ -17,6 +17,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
@@ -328,6 +329,23 @@ func init() {
 	enterpriseDescBalance := enterpriseFields[8].Descriptor()
 	// enterprise.DefaultBalance holds the default value on creation for the balance field.
 	enterprise.DefaultBalance = enterpriseDescBalance.Default.(float64)
+	enterprisebillMixin := schema.EnterpriseBill{}.Mixin()
+	enterprisebillMixinHooks2 := enterprisebillMixin[2].Hooks()
+	enterprisebill.Hooks[0] = enterprisebillMixinHooks2[0]
+	enterprisebillMixinFields0 := enterprisebillMixin[0].Fields()
+	_ = enterprisebillMixinFields0
+	enterprisebillFields := schema.EnterpriseBill{}.Fields()
+	_ = enterprisebillFields
+	// enterprisebillDescCreatedAt is the schema descriptor for created_at field.
+	enterprisebillDescCreatedAt := enterprisebillMixinFields0[0].Descriptor()
+	// enterprisebill.DefaultCreatedAt holds the default value on creation for the created_at field.
+	enterprisebill.DefaultCreatedAt = enterprisebillDescCreatedAt.Default.(func() time.Time)
+	// enterprisebillDescUpdatedAt is the schema descriptor for updated_at field.
+	enterprisebillDescUpdatedAt := enterprisebillMixinFields0[1].Descriptor()
+	// enterprisebill.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	enterprisebill.DefaultUpdatedAt = enterprisebillDescUpdatedAt.Default.(func() time.Time)
+	// enterprisebill.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	enterprisebill.UpdateDefaultUpdatedAt = enterprisebillDescUpdatedAt.UpdateDefault.(func() time.Time)
 	enterprisecontractMixin := schema.EnterpriseContract{}.Mixin()
 	enterprisecontractMixinHooks2 := enterprisecontractMixin[2].Hooks()
 	enterprisecontract.Hooks[0] = enterprisecontractMixinHooks2[0]
@@ -400,20 +418,16 @@ func init() {
 	enterprisestatementDescCost := enterprisestatementFields[1].Descriptor()
 	// enterprisestatement.DefaultCost holds the default value on creation for the cost field.
 	enterprisestatement.DefaultCost = enterprisestatementDescCost.Default.(float64)
-	// enterprisestatementDescAmount is the schema descriptor for amount field.
-	enterprisestatementDescAmount := enterprisestatementFields[2].Descriptor()
-	// enterprisestatement.DefaultAmount holds the default value on creation for the amount field.
-	enterprisestatement.DefaultAmount = enterprisestatementDescAmount.Default.(float64)
 	// enterprisestatementDescBalance is the schema descriptor for balance field.
-	enterprisestatementDescBalance := enterprisestatementFields[3].Descriptor()
+	enterprisestatementDescBalance := enterprisestatementFields[2].Descriptor()
 	// enterprisestatement.DefaultBalance holds the default value on creation for the balance field.
 	enterprisestatement.DefaultBalance = enterprisestatementDescBalance.Default.(float64)
 	// enterprisestatementDescDays is the schema descriptor for days field.
-	enterprisestatementDescDays := enterprisestatementFields[5].Descriptor()
+	enterprisestatementDescDays := enterprisestatementFields[4].Descriptor()
 	// enterprisestatement.DefaultDays holds the default value on creation for the days field.
 	enterprisestatement.DefaultDays = enterprisestatementDescDays.Default.(int)
 	// enterprisestatementDescRiderNumber is the schema descriptor for rider_number field.
-	enterprisestatementDescRiderNumber := enterprisestatementFields[6].Descriptor()
+	enterprisestatementDescRiderNumber := enterprisestatementFields[5].Descriptor()
 	// enterprisestatement.DefaultRiderNumber holds the default value on creation for the rider_number field.
 	enterprisestatement.DefaultRiderNumber = enterprisestatementDescRiderNumber.Default.(int)
 	enterprisestationMixin := schema.EnterpriseStation{}.Mixin()
@@ -735,31 +749,31 @@ func init() {
 	// subscribe.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	subscribe.UpdateDefaultUpdatedAt = subscribeDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// subscribeDescStatus is the schema descriptor for status field.
-	subscribeDescStatus := subscribeFields[4].Descriptor()
+	subscribeDescStatus := subscribeFields[3].Descriptor()
 	// subscribe.DefaultStatus holds the default value on creation for the status field.
 	subscribe.DefaultStatus = subscribeDescStatus.Default.(uint8)
 	// subscribeDescType is the schema descriptor for type field.
-	subscribeDescType := subscribeFields[5].Descriptor()
+	subscribeDescType := subscribeFields[4].Descriptor()
 	// subscribe.DefaultType holds the default value on creation for the type field.
 	subscribe.DefaultType = subscribeDescType.Default.(uint)
 	// subscribeDescAlterDays is the schema descriptor for alter_days field.
-	subscribeDescAlterDays := subscribeFields[8].Descriptor()
+	subscribeDescAlterDays := subscribeFields[7].Descriptor()
 	// subscribe.DefaultAlterDays holds the default value on creation for the alter_days field.
 	subscribe.DefaultAlterDays = subscribeDescAlterDays.Default.(int)
 	// subscribeDescPauseDays is the schema descriptor for pause_days field.
-	subscribeDescPauseDays := subscribeFields[9].Descriptor()
+	subscribeDescPauseDays := subscribeFields[8].Descriptor()
 	// subscribe.DefaultPauseDays holds the default value on creation for the pause_days field.
 	subscribe.DefaultPauseDays = subscribeDescPauseDays.Default.(int)
 	// subscribeDescRenewalDays is the schema descriptor for renewal_days field.
-	subscribeDescRenewalDays := subscribeFields[10].Descriptor()
+	subscribeDescRenewalDays := subscribeFields[9].Descriptor()
 	// subscribe.DefaultRenewalDays holds the default value on creation for the renewal_days field.
 	subscribe.DefaultRenewalDays = subscribeDescRenewalDays.Default.(int)
 	// subscribeDescOverdueDays is the schema descriptor for overdue_days field.
-	subscribeDescOverdueDays := subscribeFields[11].Descriptor()
+	subscribeDescOverdueDays := subscribeFields[10].Descriptor()
 	// subscribe.DefaultOverdueDays holds the default value on creation for the overdue_days field.
 	subscribe.DefaultOverdueDays = subscribeDescOverdueDays.Default.(int)
 	// subscribeDescRemaining is the schema descriptor for remaining field.
-	subscribeDescRemaining := subscribeFields[12].Descriptor()
+	subscribeDescRemaining := subscribeFields[11].Descriptor()
 	// subscribe.DefaultRemaining holds the default value on creation for the remaining field.
 	subscribe.DefaultRemaining = subscribeDescRemaining.Default.(int)
 	subscribealterMixin := schema.SubscribeAlter{}.Mixin()

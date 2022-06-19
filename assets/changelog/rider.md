@@ -1,3 +1,15 @@
+## 2022-06-19
+
+#### 接口新增
+
+- [R3010 订单支付状态](http://localhost:5533/docs#tag/R/operation/RiderOrderStatus)
+
+
+
+
+
+<br />
+
 ## 2022-06-15
 
 #### 接口调整

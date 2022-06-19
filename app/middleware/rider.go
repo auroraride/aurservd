@@ -47,7 +47,7 @@ func RiderMiddleware() echo.MiddlewareFunc {
             }
 
             // 用户被封禁
-            if s.IsBanned(u) {
+            if s.IsBanned(u) || s.IsBlocked(u) {
                 s.Signout(u)
                 snag.Panic(snag.StatusForbidden, ar.BannedMessage)
             }

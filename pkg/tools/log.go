@@ -17,11 +17,11 @@ func NewLog() *logTool {
     return &logTool{}
 }
 
-func (*logTool) Infof(str string, params ...any) {
-    data := make([]interface{}, len(params))
-    for i, param := range params {
+func (*logTool) Infof(format string, args ...interface{}) {
+    data := make([]interface{}, len(args))
+    for i, param := range args {
         b, _ := jsoniter.MarshalIndent(param, "", "  ")
         data[i] = string(b)
     }
-    log.Infof(str, data...)
+    log.Infof(format, data...)
 }

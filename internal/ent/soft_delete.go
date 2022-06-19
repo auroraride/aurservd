@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
@@ -512,6 +513,46 @@ func (c *EnterpriseClient) GetNotDeleted(ctx context.Context, id uint64) (*Enter
 
 // GetNotDeletedX is like Get, but panics if an error occurs.
 func (c *EnterpriseClient) GetNotDeletedX(ctx context.Context, id uint64) *Enterprise {
+	obj, err := c.GetNotDeleted(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// SoftDelete returns an soft delete builder for EnterpriseBill.
+func (c *EnterpriseBillClient) SoftDelete() *EnterpriseBillUpdate {
+	mutation := newEnterpriseBillMutation(c.config, OpUpdate)
+	mutation.SetDeletedAt(time.Now())
+	return &EnterpriseBillUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOne returns an soft delete builder for the given entity.
+func (c *EnterpriseBillClient) SoftDeleteOne(eb *EnterpriseBill) *EnterpriseBillUpdateOne {
+	mutation := newEnterpriseBillMutation(c.config, OpUpdateOne, withEnterpriseBill(eb))
+	mutation.SetDeletedAt(time.Now())
+	return &EnterpriseBillUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// SoftDeleteOneID returns an soft delete builder for the given id.
+func (c *EnterpriseBillClient) SoftDeleteOneID(id uint64) *EnterpriseBillUpdateOne {
+	mutation := newEnterpriseBillMutation(c.config, OpUpdateOne, withEnterpriseBillID(id))
+	mutation.SetDeletedAt(time.Now())
+	return &EnterpriseBillUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// QueryNotDeleted returns a query not deleted builder for EnterpriseBill.
+func (c *EnterpriseBillClient) QueryNotDeleted() *EnterpriseBillQuery {
+	return c.Query().Where(enterprisebill.DeletedAtIsNil())
+}
+
+// GetNotDeleted returns a EnterpriseBill not deleted entity by its id.
+func (c *EnterpriseBillClient) GetNotDeleted(ctx context.Context, id uint64) (*EnterpriseBill, error) {
+	return c.Query().Where(enterprisebill.ID(id), enterprisebill.DeletedAtIsNil()).Only(ctx)
+}
+
+// GetNotDeletedX is like Get, but panics if an error occurs.
+func (c *EnterpriseBillClient) GetNotDeletedX(ctx context.Context, id uint64) *EnterpriseBill {
 	obj, err := c.GetNotDeleted(ctx, id)
 	if err != nil {
 		panic(err)

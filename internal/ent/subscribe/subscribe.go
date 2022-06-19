@@ -41,8 +41,6 @@ const (
 	FieldInitialOrderID = "initial_order_id"
 	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
 	FieldEnterpriseID = "enterprise_id"
-	// FieldStatementID holds the string denoting the statement_id field in the database.
-	FieldStatementID = "statement_id"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldType holds the string denoting the type field in the database.
@@ -71,6 +69,8 @@ const (
 	FieldRefundAt = "refund_at"
 	// FieldUnsubscribeReason holds the string denoting the unsubscribe_reason field in the database.
 	FieldUnsubscribeReason = "unsubscribe_reason"
+	// FieldLastBillDate holds the string denoting the last_bill_date field in the database.
+	FieldLastBillDate = "last_bill_date"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -93,8 +93,6 @@ const (
 	EdgeOrders = "orders"
 	// EdgeInitialOrder holds the string denoting the initial_order edge name in mutations.
 	EdgeInitialOrder = "initial_order"
-	// EdgeStatement holds the string denoting the statement edge name in mutations.
-	EdgeStatement = "statement"
 	// Table holds the table name of the subscribe in the database.
 	Table = "subscribe"
 	// PlanTable is the table that holds the plan relation/edge.
@@ -174,13 +172,6 @@ const (
 	InitialOrderInverseTable = "order"
 	// InitialOrderColumn is the table column denoting the initial_order relation/edge.
 	InitialOrderColumn = "initial_order_id"
-	// StatementTable is the table that holds the statement relation/edge.
-	StatementTable = "subscribe"
-	// StatementInverseTable is the table name for the EnterpriseStatement entity.
-	// It exists in this package in order to avoid circular dependency with the "enterprisestatement" package.
-	StatementInverseTable = "enterprise_statement"
-	// StatementColumn is the table column denoting the statement relation/edge.
-	StatementColumn = "statement_id"
 )
 
 // Columns holds all SQL columns for subscribe fields.
@@ -200,7 +191,6 @@ var Columns = []string{
 	FieldRiderID,
 	FieldInitialOrderID,
 	FieldEnterpriseID,
-	FieldStatementID,
 	FieldStatus,
 	FieldType,
 	FieldVoltage,
@@ -215,6 +205,7 @@ var Columns = []string{
 	FieldEndAt,
 	FieldRefundAt,
 	FieldUnsubscribeReason,
+	FieldLastBillDate,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

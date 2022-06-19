@@ -35,7 +35,7 @@ func (*plan) List(c echo.Context) (err error) {
 
 // Renewly
 // @ID           RiderPlanRenewly
-// @Router       /employee/v1/plan/renewly [GET]
+// @Router       /rider/v1/plan/renewly [GET]
 // @Summary      R3003 续费骑士卡
 // @Tags         [R]骑手接口
 // @Accept       json

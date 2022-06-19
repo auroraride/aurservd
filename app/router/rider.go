@@ -62,6 +62,7 @@ func loadRideRoutes() {
     g.GET("/enterprise/voltage", rapi.Enterprise.ListVoltage)
     g.POST("/enterprise/subscribe", rapi.Enterprise.Subscribe)
     g.GET("/enterprise/subscribe", rapi.Enterprise.SubscribeStatus)
+    g.GET("/order/status", rapi.Order.Status)
 
     // 电柜
     cabinet := g.Group("/cabinet")

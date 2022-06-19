@@ -61,6 +61,8 @@ const (
 	EdgeStatements = "statements"
 	// EdgeStations holds the string denoting the stations edge name in mutations.
 	EdgeStations = "stations"
+	// EdgeBills holds the string denoting the bills edge name in mutations.
+	EdgeBills = "bills"
 	// Table holds the table name of the enterprise in the database.
 	Table = "enterprise"
 	// CityTable is the table that holds the city relation/edge.
@@ -112,6 +114,13 @@ const (
 	StationsInverseTable = "enterprise_station"
 	// StationsColumn is the table column denoting the stations relation/edge.
 	StationsColumn = "enterprise_id"
+	// BillsTable is the table that holds the bills relation/edge.
+	BillsTable = "EnterpriseBill"
+	// BillsInverseTable is the table name for the EnterpriseBill entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisebill" package.
+	BillsInverseTable = "EnterpriseBill"
+	// BillsColumn is the table column denoting the bills relation/edge.
+	BillsColumn = "enterprise_id"
 )
 
 // Columns holds all SQL columns for enterprise fields.

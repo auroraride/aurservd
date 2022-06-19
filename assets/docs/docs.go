@@ -610,38 +610,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/employee/v1/plan/renewly": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[R]骑手接口"
-                ],
-                "summary": "R3003 续费骑士卡",
-                "operationId": "RiderPlanRenewly",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.RiderPlanRenewalRes"
-                        }
-                    }
-                }
-            }
-        },
         "/employee/v1/profile": {
             "get": {
                 "consumes": [
@@ -874,26 +842,20 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "城市ID",
-                        "name": "cityId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "业绩统计结束时间",
+                        "description": "筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
                         "name": "end",
                         "in": "query"
                     },
                     {
-                        "type": "string",
-                        "description": "查询店员电话或姓名",
-                        "name": "name",
+                        "type": "boolean",
+                        "description": "是否筛选出库, false(默认):入库 true:出库",
+                        "name": "outbound",
                         "in": "query"
                     },
                     {
@@ -904,14 +866,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "业绩统计开始时间",
+                        "description": "筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
                         "name": "start",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "门店ID",
-                        "name": "storeId",
                         "in": "query"
                     }
                 ],
@@ -2371,6 +2327,52 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/bill": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9011 获取账单",
+                "operationId": "ManagerStatementBill",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "账单截止日期 ",
+                        "name": "end",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "企业ID ",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatementBillRes"
                         }
                     }
                 }
@@ -3975,6 +3977,12 @@ const docTemplate = `{
                         "description": "开始时间",
                         "name": "start",
                         "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店ID",
+                        "name": "storeID",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -5558,6 +5566,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/order/status": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R3010 订单支付状态",
+                "operationId": "RiderOrderStatus",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "订单编号",
+                        "name": "outTradeNo",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.OrderStatusRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/order/{id}": {
             "get": {
                 "consumes": [
@@ -5641,6 +5688,38 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/model.RiderPlanItem"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/plan/renewly": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R3003 续费骑士卡",
+                "operationId": "RiderPlanRenewly",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderPlanRenewalRes"
                         }
                     }
                 }
@@ -5840,6 +5919,39 @@ const docTemplate = `{
                 },
                 "voltage": {
                     "description": "电压 ",
+                    "type": "number"
+                }
+            }
+        },
+        "model.BillOverview": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "cost": {
+                    "description": "账单金额",
+                    "type": "number"
+                },
+                "days": {
+                    "description": "天数",
+                    "type": "integer"
+                },
+                "number": {
+                    "description": "使用骑手数量",
+                    "type": "integer"
+                },
+                "price": {
+                    "description": "单价",
+                    "type": "number"
+                },
+                "voltage": {
+                    "description": "电压型号",
                     "type": "number"
                 }
             }
@@ -7300,6 +7412,10 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                },
+                "unsettlement": {
+                    "description": "未结算天数, 预付费企业此字段强制为0",
+                    "type": "integer"
                 }
             }
         },
@@ -7848,6 +7964,19 @@ const docTemplate = `{
                 "prepay": {
                     "description": "预支付字符串",
                     "type": "string"
+                }
+            }
+        },
+        "model.OrderStatusRes": {
+            "type": "object",
+            "properties": {
+                "outTradeNo": {
+                    "description": "订单编号",
+                    "type": "string"
+                },
+                "paid": {
+                    "description": "是否支付",
+                    "type": "boolean"
                 }
             }
         },
@@ -8836,6 +8965,50 @@ const docTemplate = `{
             "properties": {
                 "id": {
                     "description": "任务ID",
+                    "type": "string"
+                }
+            }
+        },
+        "model.StatementBillRes": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "企业城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "contactName": {
+                    "description": "联系人",
+                    "type": "string"
+                },
+                "contactPhone": {
+                    "description": "联系电话",
+                    "type": "string"
+                },
+                "cost": {
+                    "description": "账单总额",
+                    "type": "number"
+                },
+                "end": {
+                    "description": "账单周期结束日期",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "企业ID",
+                    "type": "integer"
+                },
+                "overview": {
+                    "description": "账单概览",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.BillOverview"
+                    }
+                },
+                "start": {
+                    "description": "账单周期开始日期",
                     "type": "string"
                 }
             }

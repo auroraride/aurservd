@@ -88,9 +88,11 @@ type EnterpriseEdges struct {
 	Statements []*EnterpriseStatement `json:"statements,omitempty"`
 	// Stations holds the value of the stations edge.
 	Stations []*EnterpriseStation `json:"stations,omitempty"`
+	// Bills holds the value of the bills edge.
+	Bills []*EnterpriseBill `json:"bills,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [7]bool
+	loadedTypes [8]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -159,6 +161,15 @@ func (e EnterpriseEdges) StationsOrErr() ([]*EnterpriseStation, error) {
 		return e.Stations, nil
 	}
 	return nil, &NotLoadedError{edge: "stations"}
+}
+
+// BillsOrErr returns the Bills value or an error if the edge
+// was not loaded in eager-loading.
+func (e EnterpriseEdges) BillsOrErr() ([]*EnterpriseBill, error) {
+	if e.loadedTypes[7] {
+		return e.Bills, nil
+	}
+	return nil, &NotLoadedError{edge: "bills"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -343,6 +354,11 @@ func (e *Enterprise) QueryStatements() *EnterpriseStatementQuery {
 // QueryStations queries the "stations" edge of the Enterprise entity.
 func (e *Enterprise) QueryStations() *EnterpriseStationQuery {
 	return (&EnterpriseClient{config: e.config}).QueryStations(e)
+}
+
+// QueryBills queries the "bills" edge of the Enterprise entity.
+func (e *Enterprise) QueryBills() *EnterpriseBillQuery {
+	return (&EnterpriseClient{config: e.config}).QueryBills(e)
 }
 
 // Update returns a builder for updating this Enterprise.

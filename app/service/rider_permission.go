@@ -29,8 +29,9 @@ func NewRiderPermissionWithRider(r *ent.Rider) *riderPermissionService {
     return s
 }
 
+// Business 判定骑手业务状态是否满足条件
 func (s *riderPermissionService) Business() (err error) {
-    err = NewRider().Business(s.rider)
+    err = NewRider().Permission(s.rider)
     if err != nil {
         return
     }

@@ -175,7 +175,7 @@ func (p *yundong) Brand() string {
 
 func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
     res := new(YDStatusRes)
-    r, err := p.RequestClient(false).
+    _, err := p.RequestClient(false).
         SetResult(res).
         Get(p.GetUrl(yundongStatusUrl) + "?cabinetNo=" + item.Serial)
     // token 请求失败, 重新请求token后重试
@@ -184,7 +184,7 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
         return p.UpdateStatus(up, item)
     }
 
-    log.Infof("云动状态获取结果：%s", string(r.Body()))
+    // log.Infof("云动状态获取结果：%s", string(r.Body()))
     if err != nil || res.Code != 0 {
         msg := fmt.Sprintf("云动状态获取失败, serial: %s, err: %#v, res: %s", item.Serial, err, res)
         log.Error(msg)

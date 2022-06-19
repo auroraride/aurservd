@@ -42,7 +42,7 @@ func (s *selectionService) Plan(req *model.PlanSelectionReq) (items []model.Casc
         WithCities().
         WithPms()
 
-    if req.Effect != nil {
+    if req.Effect != nil && *req.Effect != 0 {
         now := time.Now()
         if *req.Effect == 1 {
             q.Where(
@@ -59,7 +59,7 @@ func (s *selectionService) Plan(req *model.PlanSelectionReq) (items []model.Casc
         }
     }
 
-    if req.Status != nil {
+    if req.Status != nil && *req.Status != 0 {
         enable := *req.Status == 1
         q.Where(plan.Enable(enable))
     }

@@ -17,6 +17,7 @@ import (
     log "github.com/sirupsen/logrus"
     "github.com/smartwalle/alipay/v3"
     "net/http"
+    "time"
 )
 
 var _alipay *alipayClient
@@ -75,16 +76,16 @@ func NewAlipay() *alipayClient {
 
 // AppPay app支付
 func (c *alipayClient) AppPay(pc *model.PaymentCache) (string, error) {
-    prepay := pc.Subscribe
     cfg := ar.Config.Payment.Alipay
+    amount, subject, no := pc.GetPaymentArgs()
     trade := alipay.TradeAppPay{
         Trade: alipay.Trade{
-            TotalAmount: fmt.Sprintf("%.2f", prepay.Amount),
+            TotalAmount: fmt.Sprintf("%.2f", amount),
             NotifyURL:   cfg.NotifyUrl,
-            Subject:     prepay.Name,
-            OutTradeNo:  prepay.OutTradeNo,
+            Subject:     subject,
+            OutTradeNo:  no,
         },
-        TimeExpire: prepay.Expire.Format(carbon.DateTimeLayout),
+        TimeExpire: time.Now().Add(10 * time.Minute).Format(carbon.DateTimeLayout),
     }
     return c.TradeAppPay(trade)
 }

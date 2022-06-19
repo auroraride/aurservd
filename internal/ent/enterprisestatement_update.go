@@ -13,9 +13,9 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
-	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // EnterpriseStatementUpdate is the builder for updating EnterpriseStatement entities.
@@ -116,27 +116,6 @@ func (esu *EnterpriseStatementUpdate) AddCost(f float64) *EnterpriseStatementUpd
 	return esu
 }
 
-// SetAmount sets the "amount" field.
-func (esu *EnterpriseStatementUpdate) SetAmount(f float64) *EnterpriseStatementUpdate {
-	esu.mutation.ResetAmount()
-	esu.mutation.SetAmount(f)
-	return esu
-}
-
-// SetNillableAmount sets the "amount" field if the given value is not nil.
-func (esu *EnterpriseStatementUpdate) SetNillableAmount(f *float64) *EnterpriseStatementUpdate {
-	if f != nil {
-		esu.SetAmount(*f)
-	}
-	return esu
-}
-
-// AddAmount adds f to the "amount" field.
-func (esu *EnterpriseStatementUpdate) AddAmount(f float64) *EnterpriseStatementUpdate {
-	esu.mutation.AddAmount(f)
-	return esu
-}
-
 // SetBalance sets the "balance" field.
 func (esu *EnterpriseStatementUpdate) SetBalance(f float64) *EnterpriseStatementUpdate {
 	esu.mutation.ResetBalance()
@@ -220,39 +199,50 @@ func (esu *EnterpriseStatementUpdate) AddRiderNumber(i int) *EnterpriseStatement
 	return esu
 }
 
-// SetBillTime sets the "bill_time" field.
-func (esu *EnterpriseStatementUpdate) SetBillTime(t time.Time) *EnterpriseStatementUpdate {
-	esu.mutation.SetBillTime(t)
+// SetDate sets the "date" field.
+func (esu *EnterpriseStatementUpdate) SetDate(t time.Time) *EnterpriseStatementUpdate {
+	esu.mutation.SetDate(t)
 	return esu
 }
 
-// SetNillableBillTime sets the "bill_time" field if the given value is not nil.
-func (esu *EnterpriseStatementUpdate) SetNillableBillTime(t *time.Time) *EnterpriseStatementUpdate {
+// SetNillableDate sets the "date" field if the given value is not nil.
+func (esu *EnterpriseStatementUpdate) SetNillableDate(t *time.Time) *EnterpriseStatementUpdate {
 	if t != nil {
-		esu.SetBillTime(*t)
+		esu.SetDate(*t)
 	}
 	return esu
 }
 
-// ClearBillTime clears the value of the "bill_time" field.
-func (esu *EnterpriseStatementUpdate) ClearBillTime() *EnterpriseStatementUpdate {
-	esu.mutation.ClearBillTime()
+// ClearDate clears the value of the "date" field.
+func (esu *EnterpriseStatementUpdate) ClearDate() *EnterpriseStatementUpdate {
+	esu.mutation.ClearDate()
 	return esu
 }
 
-// AddSubscribeIDs adds the "subscribes" edge to the Subscribe entity by IDs.
-func (esu *EnterpriseStatementUpdate) AddSubscribeIDs(ids ...uint64) *EnterpriseStatementUpdate {
-	esu.mutation.AddSubscribeIDs(ids...)
+// SetStart sets the "start" field.
+func (esu *EnterpriseStatementUpdate) SetStart(t time.Time) *EnterpriseStatementUpdate {
+	esu.mutation.SetStart(t)
 	return esu
 }
 
-// AddSubscribes adds the "subscribes" edges to the Subscribe entity.
-func (esu *EnterpriseStatementUpdate) AddSubscribes(s ...*Subscribe) *EnterpriseStatementUpdate {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// SetEnd sets the "end" field.
+func (esu *EnterpriseStatementUpdate) SetEnd(t time.Time) *EnterpriseStatementUpdate {
+	esu.mutation.SetEnd(t)
+	return esu
+}
+
+// SetNillableEnd sets the "end" field if the given value is not nil.
+func (esu *EnterpriseStatementUpdate) SetNillableEnd(t *time.Time) *EnterpriseStatementUpdate {
+	if t != nil {
+		esu.SetEnd(*t)
 	}
-	return esu.AddSubscribeIDs(ids...)
+	return esu
+}
+
+// ClearEnd clears the value of the "end" field.
+func (esu *EnterpriseStatementUpdate) ClearEnd() *EnterpriseStatementUpdate {
+	esu.mutation.ClearEnd()
+	return esu
 }
 
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
@@ -260,36 +250,51 @@ func (esu *EnterpriseStatementUpdate) SetEnterprise(e *Enterprise) *EnterpriseSt
 	return esu.SetEnterpriseID(e.ID)
 }
 
+// AddBillIDs adds the "bills" edge to the EnterpriseBill entity by IDs.
+func (esu *EnterpriseStatementUpdate) AddBillIDs(ids ...uint64) *EnterpriseStatementUpdate {
+	esu.mutation.AddBillIDs(ids...)
+	return esu
+}
+
+// AddBills adds the "bills" edges to the EnterpriseBill entity.
+func (esu *EnterpriseStatementUpdate) AddBills(e ...*EnterpriseBill) *EnterpriseStatementUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return esu.AddBillIDs(ids...)
+}
+
 // Mutation returns the EnterpriseStatementMutation object of the builder.
 func (esu *EnterpriseStatementUpdate) Mutation() *EnterpriseStatementMutation {
 	return esu.mutation
-}
-
-// ClearSubscribes clears all "subscribes" edges to the Subscribe entity.
-func (esu *EnterpriseStatementUpdate) ClearSubscribes() *EnterpriseStatementUpdate {
-	esu.mutation.ClearSubscribes()
-	return esu
-}
-
-// RemoveSubscribeIDs removes the "subscribes" edge to Subscribe entities by IDs.
-func (esu *EnterpriseStatementUpdate) RemoveSubscribeIDs(ids ...uint64) *EnterpriseStatementUpdate {
-	esu.mutation.RemoveSubscribeIDs(ids...)
-	return esu
-}
-
-// RemoveSubscribes removes "subscribes" edges to Subscribe entities.
-func (esu *EnterpriseStatementUpdate) RemoveSubscribes(s ...*Subscribe) *EnterpriseStatementUpdate {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
-	}
-	return esu.RemoveSubscribeIDs(ids...)
 }
 
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (esu *EnterpriseStatementUpdate) ClearEnterprise() *EnterpriseStatementUpdate {
 	esu.mutation.ClearEnterprise()
 	return esu
+}
+
+// ClearBills clears all "bills" edges to the EnterpriseBill entity.
+func (esu *EnterpriseStatementUpdate) ClearBills() *EnterpriseStatementUpdate {
+	esu.mutation.ClearBills()
+	return esu
+}
+
+// RemoveBillIDs removes the "bills" edge to EnterpriseBill entities by IDs.
+func (esu *EnterpriseStatementUpdate) RemoveBillIDs(ids ...uint64) *EnterpriseStatementUpdate {
+	esu.mutation.RemoveBillIDs(ids...)
+	return esu
+}
+
+// RemoveBills removes "bills" edges to EnterpriseBill entities.
+func (esu *EnterpriseStatementUpdate) RemoveBills(e ...*EnterpriseBill) *EnterpriseStatementUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return esu.RemoveBillIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -459,20 +464,6 @@ func (esu *EnterpriseStatementUpdate) sqlSave(ctx context.Context) (n int, err e
 			Column: enterprisestatement.FieldCost,
 		})
 	}
-	if value, ok := esu.mutation.Amount(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisestatement.FieldAmount,
-		})
-	}
-	if value, ok := esu.mutation.AddedAmount(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisestatement.FieldAmount,
-		})
-	}
 	if value, ok := esu.mutation.Balance(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
@@ -528,72 +519,38 @@ func (esu *EnterpriseStatementUpdate) sqlSave(ctx context.Context) (n int, err e
 			Column: enterprisestatement.FieldRiderNumber,
 		})
 	}
-	if value, ok := esu.mutation.BillTime(); ok {
+	if value, ok := esu.mutation.Date(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: enterprisestatement.FieldBillTime,
+			Column: enterprisestatement.FieldDate,
 		})
 	}
-	if esu.mutation.BillTimeCleared() {
+	if esu.mutation.DateCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
-			Column: enterprisestatement.FieldBillTime,
+			Column: enterprisestatement.FieldDate,
 		})
 	}
-	if esu.mutation.SubscribesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprisestatement.SubscribesTable,
-			Columns: []string{enterprisestatement.SubscribesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	if value, ok := esu.mutation.Start(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: enterprisestatement.FieldStart,
+		})
 	}
-	if nodes := esu.mutation.RemovedSubscribesIDs(); len(nodes) > 0 && !esu.mutation.SubscribesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprisestatement.SubscribesTable,
-			Columns: []string{enterprisestatement.SubscribesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	if value, ok := esu.mutation.End(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: enterprisestatement.FieldEnd,
+		})
 	}
-	if nodes := esu.mutation.SubscribesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprisestatement.SubscribesTable,
-			Columns: []string{enterprisestatement.SubscribesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	if esu.mutation.EndCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: enterprisestatement.FieldEnd,
+		})
 	}
 	if esu.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -622,6 +579,60 @@ func (esu *EnterpriseStatementUpdate) sqlSave(ctx context.Context) (n int, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: enterprise.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if esu.mutation.BillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestatement.BillsTable,
+			Columns: []string{enterprisestatement.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esu.mutation.RemovedBillsIDs(); len(nodes) > 0 && !esu.mutation.BillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestatement.BillsTable,
+			Columns: []string{enterprisestatement.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esu.mutation.BillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestatement.BillsTable,
+			Columns: []string{enterprisestatement.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
 				},
 			},
 		}
@@ -734,27 +745,6 @@ func (esuo *EnterpriseStatementUpdateOne) AddCost(f float64) *EnterpriseStatemen
 	return esuo
 }
 
-// SetAmount sets the "amount" field.
-func (esuo *EnterpriseStatementUpdateOne) SetAmount(f float64) *EnterpriseStatementUpdateOne {
-	esuo.mutation.ResetAmount()
-	esuo.mutation.SetAmount(f)
-	return esuo
-}
-
-// SetNillableAmount sets the "amount" field if the given value is not nil.
-func (esuo *EnterpriseStatementUpdateOne) SetNillableAmount(f *float64) *EnterpriseStatementUpdateOne {
-	if f != nil {
-		esuo.SetAmount(*f)
-	}
-	return esuo
-}
-
-// AddAmount adds f to the "amount" field.
-func (esuo *EnterpriseStatementUpdateOne) AddAmount(f float64) *EnterpriseStatementUpdateOne {
-	esuo.mutation.AddAmount(f)
-	return esuo
-}
-
 // SetBalance sets the "balance" field.
 func (esuo *EnterpriseStatementUpdateOne) SetBalance(f float64) *EnterpriseStatementUpdateOne {
 	esuo.mutation.ResetBalance()
@@ -838,39 +828,50 @@ func (esuo *EnterpriseStatementUpdateOne) AddRiderNumber(i int) *EnterpriseState
 	return esuo
 }
 
-// SetBillTime sets the "bill_time" field.
-func (esuo *EnterpriseStatementUpdateOne) SetBillTime(t time.Time) *EnterpriseStatementUpdateOne {
-	esuo.mutation.SetBillTime(t)
+// SetDate sets the "date" field.
+func (esuo *EnterpriseStatementUpdateOne) SetDate(t time.Time) *EnterpriseStatementUpdateOne {
+	esuo.mutation.SetDate(t)
 	return esuo
 }
 
-// SetNillableBillTime sets the "bill_time" field if the given value is not nil.
-func (esuo *EnterpriseStatementUpdateOne) SetNillableBillTime(t *time.Time) *EnterpriseStatementUpdateOne {
+// SetNillableDate sets the "date" field if the given value is not nil.
+func (esuo *EnterpriseStatementUpdateOne) SetNillableDate(t *time.Time) *EnterpriseStatementUpdateOne {
 	if t != nil {
-		esuo.SetBillTime(*t)
+		esuo.SetDate(*t)
 	}
 	return esuo
 }
 
-// ClearBillTime clears the value of the "bill_time" field.
-func (esuo *EnterpriseStatementUpdateOne) ClearBillTime() *EnterpriseStatementUpdateOne {
-	esuo.mutation.ClearBillTime()
+// ClearDate clears the value of the "date" field.
+func (esuo *EnterpriseStatementUpdateOne) ClearDate() *EnterpriseStatementUpdateOne {
+	esuo.mutation.ClearDate()
 	return esuo
 }
 
-// AddSubscribeIDs adds the "subscribes" edge to the Subscribe entity by IDs.
-func (esuo *EnterpriseStatementUpdateOne) AddSubscribeIDs(ids ...uint64) *EnterpriseStatementUpdateOne {
-	esuo.mutation.AddSubscribeIDs(ids...)
+// SetStart sets the "start" field.
+func (esuo *EnterpriseStatementUpdateOne) SetStart(t time.Time) *EnterpriseStatementUpdateOne {
+	esuo.mutation.SetStart(t)
 	return esuo
 }
 
-// AddSubscribes adds the "subscribes" edges to the Subscribe entity.
-func (esuo *EnterpriseStatementUpdateOne) AddSubscribes(s ...*Subscribe) *EnterpriseStatementUpdateOne {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// SetEnd sets the "end" field.
+func (esuo *EnterpriseStatementUpdateOne) SetEnd(t time.Time) *EnterpriseStatementUpdateOne {
+	esuo.mutation.SetEnd(t)
+	return esuo
+}
+
+// SetNillableEnd sets the "end" field if the given value is not nil.
+func (esuo *EnterpriseStatementUpdateOne) SetNillableEnd(t *time.Time) *EnterpriseStatementUpdateOne {
+	if t != nil {
+		esuo.SetEnd(*t)
 	}
-	return esuo.AddSubscribeIDs(ids...)
+	return esuo
+}
+
+// ClearEnd clears the value of the "end" field.
+func (esuo *EnterpriseStatementUpdateOne) ClearEnd() *EnterpriseStatementUpdateOne {
+	esuo.mutation.ClearEnd()
+	return esuo
 }
 
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
@@ -878,36 +879,51 @@ func (esuo *EnterpriseStatementUpdateOne) SetEnterprise(e *Enterprise) *Enterpri
 	return esuo.SetEnterpriseID(e.ID)
 }
 
+// AddBillIDs adds the "bills" edge to the EnterpriseBill entity by IDs.
+func (esuo *EnterpriseStatementUpdateOne) AddBillIDs(ids ...uint64) *EnterpriseStatementUpdateOne {
+	esuo.mutation.AddBillIDs(ids...)
+	return esuo
+}
+
+// AddBills adds the "bills" edges to the EnterpriseBill entity.
+func (esuo *EnterpriseStatementUpdateOne) AddBills(e ...*EnterpriseBill) *EnterpriseStatementUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return esuo.AddBillIDs(ids...)
+}
+
 // Mutation returns the EnterpriseStatementMutation object of the builder.
 func (esuo *EnterpriseStatementUpdateOne) Mutation() *EnterpriseStatementMutation {
 	return esuo.mutation
-}
-
-// ClearSubscribes clears all "subscribes" edges to the Subscribe entity.
-func (esuo *EnterpriseStatementUpdateOne) ClearSubscribes() *EnterpriseStatementUpdateOne {
-	esuo.mutation.ClearSubscribes()
-	return esuo
-}
-
-// RemoveSubscribeIDs removes the "subscribes" edge to Subscribe entities by IDs.
-func (esuo *EnterpriseStatementUpdateOne) RemoveSubscribeIDs(ids ...uint64) *EnterpriseStatementUpdateOne {
-	esuo.mutation.RemoveSubscribeIDs(ids...)
-	return esuo
-}
-
-// RemoveSubscribes removes "subscribes" edges to Subscribe entities.
-func (esuo *EnterpriseStatementUpdateOne) RemoveSubscribes(s ...*Subscribe) *EnterpriseStatementUpdateOne {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
-	}
-	return esuo.RemoveSubscribeIDs(ids...)
 }
 
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (esuo *EnterpriseStatementUpdateOne) ClearEnterprise() *EnterpriseStatementUpdateOne {
 	esuo.mutation.ClearEnterprise()
 	return esuo
+}
+
+// ClearBills clears all "bills" edges to the EnterpriseBill entity.
+func (esuo *EnterpriseStatementUpdateOne) ClearBills() *EnterpriseStatementUpdateOne {
+	esuo.mutation.ClearBills()
+	return esuo
+}
+
+// RemoveBillIDs removes the "bills" edge to EnterpriseBill entities by IDs.
+func (esuo *EnterpriseStatementUpdateOne) RemoveBillIDs(ids ...uint64) *EnterpriseStatementUpdateOne {
+	esuo.mutation.RemoveBillIDs(ids...)
+	return esuo
+}
+
+// RemoveBills removes "bills" edges to EnterpriseBill entities.
+func (esuo *EnterpriseStatementUpdateOne) RemoveBills(e ...*EnterpriseBill) *EnterpriseStatementUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return esuo.RemoveBillIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1107,20 +1123,6 @@ func (esuo *EnterpriseStatementUpdateOne) sqlSave(ctx context.Context) (_node *E
 			Column: enterprisestatement.FieldCost,
 		})
 	}
-	if value, ok := esuo.mutation.Amount(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisestatement.FieldAmount,
-		})
-	}
-	if value, ok := esuo.mutation.AddedAmount(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisestatement.FieldAmount,
-		})
-	}
 	if value, ok := esuo.mutation.Balance(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
@@ -1176,72 +1178,38 @@ func (esuo *EnterpriseStatementUpdateOne) sqlSave(ctx context.Context) (_node *E
 			Column: enterprisestatement.FieldRiderNumber,
 		})
 	}
-	if value, ok := esuo.mutation.BillTime(); ok {
+	if value, ok := esuo.mutation.Date(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: enterprisestatement.FieldBillTime,
+			Column: enterprisestatement.FieldDate,
 		})
 	}
-	if esuo.mutation.BillTimeCleared() {
+	if esuo.mutation.DateCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
-			Column: enterprisestatement.FieldBillTime,
+			Column: enterprisestatement.FieldDate,
 		})
 	}
-	if esuo.mutation.SubscribesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprisestatement.SubscribesTable,
-			Columns: []string{enterprisestatement.SubscribesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	if value, ok := esuo.mutation.Start(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: enterprisestatement.FieldStart,
+		})
 	}
-	if nodes := esuo.mutation.RemovedSubscribesIDs(); len(nodes) > 0 && !esuo.mutation.SubscribesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprisestatement.SubscribesTable,
-			Columns: []string{enterprisestatement.SubscribesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	if value, ok := esuo.mutation.End(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: enterprisestatement.FieldEnd,
+		})
 	}
-	if nodes := esuo.mutation.SubscribesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprisestatement.SubscribesTable,
-			Columns: []string{enterprisestatement.SubscribesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	if esuo.mutation.EndCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: enterprisestatement.FieldEnd,
+		})
 	}
 	if esuo.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1270,6 +1238,60 @@ func (esuo *EnterpriseStatementUpdateOne) sqlSave(ctx context.Context) (_node *E
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: enterprise.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if esuo.mutation.BillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestatement.BillsTable,
+			Columns: []string{enterprisestatement.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esuo.mutation.RemovedBillsIDs(); len(nodes) > 0 && !esuo.mutation.BillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestatement.BillsTable,
+			Columns: []string{enterprisestatement.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := esuo.mutation.BillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestatement.BillsTable,
+			Columns: []string{enterprisestatement.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
 				},
 			},
 		}

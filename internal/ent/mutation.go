@@ -22,6 +22,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
@@ -69,6 +70,7 @@ const (
 	TypeContract             = "Contract"
 	TypeEmployee             = "Employee"
 	TypeEnterprise           = "Enterprise"
+	TypeEnterpriseBill       = "EnterpriseBill"
 	TypeEnterpriseContract   = "EnterpriseContract"
 	TypeEnterprisePrepayment = "EnterprisePrepayment"
 	TypeEnterprisePrice      = "EnterprisePrice"
@@ -15581,6 +15583,9 @@ type EnterpriseMutation struct {
 	stations          map[uint64]struct{}
 	removedstations   map[uint64]struct{}
 	clearedstations   bool
+	bills             map[uint64]struct{}
+	removedbills      map[uint64]struct{}
+	clearedbills      bool
 	done              bool
 	oldValue          func(context.Context) (*Enterprise, error)
 	predicates        []predicate.Enterprise
@@ -16791,6 +16796,60 @@ func (m *EnterpriseMutation) ResetStations() {
 	m.removedstations = nil
 }
 
+// AddBillIDs adds the "bills" edge to the EnterpriseBill entity by ids.
+func (m *EnterpriseMutation) AddBillIDs(ids ...uint64) {
+	if m.bills == nil {
+		m.bills = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.bills[ids[i]] = struct{}{}
+	}
+}
+
+// ClearBills clears the "bills" edge to the EnterpriseBill entity.
+func (m *EnterpriseMutation) ClearBills() {
+	m.clearedbills = true
+}
+
+// BillsCleared reports if the "bills" edge to the EnterpriseBill entity was cleared.
+func (m *EnterpriseMutation) BillsCleared() bool {
+	return m.clearedbills
+}
+
+// RemoveBillIDs removes the "bills" edge to the EnterpriseBill entity by IDs.
+func (m *EnterpriseMutation) RemoveBillIDs(ids ...uint64) {
+	if m.removedbills == nil {
+		m.removedbills = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.bills, ids[i])
+		m.removedbills[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedBills returns the removed IDs of the "bills" edge to the EnterpriseBill entity.
+func (m *EnterpriseMutation) RemovedBillsIDs() (ids []uint64) {
+	for id := range m.removedbills {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// BillsIDs returns the "bills" edge IDs in the mutation.
+func (m *EnterpriseMutation) BillsIDs() (ids []uint64) {
+	for id := range m.bills {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetBills resets all changes to the "bills" edge.
+func (m *EnterpriseMutation) ResetBills() {
+	m.bills = nil
+	m.clearedbills = false
+	m.removedbills = nil
+}
+
 // Where appends a list predicates to the EnterpriseMutation builder.
 func (m *EnterpriseMutation) Where(ps ...predicate.Enterprise) {
 	m.predicates = append(m.predicates, ps...)
@@ -17265,7 +17324,7 @@ func (m *EnterpriseMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EnterpriseMutation) AddedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.city != nil {
 		edges = append(edges, enterprise.EdgeCity)
 	}
@@ -17286,6 +17345,9 @@ func (m *EnterpriseMutation) AddedEdges() []string {
 	}
 	if m.stations != nil {
 		edges = append(edges, enterprise.EdgeStations)
+	}
+	if m.bills != nil {
+		edges = append(edges, enterprise.EdgeBills)
 	}
 	return edges
 }
@@ -17334,13 +17396,19 @@ func (m *EnterpriseMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case enterprise.EdgeBills:
+		ids := make([]ent.Value, 0, len(m.bills))
+		for id := range m.bills {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EnterpriseMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.removedriders != nil {
 		edges = append(edges, enterprise.EdgeRiders)
 	}
@@ -17358,6 +17426,9 @@ func (m *EnterpriseMutation) RemovedEdges() []string {
 	}
 	if m.removedstations != nil {
 		edges = append(edges, enterprise.EdgeStations)
+	}
+	if m.removedbills != nil {
+		edges = append(edges, enterprise.EdgeBills)
 	}
 	return edges
 }
@@ -17402,13 +17473,19 @@ func (m *EnterpriseMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case enterprise.EdgeBills:
+		ids := make([]ent.Value, 0, len(m.removedbills))
+		for id := range m.removedbills {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EnterpriseMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.clearedcity {
 		edges = append(edges, enterprise.EdgeCity)
 	}
@@ -17429,6 +17506,9 @@ func (m *EnterpriseMutation) ClearedEdges() []string {
 	}
 	if m.clearedstations {
 		edges = append(edges, enterprise.EdgeStations)
+	}
+	if m.clearedbills {
+		edges = append(edges, enterprise.EdgeBills)
 	}
 	return edges
 }
@@ -17451,6 +17531,8 @@ func (m *EnterpriseMutation) EdgeCleared(name string) bool {
 		return m.clearedstatements
 	case enterprise.EdgeStations:
 		return m.clearedstations
+	case enterprise.EdgeBills:
+		return m.clearedbills
 	}
 	return false
 }
@@ -17491,8 +17573,1635 @@ func (m *EnterpriseMutation) ResetEdge(name string) error {
 	case enterprise.EdgeStations:
 		m.ResetStations()
 		return nil
+	case enterprise.EdgeBills:
+		m.ResetBills()
+		return nil
 	}
 	return fmt.Errorf("unknown Enterprise edge %s", name)
+}
+
+// EnterpriseBillMutation represents an operation that mutates the EnterpriseBill nodes in the graph.
+type EnterpriseBillMutation struct {
+	config
+	op                Op
+	typ               string
+	id                *uint64
+	created_at        *time.Time
+	updated_at        *time.Time
+	deleted_at        *time.Time
+	creator           **model.Modifier
+	last_modifier     **model.Modifier
+	remark            *string
+	start             *time.Time
+	end               *time.Time
+	days              *int
+	adddays           *int
+	price             *float64
+	addprice          *float64
+	cost              *float64
+	addcost           *float64
+	voltage           *float64
+	addvoltage        *float64
+	clearedFields     map[string]struct{}
+	rider             *uint64
+	clearedrider      bool
+	subscribe         *uint64
+	clearedsubscribe  bool
+	city              *uint64
+	clearedcity       bool
+	enterprise        *uint64
+	clearedenterprise bool
+	statement         *uint64
+	clearedstatement  bool
+	done              bool
+	oldValue          func(context.Context) (*EnterpriseBill, error)
+	predicates        []predicate.EnterpriseBill
+}
+
+var _ ent.Mutation = (*EnterpriseBillMutation)(nil)
+
+// enterprisebillOption allows management of the mutation configuration using functional options.
+type enterprisebillOption func(*EnterpriseBillMutation)
+
+// newEnterpriseBillMutation creates new mutation for the EnterpriseBill entity.
+func newEnterpriseBillMutation(c config, op Op, opts ...enterprisebillOption) *EnterpriseBillMutation {
+	m := &EnterpriseBillMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeEnterpriseBill,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withEnterpriseBillID sets the ID field of the mutation.
+func withEnterpriseBillID(id uint64) enterprisebillOption {
+	return func(m *EnterpriseBillMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *EnterpriseBill
+		)
+		m.oldValue = func(ctx context.Context) (*EnterpriseBill, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().EnterpriseBill.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withEnterpriseBill sets the old EnterpriseBill of the mutation.
+func withEnterpriseBill(node *EnterpriseBill) enterprisebillOption {
+	return func(m *EnterpriseBillMutation) {
+		m.oldValue = func(context.Context) (*EnterpriseBill, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m EnterpriseBillMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m EnterpriseBillMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *EnterpriseBillMutation) ID() (id uint64, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *EnterpriseBillMutation) IDs(ctx context.Context) ([]uint64, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint64{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().EnterpriseBill.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *EnterpriseBillMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *EnterpriseBillMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *EnterpriseBillMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *EnterpriseBillMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *EnterpriseBillMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *EnterpriseBillMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *EnterpriseBillMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *EnterpriseBillMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *EnterpriseBillMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[enterprisebill.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *EnterpriseBillMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[enterprisebill.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *EnterpriseBillMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, enterprisebill.FieldDeletedAt)
+}
+
+// SetCreator sets the "creator" field.
+func (m *EnterpriseBillMutation) SetCreator(value *model.Modifier) {
+	m.creator = &value
+}
+
+// Creator returns the value of the "creator" field in the mutation.
+func (m *EnterpriseBillMutation) Creator() (r *model.Modifier, exists bool) {
+	v := m.creator
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreator returns the old "creator" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldCreator(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreator is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreator requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreator: %w", err)
+	}
+	return oldValue.Creator, nil
+}
+
+// ClearCreator clears the value of the "creator" field.
+func (m *EnterpriseBillMutation) ClearCreator() {
+	m.creator = nil
+	m.clearedFields[enterprisebill.FieldCreator] = struct{}{}
+}
+
+// CreatorCleared returns if the "creator" field was cleared in this mutation.
+func (m *EnterpriseBillMutation) CreatorCleared() bool {
+	_, ok := m.clearedFields[enterprisebill.FieldCreator]
+	return ok
+}
+
+// ResetCreator resets all changes to the "creator" field.
+func (m *EnterpriseBillMutation) ResetCreator() {
+	m.creator = nil
+	delete(m.clearedFields, enterprisebill.FieldCreator)
+}
+
+// SetLastModifier sets the "last_modifier" field.
+func (m *EnterpriseBillMutation) SetLastModifier(value *model.Modifier) {
+	m.last_modifier = &value
+}
+
+// LastModifier returns the value of the "last_modifier" field in the mutation.
+func (m *EnterpriseBillMutation) LastModifier() (r *model.Modifier, exists bool) {
+	v := m.last_modifier
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastModifier returns the old "last_modifier" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldLastModifier(ctx context.Context) (v *model.Modifier, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastModifier is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastModifier requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastModifier: %w", err)
+	}
+	return oldValue.LastModifier, nil
+}
+
+// ClearLastModifier clears the value of the "last_modifier" field.
+func (m *EnterpriseBillMutation) ClearLastModifier() {
+	m.last_modifier = nil
+	m.clearedFields[enterprisebill.FieldLastModifier] = struct{}{}
+}
+
+// LastModifierCleared returns if the "last_modifier" field was cleared in this mutation.
+func (m *EnterpriseBillMutation) LastModifierCleared() bool {
+	_, ok := m.clearedFields[enterprisebill.FieldLastModifier]
+	return ok
+}
+
+// ResetLastModifier resets all changes to the "last_modifier" field.
+func (m *EnterpriseBillMutation) ResetLastModifier() {
+	m.last_modifier = nil
+	delete(m.clearedFields, enterprisebill.FieldLastModifier)
+}
+
+// SetRemark sets the "remark" field.
+func (m *EnterpriseBillMutation) SetRemark(s string) {
+	m.remark = &s
+}
+
+// Remark returns the value of the "remark" field in the mutation.
+func (m *EnterpriseBillMutation) Remark() (r string, exists bool) {
+	v := m.remark
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRemark returns the old "remark" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldRemark(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRemark requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
+	}
+	return oldValue.Remark, nil
+}
+
+// ClearRemark clears the value of the "remark" field.
+func (m *EnterpriseBillMutation) ClearRemark() {
+	m.remark = nil
+	m.clearedFields[enterprisebill.FieldRemark] = struct{}{}
+}
+
+// RemarkCleared returns if the "remark" field was cleared in this mutation.
+func (m *EnterpriseBillMutation) RemarkCleared() bool {
+	_, ok := m.clearedFields[enterprisebill.FieldRemark]
+	return ok
+}
+
+// ResetRemark resets all changes to the "remark" field.
+func (m *EnterpriseBillMutation) ResetRemark() {
+	m.remark = nil
+	delete(m.clearedFields, enterprisebill.FieldRemark)
+}
+
+// SetRiderID sets the "rider_id" field.
+func (m *EnterpriseBillMutation) SetRiderID(u uint64) {
+	m.rider = &u
+}
+
+// RiderID returns the value of the "rider_id" field in the mutation.
+func (m *EnterpriseBillMutation) RiderID() (r uint64, exists bool) {
+	v := m.rider
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRiderID returns the old "rider_id" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldRiderID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRiderID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRiderID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRiderID: %w", err)
+	}
+	return oldValue.RiderID, nil
+}
+
+// ResetRiderID resets all changes to the "rider_id" field.
+func (m *EnterpriseBillMutation) ResetRiderID() {
+	m.rider = nil
+}
+
+// SetSubscribeID sets the "subscribe_id" field.
+func (m *EnterpriseBillMutation) SetSubscribeID(u uint64) {
+	m.subscribe = &u
+}
+
+// SubscribeID returns the value of the "subscribe_id" field in the mutation.
+func (m *EnterpriseBillMutation) SubscribeID() (r uint64, exists bool) {
+	v := m.subscribe
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubscribeID returns the old "subscribe_id" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldSubscribeID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubscribeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubscribeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubscribeID: %w", err)
+	}
+	return oldValue.SubscribeID, nil
+}
+
+// ResetSubscribeID resets all changes to the "subscribe_id" field.
+func (m *EnterpriseBillMutation) ResetSubscribeID() {
+	m.subscribe = nil
+}
+
+// SetCityID sets the "city_id" field.
+func (m *EnterpriseBillMutation) SetCityID(u uint64) {
+	m.city = &u
+}
+
+// CityID returns the value of the "city_id" field in the mutation.
+func (m *EnterpriseBillMutation) CityID() (r uint64, exists bool) {
+	v := m.city
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCityID returns the old "city_id" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldCityID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCityID: %w", err)
+	}
+	return oldValue.CityID, nil
+}
+
+// ResetCityID resets all changes to the "city_id" field.
+func (m *EnterpriseBillMutation) ResetCityID() {
+	m.city = nil
+}
+
+// SetEnterpriseID sets the "enterprise_id" field.
+func (m *EnterpriseBillMutation) SetEnterpriseID(u uint64) {
+	m.enterprise = &u
+}
+
+// EnterpriseID returns the value of the "enterprise_id" field in the mutation.
+func (m *EnterpriseBillMutation) EnterpriseID() (r uint64, exists bool) {
+	v := m.enterprise
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEnterpriseID returns the old "enterprise_id" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldEnterpriseID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEnterpriseID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEnterpriseID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEnterpriseID: %w", err)
+	}
+	return oldValue.EnterpriseID, nil
+}
+
+// ResetEnterpriseID resets all changes to the "enterprise_id" field.
+func (m *EnterpriseBillMutation) ResetEnterpriseID() {
+	m.enterprise = nil
+}
+
+// SetStatementID sets the "statement_id" field.
+func (m *EnterpriseBillMutation) SetStatementID(u uint64) {
+	m.statement = &u
+}
+
+// StatementID returns the value of the "statement_id" field in the mutation.
+func (m *EnterpriseBillMutation) StatementID() (r uint64, exists bool) {
+	v := m.statement
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatementID returns the old "statement_id" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldStatementID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatementID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatementID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatementID: %w", err)
+	}
+	return oldValue.StatementID, nil
+}
+
+// ResetStatementID resets all changes to the "statement_id" field.
+func (m *EnterpriseBillMutation) ResetStatementID() {
+	m.statement = nil
+}
+
+// SetStart sets the "start" field.
+func (m *EnterpriseBillMutation) SetStart(t time.Time) {
+	m.start = &t
+}
+
+// Start returns the value of the "start" field in the mutation.
+func (m *EnterpriseBillMutation) Start() (r time.Time, exists bool) {
+	v := m.start
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStart returns the old "start" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldStart(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStart is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStart requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStart: %w", err)
+	}
+	return oldValue.Start, nil
+}
+
+// ResetStart resets all changes to the "start" field.
+func (m *EnterpriseBillMutation) ResetStart() {
+	m.start = nil
+}
+
+// SetEnd sets the "end" field.
+func (m *EnterpriseBillMutation) SetEnd(t time.Time) {
+	m.end = &t
+}
+
+// End returns the value of the "end" field in the mutation.
+func (m *EnterpriseBillMutation) End() (r time.Time, exists bool) {
+	v := m.end
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEnd returns the old "end" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldEnd(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEnd is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEnd requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEnd: %w", err)
+	}
+	return oldValue.End, nil
+}
+
+// ResetEnd resets all changes to the "end" field.
+func (m *EnterpriseBillMutation) ResetEnd() {
+	m.end = nil
+}
+
+// SetDays sets the "days" field.
+func (m *EnterpriseBillMutation) SetDays(i int) {
+	m.days = &i
+	m.adddays = nil
+}
+
+// Days returns the value of the "days" field in the mutation.
+func (m *EnterpriseBillMutation) Days() (r int, exists bool) {
+	v := m.days
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDays returns the old "days" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldDays(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDays is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDays requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDays: %w", err)
+	}
+	return oldValue.Days, nil
+}
+
+// AddDays adds i to the "days" field.
+func (m *EnterpriseBillMutation) AddDays(i int) {
+	if m.adddays != nil {
+		*m.adddays += i
+	} else {
+		m.adddays = &i
+	}
+}
+
+// AddedDays returns the value that was added to the "days" field in this mutation.
+func (m *EnterpriseBillMutation) AddedDays() (r int, exists bool) {
+	v := m.adddays
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDays resets all changes to the "days" field.
+func (m *EnterpriseBillMutation) ResetDays() {
+	m.days = nil
+	m.adddays = nil
+}
+
+// SetPrice sets the "price" field.
+func (m *EnterpriseBillMutation) SetPrice(f float64) {
+	m.price = &f
+	m.addprice = nil
+}
+
+// Price returns the value of the "price" field in the mutation.
+func (m *EnterpriseBillMutation) Price() (r float64, exists bool) {
+	v := m.price
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPrice returns the old "price" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldPrice(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPrice is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPrice requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPrice: %w", err)
+	}
+	return oldValue.Price, nil
+}
+
+// AddPrice adds f to the "price" field.
+func (m *EnterpriseBillMutation) AddPrice(f float64) {
+	if m.addprice != nil {
+		*m.addprice += f
+	} else {
+		m.addprice = &f
+	}
+}
+
+// AddedPrice returns the value that was added to the "price" field in this mutation.
+func (m *EnterpriseBillMutation) AddedPrice() (r float64, exists bool) {
+	v := m.addprice
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPrice resets all changes to the "price" field.
+func (m *EnterpriseBillMutation) ResetPrice() {
+	m.price = nil
+	m.addprice = nil
+}
+
+// SetCost sets the "cost" field.
+func (m *EnterpriseBillMutation) SetCost(f float64) {
+	m.cost = &f
+	m.addcost = nil
+}
+
+// Cost returns the value of the "cost" field in the mutation.
+func (m *EnterpriseBillMutation) Cost() (r float64, exists bool) {
+	v := m.cost
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCost returns the old "cost" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldCost(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCost is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCost requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCost: %w", err)
+	}
+	return oldValue.Cost, nil
+}
+
+// AddCost adds f to the "cost" field.
+func (m *EnterpriseBillMutation) AddCost(f float64) {
+	if m.addcost != nil {
+		*m.addcost += f
+	} else {
+		m.addcost = &f
+	}
+}
+
+// AddedCost returns the value that was added to the "cost" field in this mutation.
+func (m *EnterpriseBillMutation) AddedCost() (r float64, exists bool) {
+	v := m.addcost
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCost resets all changes to the "cost" field.
+func (m *EnterpriseBillMutation) ResetCost() {
+	m.cost = nil
+	m.addcost = nil
+}
+
+// SetVoltage sets the "voltage" field.
+func (m *EnterpriseBillMutation) SetVoltage(f float64) {
+	m.voltage = &f
+	m.addvoltage = nil
+}
+
+// Voltage returns the value of the "voltage" field in the mutation.
+func (m *EnterpriseBillMutation) Voltage() (r float64, exists bool) {
+	v := m.voltage
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVoltage returns the old "voltage" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldVoltage(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVoltage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVoltage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVoltage: %w", err)
+	}
+	return oldValue.Voltage, nil
+}
+
+// AddVoltage adds f to the "voltage" field.
+func (m *EnterpriseBillMutation) AddVoltage(f float64) {
+	if m.addvoltage != nil {
+		*m.addvoltage += f
+	} else {
+		m.addvoltage = &f
+	}
+}
+
+// AddedVoltage returns the value that was added to the "voltage" field in this mutation.
+func (m *EnterpriseBillMutation) AddedVoltage() (r float64, exists bool) {
+	v := m.addvoltage
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetVoltage resets all changes to the "voltage" field.
+func (m *EnterpriseBillMutation) ResetVoltage() {
+	m.voltage = nil
+	m.addvoltage = nil
+}
+
+// ClearRider clears the "rider" edge to the Rider entity.
+func (m *EnterpriseBillMutation) ClearRider() {
+	m.clearedrider = true
+}
+
+// RiderCleared reports if the "rider" edge to the Rider entity was cleared.
+func (m *EnterpriseBillMutation) RiderCleared() bool {
+	return m.clearedrider
+}
+
+// RiderIDs returns the "rider" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RiderID instead. It exists only for internal usage by the builders.
+func (m *EnterpriseBillMutation) RiderIDs() (ids []uint64) {
+	if id := m.rider; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetRider resets all changes to the "rider" edge.
+func (m *EnterpriseBillMutation) ResetRider() {
+	m.rider = nil
+	m.clearedrider = false
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (m *EnterpriseBillMutation) ClearSubscribe() {
+	m.clearedsubscribe = true
+}
+
+// SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
+func (m *EnterpriseBillMutation) SubscribeCleared() bool {
+	return m.clearedsubscribe
+}
+
+// SubscribeIDs returns the "subscribe" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// SubscribeID instead. It exists only for internal usage by the builders.
+func (m *EnterpriseBillMutation) SubscribeIDs() (ids []uint64) {
+	if id := m.subscribe; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetSubscribe resets all changes to the "subscribe" edge.
+func (m *EnterpriseBillMutation) ResetSubscribe() {
+	m.subscribe = nil
+	m.clearedsubscribe = false
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (m *EnterpriseBillMutation) ClearCity() {
+	m.clearedcity = true
+}
+
+// CityCleared reports if the "city" edge to the City entity was cleared.
+func (m *EnterpriseBillMutation) CityCleared() bool {
+	return m.clearedcity
+}
+
+// CityIDs returns the "city" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CityID instead. It exists only for internal usage by the builders.
+func (m *EnterpriseBillMutation) CityIDs() (ids []uint64) {
+	if id := m.city; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCity resets all changes to the "city" edge.
+func (m *EnterpriseBillMutation) ResetCity() {
+	m.city = nil
+	m.clearedcity = false
+}
+
+// ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
+func (m *EnterpriseBillMutation) ClearEnterprise() {
+	m.clearedenterprise = true
+}
+
+// EnterpriseCleared reports if the "enterprise" edge to the Enterprise entity was cleared.
+func (m *EnterpriseBillMutation) EnterpriseCleared() bool {
+	return m.clearedenterprise
+}
+
+// EnterpriseIDs returns the "enterprise" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EnterpriseID instead. It exists only for internal usage by the builders.
+func (m *EnterpriseBillMutation) EnterpriseIDs() (ids []uint64) {
+	if id := m.enterprise; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEnterprise resets all changes to the "enterprise" edge.
+func (m *EnterpriseBillMutation) ResetEnterprise() {
+	m.enterprise = nil
+	m.clearedenterprise = false
+}
+
+// ClearStatement clears the "statement" edge to the EnterpriseStatement entity.
+func (m *EnterpriseBillMutation) ClearStatement() {
+	m.clearedstatement = true
+}
+
+// StatementCleared reports if the "statement" edge to the EnterpriseStatement entity was cleared.
+func (m *EnterpriseBillMutation) StatementCleared() bool {
+	return m.clearedstatement
+}
+
+// StatementIDs returns the "statement" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// StatementID instead. It exists only for internal usage by the builders.
+func (m *EnterpriseBillMutation) StatementIDs() (ids []uint64) {
+	if id := m.statement; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetStatement resets all changes to the "statement" edge.
+func (m *EnterpriseBillMutation) ResetStatement() {
+	m.statement = nil
+	m.clearedstatement = false
+}
+
+// Where appends a list predicates to the EnterpriseBillMutation builder.
+func (m *EnterpriseBillMutation) Where(ps ...predicate.EnterpriseBill) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *EnterpriseBillMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (EnterpriseBill).
+func (m *EnterpriseBillMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *EnterpriseBillMutation) Fields() []string {
+	fields := make([]string, 0, 17)
+	if m.created_at != nil {
+		fields = append(fields, enterprisebill.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, enterprisebill.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, enterprisebill.FieldDeletedAt)
+	}
+	if m.creator != nil {
+		fields = append(fields, enterprisebill.FieldCreator)
+	}
+	if m.last_modifier != nil {
+		fields = append(fields, enterprisebill.FieldLastModifier)
+	}
+	if m.remark != nil {
+		fields = append(fields, enterprisebill.FieldRemark)
+	}
+	if m.rider != nil {
+		fields = append(fields, enterprisebill.FieldRiderID)
+	}
+	if m.subscribe != nil {
+		fields = append(fields, enterprisebill.FieldSubscribeID)
+	}
+	if m.city != nil {
+		fields = append(fields, enterprisebill.FieldCityID)
+	}
+	if m.enterprise != nil {
+		fields = append(fields, enterprisebill.FieldEnterpriseID)
+	}
+	if m.statement != nil {
+		fields = append(fields, enterprisebill.FieldStatementID)
+	}
+	if m.start != nil {
+		fields = append(fields, enterprisebill.FieldStart)
+	}
+	if m.end != nil {
+		fields = append(fields, enterprisebill.FieldEnd)
+	}
+	if m.days != nil {
+		fields = append(fields, enterprisebill.FieldDays)
+	}
+	if m.price != nil {
+		fields = append(fields, enterprisebill.FieldPrice)
+	}
+	if m.cost != nil {
+		fields = append(fields, enterprisebill.FieldCost)
+	}
+	if m.voltage != nil {
+		fields = append(fields, enterprisebill.FieldVoltage)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *EnterpriseBillMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case enterprisebill.FieldCreatedAt:
+		return m.CreatedAt()
+	case enterprisebill.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case enterprisebill.FieldDeletedAt:
+		return m.DeletedAt()
+	case enterprisebill.FieldCreator:
+		return m.Creator()
+	case enterprisebill.FieldLastModifier:
+		return m.LastModifier()
+	case enterprisebill.FieldRemark:
+		return m.Remark()
+	case enterprisebill.FieldRiderID:
+		return m.RiderID()
+	case enterprisebill.FieldSubscribeID:
+		return m.SubscribeID()
+	case enterprisebill.FieldCityID:
+		return m.CityID()
+	case enterprisebill.FieldEnterpriseID:
+		return m.EnterpriseID()
+	case enterprisebill.FieldStatementID:
+		return m.StatementID()
+	case enterprisebill.FieldStart:
+		return m.Start()
+	case enterprisebill.FieldEnd:
+		return m.End()
+	case enterprisebill.FieldDays:
+		return m.Days()
+	case enterprisebill.FieldPrice:
+		return m.Price()
+	case enterprisebill.FieldCost:
+		return m.Cost()
+	case enterprisebill.FieldVoltage:
+		return m.Voltage()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *EnterpriseBillMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case enterprisebill.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case enterprisebill.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case enterprisebill.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case enterprisebill.FieldCreator:
+		return m.OldCreator(ctx)
+	case enterprisebill.FieldLastModifier:
+		return m.OldLastModifier(ctx)
+	case enterprisebill.FieldRemark:
+		return m.OldRemark(ctx)
+	case enterprisebill.FieldRiderID:
+		return m.OldRiderID(ctx)
+	case enterprisebill.FieldSubscribeID:
+		return m.OldSubscribeID(ctx)
+	case enterprisebill.FieldCityID:
+		return m.OldCityID(ctx)
+	case enterprisebill.FieldEnterpriseID:
+		return m.OldEnterpriseID(ctx)
+	case enterprisebill.FieldStatementID:
+		return m.OldStatementID(ctx)
+	case enterprisebill.FieldStart:
+		return m.OldStart(ctx)
+	case enterprisebill.FieldEnd:
+		return m.OldEnd(ctx)
+	case enterprisebill.FieldDays:
+		return m.OldDays(ctx)
+	case enterprisebill.FieldPrice:
+		return m.OldPrice(ctx)
+	case enterprisebill.FieldCost:
+		return m.OldCost(ctx)
+	case enterprisebill.FieldVoltage:
+		return m.OldVoltage(ctx)
+	}
+	return nil, fmt.Errorf("unknown EnterpriseBill field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EnterpriseBillMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case enterprisebill.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case enterprisebill.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case enterprisebill.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case enterprisebill.FieldCreator:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreator(v)
+		return nil
+	case enterprisebill.FieldLastModifier:
+		v, ok := value.(*model.Modifier)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastModifier(v)
+		return nil
+	case enterprisebill.FieldRemark:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRemark(v)
+		return nil
+	case enterprisebill.FieldRiderID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRiderID(v)
+		return nil
+	case enterprisebill.FieldSubscribeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubscribeID(v)
+		return nil
+	case enterprisebill.FieldCityID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCityID(v)
+		return nil
+	case enterprisebill.FieldEnterpriseID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEnterpriseID(v)
+		return nil
+	case enterprisebill.FieldStatementID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatementID(v)
+		return nil
+	case enterprisebill.FieldStart:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStart(v)
+		return nil
+	case enterprisebill.FieldEnd:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEnd(v)
+		return nil
+	case enterprisebill.FieldDays:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDays(v)
+		return nil
+	case enterprisebill.FieldPrice:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPrice(v)
+		return nil
+	case enterprisebill.FieldCost:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCost(v)
+		return nil
+	case enterprisebill.FieldVoltage:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVoltage(v)
+		return nil
+	}
+	return fmt.Errorf("unknown EnterpriseBill field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *EnterpriseBillMutation) AddedFields() []string {
+	var fields []string
+	if m.adddays != nil {
+		fields = append(fields, enterprisebill.FieldDays)
+	}
+	if m.addprice != nil {
+		fields = append(fields, enterprisebill.FieldPrice)
+	}
+	if m.addcost != nil {
+		fields = append(fields, enterprisebill.FieldCost)
+	}
+	if m.addvoltage != nil {
+		fields = append(fields, enterprisebill.FieldVoltage)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *EnterpriseBillMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case enterprisebill.FieldDays:
+		return m.AddedDays()
+	case enterprisebill.FieldPrice:
+		return m.AddedPrice()
+	case enterprisebill.FieldCost:
+		return m.AddedCost()
+	case enterprisebill.FieldVoltage:
+		return m.AddedVoltage()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *EnterpriseBillMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case enterprisebill.FieldDays:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDays(v)
+		return nil
+	case enterprisebill.FieldPrice:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPrice(v)
+		return nil
+	case enterprisebill.FieldCost:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCost(v)
+		return nil
+	case enterprisebill.FieldVoltage:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVoltage(v)
+		return nil
+	}
+	return fmt.Errorf("unknown EnterpriseBill numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *EnterpriseBillMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(enterprisebill.FieldDeletedAt) {
+		fields = append(fields, enterprisebill.FieldDeletedAt)
+	}
+	if m.FieldCleared(enterprisebill.FieldCreator) {
+		fields = append(fields, enterprisebill.FieldCreator)
+	}
+	if m.FieldCleared(enterprisebill.FieldLastModifier) {
+		fields = append(fields, enterprisebill.FieldLastModifier)
+	}
+	if m.FieldCleared(enterprisebill.FieldRemark) {
+		fields = append(fields, enterprisebill.FieldRemark)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *EnterpriseBillMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *EnterpriseBillMutation) ClearField(name string) error {
+	switch name {
+	case enterprisebill.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case enterprisebill.FieldCreator:
+		m.ClearCreator()
+		return nil
+	case enterprisebill.FieldLastModifier:
+		m.ClearLastModifier()
+		return nil
+	case enterprisebill.FieldRemark:
+		m.ClearRemark()
+		return nil
+	}
+	return fmt.Errorf("unknown EnterpriseBill nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *EnterpriseBillMutation) ResetField(name string) error {
+	switch name {
+	case enterprisebill.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case enterprisebill.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case enterprisebill.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case enterprisebill.FieldCreator:
+		m.ResetCreator()
+		return nil
+	case enterprisebill.FieldLastModifier:
+		m.ResetLastModifier()
+		return nil
+	case enterprisebill.FieldRemark:
+		m.ResetRemark()
+		return nil
+	case enterprisebill.FieldRiderID:
+		m.ResetRiderID()
+		return nil
+	case enterprisebill.FieldSubscribeID:
+		m.ResetSubscribeID()
+		return nil
+	case enterprisebill.FieldCityID:
+		m.ResetCityID()
+		return nil
+	case enterprisebill.FieldEnterpriseID:
+		m.ResetEnterpriseID()
+		return nil
+	case enterprisebill.FieldStatementID:
+		m.ResetStatementID()
+		return nil
+	case enterprisebill.FieldStart:
+		m.ResetStart()
+		return nil
+	case enterprisebill.FieldEnd:
+		m.ResetEnd()
+		return nil
+	case enterprisebill.FieldDays:
+		m.ResetDays()
+		return nil
+	case enterprisebill.FieldPrice:
+		m.ResetPrice()
+		return nil
+	case enterprisebill.FieldCost:
+		m.ResetCost()
+		return nil
+	case enterprisebill.FieldVoltage:
+		m.ResetVoltage()
+		return nil
+	}
+	return fmt.Errorf("unknown EnterpriseBill field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *EnterpriseBillMutation) AddedEdges() []string {
+	edges := make([]string, 0, 5)
+	if m.rider != nil {
+		edges = append(edges, enterprisebill.EdgeRider)
+	}
+	if m.subscribe != nil {
+		edges = append(edges, enterprisebill.EdgeSubscribe)
+	}
+	if m.city != nil {
+		edges = append(edges, enterprisebill.EdgeCity)
+	}
+	if m.enterprise != nil {
+		edges = append(edges, enterprisebill.EdgeEnterprise)
+	}
+	if m.statement != nil {
+		edges = append(edges, enterprisebill.EdgeStatement)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *EnterpriseBillMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case enterprisebill.EdgeRider:
+		if id := m.rider; id != nil {
+			return []ent.Value{*id}
+		}
+	case enterprisebill.EdgeSubscribe:
+		if id := m.subscribe; id != nil {
+			return []ent.Value{*id}
+		}
+	case enterprisebill.EdgeCity:
+		if id := m.city; id != nil {
+			return []ent.Value{*id}
+		}
+	case enterprisebill.EdgeEnterprise:
+		if id := m.enterprise; id != nil {
+			return []ent.Value{*id}
+		}
+	case enterprisebill.EdgeStatement:
+		if id := m.statement; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *EnterpriseBillMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 5)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *EnterpriseBillMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *EnterpriseBillMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 5)
+	if m.clearedrider {
+		edges = append(edges, enterprisebill.EdgeRider)
+	}
+	if m.clearedsubscribe {
+		edges = append(edges, enterprisebill.EdgeSubscribe)
+	}
+	if m.clearedcity {
+		edges = append(edges, enterprisebill.EdgeCity)
+	}
+	if m.clearedenterprise {
+		edges = append(edges, enterprisebill.EdgeEnterprise)
+	}
+	if m.clearedstatement {
+		edges = append(edges, enterprisebill.EdgeStatement)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *EnterpriseBillMutation) EdgeCleared(name string) bool {
+	switch name {
+	case enterprisebill.EdgeRider:
+		return m.clearedrider
+	case enterprisebill.EdgeSubscribe:
+		return m.clearedsubscribe
+	case enterprisebill.EdgeCity:
+		return m.clearedcity
+	case enterprisebill.EdgeEnterprise:
+		return m.clearedenterprise
+	case enterprisebill.EdgeStatement:
+		return m.clearedstatement
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *EnterpriseBillMutation) ClearEdge(name string) error {
+	switch name {
+	case enterprisebill.EdgeRider:
+		m.ClearRider()
+		return nil
+	case enterprisebill.EdgeSubscribe:
+		m.ClearSubscribe()
+		return nil
+	case enterprisebill.EdgeCity:
+		m.ClearCity()
+		return nil
+	case enterprisebill.EdgeEnterprise:
+		m.ClearEnterprise()
+		return nil
+	case enterprisebill.EdgeStatement:
+		m.ClearStatement()
+		return nil
+	}
+	return fmt.Errorf("unknown EnterpriseBill unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *EnterpriseBillMutation) ResetEdge(name string) error {
+	switch name {
+	case enterprisebill.EdgeRider:
+		m.ResetRider()
+		return nil
+	case enterprisebill.EdgeSubscribe:
+		m.ResetSubscribe()
+		return nil
+	case enterprisebill.EdgeCity:
+		m.ResetCity()
+		return nil
+	case enterprisebill.EdgeEnterprise:
+		m.ResetEnterprise()
+		return nil
+	case enterprisebill.EdgeStatement:
+		m.ResetStatement()
+		return nil
+	}
+	return fmt.Errorf("unknown EnterpriseBill edge %s", name)
 }
 
 // EnterpriseContractMutation represents an operation that mutates the EnterpriseContract nodes in the graph.
@@ -20347,8 +22056,6 @@ type EnterpriseStatementMutation struct {
 	remark            *string
 	cost              *float64
 	addcost           *float64
-	amount            *float64
-	addamount         *float64
 	balance           *float64
 	addbalance        *float64
 	settled_at        *time.Time
@@ -20356,13 +22063,15 @@ type EnterpriseStatementMutation struct {
 	adddays           *int
 	rider_number      *int
 	addrider_number   *int
-	bill_time         *time.Time
+	date              *time.Time
+	start             *time.Time
+	end               *time.Time
 	clearedFields     map[string]struct{}
-	subscribes        map[uint64]struct{}
-	removedsubscribes map[uint64]struct{}
-	clearedsubscribes bool
 	enterprise        *uint64
 	clearedenterprise bool
+	bills             map[uint64]struct{}
+	removedbills      map[uint64]struct{}
+	clearedbills      bool
 	done              bool
 	oldValue          func(context.Context) (*EnterpriseStatement, error)
 	predicates        []predicate.EnterpriseStatement
@@ -20826,62 +22535,6 @@ func (m *EnterpriseStatementMutation) ResetCost() {
 	m.addcost = nil
 }
 
-// SetAmount sets the "amount" field.
-func (m *EnterpriseStatementMutation) SetAmount(f float64) {
-	m.amount = &f
-	m.addamount = nil
-}
-
-// Amount returns the value of the "amount" field in the mutation.
-func (m *EnterpriseStatementMutation) Amount() (r float64, exists bool) {
-	v := m.amount
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldAmount returns the old "amount" field's value of the EnterpriseStatement entity.
-// If the EnterpriseStatement object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EnterpriseStatementMutation) OldAmount(ctx context.Context) (v float64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAmount is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAmount requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAmount: %w", err)
-	}
-	return oldValue.Amount, nil
-}
-
-// AddAmount adds f to the "amount" field.
-func (m *EnterpriseStatementMutation) AddAmount(f float64) {
-	if m.addamount != nil {
-		*m.addamount += f
-	} else {
-		m.addamount = &f
-	}
-}
-
-// AddedAmount returns the value that was added to the "amount" field in this mutation.
-func (m *EnterpriseStatementMutation) AddedAmount() (r float64, exists bool) {
-	v := m.addamount
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetAmount resets all changes to the "amount" field.
-func (m *EnterpriseStatementMutation) ResetAmount() {
-	m.amount = nil
-	m.addamount = nil
-}
-
 // SetBalance sets the "balance" field.
 func (m *EnterpriseStatementMutation) SetBalance(f float64) {
 	m.balance = &f
@@ -21099,107 +22752,138 @@ func (m *EnterpriseStatementMutation) ResetRiderNumber() {
 	m.addrider_number = nil
 }
 
-// SetBillTime sets the "bill_time" field.
-func (m *EnterpriseStatementMutation) SetBillTime(t time.Time) {
-	m.bill_time = &t
+// SetDate sets the "date" field.
+func (m *EnterpriseStatementMutation) SetDate(t time.Time) {
+	m.date = &t
 }
 
-// BillTime returns the value of the "bill_time" field in the mutation.
-func (m *EnterpriseStatementMutation) BillTime() (r time.Time, exists bool) {
-	v := m.bill_time
+// Date returns the value of the "date" field in the mutation.
+func (m *EnterpriseStatementMutation) Date() (r time.Time, exists bool) {
+	v := m.date
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldBillTime returns the old "bill_time" field's value of the EnterpriseStatement entity.
+// OldDate returns the old "date" field's value of the EnterpriseStatement entity.
 // If the EnterpriseStatement object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EnterpriseStatementMutation) OldBillTime(ctx context.Context) (v *time.Time, err error) {
+func (m *EnterpriseStatementMutation) OldDate(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBillTime is only allowed on UpdateOne operations")
+		return v, errors.New("OldDate is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBillTime requires an ID field in the mutation")
+		return v, errors.New("OldDate requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBillTime: %w", err)
+		return v, fmt.Errorf("querying old value for OldDate: %w", err)
 	}
-	return oldValue.BillTime, nil
+	return oldValue.Date, nil
 }
 
-// ClearBillTime clears the value of the "bill_time" field.
-func (m *EnterpriseStatementMutation) ClearBillTime() {
-	m.bill_time = nil
-	m.clearedFields[enterprisestatement.FieldBillTime] = struct{}{}
+// ClearDate clears the value of the "date" field.
+func (m *EnterpriseStatementMutation) ClearDate() {
+	m.date = nil
+	m.clearedFields[enterprisestatement.FieldDate] = struct{}{}
 }
 
-// BillTimeCleared returns if the "bill_time" field was cleared in this mutation.
-func (m *EnterpriseStatementMutation) BillTimeCleared() bool {
-	_, ok := m.clearedFields[enterprisestatement.FieldBillTime]
+// DateCleared returns if the "date" field was cleared in this mutation.
+func (m *EnterpriseStatementMutation) DateCleared() bool {
+	_, ok := m.clearedFields[enterprisestatement.FieldDate]
 	return ok
 }
 
-// ResetBillTime resets all changes to the "bill_time" field.
-func (m *EnterpriseStatementMutation) ResetBillTime() {
-	m.bill_time = nil
-	delete(m.clearedFields, enterprisestatement.FieldBillTime)
+// ResetDate resets all changes to the "date" field.
+func (m *EnterpriseStatementMutation) ResetDate() {
+	m.date = nil
+	delete(m.clearedFields, enterprisestatement.FieldDate)
 }
 
-// AddSubscribeIDs adds the "subscribes" edge to the Subscribe entity by ids.
-func (m *EnterpriseStatementMutation) AddSubscribeIDs(ids ...uint64) {
-	if m.subscribes == nil {
-		m.subscribes = make(map[uint64]struct{})
+// SetStart sets the "start" field.
+func (m *EnterpriseStatementMutation) SetStart(t time.Time) {
+	m.start = &t
+}
+
+// Start returns the value of the "start" field in the mutation.
+func (m *EnterpriseStatementMutation) Start() (r time.Time, exists bool) {
+	v := m.start
+	if v == nil {
+		return
 	}
-	for i := range ids {
-		m.subscribes[ids[i]] = struct{}{}
+	return *v, true
+}
+
+// OldStart returns the old "start" field's value of the EnterpriseStatement entity.
+// If the EnterpriseStatement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseStatementMutation) OldStart(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStart is only allowed on UpdateOne operations")
 	}
-}
-
-// ClearSubscribes clears the "subscribes" edge to the Subscribe entity.
-func (m *EnterpriseStatementMutation) ClearSubscribes() {
-	m.clearedsubscribes = true
-}
-
-// SubscribesCleared reports if the "subscribes" edge to the Subscribe entity was cleared.
-func (m *EnterpriseStatementMutation) SubscribesCleared() bool {
-	return m.clearedsubscribes
-}
-
-// RemoveSubscribeIDs removes the "subscribes" edge to the Subscribe entity by IDs.
-func (m *EnterpriseStatementMutation) RemoveSubscribeIDs(ids ...uint64) {
-	if m.removedsubscribes == nil {
-		m.removedsubscribes = make(map[uint64]struct{})
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStart requires an ID field in the mutation")
 	}
-	for i := range ids {
-		delete(m.subscribes, ids[i])
-		m.removedsubscribes[ids[i]] = struct{}{}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStart: %w", err)
 	}
+	return oldValue.Start, nil
 }
 
-// RemovedSubscribes returns the removed IDs of the "subscribes" edge to the Subscribe entity.
-func (m *EnterpriseStatementMutation) RemovedSubscribesIDs() (ids []uint64) {
-	for id := range m.removedsubscribes {
-		ids = append(ids, id)
-	}
-	return
+// ResetStart resets all changes to the "start" field.
+func (m *EnterpriseStatementMutation) ResetStart() {
+	m.start = nil
 }
 
-// SubscribesIDs returns the "subscribes" edge IDs in the mutation.
-func (m *EnterpriseStatementMutation) SubscribesIDs() (ids []uint64) {
-	for id := range m.subscribes {
-		ids = append(ids, id)
-	}
-	return
+// SetEnd sets the "end" field.
+func (m *EnterpriseStatementMutation) SetEnd(t time.Time) {
+	m.end = &t
 }
 
-// ResetSubscribes resets all changes to the "subscribes" edge.
-func (m *EnterpriseStatementMutation) ResetSubscribes() {
-	m.subscribes = nil
-	m.clearedsubscribes = false
-	m.removedsubscribes = nil
+// End returns the value of the "end" field in the mutation.
+func (m *EnterpriseStatementMutation) End() (r time.Time, exists bool) {
+	v := m.end
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEnd returns the old "end" field's value of the EnterpriseStatement entity.
+// If the EnterpriseStatement object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseStatementMutation) OldEnd(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEnd is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEnd requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEnd: %w", err)
+	}
+	return oldValue.End, nil
+}
+
+// ClearEnd clears the value of the "end" field.
+func (m *EnterpriseStatementMutation) ClearEnd() {
+	m.end = nil
+	m.clearedFields[enterprisestatement.FieldEnd] = struct{}{}
+}
+
+// EndCleared returns if the "end" field was cleared in this mutation.
+func (m *EnterpriseStatementMutation) EndCleared() bool {
+	_, ok := m.clearedFields[enterprisestatement.FieldEnd]
+	return ok
+}
+
+// ResetEnd resets all changes to the "end" field.
+func (m *EnterpriseStatementMutation) ResetEnd() {
+	m.end = nil
+	delete(m.clearedFields, enterprisestatement.FieldEnd)
 }
 
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
@@ -21228,6 +22912,60 @@ func (m *EnterpriseStatementMutation) ResetEnterprise() {
 	m.clearedenterprise = false
 }
 
+// AddBillIDs adds the "bills" edge to the EnterpriseBill entity by ids.
+func (m *EnterpriseStatementMutation) AddBillIDs(ids ...uint64) {
+	if m.bills == nil {
+		m.bills = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.bills[ids[i]] = struct{}{}
+	}
+}
+
+// ClearBills clears the "bills" edge to the EnterpriseBill entity.
+func (m *EnterpriseStatementMutation) ClearBills() {
+	m.clearedbills = true
+}
+
+// BillsCleared reports if the "bills" edge to the EnterpriseBill entity was cleared.
+func (m *EnterpriseStatementMutation) BillsCleared() bool {
+	return m.clearedbills
+}
+
+// RemoveBillIDs removes the "bills" edge to the EnterpriseBill entity by IDs.
+func (m *EnterpriseStatementMutation) RemoveBillIDs(ids ...uint64) {
+	if m.removedbills == nil {
+		m.removedbills = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.bills, ids[i])
+		m.removedbills[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedBills returns the removed IDs of the "bills" edge to the EnterpriseBill entity.
+func (m *EnterpriseStatementMutation) RemovedBillsIDs() (ids []uint64) {
+	for id := range m.removedbills {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// BillsIDs returns the "bills" edge IDs in the mutation.
+func (m *EnterpriseStatementMutation) BillsIDs() (ids []uint64) {
+	for id := range m.bills {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetBills resets all changes to the "bills" edge.
+func (m *EnterpriseStatementMutation) ResetBills() {
+	m.bills = nil
+	m.clearedbills = false
+	m.removedbills = nil
+}
+
 // Where appends a list predicates to the EnterpriseStatementMutation builder.
 func (m *EnterpriseStatementMutation) Where(ps ...predicate.EnterpriseStatement) {
 	m.predicates = append(m.predicates, ps...)
@@ -21247,7 +22985,7 @@ func (m *EnterpriseStatementMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterpriseStatementMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 15)
 	if m.created_at != nil {
 		fields = append(fields, enterprisestatement.FieldCreatedAt)
 	}
@@ -21272,9 +23010,6 @@ func (m *EnterpriseStatementMutation) Fields() []string {
 	if m.cost != nil {
 		fields = append(fields, enterprisestatement.FieldCost)
 	}
-	if m.amount != nil {
-		fields = append(fields, enterprisestatement.FieldAmount)
-	}
 	if m.balance != nil {
 		fields = append(fields, enterprisestatement.FieldBalance)
 	}
@@ -21287,8 +23022,14 @@ func (m *EnterpriseStatementMutation) Fields() []string {
 	if m.rider_number != nil {
 		fields = append(fields, enterprisestatement.FieldRiderNumber)
 	}
-	if m.bill_time != nil {
-		fields = append(fields, enterprisestatement.FieldBillTime)
+	if m.date != nil {
+		fields = append(fields, enterprisestatement.FieldDate)
+	}
+	if m.start != nil {
+		fields = append(fields, enterprisestatement.FieldStart)
+	}
+	if m.end != nil {
+		fields = append(fields, enterprisestatement.FieldEnd)
 	}
 	return fields
 }
@@ -21314,8 +23055,6 @@ func (m *EnterpriseStatementMutation) Field(name string) (ent.Value, bool) {
 		return m.EnterpriseID()
 	case enterprisestatement.FieldCost:
 		return m.Cost()
-	case enterprisestatement.FieldAmount:
-		return m.Amount()
 	case enterprisestatement.FieldBalance:
 		return m.Balance()
 	case enterprisestatement.FieldSettledAt:
@@ -21324,8 +23063,12 @@ func (m *EnterpriseStatementMutation) Field(name string) (ent.Value, bool) {
 		return m.Days()
 	case enterprisestatement.FieldRiderNumber:
 		return m.RiderNumber()
-	case enterprisestatement.FieldBillTime:
-		return m.BillTime()
+	case enterprisestatement.FieldDate:
+		return m.Date()
+	case enterprisestatement.FieldStart:
+		return m.Start()
+	case enterprisestatement.FieldEnd:
+		return m.End()
 	}
 	return nil, false
 }
@@ -21351,8 +23094,6 @@ func (m *EnterpriseStatementMutation) OldField(ctx context.Context, name string)
 		return m.OldEnterpriseID(ctx)
 	case enterprisestatement.FieldCost:
 		return m.OldCost(ctx)
-	case enterprisestatement.FieldAmount:
-		return m.OldAmount(ctx)
 	case enterprisestatement.FieldBalance:
 		return m.OldBalance(ctx)
 	case enterprisestatement.FieldSettledAt:
@@ -21361,8 +23102,12 @@ func (m *EnterpriseStatementMutation) OldField(ctx context.Context, name string)
 		return m.OldDays(ctx)
 	case enterprisestatement.FieldRiderNumber:
 		return m.OldRiderNumber(ctx)
-	case enterprisestatement.FieldBillTime:
-		return m.OldBillTime(ctx)
+	case enterprisestatement.FieldDate:
+		return m.OldDate(ctx)
+	case enterprisestatement.FieldStart:
+		return m.OldStart(ctx)
+	case enterprisestatement.FieldEnd:
+		return m.OldEnd(ctx)
 	}
 	return nil, fmt.Errorf("unknown EnterpriseStatement field %s", name)
 }
@@ -21428,13 +23173,6 @@ func (m *EnterpriseStatementMutation) SetField(name string, value ent.Value) err
 		}
 		m.SetCost(v)
 		return nil
-	case enterprisestatement.FieldAmount:
-		v, ok := value.(float64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetAmount(v)
-		return nil
 	case enterprisestatement.FieldBalance:
 		v, ok := value.(float64)
 		if !ok {
@@ -21463,12 +23201,26 @@ func (m *EnterpriseStatementMutation) SetField(name string, value ent.Value) err
 		}
 		m.SetRiderNumber(v)
 		return nil
-	case enterprisestatement.FieldBillTime:
+	case enterprisestatement.FieldDate:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBillTime(v)
+		m.SetDate(v)
+		return nil
+	case enterprisestatement.FieldStart:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStart(v)
+		return nil
+	case enterprisestatement.FieldEnd:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEnd(v)
 		return nil
 	}
 	return fmt.Errorf("unknown EnterpriseStatement field %s", name)
@@ -21480,9 +23232,6 @@ func (m *EnterpriseStatementMutation) AddedFields() []string {
 	var fields []string
 	if m.addcost != nil {
 		fields = append(fields, enterprisestatement.FieldCost)
-	}
-	if m.addamount != nil {
-		fields = append(fields, enterprisestatement.FieldAmount)
 	}
 	if m.addbalance != nil {
 		fields = append(fields, enterprisestatement.FieldBalance)
@@ -21503,8 +23252,6 @@ func (m *EnterpriseStatementMutation) AddedField(name string) (ent.Value, bool) 
 	switch name {
 	case enterprisestatement.FieldCost:
 		return m.AddedCost()
-	case enterprisestatement.FieldAmount:
-		return m.AddedAmount()
 	case enterprisestatement.FieldBalance:
 		return m.AddedBalance()
 	case enterprisestatement.FieldDays:
@@ -21526,13 +23273,6 @@ func (m *EnterpriseStatementMutation) AddField(name string, value ent.Value) err
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddCost(v)
-		return nil
-	case enterprisestatement.FieldAmount:
-		v, ok := value.(float64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddAmount(v)
 		return nil
 	case enterprisestatement.FieldBalance:
 		v, ok := value.(float64)
@@ -21578,8 +23318,11 @@ func (m *EnterpriseStatementMutation) ClearedFields() []string {
 	if m.FieldCleared(enterprisestatement.FieldSettledAt) {
 		fields = append(fields, enterprisestatement.FieldSettledAt)
 	}
-	if m.FieldCleared(enterprisestatement.FieldBillTime) {
-		fields = append(fields, enterprisestatement.FieldBillTime)
+	if m.FieldCleared(enterprisestatement.FieldDate) {
+		fields = append(fields, enterprisestatement.FieldDate)
+	}
+	if m.FieldCleared(enterprisestatement.FieldEnd) {
+		fields = append(fields, enterprisestatement.FieldEnd)
 	}
 	return fields
 }
@@ -21610,8 +23353,11 @@ func (m *EnterpriseStatementMutation) ClearField(name string) error {
 	case enterprisestatement.FieldSettledAt:
 		m.ClearSettledAt()
 		return nil
-	case enterprisestatement.FieldBillTime:
-		m.ClearBillTime()
+	case enterprisestatement.FieldDate:
+		m.ClearDate()
+		return nil
+	case enterprisestatement.FieldEnd:
+		m.ClearEnd()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterpriseStatement nullable field %s", name)
@@ -21645,9 +23391,6 @@ func (m *EnterpriseStatementMutation) ResetField(name string) error {
 	case enterprisestatement.FieldCost:
 		m.ResetCost()
 		return nil
-	case enterprisestatement.FieldAmount:
-		m.ResetAmount()
-		return nil
 	case enterprisestatement.FieldBalance:
 		m.ResetBalance()
 		return nil
@@ -21660,8 +23403,14 @@ func (m *EnterpriseStatementMutation) ResetField(name string) error {
 	case enterprisestatement.FieldRiderNumber:
 		m.ResetRiderNumber()
 		return nil
-	case enterprisestatement.FieldBillTime:
-		m.ResetBillTime()
+	case enterprisestatement.FieldDate:
+		m.ResetDate()
+		return nil
+	case enterprisestatement.FieldStart:
+		m.ResetStart()
+		return nil
+	case enterprisestatement.FieldEnd:
+		m.ResetEnd()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterpriseStatement field %s", name)
@@ -21670,11 +23419,11 @@ func (m *EnterpriseStatementMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EnterpriseStatementMutation) AddedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.subscribes != nil {
-		edges = append(edges, enterprisestatement.EdgeSubscribes)
-	}
 	if m.enterprise != nil {
 		edges = append(edges, enterprisestatement.EdgeEnterprise)
+	}
+	if m.bills != nil {
+		edges = append(edges, enterprisestatement.EdgeBills)
 	}
 	return edges
 }
@@ -21683,16 +23432,16 @@ func (m *EnterpriseStatementMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *EnterpriseStatementMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case enterprisestatement.EdgeSubscribes:
-		ids := make([]ent.Value, 0, len(m.subscribes))
-		for id := range m.subscribes {
-			ids = append(ids, id)
-		}
-		return ids
 	case enterprisestatement.EdgeEnterprise:
 		if id := m.enterprise; id != nil {
 			return []ent.Value{*id}
 		}
+	case enterprisestatement.EdgeBills:
+		ids := make([]ent.Value, 0, len(m.bills))
+		for id := range m.bills {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
@@ -21700,8 +23449,8 @@ func (m *EnterpriseStatementMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EnterpriseStatementMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removedsubscribes != nil {
-		edges = append(edges, enterprisestatement.EdgeSubscribes)
+	if m.removedbills != nil {
+		edges = append(edges, enterprisestatement.EdgeBills)
 	}
 	return edges
 }
@@ -21710,9 +23459,9 @@ func (m *EnterpriseStatementMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *EnterpriseStatementMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case enterprisestatement.EdgeSubscribes:
-		ids := make([]ent.Value, 0, len(m.removedsubscribes))
-		for id := range m.removedsubscribes {
+	case enterprisestatement.EdgeBills:
+		ids := make([]ent.Value, 0, len(m.removedbills))
+		for id := range m.removedbills {
 			ids = append(ids, id)
 		}
 		return ids
@@ -21723,11 +23472,11 @@ func (m *EnterpriseStatementMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EnterpriseStatementMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.clearedsubscribes {
-		edges = append(edges, enterprisestatement.EdgeSubscribes)
-	}
 	if m.clearedenterprise {
 		edges = append(edges, enterprisestatement.EdgeEnterprise)
+	}
+	if m.clearedbills {
+		edges = append(edges, enterprisestatement.EdgeBills)
 	}
 	return edges
 }
@@ -21736,10 +23485,10 @@ func (m *EnterpriseStatementMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *EnterpriseStatementMutation) EdgeCleared(name string) bool {
 	switch name {
-	case enterprisestatement.EdgeSubscribes:
-		return m.clearedsubscribes
 	case enterprisestatement.EdgeEnterprise:
 		return m.clearedenterprise
+	case enterprisestatement.EdgeBills:
+		return m.clearedbills
 	}
 	return false
 }
@@ -21759,11 +23508,11 @@ func (m *EnterpriseStatementMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *EnterpriseStatementMutation) ResetEdge(name string) error {
 	switch name {
-	case enterprisestatement.EdgeSubscribes:
-		m.ResetSubscribes()
-		return nil
 	case enterprisestatement.EdgeEnterprise:
 		m.ResetEnterprise()
+		return nil
+	case enterprisestatement.EdgeBills:
+		m.ResetBills()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterpriseStatement edge %s", name)
@@ -40242,6 +41991,7 @@ type SubscribeMutation struct {
 	end_at               *time.Time
 	refund_at            *time.Time
 	unsubscribe_reason   *string
+	last_bill_date       *time.Time
 	clearedFields        map[string]struct{}
 	plan                 *uint64
 	clearedplan          bool
@@ -40268,8 +42018,6 @@ type SubscribeMutation struct {
 	clearedorders        bool
 	initial_order        *uint64
 	clearedinitial_order bool
-	statement            *uint64
-	clearedstatement     bool
 	done                 bool
 	oldValue             func(context.Context) (*Subscribe, error)
 	predicates           []predicate.Subscribe
@@ -41005,55 +42753,6 @@ func (m *SubscribeMutation) EnterpriseIDCleared() bool {
 func (m *SubscribeMutation) ResetEnterpriseID() {
 	m.enterprise = nil
 	delete(m.clearedFields, subscribe.FieldEnterpriseID)
-}
-
-// SetStatementID sets the "statement_id" field.
-func (m *SubscribeMutation) SetStatementID(u uint64) {
-	m.statement = &u
-}
-
-// StatementID returns the value of the "statement_id" field in the mutation.
-func (m *SubscribeMutation) StatementID() (r uint64, exists bool) {
-	v := m.statement
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldStatementID returns the old "statement_id" field's value of the Subscribe entity.
-// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SubscribeMutation) OldStatementID(ctx context.Context) (v *uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldStatementID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldStatementID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldStatementID: %w", err)
-	}
-	return oldValue.StatementID, nil
-}
-
-// ClearStatementID clears the value of the "statement_id" field.
-func (m *SubscribeMutation) ClearStatementID() {
-	m.statement = nil
-	m.clearedFields[subscribe.FieldStatementID] = struct{}{}
-}
-
-// StatementIDCleared returns if the "statement_id" field was cleared in this mutation.
-func (m *SubscribeMutation) StatementIDCleared() bool {
-	_, ok := m.clearedFields[subscribe.FieldStatementID]
-	return ok
-}
-
-// ResetStatementID resets all changes to the "statement_id" field.
-func (m *SubscribeMutation) ResetStatementID() {
-	m.statement = nil
-	delete(m.clearedFields, subscribe.FieldStatementID)
 }
 
 // SetStatus sets the "status" field.
@@ -41819,6 +43518,55 @@ func (m *SubscribeMutation) ResetUnsubscribeReason() {
 	delete(m.clearedFields, subscribe.FieldUnsubscribeReason)
 }
 
+// SetLastBillDate sets the "last_bill_date" field.
+func (m *SubscribeMutation) SetLastBillDate(t time.Time) {
+	m.last_bill_date = &t
+}
+
+// LastBillDate returns the value of the "last_bill_date" field in the mutation.
+func (m *SubscribeMutation) LastBillDate() (r time.Time, exists bool) {
+	v := m.last_bill_date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastBillDate returns the old "last_bill_date" field's value of the Subscribe entity.
+// If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SubscribeMutation) OldLastBillDate(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastBillDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastBillDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastBillDate: %w", err)
+	}
+	return oldValue.LastBillDate, nil
+}
+
+// ClearLastBillDate clears the value of the "last_bill_date" field.
+func (m *SubscribeMutation) ClearLastBillDate() {
+	m.last_bill_date = nil
+	m.clearedFields[subscribe.FieldLastBillDate] = struct{}{}
+}
+
+// LastBillDateCleared returns if the "last_bill_date" field was cleared in this mutation.
+func (m *SubscribeMutation) LastBillDateCleared() bool {
+	_, ok := m.clearedFields[subscribe.FieldLastBillDate]
+	return ok
+}
+
+// ResetLastBillDate resets all changes to the "last_bill_date" field.
+func (m *SubscribeMutation) ResetLastBillDate() {
+	m.last_bill_date = nil
+	delete(m.clearedFields, subscribe.FieldLastBillDate)
+}
+
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *SubscribeMutation) ClearPlan() {
 	m.clearedplan = true
@@ -42189,32 +43937,6 @@ func (m *SubscribeMutation) ResetInitialOrder() {
 	m.clearedinitial_order = false
 }
 
-// ClearStatement clears the "statement" edge to the EnterpriseStatement entity.
-func (m *SubscribeMutation) ClearStatement() {
-	m.clearedstatement = true
-}
-
-// StatementCleared reports if the "statement" edge to the EnterpriseStatement entity was cleared.
-func (m *SubscribeMutation) StatementCleared() bool {
-	return m.StatementIDCleared() || m.clearedstatement
-}
-
-// StatementIDs returns the "statement" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// StatementID instead. It exists only for internal usage by the builders.
-func (m *SubscribeMutation) StatementIDs() (ids []uint64) {
-	if id := m.statement; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetStatement resets all changes to the "statement" edge.
-func (m *SubscribeMutation) ResetStatement() {
-	m.statement = nil
-	m.clearedstatement = false
-}
-
 // Where appends a list predicates to the SubscribeMutation builder.
 func (m *SubscribeMutation) Where(ps ...predicate.Subscribe) {
 	m.predicates = append(m.predicates, ps...)
@@ -42277,9 +43999,6 @@ func (m *SubscribeMutation) Fields() []string {
 	if m.enterprise != nil {
 		fields = append(fields, subscribe.FieldEnterpriseID)
 	}
-	if m.statement != nil {
-		fields = append(fields, subscribe.FieldStatementID)
-	}
 	if m.status != nil {
 		fields = append(fields, subscribe.FieldStatus)
 	}
@@ -42322,6 +44041,9 @@ func (m *SubscribeMutation) Fields() []string {
 	if m.unsubscribe_reason != nil {
 		fields = append(fields, subscribe.FieldUnsubscribeReason)
 	}
+	if m.last_bill_date != nil {
+		fields = append(fields, subscribe.FieldLastBillDate)
+	}
 	return fields
 }
 
@@ -42358,8 +44080,6 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.InitialOrderID()
 	case subscribe.FieldEnterpriseID:
 		return m.EnterpriseID()
-	case subscribe.FieldStatementID:
-		return m.StatementID()
 	case subscribe.FieldStatus:
 		return m.Status()
 	case subscribe.FieldType:
@@ -42388,6 +44108,8 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.RefundAt()
 	case subscribe.FieldUnsubscribeReason:
 		return m.UnsubscribeReason()
+	case subscribe.FieldLastBillDate:
+		return m.LastBillDate()
 	}
 	return nil, false
 }
@@ -42425,8 +44147,6 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldInitialOrderID(ctx)
 	case subscribe.FieldEnterpriseID:
 		return m.OldEnterpriseID(ctx)
-	case subscribe.FieldStatementID:
-		return m.OldStatementID(ctx)
 	case subscribe.FieldStatus:
 		return m.OldStatus(ctx)
 	case subscribe.FieldType:
@@ -42455,6 +44175,8 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldRefundAt(ctx)
 	case subscribe.FieldUnsubscribeReason:
 		return m.OldUnsubscribeReason(ctx)
+	case subscribe.FieldLastBillDate:
+		return m.OldLastBillDate(ctx)
 	}
 	return nil, fmt.Errorf("unknown Subscribe field %s", name)
 }
@@ -42562,13 +44284,6 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetEnterpriseID(v)
 		return nil
-	case subscribe.FieldStatementID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetStatementID(v)
-		return nil
 	case subscribe.FieldStatus:
 		v, ok := value.(uint8)
 		if !ok {
@@ -42666,6 +44381,13 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUnsubscribeReason(v)
+		return nil
+	case subscribe.FieldLastBillDate:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastBillDate(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)
@@ -42838,9 +44560,6 @@ func (m *SubscribeMutation) ClearedFields() []string {
 	if m.FieldCleared(subscribe.FieldEnterpriseID) {
 		fields = append(fields, subscribe.FieldEnterpriseID)
 	}
-	if m.FieldCleared(subscribe.FieldStatementID) {
-		fields = append(fields, subscribe.FieldStatementID)
-	}
 	if m.FieldCleared(subscribe.FieldInitialDays) {
 		fields = append(fields, subscribe.FieldInitialDays)
 	}
@@ -42858,6 +44577,9 @@ func (m *SubscribeMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(subscribe.FieldUnsubscribeReason) {
 		fields = append(fields, subscribe.FieldUnsubscribeReason)
+	}
+	if m.FieldCleared(subscribe.FieldLastBillDate) {
+		fields = append(fields, subscribe.FieldLastBillDate)
 	}
 	return fields
 }
@@ -42903,9 +44625,6 @@ func (m *SubscribeMutation) ClearField(name string) error {
 	case subscribe.FieldEnterpriseID:
 		m.ClearEnterpriseID()
 		return nil
-	case subscribe.FieldStatementID:
-		m.ClearStatementID()
-		return nil
 	case subscribe.FieldInitialDays:
 		m.ClearInitialDays()
 		return nil
@@ -42923,6 +44642,9 @@ func (m *SubscribeMutation) ClearField(name string) error {
 		return nil
 	case subscribe.FieldUnsubscribeReason:
 		m.ClearUnsubscribeReason()
+		return nil
+	case subscribe.FieldLastBillDate:
+		m.ClearLastBillDate()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe nullable field %s", name)
@@ -42974,9 +44696,6 @@ func (m *SubscribeMutation) ResetField(name string) error {
 	case subscribe.FieldEnterpriseID:
 		m.ResetEnterpriseID()
 		return nil
-	case subscribe.FieldStatementID:
-		m.ResetStatementID()
-		return nil
 	case subscribe.FieldStatus:
 		m.ResetStatus()
 		return nil
@@ -43019,13 +44738,16 @@ func (m *SubscribeMutation) ResetField(name string) error {
 	case subscribe.FieldUnsubscribeReason:
 		m.ResetUnsubscribeReason()
 		return nil
+	case subscribe.FieldLastBillDate:
+		m.ResetLastBillDate()
+		return nil
 	}
 	return fmt.Errorf("unknown Subscribe field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SubscribeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 11)
 	if m.plan != nil {
 		edges = append(edges, subscribe.EdgePlan)
 	}
@@ -43058,9 +44780,6 @@ func (m *SubscribeMutation) AddedEdges() []string {
 	}
 	if m.initial_order != nil {
 		edges = append(edges, subscribe.EdgeInitialOrder)
-	}
-	if m.statement != nil {
-		edges = append(edges, subscribe.EdgeStatement)
 	}
 	return edges
 }
@@ -43119,17 +44838,13 @@ func (m *SubscribeMutation) AddedIDs(name string) []ent.Value {
 		if id := m.initial_order; id != nil {
 			return []ent.Value{*id}
 		}
-	case subscribe.EdgeStatement:
-		if id := m.statement; id != nil {
-			return []ent.Value{*id}
-		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SubscribeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 11)
 	if m.removedpauses != nil {
 		edges = append(edges, subscribe.EdgePauses)
 	}
@@ -43170,7 +44885,7 @@ func (m *SubscribeMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SubscribeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 11)
 	if m.clearedplan {
 		edges = append(edges, subscribe.EdgePlan)
 	}
@@ -43204,9 +44919,6 @@ func (m *SubscribeMutation) ClearedEdges() []string {
 	if m.clearedinitial_order {
 		edges = append(edges, subscribe.EdgeInitialOrder)
 	}
-	if m.clearedstatement {
-		edges = append(edges, subscribe.EdgeStatement)
-	}
 	return edges
 }
 
@@ -43236,8 +44948,6 @@ func (m *SubscribeMutation) EdgeCleared(name string) bool {
 		return m.clearedorders
 	case subscribe.EdgeInitialOrder:
 		return m.clearedinitial_order
-	case subscribe.EdgeStatement:
-		return m.clearedstatement
 	}
 	return false
 }
@@ -43269,9 +44979,6 @@ func (m *SubscribeMutation) ClearEdge(name string) error {
 		return nil
 	case subscribe.EdgeInitialOrder:
 		m.ClearInitialOrder()
-		return nil
-	case subscribe.EdgeStatement:
-		m.ClearStatement()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe unique edge %s", name)
@@ -43313,9 +45020,6 @@ func (m *SubscribeMutation) ResetEdge(name string) error {
 		return nil
 	case subscribe.EdgeInitialOrder:
 		m.ResetInitialOrder()
-		return nil
-	case subscribe.EdgeStatement:
-		m.ResetStatement()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe edge %s", name)

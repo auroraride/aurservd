@@ -5,6 +5,8 @@
 
 package model
 
+import "errors"
+
 // RiderTokenPermission 骑手token权限, 以此判定登陆后动作
 type RiderTokenPermission uint8
 
@@ -171,4 +173,20 @@ type RiderExchangeReq struct {
 
 type RiderSelectionReq struct {
     Keyword *string `json:"keyword"` // 筛选骑手姓名或电话
+}
+
+type RiderPermissionError struct {
+    error
+    ForceSignout bool // 是否强制退出
+}
+
+func NewRiderPermissionError(message string, params ...bool) *RiderPermissionError {
+    err := &RiderPermissionError{
+        error:        errors.New(message),
+        ForceSignout: false,
+    }
+    if len(params) > 0 {
+        err.ForceSignout = params[0]
+    }
+    return err
 }

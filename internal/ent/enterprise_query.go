@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
@@ -39,6 +40,7 @@ type EnterpriseQuery struct {
 	withSubscribes *SubscribeQuery
 	withStatements *EnterpriseStatementQuery
 	withStations   *EnterpriseStationQuery
+	withBills      *EnterpriseBillQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -223,6 +225,28 @@ func (eq *EnterpriseQuery) QueryStations() *EnterpriseStationQuery {
 			sqlgraph.From(enterprise.Table, enterprise.FieldID, selector),
 			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.StationsTable, enterprise.StationsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBills chains the current query on the "bills" edge.
+func (eq *EnterpriseQuery) QueryBills() *EnterpriseBillQuery {
+	query := &EnterpriseBillQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, selector),
+			sqlgraph.To(enterprisebill.Table, enterprisebill.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.BillsTable, enterprise.BillsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -418,6 +442,7 @@ func (eq *EnterpriseQuery) Clone() *EnterpriseQuery {
 		withSubscribes: eq.withSubscribes.Clone(),
 		withStatements: eq.withStatements.Clone(),
 		withStations:   eq.withStations.Clone(),
+		withBills:      eq.withBills.Clone(),
 		// clone intermediate query.
 		sql:    eq.sql.Clone(),
 		path:   eq.path,
@@ -502,6 +527,17 @@ func (eq *EnterpriseQuery) WithStations(opts ...func(*EnterpriseStationQuery)) *
 	return eq
 }
 
+// WithBills tells the query-builder to eager-load the nodes that are connected to
+// the "bills" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EnterpriseQuery) WithBills(opts ...func(*EnterpriseBillQuery)) *EnterpriseQuery {
+	query := &EnterpriseBillQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withBills = query
+	return eq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -572,7 +608,7 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 	var (
 		nodes       = []*Enterprise{}
 		_spec       = eq.querySpec()
-		loadedTypes = [7]bool{
+		loadedTypes = [8]bool{
 			eq.withCity != nil,
 			eq.withRiders != nil,
 			eq.withContracts != nil,
@@ -580,6 +616,7 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 			eq.withSubscribes != nil,
 			eq.withStatements != nil,
 			eq.withStations != nil,
+			eq.withBills != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -783,6 +820,31 @@ func (eq *EnterpriseQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*E
 				return nil, fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Stations = append(node.Edges.Stations, n)
+		}
+	}
+
+	if query := eq.withBills; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Enterprise)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Bills = []*EnterpriseBill{}
+		}
+		query.Where(predicate.EnterpriseBill(func(s *sql.Selector) {
+			s.Where(sql.InValues(enterprise.BillsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.EnterpriseID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "enterprise_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Bills = append(node.Edges.Bills, n)
 		}
 	}
 

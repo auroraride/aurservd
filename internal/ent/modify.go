@@ -135,6 +135,13 @@ func (c *EnterpriseClient) ModifyOne(old *Enterprise, data any) *EnterpriseUpdat
 	return EntitySetAttributes[EnterpriseUpdateOne, Enterprise](up, old, data)
 }
 
+// ModifyOne returns an update with pointer struct builder for EnterpriseBill.
+func (c *EnterpriseBillClient) ModifyOne(old *EnterpriseBill, data any) *EnterpriseBillUpdateOne {
+	mutation := newEnterpriseBillMutation(c.config, OpUpdateOne, withEnterpriseBill(old))
+	up := &EnterpriseBillUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[EnterpriseBillUpdateOne, EnterpriseBill](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for EnterpriseContract.
 func (c *EnterpriseContractClient) ModifyOne(old *EnterpriseContract, data any) *EnterpriseContractUpdateOne {
 	mutation := newEnterpriseContractMutation(c.config, OpUpdateOne, withEnterpriseContract(old))

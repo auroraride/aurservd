@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
@@ -313,6 +314,21 @@ func (eu *EnterpriseUpdate) AddStations(e ...*EnterpriseStation) *EnterpriseUpda
 	return eu.AddStationIDs(ids...)
 }
 
+// AddBillIDs adds the "bills" edge to the EnterpriseBill entity by IDs.
+func (eu *EnterpriseUpdate) AddBillIDs(ids ...uint64) *EnterpriseUpdate {
+	eu.mutation.AddBillIDs(ids...)
+	return eu
+}
+
+// AddBills adds the "bills" edges to the EnterpriseBill entity.
+func (eu *EnterpriseUpdate) AddBills(e ...*EnterpriseBill) *EnterpriseUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return eu.AddBillIDs(ids...)
+}
+
 // Mutation returns the EnterpriseMutation object of the builder.
 func (eu *EnterpriseUpdate) Mutation() *EnterpriseMutation {
 	return eu.mutation
@@ -448,6 +464,27 @@ func (eu *EnterpriseUpdate) RemoveStations(e ...*EnterpriseStation) *EnterpriseU
 		ids[i] = e[i].ID
 	}
 	return eu.RemoveStationIDs(ids...)
+}
+
+// ClearBills clears all "bills" edges to the EnterpriseBill entity.
+func (eu *EnterpriseUpdate) ClearBills() *EnterpriseUpdate {
+	eu.mutation.ClearBills()
+	return eu
+}
+
+// RemoveBillIDs removes the "bills" edge to EnterpriseBill entities by IDs.
+func (eu *EnterpriseUpdate) RemoveBillIDs(ids ...uint64) *EnterpriseUpdate {
+	eu.mutation.RemoveBillIDs(ids...)
+	return eu
+}
+
+// RemoveBills removes "bills" edges to EnterpriseBill entities.
+func (eu *EnterpriseUpdate) RemoveBills(e ...*EnterpriseBill) *EnterpriseUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return eu.RemoveBillIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1066,6 +1103,60 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if eu.mutation.BillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.BillsTable,
+			Columns: []string{enterprise.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedBillsIDs(); len(nodes) > 0 && !eu.mutation.BillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.BillsTable,
+			Columns: []string{enterprise.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.BillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.BillsTable,
+			Columns: []string{enterprise.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{enterprise.Label}
@@ -1362,6 +1453,21 @@ func (euo *EnterpriseUpdateOne) AddStations(e ...*EnterpriseStation) *Enterprise
 	return euo.AddStationIDs(ids...)
 }
 
+// AddBillIDs adds the "bills" edge to the EnterpriseBill entity by IDs.
+func (euo *EnterpriseUpdateOne) AddBillIDs(ids ...uint64) *EnterpriseUpdateOne {
+	euo.mutation.AddBillIDs(ids...)
+	return euo
+}
+
+// AddBills adds the "bills" edges to the EnterpriseBill entity.
+func (euo *EnterpriseUpdateOne) AddBills(e ...*EnterpriseBill) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return euo.AddBillIDs(ids...)
+}
+
 // Mutation returns the EnterpriseMutation object of the builder.
 func (euo *EnterpriseUpdateOne) Mutation() *EnterpriseMutation {
 	return euo.mutation
@@ -1497,6 +1603,27 @@ func (euo *EnterpriseUpdateOne) RemoveStations(e ...*EnterpriseStation) *Enterpr
 		ids[i] = e[i].ID
 	}
 	return euo.RemoveStationIDs(ids...)
+}
+
+// ClearBills clears all "bills" edges to the EnterpriseBill entity.
+func (euo *EnterpriseUpdateOne) ClearBills() *EnterpriseUpdateOne {
+	euo.mutation.ClearBills()
+	return euo
+}
+
+// RemoveBillIDs removes the "bills" edge to EnterpriseBill entities by IDs.
+func (euo *EnterpriseUpdateOne) RemoveBillIDs(ids ...uint64) *EnterpriseUpdateOne {
+	euo.mutation.RemoveBillIDs(ids...)
+	return euo
+}
+
+// RemoveBills removes "bills" edges to EnterpriseBill entities.
+func (euo *EnterpriseUpdateOne) RemoveBills(e ...*EnterpriseBill) *EnterpriseUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return euo.RemoveBillIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -2137,6 +2264,60 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.BillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.BillsTable,
+			Columns: []string{enterprise.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedBillsIDs(); len(nodes) > 0 && !euo.mutation.BillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.BillsTable,
+			Columns: []string{enterprise.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.BillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprise.BillsTable,
+			Columns: []string{enterprise.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
 				},
 			},
 		}

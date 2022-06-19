@@ -13,7 +13,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
-	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -66,9 +65,6 @@ type Subscribe struct {
 	// EnterpriseID holds the value of the "enterprise_id" field.
 	// 企业ID
 	EnterpriseID *uint64 `json:"enterprise_id,omitempty"`
-	// StatementID holds the value of the "statement_id" field.
-	// 团签结账对账单ID
-	StatementID *uint64 `json:"statement_id,omitempty"`
 	// Status holds the value of the "status" field.
 	// 当前订阅状态
 	Status uint8 `json:"status,omitempty"`
@@ -111,6 +107,9 @@ type Subscribe struct {
 	// UnsubscribeReason holds the value of the "unsubscribe_reason" field.
 	// 退租理由
 	UnsubscribeReason string `json:"unsubscribe_reason,omitempty"`
+	// LastBillDate holds the value of the "last_bill_date" field.
+	// 上次结算日期(包含该日期)
+	LastBillDate *time.Time `json:"last_bill_date,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeQuery when eager-loading is set.
 	Edges SubscribeEdges `json:"edges"`
@@ -140,11 +139,9 @@ type SubscribeEdges struct {
 	Orders []*Order `json:"orders,omitempty"`
 	// InitialOrder holds the value of the initial_order edge.
 	InitialOrder *Order `json:"initial_order,omitempty"`
-	// Statement holds the value of the statement edge.
-	Statement *EnterpriseStatement `json:"statement,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [12]bool
+	loadedTypes [11]bool
 }
 
 // PlanOrErr returns the Plan value or an error if the edge
@@ -286,20 +283,6 @@ func (e SubscribeEdges) InitialOrderOrErr() (*Order, error) {
 	return nil, &NotLoadedError{edge: "initial_order"}
 }
 
-// StatementOrErr returns the Statement value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e SubscribeEdges) StatementOrErr() (*EnterpriseStatement, error) {
-	if e.loadedTypes[11] {
-		if e.Statement == nil {
-			// The edge statement was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: enterprisestatement.Label}
-		}
-		return e.Statement, nil
-	}
-	return nil, &NotLoadedError{edge: "statement"}
-}
-
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Subscribe) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -309,11 +292,11 @@ func (*Subscribe) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case subscribe.FieldVoltage:
 			values[i] = new(sql.NullFloat64)
-		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatementID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining:
+		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining:
 			values[i] = new(sql.NullInt64)
 		case subscribe.FieldRemark, subscribe.FieldUnsubscribeReason:
 			values[i] = new(sql.NullString)
-		case subscribe.FieldCreatedAt, subscribe.FieldUpdatedAt, subscribe.FieldDeletedAt, subscribe.FieldPausedAt, subscribe.FieldStartAt, subscribe.FieldEndAt, subscribe.FieldRefundAt:
+		case subscribe.FieldCreatedAt, subscribe.FieldUpdatedAt, subscribe.FieldDeletedAt, subscribe.FieldPausedAt, subscribe.FieldStartAt, subscribe.FieldEndAt, subscribe.FieldRefundAt, subscribe.FieldLastBillDate:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Subscribe", columns[i])
@@ -430,13 +413,6 @@ func (s *Subscribe) assignValues(columns []string, values []interface{}) error {
 				s.EnterpriseID = new(uint64)
 				*s.EnterpriseID = uint64(value.Int64)
 			}
-		case subscribe.FieldStatementID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field statement_id", values[i])
-			} else if value.Valid {
-				s.StatementID = new(uint64)
-				*s.StatementID = uint64(value.Int64)
-			}
 		case subscribe.FieldStatus:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
@@ -525,6 +501,13 @@ func (s *Subscribe) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.UnsubscribeReason = value.String
 			}
+		case subscribe.FieldLastBillDate:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field last_bill_date", values[i])
+			} else if value.Valid {
+				s.LastBillDate = new(time.Time)
+				*s.LastBillDate = value.Time
+			}
 		}
 	}
 	return nil
@@ -583,11 +566,6 @@ func (s *Subscribe) QueryOrders() *OrderQuery {
 // QueryInitialOrder queries the "initial_order" edge of the Subscribe entity.
 func (s *Subscribe) QueryInitialOrder() *OrderQuery {
 	return (&SubscribeClient{config: s.config}).QueryInitialOrder(s)
-}
-
-// QueryStatement queries the "statement" edge of the Subscribe entity.
-func (s *Subscribe) QueryStatement() *EnterpriseStatementQuery {
-	return (&SubscribeClient{config: s.config}).QueryStatement(s)
 }
 
 // Update returns a builder for updating this Subscribe.
@@ -653,10 +631,6 @@ func (s *Subscribe) String() string {
 		builder.WriteString(", enterprise_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
-	if v := s.StatementID; v != nil {
-		builder.WriteString(", statement_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", s.Status))
 	builder.WriteString(", type=")
@@ -693,6 +667,10 @@ func (s *Subscribe) String() string {
 	}
 	builder.WriteString(", unsubscribe_reason=")
 	builder.WriteString(s.UnsubscribeReason)
+	if v := s.LastBillDate; v != nil {
+		builder.WriteString(", last_bill_date=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -8,6 +8,7 @@ package service
 import (
     "context"
     "encoding/json"
+    "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -140,7 +141,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
         snag.Panic("当前有退款中的订单")
     }
 
-    subd, _ := NewSubscribe().RecentDetail(s.rider.ID)
+    subd, sub := NewSubscribe().RecentDetail(s.rider.ID)
     // 判定类型条件
     var subID, orderID *uint64
     otype := req.OrderType
@@ -155,8 +156,8 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
         if subd.Remaining < 0 && int(op.Days)+subd.Remaining < 0 {
             snag.Panic("无法继续, 逾期天数大于套餐天数")
         }
-        subID = tools.NewPointer().UInt64(subd.ID)
-        orderID = tools.NewPointer().UInt64(subd.Order.ID)
+        subID = tools.NewPointer().UInt64(sub.ID)
+        orderID = tools.NewPointer().UInt64(sub.InitialOrderID)
         break
     default:
         snag.Panic("未知的支付请求")
@@ -175,7 +176,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
     result.OutTradeNo = no
     // 生成订单字段
     price := op.Price
-    // DEBUG 模式支付一分钱
+    // TODO DEBUG 模式支付一分钱
     mode := ar.Config.App.Mode
     if mode == "debug" || mode == "next" {
         price = 0.01
@@ -196,7 +197,6 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
             Name:        "购买" + op.Name,
             Amount:      total,
             Payway:      req.Payway,
-            Expire:      time.Now().Add(10 * time.Minute),
             PlanID:      op.ID,
             Deposit:     deposit,
             PastDays:    pastDays,
@@ -217,15 +217,21 @@ func (s *orderService) CreateFee(riderID uint64, payway uint8) *model.OrderCreat
     result := new(model.OrderCreateRes)
 
     sub, _ := NewSubscribe().QueryEffective(riderID)
-    if sub == nil || sub.Remaining < 0 {
-        snag.Panic("为找到逾期骑士卡信息")
+    if sub == nil || sub.Remaining > 0 {
+        snag.Panic("未找到逾期骑士卡信息")
     }
 
     fee, _, o := NewSubscribe().OverdueFee(riderID, sub.Remaining)
+    // TODO DEBUG 模式支付一分钱
+    mode := ar.Config.App.Mode
+    if mode == "debug" || mode == "next" {
+        fee = 0.01
+    }
     no := tools.NewUnique().NewSN28()
     prepay := &model.PaymentCache{
         CacheType: model.PaymentCacheTypeOverdueFee,
         OverDueFee: &model.PaymentOverdueFee{
+            Subject:     fmt.Sprintf("逾期%d天费用", 0-sub.Remaining),
             OutTradeNo:  no,
             OrderType:   model.OrderTypeFee,
             Days:        0 - sub.Remaining,

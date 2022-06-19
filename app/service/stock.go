@@ -84,6 +84,12 @@ func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
             store.HasBranchWith(branch.CityID(*req.CityID)),
         )
     }
+    if req.StoreID != nil {
+        q.Where(
+            store.ID(*req.StoreID),
+        )
+    }
+
     if req.Start != nil {
         start := carbon.Parse(*req.Start).StartOfDay().Carbon2Time()
         if start.IsZero() {

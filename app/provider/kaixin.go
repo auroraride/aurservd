@@ -165,7 +165,7 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
         return msg
     }
 
-    log.Infof("凯信状态获取结果：%s", string(r.Body()))
+    // log.Infof("凯信状态获取结果：%s", string(r.Body()))
     err = jsoniter.Unmarshal(r.Body(), res)
     if err != nil {
         msg := fmt.Sprintf("凯信状态获取失败, serial: %s, err: %#v", item.Serial, err)

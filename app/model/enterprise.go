@@ -76,6 +76,7 @@ type EnterpriseListReq struct {
 type EnterpriseRes struct {
     ID           uint64                    `json:"id"`                    // 企业ID
     Balance      float64                   `json:"balance"`               // 可用余额
+    Unsettlement int                       `json:"unsettlement"`          // 未结算天数, 预付费企业此字段强制为0
     Name         string                    `json:"name"`                  // 企业名称
     Status       uint8                     `json:"status" enums:"0,1,2" ` // 合作状态 0:未合作 1:已合作 2:已暂停
     ContactName  string                    `json:"contactName"`           // 联系人

@@ -71,7 +71,7 @@ func NewWechat() *wechatClient {
 
 // AppPay APP支付
 func (c *wechatClient) AppPay(pc *model.PaymentCache) (string, error) {
-    prepay := pc.Subscribe
+    amount, subject, no := pc.GetPaymentArgs()
     cfg := ar.Config.Payment.Wechat
 
     svc := app.AppApiService{
@@ -81,13 +81,13 @@ func (c *wechatClient) AppPay(pc *model.PaymentCache) (string, error) {
     resp, result, err := svc.PrepayWithRequestPayment(context.Background(), app.PrepayRequest{
         Appid:       core.String(cfg.AppID),
         Mchid:       core.String(cfg.MchID),
-        Description: core.String(prepay.Name),
-        OutTradeNo:  core.String(prepay.OutTradeNo),
-        TimeExpire:  core.Time(prepay.Expire),
+        Description: core.String(subject),
+        OutTradeNo:  core.String(no),
+        TimeExpire:  core.Time(time.Now().Add(10 * time.Minute)),
         NotifyUrl:   core.String(cfg.NotifyUrl),
         Amount: &app.Amount{
             Currency: core.String("CNY"),
-            Total:    core.Int64(int64(math.Round(prepay.Amount * 100))),
+            Total:    core.Int64(int64(math.Round(amount * 100))),
         },
     })
 

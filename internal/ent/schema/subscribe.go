@@ -3,6 +3,7 @@ package schema
 import (
     "context"
     "entgo.io/ent"
+    "entgo.io/ent/dialect"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/entc/integration/ent/hook"
     "entgo.io/ent/schema"
@@ -56,7 +57,6 @@ func (Subscribe) Fields() []ent.Field {
         field.Uint64("rider_id").Comment("骑手ID"),
         field.Uint64("initial_order_id").Optional().Comment("初始订单ID(开通订阅的初始订单), 团签用户无此字段"),
         field.Uint64("enterprise_id").Optional().Nillable().Comment("企业ID"),
-        field.Uint64("statement_id").Optional().Nillable().Comment("团签结账对账单ID"),
         field.Uint8("status").Default(model.SubscribeStatusInactive).Comment("当前订阅状态"),
         field.Uint("type").Default(0).Immutable().Comment("订阅类型 0团签 1新签 2续签 3重签 4更改电池, 除0值外 其他值参考order.type"),
         field.Float("voltage").Comment("可用电压型号"),
@@ -72,6 +72,7 @@ func (Subscribe) Fields() []ent.Field {
         field.Time("end_at").Optional().Nillable().Comment("归还/团签结束时间"),
         field.Time("refund_at").Optional().Nillable().Comment("退款时间"),
         field.String("unsubscribe_reason").Optional().Comment("退租理由"),
+        field.Time("last_bill_date").Optional().Nillable().SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("上次结算日期(包含该日期)"),
     }
 }
 
@@ -86,7 +87,6 @@ func (Subscribe) Edges() []ent.Edge {
         edge.To("orders", Order.Type),
 
         edge.To("initial_order", Order.Type).Unique().Field("initial_order_id").Comment("对应初始订单"),
-        edge.From("statement", EnterpriseStatement.Type).Unique().Ref("subscribes").Field("statement_id").Comment("对账单"),
     }
 }
 
@@ -107,6 +107,7 @@ func (Subscribe) Mixin() []ent.Mixin {
 func (Subscribe) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("paused_at"),
+        index.Fields("last_bill_date"),
         index.Fields("start_at", "end_at"),
     }
 }

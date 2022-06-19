@@ -12,9 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
-	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // EnterpriseStatementQuery is the builder for querying EnterpriseStatement entities.
@@ -27,8 +27,8 @@ type EnterpriseStatementQuery struct {
 	fields     []string
 	predicates []predicate.EnterpriseStatement
 	// eager-loading edges.
-	withSubscribes *SubscribeQuery
 	withEnterprise *EnterpriseQuery
+	withBills      *EnterpriseBillQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -66,28 +66,6 @@ func (esq *EnterpriseStatementQuery) Order(o ...OrderFunc) *EnterpriseStatementQ
 	return esq
 }
 
-// QuerySubscribes chains the current query on the "subscribes" edge.
-func (esq *EnterpriseStatementQuery) QuerySubscribes() *SubscribeQuery {
-	query := &SubscribeQuery{config: esq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := esq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := esq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(enterprisestatement.Table, enterprisestatement.FieldID, selector),
-			sqlgraph.To(subscribe.Table, subscribe.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestatement.SubscribesTable, enterprisestatement.SubscribesColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(esq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
 // QueryEnterprise chains the current query on the "enterprise" edge.
 func (esq *EnterpriseStatementQuery) QueryEnterprise() *EnterpriseQuery {
 	query := &EnterpriseQuery{config: esq.config}
@@ -103,6 +81,28 @@ func (esq *EnterpriseStatementQuery) QueryEnterprise() *EnterpriseQuery {
 			sqlgraph.From(enterprisestatement.Table, enterprisestatement.FieldID, selector),
 			sqlgraph.To(enterprise.Table, enterprise.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, enterprisestatement.EnterpriseTable, enterprisestatement.EnterpriseColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(esq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBills chains the current query on the "bills" edge.
+func (esq *EnterpriseStatementQuery) QueryBills() *EnterpriseBillQuery {
+	query := &EnterpriseBillQuery{config: esq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := esq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := esq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestatement.Table, enterprisestatement.FieldID, selector),
+			sqlgraph.To(enterprisebill.Table, enterprisebill.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestatement.BillsTable, enterprisestatement.BillsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(esq.driver.Dialect(), step)
 		return fromU, nil
@@ -291,24 +291,13 @@ func (esq *EnterpriseStatementQuery) Clone() *EnterpriseStatementQuery {
 		offset:         esq.offset,
 		order:          append([]OrderFunc{}, esq.order...),
 		predicates:     append([]predicate.EnterpriseStatement{}, esq.predicates...),
-		withSubscribes: esq.withSubscribes.Clone(),
 		withEnterprise: esq.withEnterprise.Clone(),
+		withBills:      esq.withBills.Clone(),
 		// clone intermediate query.
 		sql:    esq.sql.Clone(),
 		path:   esq.path,
 		unique: esq.unique,
 	}
-}
-
-// WithSubscribes tells the query-builder to eager-load the nodes that are connected to
-// the "subscribes" edge. The optional arguments are used to configure the query builder of the edge.
-func (esq *EnterpriseStatementQuery) WithSubscribes(opts ...func(*SubscribeQuery)) *EnterpriseStatementQuery {
-	query := &SubscribeQuery{config: esq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	esq.withSubscribes = query
-	return esq
 }
 
 // WithEnterprise tells the query-builder to eager-load the nodes that are connected to
@@ -319,6 +308,17 @@ func (esq *EnterpriseStatementQuery) WithEnterprise(opts ...func(*EnterpriseQuer
 		opt(query)
 	}
 	esq.withEnterprise = query
+	return esq
+}
+
+// WithBills tells the query-builder to eager-load the nodes that are connected to
+// the "bills" edge. The optional arguments are used to configure the query builder of the edge.
+func (esq *EnterpriseStatementQuery) WithBills(opts ...func(*EnterpriseBillQuery)) *EnterpriseStatementQuery {
+	query := &EnterpriseBillQuery{config: esq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	esq.withBills = query
 	return esq
 }
 
@@ -393,8 +393,8 @@ func (esq *EnterpriseStatementQuery) sqlAll(ctx context.Context, hooks ...queryH
 		nodes       = []*EnterpriseStatement{}
 		_spec       = esq.querySpec()
 		loadedTypes = [2]bool{
-			esq.withSubscribes != nil,
 			esq.withEnterprise != nil,
+			esq.withBills != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -417,34 +417,6 @@ func (esq *EnterpriseStatementQuery) sqlAll(ctx context.Context, hooks ...queryH
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
-	}
-
-	if query := esq.withSubscribes; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[uint64]*EnterpriseStatement)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.Subscribes = []*Subscribe{}
-		}
-		query.Where(predicate.Subscribe(func(s *sql.Selector) {
-			s.Where(sql.InValues(enterprisestatement.SubscribesColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			fk := n.StatementID
-			if fk == nil {
-				return nil, fmt.Errorf(`foreign-key "statement_id" is nil for node %v`, n.ID)
-			}
-			node, ok := nodeids[*fk]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "statement_id" returned %v for node %v`, *fk, n.ID)
-			}
-			node.Edges.Subscribes = append(node.Edges.Subscribes, n)
-		}
 	}
 
 	if query := esq.withEnterprise; query != nil {
@@ -470,6 +442,31 @@ func (esq *EnterpriseStatementQuery) sqlAll(ctx context.Context, hooks ...queryH
 			for i := range nodes {
 				nodes[i].Edges.Enterprise = n
 			}
+		}
+	}
+
+	if query := esq.withBills; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*EnterpriseStatement)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Bills = []*EnterpriseBill{}
+		}
+		query.Where(predicate.EnterpriseBill(func(s *sql.Selector) {
+			s.Where(sql.InValues(enterprisestatement.BillsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.StatementID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "statement_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Bills = append(node.Edges.Bills, n)
 		}
 	}
 

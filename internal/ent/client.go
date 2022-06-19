@@ -21,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/contract"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisecontract"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
 	"github.com/auroraride/aurservd/internal/ent/enterpriseprice"
@@ -76,6 +77,8 @@ type Client struct {
 	Employee *EmployeeClient
 	// Enterprise is the client for interacting with the Enterprise builders.
 	Enterprise *EnterpriseClient
+	// EnterpriseBill is the client for interacting with the EnterpriseBill builders.
+	EnterpriseBill *EnterpriseBillClient
 	// EnterpriseContract is the client for interacting with the EnterpriseContract builders.
 	EnterpriseContract *EnterpriseContractClient
 	// EnterprisePrepayment is the client for interacting with the EnterprisePrepayment builders.
@@ -141,6 +144,7 @@ func (c *Client) init() {
 	c.Contract = NewContractClient(c.config)
 	c.Employee = NewEmployeeClient(c.config)
 	c.Enterprise = NewEnterpriseClient(c.config)
+	c.EnterpriseBill = NewEnterpriseBillClient(c.config)
 	c.EnterpriseContract = NewEnterpriseContractClient(c.config)
 	c.EnterprisePrepayment = NewEnterprisePrepaymentClient(c.config)
 	c.EnterprisePrice = NewEnterprisePriceClient(c.config)
@@ -206,6 +210,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Contract:             NewContractClient(cfg),
 		Employee:             NewEmployeeClient(cfg),
 		Enterprise:           NewEnterpriseClient(cfg),
+		EnterpriseBill:       NewEnterpriseBillClient(cfg),
 		EnterpriseContract:   NewEnterpriseContractClient(cfg),
 		EnterprisePrepayment: NewEnterprisePrepaymentClient(cfg),
 		EnterprisePrice:      NewEnterprisePriceClient(cfg),
@@ -257,6 +262,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Contract:             NewContractClient(cfg),
 		Employee:             NewEmployeeClient(cfg),
 		Enterprise:           NewEnterpriseClient(cfg),
+		EnterpriseBill:       NewEnterpriseBillClient(cfg),
 		EnterpriseContract:   NewEnterpriseContractClient(cfg),
 		EnterprisePrepayment: NewEnterprisePrepaymentClient(cfg),
 		EnterprisePrice:      NewEnterprisePriceClient(cfg),
@@ -318,6 +324,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Contract.Use(hooks...)
 	c.Employee.Use(hooks...)
 	c.Enterprise.Use(hooks...)
+	c.EnterpriseBill.Use(hooks...)
 	c.EnterpriseContract.Use(hooks...)
 	c.EnterprisePrepayment.Use(hooks...)
 	c.EnterprisePrice.Use(hooks...)
@@ -2130,10 +2137,197 @@ func (c *EnterpriseClient) QueryStations(e *Enterprise) *EnterpriseStationQuery 
 	return query
 }
 
+// QueryBills queries the bills edge of a Enterprise.
+func (c *EnterpriseClient) QueryBills(e *Enterprise) *EnterpriseBillQuery {
+	query := &EnterpriseBillQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprise.Table, enterprise.FieldID, id),
+			sqlgraph.To(enterprisebill.Table, enterprisebill.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprise.BillsTable, enterprise.BillsColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EnterpriseClient) Hooks() []Hook {
 	hooks := c.hooks.Enterprise
 	return append(hooks[:len(hooks):len(hooks)], enterprise.Hooks[:]...)
+}
+
+// EnterpriseBillClient is a client for the EnterpriseBill schema.
+type EnterpriseBillClient struct {
+	config
+}
+
+// NewEnterpriseBillClient returns a client for the EnterpriseBill from the given config.
+func NewEnterpriseBillClient(c config) *EnterpriseBillClient {
+	return &EnterpriseBillClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `enterprisebill.Hooks(f(g(h())))`.
+func (c *EnterpriseBillClient) Use(hooks ...Hook) {
+	c.hooks.EnterpriseBill = append(c.hooks.EnterpriseBill, hooks...)
+}
+
+// Create returns a create builder for EnterpriseBill.
+func (c *EnterpriseBillClient) Create() *EnterpriseBillCreate {
+	mutation := newEnterpriseBillMutation(c.config, OpCreate)
+	return &EnterpriseBillCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of EnterpriseBill entities.
+func (c *EnterpriseBillClient) CreateBulk(builders ...*EnterpriseBillCreate) *EnterpriseBillCreateBulk {
+	return &EnterpriseBillCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for EnterpriseBill.
+func (c *EnterpriseBillClient) Update() *EnterpriseBillUpdate {
+	mutation := newEnterpriseBillMutation(c.config, OpUpdate)
+	return &EnterpriseBillUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *EnterpriseBillClient) UpdateOne(eb *EnterpriseBill) *EnterpriseBillUpdateOne {
+	mutation := newEnterpriseBillMutation(c.config, OpUpdateOne, withEnterpriseBill(eb))
+	return &EnterpriseBillUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *EnterpriseBillClient) UpdateOneID(id uint64) *EnterpriseBillUpdateOne {
+	mutation := newEnterpriseBillMutation(c.config, OpUpdateOne, withEnterpriseBillID(id))
+	return &EnterpriseBillUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for EnterpriseBill.
+func (c *EnterpriseBillClient) Delete() *EnterpriseBillDelete {
+	mutation := newEnterpriseBillMutation(c.config, OpDelete)
+	return &EnterpriseBillDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *EnterpriseBillClient) DeleteOne(eb *EnterpriseBill) *EnterpriseBillDeleteOne {
+	return c.DeleteOneID(eb.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *EnterpriseBillClient) DeleteOneID(id uint64) *EnterpriseBillDeleteOne {
+	builder := c.Delete().Where(enterprisebill.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &EnterpriseBillDeleteOne{builder}
+}
+
+// Query returns a query builder for EnterpriseBill.
+func (c *EnterpriseBillClient) Query() *EnterpriseBillQuery {
+	return &EnterpriseBillQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a EnterpriseBill entity by its id.
+func (c *EnterpriseBillClient) Get(ctx context.Context, id uint64) (*EnterpriseBill, error) {
+	return c.Query().Where(enterprisebill.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *EnterpriseBillClient) GetX(ctx context.Context, id uint64) *EnterpriseBill {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryRider queries the rider edge of a EnterpriseBill.
+func (c *EnterpriseBillClient) QueryRider(eb *EnterpriseBill) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := eb.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebill.RiderTable, enterprisebill.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(eb.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySubscribe queries the subscribe edge of a EnterpriseBill.
+func (c *EnterpriseBillClient) QuerySubscribe(eb *EnterpriseBill) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := eb.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebill.SubscribeTable, enterprisebill.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(eb.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCity queries the city edge of a EnterpriseBill.
+func (c *EnterpriseBillClient) QueryCity(eb *EnterpriseBill) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := eb.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebill.CityTable, enterprisebill.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(eb.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEnterprise queries the enterprise edge of a EnterpriseBill.
+func (c *EnterpriseBillClient) QueryEnterprise(eb *EnterpriseBill) *EnterpriseQuery {
+	query := &EnterpriseQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := eb.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, id),
+			sqlgraph.To(enterprise.Table, enterprise.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, enterprisebill.EnterpriseTable, enterprisebill.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(eb.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStatement queries the statement edge of a EnterpriseBill.
+func (c *EnterpriseBillClient) QueryStatement(eb *EnterpriseBill) *EnterpriseStatementQuery {
+	query := &EnterpriseStatementQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := eb.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, id),
+			sqlgraph.To(enterprisestatement.Table, enterprisestatement.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, enterprisebill.StatementTable, enterprisebill.StatementColumn),
+		)
+		fromV = sqlgraph.Neighbors(eb.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *EnterpriseBillClient) Hooks() []Hook {
+	hooks := c.hooks.EnterpriseBill
+	return append(hooks[:len(hooks):len(hooks)], enterprisebill.Hooks[:]...)
 }
 
 // EnterpriseContractClient is a client for the EnterpriseContract schema.
@@ -2558,22 +2752,6 @@ func (c *EnterpriseStatementClient) GetX(ctx context.Context, id uint64) *Enterp
 	return obj
 }
 
-// QuerySubscribes queries the subscribes edge of a EnterpriseStatement.
-func (c *EnterpriseStatementClient) QuerySubscribes(es *EnterpriseStatement) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := es.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(enterprisestatement.Table, enterprisestatement.FieldID, id),
-			sqlgraph.To(subscribe.Table, subscribe.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestatement.SubscribesTable, enterprisestatement.SubscribesColumn),
-		)
-		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryEnterprise queries the enterprise edge of a EnterpriseStatement.
 func (c *EnterpriseStatementClient) QueryEnterprise(es *EnterpriseStatement) *EnterpriseQuery {
 	query := &EnterpriseQuery{config: c.config}
@@ -2583,6 +2761,22 @@ func (c *EnterpriseStatementClient) QueryEnterprise(es *EnterpriseStatement) *En
 			sqlgraph.From(enterprisestatement.Table, enterprisestatement.FieldID, id),
 			sqlgraph.To(enterprise.Table, enterprise.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, enterprisestatement.EnterpriseTable, enterprisestatement.EnterpriseColumn),
+		)
+		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBills queries the bills edge of a EnterpriseStatement.
+func (c *EnterpriseStatementClient) QueryBills(es *EnterpriseStatement) *EnterpriseBillQuery {
+	query := &EnterpriseBillQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := es.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisestatement.Table, enterprisestatement.FieldID, id),
+			sqlgraph.To(enterprisebill.Table, enterprisebill.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, enterprisestatement.BillsTable, enterprisestatement.BillsColumn),
 		)
 		fromV = sqlgraph.Neighbors(es.driver.Dialect(), step)
 		return fromV, nil
@@ -4753,22 +4947,6 @@ func (c *SubscribeClient) QueryInitialOrder(s *Subscribe) *OrderQuery {
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
 			sqlgraph.To(order.Table, order.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.InitialOrderTable, subscribe.InitialOrderColumn),
-		)
-		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryStatement queries the statement edge of a Subscribe.
-func (c *SubscribeClient) QueryStatement(s *Subscribe) *EnterpriseStatementQuery {
-	query := &EnterpriseStatementQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := s.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
-			sqlgraph.To(enterprisestatement.Table, enterprisestatement.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, subscribe.StatementTable, subscribe.StatementColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

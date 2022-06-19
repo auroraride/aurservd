@@ -135,13 +135,6 @@ func Cost(v float64) predicate.EnterpriseStatement {
 	})
 }
 
-// Amount applies equality check predicate on the "amount" field. It's identical to AmountEQ.
-func Amount(v float64) predicate.EnterpriseStatement {
-	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAmount), v))
-	})
-}
-
 // Balance applies equality check predicate on the "balance" field. It's identical to BalanceEQ.
 func Balance(v float64) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
@@ -170,10 +163,24 @@ func RiderNumber(v int) predicate.EnterpriseStatement {
 	})
 }
 
-// BillTime applies equality check predicate on the "bill_time" field. It's identical to BillTimeEQ.
-func BillTime(v time.Time) predicate.EnterpriseStatement {
+// Date applies equality check predicate on the "date" field. It's identical to DateEQ.
+func Date(v time.Time) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBillTime), v))
+		s.Where(sql.EQ(s.C(FieldDate), v))
+	})
+}
+
+// Start applies equality check predicate on the "start" field. It's identical to StartEQ.
+func Start(v time.Time) predicate.EnterpriseStatement {
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStart), v))
+	})
+}
+
+// End applies equality check predicate on the "end" field. It's identical to EndEQ.
+func End(v time.Time) predicate.EnterpriseStatement {
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEnd), v))
 	})
 }
 
@@ -696,82 +703,6 @@ func CostLTE(v float64) predicate.EnterpriseStatement {
 	})
 }
 
-// AmountEQ applies the EQ predicate on the "amount" field.
-func AmountEQ(v float64) predicate.EnterpriseStatement {
-	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAmount), v))
-	})
-}
-
-// AmountNEQ applies the NEQ predicate on the "amount" field.
-func AmountNEQ(v float64) predicate.EnterpriseStatement {
-	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAmount), v))
-	})
-}
-
-// AmountIn applies the In predicate on the "amount" field.
-func AmountIn(vs ...float64) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldAmount), v...))
-	})
-}
-
-// AmountNotIn applies the NotIn predicate on the "amount" field.
-func AmountNotIn(vs ...float64) predicate.EnterpriseStatement {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldAmount), v...))
-	})
-}
-
-// AmountGT applies the GT predicate on the "amount" field.
-func AmountGT(v float64) predicate.EnterpriseStatement {
-	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAmount), v))
-	})
-}
-
-// AmountGTE applies the GTE predicate on the "amount" field.
-func AmountGTE(v float64) predicate.EnterpriseStatement {
-	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAmount), v))
-	})
-}
-
-// AmountLT applies the LT predicate on the "amount" field.
-func AmountLT(v float64) predicate.EnterpriseStatement {
-	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAmount), v))
-	})
-}
-
-// AmountLTE applies the LTE predicate on the "amount" field.
-func AmountLTE(v float64) predicate.EnterpriseStatement {
-	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAmount), v))
-	})
-}
-
 // BalanceEQ applies the EQ predicate on the "balance" field.
 func BalanceEQ(v float64) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
@@ -1090,22 +1021,22 @@ func RiderNumberLTE(v int) predicate.EnterpriseStatement {
 	})
 }
 
-// BillTimeEQ applies the EQ predicate on the "bill_time" field.
-func BillTimeEQ(v time.Time) predicate.EnterpriseStatement {
+// DateEQ applies the EQ predicate on the "date" field.
+func DateEQ(v time.Time) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBillTime), v))
+		s.Where(sql.EQ(s.C(FieldDate), v))
 	})
 }
 
-// BillTimeNEQ applies the NEQ predicate on the "bill_time" field.
-func BillTimeNEQ(v time.Time) predicate.EnterpriseStatement {
+// DateNEQ applies the NEQ predicate on the "date" field.
+func DateNEQ(v time.Time) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBillTime), v))
+		s.Where(sql.NEQ(s.C(FieldDate), v))
 	})
 }
 
-// BillTimeIn applies the In predicate on the "bill_time" field.
-func BillTimeIn(vs ...time.Time) predicate.EnterpriseStatement {
+// DateIn applies the In predicate on the "date" field.
+func DateIn(vs ...time.Time) predicate.EnterpriseStatement {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1117,12 +1048,12 @@ func BillTimeIn(vs ...time.Time) predicate.EnterpriseStatement {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldBillTime), v...))
+		s.Where(sql.In(s.C(FieldDate), v...))
 	})
 }
 
-// BillTimeNotIn applies the NotIn predicate on the "bill_time" field.
-func BillTimeNotIn(vs ...time.Time) predicate.EnterpriseStatement {
+// DateNotIn applies the NotIn predicate on the "date" field.
+func DateNotIn(vs ...time.Time) predicate.EnterpriseStatement {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1134,77 +1065,215 @@ func BillTimeNotIn(vs ...time.Time) predicate.EnterpriseStatement {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldBillTime), v...))
+		s.Where(sql.NotIn(s.C(FieldDate), v...))
 	})
 }
 
-// BillTimeGT applies the GT predicate on the "bill_time" field.
-func BillTimeGT(v time.Time) predicate.EnterpriseStatement {
+// DateGT applies the GT predicate on the "date" field.
+func DateGT(v time.Time) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldBillTime), v))
+		s.Where(sql.GT(s.C(FieldDate), v))
 	})
 }
 
-// BillTimeGTE applies the GTE predicate on the "bill_time" field.
-func BillTimeGTE(v time.Time) predicate.EnterpriseStatement {
+// DateGTE applies the GTE predicate on the "date" field.
+func DateGTE(v time.Time) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldBillTime), v))
+		s.Where(sql.GTE(s.C(FieldDate), v))
 	})
 }
 
-// BillTimeLT applies the LT predicate on the "bill_time" field.
-func BillTimeLT(v time.Time) predicate.EnterpriseStatement {
+// DateLT applies the LT predicate on the "date" field.
+func DateLT(v time.Time) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldBillTime), v))
+		s.Where(sql.LT(s.C(FieldDate), v))
 	})
 }
 
-// BillTimeLTE applies the LTE predicate on the "bill_time" field.
-func BillTimeLTE(v time.Time) predicate.EnterpriseStatement {
+// DateLTE applies the LTE predicate on the "date" field.
+func DateLTE(v time.Time) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldBillTime), v))
+		s.Where(sql.LTE(s.C(FieldDate), v))
 	})
 }
 
-// BillTimeIsNil applies the IsNil predicate on the "bill_time" field.
-func BillTimeIsNil() predicate.EnterpriseStatement {
+// DateIsNil applies the IsNil predicate on the "date" field.
+func DateIsNil() predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldBillTime)))
+		s.Where(sql.IsNull(s.C(FieldDate)))
 	})
 }
 
-// BillTimeNotNil applies the NotNil predicate on the "bill_time" field.
-func BillTimeNotNil() predicate.EnterpriseStatement {
+// DateNotNil applies the NotNil predicate on the "date" field.
+func DateNotNil() predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldBillTime)))
+		s.Where(sql.NotNull(s.C(FieldDate)))
 	})
 }
 
-// HasSubscribes applies the HasEdge predicate on the "subscribes" edge.
-func HasSubscribes() predicate.EnterpriseStatement {
+// StartEQ applies the EQ predicate on the "start" field.
+func StartEQ(v time.Time) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribesTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, SubscribesTable, SubscribesColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
+		s.Where(sql.EQ(s.C(FieldStart), v))
 	})
 }
 
-// HasSubscribesWith applies the HasEdge predicate on the "subscribes" edge with a given conditions (other predicates).
-func HasSubscribesWith(preds ...predicate.Subscribe) predicate.EnterpriseStatement {
+// StartNEQ applies the NEQ predicate on the "start" field.
+func StartNEQ(v time.Time) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, SubscribesTable, SubscribesColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
+		s.Where(sql.NEQ(s.C(FieldStart), v))
+	})
+}
+
+// StartIn applies the In predicate on the "start" field.
+func StartIn(vs ...time.Time) predicate.EnterpriseStatement {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldStart), v...))
+	})
+}
+
+// StartNotIn applies the NotIn predicate on the "start" field.
+func StartNotIn(vs ...time.Time) predicate.EnterpriseStatement {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldStart), v...))
+	})
+}
+
+// StartGT applies the GT predicate on the "start" field.
+func StartGT(v time.Time) predicate.EnterpriseStatement {
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldStart), v))
+	})
+}
+
+// StartGTE applies the GTE predicate on the "start" field.
+func StartGTE(v time.Time) predicate.EnterpriseStatement {
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldStart), v))
+	})
+}
+
+// StartLT applies the LT predicate on the "start" field.
+func StartLT(v time.Time) predicate.EnterpriseStatement {
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldStart), v))
+	})
+}
+
+// StartLTE applies the LTE predicate on the "start" field.
+func StartLTE(v time.Time) predicate.EnterpriseStatement {
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldStart), v))
+	})
+}
+
+// EndEQ applies the EQ predicate on the "end" field.
+func EndEQ(v time.Time) predicate.EnterpriseStatement {
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEnd), v))
+	})
+}
+
+// EndNEQ applies the NEQ predicate on the "end" field.
+func EndNEQ(v time.Time) predicate.EnterpriseStatement {
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEnd), v))
+	})
+}
+
+// EndIn applies the In predicate on the "end" field.
+func EndIn(vs ...time.Time) predicate.EnterpriseStatement {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldEnd), v...))
+	})
+}
+
+// EndNotIn applies the NotIn predicate on the "end" field.
+func EndNotIn(vs ...time.Time) predicate.EnterpriseStatement {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldEnd), v...))
+	})
+}
+
+// EndGT applies the GT predicate on the "end" field.
+func EndGT(v time.Time) predicate.EnterpriseStatement {
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldEnd), v))
+	})
+}
+
+// EndGTE applies the GTE predicate on the "end" field.
+func EndGTE(v time.Time) predicate.EnterpriseStatement {
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldEnd), v))
+	})
+}
+
+// EndLT applies the LT predicate on the "end" field.
+func EndLT(v time.Time) predicate.EnterpriseStatement {
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldEnd), v))
+	})
+}
+
+// EndLTE applies the LTE predicate on the "end" field.
+func EndLTE(v time.Time) predicate.EnterpriseStatement {
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldEnd), v))
+	})
+}
+
+// EndIsNil applies the IsNil predicate on the "end" field.
+func EndIsNil() predicate.EnterpriseStatement {
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldEnd)))
+	})
+}
+
+// EndNotNil applies the NotNil predicate on the "end" field.
+func EndNotNil() predicate.EnterpriseStatement {
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldEnd)))
 	})
 }
 
@@ -1227,6 +1296,34 @@ func HasEnterpriseWith(preds ...predicate.Enterprise) predicate.EnterpriseStatem
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(EnterpriseInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, EnterpriseTable, EnterpriseColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasBills applies the HasEdge predicate on the "bills" edge.
+func HasBills() predicate.EnterpriseStatement {
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(BillsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, BillsTable, BillsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBillsWith applies the HasEdge predicate on the "bills" edge with a given conditions (other predicates).
+func HasBillsWith(preds ...predicate.EnterpriseBill) predicate.EnterpriseStatement {
+	return predicate.EnterpriseStatement(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(BillsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, BillsTable, BillsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

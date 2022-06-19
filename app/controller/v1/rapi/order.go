@@ -42,7 +42,7 @@ func (*order) Create(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
-// @Param        body  body  model.RefundReq  true  "desc"
+// @Param        body  body     model.RefundReq  true  "desc"
 // @Success      200  {object}  model.RefundRes  "请求成功"
 func (*order) Refund(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.RefundReq](c)
@@ -81,4 +81,19 @@ func (*order) Detail(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.IDParamReq](c)
     srv := service.NewRiderOrderWithRider(ctx.Rider)
     return ctx.SendResponse(srv.Detail(srv.Query(ctx.Rider.ID, req.ID)))
+}
+
+// Status
+// @ID           RiderOrderStatus
+// @Router       /rider/v1/order/status [GET]
+// @Summary      R3010 订单支付状态
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        outTradeNo     query  string  true  "订单编号"
+// @Success      200 {object}   model.OrderStatusRes  "请求成功"
+func (*order) Status(c echo.Context) (err error) {
+    ctx, req := app.RiderContextAndBinding[model.OrderStatusReq](c)
+    return ctx.SendResponse(service.NewRiderOrderWithRider(ctx.Rider).QueryStatus(req))
 }

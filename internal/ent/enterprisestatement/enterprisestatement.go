@@ -29,8 +29,6 @@ const (
 	FieldEnterpriseID = "enterprise_id"
 	// FieldCost holds the string denoting the cost field in the database.
 	FieldCost = "cost"
-	// FieldAmount holds the string denoting the amount field in the database.
-	FieldAmount = "amount"
 	// FieldBalance holds the string denoting the balance field in the database.
 	FieldBalance = "balance"
 	// FieldSettledAt holds the string denoting the settled_at field in the database.
@@ -39,21 +37,18 @@ const (
 	FieldDays = "days"
 	// FieldRiderNumber holds the string denoting the rider_number field in the database.
 	FieldRiderNumber = "rider_number"
-	// FieldBillTime holds the string denoting the bill_time field in the database.
-	FieldBillTime = "bill_time"
-	// EdgeSubscribes holds the string denoting the subscribes edge name in mutations.
-	EdgeSubscribes = "subscribes"
+	// FieldDate holds the string denoting the date field in the database.
+	FieldDate = "date"
+	// FieldStart holds the string denoting the start field in the database.
+	FieldStart = "start"
+	// FieldEnd holds the string denoting the end field in the database.
+	FieldEnd = "end"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
+	// EdgeBills holds the string denoting the bills edge name in mutations.
+	EdgeBills = "bills"
 	// Table holds the table name of the enterprisestatement in the database.
 	Table = "enterprise_statement"
-	// SubscribesTable is the table that holds the subscribes relation/edge.
-	SubscribesTable = "subscribe"
-	// SubscribesInverseTable is the table name for the Subscribe entity.
-	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
-	SubscribesInverseTable = "subscribe"
-	// SubscribesColumn is the table column denoting the subscribes relation/edge.
-	SubscribesColumn = "statement_id"
 	// EnterpriseTable is the table that holds the enterprise relation/edge.
 	EnterpriseTable = "enterprise_statement"
 	// EnterpriseInverseTable is the table name for the Enterprise entity.
@@ -61,6 +56,13 @@ const (
 	EnterpriseInverseTable = "enterprise"
 	// EnterpriseColumn is the table column denoting the enterprise relation/edge.
 	EnterpriseColumn = "enterprise_id"
+	// BillsTable is the table that holds the bills relation/edge.
+	BillsTable = "EnterpriseBill"
+	// BillsInverseTable is the table name for the EnterpriseBill entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisebill" package.
+	BillsInverseTable = "EnterpriseBill"
+	// BillsColumn is the table column denoting the bills relation/edge.
+	BillsColumn = "statement_id"
 )
 
 // Columns holds all SQL columns for enterprisestatement fields.
@@ -74,12 +76,13 @@ var Columns = []string{
 	FieldRemark,
 	FieldEnterpriseID,
 	FieldCost,
-	FieldAmount,
 	FieldBalance,
 	FieldSettledAt,
 	FieldDays,
 	FieldRiderNumber,
-	FieldBillTime,
+	FieldDate,
+	FieldStart,
+	FieldEnd,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -108,8 +111,6 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultCost holds the default value on creation for the "cost" field.
 	DefaultCost float64
-	// DefaultAmount holds the default value on creation for the "amount" field.
-	DefaultAmount float64
 	// DefaultBalance holds the default value on creation for the "balance" field.
 	DefaultBalance float64
 	// DefaultDays holds the default value on creation for the "days" field.

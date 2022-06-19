@@ -165,6 +165,19 @@ func (f EnterpriseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return f(ctx, mv)
 }
 
+// The EnterpriseBillFunc type is an adapter to allow the use of ordinary
+// function as EnterpriseBill mutator.
+type EnterpriseBillFunc func(context.Context, *ent.EnterpriseBillMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f EnterpriseBillFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.EnterpriseBillMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EnterpriseBillMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The EnterpriseContractFunc type is an adapter to allow the use of ordinary
 // function as EnterpriseContract mutator.
 type EnterpriseContractFunc func(context.Context, *ent.EnterpriseContractMutation) (ent.Value, error)

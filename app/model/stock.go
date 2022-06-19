@@ -36,10 +36,11 @@ type StockTransferReq struct {
 type StockListReq struct {
     PaginationReq
 
-    Name   *string `json:"name" query:"name"`     // 门店名称
-    CityID *uint64 `json:"cityId" query:"cityId"` // 城市ID
-    Start  *string `json:"start" query:"start"`   // 开始时间
-    End    *string `json:"end" query:"end"`       // 结束时间
+    Name    *string `json:"name" query:"name"`       // 门店名称
+    CityID  *uint64 `json:"cityId" query:"cityId"`   // 城市ID
+    Start   *string `json:"start" query:"start"`     // 开始时间
+    End     *string `json:"end" query:"end"`         // 结束时间
+    StoreID *uint64 `json:"storeID" query:"storeID"` // 门店ID
 }
 
 type StockMaterial struct {

@@ -529,19 +529,19 @@ func (s *riderService) Query(id uint64) *ent.Rider {
 // QueryForBusinessID 查找骑手并判定是否满足业务办理条件
 func (s *riderService) QueryForBusinessID(riderID uint64) (u *ent.Rider, err error) {
     u = s.Query(riderID)
-    err = s.Business(u)
+    err = s.Permission(u)
     return
 }
 
 // CheckForBusiness 骑手是否可办理业务
 func (s *riderService) CheckForBusiness(u *ent.Rider) {
-    err := s.Business(u)
+    err := s.Permission(u)
     if err != nil {
         snag.Panic(err)
     }
 }
 
-func (s *riderService) Business(u *ent.Rider) (err error) {
+func (s *riderService) Permission(u *ent.Rider) (err error) {
     if u.IsNewDevice {
         err = errors.New("骑手未人脸识别")
     }

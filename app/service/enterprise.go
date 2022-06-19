@@ -16,6 +16,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/enterprise"
     "github.com/auroraride/aurservd/internal/ent/enterprisecontract"
     "github.com/auroraride/aurservd/internal/ent/enterpriseprice"
+    "github.com/auroraride/aurservd/internal/ent/enterprisestatement"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -24,6 +25,7 @@ import (
     "github.com/jinzhu/copier"
     "github.com/shopspring/decimal"
     log "github.com/sirupsen/logrus"
+    "time"
 )
 
 type enterpriseService struct {
@@ -89,7 +91,7 @@ func (s *enterpriseService) Modify(req *model.EnterpriseDetailWithID) {
     e := s.QueryX(req.ID)
     // 判定付费方式是否允许改变
     if *req.Payment != e.Payment {
-        set := NewEnterpriseStatementWithModifier(s.modifier).Current(e.ID)
+        set := NewEnterpriseStatementWithModifier(s.modifier).Current(e)
         if set.Cost > 0 {
             snag.Panic("企业已产生费用, 无法修改支付方式")
         }
@@ -154,6 +156,8 @@ func (s *enterpriseService) DetailQuery() *ent.EnterpriseQuery {
         ecq.Order(ent.Desc(enterprisecontract.FieldEnd))
     }).WithRiders(func(erq *ent.RiderQuery) {
         erq.Where(rider.DeletedAtIsNil())
+    }).WithStatements(func(esq *ent.EnterpriseStatementQuery) {
+        esq.Where(enterprisestatement.Date(carbon.Now().StartOfDay().Carbon2Time()))
     })
 }
 
@@ -197,7 +201,9 @@ func (s *enterpriseService) List(req *model.EnterpriseListReq) *model.Pagination
 
 // GetDetail 获取企业详情
 func (s *enterpriseService) GetDetail(req *model.IDParamReq) model.EnterpriseRes {
-    item, _ := s.DetailQuery().Where(enterprise.ID(req.ID)).First(s.ctx)
+    item, _ := s.DetailQuery().Where(enterprise.ID(req.ID)).WithStatements(func(esq *ent.EnterpriseStatementQuery) {
+        esq.Where(enterprisestatement.Date(carbon.Now().StartOfDay().Carbon2Time()))
+    }).First(s.ctx)
     if item == nil {
         snag.Panic("未找到有效企业")
     }
@@ -238,6 +244,11 @@ func (s *enterpriseService) Detail(item *ent.Enterprise) (res model.EnterpriseRe
             }
         }
     }
+
+    stas := item.Edges.Statements
+    if item.Payment == model.EnterprisePaymentPostPay && stas != nil && len(stas) == 1 {
+        res.Unsettlement = stas[0].Days
+    }
     return
 }
 
@@ -251,15 +262,30 @@ func (s *enterpriseService) QueryAllCollaborated() []*ent.Enterprise {
 }
 
 // QueryAllUsingSubscribe 获取所有待结算骑手团签订阅
-func (s *enterpriseService) QueryAllUsingSubscribe(enterpriseID uint64) []*ent.Subscribe {
-    items, _ := ar.Ent.Subscribe.QueryNotDeleted().Where(
-        // 所属企业
-        subscribe.EnterpriseID(enterpriseID),
-        // 未结算
-        subscribe.StatementIDIsNil(),
-        // 已开始使用
-        subscribe.StartAtNotNil(),
-    ).All(s.ctx)
+func (s *enterpriseService) QueryAllUsingSubscribe(enterpriseID uint64, args ...any) []*ent.Subscribe {
+    q := ar.Ent.Subscribe.QueryNotDeleted().
+        Where(
+            // 所属企业
+            subscribe.EnterpriseID(enterpriseID),
+            // 已开始使用
+            subscribe.StartAtNotNil(),
+        )
+
+    end := time.Now()
+    if len(args) > 0 {
+        if d, ok := args[0].(time.Time); ok {
+            end = d
+        }
+    }
+    q.Where(
+        // 获取未结算订阅: 上次结算日期为空或小于截止日期
+        subscribe.Or(
+            subscribe.LastBillDateIsNil(),
+            subscribe.LastBillDateLTE(carbon.Time2Carbon(end).StartOfDay().Carbon2Time()),
+        ),
+    )
+
+    items, _ := q.WithCity().All(s.ctx)
     return items
 }
 
@@ -274,71 +300,117 @@ func (s *enterpriseService) GetPrices(item *ent.Enterprise) (res map[string]floa
 
     res = make(map[string]float64)
     for _, ep := range items {
-        res[fmt.Sprintf("%d-%f", ep.CityID, ep.Voltage)] = ep.Price
+        res[fmt.Sprintf("%d-%.2f", ep.CityID, ep.Voltage)] = ep.Price
     }
 
     return res
 }
 
-// UpdateStatement 更新企业账单
-func (s *enterpriseService) UpdateStatement(item *ent.Enterprise) {
+func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time) (sta *ent.EnterpriseStatement, bills []model.StatementBillData) {
     tt := tools.NewTime()
-    prices := s.GetPrices(item)
-    statement := NewEnterpriseStatement().Current(item.ID)
+    prices := s.GetPrices(e)
+    sta = NewEnterpriseStatement().Current(e)
 
     // 获取所有骑手订阅
-    var days int
-    cost := decimal.NewFromFloat(0)
-    subs := s.QueryAllUsingSubscribe(item.ID)
-    for _, sub := range subs {
+    subs := s.QueryAllUsingSubscribe(e.ID, end)
+    bills = make([]model.StatementBillData, len(subs))
+    for i, sub := range subs {
         // 计算使用天数
         var used int
+
         // 判定是否退订
-        if sub.EndAt != nil {
-            used = tt.UsedDays(*sub.EndAt, *sub.StartAt)
-        } else {
-            // 计算已使用天数
-            used = tt.UsedDaysToNow(*sub.StartAt)
+        // 上次结算日期存在则从上次结算日开始计算
+        from := carbon.Time2Carbon(*sub.StartAt).StartOfDay().Carbon2Time()
+        to := end
+        if sub.LastBillDate != nil {
+            from = *sub.LastBillDate
         }
 
-        // 总天数
-        days += used
+        // 是否已结束
+        if sub.EndAt != nil && sub.EndAt.Before(end) {
+            to = carbon.Time2Carbon(*sub.EndAt).StartOfDay().Carbon2Time()
+        }
+        used = tt.UsedDays(to, from)
 
         // 按城市/型号计算金额
-        k := fmt.Sprintf("%d-%f", sub.CityID, sub.Voltage)
-        if p, ok := prices[k]; ok {
-            cost = cost.Add(decimal.NewFromFloat(p).Mul(decimal.NewFromInt(int64(days))))
+        k := fmt.Sprintf("%d-%.2f", sub.CityID, sub.Voltage)
+        p, ok := prices[k]
+        if !ok {
+            log.Errorf("%d [%d] 获取价格失败", sub.ID, sub.CityID)
         }
+
+        cost, _ := decimal.NewFromFloat(p).Mul(decimal.NewFromInt(int64(used))).Float64()
+
+        bills[i] = model.StatementBillData{
+            EnterpriseID: *sub.EnterpriseID,
+            RiderID:      sub.RiderID,
+            SubscribeID:  sub.ID,
+            City: model.City{
+                ID:   sub.Edges.City.ID,
+                Name: sub.Edges.City.Name,
+            },
+            StatementID: sta.ID,
+            Days:        used,
+            End:         end,
+            Start:       from,
+            Cost:        cost,
+            Price:       p,
+            Voltage:     sub.Voltage,
+        }
+    }
+
+    return
+}
+
+// UpdateStatement 更新企业账单
+func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
+    sta, bills := s.CalculateStatement(e, time.Now())
+
+    // 总天数
+    var days int
+    // 总计费用
+    var cost float64
+    td := tools.NewDecimal()
+    for _, bill := range bills {
+        cost = td.Sum(cost, bill.Cost)
+        days += bill.Days
     }
 
     // 企业付款方式
     var balance float64
-    switch item.Payment {
+    switch e.Payment {
     case model.EnterprisePaymentPrepay:
         // 预付费, 计算余额
-        balance, _ = decimal.NewFromFloat(statement.Amount).Sub(cost).Float64()
+        balance = tools.NewDecimal().Sub(sta.Balance, cost)
         break
     }
 
-    _, err := item.Update().SetBalance(balance).Save(s.ctx)
+    _, err := e.Update().SetBalance(balance).Save(s.ctx)
     if err != nil {
-        log.Errorf("[ENTERPRISE TASK] %d 更新失败: %v", item.ID, err)
+        log.Errorf("[ENTERPRISE TASK] %d 更新失败: %v", e.ID, err)
     }
 
-    cf, _ := cost.Float64()
-    _, err = statement.Update().
-        SetRiderNumber(len(subs)).
+    now := carbon.Now().StartOfDay().Carbon2Time()
+    _, err = sta.Update().
+        SetRiderNumber(len(bills)).
         SetBalance(balance).
         SetDays(days).
-        SetCost(cf).
-        SetBillTime(carbon.Now().StartOfDay().AddDays(-1).Carbon2Time()).
+        SetCost(cost).
+        SetDate(now).
         Save(s.ctx)
 
     if err != nil {
-        log.Errorf("[ENTERPRISE TASK] %d 更新失败: %v", item.ID, err)
+        log.Errorf("[ENTERPRISE TASK] %d 更新失败: %v", e.ID, err)
     }
 
-    log.Infof("[ENTERPRISE TASK] EntperirseID:[%d] 更新成功, 总使用人数: %d, 账期使用总天数: %d, 总费用: %v", item.ID, len(subs), days, cost)
+    log.Infof("[ENTERPRISE TASK] EntperirseID:[%d] 更新成功, 总使用人数: %d, 账期使用总天数: %d, 总费用: %.2f, 余额: %.2f, 出账日期: %s",
+        e.ID,
+        len(bills),
+        days,
+        cost,
+        balance,
+        now.Format(carbon.DateLayout),
+    )
 }
 
 // Prepayment 预付费
@@ -348,7 +420,7 @@ func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float
         snag.Panic("该企业支付方式为后付费")
     }
 
-    set := NewEnterpriseStatementWithModifier(s.modifier).Current(e.ID)
+    set := NewEnterpriseStatementWithModifier(s.modifier).Current(e)
 
     before := e.Balance
     tx, _ := ar.Ent.Tx(s.ctx)
@@ -357,16 +429,16 @@ func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float
     _, err := tx.EnterprisePrepayment.Create().SetEnterpriseID(e.ID).SetAmount(req.Amount).SetRemark(req.Remark).Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
 
-    // 更新余额
-    b, _ := decimal.NewFromFloat(set.Balance).Add(decimal.NewFromFloat(req.Amount)).Float64()
-    a, _ := decimal.NewFromFloat(set.Amount).Add(decimal.NewFromFloat(req.Amount)).Float64()
+    td := tools.NewDecimal()
 
-    // 更新账单表
-    _, err = tx.EnterpriseStatement.UpdateOne(set).SetBalance(b).SetAmount(a).Save(s.ctx)
+    // 更新余额
+    // 账单表
+    balance := td.Sum(e.Balance, req.Amount)
+    _, err = tx.EnterpriseStatement.UpdateOne(set).SetBalance(balance).Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
 
     // 更新企业表
-    _, err = tx.Enterprise.UpdateOne(e).SetBalance(b).Save(s.ctx)
+    _, err = tx.Enterprise.UpdateOne(e).SetBalance(balance).Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
 
     // 记录日志
@@ -374,18 +446,22 @@ func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float
         SetRef(e).
         SetModifier(s.modifier).
         SetOperate(model.OperateEnterprisePrepayment).
-        SetDiff(fmt.Sprintf("余额%.2f元", before), fmt.Sprintf("余额%.2f元", b)).
+        SetDiff(fmt.Sprintf("余额%.2f元", before), fmt.Sprintf("余额%.2f元", balance)).
         SetRemark(req.Remark).
         Send()
 
     _ = tx.Commit()
-    return b
+    return balance
 }
 
 // Business 企业是否可以办理业务
 func (s *enterpriseService) Business(e *ent.Enterprise) error {
     if e == nil {
         return errors.New("未找到企业信息")
+    }
+
+    if e.Status != model.EnterpriseStatusCollaborated {
+        return errors.New("企业已终止合作")
     }
 
     if e.Payment == model.EnterprisePaymentPrepay && e.Balance < 0 {

@@ -177,13 +177,6 @@ func EnterpriseID(v uint64) predicate.Subscribe {
 	})
 }
 
-// StatementID applies equality check predicate on the "statement_id" field. It's identical to StatementIDEQ.
-func StatementID(v uint64) predicate.Subscribe {
-	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatementID), v))
-	})
-}
-
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v uint8) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
@@ -279,6 +272,13 @@ func RefundAt(v time.Time) predicate.Subscribe {
 func UnsubscribeReason(v string) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUnsubscribeReason), v))
+	})
+}
+
+// LastBillDate applies equality check predicate on the "last_bill_date" field. It's identical to LastBillDateEQ.
+func LastBillDate(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLastBillDate), v))
 	})
 }
 
@@ -1142,68 +1142,6 @@ func EnterpriseIDIsNil() predicate.Subscribe {
 func EnterpriseIDNotNil() predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldEnterpriseID)))
-	})
-}
-
-// StatementIDEQ applies the EQ predicate on the "statement_id" field.
-func StatementIDEQ(v uint64) predicate.Subscribe {
-	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatementID), v))
-	})
-}
-
-// StatementIDNEQ applies the NEQ predicate on the "statement_id" field.
-func StatementIDNEQ(v uint64) predicate.Subscribe {
-	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStatementID), v))
-	})
-}
-
-// StatementIDIn applies the In predicate on the "statement_id" field.
-func StatementIDIn(vs ...uint64) predicate.Subscribe {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Subscribe(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldStatementID), v...))
-	})
-}
-
-// StatementIDNotIn applies the NotIn predicate on the "statement_id" field.
-func StatementIDNotIn(vs ...uint64) predicate.Subscribe {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Subscribe(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldStatementID), v...))
-	})
-}
-
-// StatementIDIsNil applies the IsNil predicate on the "statement_id" field.
-func StatementIDIsNil() predicate.Subscribe {
-	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldStatementID)))
-	})
-}
-
-// StatementIDNotNil applies the NotNil predicate on the "statement_id" field.
-func StatementIDNotNil() predicate.Subscribe {
-	return predicate.Subscribe(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldStatementID)))
 	})
 }
 
@@ -2390,6 +2328,96 @@ func UnsubscribeReasonContainsFold(v string) predicate.Subscribe {
 	})
 }
 
+// LastBillDateEQ applies the EQ predicate on the "last_bill_date" field.
+func LastBillDateEQ(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLastBillDate), v))
+	})
+}
+
+// LastBillDateNEQ applies the NEQ predicate on the "last_bill_date" field.
+func LastBillDateNEQ(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLastBillDate), v))
+	})
+}
+
+// LastBillDateIn applies the In predicate on the "last_bill_date" field.
+func LastBillDateIn(vs ...time.Time) predicate.Subscribe {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldLastBillDate), v...))
+	})
+}
+
+// LastBillDateNotIn applies the NotIn predicate on the "last_bill_date" field.
+func LastBillDateNotIn(vs ...time.Time) predicate.Subscribe {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Subscribe(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldLastBillDate), v...))
+	})
+}
+
+// LastBillDateGT applies the GT predicate on the "last_bill_date" field.
+func LastBillDateGT(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldLastBillDate), v))
+	})
+}
+
+// LastBillDateGTE applies the GTE predicate on the "last_bill_date" field.
+func LastBillDateGTE(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldLastBillDate), v))
+	})
+}
+
+// LastBillDateLT applies the LT predicate on the "last_bill_date" field.
+func LastBillDateLT(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldLastBillDate), v))
+	})
+}
+
+// LastBillDateLTE applies the LTE predicate on the "last_bill_date" field.
+func LastBillDateLTE(v time.Time) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldLastBillDate), v))
+	})
+}
+
+// LastBillDateIsNil applies the IsNil predicate on the "last_bill_date" field.
+func LastBillDateIsNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldLastBillDate)))
+	})
+}
+
+// LastBillDateNotNil applies the NotNil predicate on the "last_bill_date" field.
+func LastBillDateNotNil() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldLastBillDate)))
+	})
+}
+
 // HasPlan applies the HasEdge predicate on the "plan" edge.
 func HasPlan() predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
@@ -2689,34 +2717,6 @@ func HasInitialOrderWith(preds ...predicate.Order) predicate.Subscribe {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(InitialOrderInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, InitialOrderTable, InitialOrderColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasStatement applies the HasEdge predicate on the "statement" edge.
-func HasStatement() predicate.Subscribe {
-	return predicate.Subscribe(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StatementTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, StatementTable, StatementColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasStatementWith applies the HasEdge predicate on the "statement" edge with a given conditions (other predicates).
-func HasStatementWith(preds ...predicate.EnterpriseStatement) predicate.Subscribe {
-	return predicate.Subscribe(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StatementInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, StatementTable, StatementColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

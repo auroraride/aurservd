@@ -93,6 +93,28 @@ definitions:
     - capacity
     - voltage
     type: object
+  model.BillOverview:
+    properties:
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      cost:
+        description: 账单金额
+        type: number
+      days:
+        description: 天数
+        type: integer
+      number:
+        description: 使用骑手数量
+        type: integer
+      price:
+        description: 单价
+        type: number
+      voltage:
+        description: 电压型号
+        type: number
+    type: object
   model.BranchContract:
     properties:
       area:
@@ -1132,6 +1154,9 @@ definitions:
         - 1
         - 2
         type: integer
+      unsettlement:
+        description: 未结算天数, 预付费企业此字段强制为0
+        type: integer
     type: object
   model.EnterpriseRider:
     properties:
@@ -1511,6 +1536,15 @@ definitions:
       prepay:
         description: 预支付字符串
         type: string
+    type: object
+  model.OrderStatusRes:
+    properties:
+      outTradeNo:
+        description: 订单编号
+        type: string
+      paid:
+        description: 是否支付
+        type: boolean
     type: object
   model.Pagination:
     properties:
@@ -2179,6 +2213,36 @@ definitions:
     properties:
       id:
         description: 任务ID
+        type: string
+    type: object
+  model.StatementBillRes:
+    properties:
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 企业城市
+      contactName:
+        description: 联系人
+        type: string
+      contactPhone:
+        description: 联系电话
+        type: string
+      cost:
+        description: 账单总额
+        type: number
+      end:
+        description: 账单周期结束日期
+        type: string
+      id:
+        description: 企业ID
+        type: integer
+      overview:
+        description: 账单概览
+        items:
+          $ref: '#/definitions/model.BillOverview'
+        type: array
+      start:
+        description: 账单周期开始日期
         type: string
     type: object
   model.StatusResponse:
@@ -3083,27 +3147,6 @@ paths:
       summary: E2008 换电记录
       tags:
       - '[E]店员接口'
-  /employee/v1/plan/renewly:
-    get:
-      consumes:
-      - application/json
-      operationId: RiderPlanRenewly
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.RiderPlanRenewalRes'
-      summary: R3003 续费骑士卡
-      tags:
-      - '[R]骑手接口'
   /employee/v1/profile:
     get:
       consumes:
@@ -3250,34 +3293,26 @@ paths:
         name: X-Employee-Token
         required: true
         type: string
-      - description: 城市ID
-        in: query
-        name: cityId
-        type: integer
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
         type: integer
-      - description: 业绩统计结束时间
+      - description: '筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
         in: query
         name: end
         type: string
-      - description: 查询店员电话或姓名
+      - description: 是否筛选出库, false(默认):入库 true:出库
         in: query
-        name: name
-        type: string
+        name: outbound
+        type: boolean
       - description: 每页数据, 默认20
         in: query
         name: pageSize
         type: integer
-      - description: 业绩统计开始时间
+      - description: '筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
         in: query
         name: start
         type: string
-      - description: 门店ID
-        in: query
-        name: storeId
-        type: integer
       produces:
       - application/json
       responses:
@@ -4330,6 +4365,37 @@ paths:
       summary: M9005 企业预付费
       tags:
       - '[M]管理接口'
+  /manager/v1/enterprise/bill:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerStatementBill
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: '账单截止日期 '
+        in: query
+        name: end
+        required: true
+        type: string
+      - description: '企业ID '
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatementBillRes'
+      summary: M9011 获取账单
+      tags:
+      - '[M]管理接口'
   /manager/v1/enterprise/rider:
     get:
       consumes:
@@ -5302,6 +5368,10 @@ paths:
         in: query
         name: start
         type: string
+      - description: 门店ID
+        in: query
+        name: storeID
+        type: integer
       produces:
       - application/json
       responses:
@@ -6336,6 +6406,32 @@ paths:
       summary: R3007 申请退款
       tags:
       - '[R]骑手接口'
+  /rider/v1/order/status:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderOrderStatus
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 订单编号
+        in: query
+        name: outTradeNo
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.OrderStatusRes'
+      summary: R3010 订单支付状态
+      tags:
+      - '[R]骑手接口'
   /rider/v1/plan:
     get:
       consumes:
@@ -6367,6 +6463,27 @@ paths:
               $ref: '#/definitions/model.RiderPlanItem'
             type: array
       summary: R3002 新购骑士卡
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/plan/renewly:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderPlanRenewly
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderPlanRenewalRes'
+      summary: R3003 续费骑士卡
       tags:
       - '[R]骑手接口'
   /rider/v1/profile:

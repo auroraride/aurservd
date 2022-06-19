@@ -15,6 +15,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/plan"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
+    log "github.com/sirupsen/logrus"
     "sort"
     "time"
 )
@@ -69,6 +70,7 @@ func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
         WithPms().
         Only(s.ctx)
     if err != nil || item == nil {
+        log.Error(err)
         snag.Panic("未找到有效的骑士卡")
     }
     return item

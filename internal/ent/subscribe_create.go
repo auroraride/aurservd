@@ -15,7 +15,6 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
-	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -194,20 +193,6 @@ func (sc *SubscribeCreate) SetEnterpriseID(u uint64) *SubscribeCreate {
 func (sc *SubscribeCreate) SetNillableEnterpriseID(u *uint64) *SubscribeCreate {
 	if u != nil {
 		sc.SetEnterpriseID(*u)
-	}
-	return sc
-}
-
-// SetStatementID sets the "statement_id" field.
-func (sc *SubscribeCreate) SetStatementID(u uint64) *SubscribeCreate {
-	sc.mutation.SetStatementID(u)
-	return sc
-}
-
-// SetNillableStatementID sets the "statement_id" field if the given value is not nil.
-func (sc *SubscribeCreate) SetNillableStatementID(u *uint64) *SubscribeCreate {
-	if u != nil {
-		sc.SetStatementID(*u)
 	}
 	return sc
 }
@@ -400,6 +385,20 @@ func (sc *SubscribeCreate) SetNillableUnsubscribeReason(s *string) *SubscribeCre
 	return sc
 }
 
+// SetLastBillDate sets the "last_bill_date" field.
+func (sc *SubscribeCreate) SetLastBillDate(t time.Time) *SubscribeCreate {
+	sc.mutation.SetLastBillDate(t)
+	return sc
+}
+
+// SetNillableLastBillDate sets the "last_bill_date" field if the given value is not nil.
+func (sc *SubscribeCreate) SetNillableLastBillDate(t *time.Time) *SubscribeCreate {
+	if t != nil {
+		sc.SetLastBillDate(*t)
+	}
+	return sc
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (sc *SubscribeCreate) SetPlan(p *Plan) *SubscribeCreate {
 	return sc.SetPlanID(p.ID)
@@ -483,11 +482,6 @@ func (sc *SubscribeCreate) AddOrders(o ...*Order) *SubscribeCreate {
 // SetInitialOrder sets the "initial_order" edge to the Order entity.
 func (sc *SubscribeCreate) SetInitialOrder(o *Order) *SubscribeCreate {
 	return sc.SetInitialOrderID(o.ID)
-}
-
-// SetStatement sets the "statement" edge to the EnterpriseStatement entity.
-func (sc *SubscribeCreate) SetStatement(e *EnterpriseStatement) *SubscribeCreate {
-	return sc.SetStatementID(e.ID)
 }
 
 // Mutation returns the SubscribeMutation object of the builder.
@@ -846,6 +840,14 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		})
 		_node.UnsubscribeReason = value
 	}
+	if value, ok := sc.mutation.LastBillDate(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: subscribe.FieldLastBillDate,
+		})
+		_node.LastBillDate = &value
+	}
 	if nodes := sc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1061,26 +1063,6 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.InitialOrderID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := sc.mutation.StatementIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   subscribe.StatementTable,
-			Columns: []string{subscribe.StatementColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: enterprisestatement.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.StatementID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -1365,24 +1347,6 @@ func (u *SubscribeUpsert) ClearEnterpriseID() *SubscribeUpsert {
 	return u
 }
 
-// SetStatementID sets the "statement_id" field.
-func (u *SubscribeUpsert) SetStatementID(v uint64) *SubscribeUpsert {
-	u.Set(subscribe.FieldStatementID, v)
-	return u
-}
-
-// UpdateStatementID sets the "statement_id" field to the value that was provided on create.
-func (u *SubscribeUpsert) UpdateStatementID() *SubscribeUpsert {
-	u.SetExcluded(subscribe.FieldStatementID)
-	return u
-}
-
-// ClearStatementID clears the value of the "statement_id" field.
-func (u *SubscribeUpsert) ClearStatementID() *SubscribeUpsert {
-	u.SetNull(subscribe.FieldStatementID)
-	return u
-}
-
 // SetStatus sets the "status" field.
 func (u *SubscribeUpsert) SetStatus(v uint8) *SubscribeUpsert {
 	u.Set(subscribe.FieldStatus, v)
@@ -1638,6 +1602,24 @@ func (u *SubscribeUpsert) UpdateUnsubscribeReason() *SubscribeUpsert {
 // ClearUnsubscribeReason clears the value of the "unsubscribe_reason" field.
 func (u *SubscribeUpsert) ClearUnsubscribeReason() *SubscribeUpsert {
 	u.SetNull(subscribe.FieldUnsubscribeReason)
+	return u
+}
+
+// SetLastBillDate sets the "last_bill_date" field.
+func (u *SubscribeUpsert) SetLastBillDate(v time.Time) *SubscribeUpsert {
+	u.Set(subscribe.FieldLastBillDate, v)
+	return u
+}
+
+// UpdateLastBillDate sets the "last_bill_date" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateLastBillDate() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldLastBillDate)
+	return u
+}
+
+// ClearLastBillDate clears the value of the "last_bill_date" field.
+func (u *SubscribeUpsert) ClearLastBillDate() *SubscribeUpsert {
+	u.SetNull(subscribe.FieldLastBillDate)
 	return u
 }
 
@@ -1960,27 +1942,6 @@ func (u *SubscribeUpsertOne) ClearEnterpriseID() *SubscribeUpsertOne {
 	})
 }
 
-// SetStatementID sets the "statement_id" field.
-func (u *SubscribeUpsertOne) SetStatementID(v uint64) *SubscribeUpsertOne {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.SetStatementID(v)
-	})
-}
-
-// UpdateStatementID sets the "statement_id" field to the value that was provided on create.
-func (u *SubscribeUpsertOne) UpdateStatementID() *SubscribeUpsertOne {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.UpdateStatementID()
-	})
-}
-
-// ClearStatementID clears the value of the "statement_id" field.
-func (u *SubscribeUpsertOne) ClearStatementID() *SubscribeUpsertOne {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.ClearStatementID()
-	})
-}
-
 // SetStatus sets the "status" field.
 func (u *SubscribeUpsertOne) SetStatus(v uint8) *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
@@ -2279,6 +2240,27 @@ func (u *SubscribeUpsertOne) UpdateUnsubscribeReason() *SubscribeUpsertOne {
 func (u *SubscribeUpsertOne) ClearUnsubscribeReason() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearUnsubscribeReason()
+	})
+}
+
+// SetLastBillDate sets the "last_bill_date" field.
+func (u *SubscribeUpsertOne) SetLastBillDate(v time.Time) *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetLastBillDate(v)
+	})
+}
+
+// UpdateLastBillDate sets the "last_bill_date" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateLastBillDate() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateLastBillDate()
+	})
+}
+
+// ClearLastBillDate clears the value of the "last_bill_date" field.
+func (u *SubscribeUpsertOne) ClearLastBillDate() *SubscribeUpsertOne {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearLastBillDate()
 	})
 }
 
@@ -2765,27 +2747,6 @@ func (u *SubscribeUpsertBulk) ClearEnterpriseID() *SubscribeUpsertBulk {
 	})
 }
 
-// SetStatementID sets the "statement_id" field.
-func (u *SubscribeUpsertBulk) SetStatementID(v uint64) *SubscribeUpsertBulk {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.SetStatementID(v)
-	})
-}
-
-// UpdateStatementID sets the "statement_id" field to the value that was provided on create.
-func (u *SubscribeUpsertBulk) UpdateStatementID() *SubscribeUpsertBulk {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.UpdateStatementID()
-	})
-}
-
-// ClearStatementID clears the value of the "statement_id" field.
-func (u *SubscribeUpsertBulk) ClearStatementID() *SubscribeUpsertBulk {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.ClearStatementID()
-	})
-}
-
 // SetStatus sets the "status" field.
 func (u *SubscribeUpsertBulk) SetStatus(v uint8) *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
@@ -3084,6 +3045,27 @@ func (u *SubscribeUpsertBulk) UpdateUnsubscribeReason() *SubscribeUpsertBulk {
 func (u *SubscribeUpsertBulk) ClearUnsubscribeReason() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.ClearUnsubscribeReason()
+	})
+}
+
+// SetLastBillDate sets the "last_bill_date" field.
+func (u *SubscribeUpsertBulk) SetLastBillDate(v time.Time) *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.SetLastBillDate(v)
+	})
+}
+
+// UpdateLastBillDate sets the "last_bill_date" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateLastBillDate() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.UpdateLastBillDate()
+	})
+}
+
+// ClearLastBillDate clears the value of the "last_bill_date" field.
+func (u *SubscribeUpsertBulk) ClearLastBillDate() *SubscribeUpsertBulk {
+	return u.Update(func(s *SubscribeUpsert) {
+		s.ClearLastBillDate()
 	})
 }
 

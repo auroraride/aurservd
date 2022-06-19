@@ -92,6 +92,8 @@ func (s *employeeSubscribeService) Inactive(qr string) (*model.SubscribeActiveIn
         snag.Panic("骑手信息获取失败")
     }
 
+    NewRiderPermissionWithRider(r).BusinessX()
+
     p := sub.Edges.Rider.Edges.Person
     if p.Status != model.PersonAuthenticated.Raw() {
         snag.Panic("骑手还未认证")
@@ -160,13 +162,6 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
         Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
 
-    // 团签账单
-    if info.EnterpriseID != nil {
-        sm := NewEnterpriseStatement().Current(*info.EnterpriseID)
-        _, err = tx.EnterpriseStatement.UpdateOne(sm).AddRiderNumber(1).Save(s.ctx)
-        snag.PanicIfErrorX(err, tx.Rollback)
-    }
-
     // 提成
     if info.CommissionID != nil {
         _, err = tx.Commission.UpdateOneID(*info.CommissionID).SetEmployeeID(s.employee.ID).Save(s.ctx)
@@ -187,6 +182,11 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
     snag.PanicIfErrorX(err, tx.Rollback)
 
     _ = tx.Commit()
+
+    // 更新团签账单
+    if info.EnterpriseID != nil {
+        go NewEnterprise().UpdateStatement(sub.Edges.Enterprise)
+    }
 
     // 保存业务日志
     NewBusinessLogWithEmployee(s.employee, sub).SaveAsync(business.TypeActive)

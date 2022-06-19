@@ -75,3 +75,12 @@ type OrderEmployeeListReq struct {
     Keyword *string `json:"keyword" query:"keyword"` // 筛选骑手姓名或电话
     Type    *string `json:"type" query:"type"`       // 筛选订单类别
 }
+
+type OrderStatusReq struct {
+    OutTradeNo string `json:"outTradeNo" query:"outTradeNo"` // 订单编号
+}
+
+type OrderStatusRes struct {
+    OutTradeNo string `json:"outTradeNo"` // 订单编号
+    Paid       bool   `json:"paid"`       // 是否支付
+}

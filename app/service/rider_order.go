@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
+    "time"
 )
 
 type riderOrderService struct {
@@ -176,4 +177,30 @@ func (s *riderOrderService) Query(riderID, orderID uint64) *ent.Order {
         snag.Panic("未找到订单")
     }
     return item
+}
+
+// QueryStatus 查询订单状态
+func (s *riderOrderService) QueryStatus(req *model.OrderStatusReq) (res model.OrderStatusRes) {
+    now := time.Now()
+    res = model.OrderStatusRes{
+        OutTradeNo: req.OutTradeNo,
+        Paid:       false,
+    }
+    for {
+        o, _ := ar.Ent.Order.QueryNotDeleted().Where(
+            order.OutTradeNo(req.OutTradeNo),
+            order.RiderID(s.rider.ID),
+        ).First(s.ctx)
+
+        if o != nil && o.Status == model.OrderStatusPaid {
+            res.Paid = true
+            return
+        }
+
+        if time.Now().Sub(now).Seconds() >= 30 {
+            return
+        }
+
+        time.Sleep(1 * time.Second)
+    }
 }

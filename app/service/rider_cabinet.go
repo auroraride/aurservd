@@ -109,6 +109,7 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
         RiderCabinetOperateProcess: info,
         Voltage:                    subd.Voltage,
         CityID:                     subd.City.ID,
+        Brand:                      model.CabinetBrand(cab.Brand),
     }
 
     tools.NewLog().Infof("[换电信息] %s, %s", uid, res)

@@ -22,8 +22,8 @@ func (t *enterpriseTask) Start() {
     go t.Do()
 
     c := cron.New()
-    entryID, err := c.AddFunc("1 0 * * *", func() {
-        log.Info("开始执行 [enterprise] 定时任务")
+    entryID, err := c.AddFunc("@daily", func() {
+        log.Info("开始执行 @daily[enterprise] 定时任务")
         t.Do()
     })
     if err != nil {

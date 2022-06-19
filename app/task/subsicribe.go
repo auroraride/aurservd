@@ -20,6 +20,7 @@ func NewSubscribe() *subscribeTask {
 
 func (t *subscribeTask) Start() {
     go t.Do()
+
     c := cron.New()
     entryID, err := c.AddFunc("@daily", func() {
         log.Info("开始执行 @daily[subscribe] 定时任务")

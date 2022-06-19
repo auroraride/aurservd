@@ -13,8 +13,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
-	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
 
 // EnterpriseStatementCreate is the builder for creating a EnterpriseStatement entity.
@@ -113,20 +113,6 @@ func (esc *EnterpriseStatementCreate) SetNillableCost(f *float64) *EnterpriseSta
 	return esc
 }
 
-// SetAmount sets the "amount" field.
-func (esc *EnterpriseStatementCreate) SetAmount(f float64) *EnterpriseStatementCreate {
-	esc.mutation.SetAmount(f)
-	return esc
-}
-
-// SetNillableAmount sets the "amount" field if the given value is not nil.
-func (esc *EnterpriseStatementCreate) SetNillableAmount(f *float64) *EnterpriseStatementCreate {
-	if f != nil {
-		esc.SetAmount(*f)
-	}
-	return esc
-}
-
 // SetBalance sets the "balance" field.
 func (esc *EnterpriseStatementCreate) SetBalance(f float64) *EnterpriseStatementCreate {
 	esc.mutation.SetBalance(f)
@@ -183,38 +169,58 @@ func (esc *EnterpriseStatementCreate) SetNillableRiderNumber(i *int) *Enterprise
 	return esc
 }
 
-// SetBillTime sets the "bill_time" field.
-func (esc *EnterpriseStatementCreate) SetBillTime(t time.Time) *EnterpriseStatementCreate {
-	esc.mutation.SetBillTime(t)
+// SetDate sets the "date" field.
+func (esc *EnterpriseStatementCreate) SetDate(t time.Time) *EnterpriseStatementCreate {
+	esc.mutation.SetDate(t)
 	return esc
 }
 
-// SetNillableBillTime sets the "bill_time" field if the given value is not nil.
-func (esc *EnterpriseStatementCreate) SetNillableBillTime(t *time.Time) *EnterpriseStatementCreate {
+// SetNillableDate sets the "date" field if the given value is not nil.
+func (esc *EnterpriseStatementCreate) SetNillableDate(t *time.Time) *EnterpriseStatementCreate {
 	if t != nil {
-		esc.SetBillTime(*t)
+		esc.SetDate(*t)
 	}
 	return esc
 }
 
-// AddSubscribeIDs adds the "subscribes" edge to the Subscribe entity by IDs.
-func (esc *EnterpriseStatementCreate) AddSubscribeIDs(ids ...uint64) *EnterpriseStatementCreate {
-	esc.mutation.AddSubscribeIDs(ids...)
+// SetStart sets the "start" field.
+func (esc *EnterpriseStatementCreate) SetStart(t time.Time) *EnterpriseStatementCreate {
+	esc.mutation.SetStart(t)
 	return esc
 }
 
-// AddSubscribes adds the "subscribes" edges to the Subscribe entity.
-func (esc *EnterpriseStatementCreate) AddSubscribes(s ...*Subscribe) *EnterpriseStatementCreate {
-	ids := make([]uint64, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+// SetEnd sets the "end" field.
+func (esc *EnterpriseStatementCreate) SetEnd(t time.Time) *EnterpriseStatementCreate {
+	esc.mutation.SetEnd(t)
+	return esc
+}
+
+// SetNillableEnd sets the "end" field if the given value is not nil.
+func (esc *EnterpriseStatementCreate) SetNillableEnd(t *time.Time) *EnterpriseStatementCreate {
+	if t != nil {
+		esc.SetEnd(*t)
 	}
-	return esc.AddSubscribeIDs(ids...)
+	return esc
 }
 
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (esc *EnterpriseStatementCreate) SetEnterprise(e *Enterprise) *EnterpriseStatementCreate {
 	return esc.SetEnterpriseID(e.ID)
+}
+
+// AddBillIDs adds the "bills" edge to the EnterpriseBill entity by IDs.
+func (esc *EnterpriseStatementCreate) AddBillIDs(ids ...uint64) *EnterpriseStatementCreate {
+	esc.mutation.AddBillIDs(ids...)
+	return esc
+}
+
+// AddBills adds the "bills" edges to the EnterpriseBill entity.
+func (esc *EnterpriseStatementCreate) AddBills(e ...*EnterpriseBill) *EnterpriseStatementCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return esc.AddBillIDs(ids...)
 }
 
 // Mutation returns the EnterpriseStatementMutation object of the builder.
@@ -314,10 +320,6 @@ func (esc *EnterpriseStatementCreate) defaults() error {
 		v := enterprisestatement.DefaultCost
 		esc.mutation.SetCost(v)
 	}
-	if _, ok := esc.mutation.Amount(); !ok {
-		v := enterprisestatement.DefaultAmount
-		esc.mutation.SetAmount(v)
-	}
 	if _, ok := esc.mutation.Balance(); !ok {
 		v := enterprisestatement.DefaultBalance
 		esc.mutation.SetBalance(v)
@@ -347,9 +349,6 @@ func (esc *EnterpriseStatementCreate) check() error {
 	if _, ok := esc.mutation.Cost(); !ok {
 		return &ValidationError{Name: "cost", err: errors.New(`ent: missing required field "EnterpriseStatement.cost"`)}
 	}
-	if _, ok := esc.mutation.Amount(); !ok {
-		return &ValidationError{Name: "amount", err: errors.New(`ent: missing required field "EnterpriseStatement.amount"`)}
-	}
 	if _, ok := esc.mutation.Balance(); !ok {
 		return &ValidationError{Name: "balance", err: errors.New(`ent: missing required field "EnterpriseStatement.balance"`)}
 	}
@@ -358,6 +357,9 @@ func (esc *EnterpriseStatementCreate) check() error {
 	}
 	if _, ok := esc.mutation.RiderNumber(); !ok {
 		return &ValidationError{Name: "rider_number", err: errors.New(`ent: missing required field "EnterpriseStatement.rider_number"`)}
+	}
+	if _, ok := esc.mutation.Start(); !ok {
+		return &ValidationError{Name: "start", err: errors.New(`ent: missing required field "EnterpriseStatement.start"`)}
 	}
 	if _, ok := esc.mutation.EnterpriseID(); !ok {
 		return &ValidationError{Name: "enterprise", err: errors.New(`ent: missing required edge "EnterpriseStatement.enterprise"`)}
@@ -446,14 +448,6 @@ func (esc *EnterpriseStatementCreate) createSpec() (*EnterpriseStatement, *sqlgr
 		})
 		_node.Cost = value
 	}
-	if value, ok := esc.mutation.Amount(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisestatement.FieldAmount,
-		})
-		_node.Amount = value
-	}
 	if value, ok := esc.mutation.Balance(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
@@ -486,32 +480,29 @@ func (esc *EnterpriseStatementCreate) createSpec() (*EnterpriseStatement, *sqlgr
 		})
 		_node.RiderNumber = value
 	}
-	if value, ok := esc.mutation.BillTime(); ok {
+	if value, ok := esc.mutation.Date(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: enterprisestatement.FieldBillTime,
+			Column: enterprisestatement.FieldDate,
 		})
-		_node.BillTime = &value
+		_node.Date = &value
 	}
-	if nodes := esc.mutation.SubscribesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   enterprisestatement.SubscribesTable,
-			Columns: []string{enterprisestatement.SubscribesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
+	if value, ok := esc.mutation.Start(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: enterprisestatement.FieldStart,
+		})
+		_node.Start = value
+	}
+	if value, ok := esc.mutation.End(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: enterprisestatement.FieldEnd,
+		})
+		_node.End = &value
 	}
 	if nodes := esc.mutation.EnterpriseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -531,6 +522,25 @@ func (esc *EnterpriseStatementCreate) createSpec() (*EnterpriseStatement, *sqlgr
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.EnterpriseID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := esc.mutation.BillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   enterprisestatement.BillsTable,
+			Columns: []string{enterprisestatement.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -713,24 +723,6 @@ func (u *EnterpriseStatementUpsert) AddCost(v float64) *EnterpriseStatementUpser
 	return u
 }
 
-// SetAmount sets the "amount" field.
-func (u *EnterpriseStatementUpsert) SetAmount(v float64) *EnterpriseStatementUpsert {
-	u.Set(enterprisestatement.FieldAmount, v)
-	return u
-}
-
-// UpdateAmount sets the "amount" field to the value that was provided on create.
-func (u *EnterpriseStatementUpsert) UpdateAmount() *EnterpriseStatementUpsert {
-	u.SetExcluded(enterprisestatement.FieldAmount)
-	return u
-}
-
-// AddAmount adds v to the "amount" field.
-func (u *EnterpriseStatementUpsert) AddAmount(v float64) *EnterpriseStatementUpsert {
-	u.Add(enterprisestatement.FieldAmount, v)
-	return u
-}
-
 // SetBalance sets the "balance" field.
 func (u *EnterpriseStatementUpsert) SetBalance(v float64) *EnterpriseStatementUpsert {
 	u.Set(enterprisestatement.FieldBalance, v)
@@ -803,21 +795,51 @@ func (u *EnterpriseStatementUpsert) AddRiderNumber(v int) *EnterpriseStatementUp
 	return u
 }
 
-// SetBillTime sets the "bill_time" field.
-func (u *EnterpriseStatementUpsert) SetBillTime(v time.Time) *EnterpriseStatementUpsert {
-	u.Set(enterprisestatement.FieldBillTime, v)
+// SetDate sets the "date" field.
+func (u *EnterpriseStatementUpsert) SetDate(v time.Time) *EnterpriseStatementUpsert {
+	u.Set(enterprisestatement.FieldDate, v)
 	return u
 }
 
-// UpdateBillTime sets the "bill_time" field to the value that was provided on create.
-func (u *EnterpriseStatementUpsert) UpdateBillTime() *EnterpriseStatementUpsert {
-	u.SetExcluded(enterprisestatement.FieldBillTime)
+// UpdateDate sets the "date" field to the value that was provided on create.
+func (u *EnterpriseStatementUpsert) UpdateDate() *EnterpriseStatementUpsert {
+	u.SetExcluded(enterprisestatement.FieldDate)
 	return u
 }
 
-// ClearBillTime clears the value of the "bill_time" field.
-func (u *EnterpriseStatementUpsert) ClearBillTime() *EnterpriseStatementUpsert {
-	u.SetNull(enterprisestatement.FieldBillTime)
+// ClearDate clears the value of the "date" field.
+func (u *EnterpriseStatementUpsert) ClearDate() *EnterpriseStatementUpsert {
+	u.SetNull(enterprisestatement.FieldDate)
+	return u
+}
+
+// SetStart sets the "start" field.
+func (u *EnterpriseStatementUpsert) SetStart(v time.Time) *EnterpriseStatementUpsert {
+	u.Set(enterprisestatement.FieldStart, v)
+	return u
+}
+
+// UpdateStart sets the "start" field to the value that was provided on create.
+func (u *EnterpriseStatementUpsert) UpdateStart() *EnterpriseStatementUpsert {
+	u.SetExcluded(enterprisestatement.FieldStart)
+	return u
+}
+
+// SetEnd sets the "end" field.
+func (u *EnterpriseStatementUpsert) SetEnd(v time.Time) *EnterpriseStatementUpsert {
+	u.Set(enterprisestatement.FieldEnd, v)
+	return u
+}
+
+// UpdateEnd sets the "end" field to the value that was provided on create.
+func (u *EnterpriseStatementUpsert) UpdateEnd() *EnterpriseStatementUpsert {
+	u.SetExcluded(enterprisestatement.FieldEnd)
+	return u
+}
+
+// ClearEnd clears the value of the "end" field.
+func (u *EnterpriseStatementUpsert) ClearEnd() *EnterpriseStatementUpsert {
+	u.SetNull(enterprisestatement.FieldEnd)
 	return u
 }
 
@@ -1018,27 +1040,6 @@ func (u *EnterpriseStatementUpsertOne) UpdateCost() *EnterpriseStatementUpsertOn
 	})
 }
 
-// SetAmount sets the "amount" field.
-func (u *EnterpriseStatementUpsertOne) SetAmount(v float64) *EnterpriseStatementUpsertOne {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.SetAmount(v)
-	})
-}
-
-// AddAmount adds v to the "amount" field.
-func (u *EnterpriseStatementUpsertOne) AddAmount(v float64) *EnterpriseStatementUpsertOne {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.AddAmount(v)
-	})
-}
-
-// UpdateAmount sets the "amount" field to the value that was provided on create.
-func (u *EnterpriseStatementUpsertOne) UpdateAmount() *EnterpriseStatementUpsertOne {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.UpdateAmount()
-	})
-}
-
 // SetBalance sets the "balance" field.
 func (u *EnterpriseStatementUpsertOne) SetBalance(v float64) *EnterpriseStatementUpsertOne {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
@@ -1123,24 +1124,59 @@ func (u *EnterpriseStatementUpsertOne) UpdateRiderNumber() *EnterpriseStatementU
 	})
 }
 
-// SetBillTime sets the "bill_time" field.
-func (u *EnterpriseStatementUpsertOne) SetBillTime(v time.Time) *EnterpriseStatementUpsertOne {
+// SetDate sets the "date" field.
+func (u *EnterpriseStatementUpsertOne) SetDate(v time.Time) *EnterpriseStatementUpsertOne {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.SetBillTime(v)
+		s.SetDate(v)
 	})
 }
 
-// UpdateBillTime sets the "bill_time" field to the value that was provided on create.
-func (u *EnterpriseStatementUpsertOne) UpdateBillTime() *EnterpriseStatementUpsertOne {
+// UpdateDate sets the "date" field to the value that was provided on create.
+func (u *EnterpriseStatementUpsertOne) UpdateDate() *EnterpriseStatementUpsertOne {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.UpdateBillTime()
+		s.UpdateDate()
 	})
 }
 
-// ClearBillTime clears the value of the "bill_time" field.
-func (u *EnterpriseStatementUpsertOne) ClearBillTime() *EnterpriseStatementUpsertOne {
+// ClearDate clears the value of the "date" field.
+func (u *EnterpriseStatementUpsertOne) ClearDate() *EnterpriseStatementUpsertOne {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.ClearBillTime()
+		s.ClearDate()
+	})
+}
+
+// SetStart sets the "start" field.
+func (u *EnterpriseStatementUpsertOne) SetStart(v time.Time) *EnterpriseStatementUpsertOne {
+	return u.Update(func(s *EnterpriseStatementUpsert) {
+		s.SetStart(v)
+	})
+}
+
+// UpdateStart sets the "start" field to the value that was provided on create.
+func (u *EnterpriseStatementUpsertOne) UpdateStart() *EnterpriseStatementUpsertOne {
+	return u.Update(func(s *EnterpriseStatementUpsert) {
+		s.UpdateStart()
+	})
+}
+
+// SetEnd sets the "end" field.
+func (u *EnterpriseStatementUpsertOne) SetEnd(v time.Time) *EnterpriseStatementUpsertOne {
+	return u.Update(func(s *EnterpriseStatementUpsert) {
+		s.SetEnd(v)
+	})
+}
+
+// UpdateEnd sets the "end" field to the value that was provided on create.
+func (u *EnterpriseStatementUpsertOne) UpdateEnd() *EnterpriseStatementUpsertOne {
+	return u.Update(func(s *EnterpriseStatementUpsert) {
+		s.UpdateEnd()
+	})
+}
+
+// ClearEnd clears the value of the "end" field.
+func (u *EnterpriseStatementUpsertOne) ClearEnd() *EnterpriseStatementUpsertOne {
+	return u.Update(func(s *EnterpriseStatementUpsert) {
+		s.ClearEnd()
 	})
 }
 
@@ -1505,27 +1541,6 @@ func (u *EnterpriseStatementUpsertBulk) UpdateCost() *EnterpriseStatementUpsertB
 	})
 }
 
-// SetAmount sets the "amount" field.
-func (u *EnterpriseStatementUpsertBulk) SetAmount(v float64) *EnterpriseStatementUpsertBulk {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.SetAmount(v)
-	})
-}
-
-// AddAmount adds v to the "amount" field.
-func (u *EnterpriseStatementUpsertBulk) AddAmount(v float64) *EnterpriseStatementUpsertBulk {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.AddAmount(v)
-	})
-}
-
-// UpdateAmount sets the "amount" field to the value that was provided on create.
-func (u *EnterpriseStatementUpsertBulk) UpdateAmount() *EnterpriseStatementUpsertBulk {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.UpdateAmount()
-	})
-}
-
 // SetBalance sets the "balance" field.
 func (u *EnterpriseStatementUpsertBulk) SetBalance(v float64) *EnterpriseStatementUpsertBulk {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
@@ -1610,24 +1625,59 @@ func (u *EnterpriseStatementUpsertBulk) UpdateRiderNumber() *EnterpriseStatement
 	})
 }
 
-// SetBillTime sets the "bill_time" field.
-func (u *EnterpriseStatementUpsertBulk) SetBillTime(v time.Time) *EnterpriseStatementUpsertBulk {
+// SetDate sets the "date" field.
+func (u *EnterpriseStatementUpsertBulk) SetDate(v time.Time) *EnterpriseStatementUpsertBulk {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.SetBillTime(v)
+		s.SetDate(v)
 	})
 }
 
-// UpdateBillTime sets the "bill_time" field to the value that was provided on create.
-func (u *EnterpriseStatementUpsertBulk) UpdateBillTime() *EnterpriseStatementUpsertBulk {
+// UpdateDate sets the "date" field to the value that was provided on create.
+func (u *EnterpriseStatementUpsertBulk) UpdateDate() *EnterpriseStatementUpsertBulk {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.UpdateBillTime()
+		s.UpdateDate()
 	})
 }
 
-// ClearBillTime clears the value of the "bill_time" field.
-func (u *EnterpriseStatementUpsertBulk) ClearBillTime() *EnterpriseStatementUpsertBulk {
+// ClearDate clears the value of the "date" field.
+func (u *EnterpriseStatementUpsertBulk) ClearDate() *EnterpriseStatementUpsertBulk {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.ClearBillTime()
+		s.ClearDate()
+	})
+}
+
+// SetStart sets the "start" field.
+func (u *EnterpriseStatementUpsertBulk) SetStart(v time.Time) *EnterpriseStatementUpsertBulk {
+	return u.Update(func(s *EnterpriseStatementUpsert) {
+		s.SetStart(v)
+	})
+}
+
+// UpdateStart sets the "start" field to the value that was provided on create.
+func (u *EnterpriseStatementUpsertBulk) UpdateStart() *EnterpriseStatementUpsertBulk {
+	return u.Update(func(s *EnterpriseStatementUpsert) {
+		s.UpdateStart()
+	})
+}
+
+// SetEnd sets the "end" field.
+func (u *EnterpriseStatementUpsertBulk) SetEnd(v time.Time) *EnterpriseStatementUpsertBulk {
+	return u.Update(func(s *EnterpriseStatementUpsert) {
+		s.SetEnd(v)
+	})
+}
+
+// UpdateEnd sets the "end" field to the value that was provided on create.
+func (u *EnterpriseStatementUpsertBulk) UpdateEnd() *EnterpriseStatementUpsertBulk {
+	return u.Update(func(s *EnterpriseStatementUpsert) {
+		s.UpdateEnd()
+	})
+}
+
+// ClearEnd clears the value of the "end" field.
+func (u *EnterpriseStatementUpsertBulk) ClearEnd() *EnterpriseStatementUpsertBulk {
+	return u.Update(func(s *EnterpriseStatementUpsert) {
+		s.ClearEnd()
 	})
 }
 
