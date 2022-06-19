@@ -57,6 +57,11 @@ func (s *cabinetService) QueryOne(id uint64) *ent.Cabinet {
 
 // CreateCabinet 创建电柜
 func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.CabinetItem) {
+    err := s.checkDeploy(req.Status, req.BranchID)
+    if err != nil {
+        snag.Panic(err)
+    }
+
     q := s.orm.Create().
         SetName(req.Name).
         SetSerial(req.Serial).
@@ -88,6 +93,9 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
     res = new(model.CabinetItem)
     _ = copier.Copy(res, item)
     res.Models = bms
+
+    go s.Deploy(item)
+
     return
 }
 
@@ -126,7 +134,8 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
 // Modify 修改电柜
 func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
     c := s.QueryOne(req.ID)
-    q := s.orm.UpdateOne(c)
+    tx, _ := ar.Ent.Tx(s.ctx)
+    q := tx.Cabinet.UpdateOne(c)
     if req.Models != nil {
         q.ClearBms()
         // 查询设置电池型号
@@ -161,7 +170,37 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
     if req.Remark != nil {
         q.SetRemark(*req.Remark)
     }
-    q.SaveX(s.ctx)
+    n, err := q.Save(s.ctx)
+    if err != nil {
+        _ = tx.Rollback()
+        snag.Panic(err)
+    }
+
+    err = s.checkDeploy(n.Status, n.BranchID)
+    if err != nil {
+        _ = tx.Rollback()
+        snag.Panic(err)
+    }
+
+    _ = tx.Commit()
+
+    go s.Deploy(n)
+}
+
+func (s *cabinetService) checkDeploy(status uint8, branchID *uint64) error {
+    if status == model.CabinetStatusNormal && branchID == nil {
+        return errors.New("电柜投产必须选择网点")
+    }
+    return nil
+}
+
+func (s *cabinetService) Deploy(c *ent.Cabinet) {
+    if model.CabinetBrand(c.Brand) != model.CabinetBrandYundong {
+        return
+    }
+
+    // TODO 云动部署投产
+    provider.NewYundong().UpdateBasicInfo()
 }
 
 // Delete 删除电柜

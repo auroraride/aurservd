@@ -44,7 +44,7 @@ func (Cabinet) Annotations() []schema.Annotation {
 // Fields of the Cabinet.
 func (Cabinet) Fields() []ent.Field {
     return []ent.Field{
-        field.Uint64("branch_id").Optional().Comment("网点"),
+        field.Uint64("branch_id").Optional().Nillable().Comment("网点"),
         field.String("sn").Unique().Comment("编号"),
         field.String("brand").Comment("品牌"),
         field.String("serial").Comment("原始编号"),

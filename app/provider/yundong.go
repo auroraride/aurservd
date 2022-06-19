@@ -52,6 +52,7 @@ const (
     yundongControlUrl  Yundongurl = "/cabinet/control"
     yundongOperatedUrl Yundongurl = "/cabinet/operated"
     yundongOperatorlog Yundongurl = "/cabinet/operatorlog"
+    yundongBasicinfo   Yundongurl = "/zhangfei/cabinet/basicinfo"
 )
 
 func NewYundong() *yundong {
@@ -356,4 +357,10 @@ func (p *yundong) GetOperateState(opId, serial, start, end string) (state bool) 
         return p.GetOperateState(opId, serial, start, end)
     }
     return
+}
+
+// UpdateBasicInfo 更新云动电柜信息(投产)
+// TODO areaCode是什么???
+func (p *yundong) UpdateBasicInfo() {
+
 }

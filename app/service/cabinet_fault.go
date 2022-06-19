@@ -71,7 +71,7 @@ func (s *cabinetFaultService) Report(rider *ent.Rider, req *model.CabinetFaultRe
         //     Name: city.Name,
         // }).
         SetCabinetID(ca.ID).
-        SetBranchID(ca.BranchID).
+        SetBranchID(*ca.BranchID).
         SetRiderID(rider.ID).
         SetCityID(city.ID).
         // SetCabinetName(ca.Name).

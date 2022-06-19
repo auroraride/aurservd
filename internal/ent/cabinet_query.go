@@ -563,7 +563,10 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 		ids := make([]uint64, 0, len(nodes))
 		nodeids := make(map[uint64][]*Cabinet)
 		for i := range nodes {
-			fk := nodes[i].BranchID
+			if nodes[i].BranchID == nil {
+				continue
+			}
+			fk := *nodes[i].BranchID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}

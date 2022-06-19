@@ -598,9 +598,12 @@ func (bq *BranchQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Branc
 		}
 		for _, n := range neighbors {
 			fk := n.BranchID
-			node, ok := nodeids[fk]
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "branch_id" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "branch_id" returned %v for node %v`, fk, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "branch_id" returned %v for node %v`, *fk, n.ID)
 			}
 			node.Edges.Cabinets = append(node.Edges.Cabinets, n)
 		}

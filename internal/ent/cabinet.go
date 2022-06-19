@@ -40,7 +40,7 @@ type Cabinet struct {
 	CityID *uint64 `json:"city_id,omitempty"`
 	// BranchID holds the value of the "branch_id" field.
 	// 网点
-	BranchID uint64 `json:"branch_id,omitempty"`
+	BranchID *uint64 `json:"branch_id,omitempty"`
 	// Sn holds the value of the "sn" field.
 	// 编号
 	Sn string `json:"sn,omitempty"`
@@ -237,7 +237,8 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field branch_id", values[i])
 			} else if value.Valid {
-				c.BranchID = uint64(value.Int64)
+				c.BranchID = new(uint64)
+				*c.BranchID = uint64(value.Int64)
 			}
 		case cabinet.FieldSn:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -380,8 +381,10 @@ func (c *Cabinet) String() string {
 		builder.WriteString(", city_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
-	builder.WriteString(", branch_id=")
-	builder.WriteString(fmt.Sprintf("%v", c.BranchID))
+	if v := c.BranchID; v != nil {
+		builder.WriteString(", branch_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", sn=")
 	builder.WriteString(c.Sn)
 	builder.WriteString(", brand=")

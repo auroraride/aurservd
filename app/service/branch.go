@@ -291,7 +291,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
             if c.Models[0].Voltage == 60 {
                 fa.Type = model.BranchFacilityTypeV60
             }
-            s.facility(itemsMap[c.BranchID].FacilityMap, fa)
+            s.facility(itemsMap[*c.BranchID].FacilityMap, fa)
         }
     }
 
