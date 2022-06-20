@@ -62,7 +62,7 @@ func (s *exceptionService) Setting() model.ExceptionEmployeeSetting {
 }
 
 func (s *exceptionService) Create(req *model.ExceptionEmployeeReq) {
-    if (req.Voltage == nil && req.Name == nil) || (req.Voltage != nil && req.Name != nil) {
+    if (req.Voltage == 0 && req.Name == "") || (req.Voltage != 0 && req.Name != "") {
         snag.Panic("请求参数错误")
     }
 
@@ -79,11 +79,11 @@ func (s *exceptionService) Create(req *model.ExceptionEmployeeReq) {
         SetDescription(req.Description).
         SetAttachments(req.Attachments)
 
-    if req.Name != nil {
-        ec.SetName(*req.Name)
+    if req.Name != "" {
+        ec.SetName(req.Name)
     }
-    if req.Voltage != nil {
-        ec.SetName(NewBattery().VoltageName(*req.Voltage)).SetVoltage(*req.Voltage)
+    if req.Voltage != 0 {
+        ec.SetName(NewBattery().VoltageName(req.Voltage)).SetVoltage(req.Voltage)
     }
 
     ec.SaveX(s.ctx)
