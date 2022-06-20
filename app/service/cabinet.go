@@ -16,6 +16,7 @@ import (
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/batterymodel"
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -120,6 +121,9 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
     }
     if req.Status != nil {
         q.Where(cabinet.Status(*req.Status))
+    }
+    if req.Voltage != nil {
+        q.Where(cabinet.HasBmsWith(batterymodel.Voltage(*req.Voltage)))
     }
 
     return model.ParsePaginationResponse[model.CabinetItem, ent.Cabinet](q, req.PaginationReq, func(item *ent.Cabinet) (res model.CabinetItem) {

@@ -1408,11 +1408,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "电柜型号",
                         "name": "brand",
                         "in": "query"
                     },
                     {
                         "type": "integer",
+                        "description": "城市ID",
                         "name": "cityId",
                         "in": "query"
                     },
@@ -1424,6 +1426,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "电柜名称",
                         "name": "name",
                         "in": "query"
                     },
@@ -1435,12 +1438,20 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "电柜编号",
                         "name": "serial",
                         "in": "query"
                     },
                     {
                         "type": "integer",
+                        "description": "电柜状态",
                         "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "电池型号",
+                        "name": "voltage",
                         "in": "query"
                     }
                 ],

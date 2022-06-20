@@ -3762,29 +3762,38 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - in: query
+      - description: 电柜型号
+        in: query
         name: brand
         type: string
-      - in: query
+      - description: 城市ID
+        in: query
         name: cityId
         type: integer
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
         type: integer
-      - in: query
+      - description: 电柜名称
+        in: query
         name: name
         type: string
       - description: 每页数据, 默认20
         in: query
         name: pageSize
         type: integer
-      - in: query
+      - description: 电柜编号
+        in: query
         name: serial
         type: string
-      - in: query
+      - description: 电柜状态
+        in: query
         name: status
         type: integer
+      - description: 电池型号
+        in: query
+        name: voltage
+        type: number
       produces:
       - application/json
       responses:

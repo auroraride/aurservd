@@ -81,11 +81,12 @@ type CabinetItem struct {
 type CabinetQueryReq struct {
     PaginationReq
 
-    Serial *string `json:"serial" query:"serial"`
-    Name   *string `json:"name" query:"name"`
-    CityId *uint64 `json:"cityId" query:"cityId"`
-    Brand  *string `json:"brand" query:"brand"`
-    Status *uint8  `json:"status" query:"status"`
+    Serial  *string  `json:"serial" query:"serial"`   // 电柜编号
+    Name    *string  `json:"name" query:"name"`       // 电柜名称
+    CityId  *uint64  `json:"cityId" query:"cityId"`   // 城市ID
+    Brand   *string  `json:"brand" query:"brand"`     // 电柜型号
+    Status  *uint8   `json:"status" query:"status"`   // 电柜状态
+    Voltage *float64 `json:"voltage" query:"voltage"` // 电池型号
 }
 
 // CabinetModifyReq 电柜修改请求
