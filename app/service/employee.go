@@ -233,9 +233,12 @@ func (s *employeeService) Profile(e *ent.Employee) model.EmployeeProfile {
     }
     if st != nil {
         res.Onduty = true
-        res.Store = &model.Store{
-            ID:   st.ID,
-            Name: st.Name,
+        res.Store = &model.StoreWithStatus{
+            Status: st.Status,
+            Store: model.Store{
+                ID:   st.ID,
+                Name: st.Name,
+            },
         }
     }
     return res

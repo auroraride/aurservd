@@ -44,6 +44,11 @@ type Store struct {
     Name string `json:"name"` // 门店名称
 }
 
+type StoreWithStatus struct {
+    Store
+    Status uint8 `json:"status"` // 门店状态
+}
+
 type StoreListReq struct {
     PaginationReq
 

@@ -7437,7 +7437,7 @@ const docTemplate = `{
                     "description": "上班门店, 未上班为空, 业务办理禁止进入",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/model.Store"
+                            "$ref": "#/definitions/model.StoreWithStatus"
                         }
                     ]
                 },
@@ -9891,6 +9891,22 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                }
+            }
+        },
+        "model.StoreWithStatus": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "门店名称",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "门店状态",
+                    "type": "integer"
                 }
             }
         },
