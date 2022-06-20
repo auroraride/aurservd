@@ -1290,6 +1290,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/branch/contract/sheet": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M3010 修改合同底单",
+                "operationId": "ManagerBranchSheet",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "合同底单修改请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BranchContractSheetReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/branch/selector": {
             "get": {
                 "consumes": [
@@ -6191,6 +6232,25 @@ const docTemplate = `{
                 "startTime": {
                     "description": "租期开始时间 ",
                     "type": "string"
+                }
+            }
+        },
+        "model.BranchContractSheetReq": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "description": "合同ID ",
+                    "type": "integer"
+                },
+                "sheets": {
+                    "description": "底单, 需携带所有` + "`" + `未删除` + "`" + `的底单",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

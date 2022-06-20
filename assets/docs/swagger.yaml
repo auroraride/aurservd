@@ -177,6 +177,19 @@ definitions:
     - sheets
     - startTime
     type: object
+  model.BranchContractSheetReq:
+    properties:
+      id:
+        description: '合同ID '
+        type: integer
+      sheets:
+        description: 底单, 需携带所有`未删除`的底单
+        items:
+          type: string
+        type: array
+    required:
+    - id
+    type: object
   model.BranchCreateReq:
     properties:
       address:
@@ -3722,6 +3735,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M3003 编辑网点
+      tags:
+      - '[M]管理接口'
+  /manager/v1/branch/contract/sheet:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerBranchSheet
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 合同底单修改请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.BranchContractSheetReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M3010 修改合同底单
       tags:
       - '[M]管理接口'
   /manager/v1/branch/selector:

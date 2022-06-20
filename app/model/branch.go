@@ -78,6 +78,11 @@ type BranchContract struct {
     Sheets            []string `json:"sheets" validate:"required" trans:"底单"`
 }
 
+type BranchContractSheetReq struct {
+    ID     uint64   `json:"id" validate:"required" trans:"合同ID"`
+    Sheets []string `json:"sheets"` // 底单, 需携带所有`未删除`的底单
+}
+
 const (
     BranchFacilityTypeStore = "store"
     BranchFacilityTypeV72   = "v72"

@@ -80,16 +80,17 @@ func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
 
     if len(req.Materials) > 0 {
         for _, m := range req.Materials {
-            if m.Voltage != 9 {
-                m.Name = NewBattery().VoltageName(m.Voltage)
-            }
-            NewStockWithModifier(s.modifier).Transfer(&model.StockTransferReq{
-                Voltage:    m.Voltage,
-                Name:       m.Name,
+            tf := &model.StockTransferReq{
                 OutboundID: 0,
                 InboundID:  item.ID,
                 Num:        m.Num,
-            })
+            }
+            if m.Voltage != 0 {
+                tf.Voltage = m.Voltage
+            } else {
+                tf.Name = m.Name
+            }
+            NewStockWithModifier(s.modifier).Transfer(tf)
         }
     }
 

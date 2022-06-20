@@ -316,3 +316,11 @@ func (s *branchService) facility(mp map[string]*model.BranchFacility, info model
         mp[info.Type] = fa
     }
 }
+
+func (s *branchService) Sheet(req *model.BranchContractSheetReq) {
+    bc, _ := ar.Ent.BranchContract.QueryNotDeleted().Where(branchcontract.ID(req.ID)).First(s.ctx)
+    if bc == nil {
+        snag.Panic("未找到合同信息")
+    }
+    bc.Update().SetSheets(req.Sheets).SaveX(s.ctx)
+}

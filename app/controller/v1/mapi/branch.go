@@ -95,3 +95,19 @@ func (*branch) AddContract(c echo.Context) (err error) {
     service.NewBranchWithModifier(ctx.Modifier).AddContract(req.BranchID, req)
     return ctx.SendResponse()
 }
+
+// Sheet
+// @ID           ManagerBranchSheet
+// @Router       /manager/v1/branch/contract/sheet [POST]
+// @Summary      M3010 修改合同底单
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.BranchContractSheetReq  true  "合同底单修改请求"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*branch) Sheet(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.BranchContractSheetReq](c)
+    service.NewBranchWithModifier(ctx.Modifier).Sheet(req)
+    return ctx.SendResponse()
+}
