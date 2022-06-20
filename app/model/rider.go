@@ -113,7 +113,7 @@ type RiderItem struct {
     // 认证信息, 有可能不存在, 内部字段也有可能不存在
     Person *Person `json:"person,omitempty"`
     // 紧急联系人, 有可能不存在
-    Contact *RiderContact `json:"contact"`
+    Contact *RiderContact `json:"contact,omitempty"`
 }
 
 // RiderBlockReq 封禁或解封骑手账号

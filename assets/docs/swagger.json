@@ -2336,7 +2336,7 @@
                     "[M]管理接口"
                 ],
                 "summary": "M9011 获取账单",
-                "operationId": "ManagerStatementBill",
+                "operationId": "ManagerStatementGetBill",
                 "parameters": [
                     {
                         "type": "string",
@@ -2365,6 +2365,45 @@
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatementBillRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9012 结账",
+                "operationId": "ManagerStatementBill",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "结账请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.StatementClearBillReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -9044,6 +9083,10 @@
                     "description": "账单总额",
                     "type": "number"
                 },
+                "days": {
+                    "description": "总使用天数",
+                    "type": "integer"
+                },
                 "end": {
                     "description": "账单周期结束日期",
                     "type": "string"
@@ -9061,6 +9104,27 @@
                 },
                 "start": {
                     "description": "账单周期开始日期",
+                    "type": "string"
+                },
+                "statementId": {
+                    "description": "账单ID",
+                    "type": "integer"
+                },
+                "uuid": {
+                    "description": "账单编码, 结账时使用",
+                    "type": "string"
+                }
+            }
+        },
+        "model.StatementClearBillReq": {
+            "type": "object",
+            "properties": {
+                "remark": {
+                    "description": "备注信息",
+                    "type": "string"
+                },
+                "uuid": {
+                    "description": "账单编码",
                     "type": "string"
                 }
             }
@@ -9267,6 +9331,23 @@
                 }
             }
         },
+        "model.StockStoreMaterial": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "物资名称",
+                    "type": "string"
+                },
+                "num": {
+                    "description": "物资数量",
+                    "type": "integer"
+                },
+                "voltage": {
+                    "description": "电池电压型号",
+                    "type": "number"
+                }
+            }
+        },
         "model.StockTransferReq": {
             "type": "object",
             "properties": {
@@ -9315,6 +9396,13 @@
                 "branchId": {
                     "description": "网点 ",
                     "type": "integer"
+                },
+                "materials": {
+                    "description": "门店物资",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.StockStoreMaterial"
+                    }
                 },
                 "name": {
                     "description": "门店名称 ",

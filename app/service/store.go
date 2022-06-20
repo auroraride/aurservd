@@ -23,6 +23,7 @@ type storeService struct {
     ctx      context.Context
     orm      *ent.StoreClient
     employee *ent.Employee
+    modifier *model.Modifier
 }
 
 func NewStore() *storeService {
@@ -34,6 +35,7 @@ func NewStore() *storeService {
 
 func NewStoreWithModifier(m *model.Modifier) *storeService {
     s := NewStore()
+    s.modifier = m
     s.ctx = context.WithValue(s.ctx, "modifier", m)
     return s
 }
@@ -67,6 +69,7 @@ func (s *storeService) QuerySn(sn string) *ent.Store {
 // Create 创建门店
 func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
     b := NewBranch().Query(*req.BranchID)
+
     item := s.orm.Create().
         SetName(*req.Name).
         SetStatus(req.Status).
@@ -74,6 +77,22 @@ func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
         SetCityID(b.CityID).
         SetSn(shortuuid.New()).
         SaveX(s.ctx)
+
+    if len(req.Materials) > 0 {
+        for _, m := range req.Materials {
+            if m.Voltage != 9 {
+                m.Name = NewBattery().VoltageName(m.Voltage)
+            }
+            NewStockWithModifier(s.modifier).Transfer(&model.StockTransferReq{
+                Voltage:    m.Voltage,
+                Name:       m.Name,
+                OutboundID: 0,
+                InboundID:  item.ID,
+                Num:        m.Num,
+            })
+        }
+    }
+
     return s.Detail(item.ID)
 }
 

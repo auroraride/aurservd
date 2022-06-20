@@ -13,11 +13,14 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/enterprise"
     "github.com/auroraride/aurservd/internal/ent/enterprisestatement"
+    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
+    "github.com/google/uuid"
     log "github.com/sirupsen/logrus"
     "math"
+    "time"
 )
 
 type enterpriseStatementService struct {
@@ -74,7 +77,7 @@ func (s *enterpriseStatementService) Current(e *ent.Enterprise) *ent.EnterpriseS
     return res
 }
 
-func (s *enterpriseStatementService) Bill(req *model.StatementBillReq) model.StatementBillRes {
+func (s *enterpriseStatementService) GetBill(req *model.StatementBillReq) *model.StatementBillRes {
     // 判定结算日是否早于当天
     end := tools.NewTime().ParseDateStringX(req.End)
     if !end.Before(carbon.Now().StartOfDay().Carbon2Time()) {
@@ -92,19 +95,23 @@ func (s *enterpriseStatementService) Bill(req *model.StatementBillReq) model.Sta
     }
 
     // 查询未结账账单
-    sta, bills := NewEnterprise().CalculateStatement(e, end)
+    es, bills := NewEnterprise().CalculateStatement(e, end)
 
-    res := model.StatementBillRes{
-        ID: e.ID,
+    uid := uuid.New().String()
+
+    res := &model.StatementBillRes{
+        ID:   e.ID,
+        UUID: uid,
         City: model.City{
             ID:   e.CityID,
             Name: e.Edges.City.Name,
         },
         ContactName:  e.ContactName,
         ContactPhone: e.ContactPhone,
-        Start:        sta.Start.Format(carbon.DateLayout),
+        Start:        es.Start.Format(carbon.DateLayout),
         End:          req.End,
         Bills:        bills,
+        StatementID:  es.ID,
     }
 
     overview := make(map[string]*model.BillOverview)
@@ -112,6 +119,7 @@ func (s *enterpriseStatementService) Bill(req *model.StatementBillReq) model.Sta
     td := tools.NewDecimal()
     for _, bill := range bills {
         cost = td.Sum(cost, bill.Cost)
+        res.Days += bill.Days
 
         key := fmt.Sprintf("%d-%.2f", bill.City.ID, bill.Voltage)
         ov, ok := overview[key]
@@ -137,5 +145,68 @@ func (s *enterpriseStatementService) Bill(req *model.StatementBillReq) model.Sta
 
     res.Cost = math.Round(cost*100) / 100
 
+    // 缓存账单
+    cache.Set(s.ctx, uid, res, 600*time.Second)
+
     return res
+}
+
+// Bill 后付费企业结账
+func (s *enterpriseStatementService) Bill(req *model.StatementClearBillReq) {
+    // 查找账单
+    br := new(model.StatementBillRes)
+    err := cache.Get(s.ctx, req.UUID).Scan(br)
+    if err != nil {
+        log.Error(err)
+        snag.Panic("未找到账单信息")
+        return
+    }
+
+    es, _ := s.orm.QueryNotDeleted().Where(enterprisestatement.ID(br.StatementID)).First(s.ctx)
+    if es == nil {
+        snag.Panic("未找到账单信息")
+    }
+
+    end := tools.NewTime().ParseDateStringX(br.End)
+    // 下个账单开始日
+    start := carbon.Time2Carbon(end).StartOfDay().AddDay().Carbon2Time()
+
+    tx, _ := ar.Ent.Tx(s.ctx)
+    _, err = tx.EnterpriseStatement.
+        UpdateOneID(br.StatementID).
+        SetSettledAt(time.Now()).
+        SetEnd(end).
+        SetRiderNumber(len(br.Bills)).
+        SetDays(br.Days).
+        SetCost(br.Cost).
+        SetNillableRemark(req.Remark).
+        Save(s.ctx)
+    snag.PanicIfErrorX(err, tx.Rollback)
+
+    // 更新所有订阅
+    riders := 0
+    for _, bill := range br.Bills {
+        var sub *ent.Subscribe
+        sub, err = tx.Subscribe.UpdateOneID(bill.SubscribeID).SetLastBillDate(end).Save(s.ctx)
+        snag.PanicIfErrorX(err, tx.Rollback)
+
+        if sub.EndAt == nil || !sub.EndAt.Before(start) {
+            riders += 1
+        }
+    }
+
+    // 创建新账单
+    _, err = tx.EnterpriseStatement.Create().
+        SetEnterpriseID(es.EnterpriseID).
+        SetStart(start).
+        SetCost(tools.NewDecimal().Sub(es.Cost, br.Cost)).
+        SetDays(es.Days - br.Days).
+        SetRiderNumber(riders).
+        SetBalance(es.Balance).
+        Save(s.ctx)
+    snag.PanicIfErrorX(err, tx.Rollback)
+
+    _ = tx.Commit()
+
+    cache.Del(s.ctx, req.UUID)
 }

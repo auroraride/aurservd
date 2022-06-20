@@ -306,10 +306,10 @@ func (s *enterpriseService) GetPrices(item *ent.Enterprise) (res map[string]floa
     return res
 }
 
-func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time) (sta *ent.EnterpriseStatement, bills []model.StatementBillData) {
+func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time) (es *ent.EnterpriseStatement, bills []model.StatementBillData) {
     tt := tools.NewTime()
     prices := s.GetPrices(e)
-    sta = NewEnterpriseStatement().Current(e)
+    es = NewEnterpriseStatement().Current(e)
 
     // 获取所有骑手订阅
     subs := s.QueryAllUsingSubscribe(e.ID, end)
@@ -319,11 +319,11 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
         var used int
 
         // 判定是否退订
-        // 上次结算日期存在则从上次结算日开始计算
+        // 上次结算日期存在则从上次结算日次日开始计算
         from := carbon.Time2Carbon(*sub.StartAt).StartOfDay().Carbon2Time()
         to := end
         if sub.LastBillDate != nil {
-            from = *sub.LastBillDate
+            from = carbon.Time2Carbon(*sub.LastBillDate).StartOfDay().AddDay().Carbon2Time()
         }
 
         // 是否已结束
@@ -349,7 +349,7 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
                 ID:   sub.Edges.City.ID,
                 Name: sub.Edges.City.Name,
             },
-            StatementID: sta.ID,
+            StatementID: es.ID,
             Days:        used,
             End:         end.Format(carbon.DateLayout),
             Start:       from.Format(carbon.DateLayout),

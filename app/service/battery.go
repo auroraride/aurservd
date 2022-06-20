@@ -81,8 +81,7 @@ func (s *batteryService) ListVoltages(excludes ...float64) []float64 {
     if len(excludes) > 0 {
         q.Where(batterymodel.VoltageNotIn(excludes...))
     }
-    q.GroupBy(batterymodel.FieldVoltage).
-        ScanX(s.ctx, &items)
+    q.GroupBy(batterymodel.FieldVoltage).ScanX(s.ctx, &items)
     return items
 }
 

@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/inventory"
     "github.com/auroraride/aurservd/internal/ent/predicate"
+    "github.com/auroraride/aurservd/pkg/tools"
 )
 
 type inventoryService struct {
@@ -92,11 +93,12 @@ func (s *inventoryService) Delete(req *model.InventoryDelete) {
 func (s *inventoryService) ListInventory(req model.InventoryListReq) (items []model.InventoryItem) {
     // 电池型号列表
     bs := NewBattery()
+    tp := tools.NewPointer()
     for _, v := range bs.ListVoltages() {
         items = append(items, model.InventoryItem{
             Name:    bs.VoltageName(v),
             Battery: true,
-            Voltage: &v,
+            Voltage: tp.Float64(v),
         })
     }
     for _, item := range s.List(req) {

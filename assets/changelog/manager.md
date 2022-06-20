@@ -1,3 +1,15 @@
+## 2022-06-20
+
+#### 接口新增
+
+- [M9012 结账](http://localhost:5533/docs#tag/M/operation/ManagerStatementBill)
+
+
+
+
+
+<br />
+
 ## 2022-06-19
 
 #### 接口调整
@@ -8,7 +20,7 @@
 
 #### 接口新增
 
-- [M9011 获取账单](http://localhost:5533/docs#tag/M/operation/ManagerStatementBill)
+- [M9011 获取账单](http://localhost:5533/docs#tag/M/operation/ManagerStatementGetBill)
 
 
 

@@ -170,7 +170,7 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
                     if sub.LastBillDate == nil {
                         res.Unsettled += days
                     } else {
-                        res.Unsettled += tt.UsedDaysToNow(*sub.LastBillDate)
+                        res.Unsettled += tt.UsedDaysToNow(carbon.Time2Carbon(*sub.LastBillDate).StartOfDay().AddDay().Carbon2Time())
                     }
                 }
             }

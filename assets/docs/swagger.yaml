@@ -2272,6 +2272,9 @@ definitions:
       cost:
         description: 账单总额
         type: number
+      days:
+        description: 总使用天数
+        type: integer
       end:
         description: 账单周期结束日期
         type: string
@@ -2285,6 +2288,21 @@ definitions:
         type: array
       start:
         description: 账单周期开始日期
+        type: string
+      statementId:
+        description: 账单ID
+        type: integer
+      uuid:
+        description: 账单编码, 结账时使用
+        type: string
+    type: object
+  model.StatementClearBillReq:
+    properties:
+      remark:
+        description: 备注信息
+        type: string
+      uuid:
+        description: 账单编码
         type: string
     type: object
   model.StatusResponse:
@@ -2424,6 +2442,18 @@ definitions:
         description: 电池总数
         type: integer
     type: object
+  model.StockStoreMaterial:
+    properties:
+      name:
+        description: 物资名称
+        type: string
+      num:
+        description: 物资数量
+        type: integer
+      voltage:
+        description: 电池电压型号
+        type: number
+    type: object
   model.StockTransferReq:
     properties:
       inboundId:
@@ -2455,6 +2485,11 @@ definitions:
       branchId:
         description: '网点 '
         type: integer
+      materials:
+        description: 门店物资
+        items:
+          $ref: '#/definitions/model.StockStoreMaterial'
+        type: array
       name:
         description: '门店名称 '
         type: string
@@ -4411,7 +4446,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: ManagerStatementBill
+      operationId: ManagerStatementGetBill
       parameters:
       - description: 管理员校验token
         in: header
@@ -4436,6 +4471,32 @@ paths:
           schema:
             $ref: '#/definitions/model.StatementBillRes'
       summary: M9011 获取账单
+      tags:
+      - '[M]管理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerStatementBill
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 结账请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.StatementClearBillReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M9012 结账
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/rider:

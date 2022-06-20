@@ -19,18 +19,18 @@ func Recover() echo.MiddlewareFunc {
         return func(c echo.Context) error {
             defer func() {
                 if r := recover(); r != nil {
+                    stack := string(debug.Stack())
                     switch r.(type) {
                     case *snag.Error:
-                        log.Error(r)
                         c.Error(r.(*snag.Error))
                     case *ent.ValidationError:
-                        log.Error(string(debug.Stack()))
+                        log.Error(stack)
                         c.Error(r.(*ent.ValidationError).Unwrap())
                     case error:
-                        log.Error(string(debug.Stack()))
+                        log.Error(stack)
                         c.Error(r.(error))
                     default:
-                        log.Error(string(debug.Stack()))
+                        log.Error(stack)
                         _ = mw.Recover()(next)(c)
                     }
                 }

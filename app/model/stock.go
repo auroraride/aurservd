@@ -51,6 +51,12 @@ type StockMaterial struct {
     Exception int    `json:"exception"` // 异常数量
 }
 
+type StockStoreMaterial struct {
+    Voltage float64 `json:"voltage"` // 电池电压型号
+    Name    string  `json:"name"`    // 物资名称
+    Num     int     `json:"num"`     // 物资数量
+}
+
 type StockListRes struct {
     Store        Store            `json:"store"`        // 门店
     City         City             `json:"city"`         // 城市
