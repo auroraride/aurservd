@@ -8969,9 +8969,69 @@ const docTemplate = `{
                 }
             }
         },
+        "model.StatementBillData": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "cost": {
+                    "description": "金额小计",
+                    "type": "number"
+                },
+                "days": {
+                    "description": "天数",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "结束日期",
+                    "type": "string"
+                },
+                "enterpriseId": {
+                    "description": "企业ID",
+                    "type": "integer"
+                },
+                "price": {
+                    "description": "单价",
+                    "type": "number"
+                },
+                "riderId": {
+                    "description": "骑手ID",
+                    "type": "integer"
+                },
+                "start": {
+                    "description": "开始日期",
+                    "type": "string"
+                },
+                "statementId": {
+                    "description": "账单ID",
+                    "type": "integer"
+                },
+                "subscribeId": {
+                    "description": "订阅ID",
+                    "type": "integer"
+                },
+                "voltage": {
+                    "description": "电压型号",
+                    "type": "number"
+                }
+            }
+        },
         "model.StatementBillRes": {
             "type": "object",
             "properties": {
+                "bills": {
+                    "description": "详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.StatementBillData"
+                    }
+                },
                 "city": {
                     "description": "企业城市",
                     "allOf": [

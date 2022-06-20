@@ -104,6 +104,7 @@ func (s *enterpriseStatementService) Bill(req *model.StatementBillReq) model.Sta
         ContactPhone: e.ContactPhone,
         Start:        sta.Start.Format(carbon.DateLayout),
         End:          req.End,
+        Bills:        bills,
     }
 
     overview := make(map[string]*model.BillOverview)
