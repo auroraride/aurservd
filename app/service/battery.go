@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/batterymodel"
     "github.com/auroraride/aurservd/pkg/snag"
+    "strconv"
 )
 
 type batteryService struct {
@@ -87,5 +88,5 @@ func (s *batteryService) ListVoltages(excludes ...float64) []float64 {
 
 // VoltageName 获取电池电压型号名称
 func (s *batteryService) VoltageName(voltage float64) string {
-    return fmt.Sprintf("%.2gV电池", voltage)
+    return fmt.Sprintf("%sV电池", strconv.FormatFloat(voltage, 'f', -1, 64))
 }

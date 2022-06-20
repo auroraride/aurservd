@@ -2223,6 +2223,106 @@
                 }
             }
         },
+        "/manager/v1/employee/attendance": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MA016 工作流",
+                "operationId": "ManagerAttendanceList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "考勤分类 0:全部 1:上班 2:下班",
+                        "name": "duty",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "考勤结束日期",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "店员姓名或手机号",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "考勤开始日期",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店ID",
+                        "name": "storeId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.AttendanceListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/employee/{id}": {
             "put": {
                 "consumes": [
@@ -6046,6 +6146,74 @@
                 },
                 "sn": {
                     "description": "门店编号 ",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AttendanceInventory": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "物资名称",
+                    "type": "string"
+                },
+                "num": {
+                    "description": "物资数量",
+                    "type": "integer"
+                },
+                "stockNum": {
+                    "description": "当前库存该物资数量",
+                    "type": "integer"
+                },
+                "voltage": {
+                    "description": "电池型号",
+                    "type": "number"
+                }
+            }
+        },
+        "model.AttendanceListRes": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "inventory": {
+                    "description": "物资盘点情况, 当物资异常的时候需要显示实际库存量",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.AttendanceInventory"
+                    }
+                },
+                "name": {
+                    "description": "店员姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "店员电话",
+                    "type": "string"
+                },
+                "photo": {
+                    "description": "照片",
+                    "type": "string"
+                },
+                "store": {
+                    "description": "门店",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Store"
+                        }
+                    ]
+                },
+                "time": {
+                    "description": "盘点时间",
                     "type": "string"
                 }
             }

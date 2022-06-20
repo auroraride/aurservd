@@ -12,7 +12,10 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/attendance"
+    "github.com/auroraride/aurservd/internal/ent/employee"
+    "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     "strings"
     "time"
@@ -55,7 +58,7 @@ func NewAttendanceWithEmployee(e *ent.Employee) *attendanceService {
 }
 
 // check 检查是否满足打卡条件并获取需盘点物资清单
-func (s *attendanceService) check(req *model.AttendancePrecheck) (*ent.Store, float64, []model.InventoryItem) {
+func (s *attendanceService) check(req *model.AttendancePrecheck) (*ent.Store, float64, []model.InventoryItemWithNum) {
     st := NewStore().QuerySn(*req.SN)
     b := NewBranch().Query(st.BranchID)
     if st.EmployeeID != nil && req.Duty {
@@ -73,10 +76,10 @@ func (s *attendanceService) check(req *model.AttendancePrecheck) (*ent.Store, fl
     if miles > 1000 {
         snag.Panic("距离过远")
     }
-    return st, miles, NewInventory().ListInventory(model.InventoryListReq{Count: true})
+    return st, miles, NewInventory().ListStockInventory(st.ID, model.InventoryListReq{Count: true})
 }
 
-func (s *attendanceService) Precheck(req *model.AttendancePrecheck) []model.InventoryItem {
+func (s *attendanceService) Precheck(req *model.AttendancePrecheck) []model.InventoryItemWithNum {
     _, _, items := s.check(req)
     return items
 }
@@ -106,16 +109,25 @@ func (s *attendanceService) dutyDate(duty bool, storeID, employeeID uint64) time
 }
 
 // Create 打卡
-// TODO 打卡物资盘点和出入库是否联动????如何联动
 func (s *attendanceService) Create(req *model.AttendanceCreateReq) {
     if !strings.HasPrefix(*req.Photo, "employee/") {
         snag.Panic("照片错误")
     }
+
+    inventory := make([]model.AttendanceInventory, 0)
     st, distance, items := s.check(req.AttendancePrecheck)
     for _, item := range items {
-        if _, ok := req.Inventory[item.Name]; !ok {
+        n, ok := req.Inventory[item.Name]
+        if !ok {
             snag.Panic("请提交全部的物资清单")
         }
+
+        inventory = append(inventory, model.AttendanceInventory{
+            Name:     item.Name,
+            Num:      n,
+            StockNum: item.Num,
+            Voltage:  item.Voltage,
+        })
     }
 
     tx, _ := ar.Ent.Tx(s.ctx)
@@ -124,7 +136,7 @@ func (s *attendanceService) Create(req *model.AttendanceCreateReq) {
         SetStore(st).
         SetDate(s.dutyDate(req.Duty, st.ID, s.employee.ID)).
         SetDuty(req.Duty).
-        SetInventory(req.Inventory).
+        SetInventory(inventory).
         SetPhoto(*req.Photo).
         SetDuty(req.Duty).
         SetAddress(*req.Address).
@@ -145,4 +157,58 @@ func (s *attendanceService) Create(req *model.AttendanceCreateReq) {
     }
 
     _ = tx.Commit()
+}
+
+func (s *attendanceService) List(req *model.AttendanceListReq) *model.PaginationRes {
+    q := s.orm.QueryNotDeleted().WithStore(func(sq *ent.StoreQuery) {
+        sq.WithCity()
+    }).WithEmployee()
+    tt := tools.NewTime()
+    if req.Start != nil {
+        q.Where(attendance.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
+    }
+    if req.End != nil {
+        q.Where(attendance.CreatedAtLT(carbon.Time2Carbon(tt.ParseDateStringX(*req.Start)).StartOfDay().Tomorrow().Carbon2Time()))
+    }
+    if req.Keyword != nil {
+        q.Where(
+            attendance.HasEmployeeWith(
+                employee.Or(
+                    employee.NameContainsFold(*req.Keyword),
+                    employee.PhoneContainsFold(*req.Keyword),
+                ),
+            ),
+        )
+    }
+    if req.Duty != 0 {
+        q.Where(attendance.Duty(req.Duty == 1))
+    }
+    if req.CityID != nil {
+        q.Where(attendance.HasStoreWith(store.CityID(*req.CityID)))
+    }
+    if req.StoreID != nil {
+        q.Where(attendance.StoreID(*req.StoreID))
+    }
+
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Attendance) model.AttendanceListRes {
+        es := item.Edges.Store
+        esc := es.Edges.City
+        ee := item.Edges.Employee
+        return model.AttendanceListRes{
+            ID: item.ID,
+            City: model.City{
+                ID:   esc.ID,
+                Name: esc.Name,
+            },
+            Store: model.Store{
+                ID:   es.ID,
+                Name: es.Name,
+            },
+            Name:      ee.Name,
+            Phone:     ee.Phone,
+            Time:      item.CreatedAt.Format(carbon.DateTimeLayout),
+            Photo:     *item.Photo,
+            Inventory: item.Inventory,
+        }
+    })
 }

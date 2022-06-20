@@ -105,7 +105,7 @@ type AttendanceMutation struct {
 	creator         **model.Modifier
 	last_modifier   **model.Modifier
 	remark          *string
-	inventory       *map[string]int
+	inventory       *[]model.AttendanceInventory
 	photo           *string
 	duty            *bool
 	date            *time.Time
@@ -565,12 +565,12 @@ func (m *AttendanceMutation) ResetEmployeeID() {
 }
 
 // SetInventory sets the "inventory" field.
-func (m *AttendanceMutation) SetInventory(value map[string]int) {
-	m.inventory = &value
+func (m *AttendanceMutation) SetInventory(mi []model.AttendanceInventory) {
+	m.inventory = &mi
 }
 
 // Inventory returns the value of the "inventory" field in the mutation.
-func (m *AttendanceMutation) Inventory() (r map[string]int, exists bool) {
+func (m *AttendanceMutation) Inventory() (r []model.AttendanceInventory, exists bool) {
 	v := m.inventory
 	if v == nil {
 		return
@@ -581,7 +581,7 @@ func (m *AttendanceMutation) Inventory() (r map[string]int, exists bool) {
 // OldInventory returns the old "inventory" field's value of the Attendance entity.
 // If the Attendance object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AttendanceMutation) OldInventory(ctx context.Context) (v map[string]int, err error) {
+func (m *AttendanceMutation) OldInventory(ctx context.Context) (v []model.AttendanceInventory, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldInventory is only allowed on UpdateOne operations")
 	}
@@ -1260,7 +1260,7 @@ func (m *AttendanceMutation) SetField(name string, value ent.Value) error {
 		m.SetEmployeeID(v)
 		return nil
 	case attendance.FieldInventory:
-		v, ok := value.(map[string]int)
+		v, ok := value.([]model.AttendanceInventory)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

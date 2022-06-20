@@ -125,6 +125,10 @@ func (s *employeeService) List(req *model.EmployeeListReq) *model.PaginationRes 
         q.Where(employee.CityID(*req.CityID))
     }
 
+    if req.Status != 0 {
+        q.Where(employee.Enable(req.Status == 1))
+    }
+
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Employee) model.EmployeeListRes {
         res := model.EmployeeListRes{
             ID:     item.ID,

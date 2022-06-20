@@ -47,6 +47,51 @@ definitions:
     - lng
     - sn
     type: object
+  model.AttendanceInventory:
+    properties:
+      name:
+        description: 物资名称
+        type: string
+      num:
+        description: 物资数量
+        type: integer
+      stockNum:
+        description: 当前库存该物资数量
+        type: integer
+      voltage:
+        description: 电池型号
+        type: number
+    type: object
+  model.AttendanceListRes:
+    properties:
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      id:
+        type: integer
+      inventory:
+        description: 物资盘点情况, 当物资异常的时候需要显示实际库存量
+        items:
+          $ref: '#/definitions/model.AttendanceInventory'
+        type: array
+      name:
+        description: 店员姓名
+        type: string
+      phone:
+        description: 店员电话
+        type: string
+      photo:
+        description: 照片
+        type: string
+      store:
+        allOf:
+        - $ref: '#/definitions/model.Store'
+        description: 门店
+      time:
+        description: 盘点时间
+        type: string
+    type: object
   model.AttendancePrecheck:
     properties:
       address:
@@ -4363,6 +4408,70 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: MA014 店员业绩
+      tags:
+      - '[M]管理接口'
+  /manager/v1/employee/attendance:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerAttendanceList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 考勤分类 0:全部 1:上班 2:下班
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: duty
+        type: integer
+      - description: 考勤结束日期
+        in: query
+        name: end
+        type: string
+      - description: 店员姓名或手机号
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 考勤开始日期
+        in: query
+        name: start
+        type: string
+      - description: 门店ID
+        in: query
+        name: storeId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.AttendanceListRes'
+                  type: array
+              type: object
+      summary: MA016 工作流
       tags:
       - '[M]管理接口'
   /manager/v1/enable/enable:

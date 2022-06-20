@@ -102,8 +102,8 @@ func (au *AttendanceUpdate) SetEmployeeID(u uint64) *AttendanceUpdate {
 }
 
 // SetInventory sets the "inventory" field.
-func (au *AttendanceUpdate) SetInventory(m map[string]int) *AttendanceUpdate {
-	au.mutation.SetInventory(m)
+func (au *AttendanceUpdate) SetInventory(mi []model.AttendanceInventory) *AttendanceUpdate {
+	au.mutation.SetInventory(mi)
 	return au
 }
 
@@ -702,8 +702,8 @@ func (auo *AttendanceUpdateOne) SetEmployeeID(u uint64) *AttendanceUpdateOne {
 }
 
 // SetInventory sets the "inventory" field.
-func (auo *AttendanceUpdateOne) SetInventory(m map[string]int) *AttendanceUpdateOne {
-	auo.mutation.SetInventory(m)
+func (auo *AttendanceUpdateOne) SetInventory(mi []model.AttendanceInventory) *AttendanceUpdateOne {
+	auo.mutation.SetInventory(mi)
 	return auo
 }
 

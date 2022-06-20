@@ -38,7 +38,7 @@ func loadManagerRoutes() {
     g.POST("/branch", mapi.Branch.Create)                   // 新增网点
     g.PUT("/branch/:id", mapi.Branch.Modify)                // 编辑网点
     g.POST("/branch/:id/contract", mapi.Branch.AddContract) // 添加合同
-    g.POST("/branch/contract/sheet", mapi.Branch.Sheet) // 添加合同
+    g.POST("/branch/contract/sheet", mapi.Branch.Sheet)
 
     // 门店
     g.GET("/store", mapi.Store.List)
@@ -108,6 +108,7 @@ func loadManagerRoutes() {
     g.DELETE("/employee/:id", mapi.Employee.Delete)
     g.GET("/employee/activity", mapi.Employee.Activity)
     g.POST("/employee/enable", mapi.Employee.Enable)
+    g.GET("/employee/attendance", mapi.Attendance.List)
 
     // 物资
     g.POST("/stock", mapi.Stock.Create)

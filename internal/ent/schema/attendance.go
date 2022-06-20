@@ -8,6 +8,7 @@ import (
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -28,7 +29,7 @@ func (Attendance) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("store_id").Comment("门店ID"),
         field.Uint64("employee_id").Comment("店员ID"),
-        field.JSON("inventory", map[string]int{}).Optional().Comment("物资盘点"),
+        field.JSON("inventory", []model.AttendanceInventory{}).Optional().Comment("物资盘点"),
         field.String("photo").Optional().Nillable().Comment("上班照片"),
         field.Bool("duty").Comment("是否上班盘点"),
         field.Time("date").SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("日期"),

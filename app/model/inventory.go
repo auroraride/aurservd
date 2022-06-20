@@ -27,3 +27,8 @@ type InventoryItem struct {
     Battery bool     `json:"battery"`           // 是否电池
     Voltage *float64 `json:"voltage,omitempty"` // 电压型号
 }
+
+type InventoryItemWithNum struct {
+    InventoryItem
+    Num int `json:"num"` // 物资数量
+}

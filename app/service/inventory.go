@@ -89,7 +89,7 @@ func (s *inventoryService) Delete(req *model.InventoryDelete) {
     s.orm.SoftDelete().Where(inventory.Name(*req.Name)).SaveX(s.ctx)
 }
 
-// ListInventory 获取需物资列表
+// ListInventory 获取物资列表
 func (s *inventoryService) ListInventory(req model.InventoryListReq) (items []model.InventoryItem) {
     // 电池型号列表
     bs := NewBattery()
@@ -104,6 +104,19 @@ func (s *inventoryService) ListInventory(req model.InventoryListReq) (items []mo
     for _, item := range s.List(req) {
         if item.Count {
             items = append(items, model.InventoryItem{Name: item.Name})
+        }
+    }
+    return
+}
+
+func (s *inventoryService) ListStockInventory(id uint64, req model.InventoryListReq) (res []model.InventoryItemWithNum) {
+    inm := NewStock().CurrentMap(id)
+    items := s.ListInventory(req)
+    res = make([]model.InventoryItemWithNum, len(items))
+    for i, item := range items {
+        res[i].InventoryItem = item
+        if x, ok := inm[item.Name]; ok {
+            res[i].Num = x.Num
         }
     }
     return

@@ -106,8 +106,8 @@ func (ac *AttendanceCreate) SetEmployeeID(u uint64) *AttendanceCreate {
 }
 
 // SetInventory sets the "inventory" field.
-func (ac *AttendanceCreate) SetInventory(m map[string]int) *AttendanceCreate {
-	ac.mutation.SetInventory(m)
+func (ac *AttendanceCreate) SetInventory(mi []model.AttendanceInventory) *AttendanceCreate {
+	ac.mutation.SetInventory(mi)
 	return ac
 }
 
@@ -680,7 +680,7 @@ func (u *AttendanceUpsert) UpdateEmployeeID() *AttendanceUpsert {
 }
 
 // SetInventory sets the "inventory" field.
-func (u *AttendanceUpsert) SetInventory(v map[string]int) *AttendanceUpsert {
+func (u *AttendanceUpsert) SetInventory(v []model.AttendanceInventory) *AttendanceUpsert {
 	u.Set(attendance.FieldInventory, v)
 	return u
 }
@@ -1020,7 +1020,7 @@ func (u *AttendanceUpsertOne) UpdateEmployeeID() *AttendanceUpsertOne {
 }
 
 // SetInventory sets the "inventory" field.
-func (u *AttendanceUpsertOne) SetInventory(v map[string]int) *AttendanceUpsertOne {
+func (u *AttendanceUpsertOne) SetInventory(v []model.AttendanceInventory) *AttendanceUpsertOne {
 	return u.Update(func(s *AttendanceUpsert) {
 		s.SetInventory(v)
 	})
@@ -1549,7 +1549,7 @@ func (u *AttendanceUpsertBulk) UpdateEmployeeID() *AttendanceUpsertBulk {
 }
 
 // SetInventory sets the "inventory" field.
-func (u *AttendanceUpsertBulk) SetInventory(v map[string]int) *AttendanceUpsertBulk {
+func (u *AttendanceUpsertBulk) SetInventory(v []model.AttendanceInventory) *AttendanceUpsertBulk {
 	return u.Update(func(s *AttendanceUpsert) {
 		s.SetInventory(v)
 	})

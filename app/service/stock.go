@@ -8,7 +8,9 @@ package service
 import (
     "context"
     stdsql "database/sql"
+    "entgo.io/ent/dialect/sql"
     "errors"
+    "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -522,4 +524,31 @@ func (s *stockService) EmployeeList(req *model.StockEmployeeListReq) model.Stock
         Today:         today,
         PaginationRes: res,
     }
+}
+
+// Current 列出当前门店所有库存物资
+func (s *stockService) Current(id uint64) []model.InventoryItemWithNum {
+    ins := make([]model.InventoryItemWithNum, 0)
+    err := s.orm.QueryNotDeleted().
+        Where(stock.StoreID(id)).
+        Modify(func(sel *sql.Selector) {
+            sel.GroupBy(stock.FieldName, stock.FieldVoltage).Select(stock.FieldName, stock.FieldVoltage).
+                AppendSelectExprAs(sql.Raw(fmt.Sprintf("%s IS NOT NULL", stock.FieldVoltage)), "battery").
+                AppendSelectExprAs(sql.Raw(fmt.Sprintf("SUM(%s)", stock.FieldNum)), "num")
+        }).
+        Scan(s.ctx, &ins)
+
+    if err != nil {
+        log.Error(err)
+    }
+
+    return ins
+}
+
+func (s *stockService) CurrentMap(id uint64) map[string]model.InventoryItemWithNum {
+    inm := make(map[string]model.InventoryItemWithNum)
+    for _, in := range s.Current(id) {
+        inm[in.Name] = in
+    }
+    return inm
 }

@@ -43,7 +43,7 @@ type Attendance struct {
 	EmployeeID uint64 `json:"employee_id,omitempty"`
 	// Inventory holds the value of the "inventory" field.
 	// 物资盘点
-	Inventory map[string]int `json:"inventory,omitempty"`
+	Inventory []model.AttendanceInventory `json:"inventory,omitempty"`
 	// Photo holds the value of the "photo" field.
 	// 上班照片
 	Photo *string `json:"photo,omitempty"`
