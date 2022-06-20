@@ -64,9 +64,11 @@ type EmployeeEdges struct {
 	Stocks []*Stock `json:"stocks,omitempty"`
 	// Exchanges holds the value of the exchanges edge.
 	Exchanges []*Exchange `json:"exchanges,omitempty"`
+	// Commissions holds the value of the commissions edge.
+	Commissions []*Commission `json:"commissions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // CityOrErr returns the City value or an error if the edge
@@ -122,6 +124,15 @@ func (e EmployeeEdges) ExchangesOrErr() ([]*Exchange, error) {
 		return e.Exchanges, nil
 	}
 	return nil, &NotLoadedError{edge: "exchanges"}
+}
+
+// CommissionsOrErr returns the Commissions value or an error if the edge
+// was not loaded in eager-loading.
+func (e EmployeeEdges) CommissionsOrErr() ([]*Commission, error) {
+	if e.loadedTypes[5] {
+		return e.Commissions, nil
+	}
+	return nil, &NotLoadedError{edge: "commissions"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -253,6 +264,11 @@ func (e *Employee) QueryStocks() *StockQuery {
 // QueryExchanges queries the "exchanges" edge of the Employee entity.
 func (e *Employee) QueryExchanges() *ExchangeQuery {
 	return (&EmployeeClient{config: e.config}).QueryExchanges(e)
+}
+
+// QueryCommissions queries the "commissions" edge of the Employee entity.
+func (e *Employee) QueryCommissions() *CommissionQuery {
+	return (&EmployeeClient{config: e.config}).QueryCommissions(e)
 }
 
 // Update returns a builder for updating this Employee.

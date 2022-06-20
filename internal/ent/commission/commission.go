@@ -35,6 +35,8 @@ const (
 	FieldEmployeeID = "employee_id"
 	// EdgeOrder holds the string denoting the order edge name in mutations.
 	EdgeOrder = "order"
+	// EdgeEmployee holds the string denoting the employee edge name in mutations.
+	EdgeEmployee = "employee"
 	// Table holds the table name of the commission in the database.
 	Table = "commission"
 	// OrderTable is the table that holds the order relation/edge.
@@ -44,6 +46,13 @@ const (
 	OrderInverseTable = "order"
 	// OrderColumn is the table column denoting the order relation/edge.
 	OrderColumn = "order_id"
+	// EmployeeTable is the table that holds the employee relation/edge.
+	EmployeeTable = "commission"
+	// EmployeeInverseTable is the table name for the Employee entity.
+	// It exists in this package in order to avoid circular dependency with the "employee" package.
+	EmployeeInverseTable = "employee"
+	// EmployeeColumn is the table column denoting the employee relation/edge.
+	EmployeeColumn = "employee_id"
 )
 
 // Columns holds all SQL columns for commission fields.

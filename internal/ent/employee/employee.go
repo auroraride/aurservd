@@ -43,6 +43,8 @@ const (
 	EdgeStocks = "stocks"
 	// EdgeExchanges holds the string denoting the exchanges edge name in mutations.
 	EdgeExchanges = "exchanges"
+	// EdgeCommissions holds the string denoting the commissions edge name in mutations.
+	EdgeCommissions = "commissions"
 	// Table holds the table name of the employee in the database.
 	Table = "employee"
 	// CityTable is the table that holds the city relation/edge.
@@ -80,6 +82,13 @@ const (
 	ExchangesInverseTable = "exchange"
 	// ExchangesColumn is the table column denoting the exchanges relation/edge.
 	ExchangesColumn = "employee_id"
+	// CommissionsTable is the table that holds the commissions relation/edge.
+	CommissionsTable = "commission"
+	// CommissionsInverseTable is the table name for the Commission entity.
+	// It exists in this package in order to avoid circular dependency with the "commission" package.
+	CommissionsInverseTable = "commission"
+	// CommissionsColumn is the table column denoting the commissions relation/edge.
+	CommissionsColumn = "employee_id"
 )
 
 // Columns holds all SQL columns for employee fields.

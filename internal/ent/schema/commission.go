@@ -29,7 +29,7 @@ func (Commission) Fields() []ent.Field {
         // field.Uint64("city_id").Comment("城市ID"),
         field.Float("amount").Immutable().Comment("提成金额"),
         field.Uint8("status").Default(0).Comment("提成状态 0未发放 1已发放"),
-        field.Uint64("employee_id").Optional().Comment("员工ID"),
+        field.Uint64("employee_id").Optional().Nillable().Comment("员工ID"),
     }
 }
 
@@ -37,6 +37,7 @@ func (Commission) Fields() []ent.Field {
 func (Commission) Edges() []ent.Edge {
     return []ent.Edge{
         edge.From("order", Order.Type).Ref("commission").Unique().Required().Field("order_id").Comment("订单ID"),
+        edge.From("employee", Employee.Type).Ref("commissions").Unique().Field("employee_id"),
     }
 }
 

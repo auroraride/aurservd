@@ -1656,6 +1656,22 @@ func (c *CommissionClient) QueryOrder(co *Commission) *OrderQuery {
 	return query
 }
 
+// QueryEmployee queries the employee edge of a Commission.
+func (c *CommissionClient) QueryEmployee(co *Commission) *EmployeeQuery {
+	query := &EmployeeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(commission.Table, commission.FieldID, id),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, commission.EmployeeTable, commission.EmployeeColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *CommissionClient) Hooks() []Hook {
 	hooks := c.hooks.Commission
@@ -1927,6 +1943,22 @@ func (c *EmployeeClient) QueryExchanges(e *Employee) *ExchangeQuery {
 			sqlgraph.From(employee.Table, employee.FieldID, id),
 			sqlgraph.To(exchange.Table, exchange.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, employee.ExchangesTable, employee.ExchangesColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCommissions queries the commissions edge of a Employee.
+func (c *EmployeeClient) QueryCommissions(e *Employee) *CommissionQuery {
+	query := &CommissionQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, id),
+			sqlgraph.To(commission.Table, commission.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, employee.CommissionsTable, employee.CommissionsColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil

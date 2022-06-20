@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/city"
+	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -200,6 +201,21 @@ func (eu *EmployeeUpdate) AddExchanges(e ...*Exchange) *EmployeeUpdate {
 	return eu.AddExchangeIDs(ids...)
 }
 
+// AddCommissionIDs adds the "commissions" edge to the Commission entity by IDs.
+func (eu *EmployeeUpdate) AddCommissionIDs(ids ...uint64) *EmployeeUpdate {
+	eu.mutation.AddCommissionIDs(ids...)
+	return eu
+}
+
+// AddCommissions adds the "commissions" edges to the Commission entity.
+func (eu *EmployeeUpdate) AddCommissions(c ...*Commission) *EmployeeUpdate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return eu.AddCommissionIDs(ids...)
+}
+
 // Mutation returns the EmployeeMutation object of the builder.
 func (eu *EmployeeUpdate) Mutation() *EmployeeMutation {
 	return eu.mutation
@@ -278,6 +294,27 @@ func (eu *EmployeeUpdate) RemoveExchanges(e ...*Exchange) *EmployeeUpdate {
 		ids[i] = e[i].ID
 	}
 	return eu.RemoveExchangeIDs(ids...)
+}
+
+// ClearCommissions clears all "commissions" edges to the Commission entity.
+func (eu *EmployeeUpdate) ClearCommissions() *EmployeeUpdate {
+	eu.mutation.ClearCommissions()
+	return eu
+}
+
+// RemoveCommissionIDs removes the "commissions" edge to Commission entities by IDs.
+func (eu *EmployeeUpdate) RemoveCommissionIDs(ids ...uint64) *EmployeeUpdate {
+	eu.mutation.RemoveCommissionIDs(ids...)
+	return eu
+}
+
+// RemoveCommissions removes "commissions" edges to Commission entities.
+func (eu *EmployeeUpdate) RemoveCommissions(c ...*Commission) *EmployeeUpdate {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return eu.RemoveCommissionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -692,6 +729,60 @@ func (eu *EmployeeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if eu.mutation.CommissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.CommissionsTable,
+			Columns: []string{employee.CommissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: commission.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedCommissionsIDs(); len(nodes) > 0 && !eu.mutation.CommissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.CommissionsTable,
+			Columns: []string{employee.CommissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: commission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.CommissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.CommissionsTable,
+			Columns: []string{employee.CommissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: commission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{employee.Label}
@@ -876,6 +967,21 @@ func (euo *EmployeeUpdateOne) AddExchanges(e ...*Exchange) *EmployeeUpdateOne {
 	return euo.AddExchangeIDs(ids...)
 }
 
+// AddCommissionIDs adds the "commissions" edge to the Commission entity by IDs.
+func (euo *EmployeeUpdateOne) AddCommissionIDs(ids ...uint64) *EmployeeUpdateOne {
+	euo.mutation.AddCommissionIDs(ids...)
+	return euo
+}
+
+// AddCommissions adds the "commissions" edges to the Commission entity.
+func (euo *EmployeeUpdateOne) AddCommissions(c ...*Commission) *EmployeeUpdateOne {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return euo.AddCommissionIDs(ids...)
+}
+
 // Mutation returns the EmployeeMutation object of the builder.
 func (euo *EmployeeUpdateOne) Mutation() *EmployeeMutation {
 	return euo.mutation
@@ -954,6 +1060,27 @@ func (euo *EmployeeUpdateOne) RemoveExchanges(e ...*Exchange) *EmployeeUpdateOne
 		ids[i] = e[i].ID
 	}
 	return euo.RemoveExchangeIDs(ids...)
+}
+
+// ClearCommissions clears all "commissions" edges to the Commission entity.
+func (euo *EmployeeUpdateOne) ClearCommissions() *EmployeeUpdateOne {
+	euo.mutation.ClearCommissions()
+	return euo
+}
+
+// RemoveCommissionIDs removes the "commissions" edge to Commission entities by IDs.
+func (euo *EmployeeUpdateOne) RemoveCommissionIDs(ids ...uint64) *EmployeeUpdateOne {
+	euo.mutation.RemoveCommissionIDs(ids...)
+	return euo
+}
+
+// RemoveCommissions removes "commissions" edges to Commission entities.
+func (euo *EmployeeUpdateOne) RemoveCommissions(c ...*Commission) *EmployeeUpdateOne {
+	ids := make([]uint64, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return euo.RemoveCommissionIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1390,6 +1517,60 @@ func (euo *EmployeeUpdateOne) sqlSave(ctx context.Context) (_node *Employee, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: exchange.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.CommissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.CommissionsTable,
+			Columns: []string{employee.CommissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: commission.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedCommissionsIDs(); len(nodes) > 0 && !euo.mutation.CommissionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.CommissionsTable,
+			Columns: []string{employee.CommissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: commission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.CommissionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.CommissionsTable,
+			Columns: []string{employee.CommissionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: commission.FieldID,
 				},
 			},
 		}

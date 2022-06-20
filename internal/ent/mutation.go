@@ -12131,27 +12131,27 @@ func (m *CityMutation) ResetEdge(name string) error {
 // CommissionMutation represents an operation that mutates the Commission nodes in the graph.
 type CommissionMutation struct {
 	config
-	op             Op
-	typ            string
-	id             *uint64
-	created_at     *time.Time
-	updated_at     *time.Time
-	deleted_at     *time.Time
-	creator        **model.Modifier
-	last_modifier  **model.Modifier
-	remark         *string
-	amount         *float64
-	addamount      *float64
-	status         *uint8
-	addstatus      *int8
-	employee_id    *uint64
-	addemployee_id *int64
-	clearedFields  map[string]struct{}
-	_order         *uint64
-	cleared_order  bool
-	done           bool
-	oldValue       func(context.Context) (*Commission, error)
-	predicates     []predicate.Commission
+	op              Op
+	typ             string
+	id              *uint64
+	created_at      *time.Time
+	updated_at      *time.Time
+	deleted_at      *time.Time
+	creator         **model.Modifier
+	last_modifier   **model.Modifier
+	remark          *string
+	amount          *float64
+	addamount       *float64
+	status          *uint8
+	addstatus       *int8
+	clearedFields   map[string]struct{}
+	_order          *uint64
+	cleared_order   bool
+	employee        *uint64
+	clearedemployee bool
+	done            bool
+	oldValue        func(context.Context) (*Commission, error)
+	predicates      []predicate.Commission
 }
 
 var _ ent.Mutation = (*CommissionMutation)(nil)
@@ -12670,13 +12670,12 @@ func (m *CommissionMutation) ResetStatus() {
 
 // SetEmployeeID sets the "employee_id" field.
 func (m *CommissionMutation) SetEmployeeID(u uint64) {
-	m.employee_id = &u
-	m.addemployee_id = nil
+	m.employee = &u
 }
 
 // EmployeeID returns the value of the "employee_id" field in the mutation.
 func (m *CommissionMutation) EmployeeID() (r uint64, exists bool) {
-	v := m.employee_id
+	v := m.employee
 	if v == nil {
 		return
 	}
@@ -12686,7 +12685,7 @@ func (m *CommissionMutation) EmployeeID() (r uint64, exists bool) {
 // OldEmployeeID returns the old "employee_id" field's value of the Commission entity.
 // If the Commission object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CommissionMutation) OldEmployeeID(ctx context.Context) (v uint64, err error) {
+func (m *CommissionMutation) OldEmployeeID(ctx context.Context) (v *uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldEmployeeID is only allowed on UpdateOne operations")
 	}
@@ -12700,28 +12699,9 @@ func (m *CommissionMutation) OldEmployeeID(ctx context.Context) (v uint64, err e
 	return oldValue.EmployeeID, nil
 }
 
-// AddEmployeeID adds u to the "employee_id" field.
-func (m *CommissionMutation) AddEmployeeID(u int64) {
-	if m.addemployee_id != nil {
-		*m.addemployee_id += u
-	} else {
-		m.addemployee_id = &u
-	}
-}
-
-// AddedEmployeeID returns the value that was added to the "employee_id" field in this mutation.
-func (m *CommissionMutation) AddedEmployeeID() (r int64, exists bool) {
-	v := m.addemployee_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
 // ClearEmployeeID clears the value of the "employee_id" field.
 func (m *CommissionMutation) ClearEmployeeID() {
-	m.employee_id = nil
-	m.addemployee_id = nil
+	m.employee = nil
 	m.clearedFields[commission.FieldEmployeeID] = struct{}{}
 }
 
@@ -12733,8 +12713,7 @@ func (m *CommissionMutation) EmployeeIDCleared() bool {
 
 // ResetEmployeeID resets all changes to the "employee_id" field.
 func (m *CommissionMutation) ResetEmployeeID() {
-	m.employee_id = nil
-	m.addemployee_id = nil
+	m.employee = nil
 	delete(m.clearedFields, commission.FieldEmployeeID)
 }
 
@@ -12762,6 +12741,32 @@ func (m *CommissionMutation) OrderIDs() (ids []uint64) {
 func (m *CommissionMutation) ResetOrder() {
 	m._order = nil
 	m.cleared_order = false
+}
+
+// ClearEmployee clears the "employee" edge to the Employee entity.
+func (m *CommissionMutation) ClearEmployee() {
+	m.clearedemployee = true
+}
+
+// EmployeeCleared reports if the "employee" edge to the Employee entity was cleared.
+func (m *CommissionMutation) EmployeeCleared() bool {
+	return m.EmployeeIDCleared() || m.clearedemployee
+}
+
+// EmployeeIDs returns the "employee" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EmployeeID instead. It exists only for internal usage by the builders.
+func (m *CommissionMutation) EmployeeIDs() (ids []uint64) {
+	if id := m.employee; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEmployee resets all changes to the "employee" edge.
+func (m *CommissionMutation) ResetEmployee() {
+	m.employee = nil
+	m.clearedemployee = false
 }
 
 // Where appends a list predicates to the CommissionMutation builder.
@@ -12811,7 +12816,7 @@ func (m *CommissionMutation) Fields() []string {
 	if m.status != nil {
 		fields = append(fields, commission.FieldStatus)
 	}
-	if m.employee_id != nil {
+	if m.employee != nil {
 		fields = append(fields, commission.FieldEmployeeID)
 	}
 	return fields
@@ -12964,9 +12969,6 @@ func (m *CommissionMutation) AddedFields() []string {
 	if m.addstatus != nil {
 		fields = append(fields, commission.FieldStatus)
 	}
-	if m.addemployee_id != nil {
-		fields = append(fields, commission.FieldEmployeeID)
-	}
 	return fields
 }
 
@@ -12979,8 +12981,6 @@ func (m *CommissionMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedAmount()
 	case commission.FieldStatus:
 		return m.AddedStatus()
-	case commission.FieldEmployeeID:
-		return m.AddedEmployeeID()
 	}
 	return nil, false
 }
@@ -13003,13 +13003,6 @@ func (m *CommissionMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddStatus(v)
-		return nil
-	case commission.FieldEmployeeID:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddEmployeeID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Commission numeric field %s", name)
@@ -13107,9 +13100,12 @@ func (m *CommissionMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CommissionMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m._order != nil {
 		edges = append(edges, commission.EdgeOrder)
+	}
+	if m.employee != nil {
+		edges = append(edges, commission.EdgeEmployee)
 	}
 	return edges
 }
@@ -13122,13 +13118,17 @@ func (m *CommissionMutation) AddedIDs(name string) []ent.Value {
 		if id := m._order; id != nil {
 			return []ent.Value{*id}
 		}
+	case commission.EdgeEmployee:
+		if id := m.employee; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CommissionMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	return edges
 }
 
@@ -13142,9 +13142,12 @@ func (m *CommissionMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CommissionMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.cleared_order {
 		edges = append(edges, commission.EdgeOrder)
+	}
+	if m.clearedemployee {
+		edges = append(edges, commission.EdgeEmployee)
 	}
 	return edges
 }
@@ -13155,6 +13158,8 @@ func (m *CommissionMutation) EdgeCleared(name string) bool {
 	switch name {
 	case commission.EdgeOrder:
 		return m.cleared_order
+	case commission.EdgeEmployee:
+		return m.clearedemployee
 	}
 	return false
 }
@@ -13166,6 +13171,9 @@ func (m *CommissionMutation) ClearEdge(name string) error {
 	case commission.EdgeOrder:
 		m.ClearOrder()
 		return nil
+	case commission.EdgeEmployee:
+		m.ClearEmployee()
+		return nil
 	}
 	return fmt.Errorf("unknown Commission unique edge %s", name)
 }
@@ -13176,6 +13184,9 @@ func (m *CommissionMutation) ResetEdge(name string) error {
 	switch name {
 	case commission.EdgeOrder:
 		m.ResetOrder()
+		return nil
+	case commission.EdgeEmployee:
+		m.ResetEmployee()
 		return nil
 	}
 	return fmt.Errorf("unknown Commission edge %s", name)
@@ -14304,6 +14315,9 @@ type EmployeeMutation struct {
 	exchanges          map[uint64]struct{}
 	removedexchanges   map[uint64]struct{}
 	clearedexchanges   bool
+	commissions        map[uint64]struct{}
+	removedcommissions map[uint64]struct{}
+	clearedcommissions bool
 	done               bool
 	oldValue           func(context.Context) (*Employee, error)
 	predicates         []predicate.Employee
@@ -15059,6 +15073,60 @@ func (m *EmployeeMutation) ResetExchanges() {
 	m.removedexchanges = nil
 }
 
+// AddCommissionIDs adds the "commissions" edge to the Commission entity by ids.
+func (m *EmployeeMutation) AddCommissionIDs(ids ...uint64) {
+	if m.commissions == nil {
+		m.commissions = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.commissions[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCommissions clears the "commissions" edge to the Commission entity.
+func (m *EmployeeMutation) ClearCommissions() {
+	m.clearedcommissions = true
+}
+
+// CommissionsCleared reports if the "commissions" edge to the Commission entity was cleared.
+func (m *EmployeeMutation) CommissionsCleared() bool {
+	return m.clearedcommissions
+}
+
+// RemoveCommissionIDs removes the "commissions" edge to the Commission entity by IDs.
+func (m *EmployeeMutation) RemoveCommissionIDs(ids ...uint64) {
+	if m.removedcommissions == nil {
+		m.removedcommissions = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.commissions, ids[i])
+		m.removedcommissions[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCommissions returns the removed IDs of the "commissions" edge to the Commission entity.
+func (m *EmployeeMutation) RemovedCommissionsIDs() (ids []uint64) {
+	for id := range m.removedcommissions {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CommissionsIDs returns the "commissions" edge IDs in the mutation.
+func (m *EmployeeMutation) CommissionsIDs() (ids []uint64) {
+	for id := range m.commissions {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCommissions resets all changes to the "commissions" edge.
+func (m *EmployeeMutation) ResetCommissions() {
+	m.commissions = nil
+	m.clearedcommissions = false
+	m.removedcommissions = nil
+}
+
 // Where appends a list predicates to the EmployeeMutation builder.
 func (m *EmployeeMutation) Where(ps ...predicate.Employee) {
 	m.predicates = append(m.predicates, ps...)
@@ -15366,7 +15434,7 @@ func (m *EmployeeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EmployeeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.city != nil {
 		edges = append(edges, employee.EdgeCity)
 	}
@@ -15381,6 +15449,9 @@ func (m *EmployeeMutation) AddedEdges() []string {
 	}
 	if m.exchanges != nil {
 		edges = append(edges, employee.EdgeExchanges)
+	}
+	if m.commissions != nil {
+		edges = append(edges, employee.EdgeCommissions)
 	}
 	return edges
 }
@@ -15415,13 +15486,19 @@ func (m *EmployeeMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case employee.EdgeCommissions:
+		ids := make([]ent.Value, 0, len(m.commissions))
+		for id := range m.commissions {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EmployeeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.removedattendances != nil {
 		edges = append(edges, employee.EdgeAttendances)
 	}
@@ -15430,6 +15507,9 @@ func (m *EmployeeMutation) RemovedEdges() []string {
 	}
 	if m.removedexchanges != nil {
 		edges = append(edges, employee.EdgeExchanges)
+	}
+	if m.removedcommissions != nil {
+		edges = append(edges, employee.EdgeCommissions)
 	}
 	return edges
 }
@@ -15456,13 +15536,19 @@ func (m *EmployeeMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case employee.EdgeCommissions:
+		ids := make([]ent.Value, 0, len(m.removedcommissions))
+		for id := range m.removedcommissions {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EmployeeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.clearedcity {
 		edges = append(edges, employee.EdgeCity)
 	}
@@ -15477,6 +15563,9 @@ func (m *EmployeeMutation) ClearedEdges() []string {
 	}
 	if m.clearedexchanges {
 		edges = append(edges, employee.EdgeExchanges)
+	}
+	if m.clearedcommissions {
+		edges = append(edges, employee.EdgeCommissions)
 	}
 	return edges
 }
@@ -15495,6 +15584,8 @@ func (m *EmployeeMutation) EdgeCleared(name string) bool {
 		return m.clearedstocks
 	case employee.EdgeExchanges:
 		return m.clearedexchanges
+	case employee.EdgeCommissions:
+		return m.clearedcommissions
 	}
 	return false
 }
@@ -15531,6 +15622,9 @@ func (m *EmployeeMutation) ResetEdge(name string) error {
 		return nil
 	case employee.EdgeExchanges:
 		m.ResetExchanges()
+		return nil
+	case employee.EdgeCommissions:
+		m.ResetCommissions()
 		return nil
 	}
 	return fmt.Errorf("unknown Employee edge %s", name)

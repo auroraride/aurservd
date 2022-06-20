@@ -3,6 +3,7 @@
 #### 接口新增
 
 - [M9012 结账](http://localhost:5533/docs#tag/M/operation/ManagerStatementBill)
+- [MA014 店员业绩](http://localhost:5533/docs#tag/M/operation/ManagerEmployeeActivity)
 
 
 

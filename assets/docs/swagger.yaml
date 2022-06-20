@@ -819,19 +819,10 @@ definitions:
     type: object
   model.EmployeeListRes:
     properties:
-      assistanceMiles:
-        description: '救援里程(米) TODO: 待实现'
-        type: number
-      assistanceTimes:
-        description: '救援次数 TODO: 待实现'
-        type: integer
       city:
         allOf:
         - $ref: '#/definitions/model.City'
         description: 城市
-      exchangeTimes:
-        description: 换电次数
-        type: integer
       id:
         type: integer
       name:
@@ -840,10 +831,6 @@ definitions:
       phone:
         description: 电话
         type: string
-      store:
-        allOf:
-        - $ref: '#/definitions/model.Store'
-        description: 当前上班门店, 字段为空的时候是休息状态
     type: object
   model.EmployeeProfile:
     properties:
@@ -4165,25 +4152,13 @@ paths:
         in: query
         name: current
         type: integer
-      - description: 业绩统计结束时间
+      - description: 搜索关键词, 手机号或姓名
         in: query
-        name: end
-        type: string
-      - description: 查询店员电话或姓名
-        in: query
-        name: name
+        name: keyword
         type: string
       - description: 每页数据, 默认20
         in: query
         name: pageSize
-        type: integer
-      - description: 业绩统计开始时间
-        in: query
-        name: start
-        type: string
-      - description: 门店ID
-        in: query
-        name: storeId
         type: integer
       produces:
       - application/json
@@ -4277,6 +4252,55 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: MA011 修改店员
+      tags:
+      - '[M]管理接口'
+  /manager/v1/employee/activity:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerEmployeeActivity
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 业绩统计结束时间
+        in: query
+        name: end
+        type: string
+      - description: 查询店员电话或姓名
+        in: query
+        name: name
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 业绩统计开始时间
+        in: query
+        name: start
+        type: string
+      - description: 门店ID
+        in: query
+        name: storeId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MA014 店员业绩
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise:

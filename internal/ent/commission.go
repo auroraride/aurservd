@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/commission"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/order"
 )
 
@@ -45,7 +46,7 @@ type Commission struct {
 	Status uint8 `json:"status,omitempty"`
 	// EmployeeID holds the value of the "employee_id" field.
 	// 员工ID
-	EmployeeID uint64 `json:"employee_id,omitempty"`
+	EmployeeID *uint64 `json:"employee_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CommissionQuery when eager-loading is set.
 	Edges CommissionEdges `json:"edges"`
@@ -55,9 +56,11 @@ type Commission struct {
 type CommissionEdges struct {
 	// Order holds the value of the order edge.
 	Order *Order `json:"order,omitempty"`
+	// Employee holds the value of the employee edge.
+	Employee *Employee `json:"employee,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // OrderOrErr returns the Order value or an error if the edge
@@ -72,6 +75,20 @@ func (e CommissionEdges) OrderOrErr() (*Order, error) {
 		return e.Order, nil
 	}
 	return nil, &NotLoadedError{edge: "order"}
+}
+
+// EmployeeOrErr returns the Employee value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CommissionEdges) EmployeeOrErr() (*Employee, error) {
+	if e.loadedTypes[1] {
+		if e.Employee == nil {
+			// The edge employee was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: employee.Label}
+		}
+		return e.Employee, nil
+	}
+	return nil, &NotLoadedError{edge: "employee"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -173,7 +190,8 @@ func (c *Commission) assignValues(columns []string, values []interface{}) error 
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field employee_id", values[i])
 			} else if value.Valid {
-				c.EmployeeID = uint64(value.Int64)
+				c.EmployeeID = new(uint64)
+				*c.EmployeeID = uint64(value.Int64)
 			}
 		}
 	}
@@ -183,6 +201,11 @@ func (c *Commission) assignValues(columns []string, values []interface{}) error 
 // QueryOrder queries the "order" edge of the Commission entity.
 func (c *Commission) QueryOrder() *OrderQuery {
 	return (&CommissionClient{config: c.config}).QueryOrder(c)
+}
+
+// QueryEmployee queries the "employee" edge of the Commission entity.
+func (c *Commission) QueryEmployee() *EmployeeQuery {
+	return (&CommissionClient{config: c.config}).QueryEmployee(c)
 }
 
 // Update returns a builder for updating this Commission.
@@ -228,8 +251,10 @@ func (c *Commission) String() string {
 	builder.WriteString(fmt.Sprintf("%v", c.Amount))
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", c.Status))
-	builder.WriteString(", employee_id=")
-	builder.WriteString(fmt.Sprintf("%v", c.EmployeeID))
+	if v := c.EmployeeID; v != nil {
+		builder.WriteString(", employee_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

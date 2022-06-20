@@ -39,8 +39,8 @@ func (*employee) Create(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        id  path  uint64  true  "店员ID"
-// @Success      200  {object}  model.StatusResponse  "请求成功"
+// @Param        id  path  uint64   true  "店员ID"
+// @Success      200  {object}      model.StatusResponse  "请求成功"
 func (*employee) Modify(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.EmployeeModifyReq](c)
     service.NewEmployeeWithModifier(ctx.Modifier).Modify(req)
@@ -55,7 +55,7 @@ func (*employee) Modify(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        query  query  model.EmployeeListReq  true  "desc"
+// @Param        query  query   model.EmployeeListReq  true  "筛选选项"
 // @Success      200  {object}  model.PaginationRes{items=[]model.EmployeeListRes}  "请求成功"
 func (*employee) List(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.EmployeeListReq](c)
@@ -76,4 +76,19 @@ func (*employee) Delete(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.EmployeeDeleteReq](c)
     service.NewEmployeeWithModifier(ctx.Modifier).Delete(req)
     return ctx.SendResponse()
+}
+
+// Activity
+// @ID           ManagerEmployeeActivity
+// @Router       /manager/v1/employee/activity [GET]
+// @Summary      MA014 店员业绩
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query   model.EmployeeActivityListReq  true  "店员业绩列表筛选"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*employee) Activity(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.EmployeeActivityListReq](c)
+    return ctx.SendResponse(service.NewEmployeeWithModifier(ctx.Modifier).Activity(req))
 }

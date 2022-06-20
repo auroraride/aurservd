@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/commission"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
@@ -25,8 +26,9 @@ type CommissionQuery struct {
 	fields     []string
 	predicates []predicate.Commission
 	// eager-loading edges.
-	withOrder *OrderQuery
-	modifiers []func(*sql.Selector)
+	withOrder    *OrderQuery
+	withEmployee *EmployeeQuery
+	modifiers    []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -78,6 +80,28 @@ func (cq *CommissionQuery) QueryOrder() *OrderQuery {
 			sqlgraph.From(commission.Table, commission.FieldID, selector),
 			sqlgraph.To(order.Table, order.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, true, commission.OrderTable, commission.OrderColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEmployee chains the current query on the "employee" edge.
+func (cq *CommissionQuery) QueryEmployee() *EmployeeQuery {
+	query := &EmployeeQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(commission.Table, commission.FieldID, selector),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, commission.EmployeeTable, commission.EmployeeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -261,12 +285,13 @@ func (cq *CommissionQuery) Clone() *CommissionQuery {
 		return nil
 	}
 	return &CommissionQuery{
-		config:     cq.config,
-		limit:      cq.limit,
-		offset:     cq.offset,
-		order:      append([]OrderFunc{}, cq.order...),
-		predicates: append([]predicate.Commission{}, cq.predicates...),
-		withOrder:  cq.withOrder.Clone(),
+		config:       cq.config,
+		limit:        cq.limit,
+		offset:       cq.offset,
+		order:        append([]OrderFunc{}, cq.order...),
+		predicates:   append([]predicate.Commission{}, cq.predicates...),
+		withOrder:    cq.withOrder.Clone(),
+		withEmployee: cq.withEmployee.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
@@ -282,6 +307,17 @@ func (cq *CommissionQuery) WithOrder(opts ...func(*OrderQuery)) *CommissionQuery
 		opt(query)
 	}
 	cq.withOrder = query
+	return cq
+}
+
+// WithEmployee tells the query-builder to eager-load the nodes that are connected to
+// the "employee" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CommissionQuery) WithEmployee(opts ...func(*EmployeeQuery)) *CommissionQuery {
+	query := &EmployeeQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withEmployee = query
 	return cq
 }
 
@@ -355,8 +391,9 @@ func (cq *CommissionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*C
 	var (
 		nodes       = []*Commission{}
 		_spec       = cq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			cq.withOrder != nil,
+			cq.withEmployee != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -403,6 +440,35 @@ func (cq *CommissionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*C
 			}
 			for i := range nodes {
 				nodes[i].Edges.Order = n
+			}
+		}
+	}
+
+	if query := cq.withEmployee; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Commission)
+		for i := range nodes {
+			if nodes[i].EmployeeID == nil {
+				continue
+			}
+			fk := *nodes[i].EmployeeID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(employee.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "employee_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Employee = n
 			}
 		}
 	}

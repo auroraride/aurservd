@@ -1045,6 +1045,34 @@ func HasExchangesWith(preds ...predicate.Exchange) predicate.Employee {
 	})
 }
 
+// HasCommissions applies the HasEdge predicate on the "commissions" edge.
+func HasCommissions() predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CommissionsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CommissionsTable, CommissionsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCommissionsWith applies the HasEdge predicate on the "commissions" edge with a given conditions (other predicates).
+func HasCommissionsWith(preds ...predicate.Commission) predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CommissionsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CommissionsTable, CommissionsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Employee) predicate.Employee {
 	return predicate.Employee(func(s *sql.Selector) {

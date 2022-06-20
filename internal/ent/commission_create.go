@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/commission"
+	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/order"
 )
 
@@ -135,6 +136,11 @@ func (cc *CommissionCreate) SetNillableEmployeeID(u *uint64) *CommissionCreate {
 // SetOrder sets the "order" edge to the Order entity.
 func (cc *CommissionCreate) SetOrder(o *Order) *CommissionCreate {
 	return cc.SetOrderID(o.ID)
+}
+
+// SetEmployee sets the "employee" edge to the Employee entity.
+func (cc *CommissionCreate) SetEmployee(e *Employee) *CommissionCreate {
+	return cc.SetEmployeeID(e.ID)
 }
 
 // Mutation returns the CommissionMutation object of the builder.
@@ -349,14 +355,6 @@ func (cc *CommissionCreate) createSpec() (*Commission, *sqlgraph.CreateSpec) {
 		})
 		_node.Status = value
 	}
-	if value, ok := cc.mutation.EmployeeID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeUint64,
-			Value:  value,
-			Column: commission.FieldEmployeeID,
-		})
-		_node.EmployeeID = value
-	}
 	if nodes := cc.mutation.OrderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -375,6 +373,26 @@ func (cc *CommissionCreate) createSpec() (*Commission, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.OrderID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.EmployeeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   commission.EmployeeTable,
+			Columns: []string{commission.EmployeeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: employee.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.EmployeeID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -584,12 +602,6 @@ func (u *CommissionUpsert) SetEmployeeID(v uint64) *CommissionUpsert {
 // UpdateEmployeeID sets the "employee_id" field to the value that was provided on create.
 func (u *CommissionUpsert) UpdateEmployeeID() *CommissionUpsert {
 	u.SetExcluded(commission.FieldEmployeeID)
-	return u
-}
-
-// AddEmployeeID adds v to the "employee_id" field.
-func (u *CommissionUpsert) AddEmployeeID(v uint64) *CommissionUpsert {
-	u.Add(commission.FieldEmployeeID, v)
 	return u
 }
 
@@ -824,13 +836,6 @@ func (u *CommissionUpsertOne) UpdateStatus() *CommissionUpsertOne {
 func (u *CommissionUpsertOne) SetEmployeeID(v uint64) *CommissionUpsertOne {
 	return u.Update(func(s *CommissionUpsert) {
 		s.SetEmployeeID(v)
-	})
-}
-
-// AddEmployeeID adds v to the "employee_id" field.
-func (u *CommissionUpsertOne) AddEmployeeID(v uint64) *CommissionUpsertOne {
-	return u.Update(func(s *CommissionUpsert) {
-		s.AddEmployeeID(v)
 	})
 }
 
@@ -1237,13 +1242,6 @@ func (u *CommissionUpsertBulk) UpdateStatus() *CommissionUpsertBulk {
 func (u *CommissionUpsertBulk) SetEmployeeID(v uint64) *CommissionUpsertBulk {
 	return u.Update(func(s *CommissionUpsert) {
 		s.SetEmployeeID(v)
-	})
-}
-
-// AddEmployeeID adds v to the "employee_id" field.
-func (u *CommissionUpsertBulk) AddEmployeeID(v uint64) *CommissionUpsertBulk {
-	return u.Update(func(s *CommissionUpsert) {
-		s.AddEmployeeID(v)
 	})
 }
 

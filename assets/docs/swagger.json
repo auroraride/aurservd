@@ -2022,32 +2022,14 @@
                     },
                     {
                         "type": "string",
-                        "description": "业绩统计结束时间",
-                        "name": "end",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "查询店员电话或姓名",
-                        "name": "name",
+                        "description": "搜索关键词, 手机号或姓名",
+                        "name": "keyword",
                         "in": "query"
                     },
                     {
                         "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "业绩统计开始时间",
-                        "name": "start",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "门店ID",
-                        "name": "storeId",
                         "in": "query"
                     }
                 ],
@@ -2110,6 +2092,80 @@
                         "description": "请求成功",
                         "schema": {
                             "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/employee/activity": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MA014 店员业绩",
+                "operationId": "ManagerEmployeeActivity",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "业绩统计结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "查询店员电话或姓名",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "业绩统计开始时间",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "门店ID",
+                        "name": "storeId",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -6991,14 +7047,6 @@
         "model.EmployeeListRes": {
             "type": "object",
             "properties": {
-                "assistanceMiles": {
-                    "description": "救援里程(米) TODO: 待实现",
-                    "type": "number"
-                },
-                "assistanceTimes": {
-                    "description": "救援次数 TODO: 待实现",
-                    "type": "integer"
-                },
                 "city": {
                     "description": "城市",
                     "allOf": [
@@ -7006,10 +7054,6 @@
                             "$ref": "#/definitions/model.City"
                         }
                     ]
-                },
-                "exchangeTimes": {
-                    "description": "换电次数",
-                    "type": "integer"
                 },
                 "id": {
                     "type": "integer"
@@ -7021,14 +7065,6 @@
                 "phone": {
                     "description": "电话",
                     "type": "string"
-                },
-                "store": {
-                    "description": "当前上班门店, 字段为空的时候是休息状态",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.Store"
-                        }
-                    ]
                 }
             }
         },

@@ -792,34 +792,6 @@ func EmployeeIDNotIn(vs ...uint64) predicate.Commission {
 	})
 }
 
-// EmployeeIDGT applies the GT predicate on the "employee_id" field.
-func EmployeeIDGT(v uint64) predicate.Commission {
-	return predicate.Commission(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldEmployeeID), v))
-	})
-}
-
-// EmployeeIDGTE applies the GTE predicate on the "employee_id" field.
-func EmployeeIDGTE(v uint64) predicate.Commission {
-	return predicate.Commission(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldEmployeeID), v))
-	})
-}
-
-// EmployeeIDLT applies the LT predicate on the "employee_id" field.
-func EmployeeIDLT(v uint64) predicate.Commission {
-	return predicate.Commission(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldEmployeeID), v))
-	})
-}
-
-// EmployeeIDLTE applies the LTE predicate on the "employee_id" field.
-func EmployeeIDLTE(v uint64) predicate.Commission {
-	return predicate.Commission(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldEmployeeID), v))
-	})
-}
-
 // EmployeeIDIsNil applies the IsNil predicate on the "employee_id" field.
 func EmployeeIDIsNil() predicate.Commission {
 	return predicate.Commission(func(s *sql.Selector) {
@@ -853,6 +825,34 @@ func HasOrderWith(preds ...predicate.Order) predicate.Commission {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(OrderInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, true, OrderTable, OrderColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEmployee applies the HasEdge predicate on the "employee" edge.
+func HasEmployee() predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EmployeeTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, EmployeeTable, EmployeeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEmployeeWith applies the HasEdge predicate on the "employee" edge with a given conditions (other predicates).
+func HasEmployeeWith(preds ...predicate.Employee) predicate.Commission {
+	return predicate.Commission(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(EmployeeInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, EmployeeTable, EmployeeColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

@@ -527,7 +527,7 @@ var (
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "amount", Type: field.TypeFloat64, Comment: "提成金额"},
 		{Name: "status", Type: field.TypeUint8, Comment: "提成状态 0未发放 1已发放", Default: 0},
-		{Name: "employee_id", Type: field.TypeUint64, Comment: "员工ID", Nullable: true},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "order_id", Type: field.TypeUint64, Unique: true},
 	}
 	// CommissionTable holds the schema information for the "commission" table.
@@ -536,6 +536,12 @@ var (
 		Columns:    CommissionColumns,
 		PrimaryKey: []*schema.Column{CommissionColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "commission_employee_commissions",
+				Columns:    []*schema.Column{CommissionColumns[9]},
+				RefColumns: []*schema.Column{EmployeeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
 			{
 				Symbol:     "commission_order_commission",
 				Columns:    []*schema.Column{CommissionColumns[10]},
@@ -2258,7 +2264,8 @@ func init() {
 	CityTable.Annotation = &entsql.Annotation{
 		Table: "city",
 	}
-	CommissionTable.ForeignKeys[0].RefTable = OrderTable
+	CommissionTable.ForeignKeys[0].RefTable = EmployeeTable
+	CommissionTable.ForeignKeys[1].RefTable = OrderTable
 	CommissionTable.Annotation = &entsql.Annotation{
 		Table: "commission",
 	}

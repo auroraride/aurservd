@@ -15,6 +15,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/google/uuid"
     "github.com/rs/xid"
@@ -107,12 +108,49 @@ func (s *employeeService) Modify(req *model.EmployeeModifyReq) {
     }
 }
 
-// List 列举骑手
 func (s *employeeService) List(req *model.EmployeeListReq) *model.PaginationRes {
+    q := s.orm.QueryNotDeleted().
+        WithCity()
+
+    if req.Keyword != nil {
+        q.Where(
+            employee.Or(
+                employee.NameContainsFold(*req.Keyword),
+                employee.PhoneContainsFold(*req.Keyword),
+            ),
+        )
+    }
+
+    if req.CityID != nil {
+        q.Where(employee.CityID(*req.CityID))
+    }
+
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Employee) model.EmployeeListRes {
+        res := model.EmployeeListRes{
+            ID:    item.ID,
+            Name:  item.Name,
+            Phone: item.Phone,
+        }
+
+        ec := item.Edges.City
+        if ec != nil {
+            res.City = model.City{
+                ID:   ec.ID,
+                Name: ec.Name,
+            }
+        }
+        return res
+    })
+}
+
+// Activity 店员动态
+func (s *employeeService) Activity(req *model.EmployeeActivityListReq) *model.PaginationRes {
     q := s.orm.QueryNotDeleted().
         WithStore().
         WithCity().
-        WithExchanges()
+        WithExchanges().
+        WithCommissions()
+
     if req.Keyword != nil {
         q.Where(
             employee.Or(
@@ -130,8 +168,8 @@ func (s *employeeService) List(req *model.EmployeeListReq) *model.PaginationRes 
         q.Where(employee.CityID(*req.CityID))
     }
 
-    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Employee) model.EmployeeListRes {
-        res := model.EmployeeListRes{
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Employee) model.EmployeeActivityListRes {
+        res := model.EmployeeActivityListRes{
             ID:            item.ID,
             Name:          item.Name,
             Phone:         item.Phone,
@@ -152,6 +190,10 @@ func (s *employeeService) List(req *model.EmployeeListReq) *model.PaginationRes 
                 ID:   es.ID,
                 Name: es.Name,
             }
+        }
+
+        for _, cm := range item.Edges.Commissions {
+            res.Amount = tools.NewDecimal().Sum(cm.Amount, res.Amount)
         }
         return res
     })

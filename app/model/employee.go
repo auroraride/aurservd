@@ -24,7 +24,7 @@ type EmployeeModifyReq struct {
     Phone  *string `json:"phone"`  // 手机号
 }
 
-type EmployeeListReq struct {
+type EmployeeActivityListReq struct {
     PaginationReq
     StoreID *uint64 `json:"storeId" query:"storeId"` // 门店ID
     Keyword *string `json:"name" query:"keyword"`    // 查询店员电话或姓名
@@ -33,13 +33,14 @@ type EmployeeListReq struct {
     End     *string `json:"end" query:"end"`         // 业绩统计结束时间
 }
 
-type EmployeeListRes struct {
+type EmployeeActivityListRes struct {
     ID              uint64  `json:"id"`
     Name            string  `json:"name"`            // 姓名
     Phone           string  `json:"phone"`           // 电话
     City            City    `json:"city"`            // 城市
     Store           *Store  `json:"store,omitempty"` // 当前上班门店, 字段为空的时候是休息状态
     ExchangeTimes   int     `json:"exchangeTimes"`   // 换电次数
+    Amount          float64 `json:"amount"`          // 业绩金额
     AssistanceTimes int     `json:"assistanceTimes"` // 救援次数 TODO: 待实现
     AssistanceMiles float64 `json:"assistanceMiles"` // 救援里程(米) TODO: 待实现
 }
@@ -66,4 +67,18 @@ type EmployeeProfile struct {
 
 type EmployeeQrcodeRes struct {
     Qrcode string `json:"qrcode"`
+}
+
+type EmployeeListReq struct {
+    PaginationReq
+
+    Keyword *string `json:"keyword" query:"keyword"` // 搜索关键词, 手机号或姓名
+    CityID  *uint64 `json:"cityId" query:"cityId"`   // 城市ID
+}
+
+type EmployeeListRes struct {
+    ID    uint64 `json:"id"`
+    Name  string `json:"name"`  // 姓名
+    Phone string `json:"phone"` // 电话
+    City  City   `json:"city"`  // 城市
 }

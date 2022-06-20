@@ -105,6 +105,7 @@ func loadManagerRoutes() {
     g.PUT("/employee/:id", mapi.Employee.Modify)
     g.GET("/employee", mapi.Employee.List)
     g.DELETE("/employee/:id", mapi.Employee.Delete)
+    g.GET("/employee/activity", mapi.Employee.Activity)
 
     // 物资
     g.POST("/stock", mapi.Stock.Create)

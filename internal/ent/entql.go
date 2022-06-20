@@ -1309,6 +1309,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Order",
 	)
 	graph.MustAddE(
+		"employee",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   commission.EmployeeTable,
+			Columns: []string{commission.EmployeeColumn},
+			Bidi:    false,
+		},
+		"Commission",
+		"Employee",
+	)
+	graph.MustAddE(
 		"rider",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -1379,6 +1391,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Employee",
 		"Exchange",
+	)
+	graph.MustAddE(
+		"commissions",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.CommissionsTable,
+			Columns: []string{employee.CommissionsColumn},
+			Bidi:    false,
+		},
+		"Employee",
+		"Commission",
 	)
 	graph.MustAddE(
 		"city",
@@ -3807,6 +3831,20 @@ func (f *CommissionFilter) WhereHasOrderWith(preds ...predicate.Order) {
 	})))
 }
 
+// WhereHasEmployee applies a predicate to check if query has an edge employee.
+func (f *CommissionFilter) WhereHasEmployee() {
+	f.Where(entql.HasEdge("employee"))
+}
+
+// WhereHasEmployeeWith applies a predicate to check if query has an edge employee with a given conditions (other predicates).
+func (f *CommissionFilter) WhereHasEmployeeWith(preds ...predicate.Employee) {
+	f.Where(entql.HasEdgeWith("employee", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (cq *ContractQuery) addPredicate(pred func(s *sql.Selector)) {
 	cq.predicates = append(cq.predicates, pred)
@@ -4075,6 +4113,20 @@ func (f *EmployeeFilter) WhereHasExchanges() {
 // WhereHasExchangesWith applies a predicate to check if query has an edge exchanges with a given conditions (other predicates).
 func (f *EmployeeFilter) WhereHasExchangesWith(preds ...predicate.Exchange) {
 	f.Where(entql.HasEdgeWith("exchanges", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCommissions applies a predicate to check if query has an edge commissions.
+func (f *EmployeeFilter) WhereHasCommissions() {
+	f.Where(entql.HasEdge("commissions"))
+}
+
+// WhereHasCommissionsWith applies a predicate to check if query has an edge commissions with a given conditions (other predicates).
+func (f *EmployeeFilter) WhereHasCommissionsWith(preds ...predicate.Commission) {
+	f.Where(entql.HasEdgeWith("commissions", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
