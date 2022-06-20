@@ -47,6 +47,9 @@ type Employee struct {
 	// Phone holds the value of the "phone" field.
 	// 电话
 	Phone string `json:"phone,omitempty"`
+	// Enable holds the value of the "enable" field.
+	// 启用状态
+	Enable bool `json:"enable,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EmployeeQuery when eager-loading is set.
 	Edges EmployeeEdges `json:"edges"`
@@ -142,6 +145,8 @@ func (*Employee) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case employee.FieldCreator, employee.FieldLastModifier:
 			values[i] = new([]byte)
+		case employee.FieldEnable:
+			values[i] = new(sql.NullBool)
 		case employee.FieldID, employee.FieldCityID:
 			values[i] = new(sql.NullInt64)
 		case employee.FieldRemark, employee.FieldName, employee.FieldPhone:
@@ -236,6 +241,12 @@ func (e *Employee) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				e.Phone = value.String
 			}
+		case employee.FieldEnable:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field enable", values[i])
+			} else if value.Valid {
+				e.Enable = value.Bool
+			}
 		}
 	}
 	return nil
@@ -316,6 +327,8 @@ func (e *Employee) String() string {
 	builder.WriteString(e.Name)
 	builder.WriteString(", phone=")
 	builder.WriteString(e.Phone)
+	builder.WriteString(", enable=")
+	builder.WriteString(fmt.Sprintf("%v", e.Enable))
 	builder.WriteByte(')')
 	return builder.String()
 }

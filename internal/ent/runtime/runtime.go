@@ -304,6 +304,10 @@ func init() {
 	employee.DefaultUpdatedAt = employeeDescUpdatedAt.Default.(func() time.Time)
 	// employee.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	employee.UpdateDefaultUpdatedAt = employeeDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// employeeDescEnable is the schema descriptor for enable field.
+	employeeDescEnable := employeeFields[3].Descriptor()
+	// employee.DefaultEnable holds the default value on creation for the enable field.
+	employee.DefaultEnable = employeeDescEnable.Default.(bool)
 	enterpriseMixin := schema.Enterprise{}.Mixin()
 	enterpriseMixinHooks2 := enterpriseMixin[2].Hooks()
 	enterprise.Hooks[0] = enterpriseMixinHooks2[0]

@@ -9,6 +9,7 @@ import (
     "context"
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/service"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -39,6 +40,10 @@ func EmployeeMiddleware() echo.MiddlewareFunc {
                 emr, err = s.GetEmployeeByID(id)
                 if err != nil || emr == nil {
                     snag.Panic(snag.StatusUnauthorized)
+                }
+                if !emr.Enable {
+                    s.Signout(emr)
+                    snag.Panic(snag.StatusForbidden, ar.BannedMessage)
                 }
             }
 

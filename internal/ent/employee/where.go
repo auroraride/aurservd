@@ -150,6 +150,13 @@ func Phone(v string) predicate.Employee {
 	})
 }
 
+// Enable applies equality check predicate on the "enable" field. It's identical to EnableEQ.
+func Enable(v bool) predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEnable), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Employee {
 	return predicate.Employee(func(s *sql.Selector) {
@@ -902,6 +909,20 @@ func PhoneEqualFold(v string) predicate.Employee {
 func PhoneContainsFold(v string) predicate.Employee {
 	return predicate.Employee(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldPhone), v))
+	})
+}
+
+// EnableEQ applies the EQ predicate on the "enable" field.
+func EnableEQ(v bool) predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEnable), v))
+	})
+}
+
+// EnableNEQ applies the NEQ predicate on the "enable" field.
+func EnableNEQ(v bool) predicate.Employee {
+	return predicate.Employee(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEnable), v))
 	})
 }
 

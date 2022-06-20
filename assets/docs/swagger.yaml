@@ -817,12 +817,26 @@ definitions:
     - name
     - phone
     type: object
+  model.EmployeeEnableReq:
+    properties:
+      enable:
+        description: 修改店员启用状态 true:启用 false:禁用
+        type: boolean
+      id:
+        description: '店员ID '
+        type: integer
+    required:
+    - id
+    type: object
   model.EmployeeListRes:
     properties:
       city:
         allOf:
         - $ref: '#/definitions/model.City'
         description: 城市
+      enable:
+        description: 是否启用
+        type: boolean
       id:
         type: integer
       name:
@@ -4160,6 +4174,14 @@ paths:
         in: query
         name: pageSize
         type: integer
+      - description: 启用状态筛选 0:全部 1:启用 2:禁用
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: status
+        type: integer
       produces:
       - application/json
       responses:
@@ -4301,6 +4323,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: MA014 店员业绩
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enable/enable:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerEmployeeEnable
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EmployeeEnableReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MA015 启用/禁用店员
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise:

@@ -72,13 +72,20 @@ type EmployeeQrcodeRes struct {
 type EmployeeListReq struct {
     PaginationReq
 
-    Keyword *string `json:"keyword" query:"keyword"` // 搜索关键词, 手机号或姓名
-    CityID  *uint64 `json:"cityId" query:"cityId"`   // 城市ID
+    Status  *uint8  `json:"status" query:"status" enums:"0,1,2"` // 启用状态筛选 0:全部 1:启用 2:禁用
+    Keyword *string `json:"keyword" query:"keyword"`             // 搜索关键词, 手机号或姓名
+    CityID  *uint64 `json:"cityId" query:"cityId"`               // 城市ID
 }
 
 type EmployeeListRes struct {
-    ID    uint64 `json:"id"`
-    Name  string `json:"name"`  // 姓名
-    Phone string `json:"phone"` // 电话
-    City  City   `json:"city"`  // 城市
+    ID     uint64 `json:"id"`
+    Enable bool   `json:"enable"` // 是否启用
+    Name   string `json:"name"`   // 姓名
+    Phone  string `json:"phone"`  // 电话
+    City   City   `json:"city"`   // 城市
+}
+
+type EmployeeEnableReq struct {
+    ID     uint64 `json:"id" validate:"required" trans:"店员ID"`
+    Enable bool   `json:"enable"` // 修改店员启用状态 true:启用 false:禁用
 }

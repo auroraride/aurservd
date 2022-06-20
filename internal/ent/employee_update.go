@@ -132,6 +132,20 @@ func (eu *EmployeeUpdate) SetPhone(s string) *EmployeeUpdate {
 	return eu
 }
 
+// SetEnable sets the "enable" field.
+func (eu *EmployeeUpdate) SetEnable(b bool) *EmployeeUpdate {
+	eu.mutation.SetEnable(b)
+	return eu
+}
+
+// SetNillableEnable sets the "enable" field if the given value is not nil.
+func (eu *EmployeeUpdate) SetNillableEnable(b *bool) *EmployeeUpdate {
+	if b != nil {
+		eu.SetEnable(*b)
+	}
+	return eu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (eu *EmployeeUpdate) SetCity(c *City) *EmployeeUpdate {
 	return eu.SetCityID(c.ID)
@@ -495,6 +509,13 @@ func (eu *EmployeeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: employee.FieldPhone,
+		})
+	}
+	if value, ok := eu.mutation.Enable(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: employee.FieldEnable,
 		})
 	}
 	if eu.mutation.CityCleared() {
@@ -898,6 +919,20 @@ func (euo *EmployeeUpdateOne) SetPhone(s string) *EmployeeUpdateOne {
 	return euo
 }
 
+// SetEnable sets the "enable" field.
+func (euo *EmployeeUpdateOne) SetEnable(b bool) *EmployeeUpdateOne {
+	euo.mutation.SetEnable(b)
+	return euo
+}
+
+// SetNillableEnable sets the "enable" field if the given value is not nil.
+func (euo *EmployeeUpdateOne) SetNillableEnable(b *bool) *EmployeeUpdateOne {
+	if b != nil {
+		euo.SetEnable(*b)
+	}
+	return euo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (euo *EmployeeUpdateOne) SetCity(c *City) *EmployeeUpdateOne {
 	return euo.SetCityID(c.ID)
@@ -1291,6 +1326,13 @@ func (euo *EmployeeUpdateOne) sqlSave(ctx context.Context) (_node *Employee, err
 			Type:   field.TypeString,
 			Value:  value,
 			Column: employee.FieldPhone,
+		})
+	}
+	if value, ok := euo.mutation.Enable(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: employee.FieldEnable,
 		})
 	}
 	if euo.mutation.CityCleared() {

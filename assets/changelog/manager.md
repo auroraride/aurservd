@@ -4,6 +4,7 @@
 
 - [M9012 结账](http://localhost:5533/docs#tag/M/operation/ManagerStatementBill)
 - [MA014 店员业绩](http://localhost:5533/docs#tag/M/operation/ManagerEmployeeActivity)
+- [MA015 启用/禁用店员](http://localhost:5533/docs#tag/M/operation/ManagerEmployeeEnable)
 
 
 
@@ -11,6 +12,8 @@
 
 - M5002 查询电柜
   - 新增电池型号筛选
+- MA012 列举店员
+  - 修改返回数据
 
 
 

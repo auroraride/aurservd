@@ -626,6 +626,7 @@ var (
 		{Name: "sn", Type: field.TypeUUID, Unique: true, Nullable: true},
 		{Name: "name", Type: field.TypeString, Comment: "姓名"},
 		{Name: "phone", Type: field.TypeString, Comment: "电话"},
+		{Name: "enable", Type: field.TypeBool, Comment: "启用状态", Default: true},
 		{Name: "city_id", Type: field.TypeUint64},
 	}
 	// EmployeeTable holds the schema information for the "employee" table.
@@ -636,7 +637,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "employee_city_city",
-				Columns:    []*schema.Column{EmployeeColumns[10]},
+				Columns:    []*schema.Column{EmployeeColumns[11]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -651,6 +652,11 @@ var (
 				Name:    "employee_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{EmployeeColumns[3]},
+			},
+			{
+				Name:    "employee_enable",
+				Unique:  false,
+				Columns: []*schema.Column{EmployeeColumns[10]},
 			},
 			{
 				Name:    "employee_name",

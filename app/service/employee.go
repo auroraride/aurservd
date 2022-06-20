@@ -127,9 +127,10 @@ func (s *employeeService) List(req *model.EmployeeListReq) *model.PaginationRes 
 
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Employee) model.EmployeeListRes {
         res := model.EmployeeListRes{
-            ID:    item.ID,
-            Name:  item.Name,
-            Phone: item.Phone,
+            ID:     item.ID,
+            Name:   item.Name,
+            Phone:  item.Phone,
+            Enable: item.Enable,
         }
 
         ec := item.Edges.City
@@ -248,6 +249,11 @@ func (s *employeeService) Signin(req *model.EmployeeSignReq) model.EmployeeProfi
         snag.Panic("未找到用户")
     }
 
+    // 被禁用
+    if !e.Enable {
+        snag.Panic(snag.StatusForbidden, ar.BannedMessage)
+    }
+
     // 生成token
     token := xid.New().String() + utils.RandTokenString()
     key := fmt.Sprintf("%s%d", s.cacheKeyPrefix, e.ID)
@@ -275,4 +281,17 @@ func (s *employeeService) Signin(req *model.EmployeeSignReq) model.EmployeeProfi
 func (s *employeeService) RefreshQrcode() model.EmployeeQrcodeRes {
     e := s.employee.Update().SetSn(uuid.New()).SaveX(s.ctx)
     return model.EmployeeQrcodeRes{Qrcode: fmt.Sprintf("EMPLOYEE:%s", e.Sn)}
+}
+
+func (s *employeeService) Enable(req *model.EmployeeEnableReq) {
+    e := s.Query(req.ID)
+    e.Update().SetEnable(req.Enable).SaveX(s.ctx)
+}
+
+func (s *employeeService) Signout(e *ent.Employee) {
+    ctx := context.Background()
+    key := fmt.Sprintf("%s%d", s.cacheKeyPrefix, e.ID)
+    token := cache.Get(ctx, key).Val()
+    cache.Del(ctx, key)
+    cache.Del(ctx, token)
 }

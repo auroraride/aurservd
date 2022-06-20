@@ -2031,6 +2031,17 @@
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
                         "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "启用状态筛选 0:全部 1:启用 2:禁用",
+                        "name": "status",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2235,6 +2246,47 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enable/enable": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MA015 启用/禁用店员",
+                "operationId": "ManagerEmployeeEnable",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EmployeeEnableReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -7044,6 +7096,22 @@
                 }
             }
         },
+        "model.EmployeeEnableReq": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "enable": {
+                    "description": "修改店员启用状态 true:启用 false:禁用",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "店员ID ",
+                    "type": "integer"
+                }
+            }
+        },
         "model.EmployeeListRes": {
             "type": "object",
             "properties": {
@@ -7054,6 +7122,10 @@
                             "$ref": "#/definitions/model.City"
                         }
                     ]
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
                 },
                 "id": {
                     "type": "integer"

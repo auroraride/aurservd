@@ -53,6 +53,7 @@ func (Employee) Fields() []ent.Field {
         field.UUID("sn", uuid.New()).Optional().Unique(),
         field.String("name").Comment("姓名"),
         field.String("phone").Comment("电话"),
+        field.Bool("enable").Default(true).Comment("启用状态"),
     }
 }
 
@@ -80,6 +81,7 @@ func (Employee) Mixin() []ent.Mixin {
 
 func (Employee) Indexes() []ent.Index {
     return []ent.Index{
+        index.Fields("enable"),
         index.Fields("name").Annotations(
             entsql.IndexTypes(map[string]string{
                 dialect.Postgres: "GIN",

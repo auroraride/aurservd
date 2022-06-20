@@ -338,6 +338,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			employee.FieldSn:           {Type: field.TypeUUID, Column: employee.FieldSn},
 			employee.FieldName:         {Type: field.TypeString, Column: employee.FieldName},
 			employee.FieldPhone:        {Type: field.TypeString, Column: employee.FieldPhone},
+			employee.FieldEnable:       {Type: field.TypeBool, Column: employee.FieldEnable},
 		},
 	}
 	graph.Nodes[11] = &sqlgraph.Node{
@@ -4047,6 +4048,11 @@ func (f *EmployeeFilter) WhereName(p entql.StringP) {
 // WherePhone applies the entql string predicate on the phone field.
 func (f *EmployeeFilter) WherePhone(p entql.StringP) {
 	f.Where(p.Field(employee.FieldPhone))
+}
+
+// WhereEnable applies the entql bool predicate on the enable field.
+func (f *EmployeeFilter) WhereEnable(p entql.BoolP) {
+	f.Where(p.Field(employee.FieldEnable))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.

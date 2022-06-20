@@ -33,6 +33,8 @@ const (
 	FieldName = "name"
 	// FieldPhone holds the string denoting the phone field in the database.
 	FieldPhone = "phone"
+	// FieldEnable holds the string denoting the enable field in the database.
+	FieldEnable = "enable"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeStore holds the string denoting the store edge name in mutations.
@@ -104,6 +106,7 @@ var Columns = []string{
 	FieldSn,
 	FieldName,
 	FieldPhone,
+	FieldEnable,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -130,4 +133,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultEnable holds the default value on creation for the "enable" field.
+	DefaultEnable bool
 )

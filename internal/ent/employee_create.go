@@ -130,6 +130,20 @@ func (ec *EmployeeCreate) SetPhone(s string) *EmployeeCreate {
 	return ec
 }
 
+// SetEnable sets the "enable" field.
+func (ec *EmployeeCreate) SetEnable(b bool) *EmployeeCreate {
+	ec.mutation.SetEnable(b)
+	return ec
+}
+
+// SetNillableEnable sets the "enable" field if the given value is not nil.
+func (ec *EmployeeCreate) SetNillableEnable(b *bool) *EmployeeCreate {
+	if b != nil {
+		ec.SetEnable(*b)
+	}
+	return ec
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (ec *EmployeeCreate) SetCity(c *City) *EmployeeCreate {
 	return ec.SetCityID(c.ID)
@@ -307,6 +321,10 @@ func (ec *EmployeeCreate) defaults() error {
 		v := employee.DefaultUpdatedAt()
 		ec.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := ec.mutation.Enable(); !ok {
+		v := employee.DefaultEnable
+		ec.mutation.SetEnable(v)
+	}
 	return nil
 }
 
@@ -326,6 +344,9 @@ func (ec *EmployeeCreate) check() error {
 	}
 	if _, ok := ec.mutation.Phone(); !ok {
 		return &ValidationError{Name: "phone", err: errors.New(`ent: missing required field "Employee.phone"`)}
+	}
+	if _, ok := ec.mutation.Enable(); !ok {
+		return &ValidationError{Name: "enable", err: errors.New(`ent: missing required field "Employee.enable"`)}
 	}
 	if _, ok := ec.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Employee.city"`)}
@@ -429,6 +450,14 @@ func (ec *EmployeeCreate) createSpec() (*Employee, *sqlgraph.CreateSpec) {
 			Column: employee.FieldPhone,
 		})
 		_node.Phone = value
+	}
+	if value, ok := ec.mutation.Enable(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: employee.FieldEnable,
+		})
+		_node.Enable = value
 	}
 	if nodes := ec.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -749,6 +778,18 @@ func (u *EmployeeUpsert) UpdatePhone() *EmployeeUpsert {
 	return u
 }
 
+// SetEnable sets the "enable" field.
+func (u *EmployeeUpsert) SetEnable(v bool) *EmployeeUpsert {
+	u.Set(employee.FieldEnable, v)
+	return u
+}
+
+// UpdateEnable sets the "enable" field to the value that was provided on create.
+func (u *EmployeeUpsert) UpdateEnable() *EmployeeUpsert {
+	u.SetExcluded(employee.FieldEnable)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -971,6 +1012,20 @@ func (u *EmployeeUpsertOne) SetPhone(v string) *EmployeeUpsertOne {
 func (u *EmployeeUpsertOne) UpdatePhone() *EmployeeUpsertOne {
 	return u.Update(func(s *EmployeeUpsert) {
 		s.UpdatePhone()
+	})
+}
+
+// SetEnable sets the "enable" field.
+func (u *EmployeeUpsertOne) SetEnable(v bool) *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetEnable(v)
+	})
+}
+
+// UpdateEnable sets the "enable" field to the value that was provided on create.
+func (u *EmployeeUpsertOne) UpdateEnable() *EmployeeUpsertOne {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdateEnable()
 	})
 }
 
@@ -1360,6 +1415,20 @@ func (u *EmployeeUpsertBulk) SetPhone(v string) *EmployeeUpsertBulk {
 func (u *EmployeeUpsertBulk) UpdatePhone() *EmployeeUpsertBulk {
 	return u.Update(func(s *EmployeeUpsert) {
 		s.UpdatePhone()
+	})
+}
+
+// SetEnable sets the "enable" field.
+func (u *EmployeeUpsertBulk) SetEnable(v bool) *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.SetEnable(v)
+	})
+}
+
+// UpdateEnable sets the "enable" field to the value that was provided on create.
+func (u *EmployeeUpsertBulk) UpdateEnable() *EmployeeUpsertBulk {
+	return u.Update(func(s *EmployeeUpsert) {
+		s.UpdateEnable()
 	})
 }
 
