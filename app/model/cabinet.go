@@ -256,3 +256,15 @@ type CabinetBinBasicInfo struct {
     Index       int                `json:"index"`       // 仓位index
     Electricity BatteryElectricity `json:"electricity"` // 电量
 }
+
+type YundongDeployInfo struct {
+    SN       string  `json:"-"`
+    AreaCode string  `json:"-"`
+    Address  string  `json:"address"`
+    Lat      float64 `json:"lat"`
+    Lng      float64 `json:"lng"`
+    Name     string  `json:"name"`
+    Phone    string  `json:"phone"`
+    Contact  string  `json:"contact"`
+    City     string  `json:"city"`
+}

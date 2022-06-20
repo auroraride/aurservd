@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/pkg/cache"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/go-resty/resty/v2"
     "github.com/golang-module/carbon/v2"
@@ -360,7 +361,34 @@ func (p *yundong) GetOperateState(opId, serial, start, end string) (state bool) 
 }
 
 // UpdateBasicInfo 更新云动电柜信息(投产)
-// TODO areaCode是什么???
-func (p *yundong) UpdateBasicInfo() {
+func (p *yundong) UpdateBasicInfo(req model.YundongDeployInfo) {
+    type info struct {
+        Type        string                  `json:"type"`
+        CabinetSN   string                  `json:"cabinetSN"`
+        AgentId     string                  `json:"agentId"`
+        WarehouseId string                  `json:"warehouseId"`
+        AreaCode    string                  `json:"areaCode"`
+        UpdateInfo  model.YundongDeployInfo `json:"updateInfo"`
+    }
 
+    data := info{
+        Type:        "normal",
+        CabinetSN:   req.SN,
+        AgentId:     "90",
+        WarehouseId: "10",
+        AreaCode:    req.AreaCode,
+        UpdateInfo:  req,
+    }
+
+    res := new(YDRes)
+    r, err := p.RequestClient(false).
+        SetResult(res).
+        SetBody(data).
+        Post(p.GetUrl(yundongBasicinfo))
+
+    log.Info(string(r.Body()))
+
+    if err != nil {
+        snag.Panic(err)
+    }
 }
