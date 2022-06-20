@@ -88,3 +88,17 @@ func (*selection) City(c echo.Context) (err error) {
     ctx := app.Context(c)
     return ctx.SendResponse(service.NewSelection().City())
 }
+
+// Branch
+// @ID           ManagerSelectionBranch
+// @Router       /manager/v1/selection/branch [GET]
+// @Summary      MB006 筛选网点
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Success      200  {object}  []model.CascaderOptionLevel2  "请求成功"
+func (*selection) Branch(c echo.Context) (err error) {
+    ctx := app.Context(c)
+    return ctx.SendResponse(service.NewSelection().Branch())
+}

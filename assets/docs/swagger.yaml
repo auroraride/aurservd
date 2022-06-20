@@ -5477,6 +5477,29 @@ paths:
       summary: M7010 修改骑手资料
       tags:
       - '[M]管理接口'
+  /manager/v1/selection/branch:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionBranch
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CascaderOptionLevel2'
+            type: array
+      summary: MB006 筛选网点
+      tags:
+      - '[M]管理接口'
   /manager/v1/selection/city:
     get:
       consumes:

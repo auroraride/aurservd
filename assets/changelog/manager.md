@@ -7,6 +7,7 @@
 - [MA015 启用/禁用店员](http://localhost:5533/docs#tag/M/operation/ManagerEmployeeEnable)
 - [M3010 修改合同底单](http://localhost:5533/docs#tag/M/operation/ManagerBranchSheet)
 - [MA016 工作流](http://localhost:5533/docs#tag/M/operation/ManagerAttendanceList)
+- [MB006 筛选网点](http://localhost:5533/docs#tag/M/operation/ManagerSelectionBranch)
 
 
 
