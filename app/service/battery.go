@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/batterymodel"
     "github.com/auroraride/aurservd/pkg/snag"
+    "regexp"
 )
 
 type batteryService struct {
@@ -47,6 +48,10 @@ func (s *batteryService) List() (res *model.ItemListRes) {
 
 // CreateModel 创建电池型号
 func (s *batteryService) CreateModel(req *model.BatteryModelCreateReq) model.BatteryModel {
+    // 判断电池型号是否合法
+    if match, _ := regexp.Match(`^[0-9]+(\.?[0-9]+)?V[0-9]+(\.?[0-9]+)?AH$`, []byte(req.Model)); !match {
+        snag.Panic("电池型号名称校验失败")
+    }
     // 查找同型号电池是否存在
     if s.orm.QueryNotDeleted().
         Where(batterymodel.Model(req.Model)).
