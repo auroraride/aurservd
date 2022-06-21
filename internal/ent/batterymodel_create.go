@@ -93,15 +93,23 @@ func (bmc *BatteryModelCreate) SetNillableRemark(s *string) *BatteryModelCreate 
 	return bmc
 }
 
-// SetVoltage sets the "voltage" field.
-func (bmc *BatteryModelCreate) SetVoltage(f float64) *BatteryModelCreate {
-	bmc.mutation.SetVoltage(f)
+// SetModel sets the "model" field.
+func (bmc *BatteryModelCreate) SetModel(s string) *BatteryModelCreate {
+	bmc.mutation.SetModel(s)
 	return bmc
 }
 
-// SetCapacity sets the "capacity" field.
-func (bmc *BatteryModelCreate) SetCapacity(f float64) *BatteryModelCreate {
-	bmc.mutation.SetCapacity(f)
+// SetEnable sets the "enable" field.
+func (bmc *BatteryModelCreate) SetEnable(b bool) *BatteryModelCreate {
+	bmc.mutation.SetEnable(b)
+	return bmc
+}
+
+// SetNillableEnable sets the "enable" field if the given value is not nil.
+func (bmc *BatteryModelCreate) SetNillableEnable(b *bool) *BatteryModelCreate {
+	if b != nil {
+		bmc.SetEnable(*b)
+	}
 	return bmc
 }
 
@@ -228,6 +236,10 @@ func (bmc *BatteryModelCreate) defaults() error {
 		v := batterymodel.DefaultUpdatedAt()
 		bmc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := bmc.mutation.Enable(); !ok {
+		v := batterymodel.DefaultEnable
+		bmc.mutation.SetEnable(v)
+	}
 	return nil
 }
 
@@ -239,11 +251,11 @@ func (bmc *BatteryModelCreate) check() error {
 	if _, ok := bmc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "BatteryModel.updated_at"`)}
 	}
-	if _, ok := bmc.mutation.Voltage(); !ok {
-		return &ValidationError{Name: "voltage", err: errors.New(`ent: missing required field "BatteryModel.voltage"`)}
+	if _, ok := bmc.mutation.Model(); !ok {
+		return &ValidationError{Name: "model", err: errors.New(`ent: missing required field "BatteryModel.model"`)}
 	}
-	if _, ok := bmc.mutation.Capacity(); !ok {
-		return &ValidationError{Name: "capacity", err: errors.New(`ent: missing required field "BatteryModel.capacity"`)}
+	if _, ok := bmc.mutation.Enable(); !ok {
+		return &ValidationError{Name: "enable", err: errors.New(`ent: missing required field "BatteryModel.enable"`)}
 	}
 	return nil
 }
@@ -321,21 +333,21 @@ func (bmc *BatteryModelCreate) createSpec() (*BatteryModel, *sqlgraph.CreateSpec
 		})
 		_node.Remark = value
 	}
-	if value, ok := bmc.mutation.Voltage(); ok {
+	if value, ok := bmc.mutation.Model(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: batterymodel.FieldVoltage,
+			Column: batterymodel.FieldModel,
 		})
-		_node.Voltage = value
+		_node.Model = value
 	}
-	if value, ok := bmc.mutation.Capacity(); ok {
+	if value, ok := bmc.mutation.Enable(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeBool,
 			Value:  value,
-			Column: batterymodel.FieldCapacity,
+			Column: batterymodel.FieldEnable,
 		})
-		_node.Capacity = value
+		_node.Enable = value
 	}
 	if nodes := bmc.mutation.CabinetsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -525,39 +537,27 @@ func (u *BatteryModelUpsert) ClearRemark() *BatteryModelUpsert {
 	return u
 }
 
-// SetVoltage sets the "voltage" field.
-func (u *BatteryModelUpsert) SetVoltage(v float64) *BatteryModelUpsert {
-	u.Set(batterymodel.FieldVoltage, v)
+// SetModel sets the "model" field.
+func (u *BatteryModelUpsert) SetModel(v string) *BatteryModelUpsert {
+	u.Set(batterymodel.FieldModel, v)
 	return u
 }
 
-// UpdateVoltage sets the "voltage" field to the value that was provided on create.
-func (u *BatteryModelUpsert) UpdateVoltage() *BatteryModelUpsert {
-	u.SetExcluded(batterymodel.FieldVoltage)
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *BatteryModelUpsert) UpdateModel() *BatteryModelUpsert {
+	u.SetExcluded(batterymodel.FieldModel)
 	return u
 }
 
-// AddVoltage adds v to the "voltage" field.
-func (u *BatteryModelUpsert) AddVoltage(v float64) *BatteryModelUpsert {
-	u.Add(batterymodel.FieldVoltage, v)
+// SetEnable sets the "enable" field.
+func (u *BatteryModelUpsert) SetEnable(v bool) *BatteryModelUpsert {
+	u.Set(batterymodel.FieldEnable, v)
 	return u
 }
 
-// SetCapacity sets the "capacity" field.
-func (u *BatteryModelUpsert) SetCapacity(v float64) *BatteryModelUpsert {
-	u.Set(batterymodel.FieldCapacity, v)
-	return u
-}
-
-// UpdateCapacity sets the "capacity" field to the value that was provided on create.
-func (u *BatteryModelUpsert) UpdateCapacity() *BatteryModelUpsert {
-	u.SetExcluded(batterymodel.FieldCapacity)
-	return u
-}
-
-// AddCapacity adds v to the "capacity" field.
-func (u *BatteryModelUpsert) AddCapacity(v float64) *BatteryModelUpsert {
-	u.Add(batterymodel.FieldCapacity, v)
+// UpdateEnable sets the "enable" field to the value that was provided on create.
+func (u *BatteryModelUpsert) UpdateEnable() *BatteryModelUpsert {
+	u.SetExcluded(batterymodel.FieldEnable)
 	return u
 }
 
@@ -723,45 +723,31 @@ func (u *BatteryModelUpsertOne) ClearRemark() *BatteryModelUpsertOne {
 	})
 }
 
-// SetVoltage sets the "voltage" field.
-func (u *BatteryModelUpsertOne) SetVoltage(v float64) *BatteryModelUpsertOne {
+// SetModel sets the "model" field.
+func (u *BatteryModelUpsertOne) SetModel(v string) *BatteryModelUpsertOne {
 	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetVoltage(v)
+		s.SetModel(v)
 	})
 }
 
-// AddVoltage adds v to the "voltage" field.
-func (u *BatteryModelUpsertOne) AddVoltage(v float64) *BatteryModelUpsertOne {
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *BatteryModelUpsertOne) UpdateModel() *BatteryModelUpsertOne {
 	return u.Update(func(s *BatteryModelUpsert) {
-		s.AddVoltage(v)
+		s.UpdateModel()
 	})
 }
 
-// UpdateVoltage sets the "voltage" field to the value that was provided on create.
-func (u *BatteryModelUpsertOne) UpdateVoltage() *BatteryModelUpsertOne {
+// SetEnable sets the "enable" field.
+func (u *BatteryModelUpsertOne) SetEnable(v bool) *BatteryModelUpsertOne {
 	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateVoltage()
+		s.SetEnable(v)
 	})
 }
 
-// SetCapacity sets the "capacity" field.
-func (u *BatteryModelUpsertOne) SetCapacity(v float64) *BatteryModelUpsertOne {
+// UpdateEnable sets the "enable" field to the value that was provided on create.
+func (u *BatteryModelUpsertOne) UpdateEnable() *BatteryModelUpsertOne {
 	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetCapacity(v)
-	})
-}
-
-// AddCapacity adds v to the "capacity" field.
-func (u *BatteryModelUpsertOne) AddCapacity(v float64) *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.AddCapacity(v)
-	})
-}
-
-// UpdateCapacity sets the "capacity" field to the value that was provided on create.
-func (u *BatteryModelUpsertOne) UpdateCapacity() *BatteryModelUpsertOne {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateCapacity()
+		s.UpdateEnable()
 	})
 }
 
@@ -1091,45 +1077,31 @@ func (u *BatteryModelUpsertBulk) ClearRemark() *BatteryModelUpsertBulk {
 	})
 }
 
-// SetVoltage sets the "voltage" field.
-func (u *BatteryModelUpsertBulk) SetVoltage(v float64) *BatteryModelUpsertBulk {
+// SetModel sets the "model" field.
+func (u *BatteryModelUpsertBulk) SetModel(v string) *BatteryModelUpsertBulk {
 	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetVoltage(v)
+		s.SetModel(v)
 	})
 }
 
-// AddVoltage adds v to the "voltage" field.
-func (u *BatteryModelUpsertBulk) AddVoltage(v float64) *BatteryModelUpsertBulk {
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *BatteryModelUpsertBulk) UpdateModel() *BatteryModelUpsertBulk {
 	return u.Update(func(s *BatteryModelUpsert) {
-		s.AddVoltage(v)
+		s.UpdateModel()
 	})
 }
 
-// UpdateVoltage sets the "voltage" field to the value that was provided on create.
-func (u *BatteryModelUpsertBulk) UpdateVoltage() *BatteryModelUpsertBulk {
+// SetEnable sets the "enable" field.
+func (u *BatteryModelUpsertBulk) SetEnable(v bool) *BatteryModelUpsertBulk {
 	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateVoltage()
+		s.SetEnable(v)
 	})
 }
 
-// SetCapacity sets the "capacity" field.
-func (u *BatteryModelUpsertBulk) SetCapacity(v float64) *BatteryModelUpsertBulk {
+// UpdateEnable sets the "enable" field to the value that was provided on create.
+func (u *BatteryModelUpsertBulk) UpdateEnable() *BatteryModelUpsertBulk {
 	return u.Update(func(s *BatteryModelUpsert) {
-		s.SetCapacity(v)
-	})
-}
-
-// AddCapacity adds v to the "capacity" field.
-func (u *BatteryModelUpsertBulk) AddCapacity(v float64) *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.AddCapacity(v)
-	})
-}
-
-// UpdateCapacity sets the "capacity" field to the value that was provided on create.
-func (u *BatteryModelUpsertBulk) UpdateCapacity() *BatteryModelUpsertBulk {
-	return u.Update(func(s *BatteryModelUpsert) {
-		s.UpdateCapacity()
+		s.UpdateEnable()
 	})
 }
 

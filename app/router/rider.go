@@ -52,14 +52,13 @@ func loadRideRoutes() {
     branch.GET("/riding", rapi.Branch.Riding)
 
     // 业务
-    g.GET("/battery/voltage", rapi.Battery.ListVoltage)
     g.GET("/plan", rapi.Plan.List)
     g.GET("/plan/renewly", rapi.Plan.Renewly)
     g.POST("/order", rapi.Order.Create)
     g.POST("/order/refund", rapi.Order.Refund) // 申请退款
     g.GET("/order", rapi.Order.List)
     g.GET("/order/:id", rapi.Order.Detail)
-    g.GET("/enterprise/voltage", rapi.Enterprise.ListVoltage)
+    g.GET("/enterprise/battery", rapi.Enterprise.Battery)
     g.POST("/enterprise/subscribe", rapi.Enterprise.Subscribe)
     g.GET("/enterprise/subscribe", rapi.Enterprise.SubscribeStatus)
     g.GET("/order/status", rapi.Order.Status)

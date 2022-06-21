@@ -58,9 +58,9 @@ type Stock struct {
 	// Name holds the value of the "name" field.
 	// 物资名称
 	Name string `json:"name,omitempty"`
-	// Voltage holds the value of the "voltage" field.
-	// 电池型号(电压)
-	Voltage *float64 `json:"voltage,omitempty"`
+	// Model holds the value of the "model" field.
+	// 电池型号
+	Model *string `json:"model,omitempty"`
 	// Num holds the value of the "num" field.
 	// 物资数量: 正值调入 / 负值调出
 	Num int `json:"num,omitempty"`
@@ -147,11 +147,9 @@ func (*Stock) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case stock.FieldCreator, stock.FieldLastModifier:
 			values[i] = new([]byte)
-		case stock.FieldVoltage:
-			values[i] = new(sql.NullFloat64)
 		case stock.FieldID, stock.FieldManagerID, stock.FieldType, stock.FieldStoreID, stock.FieldRiderID, stock.FieldEmployeeID, stock.FieldNum:
 			values[i] = new(sql.NullInt64)
-		case stock.FieldRemark, stock.FieldSn, stock.FieldName:
+		case stock.FieldRemark, stock.FieldSn, stock.FieldName, stock.FieldModel:
 			values[i] = new(sql.NullString)
 		case stock.FieldCreatedAt, stock.FieldUpdatedAt, stock.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -263,12 +261,12 @@ func (s *Stock) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.Name = value.String
 			}
-		case stock.FieldVoltage:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field voltage", values[i])
+		case stock.FieldModel:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field model", values[i])
 			} else if value.Valid {
-				s.Voltage = new(float64)
-				*s.Voltage = value.Float64
+				s.Model = new(string)
+				*s.Model = value.String
 			}
 		case stock.FieldNum:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -360,9 +358,9 @@ func (s *Stock) String() string {
 	}
 	builder.WriteString(", name=")
 	builder.WriteString(s.Name)
-	if v := s.Voltage; v != nil {
-		builder.WriteString(", voltage=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
+	if v := s.Model; v != nil {
+		builder.WriteString(", model=")
+		builder.WriteString(*v)
 	}
 	builder.WriteString(", num=")
 	builder.WriteString(fmt.Sprintf("%v", s.Num))

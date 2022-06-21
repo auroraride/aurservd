@@ -250,16 +250,9 @@ func (su *SubscribeUpdate) AddStatus(u int8) *SubscribeUpdate {
 	return su
 }
 
-// SetVoltage sets the "voltage" field.
-func (su *SubscribeUpdate) SetVoltage(f float64) *SubscribeUpdate {
-	su.mutation.ResetVoltage()
-	su.mutation.SetVoltage(f)
-	return su
-}
-
-// AddVoltage adds f to the "voltage" field.
-func (su *SubscribeUpdate) AddVoltage(f float64) *SubscribeUpdate {
-	su.mutation.AddVoltage(f)
+// SetModel sets the "model" field.
+func (su *SubscribeUpdate) SetModel(s string) *SubscribeUpdate {
+	su.mutation.SetModel(s)
 	return su
 }
 
@@ -886,18 +879,11 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: subscribe.FieldStatus,
 		})
 	}
-	if value, ok := su.mutation.Voltage(); ok {
+	if value, ok := su.mutation.Model(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: subscribe.FieldVoltage,
-		})
-	}
-	if value, ok := su.mutation.AddedVoltage(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: subscribe.FieldVoltage,
+			Column: subscribe.FieldModel,
 		})
 	}
 	if value, ok := su.mutation.InitialDays(); ok {
@@ -1740,16 +1726,9 @@ func (suo *SubscribeUpdateOne) AddStatus(u int8) *SubscribeUpdateOne {
 	return suo
 }
 
-// SetVoltage sets the "voltage" field.
-func (suo *SubscribeUpdateOne) SetVoltage(f float64) *SubscribeUpdateOne {
-	suo.mutation.ResetVoltage()
-	suo.mutation.SetVoltage(f)
-	return suo
-}
-
-// AddVoltage adds f to the "voltage" field.
-func (suo *SubscribeUpdateOne) AddVoltage(f float64) *SubscribeUpdateOne {
-	suo.mutation.AddVoltage(f)
+// SetModel sets the "model" field.
+func (suo *SubscribeUpdateOne) SetModel(s string) *SubscribeUpdateOne {
+	suo.mutation.SetModel(s)
 	return suo
 }
 
@@ -2406,18 +2385,11 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 			Column: subscribe.FieldStatus,
 		})
 	}
-	if value, ok := suo.mutation.Voltage(); ok {
+	if value, ok := suo.mutation.Model(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: subscribe.FieldVoltage,
-		})
-	}
-	if value, ok := suo.mutation.AddedVoltage(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: subscribe.FieldVoltage,
+			Column: subscribe.FieldModel,
 		})
 	}
 	if value, ok := suo.mutation.InitialDays(); ok {

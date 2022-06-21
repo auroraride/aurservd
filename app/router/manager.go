@@ -52,7 +52,6 @@ func loadManagerRoutes() {
     // 电池
     g.GET("/battery/model", mapi.Battery.ListModels)
     g.POST("/battery/model", mapi.Battery.CreateModel)
-    g.GET("/battery/voltages", mapi.Battery.ListVoltages)
 
     // 电柜
     g.POST("/cabinet", mapi.Cabinet.Create)

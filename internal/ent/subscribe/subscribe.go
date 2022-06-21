@@ -45,8 +45,8 @@ const (
 	FieldStatus = "status"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
-	// FieldVoltage holds the string denoting the voltage field in the database.
-	FieldVoltage = "voltage"
+	// FieldModel holds the string denoting the model field in the database.
+	FieldModel = "model"
 	// FieldInitialDays holds the string denoting the initial_days field in the database.
 	FieldInitialDays = "initial_days"
 	// FieldAlterDays holds the string denoting the alter_days field in the database.
@@ -193,7 +193,7 @@ var Columns = []string{
 	FieldEnterpriseID,
 	FieldStatus,
 	FieldType,
-	FieldVoltage,
+	FieldModel,
 	FieldInitialDays,
 	FieldAlterDays,
 	FieldPauseDays,

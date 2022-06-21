@@ -51,9 +51,9 @@ type Exception struct {
 	// Name holds the value of the "name" field.
 	// 物资名称
 	Name string `json:"name,omitempty"`
-	// Voltage holds the value of the "voltage" field.
-	// 电池型号(电压)
-	Voltage *float64 `json:"voltage,omitempty"`
+	// Model holds the value of the "model" field.
+	// 电池型号
+	Model *string `json:"model,omitempty"`
 	// Num holds the value of the "num" field.
 	// 异常数量
 	Num int `json:"num,omitempty"`
@@ -133,11 +133,9 @@ func (*Exception) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case exception.FieldCreator, exception.FieldLastModifier, exception.FieldAttachments:
 			values[i] = new([]byte)
-		case exception.FieldVoltage:
-			values[i] = new(sql.NullFloat64)
 		case exception.FieldID, exception.FieldCityID, exception.FieldEmployeeID, exception.FieldStatus, exception.FieldStoreID, exception.FieldNum:
 			values[i] = new(sql.NullInt64)
-		case exception.FieldRemark, exception.FieldName, exception.FieldReason, exception.FieldDescription:
+		case exception.FieldRemark, exception.FieldName, exception.FieldModel, exception.FieldReason, exception.FieldDescription:
 			values[i] = new(sql.NullString)
 		case exception.FieldCreatedAt, exception.FieldUpdatedAt, exception.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -233,12 +231,12 @@ func (e *Exception) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				e.Name = value.String
 			}
-		case exception.FieldVoltage:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field voltage", values[i])
+		case exception.FieldModel:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field model", values[i])
 			} else if value.Valid {
-				e.Voltage = new(float64)
-				*e.Voltage = value.Float64
+				e.Model = new(string)
+				*e.Model = value.String
 			}
 		case exception.FieldNum:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -333,9 +331,9 @@ func (e *Exception) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.StoreID))
 	builder.WriteString(", name=")
 	builder.WriteString(e.Name)
-	if v := e.Voltage; v != nil {
-		builder.WriteString(", voltage=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
+	if v := e.Model; v != nil {
+		builder.WriteString(", model=")
+		builder.WriteString(*v)
 	}
 	builder.WriteString(", num=")
 	builder.WriteString(fmt.Sprintf("%v", e.Num))

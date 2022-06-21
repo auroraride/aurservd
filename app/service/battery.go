@@ -7,13 +7,11 @@ package service
 
 import (
     "context"
-    "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/batterymodel"
     "github.com/auroraride/aurservd/pkg/snag"
-    "strconv"
 )
 
 type batteryService struct {
@@ -34,13 +32,13 @@ func NewBatteryWithModifier(m *model.Modifier) *batteryService {
     return s
 }
 
-// ListModels 列举电池型号
-func (s *batteryService) ListModels() (res *model.ItemListRes) {
+// List 列举电池型号
+func (s *batteryService) List() (res *model.ItemListRes) {
     res = new(model.ItemListRes)
     var items []model.BatteryModel
     s.orm.QueryNotDeleted().
         Order(ent.Desc(batterymodel.FieldCreatedAt)).
-        Select(batterymodel.FieldCapacity, batterymodel.FieldID, batterymodel.FieldVoltage).
+        Select(batterymodel.FieldID, batterymodel.FieldModel).
         ScanX(s.ctx, &items)
 
     model.SetItemListResItems[model.BatteryModel](res, items)
@@ -51,21 +49,18 @@ func (s *batteryService) ListModels() (res *model.ItemListRes) {
 func (s *batteryService) CreateModel(req *model.BatteryModelCreateReq) model.BatteryModel {
     // 查找同型号电池是否存在
     if s.orm.QueryNotDeleted().
-        Where(batterymodel.Capacity(req.Capacity)).
-        Where(batterymodel.Voltage(req.Voltage)).
+        Where(batterymodel.Model(req.Model)).
         Where(batterymodel.DeletedAtIsNil()).
         ExistX(s.ctx) {
         snag.Panic("电池型号已存在")
     }
     // 创建电池型号
     item := s.orm.Create().
-        SetVoltage(req.Voltage).
-        SetCapacity(req.Capacity).
+        SetModel(req.Model).
         SaveX(s.ctx)
     return model.BatteryModel{
-        ID:       item.ID,
-        Voltage:  item.Voltage,
-        Capacity: item.Capacity,
+        ID:    item.ID,
+        Model: item.Model,
     }
 }
 
@@ -74,19 +69,12 @@ func (s *batteryService) QueryIDs(ids []uint64) []*ent.BatteryModel {
     return s.orm.QueryNotDeleted().Where(batterymodel.IDIn(ids...)).AllX(s.ctx)
 }
 
-// ListVoltages 列出所有型号电压
-func (s *batteryService) ListVoltages(excludes ...float64) []float64 {
-    var items []float64
-    q := s.orm.QueryNotDeleted().
-        Select(batterymodel.FieldVoltage)
-    if len(excludes) > 0 {
-        q.Where(batterymodel.VoltageNotIn(excludes...))
+// Models 列出所有电池型号
+func (s *batteryService) Models() []string {
+    items, _ := s.orm.QueryNotDeleted().Where(batterymodel.Enable(true)).All(s.ctx)
+    out := make([]string, len(items))
+    for i, item := range items {
+        out[i] = item.Model
     }
-    q.GroupBy(batterymodel.FieldVoltage).ScanX(s.ctx, &items)
-    return items
-}
-
-// VoltageName 获取电池电压型号名称
-func (s *batteryService) VoltageName(voltage float64) string {
-    return fmt.Sprintf("%sV电池", strconv.FormatFloat(voltage, 'f', -1, 64))
+    return out
 }

@@ -89,29 +89,23 @@ func (bmu *BatteryModelUpdate) ClearRemark() *BatteryModelUpdate {
 	return bmu
 }
 
-// SetVoltage sets the "voltage" field.
-func (bmu *BatteryModelUpdate) SetVoltage(f float64) *BatteryModelUpdate {
-	bmu.mutation.ResetVoltage()
-	bmu.mutation.SetVoltage(f)
+// SetModel sets the "model" field.
+func (bmu *BatteryModelUpdate) SetModel(s string) *BatteryModelUpdate {
+	bmu.mutation.SetModel(s)
 	return bmu
 }
 
-// AddVoltage adds f to the "voltage" field.
-func (bmu *BatteryModelUpdate) AddVoltage(f float64) *BatteryModelUpdate {
-	bmu.mutation.AddVoltage(f)
+// SetEnable sets the "enable" field.
+func (bmu *BatteryModelUpdate) SetEnable(b bool) *BatteryModelUpdate {
+	bmu.mutation.SetEnable(b)
 	return bmu
 }
 
-// SetCapacity sets the "capacity" field.
-func (bmu *BatteryModelUpdate) SetCapacity(f float64) *BatteryModelUpdate {
-	bmu.mutation.ResetCapacity()
-	bmu.mutation.SetCapacity(f)
-	return bmu
-}
-
-// AddCapacity adds f to the "capacity" field.
-func (bmu *BatteryModelUpdate) AddCapacity(f float64) *BatteryModelUpdate {
-	bmu.mutation.AddCapacity(f)
+// SetNillableEnable sets the "enable" field if the given value is not nil.
+func (bmu *BatteryModelUpdate) SetNillableEnable(b *bool) *BatteryModelUpdate {
+	if b != nil {
+		bmu.SetEnable(*b)
+	}
 	return bmu
 }
 
@@ -331,32 +325,18 @@ func (bmu *BatteryModelUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: batterymodel.FieldRemark,
 		})
 	}
-	if value, ok := bmu.mutation.Voltage(); ok {
+	if value, ok := bmu.mutation.Model(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: batterymodel.FieldVoltage,
+			Column: batterymodel.FieldModel,
 		})
 	}
-	if value, ok := bmu.mutation.AddedVoltage(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: batterymodel.FieldVoltage,
-		})
-	}
-	if value, ok := bmu.mutation.Capacity(); ok {
+	if value, ok := bmu.mutation.Enable(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeBool,
 			Value:  value,
-			Column: batterymodel.FieldCapacity,
-		})
-	}
-	if value, ok := bmu.mutation.AddedCapacity(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: batterymodel.FieldCapacity,
+			Column: batterymodel.FieldEnable,
 		})
 	}
 	if bmu.mutation.CabinetsCleared() {
@@ -544,29 +524,23 @@ func (bmuo *BatteryModelUpdateOne) ClearRemark() *BatteryModelUpdateOne {
 	return bmuo
 }
 
-// SetVoltage sets the "voltage" field.
-func (bmuo *BatteryModelUpdateOne) SetVoltage(f float64) *BatteryModelUpdateOne {
-	bmuo.mutation.ResetVoltage()
-	bmuo.mutation.SetVoltage(f)
+// SetModel sets the "model" field.
+func (bmuo *BatteryModelUpdateOne) SetModel(s string) *BatteryModelUpdateOne {
+	bmuo.mutation.SetModel(s)
 	return bmuo
 }
 
-// AddVoltage adds f to the "voltage" field.
-func (bmuo *BatteryModelUpdateOne) AddVoltage(f float64) *BatteryModelUpdateOne {
-	bmuo.mutation.AddVoltage(f)
+// SetEnable sets the "enable" field.
+func (bmuo *BatteryModelUpdateOne) SetEnable(b bool) *BatteryModelUpdateOne {
+	bmuo.mutation.SetEnable(b)
 	return bmuo
 }
 
-// SetCapacity sets the "capacity" field.
-func (bmuo *BatteryModelUpdateOne) SetCapacity(f float64) *BatteryModelUpdateOne {
-	bmuo.mutation.ResetCapacity()
-	bmuo.mutation.SetCapacity(f)
-	return bmuo
-}
-
-// AddCapacity adds f to the "capacity" field.
-func (bmuo *BatteryModelUpdateOne) AddCapacity(f float64) *BatteryModelUpdateOne {
-	bmuo.mutation.AddCapacity(f)
+// SetNillableEnable sets the "enable" field if the given value is not nil.
+func (bmuo *BatteryModelUpdateOne) SetNillableEnable(b *bool) *BatteryModelUpdateOne {
+	if b != nil {
+		bmuo.SetEnable(*b)
+	}
 	return bmuo
 }
 
@@ -816,32 +790,18 @@ func (bmuo *BatteryModelUpdateOne) sqlSave(ctx context.Context) (_node *BatteryM
 			Column: batterymodel.FieldRemark,
 		})
 	}
-	if value, ok := bmuo.mutation.Voltage(); ok {
+	if value, ok := bmuo.mutation.Model(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: batterymodel.FieldVoltage,
+			Column: batterymodel.FieldModel,
 		})
 	}
-	if value, ok := bmuo.mutation.AddedVoltage(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: batterymodel.FieldVoltage,
-		})
-	}
-	if value, ok := bmuo.mutation.Capacity(); ok {
+	if value, ok := bmuo.mutation.Enable(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeBool,
 			Value:  value,
-			Column: batterymodel.FieldCapacity,
-		})
-	}
-	if value, ok := bmuo.mutation.AddedCapacity(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: batterymodel.FieldCapacity,
+			Column: batterymodel.FieldEnable,
 		})
 	}
 	if bmuo.mutation.CabinetsCleared() {

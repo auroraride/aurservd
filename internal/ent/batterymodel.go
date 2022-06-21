@@ -33,12 +33,12 @@ type BatteryModel struct {
 	// Remark holds the value of the "remark" field.
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
-	// Voltage holds the value of the "voltage" field.
-	// 电压
-	Voltage float64 `json:"voltage,omitempty"`
-	// Capacity holds the value of the "capacity" field.
-	// 容量
-	Capacity float64 `json:"capacity,omitempty"`
+	// Model holds the value of the "model" field.
+	// 型号
+	Model string `json:"model,omitempty"`
+	// Enable holds the value of the "enable" field.
+	// 是否启用
+	Enable bool `json:"enable,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BatteryModelQuery when eager-loading is set.
 	Edges BatteryModelEdges `json:"edges"`
@@ -80,11 +80,11 @@ func (*BatteryModel) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case batterymodel.FieldCreator, batterymodel.FieldLastModifier:
 			values[i] = new([]byte)
-		case batterymodel.FieldVoltage, batterymodel.FieldCapacity:
-			values[i] = new(sql.NullFloat64)
+		case batterymodel.FieldEnable:
+			values[i] = new(sql.NullBool)
 		case batterymodel.FieldID:
 			values[i] = new(sql.NullInt64)
-		case batterymodel.FieldRemark:
+		case batterymodel.FieldRemark, batterymodel.FieldModel:
 			values[i] = new(sql.NullString)
 		case batterymodel.FieldCreatedAt, batterymodel.FieldUpdatedAt, batterymodel.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -150,17 +150,17 @@ func (bm *BatteryModel) assignValues(columns []string, values []interface{}) err
 			} else if value.Valid {
 				bm.Remark = value.String
 			}
-		case batterymodel.FieldVoltage:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field voltage", values[i])
+		case batterymodel.FieldModel:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field model", values[i])
 			} else if value.Valid {
-				bm.Voltage = value.Float64
+				bm.Model = value.String
 			}
-		case batterymodel.FieldCapacity:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field capacity", values[i])
+		case batterymodel.FieldEnable:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field enable", values[i])
 			} else if value.Valid {
-				bm.Capacity = value.Float64
+				bm.Enable = value.Bool
 			}
 		}
 	}
@@ -214,10 +214,10 @@ func (bm *BatteryModel) String() string {
 	builder.WriteString(fmt.Sprintf("%v", bm.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(bm.Remark)
-	builder.WriteString(", voltage=")
-	builder.WriteString(fmt.Sprintf("%v", bm.Voltage))
-	builder.WriteString(", capacity=")
-	builder.WriteString(fmt.Sprintf("%v", bm.Capacity))
+	builder.WriteString(", model=")
+	builder.WriteString(bm.Model)
+	builder.WriteString(", enable=")
+	builder.WriteString(fmt.Sprintf("%v", bm.Enable))
 	builder.WriteByte(')')
 	return builder.String()
 }

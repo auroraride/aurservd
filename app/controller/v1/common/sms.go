@@ -18,7 +18,7 @@ import (
 // SendSmsCode
 // @ID           SendSmsCode
 // @Router       /commom/sms [POST]
-// @Summary      C2.发送短信验证码
+// @Summary      C2 发送短信验证码
 // @Description  上传文件必须，单次获取有效时间为1个小时
 // @Tags         [C]公共接口
 // @Param        body  body  model.SmsReq  true  "请求参数"

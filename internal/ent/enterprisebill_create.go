@@ -156,9 +156,9 @@ func (ebc *EnterpriseBillCreate) SetCost(f float64) *EnterpriseBillCreate {
 	return ebc
 }
 
-// SetVoltage sets the "voltage" field.
-func (ebc *EnterpriseBillCreate) SetVoltage(f float64) *EnterpriseBillCreate {
-	ebc.mutation.SetVoltage(f)
+// SetModel sets the "model" field.
+func (ebc *EnterpriseBillCreate) SetModel(s string) *EnterpriseBillCreate {
+	ebc.mutation.SetModel(s)
 	return ebc
 }
 
@@ -321,8 +321,8 @@ func (ebc *EnterpriseBillCreate) check() error {
 	if _, ok := ebc.mutation.Cost(); !ok {
 		return &ValidationError{Name: "cost", err: errors.New(`ent: missing required field "EnterpriseBill.cost"`)}
 	}
-	if _, ok := ebc.mutation.Voltage(); !ok {
-		return &ValidationError{Name: "voltage", err: errors.New(`ent: missing required field "EnterpriseBill.voltage"`)}
+	if _, ok := ebc.mutation.Model(); !ok {
+		return &ValidationError{Name: "model", err: errors.New(`ent: missing required field "EnterpriseBill.model"`)}
 	}
 	if _, ok := ebc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "EnterpriseBill.rider"`)}
@@ -455,13 +455,13 @@ func (ebc *EnterpriseBillCreate) createSpec() (*EnterpriseBill, *sqlgraph.Create
 		})
 		_node.Cost = value
 	}
-	if value, ok := ebc.mutation.Voltage(); ok {
+	if value, ok := ebc.mutation.Model(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: enterprisebill.FieldVoltage,
+			Column: enterprisebill.FieldModel,
 		})
-		_node.Voltage = value
+		_node.Model = value
 	}
 	if nodes := ebc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -851,21 +851,15 @@ func (u *EnterpriseBillUpsert) AddCost(v float64) *EnterpriseBillUpsert {
 	return u
 }
 
-// SetVoltage sets the "voltage" field.
-func (u *EnterpriseBillUpsert) SetVoltage(v float64) *EnterpriseBillUpsert {
-	u.Set(enterprisebill.FieldVoltage, v)
+// SetModel sets the "model" field.
+func (u *EnterpriseBillUpsert) SetModel(v string) *EnterpriseBillUpsert {
+	u.Set(enterprisebill.FieldModel, v)
 	return u
 }
 
-// UpdateVoltage sets the "voltage" field to the value that was provided on create.
-func (u *EnterpriseBillUpsert) UpdateVoltage() *EnterpriseBillUpsert {
-	u.SetExcluded(enterprisebill.FieldVoltage)
-	return u
-}
-
-// AddVoltage adds v to the "voltage" field.
-func (u *EnterpriseBillUpsert) AddVoltage(v float64) *EnterpriseBillUpsert {
-	u.Add(enterprisebill.FieldVoltage, v)
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *EnterpriseBillUpsert) UpdateModel() *EnterpriseBillUpsert {
+	u.SetExcluded(enterprisebill.FieldModel)
 	return u
 }
 
@@ -1192,24 +1186,17 @@ func (u *EnterpriseBillUpsertOne) UpdateCost() *EnterpriseBillUpsertOne {
 	})
 }
 
-// SetVoltage sets the "voltage" field.
-func (u *EnterpriseBillUpsertOne) SetVoltage(v float64) *EnterpriseBillUpsertOne {
+// SetModel sets the "model" field.
+func (u *EnterpriseBillUpsertOne) SetModel(v string) *EnterpriseBillUpsertOne {
 	return u.Update(func(s *EnterpriseBillUpsert) {
-		s.SetVoltage(v)
+		s.SetModel(v)
 	})
 }
 
-// AddVoltage adds v to the "voltage" field.
-func (u *EnterpriseBillUpsertOne) AddVoltage(v float64) *EnterpriseBillUpsertOne {
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *EnterpriseBillUpsertOne) UpdateModel() *EnterpriseBillUpsertOne {
 	return u.Update(func(s *EnterpriseBillUpsert) {
-		s.AddVoltage(v)
-	})
-}
-
-// UpdateVoltage sets the "voltage" field to the value that was provided on create.
-func (u *EnterpriseBillUpsertOne) UpdateVoltage() *EnterpriseBillUpsertOne {
-	return u.Update(func(s *EnterpriseBillUpsert) {
-		s.UpdateVoltage()
+		s.UpdateModel()
 	})
 }
 
@@ -1700,24 +1687,17 @@ func (u *EnterpriseBillUpsertBulk) UpdateCost() *EnterpriseBillUpsertBulk {
 	})
 }
 
-// SetVoltage sets the "voltage" field.
-func (u *EnterpriseBillUpsertBulk) SetVoltage(v float64) *EnterpriseBillUpsertBulk {
+// SetModel sets the "model" field.
+func (u *EnterpriseBillUpsertBulk) SetModel(v string) *EnterpriseBillUpsertBulk {
 	return u.Update(func(s *EnterpriseBillUpsert) {
-		s.SetVoltage(v)
+		s.SetModel(v)
 	})
 }
 
-// AddVoltage adds v to the "voltage" field.
-func (u *EnterpriseBillUpsertBulk) AddVoltage(v float64) *EnterpriseBillUpsertBulk {
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *EnterpriseBillUpsertBulk) UpdateModel() *EnterpriseBillUpsertBulk {
 	return u.Update(func(s *EnterpriseBillUpsert) {
-		s.AddVoltage(v)
-	})
-}
-
-// UpdateVoltage sets the "voltage" field to the value that was provided on create.
-func (u *EnterpriseBillUpsertBulk) UpdateVoltage() *EnterpriseBillUpsertBulk {
-	return u.Update(func(s *EnterpriseBillUpsert) {
-		s.UpdateVoltage()
+		s.UpdateModel()
 	})
 }
 

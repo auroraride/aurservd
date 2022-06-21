@@ -1624,10 +1624,8 @@ type BatteryModelMutation struct {
 	creator         **model.Modifier
 	last_modifier   **model.Modifier
 	remark          *string
-	voltage         *float64
-	addvoltage      *float64
-	capacity        *float64
-	addcapacity     *float64
+	model           *string
+	enable          *bool
 	clearedFields   map[string]struct{}
 	cabinets        map[uint64]struct{}
 	removedcabinets map[uint64]struct{}
@@ -2006,116 +2004,76 @@ func (m *BatteryModelMutation) ResetRemark() {
 	delete(m.clearedFields, batterymodel.FieldRemark)
 }
 
-// SetVoltage sets the "voltage" field.
-func (m *BatteryModelMutation) SetVoltage(f float64) {
-	m.voltage = &f
-	m.addvoltage = nil
+// SetModel sets the "model" field.
+func (m *BatteryModelMutation) SetModel(s string) {
+	m.model = &s
 }
 
-// Voltage returns the value of the "voltage" field in the mutation.
-func (m *BatteryModelMutation) Voltage() (r float64, exists bool) {
-	v := m.voltage
+// Model returns the value of the "model" field in the mutation.
+func (m *BatteryModelMutation) Model() (r string, exists bool) {
+	v := m.model
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldVoltage returns the old "voltage" field's value of the BatteryModel entity.
+// OldModel returns the old "model" field's value of the BatteryModel entity.
 // If the BatteryModel object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BatteryModelMutation) OldVoltage(ctx context.Context) (v float64, err error) {
+func (m *BatteryModelMutation) OldModel(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldVoltage is only allowed on UpdateOne operations")
+		return v, errors.New("OldModel is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldVoltage requires an ID field in the mutation")
+		return v, errors.New("OldModel requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldVoltage: %w", err)
+		return v, fmt.Errorf("querying old value for OldModel: %w", err)
 	}
-	return oldValue.Voltage, nil
+	return oldValue.Model, nil
 }
 
-// AddVoltage adds f to the "voltage" field.
-func (m *BatteryModelMutation) AddVoltage(f float64) {
-	if m.addvoltage != nil {
-		*m.addvoltage += f
-	} else {
-		m.addvoltage = &f
-	}
+// ResetModel resets all changes to the "model" field.
+func (m *BatteryModelMutation) ResetModel() {
+	m.model = nil
 }
 
-// AddedVoltage returns the value that was added to the "voltage" field in this mutation.
-func (m *BatteryModelMutation) AddedVoltage() (r float64, exists bool) {
-	v := m.addvoltage
+// SetEnable sets the "enable" field.
+func (m *BatteryModelMutation) SetEnable(b bool) {
+	m.enable = &b
+}
+
+// Enable returns the value of the "enable" field in the mutation.
+func (m *BatteryModelMutation) Enable() (r bool, exists bool) {
+	v := m.enable
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetVoltage resets all changes to the "voltage" field.
-func (m *BatteryModelMutation) ResetVoltage() {
-	m.voltage = nil
-	m.addvoltage = nil
-}
-
-// SetCapacity sets the "capacity" field.
-func (m *BatteryModelMutation) SetCapacity(f float64) {
-	m.capacity = &f
-	m.addcapacity = nil
-}
-
-// Capacity returns the value of the "capacity" field in the mutation.
-func (m *BatteryModelMutation) Capacity() (r float64, exists bool) {
-	v := m.capacity
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCapacity returns the old "capacity" field's value of the BatteryModel entity.
+// OldEnable returns the old "enable" field's value of the BatteryModel entity.
 // If the BatteryModel object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BatteryModelMutation) OldCapacity(ctx context.Context) (v float64, err error) {
+func (m *BatteryModelMutation) OldEnable(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCapacity is only allowed on UpdateOne operations")
+		return v, errors.New("OldEnable is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCapacity requires an ID field in the mutation")
+		return v, errors.New("OldEnable requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCapacity: %w", err)
+		return v, fmt.Errorf("querying old value for OldEnable: %w", err)
 	}
-	return oldValue.Capacity, nil
+	return oldValue.Enable, nil
 }
 
-// AddCapacity adds f to the "capacity" field.
-func (m *BatteryModelMutation) AddCapacity(f float64) {
-	if m.addcapacity != nil {
-		*m.addcapacity += f
-	} else {
-		m.addcapacity = &f
-	}
-}
-
-// AddedCapacity returns the value that was added to the "capacity" field in this mutation.
-func (m *BatteryModelMutation) AddedCapacity() (r float64, exists bool) {
-	v := m.addcapacity
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetCapacity resets all changes to the "capacity" field.
-func (m *BatteryModelMutation) ResetCapacity() {
-	m.capacity = nil
-	m.addcapacity = nil
+// ResetEnable resets all changes to the "enable" field.
+func (m *BatteryModelMutation) ResetEnable() {
+	m.enable = nil
 }
 
 // AddCabinetIDs adds the "cabinets" edge to the Cabinet entity by ids.
@@ -2264,11 +2222,11 @@ func (m *BatteryModelMutation) Fields() []string {
 	if m.remark != nil {
 		fields = append(fields, batterymodel.FieldRemark)
 	}
-	if m.voltage != nil {
-		fields = append(fields, batterymodel.FieldVoltage)
+	if m.model != nil {
+		fields = append(fields, batterymodel.FieldModel)
 	}
-	if m.capacity != nil {
-		fields = append(fields, batterymodel.FieldCapacity)
+	if m.enable != nil {
+		fields = append(fields, batterymodel.FieldEnable)
 	}
 	return fields
 }
@@ -2290,10 +2248,10 @@ func (m *BatteryModelMutation) Field(name string) (ent.Value, bool) {
 		return m.LastModifier()
 	case batterymodel.FieldRemark:
 		return m.Remark()
-	case batterymodel.FieldVoltage:
-		return m.Voltage()
-	case batterymodel.FieldCapacity:
-		return m.Capacity()
+	case batterymodel.FieldModel:
+		return m.Model()
+	case batterymodel.FieldEnable:
+		return m.Enable()
 	}
 	return nil, false
 }
@@ -2315,10 +2273,10 @@ func (m *BatteryModelMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldLastModifier(ctx)
 	case batterymodel.FieldRemark:
 		return m.OldRemark(ctx)
-	case batterymodel.FieldVoltage:
-		return m.OldVoltage(ctx)
-	case batterymodel.FieldCapacity:
-		return m.OldCapacity(ctx)
+	case batterymodel.FieldModel:
+		return m.OldModel(ctx)
+	case batterymodel.FieldEnable:
+		return m.OldEnable(ctx)
 	}
 	return nil, fmt.Errorf("unknown BatteryModel field %s", name)
 }
@@ -2370,19 +2328,19 @@ func (m *BatteryModelMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRemark(v)
 		return nil
-	case batterymodel.FieldVoltage:
-		v, ok := value.(float64)
+	case batterymodel.FieldModel:
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetVoltage(v)
+		m.SetModel(v)
 		return nil
-	case batterymodel.FieldCapacity:
-		v, ok := value.(float64)
+	case batterymodel.FieldEnable:
+		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetCapacity(v)
+		m.SetEnable(v)
 		return nil
 	}
 	return fmt.Errorf("unknown BatteryModel field %s", name)
@@ -2391,26 +2349,13 @@ func (m *BatteryModelMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *BatteryModelMutation) AddedFields() []string {
-	var fields []string
-	if m.addvoltage != nil {
-		fields = append(fields, batterymodel.FieldVoltage)
-	}
-	if m.addcapacity != nil {
-		fields = append(fields, batterymodel.FieldCapacity)
-	}
-	return fields
+	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *BatteryModelMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case batterymodel.FieldVoltage:
-		return m.AddedVoltage()
-	case batterymodel.FieldCapacity:
-		return m.AddedCapacity()
-	}
 	return nil, false
 }
 
@@ -2419,20 +2364,6 @@ func (m *BatteryModelMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *BatteryModelMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case batterymodel.FieldVoltage:
-		v, ok := value.(float64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddVoltage(v)
-		return nil
-	case batterymodel.FieldCapacity:
-		v, ok := value.(float64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddCapacity(v)
-		return nil
 	}
 	return fmt.Errorf("unknown BatteryModel numeric field %s", name)
 }
@@ -2505,11 +2436,11 @@ func (m *BatteryModelMutation) ResetField(name string) error {
 	case batterymodel.FieldRemark:
 		m.ResetRemark()
 		return nil
-	case batterymodel.FieldVoltage:
-		m.ResetVoltage()
+	case batterymodel.FieldModel:
+		m.ResetModel()
 		return nil
-	case batterymodel.FieldCapacity:
-		m.ResetCapacity()
+	case batterymodel.FieldEnable:
+		m.ResetEnable()
 		return nil
 	}
 	return fmt.Errorf("unknown BatteryModel field %s", name)
@@ -17748,8 +17679,7 @@ type EnterpriseBillMutation struct {
 	addprice          *float64
 	cost              *float64
 	addcost           *float64
-	voltage           *float64
-	addvoltage        *float64
+	model             *string
 	clearedFields     map[string]struct{}
 	rider             *uint64
 	clearedrider      bool
@@ -18552,60 +18482,40 @@ func (m *EnterpriseBillMutation) ResetCost() {
 	m.addcost = nil
 }
 
-// SetVoltage sets the "voltage" field.
-func (m *EnterpriseBillMutation) SetVoltage(f float64) {
-	m.voltage = &f
-	m.addvoltage = nil
+// SetModel sets the "model" field.
+func (m *EnterpriseBillMutation) SetModel(s string) {
+	m.model = &s
 }
 
-// Voltage returns the value of the "voltage" field in the mutation.
-func (m *EnterpriseBillMutation) Voltage() (r float64, exists bool) {
-	v := m.voltage
+// Model returns the value of the "model" field in the mutation.
+func (m *EnterpriseBillMutation) Model() (r string, exists bool) {
+	v := m.model
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldVoltage returns the old "voltage" field's value of the EnterpriseBill entity.
+// OldModel returns the old "model" field's value of the EnterpriseBill entity.
 // If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EnterpriseBillMutation) OldVoltage(ctx context.Context) (v float64, err error) {
+func (m *EnterpriseBillMutation) OldModel(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldVoltage is only allowed on UpdateOne operations")
+		return v, errors.New("OldModel is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldVoltage requires an ID field in the mutation")
+		return v, errors.New("OldModel requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldVoltage: %w", err)
+		return v, fmt.Errorf("querying old value for OldModel: %w", err)
 	}
-	return oldValue.Voltage, nil
+	return oldValue.Model, nil
 }
 
-// AddVoltage adds f to the "voltage" field.
-func (m *EnterpriseBillMutation) AddVoltage(f float64) {
-	if m.addvoltage != nil {
-		*m.addvoltage += f
-	} else {
-		m.addvoltage = &f
-	}
-}
-
-// AddedVoltage returns the value that was added to the "voltage" field in this mutation.
-func (m *EnterpriseBillMutation) AddedVoltage() (r float64, exists bool) {
-	v := m.addvoltage
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetVoltage resets all changes to the "voltage" field.
-func (m *EnterpriseBillMutation) ResetVoltage() {
-	m.voltage = nil
-	m.addvoltage = nil
+// ResetModel resets all changes to the "model" field.
+func (m *EnterpriseBillMutation) ResetModel() {
+	m.model = nil
 }
 
 // ClearRider clears the "rider" edge to the Rider entity.
@@ -18806,8 +18716,8 @@ func (m *EnterpriseBillMutation) Fields() []string {
 	if m.cost != nil {
 		fields = append(fields, enterprisebill.FieldCost)
 	}
-	if m.voltage != nil {
-		fields = append(fields, enterprisebill.FieldVoltage)
+	if m.model != nil {
+		fields = append(fields, enterprisebill.FieldModel)
 	}
 	return fields
 }
@@ -18849,8 +18759,8 @@ func (m *EnterpriseBillMutation) Field(name string) (ent.Value, bool) {
 		return m.Price()
 	case enterprisebill.FieldCost:
 		return m.Cost()
-	case enterprisebill.FieldVoltage:
-		return m.Voltage()
+	case enterprisebill.FieldModel:
+		return m.Model()
 	}
 	return nil, false
 }
@@ -18892,8 +18802,8 @@ func (m *EnterpriseBillMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldPrice(ctx)
 	case enterprisebill.FieldCost:
 		return m.OldCost(ctx)
-	case enterprisebill.FieldVoltage:
-		return m.OldVoltage(ctx)
+	case enterprisebill.FieldModel:
+		return m.OldModel(ctx)
 	}
 	return nil, fmt.Errorf("unknown EnterpriseBill field %s", name)
 }
@@ -19015,12 +18925,12 @@ func (m *EnterpriseBillMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCost(v)
 		return nil
-	case enterprisebill.FieldVoltage:
-		v, ok := value.(float64)
+	case enterprisebill.FieldModel:
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetVoltage(v)
+		m.SetModel(v)
 		return nil
 	}
 	return fmt.Errorf("unknown EnterpriseBill field %s", name)
@@ -19039,9 +18949,6 @@ func (m *EnterpriseBillMutation) AddedFields() []string {
 	if m.addcost != nil {
 		fields = append(fields, enterprisebill.FieldCost)
 	}
-	if m.addvoltage != nil {
-		fields = append(fields, enterprisebill.FieldVoltage)
-	}
 	return fields
 }
 
@@ -19056,8 +18963,6 @@ func (m *EnterpriseBillMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedPrice()
 	case enterprisebill.FieldCost:
 		return m.AddedCost()
-	case enterprisebill.FieldVoltage:
-		return m.AddedVoltage()
 	}
 	return nil, false
 }
@@ -19087,13 +18992,6 @@ func (m *EnterpriseBillMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddCost(v)
-		return nil
-	case enterprisebill.FieldVoltage:
-		v, ok := value.(float64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddVoltage(v)
 		return nil
 	}
 	return fmt.Errorf("unknown EnterpriseBill numeric field %s", name)
@@ -19197,8 +19095,8 @@ func (m *EnterpriseBillMutation) ResetField(name string) error {
 	case enterprisebill.FieldCost:
 		m.ResetCost()
 		return nil
-	case enterprisebill.FieldVoltage:
-		m.ResetVoltage()
+	case enterprisebill.FieldModel:
+		m.ResetModel()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterpriseBill field %s", name)
@@ -21159,8 +21057,7 @@ type EnterprisePriceMutation struct {
 	remark            *string
 	price             *float64
 	addprice          *float64
-	voltage           *float64
-	addvoltage        *float64
+	model             *string
 	clearedFields     map[string]struct{}
 	city              *uint64
 	clearedcity       bool
@@ -21665,60 +21562,40 @@ func (m *EnterprisePriceMutation) ResetPrice() {
 	m.addprice = nil
 }
 
-// SetVoltage sets the "voltage" field.
-func (m *EnterprisePriceMutation) SetVoltage(f float64) {
-	m.voltage = &f
-	m.addvoltage = nil
+// SetModel sets the "model" field.
+func (m *EnterprisePriceMutation) SetModel(s string) {
+	m.model = &s
 }
 
-// Voltage returns the value of the "voltage" field in the mutation.
-func (m *EnterprisePriceMutation) Voltage() (r float64, exists bool) {
-	v := m.voltage
+// Model returns the value of the "model" field in the mutation.
+func (m *EnterprisePriceMutation) Model() (r string, exists bool) {
+	v := m.model
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldVoltage returns the old "voltage" field's value of the EnterprisePrice entity.
+// OldModel returns the old "model" field's value of the EnterprisePrice entity.
 // If the EnterprisePrice object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EnterprisePriceMutation) OldVoltage(ctx context.Context) (v float64, err error) {
+func (m *EnterprisePriceMutation) OldModel(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldVoltage is only allowed on UpdateOne operations")
+		return v, errors.New("OldModel is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldVoltage requires an ID field in the mutation")
+		return v, errors.New("OldModel requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldVoltage: %w", err)
+		return v, fmt.Errorf("querying old value for OldModel: %w", err)
 	}
-	return oldValue.Voltage, nil
+	return oldValue.Model, nil
 }
 
-// AddVoltage adds f to the "voltage" field.
-func (m *EnterprisePriceMutation) AddVoltage(f float64) {
-	if m.addvoltage != nil {
-		*m.addvoltage += f
-	} else {
-		m.addvoltage = &f
-	}
-}
-
-// AddedVoltage returns the value that was added to the "voltage" field in this mutation.
-func (m *EnterprisePriceMutation) AddedVoltage() (r float64, exists bool) {
-	v := m.addvoltage
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetVoltage resets all changes to the "voltage" field.
-func (m *EnterprisePriceMutation) ResetVoltage() {
-	m.voltage = nil
-	m.addvoltage = nil
+// ResetModel resets all changes to the "model" field.
+func (m *EnterprisePriceMutation) ResetModel() {
+	m.model = nil
 }
 
 // ClearCity clears the "city" edge to the City entity.
@@ -21820,8 +21697,8 @@ func (m *EnterprisePriceMutation) Fields() []string {
 	if m.price != nil {
 		fields = append(fields, enterpriseprice.FieldPrice)
 	}
-	if m.voltage != nil {
-		fields = append(fields, enterpriseprice.FieldVoltage)
+	if m.model != nil {
+		fields = append(fields, enterpriseprice.FieldModel)
 	}
 	return fields
 }
@@ -21849,8 +21726,8 @@ func (m *EnterprisePriceMutation) Field(name string) (ent.Value, bool) {
 		return m.EnterpriseID()
 	case enterpriseprice.FieldPrice:
 		return m.Price()
-	case enterpriseprice.FieldVoltage:
-		return m.Voltage()
+	case enterpriseprice.FieldModel:
+		return m.Model()
 	}
 	return nil, false
 }
@@ -21878,8 +21755,8 @@ func (m *EnterprisePriceMutation) OldField(ctx context.Context, name string) (en
 		return m.OldEnterpriseID(ctx)
 	case enterpriseprice.FieldPrice:
 		return m.OldPrice(ctx)
-	case enterpriseprice.FieldVoltage:
-		return m.OldVoltage(ctx)
+	case enterpriseprice.FieldModel:
+		return m.OldModel(ctx)
 	}
 	return nil, fmt.Errorf("unknown EnterprisePrice field %s", name)
 }
@@ -21952,12 +21829,12 @@ func (m *EnterprisePriceMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPrice(v)
 		return nil
-	case enterpriseprice.FieldVoltage:
-		v, ok := value.(float64)
+	case enterpriseprice.FieldModel:
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetVoltage(v)
+		m.SetModel(v)
 		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrice field %s", name)
@@ -21970,9 +21847,6 @@ func (m *EnterprisePriceMutation) AddedFields() []string {
 	if m.addprice != nil {
 		fields = append(fields, enterpriseprice.FieldPrice)
 	}
-	if m.addvoltage != nil {
-		fields = append(fields, enterpriseprice.FieldVoltage)
-	}
 	return fields
 }
 
@@ -21983,8 +21857,6 @@ func (m *EnterprisePriceMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case enterpriseprice.FieldPrice:
 		return m.AddedPrice()
-	case enterpriseprice.FieldVoltage:
-		return m.AddedVoltage()
 	}
 	return nil, false
 }
@@ -22000,13 +21872,6 @@ func (m *EnterprisePriceMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddPrice(v)
-		return nil
-	case enterpriseprice.FieldVoltage:
-		v, ok := value.(float64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddVoltage(v)
 		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrice numeric field %s", name)
@@ -22089,8 +21954,8 @@ func (m *EnterprisePriceMutation) ResetField(name string) error {
 	case enterpriseprice.FieldPrice:
 		m.ResetPrice()
 		return nil
-	case enterpriseprice.FieldVoltage:
-		m.ResetVoltage()
+	case enterpriseprice.FieldModel:
+		m.ResetModel()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterprisePrice field %s", name)
@@ -24507,8 +24372,7 @@ type ExceptionMutation struct {
 	status          *uint8
 	addstatus       *int8
 	name            *string
-	voltage         *float64
-	addvoltage      *float64
+	model           *string
 	num             *int
 	addnum          *int
 	reason          *string
@@ -25092,74 +24956,53 @@ func (m *ExceptionMutation) ResetName() {
 	m.name = nil
 }
 
-// SetVoltage sets the "voltage" field.
-func (m *ExceptionMutation) SetVoltage(f float64) {
-	m.voltage = &f
-	m.addvoltage = nil
+// SetModel sets the "model" field.
+func (m *ExceptionMutation) SetModel(s string) {
+	m.model = &s
 }
 
-// Voltage returns the value of the "voltage" field in the mutation.
-func (m *ExceptionMutation) Voltage() (r float64, exists bool) {
-	v := m.voltage
+// Model returns the value of the "model" field in the mutation.
+func (m *ExceptionMutation) Model() (r string, exists bool) {
+	v := m.model
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldVoltage returns the old "voltage" field's value of the Exception entity.
+// OldModel returns the old "model" field's value of the Exception entity.
 // If the Exception object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ExceptionMutation) OldVoltage(ctx context.Context) (v *float64, err error) {
+func (m *ExceptionMutation) OldModel(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldVoltage is only allowed on UpdateOne operations")
+		return v, errors.New("OldModel is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldVoltage requires an ID field in the mutation")
+		return v, errors.New("OldModel requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldVoltage: %w", err)
+		return v, fmt.Errorf("querying old value for OldModel: %w", err)
 	}
-	return oldValue.Voltage, nil
+	return oldValue.Model, nil
 }
 
-// AddVoltage adds f to the "voltage" field.
-func (m *ExceptionMutation) AddVoltage(f float64) {
-	if m.addvoltage != nil {
-		*m.addvoltage += f
-	} else {
-		m.addvoltage = &f
-	}
+// ClearModel clears the value of the "model" field.
+func (m *ExceptionMutation) ClearModel() {
+	m.model = nil
+	m.clearedFields[exception.FieldModel] = struct{}{}
 }
 
-// AddedVoltage returns the value that was added to the "voltage" field in this mutation.
-func (m *ExceptionMutation) AddedVoltage() (r float64, exists bool) {
-	v := m.addvoltage
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearVoltage clears the value of the "voltage" field.
-func (m *ExceptionMutation) ClearVoltage() {
-	m.voltage = nil
-	m.addvoltage = nil
-	m.clearedFields[exception.FieldVoltage] = struct{}{}
-}
-
-// VoltageCleared returns if the "voltage" field was cleared in this mutation.
-func (m *ExceptionMutation) VoltageCleared() bool {
-	_, ok := m.clearedFields[exception.FieldVoltage]
+// ModelCleared returns if the "model" field was cleared in this mutation.
+func (m *ExceptionMutation) ModelCleared() bool {
+	_, ok := m.clearedFields[exception.FieldModel]
 	return ok
 }
 
-// ResetVoltage resets all changes to the "voltage" field.
-func (m *ExceptionMutation) ResetVoltage() {
-	m.voltage = nil
-	m.addvoltage = nil
-	delete(m.clearedFields, exception.FieldVoltage)
+// ResetModel resets all changes to the "model" field.
+func (m *ExceptionMutation) ResetModel() {
+	m.model = nil
+	delete(m.clearedFields, exception.FieldModel)
 }
 
 // SetNum sets the "num" field.
@@ -25483,8 +25326,8 @@ func (m *ExceptionMutation) Fields() []string {
 	if m.name != nil {
 		fields = append(fields, exception.FieldName)
 	}
-	if m.voltage != nil {
-		fields = append(fields, exception.FieldVoltage)
+	if m.model != nil {
+		fields = append(fields, exception.FieldModel)
 	}
 	if m.num != nil {
 		fields = append(fields, exception.FieldNum)
@@ -25528,8 +25371,8 @@ func (m *ExceptionMutation) Field(name string) (ent.Value, bool) {
 		return m.StoreID()
 	case exception.FieldName:
 		return m.Name()
-	case exception.FieldVoltage:
-		return m.Voltage()
+	case exception.FieldModel:
+		return m.Model()
 	case exception.FieldNum:
 		return m.Num()
 	case exception.FieldReason:
@@ -25569,8 +25412,8 @@ func (m *ExceptionMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldStoreID(ctx)
 	case exception.FieldName:
 		return m.OldName(ctx)
-	case exception.FieldVoltage:
-		return m.OldVoltage(ctx)
+	case exception.FieldModel:
+		return m.OldModel(ctx)
 	case exception.FieldNum:
 		return m.OldNum(ctx)
 	case exception.FieldReason:
@@ -25665,12 +25508,12 @@ func (m *ExceptionMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetName(v)
 		return nil
-	case exception.FieldVoltage:
-		v, ok := value.(float64)
+	case exception.FieldModel:
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetVoltage(v)
+		m.SetModel(v)
 		return nil
 	case exception.FieldNum:
 		v, ok := value.(int)
@@ -25711,9 +25554,6 @@ func (m *ExceptionMutation) AddedFields() []string {
 	if m.addstatus != nil {
 		fields = append(fields, exception.FieldStatus)
 	}
-	if m.addvoltage != nil {
-		fields = append(fields, exception.FieldVoltage)
-	}
 	if m.addnum != nil {
 		fields = append(fields, exception.FieldNum)
 	}
@@ -25727,8 +25567,6 @@ func (m *ExceptionMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case exception.FieldStatus:
 		return m.AddedStatus()
-	case exception.FieldVoltage:
-		return m.AddedVoltage()
 	case exception.FieldNum:
 		return m.AddedNum()
 	}
@@ -25746,13 +25584,6 @@ func (m *ExceptionMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddStatus(v)
-		return nil
-	case exception.FieldVoltage:
-		v, ok := value.(float64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddVoltage(v)
 		return nil
 	case exception.FieldNum:
 		v, ok := value.(int)
@@ -25781,8 +25612,8 @@ func (m *ExceptionMutation) ClearedFields() []string {
 	if m.FieldCleared(exception.FieldRemark) {
 		fields = append(fields, exception.FieldRemark)
 	}
-	if m.FieldCleared(exception.FieldVoltage) {
-		fields = append(fields, exception.FieldVoltage)
+	if m.FieldCleared(exception.FieldModel) {
+		fields = append(fields, exception.FieldModel)
 	}
 	if m.FieldCleared(exception.FieldDescription) {
 		fields = append(fields, exception.FieldDescription)
@@ -25816,8 +25647,8 @@ func (m *ExceptionMutation) ClearField(name string) error {
 	case exception.FieldRemark:
 		m.ClearRemark()
 		return nil
-	case exception.FieldVoltage:
-		m.ClearVoltage()
+	case exception.FieldModel:
+		m.ClearModel()
 		return nil
 	case exception.FieldDescription:
 		m.ClearDescription()
@@ -25866,8 +25697,8 @@ func (m *ExceptionMutation) ResetField(name string) error {
 	case exception.FieldName:
 		m.ResetName()
 		return nil
-	case exception.FieldVoltage:
-		m.ResetVoltage()
+	case exception.FieldModel:
+		m.ResetModel()
 		return nil
 	case exception.FieldNum:
 		m.ResetNum()
@@ -26012,8 +25843,7 @@ type ExchangeMutation struct {
 	uuid              *string
 	success           *bool
 	detail            **model.ExchangeCabinet
-	voltage           *float64
-	addvoltage        *float64
+	model             *string
 	clearedFields     map[string]struct{}
 	subscribe         *uint64
 	clearedsubscribe  bool
@@ -26876,60 +26706,40 @@ func (m *ExchangeMutation) ResetDetail() {
 	delete(m.clearedFields, exchange.FieldDetail)
 }
 
-// SetVoltage sets the "voltage" field.
-func (m *ExchangeMutation) SetVoltage(f float64) {
-	m.voltage = &f
-	m.addvoltage = nil
+// SetModel sets the "model" field.
+func (m *ExchangeMutation) SetModel(s string) {
+	m.model = &s
 }
 
-// Voltage returns the value of the "voltage" field in the mutation.
-func (m *ExchangeMutation) Voltage() (r float64, exists bool) {
-	v := m.voltage
+// Model returns the value of the "model" field in the mutation.
+func (m *ExchangeMutation) Model() (r string, exists bool) {
+	v := m.model
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldVoltage returns the old "voltage" field's value of the Exchange entity.
+// OldModel returns the old "model" field's value of the Exchange entity.
 // If the Exchange object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ExchangeMutation) OldVoltage(ctx context.Context) (v float64, err error) {
+func (m *ExchangeMutation) OldModel(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldVoltage is only allowed on UpdateOne operations")
+		return v, errors.New("OldModel is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldVoltage requires an ID field in the mutation")
+		return v, errors.New("OldModel requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldVoltage: %w", err)
+		return v, fmt.Errorf("querying old value for OldModel: %w", err)
 	}
-	return oldValue.Voltage, nil
+	return oldValue.Model, nil
 }
 
-// AddVoltage adds f to the "voltage" field.
-func (m *ExchangeMutation) AddVoltage(f float64) {
-	if m.addvoltage != nil {
-		*m.addvoltage += f
-	} else {
-		m.addvoltage = &f
-	}
-}
-
-// AddedVoltage returns the value that was added to the "voltage" field in this mutation.
-func (m *ExchangeMutation) AddedVoltage() (r float64, exists bool) {
-	v := m.addvoltage
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetVoltage resets all changes to the "voltage" field.
-func (m *ExchangeMutation) ResetVoltage() {
-	m.voltage = nil
-	m.addvoltage = nil
+// ResetModel resets all changes to the "model" field.
+func (m *ExchangeMutation) ResetModel() {
+	m.model = nil
 }
 
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
@@ -27211,8 +27021,8 @@ func (m *ExchangeMutation) Fields() []string {
 	if m.detail != nil {
 		fields = append(fields, exchange.FieldDetail)
 	}
-	if m.voltage != nil {
-		fields = append(fields, exchange.FieldVoltage)
+	if m.model != nil {
+		fields = append(fields, exchange.FieldModel)
 	}
 	return fields
 }
@@ -27256,8 +27066,8 @@ func (m *ExchangeMutation) Field(name string) (ent.Value, bool) {
 		return m.Success()
 	case exchange.FieldDetail:
 		return m.Detail()
-	case exchange.FieldVoltage:
-		return m.Voltage()
+	case exchange.FieldModel:
+		return m.Model()
 	}
 	return nil, false
 }
@@ -27301,8 +27111,8 @@ func (m *ExchangeMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldSuccess(ctx)
 	case exchange.FieldDetail:
 		return m.OldDetail(ctx)
-	case exchange.FieldVoltage:
-		return m.OldVoltage(ctx)
+	case exchange.FieldModel:
+		return m.OldModel(ctx)
 	}
 	return nil, fmt.Errorf("unknown Exchange field %s", name)
 }
@@ -27431,12 +27241,12 @@ func (m *ExchangeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDetail(v)
 		return nil
-	case exchange.FieldVoltage:
-		v, ok := value.(float64)
+	case exchange.FieldModel:
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetVoltage(v)
+		m.SetModel(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Exchange field %s", name)
@@ -27446,9 +27256,6 @@ func (m *ExchangeMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *ExchangeMutation) AddedFields() []string {
 	var fields []string
-	if m.addvoltage != nil {
-		fields = append(fields, exchange.FieldVoltage)
-	}
 	return fields
 }
 
@@ -27457,8 +27264,6 @@ func (m *ExchangeMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *ExchangeMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case exchange.FieldVoltage:
-		return m.AddedVoltage()
 	}
 	return nil, false
 }
@@ -27468,13 +27273,6 @@ func (m *ExchangeMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *ExchangeMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case exchange.FieldVoltage:
-		v, ok := value.(float64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddVoltage(v)
-		return nil
 	}
 	return fmt.Errorf("unknown Exchange numeric field %s", name)
 }
@@ -27616,8 +27414,8 @@ func (m *ExchangeMutation) ResetField(name string) error {
 	case exchange.FieldDetail:
 		m.ResetDetail()
 		return nil
-	case exchange.FieldVoltage:
-		m.ResetVoltage()
+	case exchange.FieldModel:
+		m.ResetModel()
 		return nil
 	}
 	return fmt.Errorf("unknown Exchange field %s", name)
@@ -39134,8 +38932,7 @@ type StockMutation struct {
 	_type           *uint8
 	add_type        *int8
 	name            *string
-	voltage         *float64
-	addvoltage      *float64
+	model           *string
 	num             *int
 	addnum          *int
 	clearedFields   map[string]struct{}
@@ -39842,74 +39639,53 @@ func (m *StockMutation) ResetName() {
 	m.name = nil
 }
 
-// SetVoltage sets the "voltage" field.
-func (m *StockMutation) SetVoltage(f float64) {
-	m.voltage = &f
-	m.addvoltage = nil
+// SetModel sets the "model" field.
+func (m *StockMutation) SetModel(s string) {
+	m.model = &s
 }
 
-// Voltage returns the value of the "voltage" field in the mutation.
-func (m *StockMutation) Voltage() (r float64, exists bool) {
-	v := m.voltage
+// Model returns the value of the "model" field in the mutation.
+func (m *StockMutation) Model() (r string, exists bool) {
+	v := m.model
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldVoltage returns the old "voltage" field's value of the Stock entity.
+// OldModel returns the old "model" field's value of the Stock entity.
 // If the Stock object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StockMutation) OldVoltage(ctx context.Context) (v *float64, err error) {
+func (m *StockMutation) OldModel(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldVoltage is only allowed on UpdateOne operations")
+		return v, errors.New("OldModel is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldVoltage requires an ID field in the mutation")
+		return v, errors.New("OldModel requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldVoltage: %w", err)
+		return v, fmt.Errorf("querying old value for OldModel: %w", err)
 	}
-	return oldValue.Voltage, nil
+	return oldValue.Model, nil
 }
 
-// AddVoltage adds f to the "voltage" field.
-func (m *StockMutation) AddVoltage(f float64) {
-	if m.addvoltage != nil {
-		*m.addvoltage += f
-	} else {
-		m.addvoltage = &f
-	}
+// ClearModel clears the value of the "model" field.
+func (m *StockMutation) ClearModel() {
+	m.model = nil
+	m.clearedFields[stock.FieldModel] = struct{}{}
 }
 
-// AddedVoltage returns the value that was added to the "voltage" field in this mutation.
-func (m *StockMutation) AddedVoltage() (r float64, exists bool) {
-	v := m.addvoltage
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearVoltage clears the value of the "voltage" field.
-func (m *StockMutation) ClearVoltage() {
-	m.voltage = nil
-	m.addvoltage = nil
-	m.clearedFields[stock.FieldVoltage] = struct{}{}
-}
-
-// VoltageCleared returns if the "voltage" field was cleared in this mutation.
-func (m *StockMutation) VoltageCleared() bool {
-	_, ok := m.clearedFields[stock.FieldVoltage]
+// ModelCleared returns if the "model" field was cleared in this mutation.
+func (m *StockMutation) ModelCleared() bool {
+	_, ok := m.clearedFields[stock.FieldModel]
 	return ok
 }
 
-// ResetVoltage resets all changes to the "voltage" field.
-func (m *StockMutation) ResetVoltage() {
-	m.voltage = nil
-	m.addvoltage = nil
-	delete(m.clearedFields, stock.FieldVoltage)
+// ResetModel resets all changes to the "model" field.
+func (m *StockMutation) ResetModel() {
+	m.model = nil
+	delete(m.clearedFields, stock.FieldModel)
 }
 
 // SetNum sets the "num" field.
@@ -40131,8 +39907,8 @@ func (m *StockMutation) Fields() []string {
 	if m.name != nil {
 		fields = append(fields, stock.FieldName)
 	}
-	if m.voltage != nil {
-		fields = append(fields, stock.FieldVoltage)
+	if m.model != nil {
+		fields = append(fields, stock.FieldModel)
 	}
 	if m.num != nil {
 		fields = append(fields, stock.FieldNum)
@@ -40171,8 +39947,8 @@ func (m *StockMutation) Field(name string) (ent.Value, bool) {
 		return m.EmployeeID()
 	case stock.FieldName:
 		return m.Name()
-	case stock.FieldVoltage:
-		return m.Voltage()
+	case stock.FieldModel:
+		return m.Model()
 	case stock.FieldNum:
 		return m.Num()
 	}
@@ -40210,8 +39986,8 @@ func (m *StockMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldEmployeeID(ctx)
 	case stock.FieldName:
 		return m.OldName(ctx)
-	case stock.FieldVoltage:
-		return m.OldVoltage(ctx)
+	case stock.FieldModel:
+		return m.OldModel(ctx)
 	case stock.FieldNum:
 		return m.OldNum(ctx)
 	}
@@ -40314,12 +40090,12 @@ func (m *StockMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetName(v)
 		return nil
-	case stock.FieldVoltage:
-		v, ok := value.(float64)
+	case stock.FieldModel:
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetVoltage(v)
+		m.SetModel(v)
 		return nil
 	case stock.FieldNum:
 		v, ok := value.(int)
@@ -40339,9 +40115,6 @@ func (m *StockMutation) AddedFields() []string {
 	if m.add_type != nil {
 		fields = append(fields, stock.FieldType)
 	}
-	if m.addvoltage != nil {
-		fields = append(fields, stock.FieldVoltage)
-	}
 	if m.addnum != nil {
 		fields = append(fields, stock.FieldNum)
 	}
@@ -40355,8 +40128,6 @@ func (m *StockMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case stock.FieldType:
 		return m.AddedType()
-	case stock.FieldVoltage:
-		return m.AddedVoltage()
 	case stock.FieldNum:
 		return m.AddedNum()
 	}
@@ -40374,13 +40145,6 @@ func (m *StockMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddType(v)
-		return nil
-	case stock.FieldVoltage:
-		v, ok := value.(float64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddVoltage(v)
 		return nil
 	case stock.FieldNum:
 		v, ok := value.(int)
@@ -40421,8 +40185,8 @@ func (m *StockMutation) ClearedFields() []string {
 	if m.FieldCleared(stock.FieldEmployeeID) {
 		fields = append(fields, stock.FieldEmployeeID)
 	}
-	if m.FieldCleared(stock.FieldVoltage) {
-		fields = append(fields, stock.FieldVoltage)
+	if m.FieldCleared(stock.FieldModel) {
+		fields = append(fields, stock.FieldModel)
 	}
 	return fields
 }
@@ -40462,8 +40226,8 @@ func (m *StockMutation) ClearField(name string) error {
 	case stock.FieldEmployeeID:
 		m.ClearEmployeeID()
 		return nil
-	case stock.FieldVoltage:
-		m.ClearVoltage()
+	case stock.FieldModel:
+		m.ClearModel()
 		return nil
 	}
 	return fmt.Errorf("unknown Stock nullable field %s", name)
@@ -40512,8 +40276,8 @@ func (m *StockMutation) ResetField(name string) error {
 	case stock.FieldName:
 		m.ResetName()
 		return nil
-	case stock.FieldVoltage:
-		m.ResetVoltage()
+	case stock.FieldModel:
+		m.ResetModel()
 		return nil
 	case stock.FieldNum:
 		m.ResetNum()
@@ -42120,8 +41884,7 @@ type SubscribeMutation struct {
 	addstatus            *int8
 	_type                *uint
 	add_type             *int
-	voltage              *float64
-	addvoltage           *float64
+	model                *string
 	initial_days         *int
 	addinitial_days      *int
 	alter_days           *int
@@ -43015,60 +42778,40 @@ func (m *SubscribeMutation) ResetType() {
 	m.add_type = nil
 }
 
-// SetVoltage sets the "voltage" field.
-func (m *SubscribeMutation) SetVoltage(f float64) {
-	m.voltage = &f
-	m.addvoltage = nil
+// SetModel sets the "model" field.
+func (m *SubscribeMutation) SetModel(s string) {
+	m.model = &s
 }
 
-// Voltage returns the value of the "voltage" field in the mutation.
-func (m *SubscribeMutation) Voltage() (r float64, exists bool) {
-	v := m.voltage
+// Model returns the value of the "model" field in the mutation.
+func (m *SubscribeMutation) Model() (r string, exists bool) {
+	v := m.model
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldVoltage returns the old "voltage" field's value of the Subscribe entity.
+// OldModel returns the old "model" field's value of the Subscribe entity.
 // If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SubscribeMutation) OldVoltage(ctx context.Context) (v float64, err error) {
+func (m *SubscribeMutation) OldModel(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldVoltage is only allowed on UpdateOne operations")
+		return v, errors.New("OldModel is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldVoltage requires an ID field in the mutation")
+		return v, errors.New("OldModel requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldVoltage: %w", err)
+		return v, fmt.Errorf("querying old value for OldModel: %w", err)
 	}
-	return oldValue.Voltage, nil
+	return oldValue.Model, nil
 }
 
-// AddVoltage adds f to the "voltage" field.
-func (m *SubscribeMutation) AddVoltage(f float64) {
-	if m.addvoltage != nil {
-		*m.addvoltage += f
-	} else {
-		m.addvoltage = &f
-	}
-}
-
-// AddedVoltage returns the value that was added to the "voltage" field in this mutation.
-func (m *SubscribeMutation) AddedVoltage() (r float64, exists bool) {
-	v := m.addvoltage
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetVoltage resets all changes to the "voltage" field.
-func (m *SubscribeMutation) ResetVoltage() {
-	m.voltage = nil
-	m.addvoltage = nil
+// ResetModel resets all changes to the "model" field.
+func (m *SubscribeMutation) ResetModel() {
+	m.model = nil
 }
 
 // SetInitialDays sets the "initial_days" field.
@@ -44153,8 +43896,8 @@ func (m *SubscribeMutation) Fields() []string {
 	if m._type != nil {
 		fields = append(fields, subscribe.FieldType)
 	}
-	if m.voltage != nil {
-		fields = append(fields, subscribe.FieldVoltage)
+	if m.model != nil {
+		fields = append(fields, subscribe.FieldModel)
 	}
 	if m.initial_days != nil {
 		fields = append(fields, subscribe.FieldInitialDays)
@@ -44232,8 +43975,8 @@ func (m *SubscribeMutation) Field(name string) (ent.Value, bool) {
 		return m.Status()
 	case subscribe.FieldType:
 		return m.GetType()
-	case subscribe.FieldVoltage:
-		return m.Voltage()
+	case subscribe.FieldModel:
+		return m.Model()
 	case subscribe.FieldInitialDays:
 		return m.InitialDays()
 	case subscribe.FieldAlterDays:
@@ -44299,8 +44042,8 @@ func (m *SubscribeMutation) OldField(ctx context.Context, name string) (ent.Valu
 		return m.OldStatus(ctx)
 	case subscribe.FieldType:
 		return m.OldType(ctx)
-	case subscribe.FieldVoltage:
-		return m.OldVoltage(ctx)
+	case subscribe.FieldModel:
+		return m.OldModel(ctx)
 	case subscribe.FieldInitialDays:
 		return m.OldInitialDays(ctx)
 	case subscribe.FieldAlterDays:
@@ -44446,12 +44189,12 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetType(v)
 		return nil
-	case subscribe.FieldVoltage:
-		v, ok := value.(float64)
+	case subscribe.FieldModel:
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetVoltage(v)
+		m.SetModel(v)
 		return nil
 	case subscribe.FieldInitialDays:
 		v, ok := value.(int)
@@ -44551,9 +44294,6 @@ func (m *SubscribeMutation) AddedFields() []string {
 	if m.add_type != nil {
 		fields = append(fields, subscribe.FieldType)
 	}
-	if m.addvoltage != nil {
-		fields = append(fields, subscribe.FieldVoltage)
-	}
 	if m.addinitial_days != nil {
 		fields = append(fields, subscribe.FieldInitialDays)
 	}
@@ -44584,8 +44324,6 @@ func (m *SubscribeMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedStatus()
 	case subscribe.FieldType:
 		return m.AddedType()
-	case subscribe.FieldVoltage:
-		return m.AddedVoltage()
 	case subscribe.FieldInitialDays:
 		return m.AddedInitialDays()
 	case subscribe.FieldAlterDays:
@@ -44620,13 +44358,6 @@ func (m *SubscribeMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddType(v)
-		return nil
-	case subscribe.FieldVoltage:
-		v, ok := value.(float64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddVoltage(v)
 		return nil
 	case subscribe.FieldInitialDays:
 		v, ok := value.(int)
@@ -44850,8 +44581,8 @@ func (m *SubscribeMutation) ResetField(name string) error {
 	case subscribe.FieldType:
 		m.ResetType()
 		return nil
-	case subscribe.FieldVoltage:
-		m.ResetVoltage()
+	case subscribe.FieldModel:
+		m.ResetModel()
 		return nil
 	case subscribe.FieldInitialDays:
 		m.ResetInitialDays()

@@ -79,6 +79,10 @@ func init() {
 	batterymodel.DefaultUpdatedAt = batterymodelDescUpdatedAt.Default.(func() time.Time)
 	// batterymodel.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	batterymodel.UpdateDefaultUpdatedAt = batterymodelDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// batterymodelDescEnable is the schema descriptor for enable field.
+	batterymodelDescEnable := batterymodelFields[1].Descriptor()
+	// batterymodel.DefaultEnable holds the default value on creation for the enable field.
+	batterymodel.DefaultEnable = batterymodelDescEnable.Default.(bool)
 	branchMixin := schema.Branch{}.Mixin()
 	branchMixinHooks2 := branchMixin[2].Hooks()
 	branch.Hooks[0] = branchMixinHooks2[0]

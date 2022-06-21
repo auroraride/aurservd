@@ -16,19 +16,19 @@ type enterprise struct{}
 
 var Enterprise = new(enterprise)
 
-// ListVoltage
-// @ID           RiderEnterpriseListVoltage
-// @Router       /rider/v1/enterprise/voltage [GET]
+// Battery
+// @ID           RiderEnterpriseBattery
+// @Router       /rider/v1/enterprise/battery [GET]
 // @Summary      R3010 企业骑手获取可用电池
 // @Tags         [R]骑手接口
 // @Accept       json
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
 // @Param        cityId  query  uint64  true  "城市ID"
-// @Success      200  {object}  []model.EnterprisePriceVoltageListRes  "请求成功"
-func (*enterprise) ListVoltage(c echo.Context) (err error) {
-    ctx, req := app.RiderContextAndBinding[model.EnterprisePriceVoltageListReq](c)
-    return ctx.SendResponse(service.NewEnterpriseRiderWithRider(ctx.Rider).ListVoltage(req))
+// @Success      200  {object}  []model.EnterprisePriceBatteryModelListRes  "请求成功"
+func (*enterprise) Battery(c echo.Context) (err error) {
+    ctx, req := app.RiderContextAndBinding[model.EnterprisePriceBatteryModelListReq](c)
+    return ctx.SendResponse(service.NewEnterpriseRiderWithRider(ctx.Rider).BatteryModels(req))
 }
 
 // Subscribe
@@ -43,7 +43,7 @@ func (*enterprise) ListVoltage(c echo.Context) (err error) {
 // @Success      200  {object}  model.EnterpriseRiderSubscribeChooseRes  "请求成功"
 func (*enterprise) Subscribe(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.EnterpriseRiderSubscribeChooseReq](c)
-    return ctx.SendResponse(service.NewEnterpriseRiderWithRider(ctx.Rider).ChooseVoltage(req))
+    return ctx.SendResponse(service.NewEnterpriseRiderWithRider(ctx.Rider).ChooseBatteryModel(req))
 }
 
 // SubscribeStatus

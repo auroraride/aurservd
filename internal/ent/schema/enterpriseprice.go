@@ -6,6 +6,7 @@ import (
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
+    "entgo.io/ent/schema/index"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -26,7 +27,7 @@ func (EnterprisePrice) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("enterprise_id"),
         field.Float("price").Comment("单价 元/天"),
-        field.Float("voltage").Comment("可用电池电压型号"),
+        field.String("model").Comment("可用电池型号"),
     }
 }
 
@@ -52,5 +53,7 @@ func (EnterprisePrice) Mixin() []ent.Mixin {
 }
 
 func (EnterprisePrice) Indexes() []ent.Index {
-    return []ent.Index{}
+    return []ent.Index{
+        index.Fields("model"),
+    }
 }

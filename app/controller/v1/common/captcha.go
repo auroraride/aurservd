@@ -18,7 +18,7 @@ import (
 // CaptchaGenerate
 // @ID           CaptchaGenerate
 // @Router       /common/captcha [GET]
-// @Summary      C1.生成图片验证码
+// @Summary      C1 生成图片验证码
 // @Description  生成的图片验证码有效时间为10分钟
 // @Tags         [C]公共接口
 // @Accept       png

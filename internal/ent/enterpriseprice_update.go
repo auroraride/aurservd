@@ -114,16 +114,9 @@ func (epu *EnterprisePriceUpdate) AddPrice(f float64) *EnterprisePriceUpdate {
 	return epu
 }
 
-// SetVoltage sets the "voltage" field.
-func (epu *EnterprisePriceUpdate) SetVoltage(f float64) *EnterprisePriceUpdate {
-	epu.mutation.ResetVoltage()
-	epu.mutation.SetVoltage(f)
-	return epu
-}
-
-// AddVoltage adds f to the "voltage" field.
-func (epu *EnterprisePriceUpdate) AddVoltage(f float64) *EnterprisePriceUpdate {
-	epu.mutation.AddVoltage(f)
+// SetModel sets the "model" field.
+func (epu *EnterprisePriceUpdate) SetModel(s string) *EnterprisePriceUpdate {
+	epu.mutation.SetModel(s)
 	return epu
 }
 
@@ -324,18 +317,11 @@ func (epu *EnterprisePriceUpdate) sqlSave(ctx context.Context) (n int, err error
 			Column: enterpriseprice.FieldPrice,
 		})
 	}
-	if value, ok := epu.mutation.Voltage(); ok {
+	if value, ok := epu.mutation.Model(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: enterpriseprice.FieldVoltage,
-		})
-	}
-	if value, ok := epu.mutation.AddedVoltage(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterpriseprice.FieldVoltage,
+			Column: enterpriseprice.FieldModel,
 		})
 	}
 	if epu.mutation.CityCleared() {
@@ -510,16 +496,9 @@ func (epuo *EnterprisePriceUpdateOne) AddPrice(f float64) *EnterprisePriceUpdate
 	return epuo
 }
 
-// SetVoltage sets the "voltage" field.
-func (epuo *EnterprisePriceUpdateOne) SetVoltage(f float64) *EnterprisePriceUpdateOne {
-	epuo.mutation.ResetVoltage()
-	epuo.mutation.SetVoltage(f)
-	return epuo
-}
-
-// AddVoltage adds f to the "voltage" field.
-func (epuo *EnterprisePriceUpdateOne) AddVoltage(f float64) *EnterprisePriceUpdateOne {
-	epuo.mutation.AddVoltage(f)
+// SetModel sets the "model" field.
+func (epuo *EnterprisePriceUpdateOne) SetModel(s string) *EnterprisePriceUpdateOne {
+	epuo.mutation.SetModel(s)
 	return epuo
 }
 
@@ -750,18 +729,11 @@ func (epuo *EnterprisePriceUpdateOne) sqlSave(ctx context.Context) (_node *Enter
 			Column: enterpriseprice.FieldPrice,
 		})
 	}
-	if value, ok := epuo.mutation.Voltage(); ok {
+	if value, ok := epuo.mutation.Model(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: enterpriseprice.FieldVoltage,
-		})
-	}
-	if value, ok := epuo.mutation.AddedVoltage(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterpriseprice.FieldVoltage,
+			Column: enterpriseprice.FieldModel,
 		})
 	}
 	if epuo.mutation.CityCleared() {

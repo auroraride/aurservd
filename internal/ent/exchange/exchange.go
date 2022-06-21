@@ -47,8 +47,8 @@ const (
 	FieldSuccess = "success"
 	// FieldDetail holds the string denoting the detail field in the database.
 	FieldDetail = "detail"
-	// FieldVoltage holds the string denoting the voltage field in the database.
-	FieldVoltage = "voltage"
+	// FieldModel holds the string denoting the model field in the database.
+	FieldModel = "model"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
 	// EdgeCity holds the string denoting the city edge name in mutations.
@@ -145,7 +145,7 @@ var Columns = []string{
 	FieldCabinetID,
 	FieldSuccess,
 	FieldDetail,
-	FieldVoltage,
+	FieldModel,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

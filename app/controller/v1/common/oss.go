@@ -19,7 +19,7 @@ var Oss = new(oss)
 // Token
 // @ID           AliyunOssToken
 // @Router       /common/oss/token [get]
-// @Summary      C3.获取阿里云oss临时凭证
+// @Summary      C3 获取阿里云oss临时凭证
 // @Description  上传文件必须，单次获取有效时间为1个小时
 // @Tags         [C]公共接口
 // @Accept       json

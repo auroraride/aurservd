@@ -6,7 +6,6 @@ import (
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
-    "entgo.io/ent/schema/index"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -25,8 +24,8 @@ func (BatteryModel) Annotations() []schema.Annotation {
 // Fields of the BatteryModel.
 func (BatteryModel) Fields() []ent.Field {
     return []ent.Field{
-        field.Float("voltage").Comment("电压"),
-        field.Float("capacity").Comment("容量"),
+        field.String("model").Unique().Comment("型号"),
+        field.Bool("enable").Default(true).Comment("是否启用"),
     }
 }
 
@@ -47,7 +46,5 @@ func (BatteryModel) Mixin() []ent.Mixin {
 }
 
 func (BatteryModel) Indexes() []ent.Index {
-    return []ent.Index{
-        index.Fields("voltage", "capacity"),
-    }
+    return []ent.Index{}
 }

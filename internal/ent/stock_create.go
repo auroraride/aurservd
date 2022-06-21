@@ -177,16 +177,16 @@ func (sc *StockCreate) SetName(s string) *StockCreate {
 	return sc
 }
 
-// SetVoltage sets the "voltage" field.
-func (sc *StockCreate) SetVoltage(f float64) *StockCreate {
-	sc.mutation.SetVoltage(f)
+// SetModel sets the "model" field.
+func (sc *StockCreate) SetModel(s string) *StockCreate {
+	sc.mutation.SetModel(s)
 	return sc
 }
 
-// SetNillableVoltage sets the "voltage" field if the given value is not nil.
-func (sc *StockCreate) SetNillableVoltage(f *float64) *StockCreate {
-	if f != nil {
-		sc.SetVoltage(*f)
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (sc *StockCreate) SetNillableModel(s *string) *StockCreate {
+	if s != nil {
+		sc.SetModel(*s)
 	}
 	return sc
 }
@@ -437,13 +437,13 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 		})
 		_node.Name = value
 	}
-	if value, ok := sc.mutation.Voltage(); ok {
+	if value, ok := sc.mutation.Model(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: stock.FieldVoltage,
+			Column: stock.FieldModel,
 		})
-		_node.Voltage = &value
+		_node.Model = &value
 	}
 	if value, ok := sc.mutation.Num(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -797,27 +797,21 @@ func (u *StockUpsert) UpdateName() *StockUpsert {
 	return u
 }
 
-// SetVoltage sets the "voltage" field.
-func (u *StockUpsert) SetVoltage(v float64) *StockUpsert {
-	u.Set(stock.FieldVoltage, v)
+// SetModel sets the "model" field.
+func (u *StockUpsert) SetModel(v string) *StockUpsert {
+	u.Set(stock.FieldModel, v)
 	return u
 }
 
-// UpdateVoltage sets the "voltage" field to the value that was provided on create.
-func (u *StockUpsert) UpdateVoltage() *StockUpsert {
-	u.SetExcluded(stock.FieldVoltage)
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *StockUpsert) UpdateModel() *StockUpsert {
+	u.SetExcluded(stock.FieldModel)
 	return u
 }
 
-// AddVoltage adds v to the "voltage" field.
-func (u *StockUpsert) AddVoltage(v float64) *StockUpsert {
-	u.Add(stock.FieldVoltage, v)
-	return u
-}
-
-// ClearVoltage clears the value of the "voltage" field.
-func (u *StockUpsert) ClearVoltage() *StockUpsert {
-	u.SetNull(stock.FieldVoltage)
+// ClearModel clears the value of the "model" field.
+func (u *StockUpsert) ClearModel() *StockUpsert {
+	u.SetNull(stock.FieldModel)
 	return u
 }
 
@@ -1137,31 +1131,24 @@ func (u *StockUpsertOne) UpdateName() *StockUpsertOne {
 	})
 }
 
-// SetVoltage sets the "voltage" field.
-func (u *StockUpsertOne) SetVoltage(v float64) *StockUpsertOne {
+// SetModel sets the "model" field.
+func (u *StockUpsertOne) SetModel(v string) *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
-		s.SetVoltage(v)
+		s.SetModel(v)
 	})
 }
 
-// AddVoltage adds v to the "voltage" field.
-func (u *StockUpsertOne) AddVoltage(v float64) *StockUpsertOne {
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *StockUpsertOne) UpdateModel() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
-		s.AddVoltage(v)
+		s.UpdateModel()
 	})
 }
 
-// UpdateVoltage sets the "voltage" field to the value that was provided on create.
-func (u *StockUpsertOne) UpdateVoltage() *StockUpsertOne {
+// ClearModel clears the value of the "model" field.
+func (u *StockUpsertOne) ClearModel() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
-		s.UpdateVoltage()
-	})
-}
-
-// ClearVoltage clears the value of the "voltage" field.
-func (u *StockUpsertOne) ClearVoltage() *StockUpsertOne {
-	return u.Update(func(s *StockUpsert) {
-		s.ClearVoltage()
+		s.ClearModel()
 	})
 }
 
@@ -1648,31 +1635,24 @@ func (u *StockUpsertBulk) UpdateName() *StockUpsertBulk {
 	})
 }
 
-// SetVoltage sets the "voltage" field.
-func (u *StockUpsertBulk) SetVoltage(v float64) *StockUpsertBulk {
+// SetModel sets the "model" field.
+func (u *StockUpsertBulk) SetModel(v string) *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
-		s.SetVoltage(v)
+		s.SetModel(v)
 	})
 }
 
-// AddVoltage adds v to the "voltage" field.
-func (u *StockUpsertBulk) AddVoltage(v float64) *StockUpsertBulk {
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *StockUpsertBulk) UpdateModel() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
-		s.AddVoltage(v)
+		s.UpdateModel()
 	})
 }
 
-// UpdateVoltage sets the "voltage" field to the value that was provided on create.
-func (u *StockUpsertBulk) UpdateVoltage() *StockUpsertBulk {
+// ClearModel clears the value of the "model" field.
+func (u *StockUpsertBulk) ClearModel() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
-		s.UpdateVoltage()
-	})
-}
-
-// ClearVoltage clears the value of the "voltage" field.
-func (u *StockUpsertBulk) ClearVoltage() *StockUpsertBulk {
-	return u.Update(func(s *StockUpsert) {
-		s.ClearVoltage()
+		s.ClearModel()
 	})
 }
 

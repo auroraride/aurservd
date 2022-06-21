@@ -45,8 +45,8 @@ const (
 	FieldPrice = "price"
 	// FieldCost holds the string denoting the cost field in the database.
 	FieldCost = "cost"
-	// FieldVoltage holds the string denoting the voltage field in the database.
-	FieldVoltage = "voltage"
+	// FieldModel holds the string denoting the model field in the database.
+	FieldModel = "model"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
@@ -115,7 +115,7 @@ var Columns = []string{
 	FieldDays,
 	FieldPrice,
 	FieldCost,
-	FieldVoltage,
+	FieldModel,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

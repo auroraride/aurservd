@@ -138,7 +138,7 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
                 for i, sub := range item.Edges.Subscribes {
                     var days int
                     if i == 0 {
-                        res.Voltage = sub.Voltage
+                        res.Model = sub.Model
                     }
                     if sub.StartAt == nil {
                         continue
@@ -179,24 +179,29 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
     )
 }
 
-// ListVoltage 列出可用电压型号
-func (s *enterpriseRiderService) ListVoltage(req *model.EnterprisePriceVoltageListReq) []model.EnterprisePriceVoltageListRes {
+// BatteryModels 列出企业可用电压型号
+func (s *enterpriseRiderService) BatteryModels(req *model.EnterprisePriceBatteryModelListReq) []model.EnterprisePriceBatteryModelListRes {
     if s.rider.EnterpriseID == nil {
         snag.Panic("非企业骑手")
     }
-    items, _ := ar.Ent.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(*s.rider.EnterpriseID), enterpriseprice.CityID(req.CityID)).All(s.ctx)
-    res := make([]model.EnterprisePriceVoltageListRes, len(items))
+
+    items, _ := ar.Ent.EnterprisePrice.QueryNotDeleted().
+        Where(enterpriseprice.EnterpriseID(*s.rider.EnterpriseID), enterpriseprice.CityID(req.CityID)).
+        All(s.ctx)
+
+    res := make([]model.EnterprisePriceBatteryModelListRes, len(items))
+
     for i, item := range items {
-        res[i] = model.EnterprisePriceVoltageListRes{
-            Voltage: item.Voltage,
-            ID:      item.ID,
+        res[i] = model.EnterprisePriceBatteryModelListRes{
+            Model: item.Model,
+            ID:    item.ID,
         }
     }
     return res
 }
 
-// ChooseVoltage 选择电池
-func (s *enterpriseRiderService) ChooseVoltage(req *model.EnterpriseRiderSubscribeChooseReq) model.EnterpriseRiderSubscribeChooseRes {
+// ChooseBatteryModel 选择电池型号
+func (s *enterpriseRiderService) ChooseBatteryModel(req *model.EnterpriseRiderSubscribeChooseReq) model.EnterpriseRiderSubscribeChooseRes {
     enterpriseID := s.rider.EnterpriseID
     if enterpriseID == nil {
         snag.Panic("非企业骑手")
@@ -217,12 +222,12 @@ func (s *enterpriseRiderService) ChooseVoltage(req *model.EnterpriseRiderSubscri
         sub, err = ar.Ent.Subscribe.Create().
             SetEnterpriseID(*s.rider.EnterpriseID).
             SetStationID(*s.rider.StationID).
-            SetVoltage(ep.Voltage).
+            SetModel(ep.Model).
             SetCityID(ep.CityID).
             SetRiderID(s.rider.ID).
             Save(s.ctx)
     } else {
-        sub, err = sub.Update().SetVoltage(ep.Voltage).Save(s.ctx)
+        sub, err = sub.Update().SetModel(ep.Model).Save(s.ctx)
         if err != nil {
             return model.EnterpriseRiderSubscribeChooseRes{}
         }

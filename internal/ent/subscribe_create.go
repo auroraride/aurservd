@@ -225,9 +225,9 @@ func (sc *SubscribeCreate) SetNillableType(u *uint) *SubscribeCreate {
 	return sc
 }
 
-// SetVoltage sets the "voltage" field.
-func (sc *SubscribeCreate) SetVoltage(f float64) *SubscribeCreate {
-	sc.mutation.SetVoltage(f)
+// SetModel sets the "model" field.
+func (sc *SubscribeCreate) SetModel(s string) *SubscribeCreate {
+	sc.mutation.SetModel(s)
 	return sc
 }
 
@@ -628,8 +628,8 @@ func (sc *SubscribeCreate) check() error {
 	if _, ok := sc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Subscribe.type"`)}
 	}
-	if _, ok := sc.mutation.Voltage(); !ok {
-		return &ValidationError{Name: "voltage", err: errors.New(`ent: missing required field "Subscribe.voltage"`)}
+	if _, ok := sc.mutation.Model(); !ok {
+		return &ValidationError{Name: "model", err: errors.New(`ent: missing required field "Subscribe.model"`)}
 	}
 	if _, ok := sc.mutation.AlterDays(); !ok {
 		return &ValidationError{Name: "alter_days", err: errors.New(`ent: missing required field "Subscribe.alter_days"`)}
@@ -744,13 +744,13 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 		})
 		_node.Type = value
 	}
-	if value, ok := sc.mutation.Voltage(); ok {
+	if value, ok := sc.mutation.Model(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: subscribe.FieldVoltage,
+			Column: subscribe.FieldModel,
 		})
-		_node.Voltage = value
+		_node.Model = value
 	}
 	if value, ok := sc.mutation.InitialDays(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -1383,21 +1383,15 @@ func (u *SubscribeUpsert) AddType(v uint) *SubscribeUpsert {
 	return u
 }
 
-// SetVoltage sets the "voltage" field.
-func (u *SubscribeUpsert) SetVoltage(v float64) *SubscribeUpsert {
-	u.Set(subscribe.FieldVoltage, v)
+// SetModel sets the "model" field.
+func (u *SubscribeUpsert) SetModel(v string) *SubscribeUpsert {
+	u.Set(subscribe.FieldModel, v)
 	return u
 }
 
-// UpdateVoltage sets the "voltage" field to the value that was provided on create.
-func (u *SubscribeUpsert) UpdateVoltage() *SubscribeUpsert {
-	u.SetExcluded(subscribe.FieldVoltage)
-	return u
-}
-
-// AddVoltage adds v to the "voltage" field.
-func (u *SubscribeUpsert) AddVoltage(v float64) *SubscribeUpsert {
-	u.Add(subscribe.FieldVoltage, v)
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *SubscribeUpsert) UpdateModel() *SubscribeUpsert {
+	u.SetExcluded(subscribe.FieldModel)
 	return u
 }
 
@@ -1984,24 +1978,17 @@ func (u *SubscribeUpsertOne) UpdateType() *SubscribeUpsertOne {
 	})
 }
 
-// SetVoltage sets the "voltage" field.
-func (u *SubscribeUpsertOne) SetVoltage(v float64) *SubscribeUpsertOne {
+// SetModel sets the "model" field.
+func (u *SubscribeUpsertOne) SetModel(v string) *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
-		s.SetVoltage(v)
+		s.SetModel(v)
 	})
 }
 
-// AddVoltage adds v to the "voltage" field.
-func (u *SubscribeUpsertOne) AddVoltage(v float64) *SubscribeUpsertOne {
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *SubscribeUpsertOne) UpdateModel() *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
-		s.AddVoltage(v)
-	})
-}
-
-// UpdateVoltage sets the "voltage" field to the value that was provided on create.
-func (u *SubscribeUpsertOne) UpdateVoltage() *SubscribeUpsertOne {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.UpdateVoltage()
+		s.UpdateModel()
 	})
 }
 
@@ -2789,24 +2776,17 @@ func (u *SubscribeUpsertBulk) UpdateType() *SubscribeUpsertBulk {
 	})
 }
 
-// SetVoltage sets the "voltage" field.
-func (u *SubscribeUpsertBulk) SetVoltage(v float64) *SubscribeUpsertBulk {
+// SetModel sets the "model" field.
+func (u *SubscribeUpsertBulk) SetModel(v string) *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
-		s.SetVoltage(v)
+		s.SetModel(v)
 	})
 }
 
-// AddVoltage adds v to the "voltage" field.
-func (u *SubscribeUpsertBulk) AddVoltage(v float64) *SubscribeUpsertBulk {
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *SubscribeUpsertBulk) UpdateModel() *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
-		s.AddVoltage(v)
-	})
-}
-
-// UpdateVoltage sets the "voltage" field to the value that was provided on create.
-func (u *SubscribeUpsertBulk) UpdateVoltage() *SubscribeUpsertBulk {
-	return u.Update(func(s *SubscribeUpsert) {
-		s.UpdateVoltage()
+		s.UpdateModel()
 	})
 }
 

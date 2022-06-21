@@ -25,10 +25,10 @@ const (
 	FieldLastModifier = "last_modifier"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
-	// FieldVoltage holds the string denoting the voltage field in the database.
-	FieldVoltage = "voltage"
-	// FieldCapacity holds the string denoting the capacity field in the database.
-	FieldCapacity = "capacity"
+	// FieldModel holds the string denoting the model field in the database.
+	FieldModel = "model"
+	// FieldEnable holds the string denoting the enable field in the database.
+	FieldEnable = "enable"
 	// EdgeCabinets holds the string denoting the cabinets edge name in mutations.
 	EdgeCabinets = "cabinets"
 	// EdgePlans holds the string denoting the plans edge name in mutations.
@@ -56,8 +56,8 @@ var Columns = []string{
 	FieldCreator,
 	FieldLastModifier,
 	FieldRemark,
-	FieldVoltage,
-	FieldCapacity,
+	FieldModel,
+	FieldEnable,
 }
 
 var (
@@ -93,4 +93,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultEnable holds the default value on creation for the "enable" field.
+	DefaultEnable bool
 )

@@ -35,7 +35,7 @@ func (Stock) Fields() []ent.Field {
         field.Uint64("rider_id").Optional().Nillable().Comment("对应骑手ID"),
         field.Uint64("employee_id").Optional().Nillable().Comment("操作店员ID"),
         field.String("name").Comment("物资名称"),
-        field.Float("voltage").Optional().Nillable().Comment("电池型号(电压)"),
+        field.String("model").Optional().Nillable().Comment("电池型号"),
         field.Int("num").Immutable().Comment("物资数量: 正值调入 / 负值调出"),
     }
 }
@@ -63,7 +63,7 @@ func (Stock) Mixin() []ent.Mixin {
 func (Stock) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("name"),
-        index.Fields("voltage"),
+        index.Fields("model"),
         index.Fields("sn"),
     }
 }

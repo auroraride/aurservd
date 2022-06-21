@@ -28,7 +28,7 @@ const docTemplate = `{
                 "tags": [
                     "[C]公共接口"
                 ],
-                "summary": "C2.发送短信验证码",
+                "summary": "C2 发送短信验证码",
                 "operationId": "SendSmsCode",
                 "parameters": [
                     {
@@ -58,6 +58,32 @@ const docTemplate = `{
                 }
             }
         },
+        "/common/battery/model": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[C]公共接口"
+                ],
+                "summary": "C4 获取生效中的电池型号",
+                "operationId": "ManagerBatteryModel",
+                "responses": {
+                    "200": {
+                        "description": "型号列表",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/common/captcha": {
             "get": {
                 "description": "生成的图片验证码有效时间为10分钟",
@@ -70,7 +96,7 @@ const docTemplate = `{
                 "tags": [
                     "[C]公共接口"
                 ],
-                "summary": "C1.生成图片验证码",
+                "summary": "C1 生成图片验证码",
                 "operationId": "CaptchaGenerate",
                 "responses": {
                     "200": {
@@ -100,7 +126,7 @@ const docTemplate = `{
                 "tags": [
                     "[C]公共接口"
                 ],
-                "summary": "C3.获取阿里云oss临时凭证",
+                "summary": "C3 获取阿里云oss临时凭证",
                 "operationId": "AliyunOssToken",
                 "responses": {
                     "200": {
@@ -1140,41 +1166,6 @@ const docTemplate = `{
                                     }
                                 }
                             ]
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v1/battery/voltages": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[M]管理接口"
-                ],
-                "summary": "M4003 列举电池电压型号",
-                "operationId": "ManagerBatteryListVoltages",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "number"
-                            }
                         }
                     }
                 }
@@ -5054,41 +5045,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/rider/v1/battery/voltage": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[R]骑手接口"
-                ],
-                "summary": "R3001 电压型号",
-                "operationId": "RiderBatteryListVoltage",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "type": "integer"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/rider/v1/branch": {
             "get": {
                 "consumes": [
@@ -5470,6 +5426,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/enterprise/battery": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R3010 企业骑手获取可用电池",
+                "operationId": "RiderEnterpriseBattery",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.EnterprisePriceBatteryModelListRes"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/enterprise/subscribe": {
             "get": {
                 "consumes": [
@@ -5543,48 +5541,6 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.EnterpriseRiderSubscribeChooseRes"
-                        }
-                    }
-                }
-            }
-        },
-        "/rider/v1/enterprise/voltage": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[R]骑手接口"
-                ],
-                "summary": "R3010 企业骑手获取可用电池",
-                "operationId": "RiderEnterpriseListVoltage",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "城市ID",
-                        "name": "cityId",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.EnterprisePriceVoltageListRes"
-                            }
                         }
                     }
                 }
@@ -6295,33 +6251,21 @@ const docTemplate = `{
         "model.BatteryModel": {
             "type": "object",
             "properties": {
-                "capacity": {
-                    "description": "容量",
-                    "type": "number"
-                },
                 "id": {
                     "type": "integer"
                 },
-                "voltage": {
-                    "description": "电压",
-                    "type": "number"
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
                 }
             }
         },
         "model.BatteryModelCreateReq": {
             "type": "object",
-            "required": [
-                "capacity",
-                "voltage"
-            ],
             "properties": {
-                "capacity": {
-                    "description": "容量 ",
-                    "type": "number"
-                },
-                "voltage": {
-                    "description": "电压 ",
-                    "type": "number"
+                "model": {
+                    "description": "电池型号, 例如60V30AH",
+                    "type": "string"
                 }
             }
         },
@@ -7718,20 +7662,15 @@ const docTemplate = `{
                 }
             }
         },
-        "model.EnterprisePriceVoltageListRes": {
+        "model.EnterprisePriceBatteryModelListRes": {
             "type": "object",
             "properties": {
                 "id": {
-                    "description": "型号ID",
                     "type": "integer"
                 },
-                "voltage": {
-                    "description": "电压型号, 暂时固定为 60 或 72",
-                    "type": "number",
-                    "enum": [
-                        60,
-                        72
-                    ]
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
                 }
             }
         },
@@ -7854,6 +7793,10 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "model": {
+                    "description": "可用电池型号, 骑手未开通订阅则此字段不存在",
+                    "type": "string"
+                },
                 "name": {
                     "description": "姓名",
                     "type": "string"
@@ -7873,10 +7816,6 @@ const docTemplate = `{
                 "unsettled": {
                     "description": "未结算天数",
                     "type": "integer"
-                },
-                "voltage": {
-                    "description": "可用电压型号, 骑手未开通订阅则此字段不存在",
-                    "type": "number"
                 }
             }
         },
@@ -8229,12 +8168,12 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "name": {
-                    "description": "物资名称",
+                    "description": "物资名称, 若物资是电池则名称默认为电池型号",
                     "type": "string"
                 },
                 "voltage": {
-                    "description": "电压型号",
-                    "type": "number"
+                    "description": "电池型号",
+                    "type": "string"
                 }
             }
         },

@@ -29,7 +29,7 @@ func (Exception) Fields() []ent.Field {
         field.Uint8("status").Default(model.ExceptionStatusPending).Comment("异常状态"),
         field.Uint64("store_id").Comment("门店ID"),
         field.String("name").Comment("物资名称"),
-        field.Float("voltage").Optional().Nillable().Comment("电池型号(电压)"),
+        field.String("model").Optional().Nillable().Comment("电池型号"),
         field.Int("num").Immutable().Comment("异常数量"),
         field.String("reason").Comment("异常原因"),
         field.String("description").Optional().Comment("异常描述"),
@@ -58,7 +58,7 @@ func (Exception) Mixin() []ent.Mixin {
 func (Exception) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("name"),
-        index.Fields("voltage"),
+        index.Fields("model"),
         index.Fields("num"),
     }
 }

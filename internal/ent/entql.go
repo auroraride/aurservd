@@ -93,8 +93,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			batterymodel.FieldCreator:      {Type: field.TypeJSON, Column: batterymodel.FieldCreator},
 			batterymodel.FieldLastModifier: {Type: field.TypeJSON, Column: batterymodel.FieldLastModifier},
 			batterymodel.FieldRemark:       {Type: field.TypeString, Column: batterymodel.FieldRemark},
-			batterymodel.FieldVoltage:      {Type: field.TypeFloat64, Column: batterymodel.FieldVoltage},
-			batterymodel.FieldCapacity:     {Type: field.TypeFloat64, Column: batterymodel.FieldCapacity},
+			batterymodel.FieldModel:        {Type: field.TypeString, Column: batterymodel.FieldModel},
+			batterymodel.FieldEnable:       {Type: field.TypeBool, Column: batterymodel.FieldEnable},
 		},
 	}
 	graph.Nodes[2] = &sqlgraph.Node{
@@ -398,7 +398,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterprisebill.FieldDays:         {Type: field.TypeInt, Column: enterprisebill.FieldDays},
 			enterprisebill.FieldPrice:        {Type: field.TypeFloat64, Column: enterprisebill.FieldPrice},
 			enterprisebill.FieldCost:         {Type: field.TypeFloat64, Column: enterprisebill.FieldCost},
-			enterprisebill.FieldVoltage:      {Type: field.TypeFloat64, Column: enterprisebill.FieldVoltage},
+			enterprisebill.FieldModel:        {Type: field.TypeString, Column: enterprisebill.FieldModel},
 		},
 	}
 	graph.Nodes[13] = &sqlgraph.Node{
@@ -465,7 +465,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterpriseprice.FieldCityID:       {Type: field.TypeUint64, Column: enterpriseprice.FieldCityID},
 			enterpriseprice.FieldEnterpriseID: {Type: field.TypeUint64, Column: enterpriseprice.FieldEnterpriseID},
 			enterpriseprice.FieldPrice:        {Type: field.TypeFloat64, Column: enterpriseprice.FieldPrice},
-			enterpriseprice.FieldVoltage:      {Type: field.TypeFloat64, Column: enterpriseprice.FieldVoltage},
+			enterpriseprice.FieldModel:        {Type: field.TypeString, Column: enterpriseprice.FieldModel},
 		},
 	}
 	graph.Nodes[16] = &sqlgraph.Node{
@@ -539,7 +539,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			exception.FieldStatus:       {Type: field.TypeUint8, Column: exception.FieldStatus},
 			exception.FieldStoreID:      {Type: field.TypeUint64, Column: exception.FieldStoreID},
 			exception.FieldName:         {Type: field.TypeString, Column: exception.FieldName},
-			exception.FieldVoltage:      {Type: field.TypeFloat64, Column: exception.FieldVoltage},
+			exception.FieldModel:        {Type: field.TypeString, Column: exception.FieldModel},
 			exception.FieldNum:          {Type: field.TypeInt, Column: exception.FieldNum},
 			exception.FieldReason:       {Type: field.TypeString, Column: exception.FieldReason},
 			exception.FieldDescription:  {Type: field.TypeString, Column: exception.FieldDescription},
@@ -574,7 +574,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			exchange.FieldCabinetID:    {Type: field.TypeUint64, Column: exchange.FieldCabinetID},
 			exchange.FieldSuccess:      {Type: field.TypeBool, Column: exchange.FieldSuccess},
 			exchange.FieldDetail:       {Type: field.TypeJSON, Column: exchange.FieldDetail},
-			exchange.FieldVoltage:      {Type: field.TypeFloat64, Column: exchange.FieldVoltage},
+			exchange.FieldModel:        {Type: field.TypeString, Column: exchange.FieldModel},
 		},
 	}
 	graph.Nodes[20] = &sqlgraph.Node{
@@ -817,7 +817,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			stock.FieldRiderID:      {Type: field.TypeUint64, Column: stock.FieldRiderID},
 			stock.FieldEmployeeID:   {Type: field.TypeUint64, Column: stock.FieldEmployeeID},
 			stock.FieldName:         {Type: field.TypeString, Column: stock.FieldName},
-			stock.FieldVoltage:      {Type: field.TypeFloat64, Column: stock.FieldVoltage},
+			stock.FieldModel:        {Type: field.TypeString, Column: stock.FieldModel},
 			stock.FieldNum:          {Type: field.TypeInt, Column: stock.FieldNum},
 		},
 	}
@@ -873,7 +873,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldEnterpriseID:      {Type: field.TypeUint64, Column: subscribe.FieldEnterpriseID},
 			subscribe.FieldStatus:            {Type: field.TypeUint8, Column: subscribe.FieldStatus},
 			subscribe.FieldType:              {Type: field.TypeUint, Column: subscribe.FieldType},
-			subscribe.FieldVoltage:           {Type: field.TypeFloat64, Column: subscribe.FieldVoltage},
+			subscribe.FieldModel:             {Type: field.TypeString, Column: subscribe.FieldModel},
 			subscribe.FieldInitialDays:       {Type: field.TypeInt, Column: subscribe.FieldInitialDays},
 			subscribe.FieldAlterDays:         {Type: field.TypeInt, Column: subscribe.FieldAlterDays},
 			subscribe.FieldPauseDays:         {Type: field.TypeInt, Column: subscribe.FieldPauseDays},
@@ -2616,14 +2616,14 @@ func (f *BatteryModelFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(batterymodel.FieldRemark))
 }
 
-// WhereVoltage applies the entql float64 predicate on the voltage field.
-func (f *BatteryModelFilter) WhereVoltage(p entql.Float64P) {
-	f.Where(p.Field(batterymodel.FieldVoltage))
+// WhereModel applies the entql string predicate on the model field.
+func (f *BatteryModelFilter) WhereModel(p entql.StringP) {
+	f.Where(p.Field(batterymodel.FieldModel))
 }
 
-// WhereCapacity applies the entql float64 predicate on the capacity field.
-func (f *BatteryModelFilter) WhereCapacity(p entql.Float64P) {
-	f.Where(p.Field(batterymodel.FieldCapacity))
+// WhereEnable applies the entql bool predicate on the enable field.
+func (f *BatteryModelFilter) WhereEnable(p entql.BoolP) {
+	f.Where(p.Field(batterymodel.FieldEnable))
 }
 
 // WhereHasCabinets applies a predicate to check if query has an edge cabinets.
@@ -4496,9 +4496,9 @@ func (f *EnterpriseBillFilter) WhereCost(p entql.Float64P) {
 	f.Where(p.Field(enterprisebill.FieldCost))
 }
 
-// WhereVoltage applies the entql float64 predicate on the voltage field.
-func (f *EnterpriseBillFilter) WhereVoltage(p entql.Float64P) {
-	f.Where(p.Field(enterprisebill.FieldVoltage))
+// WhereModel applies the entql string predicate on the model field.
+func (f *EnterpriseBillFilter) WhereModel(p entql.StringP) {
+	f.Where(p.Field(enterprisebill.FieldModel))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.
@@ -4854,9 +4854,9 @@ func (f *EnterprisePriceFilter) WherePrice(p entql.Float64P) {
 	f.Where(p.Field(enterpriseprice.FieldPrice))
 }
 
-// WhereVoltage applies the entql float64 predicate on the voltage field.
-func (f *EnterprisePriceFilter) WhereVoltage(p entql.Float64P) {
-	f.Where(p.Field(enterpriseprice.FieldVoltage))
+// WhereModel applies the entql string predicate on the model field.
+func (f *EnterprisePriceFilter) WhereModel(p entql.StringP) {
+	f.Where(p.Field(enterpriseprice.FieldModel))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.
@@ -5219,9 +5219,9 @@ func (f *ExceptionFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(exception.FieldName))
 }
 
-// WhereVoltage applies the entql float64 predicate on the voltage field.
-func (f *ExceptionFilter) WhereVoltage(p entql.Float64P) {
-	f.Where(p.Field(exception.FieldVoltage))
+// WhereModel applies the entql string predicate on the model field.
+func (f *ExceptionFilter) WhereModel(p entql.StringP) {
+	f.Where(p.Field(exception.FieldModel))
 }
 
 // WhereNum applies the entql int predicate on the num field.
@@ -5411,9 +5411,9 @@ func (f *ExchangeFilter) WhereDetail(p entql.BytesP) {
 	f.Where(p.Field(exchange.FieldDetail))
 }
 
-// WhereVoltage applies the entql float64 predicate on the voltage field.
-func (f *ExchangeFilter) WhereVoltage(p entql.Float64P) {
-	f.Where(p.Field(exchange.FieldVoltage))
+// WhereModel applies the entql string predicate on the model field.
+func (f *ExchangeFilter) WhereModel(p entql.StringP) {
+	f.Where(p.Field(exchange.FieldModel))
 }
 
 // WhereHasSubscribe applies a predicate to check if query has an edge subscribe.
@@ -6835,9 +6835,9 @@ func (f *StockFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(stock.FieldName))
 }
 
-// WhereVoltage applies the entql float64 predicate on the voltage field.
-func (f *StockFilter) WhereVoltage(p entql.Float64P) {
-	f.Where(p.Field(stock.FieldVoltage))
+// WhereModel applies the entql string predicate on the model field.
+func (f *StockFilter) WhereModel(p entql.StringP) {
+	f.Where(p.Field(stock.FieldModel))
 }
 
 // WhereNum applies the entql int predicate on the num field.
@@ -7205,9 +7205,9 @@ func (f *SubscribeFilter) WhereType(p entql.UintP) {
 	f.Where(p.Field(subscribe.FieldType))
 }
 
-// WhereVoltage applies the entql float64 predicate on the voltage field.
-func (f *SubscribeFilter) WhereVoltage(p entql.Float64P) {
-	f.Where(p.Field(subscribe.FieldVoltage))
+// WhereModel applies the entql string predicate on the model field.
+func (f *SubscribeFilter) WhereModel(p entql.StringP) {
+	f.Where(p.Field(subscribe.FieldModel))
 }
 
 // WhereInitialDays applies the entql int predicate on the initial_days field.

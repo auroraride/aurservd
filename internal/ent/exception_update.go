@@ -135,30 +135,23 @@ func (eu *ExceptionUpdate) SetName(s string) *ExceptionUpdate {
 	return eu
 }
 
-// SetVoltage sets the "voltage" field.
-func (eu *ExceptionUpdate) SetVoltage(f float64) *ExceptionUpdate {
-	eu.mutation.ResetVoltage()
-	eu.mutation.SetVoltage(f)
+// SetModel sets the "model" field.
+func (eu *ExceptionUpdate) SetModel(s string) *ExceptionUpdate {
+	eu.mutation.SetModel(s)
 	return eu
 }
 
-// SetNillableVoltage sets the "voltage" field if the given value is not nil.
-func (eu *ExceptionUpdate) SetNillableVoltage(f *float64) *ExceptionUpdate {
-	if f != nil {
-		eu.SetVoltage(*f)
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (eu *ExceptionUpdate) SetNillableModel(s *string) *ExceptionUpdate {
+	if s != nil {
+		eu.SetModel(*s)
 	}
 	return eu
 }
 
-// AddVoltage adds f to the "voltage" field.
-func (eu *ExceptionUpdate) AddVoltage(f float64) *ExceptionUpdate {
-	eu.mutation.AddVoltage(f)
-	return eu
-}
-
-// ClearVoltage clears the value of the "voltage" field.
-func (eu *ExceptionUpdate) ClearVoltage() *ExceptionUpdate {
-	eu.mutation.ClearVoltage()
+// ClearModel clears the value of the "model" field.
+func (eu *ExceptionUpdate) ClearModel() *ExceptionUpdate {
+	eu.mutation.ClearModel()
 	return eu
 }
 
@@ -418,24 +411,17 @@ func (eu *ExceptionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: exception.FieldName,
 		})
 	}
-	if value, ok := eu.mutation.Voltage(); ok {
+	if value, ok := eu.mutation.Model(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: exception.FieldVoltage,
+			Column: exception.FieldModel,
 		})
 	}
-	if value, ok := eu.mutation.AddedVoltage(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: exception.FieldVoltage,
-		})
-	}
-	if eu.mutation.VoltageCleared() {
+	if eu.mutation.ModelCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: exception.FieldVoltage,
+			Type:   field.TypeString,
+			Column: exception.FieldModel,
 		})
 	}
 	if value, ok := eu.mutation.Reason(); ok {
@@ -698,30 +684,23 @@ func (euo *ExceptionUpdateOne) SetName(s string) *ExceptionUpdateOne {
 	return euo
 }
 
-// SetVoltage sets the "voltage" field.
-func (euo *ExceptionUpdateOne) SetVoltage(f float64) *ExceptionUpdateOne {
-	euo.mutation.ResetVoltage()
-	euo.mutation.SetVoltage(f)
+// SetModel sets the "model" field.
+func (euo *ExceptionUpdateOne) SetModel(s string) *ExceptionUpdateOne {
+	euo.mutation.SetModel(s)
 	return euo
 }
 
-// SetNillableVoltage sets the "voltage" field if the given value is not nil.
-func (euo *ExceptionUpdateOne) SetNillableVoltage(f *float64) *ExceptionUpdateOne {
-	if f != nil {
-		euo.SetVoltage(*f)
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (euo *ExceptionUpdateOne) SetNillableModel(s *string) *ExceptionUpdateOne {
+	if s != nil {
+		euo.SetModel(*s)
 	}
 	return euo
 }
 
-// AddVoltage adds f to the "voltage" field.
-func (euo *ExceptionUpdateOne) AddVoltage(f float64) *ExceptionUpdateOne {
-	euo.mutation.AddVoltage(f)
-	return euo
-}
-
-// ClearVoltage clears the value of the "voltage" field.
-func (euo *ExceptionUpdateOne) ClearVoltage() *ExceptionUpdateOne {
-	euo.mutation.ClearVoltage()
+// ClearModel clears the value of the "model" field.
+func (euo *ExceptionUpdateOne) ClearModel() *ExceptionUpdateOne {
+	euo.mutation.ClearModel()
 	return euo
 }
 
@@ -1011,24 +990,17 @@ func (euo *ExceptionUpdateOne) sqlSave(ctx context.Context) (_node *Exception, e
 			Column: exception.FieldName,
 		})
 	}
-	if value, ok := euo.mutation.Voltage(); ok {
+	if value, ok := euo.mutation.Model(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: exception.FieldVoltage,
+			Column: exception.FieldModel,
 		})
 	}
-	if value, ok := euo.mutation.AddedVoltage(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: exception.FieldVoltage,
-		})
-	}
-	if euo.mutation.VoltageCleared() {
+	if euo.mutation.ModelCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: exception.FieldVoltage,
+			Type:   field.TypeString,
+			Column: exception.FieldModel,
 		})
 	}
 	if value, ok := euo.mutation.Reason(); ok {

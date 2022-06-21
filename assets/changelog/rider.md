@@ -1,3 +1,18 @@
+## 2022-06-21
+
+#### 接口调整
+
+> 删除所有涉及到`voltage<number>(电压)`和`capacity<number>(容量)`的字段，统一改为`model<string>(电池型号)`
+
+- 删除`R3001 电压型号(/rider/v1/battery/voltage)` 改用 [C4 获取生效中的电池型号](http://localhost:5533/docs#tag/C/operation/ManagerBatteryModel)
+- [R3010 企业骑手获取可用电池](http://localhost:5533/docs#tag/R/operation/RiderEnterpriseListBattery)`(/rider/v1/enterprise/voltage)`URL改为`/rider/v1/enterprise/battery`
+
+
+
+
+
+<br />
+
 ## 2022-06-19
 
 #### 接口新增

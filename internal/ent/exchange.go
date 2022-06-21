@@ -72,9 +72,9 @@ type Exchange struct {
 	// Detail holds the value of the "detail" field.
 	// 电柜换电信息
 	Detail *model.ExchangeCabinet `json:"detail,omitempty"`
-	// Voltage holds the value of the "voltage" field.
-	// 电池电压型号
-	Voltage float64 `json:"voltage,omitempty"`
+	// Model holds the value of the "model" field.
+	// 电池型号
+	Model string `json:"model,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ExchangeQuery when eager-loading is set.
 	Edges ExchangeEdges `json:"edges"`
@@ -224,11 +224,9 @@ func (*Exchange) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case exchange.FieldSuccess:
 			values[i] = new(sql.NullBool)
-		case exchange.FieldVoltage:
-			values[i] = new(sql.NullFloat64)
 		case exchange.FieldID, exchange.FieldSubscribeID, exchange.FieldCityID, exchange.FieldStoreID, exchange.FieldEnterpriseID, exchange.FieldStationID, exchange.FieldRiderID, exchange.FieldEmployeeID, exchange.FieldCabinetID:
 			values[i] = new(sql.NullInt64)
-		case exchange.FieldRemark, exchange.FieldUUID:
+		case exchange.FieldRemark, exchange.FieldUUID, exchange.FieldModel:
 			values[i] = new(sql.NullString)
 		case exchange.FieldCreatedAt, exchange.FieldUpdatedAt, exchange.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -366,11 +364,11 @@ func (e *Exchange) assignValues(columns []string, values []interface{}) error {
 					return fmt.Errorf("unmarshal field detail: %w", err)
 				}
 			}
-		case exchange.FieldVoltage:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field voltage", values[i])
+		case exchange.FieldModel:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field model", values[i])
 			} else if value.Valid {
-				e.Voltage = value.Float64
+				e.Model = value.String
 			}
 		}
 	}
@@ -484,8 +482,8 @@ func (e *Exchange) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.Success))
 	builder.WriteString(", detail=")
 	builder.WriteString(fmt.Sprintf("%v", e.Detail))
-	builder.WriteString(", voltage=")
-	builder.WriteString(fmt.Sprintf("%v", e.Voltage))
+	builder.WriteString(", model=")
+	builder.WriteString(e.Model)
 	builder.WriteByte(')')
 	return builder.String()
 }

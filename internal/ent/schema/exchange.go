@@ -32,7 +32,7 @@ func (Exchange) Fields() []ent.Field {
         field.Uint64("cabinet_id").Optional().Comment("电柜ID"),
         field.Bool("success").Default(true).Comment("是否成功"),
         field.JSON("detail", &model.ExchangeCabinet{}).Optional().Comment("电柜换电信息"),
-        field.Float("voltage").Comment("电池电压型号"),
+        field.String("model").Comment("电池型号"),
     }
 }
 
@@ -63,6 +63,6 @@ func (Exchange) Mixin() []ent.Mixin {
 func (Exchange) Indexes() []ent.Index {
     return []ent.Index{
         index.Fields("success"),
-        index.Fields("voltage"),
+        index.Fields("model"),
     }
 }

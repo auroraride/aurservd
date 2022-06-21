@@ -71,9 +71,9 @@ type Subscribe struct {
 	// Type holds the value of the "type" field.
 	// 订阅类型 0团签 1新签 2续签 3重签 4更改电池, 除0值外 其他值参考order.type
 	Type uint `json:"type,omitempty"`
-	// Voltage holds the value of the "voltage" field.
-	// 可用电压型号
-	Voltage float64 `json:"voltage,omitempty"`
+	// Model holds the value of the "model" field.
+	// 电池型号
+	Model string `json:"model,omitempty"`
 	// InitialDays holds the value of the "initial_days" field.
 	// 初始骑士卡天数
 	InitialDays int `json:"initial_days,omitempty"`
@@ -290,11 +290,9 @@ func (*Subscribe) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case subscribe.FieldCreator, subscribe.FieldLastModifier:
 			values[i] = new([]byte)
-		case subscribe.FieldVoltage:
-			values[i] = new(sql.NullFloat64)
 		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining:
 			values[i] = new(sql.NullInt64)
-		case subscribe.FieldRemark, subscribe.FieldUnsubscribeReason:
+		case subscribe.FieldRemark, subscribe.FieldModel, subscribe.FieldUnsubscribeReason:
 			values[i] = new(sql.NullString)
 		case subscribe.FieldCreatedAt, subscribe.FieldUpdatedAt, subscribe.FieldDeletedAt, subscribe.FieldPausedAt, subscribe.FieldStartAt, subscribe.FieldEndAt, subscribe.FieldRefundAt, subscribe.FieldLastBillDate:
 			values[i] = new(sql.NullTime)
@@ -425,11 +423,11 @@ func (s *Subscribe) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				s.Type = uint(value.Int64)
 			}
-		case subscribe.FieldVoltage:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field voltage", values[i])
+		case subscribe.FieldModel:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field model", values[i])
 			} else if value.Valid {
-				s.Voltage = value.Float64
+				s.Model = value.String
 			}
 		case subscribe.FieldInitialDays:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -635,8 +633,8 @@ func (s *Subscribe) String() string {
 	builder.WriteString(fmt.Sprintf("%v", s.Status))
 	builder.WriteString(", type=")
 	builder.WriteString(fmt.Sprintf("%v", s.Type))
-	builder.WriteString(", voltage=")
-	builder.WriteString(fmt.Sprintf("%v", s.Voltage))
+	builder.WriteString(", model=")
+	builder.WriteString(s.Model)
 	builder.WriteString(", initial_days=")
 	builder.WriteString(fmt.Sprintf("%v", s.InitialDays))
 	builder.WriteString(", alter_days=")

@@ -75,8 +75,8 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
-		{Name: "voltage", Type: field.TypeFloat64, Comment: "电压"},
-		{Name: "capacity", Type: field.TypeFloat64, Comment: "容量"},
+		{Name: "model", Type: field.TypeString, Unique: true, Comment: "型号"},
+		{Name: "enable", Type: field.TypeBool, Comment: "是否启用", Default: true},
 	}
 	// BatteryModelTable holds the schema information for the "battery_model" table.
 	BatteryModelTable = &schema.Table{
@@ -93,11 +93,6 @@ var (
 				Name:    "batterymodel_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{BatteryModelColumns[3]},
-			},
-			{
-				Name:    "batterymodel_voltage_capacity",
-				Unique:  false,
-				Columns: []*schema.Column{BatteryModelColumns[7], BatteryModelColumns[8]},
 			},
 		},
 	}
@@ -791,7 +786,7 @@ var (
 		{Name: "days", Type: field.TypeInt, Comment: "账单日期"},
 		{Name: "price", Type: field.TypeFloat64, Comment: "账单单价"},
 		{Name: "cost", Type: field.TypeFloat64, Comment: "账单金额"},
-		{Name: "voltage", Type: field.TypeFloat64, Comment: "电压型号"},
+		{Name: "model", Type: field.TypeString, Comment: "电池型号"},
 		{Name: "enterprise_id", Type: field.TypeUint64},
 		{Name: "rider_id", Type: field.TypeUint64},
 		{Name: "subscribe_id", Type: field.TypeUint64},
@@ -845,6 +840,11 @@ var (
 				Name:    "enterprisebill_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{EnterpriseBillColumns[3]},
+			},
+			{
+				Name:    "enterprisebill_model",
+				Unique:  false,
+				Columns: []*schema.Column{EnterpriseBillColumns[12]},
 			},
 		},
 	}
@@ -946,7 +946,7 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "price", Type: field.TypeFloat64, Comment: "单价 元/天"},
-		{Name: "voltage", Type: field.TypeFloat64, Comment: "可用电池电压型号"},
+		{Name: "model", Type: field.TypeString, Comment: "可用电池型号"},
 		{Name: "enterprise_id", Type: field.TypeUint64},
 		{Name: "city_id", Type: field.TypeUint64},
 	}
@@ -979,6 +979,11 @@ var (
 				Name:    "enterpriseprice_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{EnterprisePriceColumns[3]},
+			},
+			{
+				Name:    "enterpriseprice_model",
+				Unique:  false,
+				Columns: []*schema.Column{EnterprisePriceColumns[8]},
 			},
 		},
 	}
@@ -1086,7 +1091,7 @@ var (
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "status", Type: field.TypeUint8, Comment: "异常状态", Default: 0},
 		{Name: "name", Type: field.TypeString, Comment: "物资名称"},
-		{Name: "voltage", Type: field.TypeFloat64, Comment: "电池型号(电压)", Nullable: true},
+		{Name: "model", Type: field.TypeString, Comment: "电池型号", Nullable: true},
 		{Name: "num", Type: field.TypeInt, Comment: "异常数量"},
 		{Name: "reason", Type: field.TypeString, Comment: "异常原因"},
 		{Name: "description", Type: field.TypeString, Comment: "异常描述", Nullable: true},
@@ -1137,7 +1142,7 @@ var (
 				Columns: []*schema.Column{ExceptionColumns[8]},
 			},
 			{
-				Name:    "exception_voltage",
+				Name:    "exception_model",
 				Unique:  false,
 				Columns: []*schema.Column{ExceptionColumns[9]},
 			},
@@ -1160,7 +1165,7 @@ var (
 		{Name: "uuid", Type: field.TypeString, Unique: true},
 		{Name: "success", Type: field.TypeBool, Comment: "是否成功", Default: true},
 		{Name: "detail", Type: field.TypeJSON, Comment: "电柜换电信息", Nullable: true},
-		{Name: "voltage", Type: field.TypeFloat64, Comment: "电池电压型号"},
+		{Name: "model", Type: field.TypeString, Comment: "电池型号"},
 		{Name: "cabinet_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "subscribe_id", Type: field.TypeUint64},
@@ -1242,7 +1247,7 @@ var (
 				Columns: []*schema.Column{ExchangeColumns[8]},
 			},
 			{
-				Name:    "exchange_voltage",
+				Name:    "exchange_model",
 				Unique:  false,
 				Columns: []*schema.Column{ExchangeColumns[10]},
 			},
@@ -1736,7 +1741,7 @@ var (
 		{Name: "sn", Type: field.TypeString, Comment: "调拨编号"},
 		{Name: "type", Type: field.TypeUint8, Comment: "类型 0:调拨 1:领取电池 2:寄存电池 3:结束寄存 4:归还电池", Default: 0},
 		{Name: "name", Type: field.TypeString, Comment: "物资名称"},
-		{Name: "voltage", Type: field.TypeFloat64, Comment: "电池型号(电压)", Nullable: true},
+		{Name: "model", Type: field.TypeString, Comment: "电池型号", Nullable: true},
 		{Name: "num", Type: field.TypeInt, Comment: "物资数量: 正值调入 / 负值调出"},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64, Nullable: true},
@@ -1801,7 +1806,7 @@ var (
 				Columns: []*schema.Column{StockColumns[9]},
 			},
 			{
-				Name:    "stock_voltage",
+				Name:    "stock_model",
 				Unique:  false,
 				Columns: []*schema.Column{StockColumns[10]},
 			},
@@ -1892,7 +1897,7 @@ var (
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "status", Type: field.TypeUint8, Comment: "当前订阅状态", Default: 0},
 		{Name: "type", Type: field.TypeUint, Comment: "订阅类型 0团签 1新签 2续签 3重签 4更改电池, 除0值外 其他值参考order.type", Default: 0},
-		{Name: "voltage", Type: field.TypeFloat64, Comment: "可用电压型号"},
+		{Name: "model", Type: field.TypeString, Comment: "电池型号"},
 		{Name: "initial_days", Type: field.TypeInt, Comment: "初始骑士卡天数", Nullable: true},
 		{Name: "alter_days", Type: field.TypeInt, Comment: "改动天数", Default: 0},
 		{Name: "pause_days", Type: field.TypeInt, Comment: "暂停天数", Default: 0},

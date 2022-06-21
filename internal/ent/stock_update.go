@@ -204,30 +204,23 @@ func (su *StockUpdate) SetName(s string) *StockUpdate {
 	return su
 }
 
-// SetVoltage sets the "voltage" field.
-func (su *StockUpdate) SetVoltage(f float64) *StockUpdate {
-	su.mutation.ResetVoltage()
-	su.mutation.SetVoltage(f)
+// SetModel sets the "model" field.
+func (su *StockUpdate) SetModel(s string) *StockUpdate {
+	su.mutation.SetModel(s)
 	return su
 }
 
-// SetNillableVoltage sets the "voltage" field if the given value is not nil.
-func (su *StockUpdate) SetNillableVoltage(f *float64) *StockUpdate {
-	if f != nil {
-		su.SetVoltage(*f)
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (su *StockUpdate) SetNillableModel(s *string) *StockUpdate {
+	if s != nil {
+		su.SetModel(*s)
 	}
 	return su
 }
 
-// AddVoltage adds f to the "voltage" field.
-func (su *StockUpdate) AddVoltage(f float64) *StockUpdate {
-	su.mutation.AddVoltage(f)
-	return su
-}
-
-// ClearVoltage clears the value of the "voltage" field.
-func (su *StockUpdate) ClearVoltage() *StockUpdate {
-	su.mutation.ClearVoltage()
+// ClearModel clears the value of the "model" field.
+func (su *StockUpdate) ClearModel() *StockUpdate {
+	su.mutation.ClearModel()
 	return su
 }
 
@@ -447,24 +440,17 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: stock.FieldName,
 		})
 	}
-	if value, ok := su.mutation.Voltage(); ok {
+	if value, ok := su.mutation.Model(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: stock.FieldVoltage,
+			Column: stock.FieldModel,
 		})
 	}
-	if value, ok := su.mutation.AddedVoltage(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: stock.FieldVoltage,
-		})
-	}
-	if su.mutation.VoltageCleared() {
+	if su.mutation.ModelCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: stock.FieldVoltage,
+			Type:   field.TypeString,
+			Column: stock.FieldModel,
 		})
 	}
 	if su.mutation.ManagerCleared() {
@@ -797,30 +783,23 @@ func (suo *StockUpdateOne) SetName(s string) *StockUpdateOne {
 	return suo
 }
 
-// SetVoltage sets the "voltage" field.
-func (suo *StockUpdateOne) SetVoltage(f float64) *StockUpdateOne {
-	suo.mutation.ResetVoltage()
-	suo.mutation.SetVoltage(f)
+// SetModel sets the "model" field.
+func (suo *StockUpdateOne) SetModel(s string) *StockUpdateOne {
+	suo.mutation.SetModel(s)
 	return suo
 }
 
-// SetNillableVoltage sets the "voltage" field if the given value is not nil.
-func (suo *StockUpdateOne) SetNillableVoltage(f *float64) *StockUpdateOne {
-	if f != nil {
-		suo.SetVoltage(*f)
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableModel(s *string) *StockUpdateOne {
+	if s != nil {
+		suo.SetModel(*s)
 	}
 	return suo
 }
 
-// AddVoltage adds f to the "voltage" field.
-func (suo *StockUpdateOne) AddVoltage(f float64) *StockUpdateOne {
-	suo.mutation.AddVoltage(f)
-	return suo
-}
-
-// ClearVoltage clears the value of the "voltage" field.
-func (suo *StockUpdateOne) ClearVoltage() *StockUpdateOne {
-	suo.mutation.ClearVoltage()
+// ClearModel clears the value of the "model" field.
+func (suo *StockUpdateOne) ClearModel() *StockUpdateOne {
+	suo.mutation.ClearModel()
 	return suo
 }
 
@@ -1070,24 +1049,17 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 			Column: stock.FieldName,
 		})
 	}
-	if value, ok := suo.mutation.Voltage(); ok {
+	if value, ok := suo.mutation.Model(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: stock.FieldVoltage,
+			Column: stock.FieldModel,
 		})
 	}
-	if value, ok := suo.mutation.AddedVoltage(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: stock.FieldVoltage,
-		})
-	}
-	if suo.mutation.VoltageCleared() {
+	if suo.mutation.ModelCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Column: stock.FieldVoltage,
+			Type:   field.TypeString,
+			Column: stock.FieldModel,
 		})
 	}
 	if suo.mutation.ManagerCleared() {

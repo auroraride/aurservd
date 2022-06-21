@@ -43,9 +43,9 @@ type EnterprisePrice struct {
 	// Price holds the value of the "price" field.
 	// 单价 元/天
 	Price float64 `json:"price,omitempty"`
-	// Voltage holds the value of the "voltage" field.
-	// 可用电池电压型号
-	Voltage float64 `json:"voltage,omitempty"`
+	// Model holds the value of the "model" field.
+	// 可用电池型号
+	Model string `json:"model,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterprisePriceQuery when eager-loading is set.
 	Edges EnterprisePriceEdges `json:"edges"`
@@ -97,11 +97,11 @@ func (*EnterprisePrice) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case enterpriseprice.FieldCreator, enterpriseprice.FieldLastModifier:
 			values[i] = new([]byte)
-		case enterpriseprice.FieldPrice, enterpriseprice.FieldVoltage:
+		case enterpriseprice.FieldPrice:
 			values[i] = new(sql.NullFloat64)
 		case enterpriseprice.FieldID, enterpriseprice.FieldCityID, enterpriseprice.FieldEnterpriseID:
 			values[i] = new(sql.NullInt64)
-		case enterpriseprice.FieldRemark:
+		case enterpriseprice.FieldRemark, enterpriseprice.FieldModel:
 			values[i] = new(sql.NullString)
 		case enterpriseprice.FieldCreatedAt, enterpriseprice.FieldUpdatedAt, enterpriseprice.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -185,11 +185,11 @@ func (ep *EnterprisePrice) assignValues(columns []string, values []interface{}) 
 			} else if value.Valid {
 				ep.Price = value.Float64
 			}
-		case enterpriseprice.FieldVoltage:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field voltage", values[i])
+		case enterpriseprice.FieldModel:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field model", values[i])
 			} else if value.Valid {
-				ep.Voltage = value.Float64
+				ep.Model = value.String
 			}
 		}
 	}
@@ -249,8 +249,8 @@ func (ep *EnterprisePrice) String() string {
 	builder.WriteString(fmt.Sprintf("%v", ep.EnterpriseID))
 	builder.WriteString(", price=")
 	builder.WriteString(fmt.Sprintf("%v", ep.Price))
-	builder.WriteString(", voltage=")
-	builder.WriteString(fmt.Sprintf("%v", ep.Voltage))
+	builder.WriteString(", model=")
+	builder.WriteString(ep.Model)
 	builder.WriteByte(')')
 	return builder.String()
 }

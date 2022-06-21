@@ -213,9 +213,9 @@ func (ec *ExchangeCreate) SetDetail(mc *model.ExchangeCabinet) *ExchangeCreate {
 	return ec
 }
 
-// SetVoltage sets the "voltage" field.
-func (ec *ExchangeCreate) SetVoltage(f float64) *ExchangeCreate {
-	ec.mutation.SetVoltage(f)
+// SetModel sets the "model" field.
+func (ec *ExchangeCreate) SetModel(s string) *ExchangeCreate {
+	ec.mutation.SetModel(s)
 	return ec
 }
 
@@ -382,8 +382,8 @@ func (ec *ExchangeCreate) check() error {
 	if _, ok := ec.mutation.Success(); !ok {
 		return &ValidationError{Name: "success", err: errors.New(`ent: missing required field "Exchange.success"`)}
 	}
-	if _, ok := ec.mutation.Voltage(); !ok {
-		return &ValidationError{Name: "voltage", err: errors.New(`ent: missing required field "Exchange.voltage"`)}
+	if _, ok := ec.mutation.Model(); !ok {
+		return &ValidationError{Name: "model", err: errors.New(`ent: missing required field "Exchange.model"`)}
 	}
 	if _, ok := ec.mutation.SubscribeID(); !ok {
 		return &ValidationError{Name: "subscribe", err: errors.New(`ent: missing required edge "Exchange.subscribe"`)}
@@ -494,13 +494,13 @@ func (ec *ExchangeCreate) createSpec() (*Exchange, *sqlgraph.CreateSpec) {
 		})
 		_node.Detail = value
 	}
-	if value, ok := ec.mutation.Voltage(); ok {
+	if value, ok := ec.mutation.Model(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: exchange.FieldVoltage,
+			Column: exchange.FieldModel,
 		})
-		_node.Voltage = value
+		_node.Model = value
 	}
 	if nodes := ec.mutation.SubscribeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -980,21 +980,15 @@ func (u *ExchangeUpsert) ClearDetail() *ExchangeUpsert {
 	return u
 }
 
-// SetVoltage sets the "voltage" field.
-func (u *ExchangeUpsert) SetVoltage(v float64) *ExchangeUpsert {
-	u.Set(exchange.FieldVoltage, v)
+// SetModel sets the "model" field.
+func (u *ExchangeUpsert) SetModel(v string) *ExchangeUpsert {
+	u.Set(exchange.FieldModel, v)
 	return u
 }
 
-// UpdateVoltage sets the "voltage" field to the value that was provided on create.
-func (u *ExchangeUpsert) UpdateVoltage() *ExchangeUpsert {
-	u.SetExcluded(exchange.FieldVoltage)
-	return u
-}
-
-// AddVoltage adds v to the "voltage" field.
-func (u *ExchangeUpsert) AddVoltage(v float64) *ExchangeUpsert {
-	u.Add(exchange.FieldVoltage, v)
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateModel() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldModel)
 	return u
 }
 
@@ -1356,24 +1350,17 @@ func (u *ExchangeUpsertOne) ClearDetail() *ExchangeUpsertOne {
 	})
 }
 
-// SetVoltage sets the "voltage" field.
-func (u *ExchangeUpsertOne) SetVoltage(v float64) *ExchangeUpsertOne {
+// SetModel sets the "model" field.
+func (u *ExchangeUpsertOne) SetModel(v string) *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.SetVoltage(v)
+		s.SetModel(v)
 	})
 }
 
-// AddVoltage adds v to the "voltage" field.
-func (u *ExchangeUpsertOne) AddVoltage(v float64) *ExchangeUpsertOne {
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateModel() *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.AddVoltage(v)
-	})
-}
-
-// UpdateVoltage sets the "voltage" field to the value that was provided on create.
-func (u *ExchangeUpsertOne) UpdateVoltage() *ExchangeUpsertOne {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.UpdateVoltage()
+		s.UpdateModel()
 	})
 }
 
@@ -1899,24 +1886,17 @@ func (u *ExchangeUpsertBulk) ClearDetail() *ExchangeUpsertBulk {
 	})
 }
 
-// SetVoltage sets the "voltage" field.
-func (u *ExchangeUpsertBulk) SetVoltage(v float64) *ExchangeUpsertBulk {
+// SetModel sets the "model" field.
+func (u *ExchangeUpsertBulk) SetModel(v string) *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.SetVoltage(v)
+		s.SetModel(v)
 	})
 }
 
-// AddVoltage adds v to the "voltage" field.
-func (u *ExchangeUpsertBulk) AddVoltage(v float64) *ExchangeUpsertBulk {
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateModel() *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
-		s.AddVoltage(v)
-	})
-}
-
-// UpdateVoltage sets the "voltage" field to the value that was provided on create.
-func (u *ExchangeUpsertBulk) UpdateVoltage() *ExchangeUpsertBulk {
-	return u.Update(func(s *ExchangeUpsert) {
-		s.UpdateVoltage()
+		s.UpdateModel()
 	})
 }
 

@@ -27,7 +27,7 @@ var Battery = new(battery)
 // @Success      200  {object}  model.ItemListRes{items=[]model.BatteryModel}  "请求成功"
 func (*battery) ListModels(c echo.Context) (err error) {
     ctx := app.Context(c)
-    return ctx.SendResponse(service.NewBattery().ListModels())
+    return ctx.SendResponse(service.NewBattery().List())
 }
 
 // CreateModel
@@ -43,18 +43,4 @@ func (*battery) ListModels(c echo.Context) (err error) {
 func (*battery) CreateModel(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.BatteryModelCreateReq](c)
     return ctx.SendResponse(model.ItemRes{Item: service.NewBatteryWithModifier(ctx.Modifier).CreateModel(req)})
-}
-
-// ListVoltages
-// @ID           ManagerBatteryListVoltages
-// @Router       /manager/v1/battery/voltages [GET]
-// @Summary      M4003 列举电池电压型号
-// @Tags         [M]管理接口
-// @Accept       json
-// @Produce      json
-// @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Success      200  {object}  []float64  "请求成功"
-func (*battery) ListVoltages(c echo.Context) (err error) {
-    ctx := app.Context(c)
-    return ctx.SendResponse(service.NewBattery().ListVoltages())
 }

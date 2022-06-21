@@ -67,9 +67,9 @@ type EnterpriseBill struct {
 	// Cost holds the value of the "cost" field.
 	// 账单金额
 	Cost float64 `json:"cost,omitempty"`
-	// Voltage holds the value of the "voltage" field.
-	// 电压型号
-	Voltage float64 `json:"voltage,omitempty"`
+	// Model holds the value of the "model" field.
+	// 电池型号
+	Model string `json:"model,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterpriseBillQuery when eager-loading is set.
 	Edges EnterpriseBillEdges `json:"edges"`
@@ -169,11 +169,11 @@ func (*EnterpriseBill) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case enterprisebill.FieldCreator, enterprisebill.FieldLastModifier:
 			values[i] = new([]byte)
-		case enterprisebill.FieldPrice, enterprisebill.FieldCost, enterprisebill.FieldVoltage:
+		case enterprisebill.FieldPrice, enterprisebill.FieldCost:
 			values[i] = new(sql.NullFloat64)
 		case enterprisebill.FieldID, enterprisebill.FieldRiderID, enterprisebill.FieldSubscribeID, enterprisebill.FieldCityID, enterprisebill.FieldEnterpriseID, enterprisebill.FieldStatementID, enterprisebill.FieldDays:
 			values[i] = new(sql.NullInt64)
-		case enterprisebill.FieldRemark:
+		case enterprisebill.FieldRemark, enterprisebill.FieldModel:
 			values[i] = new(sql.NullString)
 		case enterprisebill.FieldCreatedAt, enterprisebill.FieldUpdatedAt, enterprisebill.FieldDeletedAt, enterprisebill.FieldStart, enterprisebill.FieldEnd:
 			values[i] = new(sql.NullTime)
@@ -299,11 +299,11 @@ func (eb *EnterpriseBill) assignValues(columns []string, values []interface{}) e
 			} else if value.Valid {
 				eb.Cost = value.Float64
 			}
-		case enterprisebill.FieldVoltage:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field voltage", values[i])
+		case enterprisebill.FieldModel:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field model", values[i])
 			} else if value.Valid {
-				eb.Voltage = value.Float64
+				eb.Model = value.String
 			}
 		}
 	}
@@ -392,8 +392,8 @@ func (eb *EnterpriseBill) String() string {
 	builder.WriteString(fmt.Sprintf("%v", eb.Price))
 	builder.WriteString(", cost=")
 	builder.WriteString(fmt.Sprintf("%v", eb.Cost))
-	builder.WriteString(", voltage=")
-	builder.WriteString(fmt.Sprintf("%v", eb.Voltage))
+	builder.WriteString(", model=")
+	builder.WriteString(eb.Model)
 	builder.WriteByte(')')
 	return builder.String()
 }

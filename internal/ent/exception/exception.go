@@ -35,8 +35,8 @@ const (
 	FieldStoreID = "store_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldVoltage holds the string denoting the voltage field in the database.
-	FieldVoltage = "voltage"
+	// FieldModel holds the string denoting the model field in the database.
+	FieldModel = "model"
 	// FieldNum holds the string denoting the num field in the database.
 	FieldNum = "num"
 	// FieldReason holds the string denoting the reason field in the database.
@@ -90,7 +90,7 @@ var Columns = []string{
 	FieldStatus,
 	FieldStoreID,
 	FieldName,
-	FieldVoltage,
+	FieldModel,
 	FieldNum,
 	FieldReason,
 	FieldDescription,

@@ -132,16 +132,16 @@ func (ec *ExceptionCreate) SetName(s string) *ExceptionCreate {
 	return ec
 }
 
-// SetVoltage sets the "voltage" field.
-func (ec *ExceptionCreate) SetVoltage(f float64) *ExceptionCreate {
-	ec.mutation.SetVoltage(f)
+// SetModel sets the "model" field.
+func (ec *ExceptionCreate) SetModel(s string) *ExceptionCreate {
+	ec.mutation.SetModel(s)
 	return ec
 }
 
-// SetNillableVoltage sets the "voltage" field if the given value is not nil.
-func (ec *ExceptionCreate) SetNillableVoltage(f *float64) *ExceptionCreate {
-	if f != nil {
-		ec.SetVoltage(*f)
+// SetNillableModel sets the "model" field if the given value is not nil.
+func (ec *ExceptionCreate) SetNillableModel(s *string) *ExceptionCreate {
+	if s != nil {
+		ec.SetModel(*s)
 	}
 	return ec
 }
@@ -423,13 +423,13 @@ func (ec *ExceptionCreate) createSpec() (*Exception, *sqlgraph.CreateSpec) {
 		})
 		_node.Name = value
 	}
-	if value, ok := ec.mutation.Voltage(); ok {
+	if value, ok := ec.mutation.Model(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: exception.FieldVoltage,
+			Column: exception.FieldModel,
 		})
-		_node.Voltage = &value
+		_node.Model = &value
 	}
 	if value, ok := ec.mutation.Num(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -739,27 +739,21 @@ func (u *ExceptionUpsert) UpdateName() *ExceptionUpsert {
 	return u
 }
 
-// SetVoltage sets the "voltage" field.
-func (u *ExceptionUpsert) SetVoltage(v float64) *ExceptionUpsert {
-	u.Set(exception.FieldVoltage, v)
+// SetModel sets the "model" field.
+func (u *ExceptionUpsert) SetModel(v string) *ExceptionUpsert {
+	u.Set(exception.FieldModel, v)
 	return u
 }
 
-// UpdateVoltage sets the "voltage" field to the value that was provided on create.
-func (u *ExceptionUpsert) UpdateVoltage() *ExceptionUpsert {
-	u.SetExcluded(exception.FieldVoltage)
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *ExceptionUpsert) UpdateModel() *ExceptionUpsert {
+	u.SetExcluded(exception.FieldModel)
 	return u
 }
 
-// AddVoltage adds v to the "voltage" field.
-func (u *ExceptionUpsert) AddVoltage(v float64) *ExceptionUpsert {
-	u.Add(exception.FieldVoltage, v)
-	return u
-}
-
-// ClearVoltage clears the value of the "voltage" field.
-func (u *ExceptionUpsert) ClearVoltage() *ExceptionUpsert {
-	u.SetNull(exception.FieldVoltage)
+// ClearModel clears the value of the "model" field.
+func (u *ExceptionUpsert) ClearModel() *ExceptionUpsert {
+	u.SetNull(exception.FieldModel)
 	return u
 }
 
@@ -1071,31 +1065,24 @@ func (u *ExceptionUpsertOne) UpdateName() *ExceptionUpsertOne {
 	})
 }
 
-// SetVoltage sets the "voltage" field.
-func (u *ExceptionUpsertOne) SetVoltage(v float64) *ExceptionUpsertOne {
+// SetModel sets the "model" field.
+func (u *ExceptionUpsertOne) SetModel(v string) *ExceptionUpsertOne {
 	return u.Update(func(s *ExceptionUpsert) {
-		s.SetVoltage(v)
+		s.SetModel(v)
 	})
 }
 
-// AddVoltage adds v to the "voltage" field.
-func (u *ExceptionUpsertOne) AddVoltage(v float64) *ExceptionUpsertOne {
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *ExceptionUpsertOne) UpdateModel() *ExceptionUpsertOne {
 	return u.Update(func(s *ExceptionUpsert) {
-		s.AddVoltage(v)
+		s.UpdateModel()
 	})
 }
 
-// UpdateVoltage sets the "voltage" field to the value that was provided on create.
-func (u *ExceptionUpsertOne) UpdateVoltage() *ExceptionUpsertOne {
+// ClearModel clears the value of the "model" field.
+func (u *ExceptionUpsertOne) ClearModel() *ExceptionUpsertOne {
 	return u.Update(func(s *ExceptionUpsert) {
-		s.UpdateVoltage()
-	})
-}
-
-// ClearVoltage clears the value of the "voltage" field.
-func (u *ExceptionUpsertOne) ClearVoltage() *ExceptionUpsertOne {
-	return u.Update(func(s *ExceptionUpsert) {
-		s.ClearVoltage()
+		s.ClearModel()
 	})
 }
 
@@ -1582,31 +1569,24 @@ func (u *ExceptionUpsertBulk) UpdateName() *ExceptionUpsertBulk {
 	})
 }
 
-// SetVoltage sets the "voltage" field.
-func (u *ExceptionUpsertBulk) SetVoltage(v float64) *ExceptionUpsertBulk {
+// SetModel sets the "model" field.
+func (u *ExceptionUpsertBulk) SetModel(v string) *ExceptionUpsertBulk {
 	return u.Update(func(s *ExceptionUpsert) {
-		s.SetVoltage(v)
+		s.SetModel(v)
 	})
 }
 
-// AddVoltage adds v to the "voltage" field.
-func (u *ExceptionUpsertBulk) AddVoltage(v float64) *ExceptionUpsertBulk {
+// UpdateModel sets the "model" field to the value that was provided on create.
+func (u *ExceptionUpsertBulk) UpdateModel() *ExceptionUpsertBulk {
 	return u.Update(func(s *ExceptionUpsert) {
-		s.AddVoltage(v)
+		s.UpdateModel()
 	})
 }
 
-// UpdateVoltage sets the "voltage" field to the value that was provided on create.
-func (u *ExceptionUpsertBulk) UpdateVoltage() *ExceptionUpsertBulk {
+// ClearModel clears the value of the "model" field.
+func (u *ExceptionUpsertBulk) ClearModel() *ExceptionUpsertBulk {
 	return u.Update(func(s *ExceptionUpsert) {
-		s.UpdateVoltage()
-	})
-}
-
-// ClearVoltage clears the value of the "voltage" field.
-func (u *ExceptionUpsertBulk) ClearVoltage() *ExceptionUpsertBulk {
-	return u.Update(func(s *ExceptionUpsert) {
-		s.ClearVoltage()
+		s.ClearModel()
 	})
 }
 

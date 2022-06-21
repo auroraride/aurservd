@@ -173,16 +173,9 @@ func (ebu *EnterpriseBillUpdate) AddCost(f float64) *EnterpriseBillUpdate {
 	return ebu
 }
 
-// SetVoltage sets the "voltage" field.
-func (ebu *EnterpriseBillUpdate) SetVoltage(f float64) *EnterpriseBillUpdate {
-	ebu.mutation.ResetVoltage()
-	ebu.mutation.SetVoltage(f)
-	return ebu
-}
-
-// AddVoltage adds f to the "voltage" field.
-func (ebu *EnterpriseBillUpdate) AddVoltage(f float64) *EnterpriseBillUpdate {
-	ebu.mutation.AddVoltage(f)
+// SetModel sets the "model" field.
+func (ebu *EnterpriseBillUpdate) SetModel(s string) *EnterpriseBillUpdate {
+	ebu.mutation.SetModel(s)
 	return ebu
 }
 
@@ -467,18 +460,11 @@ func (ebu *EnterpriseBillUpdate) sqlSave(ctx context.Context) (n int, err error)
 			Column: enterprisebill.FieldCost,
 		})
 	}
-	if value, ok := ebu.mutation.Voltage(); ok {
+	if value, ok := ebu.mutation.Model(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: enterprisebill.FieldVoltage,
-		})
-	}
-	if value, ok := ebu.mutation.AddedVoltage(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisebill.FieldVoltage,
+			Column: enterprisebill.FieldModel,
 		})
 	}
 	if ebu.mutation.RiderCleared() {
@@ -814,16 +800,9 @@ func (ebuo *EnterpriseBillUpdateOne) AddCost(f float64) *EnterpriseBillUpdateOne
 	return ebuo
 }
 
-// SetVoltage sets the "voltage" field.
-func (ebuo *EnterpriseBillUpdateOne) SetVoltage(f float64) *EnterpriseBillUpdateOne {
-	ebuo.mutation.ResetVoltage()
-	ebuo.mutation.SetVoltage(f)
-	return ebuo
-}
-
-// AddVoltage adds f to the "voltage" field.
-func (ebuo *EnterpriseBillUpdateOne) AddVoltage(f float64) *EnterpriseBillUpdateOne {
-	ebuo.mutation.AddVoltage(f)
+// SetModel sets the "model" field.
+func (ebuo *EnterpriseBillUpdateOne) SetModel(s string) *EnterpriseBillUpdateOne {
+	ebuo.mutation.SetModel(s)
 	return ebuo
 }
 
@@ -1138,18 +1117,11 @@ func (ebuo *EnterpriseBillUpdateOne) sqlSave(ctx context.Context) (_node *Enterp
 			Column: enterprisebill.FieldCost,
 		})
 	}
-	if value, ok := ebuo.mutation.Voltage(); ok {
+	if value, ok := ebuo.mutation.Model(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: enterprisebill.FieldVoltage,
-		})
-	}
-	if value, ok := ebuo.mutation.AddedVoltage(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisebill.FieldVoltage,
+			Column: enterprisebill.FieldModel,
 		})
 	}
 	if ebuo.mutation.RiderCleared() {

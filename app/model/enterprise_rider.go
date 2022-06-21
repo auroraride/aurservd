@@ -15,13 +15,13 @@ type EnterpriseRiderCreateReq struct {
 
 type EnterpriseRider struct {
     ID        uint64            `json:"id"`
-    Name      string            `json:"name"`              // 姓名
-    Phone     string            `json:"phone"`             // 电话
-    Days      int               `json:"days"`              // 总天数
-    Unsettled int               `json:"unsettled"`         // 未结算天数
-    Voltage   float64           `json:"voltage,omitempty"` // 可用电压型号, 骑手未开通订阅则此字段不存在
-    CreatedAt string            `json:"createdAt"`         // 添加时间
-    Station   EnterpriseStation `json:"station"`           // 站点
+    Name      string            `json:"name"`            // 姓名
+    Phone     string            `json:"phone"`           // 电话
+    Days      int               `json:"days"`            // 总天数
+    Unsettled int               `json:"unsettled"`       // 未结算天数
+    Model     string            `json:"model,omitempty"` // 可用电池型号, 骑手未开通订阅则此字段不存在
+    CreatedAt string            `json:"createdAt"`       // 添加时间
+    Station   EnterpriseStation `json:"station"`         // 站点
 }
 
 type EnterpriseRiderListReq struct {

@@ -117,26 +117,17 @@ definitions:
     type: object
   model.BatteryModel:
     properties:
-      capacity:
-        description: 容量
-        type: number
       id:
         type: integer
-      voltage:
-        description: 电压
-        type: number
+      model:
+        description: 电池型号
+        type: string
     type: object
   model.BatteryModelCreateReq:
     properties:
-      capacity:
-        description: '容量 '
-        type: number
-      voltage:
-        description: '电压 '
-        type: number
-    required:
-    - capacity
-    - voltage
+      model:
+        description: 电池型号, 例如60V30AH
+        type: string
     type: object
   model.BillOverview:
     properties:
@@ -1132,17 +1123,13 @@ definitions:
     - price
     - voltage
     type: object
-  model.EnterprisePriceVoltageListRes:
+  model.EnterprisePriceBatteryModelListRes:
     properties:
       id:
-        description: 型号ID
         type: integer
-      voltage:
-        description: 电压型号, 暂时固定为 60 或 72
-        enum:
-        - 60
-        - 72
-        type: number
+      model:
+        description: 电池型号
+        type: string
     type: object
   model.EnterprisePriceWithCity:
     properties:
@@ -1227,6 +1214,9 @@ definitions:
         type: integer
       id:
         type: integer
+      model:
+        description: 可用电池型号, 骑手未开通订阅则此字段不存在
+        type: string
       name:
         description: 姓名
         type: string
@@ -1240,9 +1230,6 @@ definitions:
       unsettled:
         description: 未结算天数
         type: integer
-      voltage:
-        description: 可用电压型号, 骑手未开通订阅则此字段不存在
-        type: number
     type: object
   model.EnterpriseRiderCreateReq:
     properties:
@@ -1483,11 +1470,11 @@ definitions:
         description: 是否电池
         type: boolean
       name:
-        description: 物资名称
+        description: 物资名称, 若物资是电池则名称默认为电池型号
         type: string
       voltage:
-        description: 电压型号
-        type: number
+        description: 电池型号
+        type: string
     type: object
   model.ItemListRes:
     properties:
@@ -2931,7 +2918,24 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.SmsRes'
-      summary: C2.发送短信验证码
+      summary: C2 发送短信验证码
+      tags:
+      - '[C]公共接口'
+  /common/battery/model:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerBatteryModel
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 型号列表
+          schema:
+            items:
+              type: string
+            type: array
+      summary: C4 获取生效中的电池型号
       tags:
       - '[C]公共接口'
   /common/captcha:
@@ -2951,7 +2955,7 @@ paths:
               type: string
           schema:
             type: string
-      summary: C1.生成图片验证码
+      summary: C1 生成图片验证码
       tags:
       - '[C]公共接口'
   /common/oss/token:
@@ -2967,7 +2971,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.AliyunOssStsRes'
-      summary: C3.获取阿里云oss临时凭证
+      summary: C3 获取阿里云oss临时凭证
       tags:
       - '[C]公共接口'
   /employee/v1/attendance:
@@ -3666,29 +3670,6 @@ paths:
                   $ref: '#/definitions/model.BatteryModel'
               type: object
       summary: M4002 创建电池型号
-      tags:
-      - '[M]管理接口'
-  /manager/v1/battery/voltages:
-    get:
-      consumes:
-      - application/json
-      operationId: ManagerBatteryListVoltages
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            items:
-              type: number
-            type: array
-      summary: M4003 列举电池电压型号
       tags:
       - '[M]管理接口'
   /manager/v1/branch:
@@ -6194,29 +6175,6 @@ paths:
       summary: R1004 实名认证结果
       tags:
       - '[R]骑手接口'
-  /rider/v1/battery/voltage:
-    get:
-      consumes:
-      - application/json
-      operationId: RiderBatteryListVoltage
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            items:
-              type: integer
-            type: array
-      summary: R3001 电压型号
-      tags:
-      - '[R]骑手接口'
   /rider/v1/branch:
     get:
       consumes:
@@ -6469,6 +6427,34 @@ paths:
       summary: R3005 签署合同
       tags:
       - '[R]骑手接口'
+  /rider/v1/enterprise/battery:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderEnterpriseBattery
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.EnterprisePriceBatteryModelListRes'
+            type: array
+      summary: R3010 企业骑手获取可用电池
+      tags:
+      - '[R]骑手接口'
   /rider/v1/enterprise/subscribe:
     get:
       consumes:
@@ -6519,34 +6505,6 @@ paths:
           schema:
             $ref: '#/definitions/model.EnterpriseRiderSubscribeChooseRes'
       summary: R3011 企业骑手选择电池
-      tags:
-      - '[R]骑手接口'
-  /rider/v1/enterprise/voltage:
-    get:
-      consumes:
-      - application/json
-      operationId: RiderEnterpriseListVoltage
-      parameters:
-      - description: 骑手校验token
-        in: header
-        name: X-Rider-Token
-        required: true
-        type: string
-      - description: 城市ID
-        in: query
-        name: cityId
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            items:
-              $ref: '#/definitions/model.EnterprisePriceVoltageListRes'
-            type: array
-      summary: R3010 企业骑手获取可用电池
       tags:
       - '[R]骑手接口'
   /rider/v1/exchange/log:

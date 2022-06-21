@@ -7,6 +7,7 @@ import (
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
+    "entgo.io/ent/schema/index"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -32,7 +33,7 @@ func (EnterpriseBill) Fields() []ent.Field {
         field.Int("days").Comment("账单日期"),
         field.Float("price").Comment("账单单价"),
         field.Float("cost").Comment("账单金额"),
-        field.Float("voltage").Comment("电压型号"),
+        field.String("model").Comment("电池型号"),
     }
 }
 
@@ -57,5 +58,7 @@ func (EnterpriseBill) Mixin() []ent.Mixin {
 }
 
 func (EnterpriseBill) Indexes() []ent.Index {
-    return []ent.Index{}
+    return []ent.Index{
+        index.Fields("model"),
+    }
 }

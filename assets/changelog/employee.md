@@ -1,3 +1,17 @@
+## 2022-06-21
+
+#### 接口调整
+
+> 删除所有涉及到`voltage<number>(电压)`和`capacity<number>(容量)`的字段，统一改为`model<string>(电池型号)`
+
+- [E1003 打卡预检](http://localhost:5533/docs#tag/E/operation/EmployeeAttendancePrecheck) 删除`voltage(number)`改为`model(string)`
+
+
+
+
+
+<br />
+
 ## 2022-06-17
 
 #### 接口新增
