@@ -415,6 +415,12 @@ func (s *stockService) EmployeeOverview() (res model.StockEmployeeOverview) {
             }
             batteries[name].Surplus += item.Num
         } else {
+            if _, ok := materials[name]; !ok {
+                materials[name] = &model.StockEmployeeOverviewMaterial{
+                    Name:    name,
+                    Surplus: 0,
+                }
+            }
             materials[name].Surplus += item.Num
         }
     }
