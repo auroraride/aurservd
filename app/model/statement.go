@@ -13,12 +13,12 @@ type StatementBillReq struct {
 }
 
 type BillOverview struct {
-    Voltage float64 `json:"voltage"` // 电压型号
-    Number  int     `json:"number"`  // 使用骑手数量
-    Price   float64 `json:"price"`   // 单价
-    Days    int     `json:"days"`    // 天数
-    Cost    float64 `json:"cost"`    // 账单金额
-    City    City    `json:"city"`    // 城市
+    Model  string  `json:"model"`  // 电池型号
+    Number int     `json:"number"` // 使用骑手数量
+    Price  float64 `json:"price"`  // 单价
+    Days   int     `json:"days"`   // 天数
+    Cost   float64 `json:"cost"`   // 账单金额
+    City   City    `json:"city"`   // 城市
 }
 
 type StatementBillRes struct {
@@ -46,7 +46,7 @@ type StatementBillData struct {
     Days         int     `json:"days"`         // 天数
     Price        float64 `json:"price"`        // 单价
     Cost         float64 `json:"cost"`         // 金额小计
-    Voltage      float64 `json:"voltage"`      // 电压型号
+    Model        string  `json:"model"`        // 电池型号
     City         City    `json:"city"`         // 城市
 }
 

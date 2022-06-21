@@ -19,6 +19,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/jinzhu/copier"
     "github.com/lithammer/shortuuid/v4"
+    "strings"
     "time"
 )
 
@@ -144,10 +145,16 @@ func (s *branchService) List(req *model.BranchListReq) *model.PaginationRes {
             }
             r.StoreTotal = len(item.Edges.Stores)
             for _, c := range item.Edges.Cabinets {
-                if c.Models[0].Voltage == 60 {
-                    r.V60Total += 1
-                } else {
-                    r.V72Total += 1
+                for _, cm := range c.Models {
+                    str := strings.ToUpper(cm.Model)
+
+                    if strings.HasPrefix(str, "60V") {
+                        r.V60Total += 1
+                    }
+
+                    if strings.HasPrefix(str, "70V") {
+                        r.V72Total += 1
+                    }
                 }
             }
             return r
@@ -287,10 +294,13 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
                 }
             }
             // 判定电池型号
-            // TODO 如果有多个电压怎么办
-            if c.Models[0].Voltage == 60 {
+            // TODO 如果有多个电压怎么办? 忽略, 使用第一个
+            str := strings.ToUpper(c.Models[0].Model)
+
+            if strings.HasPrefix(str, "60V") {
                 fa.Type = model.BranchFacilityTypeV60
             }
+
             s.facility(itemsMap[*c.BranchID].FacilityMap, fa)
         }
     }

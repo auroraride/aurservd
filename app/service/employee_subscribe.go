@@ -102,7 +102,7 @@ func (s *employeeSubscribeService) Inactive(qr string) (*model.SubscribeActiveIn
     res := &model.SubscribeActiveInfo{
         ID:           sub.ID,
         EnterpriseID: sub.EnterpriseID,
-        Voltage:      sub.Voltage,
+        Model:        sub.Model,
         CommissionID: nil,
         Rider: model.RiderBasic{
             ID:    r.ID,
@@ -175,7 +175,7 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
             RiderID:    info.Rider.ID,
             StoreID:    storeID,
             EmployeeID: s.employee.ID,
-            Voltage:    info.Voltage,
+            Model:      info.Model,
             StockType:  model.StockTypeRiderObtain,
         },
     )

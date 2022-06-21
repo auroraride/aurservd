@@ -511,7 +511,7 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
                 ri.Subscribe = &model.RiderItemSubscribe{
                     Status:    sub.Status,
                     Remaining: sub.Remaining,
-                    Voltage:   sub.Voltage,
+                    Model:     sub.Model,
                 }
                 if sub.Status == model.SubscribeStatusUsing && sub.Remaining <= 3 {
                     ri.Subscribe.Status = 11

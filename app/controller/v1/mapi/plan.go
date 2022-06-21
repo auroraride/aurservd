@@ -24,6 +24,7 @@ var Plan = new(plan)
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.PlanCreateReq  true  "骑行卡信息"
 // @Success      200  {object}  model.PlanWithComplexes  "请求成功"
 func (*plan) Create(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.PlanCreateReq](c)

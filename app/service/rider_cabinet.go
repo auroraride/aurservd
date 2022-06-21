@@ -82,7 +82,7 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
     cab := cs.QueryWithSerial(req.Serial)
 
     // 检查可用电池型号
-    if !cs.VoltageInclude(cab, subd.Voltage) {
+    if !cs.ModelInclude(cab, subd.Model) {
         snag.Panic("电池型号不兼容")
     }
 
@@ -107,7 +107,7 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
         BatteryNum:                 cab.BatteryNum,
         BatteryFullNum:             cab.BatteryFullNum,
         RiderCabinetOperateProcess: info,
-        Voltage:                    subd.Voltage,
+        Model:                      subd.Model,
         CityID:                     subd.City.ID,
         Brand:                      model.CabinetBrand(cab.Brand),
     }
@@ -185,7 +185,7 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
         FullIndex:   index,
         Serial:      info.Serial,
         Electricity: be,
-        Voltage:     info.Voltage,
+        Model:       info.Model,
     })
 }
 
@@ -219,8 +219,7 @@ func (s *riderCabinetService) ProcessStepEnd(req *model.RiderCabinetOperating) {
         SetUUID(req.UUID).
         SetCabinetID(req.ID).
         SetSuccess(res.Status == model.RiderCabinetOperateStatusSuccess && res.Step == model.RiderCabinetOperateStepClose).
-        SetVoltage(req.Voltage).
-        SetVoltage(s.subscribe.Voltage).
+        SetModel(s.subscribe.Model).
         SetNillableEnterpriseID(s.subscribe.EnterpriseID).
         SetNillableStationID(s.subscribe.StationID).
         SetSubscribeID(s.subscribe.ID).

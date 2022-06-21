@@ -64,7 +64,7 @@ func (s *businessService) Detail(id uint64) (res model.SubscribeBusiness) {
         Name:         r.Edges.Person.Name,
         Phone:        r.Phone,
         IDCardNumber: ic[len(ic)-4:],
-        Voltage:      subd.Voltage,
+        Model:        subd.Model,
         SubscribeID:  subd.ID,
     }
 
@@ -93,8 +93,6 @@ func (s *businessService) Plans(subscribeID uint64) {
     }
 
     // 获取全部的电压列表
-    // vs := NewBattery().ListVoltages(sub.Voltage)
-    // 获取全部的
 }
 
 // listBasicQuery 列表基础查询语句

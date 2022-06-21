@@ -36,10 +36,12 @@ const (
 
 // OrderCreateReq 订单创建请求
 type OrderCreateReq struct {
-    CityID    uint64 `json:"cityId" validate:"required" trans:"城市ID"`
     PlanID    uint64 `json:"planId" validate:"required" trans:"套餐ID"`
     Payway    uint8  `json:"payway" validate:"required" trans:"支付方式" enums:"1,2"`              // 1支付宝 2微信
     OrderType uint   `json:"orderType" validate:"required" trans:"订单类型" enums:"1,2,3,4,5,6,7"` // 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
+
+    CityID uint64 `json:"cityId"` // 城市ID, 新签必填
+    Model  string `json:"model"`  // 用户所选电池型号, 新签必填
 }
 
 // OrderCreateRes 订单创建返回
@@ -52,18 +54,18 @@ type OrderCreateRes struct {
 type OrderListReq struct {
     PaginationReq
 
-    RiderID      *uint64  `json:"riderId" query:"riderId"`           // 骑手ID
-    Type         *uint    `json:"type" query:"type"`                 // 订单类型 1:新签 2:续签 3:重签 4:更改电池 5:救援 6:滞纳金 7:押金
-    CityID       *uint64  `json:"cityId" query:"cityId"`             // 城市ID
-    RiderName    *string  `json:"riderName" query:"riderName"`       // 骑手姓名
-    RiderPhone   *string  `json:"riderPhone" query:"riderPhone"`     // 骑手电话
-    Start        *string  `json:"start" query:"start"`               // 时间起始, 格式为: 2022-01-01
-    End          *string  `json:"end" query:"end"`                   // 时间结束, 格式为: 2022-01-01
-    EmployeeName *string  `json:"employeeName" query:"employeeName"` // 店员名字
-    StoreName    *string  `json:"storeName" query:"storeName"`       // 门店名字
-    Voltage      *float64 `json:"voltage" query:"voltage"`           // 电压
-    Days         *int     `json:"days" query:"days"`                 // 骑士卡时长(搜索大于等于)
-    Refund       uint8    `json:"refund" query:"refund"`             // 退款查询 0:查询全部 1:查询未申请退款 2:查询已申请退款(包含退款中/已退款/已拒绝)
+    RiderID      *uint64 `json:"riderId" query:"riderId"`           // 骑手ID
+    Type         *uint   `json:"type" query:"type"`                 // 订单类型 1:新签 2:续签 3:重签 4:更改电池 5:救援 6:滞纳金 7:押金
+    CityID       *uint64 `json:"cityId" query:"cityId"`             // 城市ID
+    RiderName    *string `json:"riderName" query:"riderName"`       // 骑手姓名
+    RiderPhone   *string `json:"riderPhone" query:"riderPhone"`     // 骑手电话
+    Start        *string `json:"start" query:"start"`               // 时间起始, 格式为: 2022-01-01
+    End          *string `json:"end" query:"end"`                   // 时间结束, 格式为: 2022-01-01
+    EmployeeName *string `json:"employeeName" query:"employeeName"` // 店员名字
+    StoreName    *string `json:"storeName" query:"storeName"`       // 门店名字
+    Model        *string `json:"model" query:"model"`               // 电池型号
+    Days         *int    `json:"days" query:"days"`                 // 骑士卡时长(搜索大于等于)
+    Refund       uint8   `json:"refund" query:"refund"`             // 退款查询 0:查询全部 1:查询未申请退款 2:查询已申请退款(包含退款中/已退款/已拒绝)
 }
 
 type OrderEmployeeListReq struct {

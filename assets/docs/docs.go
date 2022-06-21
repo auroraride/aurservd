@@ -1458,6 +1458,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "电池型号",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "电柜名称",
                         "name": "name",
                         "in": "query"
@@ -1478,12 +1484,6 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "电柜状态",
                         "name": "status",
-                        "in": "query"
-                    },
-                    {
-                        "type": "number",
-                        "description": "电池型号",
-                        "name": "voltage",
                         "in": "query"
                     }
                 ],
@@ -2027,6 +2027,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/emoloyee/enable": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MA015 启用/禁用店员",
+                "operationId": "ManagerEmployeeEnable",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EmployeeEnableReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/employee": {
             "get": {
                 "consumes": [
@@ -2386,47 +2427,6 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v1/enable/enable": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[M]管理接口"
-                ],
-                "summary": "MA015 启用/禁用店员",
-                "operationId": "ManagerEmployeeEnable",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "description": "请求参数",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.EmployeeEnableReq"
-                        }
                     }
                 ],
                 "responses": {
@@ -3281,6 +3281,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "description": "电池型号",
+                        "name": "model",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "每页数据, 默认20",
                         "name": "pageSize",
@@ -3326,12 +3332,6 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "订单类型 1:新签 2:续签 3:重签 4:更改电池 5:救援 6:滞纳金 7:押金",
                         "name": "type",
-                        "in": "query"
-                    },
-                    {
-                        "type": "number",
-                        "description": "电压",
-                        "name": "voltage",
                         "in": "query"
                     }
                 ],
@@ -3496,6 +3496,15 @@ const docTemplate = `{
                         "name": "X-Manager-Token",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "description": "骑行卡信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.PlanCreateReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -5961,13 +5970,6 @@ const docTemplate = `{
                         "name": "cityId",
                         "in": "query",
                         "required": true
-                    },
-                    {
-                        "type": "number",
-                        "description": "电压型号 ",
-                        "name": "voltage",
-                        "in": "query",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -5976,7 +5978,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.RiderPlanItem"
+                                "$ref": "#/definitions/model.RiderPlanListRes"
                             }
                         }
                     }
@@ -6152,6 +6154,10 @@ const docTemplate = `{
         "model.AttendanceInventory": {
             "type": "object",
             "properties": {
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
                 "name": {
                     "description": "物资名称",
                     "type": "string"
@@ -6163,10 +6169,6 @@ const docTemplate = `{
                 "stockNum": {
                     "description": "当前库存该物资数量",
                     "type": "integer"
-                },
-                "voltage": {
-                    "description": "电池型号",
-                    "type": "number"
                 }
             }
         },
@@ -6180,6 +6182,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.City"
                         }
                     ]
+                },
+                "duty": {
+                    "description": "true上班 或 false下班打卡",
+                    "type": "boolean"
                 },
                 "id": {
                     "type": "integer"
@@ -6288,16 +6294,16 @@ const docTemplate = `{
                     "description": "天数",
                     "type": "integer"
                 },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
                 "number": {
                     "description": "使用骑手数量",
                     "type": "integer"
                 },
                 "price": {
                     "description": "单价",
-                    "type": "number"
-                },
-                "voltage": {
-                    "description": "电压型号",
                     "type": "number"
                 }
             }
@@ -6782,7 +6788,7 @@ const docTemplate = `{
                     "description": "电池型号 ",
                     "type": "array",
                     "items": {
-                        "type": "integer"
+                        "type": "string"
                     }
                 },
                 "name": {
@@ -7640,25 +7646,21 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "cityId",
-                "price",
-                "voltage"
+                "model",
+                "price"
             ],
             "properties": {
                 "cityId": {
                     "description": "城市 ",
                     "type": "integer"
                 },
+                "model": {
+                    "description": "电池型号 ",
+                    "type": "string"
+                },
                 "price": {
                     "description": "单价(元/天) ",
                     "type": "number"
-                },
-                "voltage": {
-                    "description": "电压型号 暂时固定为 60 或 72",
-                    "type": "number",
-                    "enum": [
-                        60,
-                        72
-                    ]
                 }
             }
         },
@@ -7685,17 +7687,13 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
                 "price": {
                     "description": "单价(元/天)",
                     "type": "number"
-                },
-                "voltage": {
-                    "description": "电压型号 暂时固定为 60 或 72",
-                    "type": "number",
-                    "enum": [
-                        60,
-                        72
-                    ]
                 }
             }
         },
@@ -7929,8 +7927,12 @@ const docTemplate = `{
                     "description": "描述 ",
                     "type": "string"
                 },
+                "model": {
+                    "description": "电池型号 (和` + "`" + `name` + "`" + `不能同时存在, 也不能同时为空)",
+                    "type": "string"
+                },
                 "name": {
-                    "description": "物资名称 (非电池物资, 和` + "`" + `voltage` + "`" + `不能同时存在, 也不能同时为空), 物资列表查看接口 ` + "`" + `E3001 物资异常配置` + "`" + `",
+                    "description": "物资名称 (非电池物资, 和` + "`" + `model` + "`" + `不能同时存在, 也不能同时为空), 物资列表查看接口 ` + "`" + `E3001 物资异常配置` + "`" + `",
                     "type": "string"
                 },
                 "num": {
@@ -7941,10 +7943,6 @@ const docTemplate = `{
                 "reason": {
                     "description": "异常原因 异常原因查看接口 ` + "`" + `E3001 物资异常配置` + "`" + `",
                     "type": "string"
-                },
-                "voltage": {
-                    "description": "电压型号 (电池, 和` + "`" + `name` + "`" + `不能同时存在, 也不能同时为空)",
-                    "type": "number"
                 }
             }
         },
@@ -7979,6 +7977,10 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
                 "name": {
                     "description": "骑手姓名",
                     "type": "string"
@@ -7998,10 +8000,6 @@ const docTemplate = `{
                 "time": {
                     "description": "换电时间",
                     "type": "string"
-                },
-                "voltage": {
-                    "description": "换电型号",
-                    "type": "number"
                 }
             }
         },
@@ -8086,6 +8084,10 @@ const docTemplate = `{
         "model.ExchangeStoreRes": {
             "type": "object",
             "properties": {
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
                 "storeName": {
                     "description": "门店名称",
                     "type": "string"
@@ -8097,10 +8099,6 @@ const docTemplate = `{
                 "uuid": {
                     "description": "编码",
                     "type": "string"
-                },
-                "voltage": {
-                    "description": "电池电压",
-                    "type": "number"
                 }
             }
         },
@@ -8167,12 +8165,12 @@ const docTemplate = `{
                     "description": "是否电池",
                     "type": "boolean"
                 },
-                "name": {
-                    "description": "物资名称, 若物资是电池则名称默认为电池型号",
+                "model": {
+                    "description": "电池型号",
                     "type": "string"
                 },
-                "voltage": {
-                    "description": "电池型号",
+                "name": {
+                    "description": "物资名称, 若物资是电池则名称默认为电池型号",
                     "type": "string"
                 }
             }
@@ -8277,15 +8275,18 @@ const docTemplate = `{
         "model.OrderCreateReq": {
             "type": "object",
             "required": [
-                "cityId",
                 "orderType",
                 "payway",
                 "planId"
             ],
             "properties": {
                 "cityId": {
-                    "description": "城市ID ",
+                    "description": "城市ID, 新签必填",
                     "type": "integer"
+                },
+                "model": {
+                    "description": "用户所选电池型号, 新签必填",
+                    "type": "string"
                 },
                 "orderType": {
                     "description": "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
@@ -8455,6 +8456,59 @@ const docTemplate = `{
                 "price": {
                     "description": "价格 ",
                     "type": "number"
+                }
+            }
+        },
+        "model.PlanCreateReq": {
+            "type": "object",
+            "required": [
+                "cities",
+                "complexes",
+                "end",
+                "models",
+                "name",
+                "start"
+            ],
+            "properties": {
+                "cities": {
+                    "description": "启用城市 ",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "complexes": {
+                    "description": "骑士卡详细信息 ",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "$ref": "#/definitions/model.PlanComplex"
+                    }
+                },
+                "enable": {
+                    "description": "是否启用",
+                    "type": "boolean"
+                },
+                "end": {
+                    "description": "结束日期 ",
+                    "type": "string"
+                },
+                "models": {
+                    "description": "电池型号 ",
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "description": "骑士卡名称 ",
+                    "type": "string"
+                },
+                "start": {
+                    "description": "开始日期 ",
+                    "type": "string"
                 }
             }
         },
@@ -8712,6 +8766,10 @@ const docTemplate = `{
                     "description": "电柜ID",
                     "type": "integer"
                 },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
                 "name": {
                     "description": "电柜名称",
                     "type": "string"
@@ -8723,10 +8781,6 @@ const docTemplate = `{
                 "uuid": {
                     "description": "操作ID",
                     "type": "string"
-                },
-                "voltage": {
-                    "description": "电池电压",
-                    "type": "number"
                 }
             }
         },
@@ -8924,6 +8978,10 @@ const docTemplate = `{
                     "description": "订阅ID",
                     "type": "integer"
                 },
+                "model": {
+                    "description": "骑士卡可用电池型号",
+                    "type": "string"
+                },
                 "remaining": {
                     "description": "剩余天数",
                     "type": "integer"
@@ -8931,10 +8989,6 @@ const docTemplate = `{
                 "status": {
                     "description": "订阅状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期(计算状态) 当 status = 1 且 remaining \u003c= 3 的时候是即将到期",
                     "type": "integer"
-                },
-                "voltage": {
-                    "description": "骑士卡可用电压型号",
-                    "type": "number"
                 }
             }
         },
@@ -9015,6 +9069,10 @@ const docTemplate = `{
                     "description": "订单ID",
                     "type": "integer"
                 },
+                "model": {
+                    "description": "电池型号 (可为空)",
+                    "type": "string"
+                },
                 "models": {
                     "description": "可用型号, 非骑士卡订阅订单无此字段",
                     "type": "array",
@@ -9073,10 +9131,6 @@ const docTemplate = `{
                 "type": {
                     "description": "订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金",
                     "type": "integer"
-                },
-                "voltage": {
-                    "description": "电压 (可为空)",
-                    "type": "number"
                 }
             }
         },
@@ -9105,6 +9159,26 @@ const docTemplate = `{
                 "price": {
                     "description": "价格",
                     "type": "number"
+                }
+            }
+        },
+        "model.RiderPlanListRes": {
+            "type": "object",
+            "properties": {
+                "deposit": {
+                    "description": "需缴纳押金",
+                    "type": "number"
+                },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
+                "plans": {
+                    "description": "套餐列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.RiderPlanItem"
+                    }
                 }
             }
         },
@@ -9356,6 +9430,10 @@ const docTemplate = `{
                     "description": "企业ID",
                     "type": "integer"
                 },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
                 "price": {
                     "description": "单价",
                     "type": "number"
@@ -9375,10 +9453,6 @@ const docTemplate = `{
                 "subscribeId": {
                     "description": "订阅ID",
                     "type": "integer"
-                },
-                "voltage": {
-                    "description": "电压型号",
-                    "type": "number"
                 }
             }
         },
@@ -9492,6 +9566,10 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
                 "name": {
                     "description": "骑手姓名, 平台调拨此字段不存在",
                     "type": "string"
@@ -9511,10 +9589,6 @@ const docTemplate = `{
                 "type": {
                     "description": "出入库类型 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租",
                     "type": "integer"
-                },
-                "voltage": {
-                    "description": "电压",
-                    "type": "number"
                 }
             }
         },
@@ -9544,6 +9618,10 @@ const docTemplate = `{
                     "description": "今日入库",
                     "type": "integer"
                 },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
                 "outbound": {
                     "description": "今日出库",
                     "type": "integer"
@@ -9551,10 +9629,6 @@ const docTemplate = `{
                 "surplus": {
                     "description": "库存电池",
                     "type": "integer"
-                },
-                "voltage": {
-                    "description": "电压型号",
-                    "type": "number"
                 }
             }
         },
@@ -9663,6 +9737,10 @@ const docTemplate = `{
         "model.StockStoreMaterial": {
             "type": "object",
             "properties": {
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
                 "name": {
                     "description": "物资名称",
                     "type": "string"
@@ -9670,10 +9748,6 @@ const docTemplate = `{
                 "num": {
                     "description": "物资数量",
                     "type": "integer"
-                },
-                "voltage": {
-                    "description": "电池电压型号",
-                    "type": "number"
                 }
             }
         },
@@ -9683,6 +9757,10 @@ const docTemplate = `{
                 "inboundId": {
                     "description": "调入至 (0:平台)",
                     "type": "integer"
+                },
+                "model": {
+                    "description": "电池型号 (和` + "`" + `物资名称` + "`" + `不能同时存在, 也不能同时为空)",
+                    "type": "string"
                 },
                 "name": {
                     "description": "物资名称 (和` + "`" + `电池型号` + "`" + `不能同时存在, 也不能同时为空)",
@@ -9695,10 +9773,6 @@ const docTemplate = `{
                 "outboundId": {
                     "description": "调出自 (0:平台)",
                     "type": "integer"
-                },
-                "voltage": {
-                    "description": "电池型号 (和` + "`" + `物资名称` + "`" + `不能同时存在, 也不能同时为空)",
-                    "type": "number"
                 }
             }
         },
@@ -9892,8 +9966,12 @@ const docTemplate = `{
                     "description": "初始购买骑士卡天数",
                     "type": "integer"
                 },
+                "model": {
+                    "description": "可用电池型号",
+                    "type": "string"
+                },
                 "models": {
-                    "description": "可用电池型号, 显示为` + "`" + `72V30AH` + "`" + `即Voltage(V)+Capacity(AH), 逗号分隔",
+                    "description": "可用电池型号",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.BatteryModel"
@@ -9946,10 +10024,6 @@ const docTemplate = `{
                         4,
                         5
                     ]
-                },
-                "voltage": {
-                    "description": "可用电压型号",
-                    "type": "number"
                 }
             }
         },
@@ -9980,6 +10054,10 @@ const docTemplate = `{
                     "description": "订阅ID",
                     "type": "integer"
                 },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
                 "order": {
                     "description": "订单详情, 团签骑手此字段不存在",
                     "allOf": [
@@ -10003,10 +10081,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.RiderBasic"
                         }
                     ]
-                },
-                "voltage": {
-                    "description": "电池电压型号",
-                    "type": "number"
                 }
             }
         },
@@ -10051,6 +10125,10 @@ const docTemplate = `{
                     "description": "证件后四位",
                     "type": "string"
                 },
+                "model": {
+                    "description": "可用电池型号",
+                    "type": "string"
+                },
                 "name": {
                     "description": "骑手姓名",
                     "type": "string"
@@ -10077,10 +10155,6 @@ const docTemplate = `{
                 "subscribeId": {
                     "description": "当前订阅ID",
                     "type": "integer"
-                },
-                "voltage": {
-                    "description": "当前电池型号(电压)",
-                    "type": "number"
                 }
             }
         },

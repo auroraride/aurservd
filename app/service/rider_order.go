@@ -98,9 +98,8 @@ func (s *riderOrderService) Detail(item *ent.Order) model.RiderOrder {
         }
         for _, pm := range op.Edges.Pms {
             res.Models = append(res.Models, model.BatteryModel{
-                ID:       pm.ID,
-                Voltage:  pm.Voltage,
-                Capacity: pm.Capacity,
+                ID:    pm.ID,
+                Model: pm.Model,
             })
         }
     }

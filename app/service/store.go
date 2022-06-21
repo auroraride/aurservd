@@ -85,8 +85,8 @@ func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
                 InboundID:  item.ID,
                 Num:        m.Num,
             }
-            if m.Voltage != 0 {
-                tf.Voltage = m.Voltage
+            if m.Model != "" {
+                tf.Model = m.Model
             } else {
                 tf.Name = m.Name
             }

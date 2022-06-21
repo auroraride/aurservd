@@ -17,10 +17,10 @@ type ExchangeStoreReq struct {
 }
 
 type ExchangeStoreRes struct {
-    Voltage   float64 `json:"voltage"`   // 电池电压
-    StoreName string  `json:"storeName"` // 门店名称
-    Time      int64   `json:"time"`      // 时间戳
-    UUID      string  `json:"uuid"`      // 编码
+    Model     string `json:"model"`     // 电池型号
+    StoreName string `json:"storeName"` // 门店名称
+    Time      int64  `json:"time"`      // 时间戳
+    UUID      string `json:"uuid"`      // 编码
 }
 
 type ExchangeOverview struct {
@@ -61,7 +61,7 @@ type ExchangeEmployeeListRes struct {
     Name       string           `json:"name"`                 // 骑手姓名
     Phone      string           `json:"phone"`                // 骑手电话
     Time       string           `json:"time"`                 // 换电时间
-    Voltage    float64          `json:"voltage"`              // 换电型号
+    Model      string           `json:"model"`                // 电池型号
     Enterprise *EnterpriseBasic `json:"enterprise,omitempty"` // 团签企业, 个签无此字段
     Plan       *Plan            `json:"plan,omitempty"`       // 骑士卡, 团签无此字段
 }

@@ -69,6 +69,14 @@ func (s *batteryService) QueryIDs(ids []uint64) []*ent.BatteryModel {
     return s.orm.QueryNotDeleted().Where(batterymodel.IDIn(ids...)).AllX(s.ctx)
 }
 
+func (s *batteryService) QueryModelsX(models []string) []*ent.BatteryModel {
+    items, _ := s.orm.QueryNotDeleted().Where(batterymodel.ModelIn(models...)).All(s.ctx)
+    if len(items) != len(models) {
+        snag.Panic("电池型号查询失败")
+    }
+    return items
+}
+
 // Models 列出所有电池型号
 func (s *batteryService) Models() []string {
     items, _ := s.orm.QueryNotDeleted().Where(batterymodel.Enable(true)).All(s.ctx)

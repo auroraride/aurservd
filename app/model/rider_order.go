@@ -18,7 +18,7 @@ type RiderOrder struct {
     Models     []BatteryModel `json:"models,omitempty"`   // 可用型号, 非骑士卡订阅订单无此字段
     Rider      RiderBasic     `json:"rider"`              // 骑手
     Plan       *Plan          `json:"plan,omitempty"`     // 骑士卡, 非骑士卡订阅订单无此字段 (可为空)
-    Voltage    float64        `json:"voltage,omitempty"`  // 电压 (可为空)
+    Model      string         `json:"model,omitempty"`    // 电池型号 (可为空)
     Store      *Store         `json:"store,omitempty"`    // 门店 (可为空)
     Employee   *Employee      `json:"employee,omitempty"` // 店员 (可为空)
     Refund     *Refund        `json:"refund,omitempty"`   // 退款详情 (可为空)

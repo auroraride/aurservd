@@ -81,12 +81,11 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
 
     // 查询设置电池型号
     bms := make([]model.BatteryModel, len(req.Models))
-    models := NewBattery().QueryIDs(req.Models)
+    models := NewBattery().QueryModelsX(req.Models)
     for i, bm := range models {
         bms[i] = model.BatteryModel{
-            ID:       bm.ID,
-            Voltage:  bm.Voltage,
-            Capacity: bm.Capacity,
+            ID:    bm.ID,
+            Model: bm.Model,
         }
     }
     q.AddBms(models...)
@@ -122,8 +121,8 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
     if req.Status != nil {
         q.Where(cabinet.Status(*req.Status))
     }
-    if req.Voltage != nil {
-        q.Where(cabinet.HasBmsWith(batterymodel.Voltage(*req.Voltage)))
+    if req.Model != nil {
+        q.Where(cabinet.HasBmsWith(batterymodel.Model(*req.Model)))
     }
 
     return model.ParsePaginationResponse[model.CabinetItem, ent.Cabinet](q, req.PaginationReq, func(item *ent.Cabinet) (res model.CabinetItem) {
@@ -148,12 +147,11 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
         q.ClearBms()
         // 查询设置电池型号
         bms := make([]model.BatteryModel, len(*req.Models))
-        models := NewBattery().QueryIDs(*req.Models)
+        models := NewBattery().QueryModelsX(*req.Models)
         for i, bm := range models {
             bms[i] = model.BatteryModel{
-                ID:       bm.ID,
-                Voltage:  bm.Voltage,
-                Capacity: bm.Capacity,
+                ID:    bm.ID,
+                Model: bm.Model,
             }
         }
         q.AddBms(models...)
@@ -424,14 +422,14 @@ func (s *cabinetService) QueryWithSerial(serial string) *ent.Cabinet {
     return cab
 }
 
-// VoltageInclude 电柜可用型号是否包含电压
-func (s *cabinetService) VoltageInclude(item *ent.Cabinet, voltage float64) bool {
+// ModelInclude 电柜是否可用指定型号电池
+func (s *cabinetService) ModelInclude(item *ent.Cabinet, model string) bool {
     bms := item.Edges.Bms
     if bms == nil {
         return false
     }
     for _, bm := range bms {
-        if bm.Voltage == voltage {
+        if bm.Model == model {
             return true
         }
     }

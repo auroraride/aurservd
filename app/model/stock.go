@@ -26,11 +26,11 @@ func StockNumberOfRiderBusiness(typ uint8) (num int) {
 }
 
 type StockTransferReq struct {
-    Voltage    float64 `json:"voltage,omitempty"` // 电池型号 (和`物资名称`不能同时存在, 也不能同时为空)
-    Name       string  `json:"name,omitempty"`    // 物资名称 (和`电池型号`不能同时存在, 也不能同时为空)
-    OutboundID uint64  `json:"outboundId"`        // 调出自 (0:平台)
-    InboundID  uint64  `json:"inboundId"`         // 调入至 (0:平台)
-    Num        int     `json:"num"`               // 调拨数量
+    Model      string `json:"model,omitempty"` // 电池型号 (和`物资名称`不能同时存在, 也不能同时为空)
+    Name       string `json:"name,omitempty"`  // 物资名称 (和`电池型号`不能同时存在, 也不能同时为空)
+    OutboundID uint64 `json:"outboundId"`      // 调出自 (0:平台)
+    InboundID  uint64 `json:"inboundId"`       // 调入至 (0:平台)
+    Num        int    `json:"num"`             // 调拨数量
 }
 
 type StockListReq struct {
@@ -52,9 +52,9 @@ type StockMaterial struct {
 }
 
 type StockStoreMaterial struct {
-    Voltage float64 `json:"voltage"` // 电池电压型号
-    Name    string  `json:"name"`    // 物资名称
-    Num     int     `json:"num"`     // 物资数量
+    Model string `json:"model"` // 电池型号
+    Name  string `json:"name"`  // 物资名称
+    Num   int    `json:"num"`   // 物资数量
 }
 
 type StockListRes struct {
@@ -74,19 +74,19 @@ type StockOverview struct {
 }
 
 type StockWithRiderReq struct {
-    RiderID    uint64  `json:"riderId"`    // 骑手ID
-    StoreID    uint64  `json:"storeId"`    // 门店ID
-    EmployeeID uint64  `json:"employeeId"` // 店员ID
-    ManagerID  uint64  `json:"managerId"`  // 管理员ID
-    Voltage    float64 `json:"voltage"`    // 电压型号
-    StockType  uint8   `json:"stockType"`  // 出入库类型
+    RiderID    uint64 `json:"riderId"`    // 骑手ID
+    StoreID    uint64 `json:"storeId"`    // 门店ID
+    EmployeeID uint64 `json:"employeeId"` // 店员ID
+    ManagerID  uint64 `json:"managerId"`  // 管理员ID
+    Model      string `json:"model"`      // 电池型号
+    StockType  uint8  `json:"stockType"`  // 出入库类型
 }
 
 type StockEmployeeOverviewBattery struct {
-    Voltage  float64 `json:"voltage"`  // 电压型号
-    Surplus  int     `json:"surplus"`  // 库存电池
-    Outbound int     `json:"outbound"` // 今日出库
-    Inbound  int     `json:"inbound"`  // 今日入库
+    Model    string `json:"model"`    // 电池型号
+    Surplus  int    `json:"surplus"`  // 库存电池
+    Outbound int    `json:"outbound"` // 今日出库
+    Inbound  int    `json:"inbound"`  // 今日入库
 }
 
 type StockEmployeeOverviewMaterial struct {
@@ -108,13 +108,13 @@ type StockEmployeeListReq struct {
 }
 
 type StockEmployeeListResItem struct {
-    ID      uint64   `json:"id"`
-    Type    uint8    `json:"type"`            // 出入库类型 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租
-    Name    string   `json:"name,omitempty"`  // 骑手姓名, 平台调拨此字段不存在
-    Phone   string   `json:"phone,omitempty"` // 骑手电话, 平台调拨此字段不存在
-    Num     int      `json:"num"`             // 数量, 正数为入库, 负数为出库(前端显示正数)
-    Voltage *float64 `json:"voltage"`         // 电压
-    Time    string   `json:"time"`            // 时间
+    ID    uint64  `json:"id"`
+    Type  uint8   `json:"type"`            // 出入库类型 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租
+    Name  string  `json:"name,omitempty"`  // 骑手姓名, 平台调拨此字段不存在
+    Phone string  `json:"phone,omitempty"` // 骑手电话, 平台调拨此字段不存在
+    Num   int     `json:"num"`             // 数量, 正数为入库, 负数为出库(前端显示正数)
+    Model *string `json:"model"`           // 电池型号
+    Time  string  `json:"time"`            // 时间
 }
 
 type StockEmployeeListRes struct {

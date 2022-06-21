@@ -77,14 +77,14 @@ func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
 }
 
 // checkDuplicate 查询骑士卡是否冲突
-func (s *planService) checkDuplicate(cities, models []uint64, start, end time.Time, parentID ...uint64) {
+func (s *planService) checkDuplicate(cities []uint64, models []string, start, end time.Time, parentID ...uint64) {
     for _, cityID := range cities {
-        for _, modelID := range models {
+        for _, rm := range models {
             q := s.orm.QueryNotDeleted().
                 Where(
                     plan.Enable(true),
                     plan.HasCitiesWith(city.ID(cityID)),
-                    plan.HasPmsWith(batterymodel.ID(modelID)),
+                    plan.HasPmsWith(batterymodel.Model(rm)),
                     plan.StartLTE(end),
                     plan.EndGTE(start),
                 )
@@ -107,16 +107,13 @@ func (s *planService) cloneCreator(creator *ent.PlanCreate) *ent.PlanCreate {
     return &c
 }
 
-func (s *planService) getCitiesAndModels(reqCities, reqModels []uint64) (cities ent.Cities, pms ent.BatteryModels) {
+func (s *planService) getCitiesAndModels(reqCities []uint64, reqModels []string) (cities ent.Cities, pms ent.BatteryModels) {
     var err error
     cities, err = ar.Ent.City.QueryNotDeleted().Where(city.IDIn(reqCities...)).All(s.ctx)
     if err != nil {
         snag.Panic("城市参数错误")
     }
-    pms, err = ar.Ent.BatteryModel.QueryNotDeleted().Where(batterymodel.IDIn(reqModels...)).All(s.ctx)
-    if err != nil {
-        snag.Panic("电池型号错误")
-    }
+    pms = NewBattery().QueryModelsX(reqModels)
     return
 }
 
@@ -141,7 +138,7 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanWithComplexes {
         SetName(req.Name).
         SetEnable(req.Enable).
         AddCityIDs(req.Cities...).
-        AddPmIDs(req.Models...).
+        AddPms(pms...).
         SetStart(start).
         SetEnd(end)
 
@@ -260,9 +257,8 @@ func (s *planService) PlanWithComplexes(item *ent.Plan) (res model.PlanWithCompl
 
     for i, pm := range item.Edges.Pms {
         res.Models[i] = model.BatteryModel{
-            ID:       pm.ID,
-            Voltage:  pm.Voltage,
-            Capacity: pm.Capacity,
+            ID:    pm.ID,
+            Model: pm.Model,
         }
     }
 
@@ -318,40 +314,64 @@ func (s *planService) List(req *model.PlanListReq) *model.PaginationRes {
     )
 }
 
-// RiderList 获取骑士卡列表
-func (s *planService) RiderList(req *model.PlanListRiderReq) (res []model.RiderPlanItem) {
+func (s *planService) CityList(req *model.PlanListRiderReq) map[string]*[]model.RiderPlanItem {
+    rmap := make(map[string]*[]model.RiderPlanItem)
     now := time.Now()
+
     items := s.orm.QueryNotDeleted().
         Where(
             plan.Enable(true),
             plan.StartLTE(now),
             plan.EndGTE(now),
-            plan.HasPmsWith(batterymodel.Voltage(req.Voltage)),
             plan.DaysGTE(req.Min),
+            plan.HasCitiesWith(
+                city.ID(req.CityID),
+            ),
         ).
+        WithPms().
         Order(ent.Asc(plan.FieldDays)).
         AllX(s.ctx)
-    res = make([]model.RiderPlanItem, len(items))
-    for i, item := range items {
-        res[i] = model.RiderPlanItem{
-            ID:       item.ID,
-            Name:     item.Name,
-            Price:    item.Price,
-            Days:     item.Days,
-            Original: item.Original,
-            Desc:     item.Desc,
+
+    for _, item := range items {
+        for _, pm := range item.Edges.Pms {
+            list, ok := rmap[pm.Model]
+            if !ok {
+                list = new([]model.RiderPlanItem)
+                rmap[pm.Model] = list
+            }
+            *list = append(*list, model.RiderPlanItem{
+                ID:       item.ID,
+                Name:     item.Name,
+                Price:    item.Price,
+                Days:     item.Days,
+                Original: item.Original,
+                Desc:     item.Desc,
+            })
         }
     }
-    return
+
+    return rmap
 }
 
 // RiderListNewly 获取新购骑士卡列表
-func (s *planService) RiderListNewly(req *model.PlanListRiderReq) []model.RiderPlanItem {
+func (s *planService) RiderListNewly(req *model.PlanListRiderReq) []model.RiderPlanListRes {
     if sub, _ := NewSubscribe().QueryEffective(s.rider.ID); sub != nil {
         snag.Panic("骑手有生效中的订阅, 无法新购")
     }
 
-    return s.RiderList(req)
+    deposit := NewRider().Deposit(s.rider.ID)
+
+    res := make([]model.RiderPlanListRes, 0)
+    rmap := s.CityList(req)
+    for m, list := range rmap {
+        res = append(res, model.RiderPlanListRes{
+            Model:   m,
+            Plans:   *list,
+            Deposit: deposit,
+        })
+    }
+
+    return res
 }
 
 // RiderListRenewal 获取续费骑士卡列表
@@ -363,21 +383,29 @@ func (s *planService) RiderListRenewal() model.RiderPlanRenewalRes {
 
     var fee float64
     var formula string
+    var min uint
 
     if sub.Remaining < 0 {
         fee, formula, _ = NewSubscribe().OverdueFee(s.rider.ID, sub.Remaining)
+        min = uint(0 - sub.Remaining)
     }
 
-    min := uint(0 - sub.Remaining)
+    rmap := s.CityList(&model.PlanListRiderReq{
+        CityID: sub.CityID,
+        Min:    min,
+    })
+
+    items := make([]model.RiderPlanItem, 0)
+
+    if list, ok := rmap[sub.Model]; ok {
+        items = *list
+    }
 
     return model.RiderPlanRenewalRes{
         Overdue: sub.Remaining < 0,
         Fee:     fee,
         Formula: formula,
         Days:    min,
-        Items: s.RiderList(&model.PlanListRiderReq{
-            CityID:  sub.CityID,
-            Voltage: sub.Voltage,
-        }),
+        Items:   items,
     }
 }

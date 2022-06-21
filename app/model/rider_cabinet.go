@@ -62,7 +62,7 @@ type RiderCabinetInfo struct {
     BatteryNum     uint         `json:"batteryNum"`     // 总电池数
     BatteryFullNum uint         `json:"batteryFullNum"` // 总满电电池数
     Brand          CabinetBrand `json:"brand"`          // 电柜型号
-    Voltage        float64      `json:"voltage"`        // 电池电压
+    Model          string       `json:"model"`          // 电池型号
     CityID         uint64       `json:"cityId"`         // 城市ID
     RiderCabinetOperateProcess
 }
@@ -85,7 +85,7 @@ type RiderCabinetOperateReq struct {
 type RiderCabinetOperating struct {
     UUID        string             `json:"uuid"`
     Serial      string             `json:"serial"`
-    Voltage     float64            `json:"voltage"`     // 电压型号
+    Model       string             `json:"model"`       // 电池型号
     ID          uint64             `json:"id"`          // 电柜ID
     EmptyIndex  int                `json:"emptyIndex"`  // 空店仓
     FullIndex   int                `json:"fullIndex"`   // 满电仓

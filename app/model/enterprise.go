@@ -23,15 +23,15 @@ type EnterpriseContract struct {
 }
 
 type EnterprisePrice struct {
-    CityID  uint64  `json:"cityId" validate:"required" trans:"城市"`
-    Voltage float64 `json:"voltage" validate:"required" enums:"60,72" trans:"电压型号"` // 暂时固定为 60 或 72
-    Price   float64 `json:"price" validate:"required" trans:"单价(元/天)"`
+    CityID uint64  `json:"cityId" validate:"required" trans:"城市"`
+    Model  string  `json:"model" validate:"required" trans:"电池型号"`
+    Price  float64 `json:"price" validate:"required" trans:"单价(元/天)"`
 }
 
 type EnterprisePriceWithCity struct {
-    Voltage float64 `json:"voltage" enums:"60,72"` // 电压型号 暂时固定为 60 或 72
-    Price   float64 `json:"price"`                 // 单价(元/天)
-    City    City    `json:"city"`                  // 城市
+    Model string  `json:"model"` // 电池型号
+    Price float64 `json:"price"` // 单价(元/天)
+    City  City    `json:"city"`  // 城市
 }
 
 // EnterpriseBasic 企业基础字段

@@ -30,7 +30,7 @@ type PaymentSubscribe struct {
     Deposit     float64 `json:"deposit"`           // 附带押金
     PastDays    int     `json:"pastDays"`          // 距离上次退订天数
     Commission  float64 `json:"commission"`        // 提成金额
-    Voltage     float64 `json:"voltage"`           // 可用电压型号
+    Model       string  `json:"model"`             // 可用电池型号
     Days        uint    `json:"days"`              // 骑士卡天数
     OrderID     *uint64 `json:"orderId"`           // 子订单ID
     SubscribeID *uint64 `json:"subscribeId"`       // 续费订单携带订阅ID

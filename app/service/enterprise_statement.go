@@ -7,7 +7,6 @@ package service
 
 import (
     "context"
-    "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -114,6 +113,8 @@ func (s *enterpriseStatementService) GetBill(req *model.StatementBillReq) *model
         StatementID:  es.ID,
     }
 
+    srv := NewEnterprise()
+
     overview := make(map[string]*model.BillOverview)
     var cost float64
     td := tools.NewDecimal()
@@ -121,16 +122,16 @@ func (s *enterpriseStatementService) GetBill(req *model.StatementBillReq) *model
         cost = td.Sum(cost, bill.Cost)
         res.Days += bill.Days
 
-        key := fmt.Sprintf("%d-%.2f", bill.City.ID, bill.Voltage)
+        key := srv.PriceKey(bill.City.ID, bill.Model)
         ov, ok := overview[key]
         if !ok {
             ov = &model.BillOverview{
-                Voltage: bill.Voltage,
-                Number:  0,
-                Price:   bill.Price,
-                Days:    0,
-                Cost:    0,
-                City:    bill.City,
+                Model:  bill.Model,
+                Number: 0,
+                Price:  bill.Price,
+                Days:   0,
+                Cost:   0,
+                City:   bill.City,
             }
             overview[key] = ov
         }

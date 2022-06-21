@@ -99,7 +99,7 @@ func (s *riderMgrService) PauseSubscribe(subscribeID uint64) {
 
     stockReq := &model.StockWithRiderReq{
         RiderID:   sub.RiderID,
-        Voltage:   sub.Voltage,
+        Model:     sub.Model,
         StockType: model.StockTypeRiderPause,
     }
 
@@ -174,7 +174,7 @@ func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
 
     stockReq := &model.StockWithRiderReq{
         RiderID:   sub.RiderID,
-        Voltage:   sub.Voltage,
+        Model:     sub.Model,
         StockType: model.StockTypeRiderContinue,
     }
 
@@ -244,7 +244,7 @@ func (s *riderMgrService) UnSubscribe(subscribeID uint64) {
     lgr := logging.NewOperateLog().SetEmployee(s.employeeInfo)
     stockReq := &model.StockWithRiderReq{
         RiderID:   sub.RiderID,
-        Voltage:   sub.Voltage,
+        Model:     sub.Model,
         StockType: model.StockTypeRiderUnSubscribe,
     }
 

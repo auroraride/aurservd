@@ -20,10 +20,10 @@ type AttendanceCreateReq struct {
 }
 
 type AttendanceInventory struct {
-    Name     string   `json:"name"`              // 物资名称
-    Num      int      `json:"num"`               // 物资数量
-    StockNum int      `json:"stockNum"`          // 当前库存该物资数量
-    Voltage  *float64 `json:"voltage,omitempty"` // 电池型号
+    Name     string `json:"name"`            // 物资名称
+    Num      int    `json:"num"`             // 物资数量
+    StockNum int    `json:"stockNum"`        // 当前库存该物资数量
+    Model    string `json:"model,omitempty"` // 电池型号
 }
 
 type AttendanceListReq struct {
@@ -41,6 +41,7 @@ type AttendanceListRes struct {
     ID        uint64                `json:"id"`
     City      City                  `json:"city"`      // 城市
     Store     Store                 `json:"store"`     // 门店
+    Duty      bool                  `json:"duty"`      // true上班 或 false下班打卡
     Name      string                `json:"name"`      // 店员姓名
     Phone     string                `json:"phone"`     // 店员电话
     Time      string                `json:"time"`      // 盘点时间

@@ -115,7 +115,7 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
         ID:          sub.ID,
         RiderID:     sub.RiderID,
         Status:      sub.Status,
-        Voltage:     sub.Voltage,
+        Model:       sub.Model,
         Days:        sub.InitialDays + sub.PauseDays + sub.AlterDays + sub.OverdueDays,
         PauseDays:   sub.PauseDays,
         AlterDays:   sub.AlterDays,
@@ -139,9 +139,8 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
 
         for _, pm := range sub.Edges.Plan.Edges.Pms {
             res.Models = append(res.Models, model.BatteryModel{
-                ID:       pm.ID,
-                Voltage:  pm.Voltage,
-                Capacity: pm.Capacity,
+                ID:    pm.ID,
+                Model: pm.Model,
             })
         }
     }
@@ -336,7 +335,7 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
         ID:        sub.ID,
         Status:    sub.Status,
         Remaining: sub.Remaining,
-        Voltage:   sub.Voltage,
+        Model:     sub.Model,
     }
 }
 

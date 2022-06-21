@@ -115,6 +115,11 @@ func (s *enterpriseService) Modify(req *model.EnterpriseDetailWithID) {
     _ = tx.Commit()
 }
 
+// PriceKey 获取企业价格key (城市id-电池型号)
+func (s *enterpriseService) PriceKey(cityID uint64, model string) string {
+    return fmt.Sprintf("%d-%s", cityID, model)
+}
+
 // SaveEnterprise 保存企业信息
 func (s *enterpriseService) SaveEnterprise(tx *ent.Tx, e *ent.Enterprise, req *model.EnterpriseDetail) {
     var err error
@@ -122,11 +127,11 @@ func (s *enterpriseService) SaveEnterprise(tx *ent.Tx, e *ent.Enterprise, req *m
     cvm := make(map[string]struct{})
     for _, rp := range req.Prices {
         // 判断价格是否重复
-        k := fmt.Sprintf("%d-%f", rp.CityID, rp.Voltage)
+        k := s.PriceKey(rp.CityID, rp.Model)
         if _, ok := cvm[k]; ok {
             snag.PanicCallbackX(tx.Rollback, "价格重复")
         }
-        _, err = tx.EnterprisePrice.Create().SetPrice(rp.Price).SetCityID(rp.CityID).SetVoltage(rp.Voltage).SetEnterprise(e).Save(s.ctx)
+        _, err = tx.EnterprisePrice.Create().SetPrice(rp.Price).SetCityID(rp.CityID).SetModel(rp.Model).SetEnterprise(e).Save(s.ctx)
         snag.PanicIfErrorX(err, tx.Rollback)
         cvm[k] = struct{}{}
     }
@@ -235,8 +240,8 @@ func (s *enterpriseService) Detail(item *ent.Enterprise) (res model.EnterpriseRe
         res.Prices = make([]model.EnterprisePriceWithCity, len(prices))
         for i, ep := range prices {
             res.Prices[i] = model.EnterprisePriceWithCity{
-                Voltage: ep.Voltage,
-                Price:   ep.Price,
+                Model: ep.Model,
+                Price: ep.Price,
                 City: model.City{
                     ID:   ep.Edges.City.ID,
                     Name: ep.Edges.City.Name,
@@ -300,7 +305,7 @@ func (s *enterpriseService) GetPrices(item *ent.Enterprise) (res map[string]floa
 
     res = make(map[string]float64)
     for _, ep := range items {
-        res[fmt.Sprintf("%d-%.2f", ep.CityID, ep.Voltage)] = ep.Price
+        res[s.PriceKey(ep.CityID, ep.Model)] = ep.Price
     }
 
     return res
@@ -333,7 +338,7 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
         used = tt.UsedDays(to, from)
 
         // 按城市/型号计算金额
-        k := fmt.Sprintf("%d-%.2f", sub.CityID, sub.Voltage)
+        k := s.PriceKey(sub.CityID, sub.Model)
         p, ok := prices[k]
         if !ok {
             log.Errorf("%d [%d] 获取价格失败", sub.ID, sub.CityID)
@@ -355,7 +360,7 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
             Start:       from.Format(carbon.DateLayout),
             Cost:        cost,
             Price:       p,
-            Voltage:     sub.Voltage,
+            Model:       sub.Model,
         }
     }
 

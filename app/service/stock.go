@@ -138,7 +138,7 @@ func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
 
             // 入库
             for _, st := range item.Edges.Stocks {
-                if st.Voltage != nil {
+                if st.Model != nil {
                     // 电池
                     s.calculate(batteries, st)
                 } else {
@@ -148,7 +148,7 @@ func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
             }
 
             for _, ex := range item.Edges.Exceptions {
-                if ex.Voltage != nil {
+                if ex.Model != nil {
                     s.calculateMaterial(batteries, ex)
                 } else {
                     s.calculateMaterial(materials, ex)
@@ -231,10 +231,10 @@ func (s *stockService) Fetch(storeID uint64, name string) int {
 
 // Transfer 调拨
 func (s *stockService) Transfer(req *model.StockTransferReq) {
-    if req.Name == "" && req.Voltage == 0 {
+    if req.Name == "" && req.Model == "" {
         snag.Panic("电池型号和物资名称不能同时为空")
     }
-    if req.Name != "" && req.Voltage != 0 {
+    if req.Name != "" && req.Model != "" {
         snag.Panic("电池型号和物资名称不能同时存在")
     }
     if req.Num <= 0 {
@@ -248,8 +248,8 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
 
     // 调出检查
     name := req.Name
-    if req.Voltage != 0 {
-        name = NewBattery().VoltageName(req.Voltage)
+    if req.Model != "" {
+        name = req.Model
     }
 
     if req.OutboundID > 0 && s.Fetch(req.OutboundID, name) < req.Num {
@@ -268,15 +268,15 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
         out = nil
     }
 
-    v := &req.Voltage
-    if req.Voltage == 0 {
+    v := &req.Model
+    if req.Model == "" {
         v = nil
     }
 
     // 调出
     _, err := tx.Stock.Create().
         SetName(name).
-        SetNillableVoltage(v).
+        SetNillableModel(v).
         SetNum(-req.Num).
         SetNillableStoreID(out).
         SetType(model.StockTypeTransfer).
@@ -287,7 +287,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
     // 调入
     _, err = tx.Stock.Create().
         SetName(name).
-        SetNillableVoltage(v).
+        SetNillableModel(v).
         SetNum(req.Num).
         SetNillableStoreID(in).
         SetType(model.StockTypeTransfer).
@@ -304,7 +304,7 @@ func (s *stockService) Overview() (res model.StockOverview) {
                 NOT store_id IS NULL AND num > 0 AS inbound,
                 store_id IS NULL                 AS plaform
 FROM stock
-WHERE voltage IS NOT NULL AND deleted_at IS NULL
+WHERE model IS NOT NULL AND deleted_at IS NULL
 GROUP BY outbound, inbound, plaform`)
 
     if err != nil {
@@ -342,14 +342,12 @@ GROUP BY outbound, inbound, plaform`)
 
 // BatteryWithRider 和骑手交互电池出入库
 func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockWithRiderReq) error {
-    name := NewBattery().VoltageName(req.Voltage)
-
     num := model.StockNumberOfRiderBusiness(req.StockType)
 
     // TODO 平台管理员可操作性时处理出入库逻辑
     if req.StoreID != 0 {
         cr.SetStoreID(req.StoreID)
-        if num < 0 && s.Fetch(req.StoreID, name) < int(math.Abs(float64(num))) {
+        if num < 0 && s.Fetch(req.StoreID, req.Model) < int(math.Abs(float64(num))) {
             return errors.New("电池库存不足")
         }
     }
@@ -362,10 +360,10 @@ func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockWit
         cr.SetManagerID(req.ManagerID)
     }
 
-    cr.SetName(NewBattery().VoltageName(req.Voltage)).
+    cr.SetName(req.Model).
         SetRiderID(req.RiderID).
         SetType(req.StockType).
-        SetVoltage(req.Voltage).
+        SetModel(req.Model).
         SetNum(num).
         SetSn(tools.NewUnique().NewSN())
 
@@ -398,13 +396,13 @@ func (s *stockService) EmployeeOverview() (res model.StockEmployeeOverview) {
     items, _ := s.orm.QueryNotDeleted().Where(stock.StoreID(st.ID)).All(s.ctx)
     for _, item := range items {
         name := st.Name
-        if item.Voltage != nil {
+        if item.Model != nil {
             if _, ok := batteries[name]; !ok {
                 batteries[name] = &model.StockEmployeeOverviewBattery{
                     Outbound: 0,
                     Inbound:  0,
                     Surplus:  0,
-                    Voltage:  *item.Voltage,
+                    Model:    *item.Model,
                 }
             }
             // 判断是否今日
@@ -431,7 +429,7 @@ func (s *stockService) EmployeeOverview() (res model.StockEmployeeOverview) {
 
     // 排序
     sort.Slice(res.Batteries, func(i, j int) bool {
-        return res.Batteries[i].Voltage < res.Batteries[j].Voltage
+        return strings.Compare(res.Batteries[i].Model, res.Batteries[j].Model) < 0
     })
     sort.Slice(res.Materials, func(i, j int) bool {
         return strings.Compare(res.Materials[i].Name, res.Materials[j].Name) < 0
@@ -479,11 +477,11 @@ func (s *stockService) EmployeeList(req *model.StockEmployeeListReq) model.Stock
         func(item *ent.Stock) model.StockEmployeeListResItem {
             r := item.Edges.Rider
             res := model.StockEmployeeListResItem{
-                ID:      item.ID,
-                Type:    item.Type,
-                Voltage: item.Voltage,
-                Num:     item.Num,
-                Time:    item.CreatedAt.Format(carbon.DateTimeLayout),
+                ID:    item.ID,
+                Type:  item.Type,
+                Model: item.Model,
+                Num:   item.Num,
+                Time:  item.CreatedAt.Format(carbon.DateTimeLayout),
             }
             if r != nil {
                 res.Phone = r.Phone
@@ -532,8 +530,8 @@ func (s *stockService) Current(id uint64) []model.InventoryItemWithNum {
     err := s.orm.QueryNotDeleted().
         Where(stock.StoreID(id)).
         Modify(func(sel *sql.Selector) {
-            sel.GroupBy(stock.FieldName, stock.FieldVoltage).Select(stock.FieldName, stock.FieldVoltage).
-                AppendSelectExprAs(sql.Raw(fmt.Sprintf("%s IS NOT NULL", stock.FieldVoltage)), "battery").
+            sel.GroupBy(stock.FieldName, stock.FieldModel).Select(stock.FieldName, stock.FieldModel).
+                AppendSelectExprAs(sql.Raw(fmt.Sprintf("%s IS NOT NULL", stock.FieldModel)), "battery").
                 AppendSelectExprAs(sql.Raw(fmt.Sprintf("SUM(%s)", stock.FieldNum)), "num")
         }).
         Scan(s.ctx, &ins)

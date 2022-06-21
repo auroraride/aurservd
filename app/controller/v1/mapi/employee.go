@@ -95,7 +95,7 @@ func (*employee) Activity(c echo.Context) (err error) {
 
 // Enable
 // @ID           ManagerEmployeeEnable
-// @Router       /manager/v1/enable/enable [POST]
+// @Router       /manager/v1/emoloyee/enable [POST]
 // @Summary      MA015 启用/禁用店员
 // @Tags         [M]管理接口
 // @Accept       json

@@ -95,14 +95,14 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
         SetStoreID(item.ID).
         SetCityID(subd.City.ID).
         SetUUID(uid).
-        SetVoltage(subd.Voltage).
+        SetModel(subd.Model).
         SetNillableEnterpriseID(sub.EnterpriseID).
         SetNillableStationID(sub.StationID).
         SetSubscribeID(sub.ID).
         SaveX(s.ctx)
 
     return &model.ExchangeStoreRes{
-        Voltage:   subd.Voltage,
+        Model:     subd.Model,
         StoreName: item.Name,
         Time:      time.Now().Unix(),
         UUID:      uid,

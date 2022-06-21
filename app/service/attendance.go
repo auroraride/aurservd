@@ -126,7 +126,7 @@ func (s *attendanceService) Create(req *model.AttendanceCreateReq) {
             Name:     item.Name,
             Num:      n,
             StockNum: item.Num,
-            Voltage:  item.Voltage,
+            Model:    item.Model,
         })
     }
 
@@ -209,6 +209,7 @@ func (s *attendanceService) List(req *model.AttendanceListReq) *model.Pagination
             Time:      item.CreatedAt.Format(carbon.DateTimeLayout),
             Photo:     *item.Photo,
             Inventory: item.Inventory,
+            Duty:      item.Duty,
         }
     })
 }

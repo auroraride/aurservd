@@ -49,6 +49,9 @@ definitions:
     type: object
   model.AttendanceInventory:
     properties:
+      model:
+        description: 电池型号
+        type: string
       name:
         description: 物资名称
         type: string
@@ -58,9 +61,6 @@ definitions:
       stockNum:
         description: 当前库存该物资数量
         type: integer
-      voltage:
-        description: 电池型号
-        type: number
     type: object
   model.AttendanceListRes:
     properties:
@@ -68,6 +68,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.City'
         description: 城市
+      duty:
+        description: true上班 或 false下班打卡
+        type: boolean
       id:
         type: integer
       inventory:
@@ -141,14 +144,14 @@ definitions:
       days:
         description: 天数
         type: integer
+      model:
+        description: 电池型号
+        type: string
       number:
         description: 使用骑手数量
         type: integer
       price:
         description: 单价
-        type: number
-      voltage:
-        description: 电压型号
         type: number
     type: object
   model.BranchContract:
@@ -488,7 +491,7 @@ definitions:
       models:
         description: '电池型号 '
         items:
-          type: integer
+          type: string
         type: array
       name:
         description: '电柜名称 '
@@ -1109,19 +1112,16 @@ definitions:
       cityId:
         description: '城市 '
         type: integer
+      model:
+        description: '电池型号 '
+        type: string
       price:
         description: '单价(元/天) '
         type: number
-      voltage:
-        description: 电压型号 暂时固定为 60 或 72
-        enum:
-        - 60
-        - 72
-        type: number
     required:
     - cityId
+    - model
     - price
-    - voltage
     type: object
   model.EnterprisePriceBatteryModelListRes:
     properties:
@@ -1137,14 +1137,11 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.City'
         description: 城市
+      model:
+        description: 电池型号
+        type: string
       price:
         description: 单价(元/天)
-        type: number
-      voltage:
-        description: 电压型号 暂时固定为 60 或 72
-        enum:
-        - 60
-        - 72
         type: number
     type: object
   model.EnterpriseRes:
@@ -1305,8 +1302,11 @@ definitions:
       description:
         description: '描述 '
         type: string
+      model:
+        description: 电池型号 (和`name`不能同时存在, 也不能同时为空)
+        type: string
       name:
-        description: 物资名称 (非电池物资, 和`voltage`不能同时存在, 也不能同时为空), 物资列表查看接口 `E3001 物资异常配置`
+        description: 物资名称 (非电池物资, 和`model`不能同时存在, 也不能同时为空), 物资列表查看接口 `E3001 物资异常配置`
         type: string
       num:
         description: '异常数量 '
@@ -1315,9 +1315,6 @@ definitions:
       reason:
         description: 异常原因 异常原因查看接口 `E3001 物资异常配置`
         type: string
-      voltage:
-        description: 电压型号 (电池, 和`name`不能同时存在, 也不能同时为空)
-        type: number
     required:
     - description
     - num
@@ -1343,6 +1340,9 @@ definitions:
         description: 团签企业, 个签无此字段
       id:
         type: integer
+      model:
+        description: 电池型号
+        type: string
       name:
         description: 骑手姓名
         type: string
@@ -1356,9 +1356,6 @@ definitions:
       time:
         description: 换电时间
         type: string
-      voltage:
-        description: 换电型号
-        type: number
     type: object
   model.ExchangeLogBinInfo:
     properties:
@@ -1413,6 +1410,9 @@ definitions:
     type: object
   model.ExchangeStoreRes:
     properties:
+      model:
+        description: 电池型号
+        type: string
       storeName:
         description: 门店名称
         type: string
@@ -1422,9 +1422,6 @@ definitions:
       uuid:
         description: 编码
         type: string
-      voltage:
-        description: 电池电压
-        type: number
     type: object
   model.FaceAuthUrlResponse:
     properties:
@@ -1469,11 +1466,11 @@ definitions:
       battery:
         description: 是否电池
         type: boolean
+      model:
+        description: 电池型号
+        type: string
       name:
         description: 物资名称, 若物资是电池则名称默认为电池型号
-        type: string
-      voltage:
-        description: 电池型号
         type: string
     type: object
   model.ItemListRes:
@@ -1546,8 +1543,11 @@ definitions:
   model.OrderCreateReq:
     properties:
       cityId:
-        description: '城市ID '
+        description: 城市ID, 新签必填
         type: integer
+      model:
+        description: 用户所选电池型号, 新签必填
+        type: string
       orderType:
         description: 订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
         enum:
@@ -1569,7 +1569,6 @@ definitions:
         description: '套餐ID '
         type: integer
     required:
-    - cityId
     - orderType
     - payway
     - planId
@@ -1673,6 +1672,46 @@ definitions:
     required:
     - days
     - price
+    type: object
+  model.PlanCreateReq:
+    properties:
+      cities:
+        description: '启用城市 '
+        items:
+          type: integer
+        minItems: 1
+        type: array
+      complexes:
+        description: '骑士卡详细信息 '
+        items:
+          $ref: '#/definitions/model.PlanComplex'
+        minItems: 1
+        type: array
+      enable:
+        description: 是否启用
+        type: boolean
+      end:
+        description: '结束日期 '
+        type: string
+      models:
+        description: '电池型号 '
+        items:
+          type: string
+        minItems: 1
+        type: array
+      name:
+        description: '骑士卡名称 '
+        type: string
+      start:
+        description: '开始日期 '
+        type: string
+    required:
+    - cities
+    - complexes
+    - end
+    - models
+    - name
+    - start
     type: object
   model.PlanEnableModifyReq:
     properties:
@@ -1849,6 +1888,9 @@ definitions:
       id:
         description: 电柜ID
         type: integer
+      model:
+        description: 电池型号
+        type: string
       name:
         description: 电柜名称
         type: string
@@ -1858,9 +1900,6 @@ definitions:
       uuid:
         description: 操作ID
         type: string
-      voltage:
-        description: 电池电压
-        type: number
     type: object
   model.RiderCabinetOperateReq:
     properties:
@@ -1989,6 +2028,9 @@ definitions:
       id:
         description: 订阅ID
         type: integer
+      model:
+        description: 骑士卡可用电池型号
+        type: string
       remaining:
         description: 剩余天数
         type: integer
@@ -1996,9 +2038,6 @@ definitions:
         description: '订阅状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期(计算状态) 当 status
           = 1 且 remaining <= 3 的时候是即将到期'
         type: integer
-      voltage:
-        description: 骑士卡可用电压型号
-        type: number
     type: object
   model.RiderMgrDepositReq:
     properties:
@@ -2050,6 +2089,9 @@ definitions:
       id:
         description: 订单ID
         type: integer
+      model:
+        description: 电池型号 (可为空)
+        type: string
       models:
         description: 可用型号, 非骑士卡订阅订单无此字段
         items:
@@ -2086,9 +2128,6 @@ definitions:
       type:
         description: 订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金
         type: integer
-      voltage:
-        description: 电压 (可为空)
-        type: number
     type: object
   model.RiderPlanItem:
     properties:
@@ -2109,6 +2148,20 @@ definitions:
       price:
         description: 价格
         type: number
+    type: object
+  model.RiderPlanListRes:
+    properties:
+      deposit:
+        description: 需缴纳押金
+        type: number
+      model:
+        description: 电池型号
+        type: string
+      plans:
+        description: 套餐列表
+        items:
+          $ref: '#/definitions/model.RiderPlanItem'
+        type: array
     type: object
   model.RiderPlanRenewalRes:
     properties:
@@ -2279,6 +2332,9 @@ definitions:
       enterpriseId:
         description: 企业ID
         type: integer
+      model:
+        description: 电池型号
+        type: string
       price:
         description: 单价
         type: number
@@ -2294,9 +2350,6 @@ definitions:
       subscribeId:
         description: 订阅ID
         type: integer
-      voltage:
-        description: 电压型号
-        type: number
     type: object
   model.StatementBillRes:
     properties:
@@ -2372,6 +2425,9 @@ definitions:
     properties:
       id:
         type: integer
+      model:
+        description: 电池型号
+        type: string
       name:
         description: 骑手姓名, 平台调拨此字段不存在
         type: string
@@ -2387,9 +2443,6 @@ definitions:
       type:
         description: 出入库类型 0:调拨 1:激活 2:寄存 3:结束寄存 4:退租
         type: integer
-      voltage:
-        description: 电压
-        type: number
     type: object
   model.StockEmployeeOverview:
     properties:
@@ -2409,15 +2462,15 @@ definitions:
       inbound:
         description: 今日入库
         type: integer
+      model:
+        description: 电池型号
+        type: string
       outbound:
         description: 今日出库
         type: integer
       surplus:
         description: 库存电池
         type: integer
-      voltage:
-        description: 电压型号
-        type: number
     type: object
   model.StockEmployeeOverviewMaterial:
     properties:
@@ -2490,21 +2543,24 @@ definitions:
     type: object
   model.StockStoreMaterial:
     properties:
+      model:
+        description: 电池型号
+        type: string
       name:
         description: 物资名称
         type: string
       num:
         description: 物资数量
         type: integer
-      voltage:
-        description: 电池电压型号
-        type: number
     type: object
   model.StockTransferReq:
     properties:
       inboundId:
         description: 调入至 (0:平台)
         type: integer
+      model:
+        description: 电池型号 (和`物资名称`不能同时存在, 也不能同时为空)
+        type: string
       name:
         description: 物资名称 (和`电池型号`不能同时存在, 也不能同时为空)
         type: string
@@ -2514,9 +2570,6 @@ definitions:
       outboundId:
         description: 调出自 (0:平台)
         type: integer
-      voltage:
-        description: 电池型号 (和`物资名称`不能同时存在, 也不能同时为空)
-        type: number
     type: object
   model.Store:
     properties:
@@ -2648,8 +2701,11 @@ definitions:
       initialDays:
         description: 初始购买骑士卡天数
         type: integer
+      model:
+        description: 可用电池型号
+        type: string
       models:
-        description: 可用电池型号, 显示为`72V30AH`即Voltage(V)+Capacity(AH), 逗号分隔
+        description: 可用电池型号
         items:
           $ref: '#/definitions/model.BatteryModel'
         type: array
@@ -2686,9 +2742,6 @@ definitions:
         - 4
         - 5
         type: integer
-      voltage:
-        description: 可用电压型号
-        type: number
     type: object
   model.SubscribeActiveInfo:
     properties:
@@ -2706,6 +2759,9 @@ definitions:
       id:
         description: 订阅ID
         type: integer
+      model:
+        description: 电池型号
+        type: string
       order:
         allOf:
         - $ref: '#/definitions/model.SubscribeOrderInfo'
@@ -2718,9 +2774,6 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.RiderBasic'
         description: 骑手详情
-      voltage:
-        description: 电池电压型号
-        type: number
     type: object
   model.SubscribeAlter:
     properties:
@@ -2752,6 +2805,9 @@ definitions:
       idCardNumber:
         description: 证件后四位
         type: string
+      model:
+        description: 可用电池型号
+        type: string
       name:
         description: 骑手姓名
         type: string
@@ -2773,9 +2829,6 @@ definitions:
       subscribeId:
         description: 当前订阅ID
         type: integer
-      voltage:
-        description: 当前电池型号(电压)
-        type: number
     type: object
   model.SubscribeOrderInfo:
     properties:
@@ -3852,6 +3905,10 @@ paths:
         in: query
         name: current
         type: integer
+      - description: 电池型号
+        in: query
+        name: model
+        type: string
       - description: 电柜名称
         in: query
         name: name
@@ -3868,10 +3925,6 @@ paths:
         in: query
         name: status
         type: integer
-      - description: 电池型号
-        in: query
-        name: voltage
-        type: number
       produces:
       - application/json
       responses:
@@ -4224,6 +4277,33 @@ paths:
       summary: M7009 修改押金
       tags:
       - '[M]管理接口'
+  /manager/v1/emoloyee/enable:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerEmployeeEnable
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EmployeeEnableReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MA015 启用/禁用店员
+      tags:
+      - '[M]管理接口'
   /manager/v1/employee:
     get:
       consumes:
@@ -4464,33 +4544,6 @@ paths:
                   type: array
               type: object
       summary: MA016 工作流
-      tags:
-      - '[M]管理接口'
-  /manager/v1/enable/enable:
-    post:
-      consumes:
-      - application/json
-      operationId: ManagerEmployeeEnable
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 请求参数
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.EmployeeEnableReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: MA015 启用/禁用店员
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise:
@@ -5044,6 +5097,10 @@ paths:
         in: query
         name: end
         type: string
+      - description: 电池型号
+        in: query
+        name: model
+        type: string
       - description: 每页数据, 默认20
         in: query
         name: pageSize
@@ -5076,10 +5133,6 @@ paths:
         in: query
         name: type
         type: integer
-      - description: 电压
-        in: query
-        name: voltage
-        type: number
       produces:
       - application/json
       responses:
@@ -5182,6 +5235,12 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
+      - description: 骑行卡信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.PlanCreateReq'
       produces:
       - application/json
       responses:
@@ -6774,11 +6833,6 @@ paths:
         name: cityId
         required: true
         type: integer
-      - description: '电压型号 '
-        in: query
-        name: voltage
-        required: true
-        type: number
       produces:
       - application/json
       responses:
@@ -6786,7 +6840,7 @@ paths:
           description: 请求成功
           schema:
             items:
-              $ref: '#/definitions/model.RiderPlanItem'
+              $ref: '#/definitions/model.RiderPlanListRes'
             type: array
       summary: R3002 新购骑士卡
       tags:

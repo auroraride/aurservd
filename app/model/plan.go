@@ -27,7 +27,7 @@ type PlanCreateReq struct {
     Start     string        `json:"start" validate:"required,datetime=2006-01-02" trans:"开始日期"`
     End       string        `json:"end" validate:"required,datetime=2006-01-02" trans:"结束日期"`
     Cities    []uint64      `json:"cities" validate:"required,min=1" trans:"启用城市"`
-    Models    []uint64      `json:"models" validate:"required,min=1" trans:"电池型号"`
+    Models    []string      `json:"models" validate:"required,min=1" trans:"电池型号"`
     Complexes []PlanComplex `json:"complexes" validate:"required,min=1" trans:"骑士卡详细信息"`
 }
 
@@ -62,11 +62,16 @@ type PlanWithComplexes struct {
     Complexes []PlanComplex  `json:"complexes"` // 详情集合
 }
 
-// PlanListRiderReq 骑士套餐列表请求
+// PlanListRiderReq 骑士卡列表请求
 type PlanListRiderReq struct {
-    CityID  uint64  `json:"cityId" query:"cityId" validate:"required" trans:"城市ID"`
-    Voltage float64 `json:"voltage" query:"voltage" validate:"required" trans:"电压型号"`
-    Min     uint    `json:"min" swaggerignore:"true"` // 最小天数
+    CityID uint64 `json:"cityId" query:"cityId" validate:"required" trans:"城市ID"`
+    Min    uint   `json:"min" swaggerignore:"true"` // 最小天数
+}
+
+type RiderPlanListRes struct {
+    Model   string          `json:"model"`   // 电池型号
+    Plans   []RiderPlanItem `json:"plans"`   // 套餐列表
+    Deposit float64         `json:"deposit"` // 需缴纳押金
 }
 
 // RiderPlanItem 骑士返回数据

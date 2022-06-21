@@ -48,22 +48,22 @@ type SubscribeOrderInfo struct {
 }
 
 type Subscribe struct {
-    ID          uint64  `json:"id"`                         // 订阅ID
-    RiderID     uint64  `json:"riderId"`                    // 骑手ID
-    Status      uint8   `json:"status" enums:"0,1,2,3,4,5"` // 状态 0未激活 1计费中 2寄存中 3已逾期 4已退订 5已取消
-    Voltage     float64 `json:"voltage"`                    // 可用电压型号
-    Days        int     `json:"days"`                       // 总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 续费天数 + 已缴纳逾期滞纳金天数
-    InitialDays int     `json:"initialDays"`                // 初始购买骑士卡天数
-    AlterDays   int     `json:"alterDays"`                  // 改动天数
-    PauseDays   int     `json:"pauseDays"`                  // 暂停天数
-    OverdueDays int     `json:"overdueDays"`                // 已缴纳逾期滞纳金天数
-    Remaining   int     `json:"remaining"`                  // 剩余天数 = 总天数 - 已过时间
-    StartAt     string  `json:"startAt"`                    // 开始时间
-    EndAt       string  `json:"endAt"`                      // 结束时间 / 预计套餐结束时间
-    Business    bool    `json:"business"`                   // 是否可办理业务
+    ID          uint64 `json:"id"`                         // 订阅ID
+    RiderID     uint64 `json:"riderId"`                    // 骑手ID
+    Status      uint8  `json:"status" enums:"0,1,2,3,4,5"` // 状态 0未激活 1计费中 2寄存中 3已逾期 4已退订 5已取消
+    Model       string `json:"model"`                      // 可用电池型号
+    Days        int    `json:"days"`                       // 总天数 = 骑士卡天数 + 改动天数 + 暂停天数 + 续费天数 + 已缴纳逾期滞纳金天数
+    InitialDays int    `json:"initialDays"`                // 初始购买骑士卡天数
+    AlterDays   int    `json:"alterDays"`                  // 改动天数
+    PauseDays   int    `json:"pauseDays"`                  // 暂停天数
+    OverdueDays int    `json:"overdueDays"`                // 已缴纳逾期滞纳金天数
+    Remaining   int    `json:"remaining"`                  // 剩余天数 = 总天数 - 已过时间
+    StartAt     string `json:"startAt"`                    // 开始时间
+    EndAt       string `json:"endAt"`                      // 结束时间 / 预计套餐结束时间
+    Business    bool   `json:"business"`                   // 是否可办理业务
 
     City       *City               `json:"city,omitempty"`       // 所属城市
-    Models     []BatteryModel      `json:"models,omitempty"`     // 可用电池型号, 显示为`72V30AH`即Voltage(V)+Capacity(AH), 逗号分隔
+    Models     []BatteryModel      `json:"models,omitempty"`     // 可用电池型号
     Plan       *Plan               `json:"plan,omitempty"`       // 骑士卡信息
     Order      *SubscribeOrderInfo `json:"order,omitempty"`      // 订单信息
     Enterprise *EnterpriseBasic    `json:"enterprise,omitempty"` // 企业信息
@@ -83,7 +83,7 @@ type SubscribeAlter struct {
 
 type SubscribeActiveInfo struct {
     ID           uint64              `json:"id"`                     // 订阅ID
-    Voltage      float64             `json:"voltage"`                // 电池电压型号
+    Model        string              `json:"model"`                  // 电池型号
     EnterpriseID *uint64             `json:"enterpriseId,omitempty"` // 企业ID, 团签用户判定依据, 非团签用户此字段不存在
     Rider        RiderBasic          `json:"rider"`                  // 骑手详情
     City         City                `json:"city"`                   // 所在城市
@@ -96,14 +96,14 @@ type SubscribeActiveInfo struct {
 
 // SubscribeBusiness 骑手订阅业务详情
 type SubscribeBusiness struct {
-    ID             uint64  `json:"id"`                       // 骑手ID
-    SubscribeID    uint64  `json:"subscribeId"`              // 当前订阅ID
-    Business       bool    `json:"business"`                 // 是否可办理业务
-    Status         uint8   `json:"status" enums:"0,1,2,3,4"` // 状态 0未激活 1计费中 2寄存中 3已逾期 4已退订 5已取消
-    Name           string  `json:"name"`                     // 骑手姓名
-    Phone          string  `json:"phone"`                    // 骑手电话
-    IDCardNumber   string  `json:"idCardNumber"`             // 证件后四位
-    Voltage        float64 `json:"voltage"`                  // 当前电池型号(电压)
-    EnterpriseName string  `json:"enterpriseName,omitempty"` // 企业名称 (个签不存在)
-    PlanName       string  `json:"planName,omitempty"`       // 骑士卡名称 (团签不存在)
+    ID             uint64 `json:"id"`                       // 骑手ID
+    SubscribeID    uint64 `json:"subscribeId"`              // 当前订阅ID
+    Business       bool   `json:"business"`                 // 是否可办理业务
+    Status         uint8  `json:"status" enums:"0,1,2,3,4"` // 状态 0未激活 1计费中 2寄存中 3已逾期 4已退订 5已取消
+    Name           string `json:"name"`                     // 骑手姓名
+    Phone          string `json:"phone"`                    // 骑手电话
+    IDCardNumber   string `json:"idCardNumber"`             // 证件后四位
+    Model          string `json:"model"`                    // 可用电池型号
+    EnterpriseName string `json:"enterpriseName,omitempty"` // 企业名称 (个签不存在)
+    PlanName       string `json:"planName,omitempty"`       // 骑士卡名称 (团签不存在)
 }

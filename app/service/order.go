@@ -149,6 +149,9 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
     case model.OrderTypeNewly:
         // 新签判定
         otype = s.PreconditionNewly(subd)
+        if req.Model == "" || req.CityID == 0 {
+            snag.Panic("请求参数错误")
+        }
         break
     case model.OrderTypeRenewal:
         // 续签判定
@@ -158,6 +161,8 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
         }
         subID = tools.NewPointer().UInt64(sub.ID)
         orderID = tools.NewPointer().UInt64(sub.InitialOrderID)
+        req.Model = sub.Model
+        req.CityID = sub.CityID
         break
     default:
         snag.Panic("未知的支付请求")
@@ -201,7 +206,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
             Deposit:     deposit,
             PastDays:    pastDays,
             Commission:  op.Commission,
-            Voltage:     op.Edges.Pms[0].Voltage,
+            Model:       req.Model,
             Days:        op.Days,
             OrderID:     orderID,
             SubscribeID: subID,
@@ -419,7 +424,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
         sc := tx.Subscribe.Create().
             SetType(trade.OrderType).
             SetRiderID(trade.RiderID).
-            SetVoltage(trade.Voltage).
+            SetModel(trade.Model).
             SetRemaining(int(trade.Days)).
             SetInitialDays(int(trade.Days)).
             SetStatus(model.SubscribeStatusInactive).
@@ -560,8 +565,8 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
     if req.StoreName != nil {
         q.Where(order.HasSubscribeWith(subscribe.HasStoreWith(store.NameContainsFold(*req.StoreName))))
     }
-    if req.Voltage != nil {
-        q.Where(order.HasSubscribeWith(subscribe.Voltage(*req.Voltage)))
+    if req.Model != nil {
+        q.Where(order.HasSubscribeWith(subscribe.Model(*req.Model)))
     }
     if req.Days != nil {
         q.Where(order.InitialDaysGTE(*req.Days))

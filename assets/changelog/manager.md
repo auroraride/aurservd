@@ -5,9 +5,10 @@
 > 删除所有涉及到`voltage<number>(电压)`和`capacity<number>(容量)`的字段，统一改为`model<string>(电池型号)`
 
 - 删除`M4003 列举电池电压型号(/manager/v1/battery/voltages) `改用 [C4 获取生效中的电池型号](http://localhost:5533/docs#tag/C/operation/ManagerBatteryModel)
-- [M1018 可调拨物资清单](http://localhost:5533/docs#tag/M/operation/ManagerInventoryTransferable)
-- [M4001 获取电池型号](http://localhost:5533/docs#tag/M/operation/BatteryModels)
-- [M4002 创建电池型号](http://localhost:5533/docs#tag/M/operation/BatteryCreateModel)
+
+- 删除 [M8001 订单列表](http://localhost:5533/docs#tag/M/operation/ManagerOrderList) 中字段`models`
+
+  
 
 
 

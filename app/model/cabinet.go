@@ -64,7 +64,7 @@ type Cabinet struct {
 // CabinetCreateReq 电柜创建请求
 type CabinetCreateReq struct {
     Cabinet
-    Models []uint64 `json:"models" trans:"电池型号" validate:"required"`
+    Models []string `json:"models" trans:"电池型号" validate:"required"`
 }
 
 // CabinetItem 电柜属性
@@ -81,12 +81,12 @@ type CabinetItem struct {
 type CabinetQueryReq struct {
     PaginationReq
 
-    Serial  *string  `json:"serial" query:"serial"`   // 电柜编号
-    Name    *string  `json:"name" query:"name"`       // 电柜名称
-    CityId  *uint64  `json:"cityId" query:"cityId"`   // 城市ID
-    Brand   *string  `json:"brand" query:"brand"`     // 电柜型号
-    Status  *uint8   `json:"status" query:"status"`   // 电柜状态
-    Voltage *float64 `json:"voltage" query:"voltage"` // 电池型号
+    Serial *string `json:"serial" query:"serial"` // 电柜编号
+    Name   *string `json:"name" query:"name"`     // 电柜名称
+    CityId *uint64 `json:"cityId" query:"cityId"` // 城市ID
+    Brand  *string `json:"brand" query:"brand"`   // 电柜型号
+    Status *uint8  `json:"status" query:"status"` // 电柜状态
+    Model  *string `json:"model" query:"model"`   // 电池型号
 }
 
 // CabinetModifyReq 电柜修改请求
@@ -99,7 +99,7 @@ type CabinetModifyReq struct {
     Name     *string       `json:"name" trans:"电柜名称"`
     Doors    *uint         `json:"doors" trans:"柜门数量"`
     Remark   *string       `json:"remark" trans:"备注"`
-    Models   *[]uint64     `json:"models" trans:"电池型号"`
+    Models   *[]string     `json:"models" trans:"电池型号"`
 }
 
 // CabinetDeleteReq 电柜删除请求
