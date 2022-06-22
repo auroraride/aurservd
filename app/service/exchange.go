@@ -7,6 +7,7 @@ package service
 
 import (
     "context"
+    "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -100,6 +101,11 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
         SetNillableStationID(sub.StationID).
         SetSubscribeID(sub.ID).
         SaveX(s.ctx)
+
+    message := sub.Model
+    message = strings.ReplaceAll(message, "AH", "安")
+    message = strings.ReplaceAll(message, "V", "伏")
+    NewSpeech().SendSpeech(item.ID, fmt.Sprintf("%s扫码换电%s", s.rider.Edges.Person.Name, sub.Model))
 
     return &model.ExchangeStoreRes{
         Model:     subd.Model,

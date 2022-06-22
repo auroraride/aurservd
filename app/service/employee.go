@@ -61,8 +61,12 @@ func NewEmployeeWithEmployee(e *ent.Employee) *employeeService {
     return s
 }
 
-func (s *employeeService) Query(id uint64) *ent.Employee {
-    item, _ := s.orm.QueryNotDeleted().Where(employee.ID(id)).First(s.ctx)
+func (s *employeeService) Query(id uint64) (*ent.Employee, error) {
+    return s.orm.QueryNotDeleted().Where(employee.ID(id)).First(s.ctx)
+}
+
+func (s *employeeService) QueryX(id uint64) *ent.Employee {
+    item, _ := s.Query(id)
     if item == nil {
         snag.Panic("未找到店员")
     }
@@ -101,7 +105,7 @@ func (s *employeeService) Create(req *model.EmployeeCreateReq) *ent.Employee {
 
 // Modify 修改店员
 func (s *employeeService) Modify(req *model.EmployeeModifyReq) {
-    _, err := s.orm.ModifyOne(s.Query(*req.ID), req).Save(s.ctx)
+    _, err := s.orm.ModifyOne(s.QueryX(*req.ID), req).Save(s.ctx)
     if err != nil {
         snag.Panic("保存失败")
         log.Error(err)
@@ -206,7 +210,7 @@ func (s *employeeService) Activity(req *model.EmployeeActivityListReq) *model.Pa
 
 // Delete 删除骑手
 func (s *employeeService) Delete(req *model.EmployeeDeleteReq) {
-    item := s.Query(req.ID)
+    item := s.QueryX(req.ID)
     _, err := s.orm.SoftDeleteOne(item).Save(s.ctx)
     if err != nil {
         log.Error(err)
@@ -214,11 +218,14 @@ func (s *employeeService) Delete(req *model.EmployeeDeleteReq) {
     }
 }
 
+func (s *employeeService) tokenKey(id uint64) string {
+    return fmt.Sprintf("%s%d", s.cacheKeyPrefix, id)
+}
+
 // ExtendTokenTime 延长登录有效期
 func (s *employeeService) ExtendTokenTime(id uint64, token string) {
-    key := fmt.Sprintf("%s%d", s.cacheKeyPrefix, id)
     ctx := context.Background()
-    cache.Set(ctx, key, token, 7*24*time.Hour)
+    cache.Set(ctx, s.tokenKey(id), token, 7*24*time.Hour)
     cache.Set(ctx, token, id, 7*24*time.Hour)
 }
 
@@ -263,7 +270,7 @@ func (s *employeeService) Signin(req *model.EmployeeSignReq) model.EmployeeProfi
 
     // 生成token
     token := xid.New().String() + utils.RandTokenString()
-    key := fmt.Sprintf("%s%d", s.cacheKeyPrefix, e.ID)
+    key := s.tokenKey(e.ID)
 
     // 删除旧的token
     if old := cache.Get(s.ctx, key).Val(); old != "" {
@@ -291,13 +298,13 @@ func (s *employeeService) RefreshQrcode() model.EmployeeQrcodeRes {
 }
 
 func (s *employeeService) Enable(req *model.EmployeeEnableReq) {
-    e := s.Query(req.ID)
+    e := s.QueryX(req.ID)
     e.Update().SetEnable(req.Enable).SaveX(s.ctx)
 }
 
 func (s *employeeService) Signout(e *ent.Employee) {
     ctx := context.Background()
-    key := fmt.Sprintf("%s%d", s.cacheKeyPrefix, e.ID)
+    key := s.tokenKey(e.ID)
     token := cache.Get(ctx, key).Val()
     cache.Del(ctx, key)
     cache.Del(ctx, token)

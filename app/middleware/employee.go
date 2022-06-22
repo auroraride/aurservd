@@ -19,13 +19,14 @@ import (
 var (
     employeeAuthSkipper = map[string]bool{
         "/employee/v1/signin": true,
+        "/employee/v1/speech": true,
     }
 )
 
 func EmployeeMiddleware() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
-            url := c.Request().RequestURI
+            url := c.Request().URL.Path
             var emr *ent.Employee
             // 获取employee
             if !employeeAuthSkipper[url] {

@@ -5,6 +5,7 @@ go 1.18
 require (
 	ariga.io/atlas v0.4.1
 	entgo.io/ent v0.10.2-0.20220502113020-4ac82f5bb3f0
+	github.com/LucaTheHacker/go-haversine v0.0.0-20220213075817-0d811fb84a1a
 	github.com/alibabacloud-go/darabonba-openapi v0.1.18
 	github.com/alibabacloud-go/dysmsapi-20170525/v2 v2.0.9
 	github.com/alibabacloud-go/dyvmsapi-20170525/v2 v2.1.4
@@ -51,7 +52,6 @@ require (
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
-	github.com/LucaTheHacker/go-haversine v0.0.0-20220213075817-0d811fb84a1a // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.4 // indirect
 	github.com/alibabacloud-go/debug v0.0.0-20190504072949-9472017b5c68 // indirect
@@ -80,9 +80,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/gomodule/redigo v1.8.8 // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
-	github.com/googollee/go-socket.io v1.6.2 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect

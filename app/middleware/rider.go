@@ -28,7 +28,7 @@ var (
 func RiderMiddleware() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
-            url := c.Request().RequestURI
+            url := c.Request().URL.Path
             if riderAuthSkipper[url] {
                 return next(c)
             }
