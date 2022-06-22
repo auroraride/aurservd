@@ -222,6 +222,7 @@ func (s *exchangeService) EmployeeList(req *model.ExchangeListReq) *model.Pagina
                 Name:  item.Edges.Rider.Edges.Person.Name,
                 Phone: item.Edges.Rider.Phone,
                 Time:  item.CreatedAt.Format(carbon.DateTimeLayout),
+                Model: item.Model,
             }
             sub := item.Edges.Subscribe
             if sub != nil {
