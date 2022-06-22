@@ -271,7 +271,7 @@ func (s *riderMgrService) UnSubscribe(subscribeID uint64) {
         UpdateOneID(sub.ID).
         SetEndAt(time.Now()).
         SetRemaining(0).
-        SetStatus(model.SubscribeStatusCanceled).
+        SetStatus(model.SubscribeStatusUnSubscribed).
         SetUnsubscribeReason(reason).
         Save(s.ctx)
 
