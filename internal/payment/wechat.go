@@ -11,6 +11,7 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
     jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
     "github.com/wechatpay-apiv3/wechatpay-go/core"
@@ -67,6 +68,47 @@ func newWechatClient() *wechatClient {
 
 func NewWechat() *wechatClient {
     return _wechat
+}
+
+func (c *wechatClient) AppPayDemo() (string, string, error) {
+    cfg := ar.Config.Payment.Wechat
+
+    svc := app.AppApiService{
+        Client: c.Client,
+    }
+
+    no := tools.NewUnique().NewSN28()
+
+    resp, result, err := svc.PrepayWithRequestPayment(context.Background(), app.PrepayRequest{
+        Appid:       core.String(cfg.AppID),
+        Mchid:       core.String(cfg.MchID),
+        Description: core.String("测试支付"),
+        OutTradeNo:  core.String(no),
+        TimeExpire:  core.Time(time.Now().Add(10 * time.Minute)),
+        NotifyUrl:   core.String(cfg.NotifyUrl),
+        Amount: &app.Amount{
+            Currency: core.String("CNY"),
+            Total:    core.Int64(int64(math.Round(1))),
+        },
+    })
+
+    if err != nil {
+        b, _ := ioutil.ReadAll(result.Response.Body)
+        log.Errorf("微信支付调用失败: %#v, %s", err, string(b))
+        return "", "", err
+    }
+
+    var out struct {
+        *app.PrepayWithRequestPaymentResponse
+        AppID string `json:"appId"`
+    }
+
+    out.PrepayWithRequestPaymentResponse = resp
+    out.AppID = cfg.AppID
+
+    b, _ := jsoniter.Marshal(out)
+
+    return string(b), no, nil
 }
 
 // AppPay APP支付

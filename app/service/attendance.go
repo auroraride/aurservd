@@ -150,7 +150,11 @@ func (s *attendanceService) Create(req *model.AttendanceCreateReq) {
         snag.Panic("考勤打卡失败")
     }
 
-    _, err = tx.Store.UpdateOneID(st.ID).SetEmployee(s.employee).Save(s.ctx)
+    if req.Duty {
+        _, err = tx.Store.UpdateOneID(st.ID).SetEmployee(s.employee).Save(s.ctx)
+    } else {
+        _, err = tx.Store.UpdateOneID(st.ID).ClearEmployeeID().Save(s.ctx)
+    }
     if err != nil {
         _ = tx.Rollback()
         snag.Panic("考勤打卡失败")

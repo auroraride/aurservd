@@ -22,5 +22,7 @@ func loadCommonRoutes() {
 
     g.GET("/basic", common.Basic.Get)
 
+    g.POST("/order", common.Order.Paytest)
+
     g.Static("/demo", "public")
 }

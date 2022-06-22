@@ -19,6 +19,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/jinzhu/copier"
     "github.com/lithammer/shortuuid/v4"
+    "sort"
     "strings"
     "time"
 )
@@ -317,6 +318,10 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
         }
         items = append(items, m)
     }
+
+    sort.Slice(items, func(i, j int) bool {
+        return items[i].Distance < items[j].Distance
+    })
     return
 }
 

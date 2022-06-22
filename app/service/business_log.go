@@ -55,8 +55,7 @@ func (s *businessLogService) setSubscribe(sub *ent.Subscribe) {
         SetCityID(sub.CityID).
         SetNillableEnterpriseID(sub.EnterpriseID).
         SetNillableStationID(sub.StationID).
-        SetNillablePlanID(sub.PlanID).
-        SetNillableStationID(sub.StationID)
+        SetNillablePlanID(sub.PlanID)
 }
 
 func (s *businessLogService) Save(typ business.Type) (*ent.Business, error) {
