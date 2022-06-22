@@ -7410,7 +7410,6 @@ type CabinetMutation struct {
 	adddoors            *int
 	status              *uint8
 	addstatus           *int8
-	models              *[]model.BatteryModel
 	health              *uint8
 	addhealth           *int8
 	bin                 *[]model.CabinetBin
@@ -8157,42 +8156,6 @@ func (m *CabinetMutation) ResetStatus() {
 	m.addstatus = nil
 }
 
-// SetModels sets the "models" field.
-func (m *CabinetMutation) SetModels(mm []model.BatteryModel) {
-	m.models = &mm
-}
-
-// Models returns the value of the "models" field in the mutation.
-func (m *CabinetMutation) Models() (r []model.BatteryModel, exists bool) {
-	v := m.models
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldModels returns the old "models" field's value of the Cabinet entity.
-// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetMutation) OldModels(ctx context.Context) (v []model.BatteryModel, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldModels is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldModels requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldModels: %w", err)
-	}
-	return oldValue.Models, nil
-}
-
-// ResetModels resets all changes to the "models" field.
-func (m *CabinetMutation) ResetModels() {
-	m.models = nil
-}
-
 // SetHealth sets the "health" field.
 func (m *CabinetMutation) SetHealth(u uint8) {
 	m.health = &u
@@ -8643,7 +8606,7 @@ func (m *CabinetMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CabinetMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, cabinet.FieldCreatedAt)
 	}
@@ -8685,9 +8648,6 @@ func (m *CabinetMutation) Fields() []string {
 	}
 	if m.status != nil {
 		fields = append(fields, cabinet.FieldStatus)
-	}
-	if m.models != nil {
-		fields = append(fields, cabinet.FieldModels)
 	}
 	if m.health != nil {
 		fields = append(fields, cabinet.FieldHealth)
@@ -8737,8 +8697,6 @@ func (m *CabinetMutation) Field(name string) (ent.Value, bool) {
 		return m.Doors()
 	case cabinet.FieldStatus:
 		return m.Status()
-	case cabinet.FieldModels:
-		return m.Models()
 	case cabinet.FieldHealth:
 		return m.Health()
 	case cabinet.FieldBin:
@@ -8784,8 +8742,6 @@ func (m *CabinetMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldDoors(ctx)
 	case cabinet.FieldStatus:
 		return m.OldStatus(ctx)
-	case cabinet.FieldModels:
-		return m.OldModels(ctx)
 	case cabinet.FieldHealth:
 		return m.OldHealth(ctx)
 	case cabinet.FieldBin:
@@ -8900,13 +8856,6 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatus(v)
-		return nil
-	case cabinet.FieldModels:
-		v, ok := value.([]model.BatteryModel)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetModels(v)
 		return nil
 	case cabinet.FieldHealth:
 		v, ok := value.(uint8)
@@ -9134,9 +9083,6 @@ func (m *CabinetMutation) ResetField(name string) error {
 		return nil
 	case cabinet.FieldStatus:
 		m.ResetStatus()
-		return nil
-	case cabinet.FieldModels:
-		m.ResetModels()
 		return nil
 	case cabinet.FieldHealth:
 		m.ResetHealth()

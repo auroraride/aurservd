@@ -115,10 +115,10 @@ const (
 	// StationsColumn is the table column denoting the stations relation/edge.
 	StationsColumn = "enterprise_id"
 	// BillsTable is the table that holds the bills relation/edge.
-	BillsTable = "EnterpriseBill"
+	BillsTable = "enterprise_bill"
 	// BillsInverseTable is the table name for the EnterpriseBill entity.
 	// It exists in this package in order to avoid circular dependency with the "enterprisebill" package.
-	BillsInverseTable = "EnterpriseBill"
+	BillsInverseTable = "enterprise_bill"
 	// BillsColumn is the table column denoting the bills relation/edge.
 	BillsColumn = "enterprise_id"
 )

@@ -58,37 +58,37 @@ const (
 	// EdgeStatement holds the string denoting the statement edge name in mutations.
 	EdgeStatement = "statement"
 	// Table holds the table name of the enterprisebill in the database.
-	Table = "EnterpriseBill"
+	Table = "enterprise_bill"
 	// RiderTable is the table that holds the rider relation/edge.
-	RiderTable = "EnterpriseBill"
+	RiderTable = "enterprise_bill"
 	// RiderInverseTable is the table name for the Rider entity.
 	// It exists in this package in order to avoid circular dependency with the "rider" package.
 	RiderInverseTable = "rider"
 	// RiderColumn is the table column denoting the rider relation/edge.
 	RiderColumn = "rider_id"
 	// SubscribeTable is the table that holds the subscribe relation/edge.
-	SubscribeTable = "EnterpriseBill"
+	SubscribeTable = "enterprise_bill"
 	// SubscribeInverseTable is the table name for the Subscribe entity.
 	// It exists in this package in order to avoid circular dependency with the "subscribe" package.
 	SubscribeInverseTable = "subscribe"
 	// SubscribeColumn is the table column denoting the subscribe relation/edge.
 	SubscribeColumn = "subscribe_id"
 	// CityTable is the table that holds the city relation/edge.
-	CityTable = "EnterpriseBill"
+	CityTable = "enterprise_bill"
 	// CityInverseTable is the table name for the City entity.
 	// It exists in this package in order to avoid circular dependency with the "city" package.
 	CityInverseTable = "city"
 	// CityColumn is the table column denoting the city relation/edge.
 	CityColumn = "city_id"
 	// EnterpriseTable is the table that holds the enterprise relation/edge.
-	EnterpriseTable = "EnterpriseBill"
+	EnterpriseTable = "enterprise_bill"
 	// EnterpriseInverseTable is the table name for the Enterprise entity.
 	// It exists in this package in order to avoid circular dependency with the "enterprise" package.
 	EnterpriseInverseTable = "enterprise"
 	// EnterpriseColumn is the table column denoting the enterprise relation/edge.
 	EnterpriseColumn = "enterprise_id"
 	// StatementTable is the table that holds the statement relation/edge.
-	StatementTable = "EnterpriseBill"
+	StatementTable = "enterprise_bill"
 	// StatementInverseTable is the table name for the EnterpriseStatement entity.
 	// It exists in this package in order to avoid circular dependency with the "enterprisestatement" package.
 	StatementInverseTable = "enterprise_statement"

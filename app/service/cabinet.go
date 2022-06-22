@@ -89,7 +89,6 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
         }
     }
     q.AddBms(models...)
-    q.SetModels(bms)
 
     item := q.SaveX(s.ctx)
     res = new(model.CabinetItem)
@@ -155,7 +154,6 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
             }
         }
         q.AddBms(models...)
-        q.SetModels(bms)
     }
     if req.BranchID != nil {
         b := NewBranch().Query(*req.BranchID)

@@ -182,12 +182,6 @@ func (cu *CabinetUpdate) AddStatus(u int8) *CabinetUpdate {
 	return cu
 }
 
-// SetModels sets the "models" field.
-func (cu *CabinetUpdate) SetModels(mm []model.BatteryModel) *CabinetUpdate {
-	cu.mutation.SetModels(mm)
-	return cu
-}
-
 // SetHealth sets the "health" field.
 func (cu *CabinetUpdate) SetHealth(u uint8) *CabinetUpdate {
 	cu.mutation.ResetHealth()
@@ -591,13 +585,6 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeUint8,
 			Value:  value,
 			Column: cabinet.FieldStatus,
-		})
-	}
-	if value, ok := cu.mutation.Models(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinet.FieldModels,
 		})
 	}
 	if value, ok := cu.mutation.Health(); ok {
@@ -1054,12 +1041,6 @@ func (cuo *CabinetUpdateOne) AddStatus(u int8) *CabinetUpdateOne {
 	return cuo
 }
 
-// SetModels sets the "models" field.
-func (cuo *CabinetUpdateOne) SetModels(mm []model.BatteryModel) *CabinetUpdateOne {
-	cuo.mutation.SetModels(mm)
-	return cuo
-}
-
 // SetHealth sets the "health" field.
 func (cuo *CabinetUpdateOne) SetHealth(u uint8) *CabinetUpdateOne {
 	cuo.mutation.ResetHealth()
@@ -1493,13 +1474,6 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 			Type:   field.TypeUint8,
 			Value:  value,
 			Column: cabinet.FieldStatus,
-		})
-	}
-	if value, ok := cuo.mutation.Models(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinet.FieldModels,
 		})
 	}
 	if value, ok := cuo.mutation.Health(); ok {

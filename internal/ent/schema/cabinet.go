@@ -51,7 +51,6 @@ func (Cabinet) Fields() []ent.Field {
         field.String("name").Comment("名称"),
         field.Uint("doors").Comment("柜门数量"),
         field.Uint8("status").Comment("投放状态"),
-        field.JSON("models", []model.BatteryModel{}).Comment("电池型号"),
         field.Uint8("health").Default(0).Comment("健康状态 0未知 1正常 2离线 3故障"),
         field.JSON("bin", []model.CabinetBin{}).Optional().Comment("仓位信息"),
         field.Uint("battery_num").Default(0).Comment("电池总数"),

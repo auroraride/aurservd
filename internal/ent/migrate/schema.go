@@ -322,7 +322,6 @@ var (
 		{Name: "name", Type: field.TypeString, Comment: "名称"},
 		{Name: "doors", Type: field.TypeUint, Comment: "柜门数量"},
 		{Name: "status", Type: field.TypeUint8, Comment: "投放状态"},
-		{Name: "models", Type: field.TypeJSON, Comment: "电池型号"},
 		{Name: "health", Type: field.TypeUint8, Comment: "健康状态 0未知 1正常 2离线 3故障", Default: 0},
 		{Name: "bin", Type: field.TypeJSON, Comment: "仓位信息", Nullable: true},
 		{Name: "battery_num", Type: field.TypeUint, Comment: "电池总数", Default: 0},
@@ -338,13 +337,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cabinet_branch_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[18]},
+				Columns:    []*schema.Column{CabinetColumns[17]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "cabinet_city_city",
-				Columns:    []*schema.Column{CabinetColumns[19]},
+				Columns:    []*schema.Column{CabinetColumns[18]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -363,7 +362,7 @@ var (
 			{
 				Name:    "cabinet_branch_id",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[18]},
+				Columns: []*schema.Column{CabinetColumns[17]},
 			},
 			{
 				Name:    "cabinet_brand",
@@ -772,7 +771,7 @@ var (
 			},
 		},
 	}
-	// EnterpriseBillColumns holds the columns for the "EnterpriseBill" table.
+	// EnterpriseBillColumns holds the columns for the "enterprise_bill" table.
 	EnterpriseBillColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
@@ -793,38 +792,38 @@ var (
 		{Name: "city_id", Type: field.TypeUint64},
 		{Name: "statement_id", Type: field.TypeUint64},
 	}
-	// EnterpriseBillTable holds the schema information for the "EnterpriseBill" table.
+	// EnterpriseBillTable holds the schema information for the "enterprise_bill" table.
 	EnterpriseBillTable = &schema.Table{
-		Name:       "EnterpriseBill",
+		Name:       "enterprise_bill",
 		Columns:    EnterpriseBillColumns,
 		PrimaryKey: []*schema.Column{EnterpriseBillColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "EnterpriseBill_enterprise_bills",
+				Symbol:     "enterprise_bill_enterprise_bills",
 				Columns:    []*schema.Column{EnterpriseBillColumns[13]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "EnterpriseBill_rider_rider",
+				Symbol:     "enterprise_bill_rider_rider",
 				Columns:    []*schema.Column{EnterpriseBillColumns[14]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "EnterpriseBill_subscribe_subscribe",
+				Symbol:     "enterprise_bill_subscribe_subscribe",
 				Columns:    []*schema.Column{EnterpriseBillColumns[15]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "EnterpriseBill_city_city",
+				Symbol:     "enterprise_bill_city_city",
 				Columns:    []*schema.Column{EnterpriseBillColumns[16]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "EnterpriseBill_enterprise_statement_bills",
+				Symbol:     "enterprise_bill_enterprise_statement_bills",
 				Columns:    []*schema.Column{EnterpriseBillColumns[17]},
 				RefColumns: []*schema.Column{EnterpriseStatementColumns[0]},
 				OnDelete:   schema.NoAction,
@@ -2298,7 +2297,7 @@ func init() {
 	EnterpriseBillTable.ForeignKeys[3].RefTable = CityTable
 	EnterpriseBillTable.ForeignKeys[4].RefTable = EnterpriseStatementTable
 	EnterpriseBillTable.Annotation = &entsql.Annotation{
-		Table: "EnterpriseBill",
+		Table: "enterprise_bill",
 	}
 	EnterpriseContractTable.ForeignKeys[0].RefTable = EnterpriseTable
 	EnterpriseContractTable.Annotation = &entsql.Annotation{

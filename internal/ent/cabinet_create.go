@@ -160,12 +160,6 @@ func (cc *CabinetCreate) SetStatus(u uint8) *CabinetCreate {
 	return cc
 }
 
-// SetModels sets the "models" field.
-func (cc *CabinetCreate) SetModels(mm []model.BatteryModel) *CabinetCreate {
-	cc.mutation.SetModels(mm)
-	return cc
-}
-
 // SetHealth sets the "health" field.
 func (cc *CabinetCreate) SetHealth(u uint8) *CabinetCreate {
 	cc.mutation.SetHealth(u)
@@ -403,9 +397,6 @@ func (cc *CabinetCreate) check() error {
 	if _, ok := cc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Cabinet.status"`)}
 	}
-	if _, ok := cc.mutation.Models(); !ok {
-		return &ValidationError{Name: "models", err: errors.New(`ent: missing required field "Cabinet.models"`)}
-	}
 	if _, ok := cc.mutation.Health(); !ok {
 		return &ValidationError{Name: "health", err: errors.New(`ent: missing required field "Cabinet.health"`)}
 	}
@@ -538,14 +529,6 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Column: cabinet.FieldStatus,
 		})
 		_node.Status = value
-	}
-	if value, ok := cc.mutation.Models(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
-			Value:  value,
-			Column: cabinet.FieldModels,
-		})
-		_node.Models = value
 	}
 	if value, ok := cc.mutation.Health(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -946,18 +929,6 @@ func (u *CabinetUpsert) AddStatus(v uint8) *CabinetUpsert {
 	return u
 }
 
-// SetModels sets the "models" field.
-func (u *CabinetUpsert) SetModels(v []model.BatteryModel) *CabinetUpsert {
-	u.Set(cabinet.FieldModels, v)
-	return u
-}
-
-// UpdateModels sets the "models" field to the value that was provided on create.
-func (u *CabinetUpsert) UpdateModels() *CabinetUpsert {
-	u.SetExcluded(cabinet.FieldModels)
-	return u
-}
-
 // SetHealth sets the "health" field.
 func (u *CabinetUpsert) SetHealth(v uint8) *CabinetUpsert {
 	u.Set(cabinet.FieldHealth, v)
@@ -1329,20 +1300,6 @@ func (u *CabinetUpsertOne) AddStatus(v uint8) *CabinetUpsertOne {
 func (u *CabinetUpsertOne) UpdateStatus() *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.UpdateStatus()
-	})
-}
-
-// SetModels sets the "models" field.
-func (u *CabinetUpsertOne) SetModels(v []model.BatteryModel) *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.SetModels(v)
-	})
-}
-
-// UpdateModels sets the "models" field to the value that was provided on create.
-func (u *CabinetUpsertOne) UpdateModels() *CabinetUpsertOne {
-	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateModels()
 	})
 }
 
@@ -1893,20 +1850,6 @@ func (u *CabinetUpsertBulk) AddStatus(v uint8) *CabinetUpsertBulk {
 func (u *CabinetUpsertBulk) UpdateStatus() *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.UpdateStatus()
-	})
-}
-
-// SetModels sets the "models" field.
-func (u *CabinetUpsertBulk) SetModels(v []model.BatteryModel) *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.SetModels(v)
-	})
-}
-
-// UpdateModels sets the "models" field to the value that was provided on create.
-func (u *CabinetUpsertBulk) UpdateModels() *CabinetUpsertBulk {
-	return u.Update(func(s *CabinetUpsert) {
-		s.UpdateModels()
 	})
 }
 

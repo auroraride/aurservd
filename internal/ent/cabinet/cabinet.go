@@ -41,8 +41,6 @@ const (
 	FieldDoors = "doors"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
-	// FieldModels holds the string denoting the models field in the database.
-	FieldModels = "models"
 	// FieldHealth holds the string denoting the health field in the database.
 	FieldHealth = "health"
 	// FieldBin holds the string denoting the bin field in the database.
@@ -115,7 +113,6 @@ var Columns = []string{
 	FieldName,
 	FieldDoors,
 	FieldStatus,
-	FieldModels,
 	FieldHealth,
 	FieldBin,
 	FieldBatteryNum,

@@ -145,7 +145,7 @@ func (s *branchService) List(req *model.BranchListReq) *model.PaginationRes {
             }
             r.StoreTotal = len(item.Edges.Stores)
             for _, c := range item.Edges.Cabinets {
-                for _, cm := range c.Models {
+                for _, cm := range c.Edges.Bms {
                     str := strings.ToUpper(cm.Model)
 
                     if strings.HasPrefix(str, "60V") {
@@ -271,7 +271,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
     }
 
     // 电柜
-    cabinets := ar.Ent.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).AllX(s.ctx)
+    cabinets := ar.Ent.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithBms().AllX(s.ctx)
     for _, c := range cabinets {
         if c.Status == model.CabinetStatusNormal {
             fa := model.BranchFacility{
@@ -293,9 +293,15 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
                     fa.Num += 1
                 }
             }
+
+            bms := c.Edges.Bms
+            if len(bms) < 1 {
+                continue
+            }
+
             // 判定电池型号
-            // TODO 如果有多个电压怎么办? 忽略, 使用第一个
-            str := strings.ToUpper(c.Models[0].Model)
+            // 如果有多个电压怎么办? 忽略, 使用第一个
+            str := strings.ToUpper(bms[0].Model)
 
             if strings.HasPrefix(str, "60V") {
                 fa.Type = model.BranchFacilityTypeV60

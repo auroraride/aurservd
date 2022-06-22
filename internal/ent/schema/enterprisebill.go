@@ -19,7 +19,7 @@ type EnterpriseBill struct {
 // Annotations of the EnterpriseBill.
 func (EnterpriseBill) Annotations() []schema.Annotation {
     return []schema.Annotation{
-        entsql.Annotation{Table: "EnterpriseBill"},
+        entsql.Annotation{Table: "enterprise_bill"},
     }
 }
 

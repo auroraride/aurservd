@@ -210,7 +210,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			cabinet.FieldName:           {Type: field.TypeString, Column: cabinet.FieldName},
 			cabinet.FieldDoors:          {Type: field.TypeUint, Column: cabinet.FieldDoors},
 			cabinet.FieldStatus:         {Type: field.TypeUint8, Column: cabinet.FieldStatus},
-			cabinet.FieldModels:         {Type: field.TypeJSON, Column: cabinet.FieldModels},
 			cabinet.FieldHealth:         {Type: field.TypeUint8, Column: cabinet.FieldHealth},
 			cabinet.FieldBin:            {Type: field.TypeJSON, Column: cabinet.FieldBin},
 			cabinet.FieldBatteryNum:     {Type: field.TypeUint, Column: cabinet.FieldBatteryNum},
@@ -3323,11 +3322,6 @@ func (f *CabinetFilter) WhereDoors(p entql.UintP) {
 // WhereStatus applies the entql uint8 predicate on the status field.
 func (f *CabinetFilter) WhereStatus(p entql.Uint8P) {
 	f.Where(p.Field(cabinet.FieldStatus))
-}
-
-// WhereModels applies the entql json.RawMessage predicate on the models field.
-func (f *CabinetFilter) WhereModels(p entql.BytesP) {
-	f.Where(p.Field(cabinet.FieldModels))
 }
 
 // WhereHealth applies the entql uint8 predicate on the health field.

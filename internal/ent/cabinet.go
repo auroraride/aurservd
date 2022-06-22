@@ -59,9 +59,6 @@ type Cabinet struct {
 	// Status holds the value of the "status" field.
 	// 投放状态
 	Status uint8 `json:"status,omitempty"`
-	// Models holds the value of the "models" field.
-	// 电池型号
-	Models []model.BatteryModel `json:"models,omitempty"`
 	// Health holds the value of the "health" field.
 	// 健康状态 0未知 1正常 2离线 3故障
 	Health uint8 `json:"health,omitempty"`
@@ -156,7 +153,7 @@ func (*Cabinet) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case cabinet.FieldCreator, cabinet.FieldLastModifier, cabinet.FieldModels, cabinet.FieldBin:
+		case cabinet.FieldCreator, cabinet.FieldLastModifier, cabinet.FieldBin:
 			values[i] = new([]byte)
 		case cabinet.FieldID, cabinet.FieldCityID, cabinet.FieldBranchID, cabinet.FieldDoors, cabinet.FieldStatus, cabinet.FieldHealth, cabinet.FieldBatteryNum, cabinet.FieldBatteryFullNum:
 			values[i] = new(sql.NullInt64)
@@ -276,14 +273,6 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				c.Status = uint8(value.Int64)
 			}
-		case cabinet.FieldModels:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field models", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &c.Models); err != nil {
-					return fmt.Errorf("unmarshal field models: %w", err)
-				}
-			}
 		case cabinet.FieldHealth:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field health", values[i])
@@ -397,8 +386,6 @@ func (c *Cabinet) String() string {
 	builder.WriteString(fmt.Sprintf("%v", c.Doors))
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", c.Status))
-	builder.WriteString(", models=")
-	builder.WriteString(fmt.Sprintf("%v", c.Models))
 	builder.WriteString(", health=")
 	builder.WriteString(fmt.Sprintf("%v", c.Health))
 	builder.WriteString(", bin=")

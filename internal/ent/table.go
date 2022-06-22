@@ -124,7 +124,7 @@ func (e *Enterprise) GetID() uint64 {
 
 // GetTableName returns table name for EnterpriseBill.
 func (eb *EnterpriseBill) GetTableName() string {
-	return "EnterpriseBill"
+	return "enterprise_bill"
 }
 
 // GetID returns id for EnterpriseBill.
