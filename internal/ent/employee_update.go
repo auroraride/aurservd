@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
@@ -230,6 +231,21 @@ func (eu *EmployeeUpdate) AddCommissions(c ...*Commission) *EmployeeUpdate {
 	return eu.AddCommissionIDs(ids...)
 }
 
+// AddAssistanceIDs adds the "assistances" edge to the Assistance entity by IDs.
+func (eu *EmployeeUpdate) AddAssistanceIDs(ids ...uint64) *EmployeeUpdate {
+	eu.mutation.AddAssistanceIDs(ids...)
+	return eu
+}
+
+// AddAssistances adds the "assistances" edges to the Assistance entity.
+func (eu *EmployeeUpdate) AddAssistances(a ...*Assistance) *EmployeeUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return eu.AddAssistanceIDs(ids...)
+}
+
 // Mutation returns the EmployeeMutation object of the builder.
 func (eu *EmployeeUpdate) Mutation() *EmployeeMutation {
 	return eu.mutation
@@ -329,6 +345,27 @@ func (eu *EmployeeUpdate) RemoveCommissions(c ...*Commission) *EmployeeUpdate {
 		ids[i] = c[i].ID
 	}
 	return eu.RemoveCommissionIDs(ids...)
+}
+
+// ClearAssistances clears all "assistances" edges to the Assistance entity.
+func (eu *EmployeeUpdate) ClearAssistances() *EmployeeUpdate {
+	eu.mutation.ClearAssistances()
+	return eu
+}
+
+// RemoveAssistanceIDs removes the "assistances" edge to Assistance entities by IDs.
+func (eu *EmployeeUpdate) RemoveAssistanceIDs(ids ...uint64) *EmployeeUpdate {
+	eu.mutation.RemoveAssistanceIDs(ids...)
+	return eu
+}
+
+// RemoveAssistances removes "assistances" edges to Assistance entities.
+func (eu *EmployeeUpdate) RemoveAssistances(a ...*Assistance) *EmployeeUpdate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return eu.RemoveAssistanceIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -804,6 +841,60 @@ func (eu *EmployeeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if eu.mutation.AssistancesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.AssistancesTable,
+			Columns: []string{employee.AssistancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: assistance.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.RemovedAssistancesIDs(); len(nodes) > 0 && !eu.mutation.AssistancesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.AssistancesTable,
+			Columns: []string{employee.AssistancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: assistance.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := eu.mutation.AssistancesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.AssistancesTable,
+			Columns: []string{employee.AssistancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: assistance.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, eu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{employee.Label}
@@ -1017,6 +1108,21 @@ func (euo *EmployeeUpdateOne) AddCommissions(c ...*Commission) *EmployeeUpdateOn
 	return euo.AddCommissionIDs(ids...)
 }
 
+// AddAssistanceIDs adds the "assistances" edge to the Assistance entity by IDs.
+func (euo *EmployeeUpdateOne) AddAssistanceIDs(ids ...uint64) *EmployeeUpdateOne {
+	euo.mutation.AddAssistanceIDs(ids...)
+	return euo
+}
+
+// AddAssistances adds the "assistances" edges to the Assistance entity.
+func (euo *EmployeeUpdateOne) AddAssistances(a ...*Assistance) *EmployeeUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return euo.AddAssistanceIDs(ids...)
+}
+
 // Mutation returns the EmployeeMutation object of the builder.
 func (euo *EmployeeUpdateOne) Mutation() *EmployeeMutation {
 	return euo.mutation
@@ -1116,6 +1222,27 @@ func (euo *EmployeeUpdateOne) RemoveCommissions(c ...*Commission) *EmployeeUpdat
 		ids[i] = c[i].ID
 	}
 	return euo.RemoveCommissionIDs(ids...)
+}
+
+// ClearAssistances clears all "assistances" edges to the Assistance entity.
+func (euo *EmployeeUpdateOne) ClearAssistances() *EmployeeUpdateOne {
+	euo.mutation.ClearAssistances()
+	return euo
+}
+
+// RemoveAssistanceIDs removes the "assistances" edge to Assistance entities by IDs.
+func (euo *EmployeeUpdateOne) RemoveAssistanceIDs(ids ...uint64) *EmployeeUpdateOne {
+	euo.mutation.RemoveAssistanceIDs(ids...)
+	return euo
+}
+
+// RemoveAssistances removes "assistances" edges to Assistance entities.
+func (euo *EmployeeUpdateOne) RemoveAssistances(a ...*Assistance) *EmployeeUpdateOne {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return euo.RemoveAssistanceIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1613,6 +1740,60 @@ func (euo *EmployeeUpdateOne) sqlSave(ctx context.Context) (_node *Employee, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: commission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if euo.mutation.AssistancesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.AssistancesTable,
+			Columns: []string{employee.AssistancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: assistance.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.RemovedAssistancesIDs(); len(nodes) > 0 && !euo.mutation.AssistancesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.AssistancesTable,
+			Columns: []string{employee.AssistancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: assistance.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := euo.mutation.AssistancesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.AssistancesTable,
+			Columns: []string{employee.AssistancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: assistance.FieldID,
 				},
 			},
 		}

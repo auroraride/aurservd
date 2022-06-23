@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
@@ -226,6 +227,21 @@ func (ec *EmployeeCreate) AddCommissions(c ...*Commission) *EmployeeCreate {
 		ids[i] = c[i].ID
 	}
 	return ec.AddCommissionIDs(ids...)
+}
+
+// AddAssistanceIDs adds the "assistances" edge to the Assistance entity by IDs.
+func (ec *EmployeeCreate) AddAssistanceIDs(ids ...uint64) *EmployeeCreate {
+	ec.mutation.AddAssistanceIDs(ids...)
+	return ec
+}
+
+// AddAssistances adds the "assistances" edges to the Assistance entity.
+func (ec *EmployeeCreate) AddAssistances(a ...*Assistance) *EmployeeCreate {
+	ids := make([]uint64, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ec.AddAssistanceIDs(ids...)
 }
 
 // Mutation returns the EmployeeMutation object of the builder.
@@ -566,6 +582,25 @@ func (ec *EmployeeCreate) createSpec() (*Employee, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: commission.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.AssistancesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   employee.AssistancesTable,
+			Columns: []string{employee.AssistancesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: assistance.FieldID,
 				},
 			},
 		}

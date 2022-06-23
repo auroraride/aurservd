@@ -1916,6 +1916,34 @@ func HasRefundWith(preds ...predicate.OrderRefund) predicate.Order {
 	})
 }
 
+// HasAssistance applies the HasEdge predicate on the "assistance" edge.
+func HasAssistance() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(AssistanceTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, AssistanceTable, AssistanceColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAssistanceWith applies the HasEdge predicate on the "assistance" edge with a given conditions (other predicates).
+func HasAssistanceWith(preds ...predicate.Assistance) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(AssistanceInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, AssistanceTable, AssistanceColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Order) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {

@@ -28,6 +28,7 @@ type config struct {
 
 // hooks per client, for fast access.
 type hooks struct {
+	Assistance           []ent.Hook
 	Attendance           []ent.Hook
 	BatteryModel         []ent.Hook
 	Branch               []ent.Hook

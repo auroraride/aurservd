@@ -15,6 +15,44 @@ definitions:
       stsToken:
         type: string
     type: object
+  model.AssistanceCreateReq:
+    properties:
+      address:
+        description: '详细地址 '
+        type: string
+      breakdown:
+        description: '故障原因 '
+        type: string
+      breakdownDesc:
+        description: '故障描述 '
+        type: string
+      breakdownPhotos:
+        description: '故障图片 '
+        items:
+          type: string
+        maxItems: 3
+        minItems: 1
+        type: array
+      lat:
+        description: '纬度 '
+        type: number
+      lng:
+        description: '经度 '
+        type: number
+    required:
+    - address
+    - breakdown
+    - breakdownDesc
+    - breakdownPhotos
+    - lat
+    - lng
+    type: object
+  model.AssistanceCreateRes:
+    properties:
+      outTradeNo:
+        description: 救援订单编码
+        type: string
+    type: object
   model.AttendanceCreateReq:
     properties:
       address:
@@ -6181,6 +6219,56 @@ paths:
       summary: M1001 用户登录
       tags:
       - '[M]管理接口'
+  /rider/v1/assistance:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderAssistanceCreate
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 救援参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssistanceCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AssistanceCreateRes'
+      summary: R5002 发起救援
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/assistance/breakdown:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderAssistanceBreakdown
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              type: string
+            type: array
+      summary: R5001 获取救援原因
+      tags:
+      - '[R]骑手接口'
   /rider/v1/authenticator:
     post:
       consumes:
@@ -6253,6 +6341,10 @@ paths:
         in: query
         name: distance
         type: number
+      - description: 是否仅获取上班中的门店
+        in: query
+        name: dutyStore
+        type: boolean
       - description: '纬度 '
         in: query
         name: lat

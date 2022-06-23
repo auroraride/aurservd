@@ -9,6 +9,19 @@ import (
 	"github.com/auroraride/aurservd/internal/ent"
 )
 
+// The AssistanceFunc type is an adapter to allow the use of ordinary
+// function as Assistance mutator.
+type AssistanceFunc func(context.Context, *ent.AssistanceMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AssistanceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.AssistanceMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AssistanceMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The AttendanceFunc type is an adapter to allow the use of ordinary
 // function as Attendance mutator.
 type AttendanceFunc func(context.Context, *ent.AttendanceMutation) (ent.Value, error)

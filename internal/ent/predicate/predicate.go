@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Assistance is the predicate function for assistance builders.
+type Assistance func(*sql.Selector)
+
 // Attendance is the predicate function for attendance builders.
 type Attendance func(*sql.Selector)
 

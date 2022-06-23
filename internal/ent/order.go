@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -104,9 +105,11 @@ type OrderEdges struct {
 	Children []*Order `json:"children,omitempty"`
 	// Refund holds the value of the refund edge.
 	Refund *OrderRefund `json:"refund,omitempty"`
+	// Assistance holds the value of the assistance edge.
+	Assistance *Assistance `json:"assistance,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [9]bool
 }
 
 // PlanOrErr returns the Plan value or an error if the edge
@@ -214,6 +217,20 @@ func (e OrderEdges) RefundOrErr() (*OrderRefund, error) {
 		return e.Refund, nil
 	}
 	return nil, &NotLoadedError{edge: "refund"}
+}
+
+// AssistanceOrErr returns the Assistance value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e OrderEdges) AssistanceOrErr() (*Assistance, error) {
+	if e.loadedTypes[8] {
+		if e.Assistance == nil {
+			// The edge assistance was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: assistance.Label}
+		}
+		return e.Assistance, nil
+	}
+	return nil, &NotLoadedError{edge: "assistance"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -423,6 +440,11 @@ func (o *Order) QueryChildren() *OrderQuery {
 // QueryRefund queries the "refund" edge of the Order entity.
 func (o *Order) QueryRefund() *OrderRefundQuery {
 	return (&OrderClient{config: o.config}).QueryRefund(o)
+}
+
+// QueryAssistance queries the "assistance" edge of the Order entity.
+func (o *Order) QueryAssistance() *AssistanceQuery {
+	return (&OrderClient{config: o.config}).QueryAssistance(o)
 }
 
 // Update returns a builder for updating this Order.

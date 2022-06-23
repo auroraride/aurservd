@@ -9,6 +9,7 @@ import (
 
 	"github.com/auroraride/aurservd/internal/ent/migrate"
 
+	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
@@ -53,6 +54,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Assistance is the client for interacting with the Assistance builders.
+	Assistance *AssistanceClient
 	// Attendance is the client for interacting with the Attendance builders.
 	Attendance *AttendanceClient
 	// BatteryModel is the client for interacting with the BatteryModel builders.
@@ -132,6 +135,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.Assistance = NewAssistanceClient(c.config)
 	c.Attendance = NewAttendanceClient(c.config)
 	c.BatteryModel = NewBatteryModelClient(c.config)
 	c.Branch = NewBranchClient(c.config)
@@ -198,6 +202,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:                  ctx,
 		config:               cfg,
+		Assistance:           NewAssistanceClient(cfg),
 		Attendance:           NewAttendanceClient(cfg),
 		BatteryModel:         NewBatteryModelClient(cfg),
 		Branch:               NewBranchClient(cfg),
@@ -250,6 +255,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:                  ctx,
 		config:               cfg,
+		Assistance:           NewAssistanceClient(cfg),
 		Attendance:           NewAttendanceClient(cfg),
 		BatteryModel:         NewBatteryModelClient(cfg),
 		Branch:               NewBranchClient(cfg),
@@ -289,7 +295,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Attendance.
+//		Assistance.
 //		Query().
 //		Count(ctx)
 //
@@ -312,6 +318,7 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.Assistance.Use(hooks...)
 	c.Attendance.Use(hooks...)
 	c.BatteryModel.Use(hooks...)
 	c.Branch.Use(hooks...)
@@ -345,6 +352,177 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Subscribe.Use(hooks...)
 	c.SubscribeAlter.Use(hooks...)
 	c.SubscribePause.Use(hooks...)
+}
+
+// AssistanceClient is a client for the Assistance schema.
+type AssistanceClient struct {
+	config
+}
+
+// NewAssistanceClient returns a client for the Assistance from the given config.
+func NewAssistanceClient(c config) *AssistanceClient {
+	return &AssistanceClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `assistance.Hooks(f(g(h())))`.
+func (c *AssistanceClient) Use(hooks ...Hook) {
+	c.hooks.Assistance = append(c.hooks.Assistance, hooks...)
+}
+
+// Create returns a create builder for Assistance.
+func (c *AssistanceClient) Create() *AssistanceCreate {
+	mutation := newAssistanceMutation(c.config, OpCreate)
+	return &AssistanceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Assistance entities.
+func (c *AssistanceClient) CreateBulk(builders ...*AssistanceCreate) *AssistanceCreateBulk {
+	return &AssistanceCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Assistance.
+func (c *AssistanceClient) Update() *AssistanceUpdate {
+	mutation := newAssistanceMutation(c.config, OpUpdate)
+	return &AssistanceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AssistanceClient) UpdateOne(a *Assistance) *AssistanceUpdateOne {
+	mutation := newAssistanceMutation(c.config, OpUpdateOne, withAssistance(a))
+	return &AssistanceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AssistanceClient) UpdateOneID(id uint64) *AssistanceUpdateOne {
+	mutation := newAssistanceMutation(c.config, OpUpdateOne, withAssistanceID(id))
+	return &AssistanceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Assistance.
+func (c *AssistanceClient) Delete() *AssistanceDelete {
+	mutation := newAssistanceMutation(c.config, OpDelete)
+	return &AssistanceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *AssistanceClient) DeleteOne(a *Assistance) *AssistanceDeleteOne {
+	return c.DeleteOneID(a.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *AssistanceClient) DeleteOneID(id uint64) *AssistanceDeleteOne {
+	builder := c.Delete().Where(assistance.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AssistanceDeleteOne{builder}
+}
+
+// Query returns a query builder for Assistance.
+func (c *AssistanceClient) Query() *AssistanceQuery {
+	return &AssistanceQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Assistance entity by its id.
+func (c *AssistanceClient) Get(ctx context.Context, id uint64) (*Assistance, error) {
+	return c.Query().Where(assistance.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AssistanceClient) GetX(ctx context.Context, id uint64) *Assistance {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryStore queries the store edge of a Assistance.
+func (c *AssistanceClient) QueryStore(a *Assistance) *StoreQuery {
+	query := &StoreQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assistance.Table, assistance.FieldID, id),
+			sqlgraph.To(store.Table, store.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assistance.StoreTable, assistance.StoreColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRider queries the rider edge of a Assistance.
+func (c *AssistanceClient) QueryRider(a *Assistance) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assistance.Table, assistance.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assistance.RiderTable, assistance.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySubscribe queries the subscribe edge of a Assistance.
+func (c *AssistanceClient) QuerySubscribe(a *Assistance) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assistance.Table, assistance.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assistance.SubscribeTable, assistance.SubscribeColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOrder queries the order edge of a Assistance.
+func (c *AssistanceClient) QueryOrder(a *Assistance) *OrderQuery {
+	query := &OrderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assistance.Table, assistance.FieldID, id),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, assistance.OrderTable, assistance.OrderColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEmployee queries the employee edge of a Assistance.
+func (c *AssistanceClient) QueryEmployee(a *Assistance) *EmployeeQuery {
+	query := &EmployeeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assistance.Table, assistance.FieldID, id),
+			sqlgraph.To(employee.Table, employee.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, assistance.EmployeeTable, assistance.EmployeeColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AssistanceClient) Hooks() []Hook {
+	hooks := c.hooks.Assistance
+	return append(hooks[:len(hooks):len(hooks)], assistance.Hooks[:]...)
 }
 
 // AttendanceClient is a client for the Attendance schema.
@@ -1959,6 +2137,22 @@ func (c *EmployeeClient) QueryCommissions(e *Employee) *CommissionQuery {
 			sqlgraph.From(employee.Table, employee.FieldID, id),
 			sqlgraph.To(commission.Table, commission.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, employee.CommissionsTable, employee.CommissionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAssistances queries the assistances edge of a Employee.
+func (c *EmployeeClient) QueryAssistances(e *Employee) *AssistanceQuery {
+	query := &AssistanceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, id),
+			sqlgraph.To(assistance.Table, assistance.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, employee.AssistancesTable, employee.AssistancesColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil
@@ -3675,6 +3869,22 @@ func (c *OrderClient) QueryRefund(o *Order) *OrderRefundQuery {
 			sqlgraph.From(order.Table, order.FieldID, id),
 			sqlgraph.To(orderrefund.Table, orderrefund.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, order.RefundTable, order.RefundColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAssistance queries the assistance edge of a Order.
+func (c *OrderClient) QueryAssistance(o *Order) *AssistanceQuery {
+	query := &AssistanceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, id),
+			sqlgraph.To(assistance.Table, assistance.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, order.AssistanceTable, order.AssistanceColumn),
 		)
 		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
 		return fromV, nil

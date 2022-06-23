@@ -232,6 +232,9 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
     if req.CityID != nil {
         q.Where(branch.CityID(*req.CityID))
     }
+    if req.DutyStore {
+        q.Where(branch.HasStoresWith(store.HasEmployee(), store.Status(model.StoreStatusOpen)))
+    }
     err := q.Scan(s.ctx, &temps)
     items = make([]*model.BranchWithDistanceRes, 0)
     // 三种设备类别

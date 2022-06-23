@@ -181,8 +181,13 @@ func (s *storeService) List(req *model.StoreListReq) *model.PaginationRes {
 
 func (s *storeService) SwitchStatus(req *model.StoreSwtichStatusReq) {
     st := s.employee.Edges.Store
+
     if st == nil {
         snag.Panic("当前未上班")
+    }
+
+    if req.Status != model.StoreStatusOpen && req.Status != model.StoreStatusClose {
+        snag.Panic("状态错误")
     }
     _, err := st.Update().SetStatus(req.Status).Save(s.ctx)
     if err != nil {

@@ -69,6 +69,8 @@ const (
 	EdgeChildren = "children"
 	// EdgeRefund holds the string denoting the refund edge name in mutations.
 	EdgeRefund = "refund"
+	// EdgeAssistance holds the string denoting the assistance edge name in mutations.
+	EdgeAssistance = "assistance"
 	// Table holds the table name of the order in the database.
 	Table = "order"
 	// PlanTable is the table that holds the plan relation/edge.
@@ -121,6 +123,13 @@ const (
 	RefundInverseTable = "order_refund"
 	// RefundColumn is the table column denoting the refund relation/edge.
 	RefundColumn = "order_id"
+	// AssistanceTable is the table that holds the assistance relation/edge.
+	AssistanceTable = "assistance"
+	// AssistanceInverseTable is the table name for the Assistance entity.
+	// It exists in this package in order to avoid circular dependency with the "assistance" package.
+	AssistanceInverseTable = "assistance"
+	// AssistanceColumn is the table column denoting the assistance relation/edge.
+	AssistanceColumn = "order_id"
 )
 
 // Columns holds all SQL columns for order fields.

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -39,6 +40,7 @@ type OrderQuery struct {
 	withParent     *OrderQuery
 	withChildren   *OrderQuery
 	withRefund     *OrderRefundQuery
+	withAssistance *AssistanceQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -252,6 +254,28 @@ func (oq *OrderQuery) QueryRefund() *OrderRefundQuery {
 	return query
 }
 
+// QueryAssistance chains the current query on the "assistance" edge.
+func (oq *OrderQuery) QueryAssistance() *AssistanceQuery {
+	query := &AssistanceQuery{config: oq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := oq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := oq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, selector),
+			sqlgraph.To(assistance.Table, assistance.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, order.AssistanceTable, order.AssistanceColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Order entity from the query.
 // Returns a *NotFoundError when no Order was found.
 func (oq *OrderQuery) First(ctx context.Context) (*Order, error) {
@@ -441,6 +465,7 @@ func (oq *OrderQuery) Clone() *OrderQuery {
 		withParent:     oq.withParent.Clone(),
 		withChildren:   oq.withChildren.Clone(),
 		withRefund:     oq.withRefund.Clone(),
+		withAssistance: oq.withAssistance.Clone(),
 		// clone intermediate query.
 		sql:    oq.sql.Clone(),
 		path:   oq.path,
@@ -536,6 +561,17 @@ func (oq *OrderQuery) WithRefund(opts ...func(*OrderRefundQuery)) *OrderQuery {
 	return oq
 }
 
+// WithAssistance tells the query-builder to eager-load the nodes that are connected to
+// the "assistance" edge. The optional arguments are used to configure the query builder of the edge.
+func (oq *OrderQuery) WithAssistance(opts ...func(*AssistanceQuery)) *OrderQuery {
+	query := &AssistanceQuery{config: oq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	oq.withAssistance = query
+	return oq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -606,7 +642,7 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 	var (
 		nodes       = []*Order{}
 		_spec       = oq.querySpec()
-		loadedTypes = [8]bool{
+		loadedTypes = [9]bool{
 			oq.withPlan != nil,
 			oq.withCity != nil,
 			oq.withRider != nil,
@@ -615,6 +651,7 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 			oq.withParent != nil,
 			oq.withChildren != nil,
 			oq.withRefund != nil,
+			oq.withAssistance != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -845,6 +882,33 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 				return nil, fmt.Errorf(`unexpected foreign-key "order_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Refund = n
+		}
+	}
+
+	if query := oq.withAssistance; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Order)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+		}
+		query.Where(predicate.Assistance(func(s *sql.Selector) {
+			s.Where(sql.InValues(order.AssistanceColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.OrderID
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "order_id" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "order_id" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Assistance = n
 		}
 	}
 

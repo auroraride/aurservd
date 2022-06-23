@@ -20,7 +20,6 @@ import (
 var (
     riderAuthSkipper = map[string]bool{
         "/rider/v1/signin": true,
-        // "/rider/v1/city":   true,
     }
 )
 
@@ -72,9 +71,7 @@ func RiderRequireAuthAndContact() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
             url := c.Request().RequestURI
-            // if riderAuthSkipper[url] {
-            //     return next(c)
-            // }
+
             if url == "/rider/v1/profile" {
                 return next(c)
             }
@@ -98,9 +95,7 @@ func RiderFaceMiddleware() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
             url := c.Request().RequestURI
-            // if riderAuthSkipper[url] {
-            //     return next(c)
-            // }
+
             if url == "/rider/v1/profile" {
                 return next(c)
             }

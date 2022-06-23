@@ -4966,6 +4966,82 @@
                 }
             }
         },
+        "/rider/v1/assistance": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R5002 发起救援",
+                "operationId": "RiderAssistanceCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "救援参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssistanceCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.AssistanceCreateRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/rider/v1/assistance/breakdown": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R5001 获取救援原因",
+                "operationId": "RiderAssistanceBreakdown",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/authenticator": {
             "post": {
                 "consumes": [
@@ -5077,6 +5153,12 @@
                         "type": "number",
                         "description": "距离 ",
                         "name": "distance",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否仅获取上班中的门店",
+                        "name": "dutyStore",
                         "in": "query"
                     },
                     {
@@ -6096,6 +6178,57 @@
                     "type": "string"
                 },
                 "stsToken": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssistanceCreateReq": {
+            "type": "object",
+            "required": [
+                "address",
+                "breakdown",
+                "breakdownDesc",
+                "breakdownPhotos",
+                "lat",
+                "lng"
+            ],
+            "properties": {
+                "address": {
+                    "description": "详细地址 ",
+                    "type": "string"
+                },
+                "breakdown": {
+                    "description": "故障原因 ",
+                    "type": "string"
+                },
+                "breakdownDesc": {
+                    "description": "故障描述 ",
+                    "type": "string"
+                },
+                "breakdownPhotos": {
+                    "description": "故障图片 ",
+                    "type": "array",
+                    "maxItems": 3,
+                    "minItems": 1,
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "lat": {
+                    "description": "纬度 ",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度 ",
+                    "type": "number"
+                }
+            }
+        },
+        "model.AssistanceCreateRes": {
+            "type": "object",
+            "properties": {
+                "outTradeNo": {
+                    "description": "救援订单编码",
                     "type": "string"
                 }
             }

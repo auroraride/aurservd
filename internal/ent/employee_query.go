@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
@@ -37,6 +38,7 @@ type EmployeeQuery struct {
 	withStocks      *StockQuery
 	withExchanges   *ExchangeQuery
 	withCommissions *CommissionQuery
+	withAssistances *AssistanceQuery
 	modifiers       []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -199,6 +201,28 @@ func (eq *EmployeeQuery) QueryCommissions() *CommissionQuery {
 			sqlgraph.From(employee.Table, employee.FieldID, selector),
 			sqlgraph.To(commission.Table, commission.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, employee.CommissionsTable, employee.CommissionsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAssistances chains the current query on the "assistances" edge.
+func (eq *EmployeeQuery) QueryAssistances() *AssistanceQuery {
+	query := &AssistanceQuery{config: eq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(employee.Table, employee.FieldID, selector),
+			sqlgraph.To(assistance.Table, assistance.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, employee.AssistancesTable, employee.AssistancesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -393,6 +417,7 @@ func (eq *EmployeeQuery) Clone() *EmployeeQuery {
 		withStocks:      eq.withStocks.Clone(),
 		withExchanges:   eq.withExchanges.Clone(),
 		withCommissions: eq.withCommissions.Clone(),
+		withAssistances: eq.withAssistances.Clone(),
 		// clone intermediate query.
 		sql:    eq.sql.Clone(),
 		path:   eq.path,
@@ -466,6 +491,17 @@ func (eq *EmployeeQuery) WithCommissions(opts ...func(*CommissionQuery)) *Employ
 	return eq
 }
 
+// WithAssistances tells the query-builder to eager-load the nodes that are connected to
+// the "assistances" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EmployeeQuery) WithAssistances(opts ...func(*AssistanceQuery)) *EmployeeQuery {
+	query := &AssistanceQuery{config: eq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withAssistances = query
+	return eq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -536,13 +572,14 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 	var (
 		nodes       = []*Employee{}
 		_spec       = eq.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [7]bool{
 			eq.withCity != nil,
 			eq.withStore != nil,
 			eq.withAttendances != nil,
 			eq.withStocks != nil,
 			eq.withExchanges != nil,
 			eq.withCommissions != nil,
+			eq.withAssistances != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -726,6 +763,34 @@ func (eq *EmployeeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Emp
 				return nil, fmt.Errorf(`unexpected foreign-key "employee_id" returned %v for node %v`, *fk, n.ID)
 			}
 			node.Edges.Commissions = append(node.Edges.Commissions, n)
+		}
+	}
+
+	if query := eq.withAssistances; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Employee)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Assistances = []*Assistance{}
+		}
+		query.Where(predicate.Assistance(func(s *sql.Selector) {
+			s.Where(sql.InValues(employee.AssistancesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.EmployeeID
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "employee_id" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "employee_id" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Assistances = append(node.Edges.Assistances, n)
 		}
 	}
 

@@ -51,6 +51,13 @@ func EntitySetAttributes[T, O any](client *T, entity *O, data any) *T {
 	return client
 }
 
+// ModifyOne returns an update with pointer struct builder for Assistance.
+func (c *AssistanceClient) ModifyOne(old *Assistance, data any) *AssistanceUpdateOne {
+	mutation := newAssistanceMutation(c.config, OpUpdateOne, withAssistance(old))
+	up := &AssistanceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+	return EntitySetAttributes[AssistanceUpdateOne, Assistance](up, old, data)
+}
+
 // ModifyOne returns an update with pointer struct builder for Attendance.
 func (c *AttendanceClient) ModifyOne(old *Attendance, data any) *AttendanceUpdateOne {
 	mutation := newAttendanceMutation(c.config, OpUpdateOne, withAttendance(old))

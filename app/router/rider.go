@@ -73,4 +73,8 @@ func loadRideRoutes() {
     g.POST("/exchange/store", rapi.Exchange.Store)
     g.GET("/exchange/overview", rapi.Exchange.Overview)
     g.GET("/exchange/log", rapi.Exchange.Log)
+
+    // 救援
+    g.GET("/assistance/breakdown", rapi.Assistance.Breakdown)
+    g.POST("/assistance", rapi.Assistance.Create)
 }

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -321,6 +322,25 @@ func (oc *OrderCreate) SetNillableRefundID(id *uint64) *OrderCreate {
 // SetRefund sets the "refund" edge to the OrderRefund entity.
 func (oc *OrderCreate) SetRefund(o *OrderRefund) *OrderCreate {
 	return oc.SetRefundID(o.ID)
+}
+
+// SetAssistanceID sets the "assistance" edge to the Assistance entity by ID.
+func (oc *OrderCreate) SetAssistanceID(id uint64) *OrderCreate {
+	oc.mutation.SetAssistanceID(id)
+	return oc
+}
+
+// SetNillableAssistanceID sets the "assistance" edge to the Assistance entity by ID if the given value is not nil.
+func (oc *OrderCreate) SetNillableAssistanceID(id *uint64) *OrderCreate {
+	if id != nil {
+		oc = oc.SetAssistanceID(*id)
+	}
+	return oc
+}
+
+// SetAssistance sets the "assistance" edge to the Assistance entity.
+func (oc *OrderCreate) SetAssistance(a *Assistance) *OrderCreate {
+	return oc.SetAssistanceID(a.ID)
 }
 
 // Mutation returns the OrderMutation object of the builder.
@@ -759,6 +779,25 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: orderrefund.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := oc.mutation.AssistanceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   order.AssistanceTable,
+			Columns: []string{order.AssistanceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: assistance.FieldID,
 				},
 			},
 		}

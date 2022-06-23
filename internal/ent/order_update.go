@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/commission"
 	"github.com/auroraride/aurservd/internal/ent/order"
@@ -325,6 +326,25 @@ func (ou *OrderUpdate) SetRefund(o *OrderRefund) *OrderUpdate {
 	return ou.SetRefundID(o.ID)
 }
 
+// SetAssistanceID sets the "assistance" edge to the Assistance entity by ID.
+func (ou *OrderUpdate) SetAssistanceID(id uint64) *OrderUpdate {
+	ou.mutation.SetAssistanceID(id)
+	return ou
+}
+
+// SetNillableAssistanceID sets the "assistance" edge to the Assistance entity by ID if the given value is not nil.
+func (ou *OrderUpdate) SetNillableAssistanceID(id *uint64) *OrderUpdate {
+	if id != nil {
+		ou = ou.SetAssistanceID(*id)
+	}
+	return ou
+}
+
+// SetAssistance sets the "assistance" edge to the Assistance entity.
+func (ou *OrderUpdate) SetAssistance(a *Assistance) *OrderUpdate {
+	return ou.SetAssistanceID(a.ID)
+}
+
 // Mutation returns the OrderMutation object of the builder.
 func (ou *OrderUpdate) Mutation() *OrderMutation {
 	return ou.mutation
@@ -390,6 +410,12 @@ func (ou *OrderUpdate) RemoveChildren(o ...*Order) *OrderUpdate {
 // ClearRefund clears the "refund" edge to the OrderRefund entity.
 func (ou *OrderUpdate) ClearRefund() *OrderUpdate {
 	ou.mutation.ClearRefund()
+	return ou
+}
+
+// ClearAssistance clears the "assistance" edge to the Assistance entity.
+func (ou *OrderUpdate) ClearAssistance() *OrderUpdate {
+	ou.mutation.ClearAssistance()
 	return ou
 }
 
@@ -892,6 +918,41 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ou.mutation.AssistanceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   order.AssistanceTable,
+			Columns: []string{order.AssistanceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: assistance.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ou.mutation.AssistanceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   order.AssistanceTable,
+			Columns: []string{order.AssistanceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: assistance.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ou.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{order.Label}
@@ -1201,6 +1262,25 @@ func (ouo *OrderUpdateOne) SetRefund(o *OrderRefund) *OrderUpdateOne {
 	return ouo.SetRefundID(o.ID)
 }
 
+// SetAssistanceID sets the "assistance" edge to the Assistance entity by ID.
+func (ouo *OrderUpdateOne) SetAssistanceID(id uint64) *OrderUpdateOne {
+	ouo.mutation.SetAssistanceID(id)
+	return ouo
+}
+
+// SetNillableAssistanceID sets the "assistance" edge to the Assistance entity by ID if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableAssistanceID(id *uint64) *OrderUpdateOne {
+	if id != nil {
+		ouo = ouo.SetAssistanceID(*id)
+	}
+	return ouo
+}
+
+// SetAssistance sets the "assistance" edge to the Assistance entity.
+func (ouo *OrderUpdateOne) SetAssistance(a *Assistance) *OrderUpdateOne {
+	return ouo.SetAssistanceID(a.ID)
+}
+
 // Mutation returns the OrderMutation object of the builder.
 func (ouo *OrderUpdateOne) Mutation() *OrderMutation {
 	return ouo.mutation
@@ -1266,6 +1346,12 @@ func (ouo *OrderUpdateOne) RemoveChildren(o ...*Order) *OrderUpdateOne {
 // ClearRefund clears the "refund" edge to the OrderRefund entity.
 func (ouo *OrderUpdateOne) ClearRefund() *OrderUpdateOne {
 	ouo.mutation.ClearRefund()
+	return ouo
+}
+
+// ClearAssistance clears the "assistance" edge to the Assistance entity.
+func (ouo *OrderUpdateOne) ClearAssistance() *OrderUpdateOne {
+	ouo.mutation.ClearAssistance()
 	return ouo
 }
 
@@ -1790,6 +1876,41 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: orderrefund.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ouo.mutation.AssistanceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   order.AssistanceTable,
+			Columns: []string{order.AssistanceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: assistance.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ouo.mutation.AssistanceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   order.AssistanceTable,
+			Columns: []string{order.AssistanceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: assistance.FieldID,
 				},
 			},
 		}

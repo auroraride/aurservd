@@ -5,6 +5,7 @@ package runtime
 import (
 	"time"
 
+	"github.com/auroraride/aurservd/internal/ent/assistance"
 	"github.com/auroraride/aurservd/internal/ent/attendance"
 	"github.com/auroraride/aurservd/internal/ent/batterymodel"
 	"github.com/auroraride/aurservd/internal/ent/branch"
@@ -45,6 +46,27 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	assistanceMixin := schema.Assistance{}.Mixin()
+	assistanceMixinHooks2 := assistanceMixin[2].Hooks()
+	assistance.Hooks[0] = assistanceMixinHooks2[0]
+	assistanceMixinFields0 := assistanceMixin[0].Fields()
+	_ = assistanceMixinFields0
+	assistanceFields := schema.Assistance{}.Fields()
+	_ = assistanceFields
+	// assistanceDescCreatedAt is the schema descriptor for created_at field.
+	assistanceDescCreatedAt := assistanceMixinFields0[0].Descriptor()
+	// assistance.DefaultCreatedAt holds the default value on creation for the created_at field.
+	assistance.DefaultCreatedAt = assistanceDescCreatedAt.Default.(func() time.Time)
+	// assistanceDescUpdatedAt is the schema descriptor for updated_at field.
+	assistanceDescUpdatedAt := assistanceMixinFields0[1].Descriptor()
+	// assistance.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	assistance.DefaultUpdatedAt = assistanceDescUpdatedAt.Default.(func() time.Time)
+	// assistance.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	assistance.UpdateDefaultUpdatedAt = assistanceDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// assistanceDescStatus is the schema descriptor for status field.
+	assistanceDescStatus := assistanceFields[2].Descriptor()
+	// assistance.DefaultStatus holds the default value on creation for the status field.
+	assistance.DefaultStatus = assistanceDescStatus.Default.(uint8)
 	attendanceMixin := schema.Attendance{}.Mixin()
 	attendanceMixinHooks2 := attendanceMixin[2].Hooks()
 	attendance.Hooks[0] = attendanceMixinHooks2[0]

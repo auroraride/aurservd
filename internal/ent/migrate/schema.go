@@ -9,6 +9,98 @@ import (
 )
 
 var (
+	// AssistanceColumns holds the columns for the "assistance" table.
+	AssistanceColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "status", Type: field.TypeUint8, Comment: "救援状态 0:等待接单 1:已接单 2:已拒绝 3:救援失败 4:救援成功", Default: 0},
+		{Name: "out_trade_no", Type: field.TypeString, Comment: "救援单号"},
+		{Name: "lng", Type: field.TypeFloat64, Comment: "经度"},
+		{Name: "lat", Type: field.TypeFloat64, Comment: "纬度"},
+		{Name: "address", Type: field.TypeString, Comment: "详细地址"},
+		{Name: "breakdown", Type: field.TypeString, Comment: "故障"},
+		{Name: "breakdown_desc", Type: field.TypeString, Comment: "故障描述", Nullable: true},
+		{Name: "breakdown_photos", Type: field.TypeJSON, Comment: "故障照片"},
+		{Name: "cancel_reason", Type: field.TypeString, Comment: "取消原因", Nullable: true},
+		{Name: "cancel_reason_desc", Type: field.TypeString, Comment: "取消原因详细描述", Nullable: true},
+		{Name: "distance", Type: field.TypeFloat64, Comment: "救援距离", Nullable: true},
+		{Name: "reason", Type: field.TypeString, Comment: "救援原因", Nullable: true},
+		{Name: "battery_photo", Type: field.TypeString, Comment: "电池照片", Nullable: true},
+		{Name: "joint_photo", Type: field.TypeString, Comment: "与用户合影", Nullable: true},
+		{Name: "cost", Type: field.TypeFloat64, Comment: "本次救援费用", Nullable: true},
+		{Name: "refused_desc", Type: field.TypeString, Comment: "拒绝原因", Nullable: true},
+		{Name: "pay_at", Type: field.TypeTime, Comment: "支付时间", Nullable: true},
+		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "rider_id", Type: field.TypeUint64},
+		{Name: "subscribe_id", Type: field.TypeUint64},
+		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "order_id", Type: field.TypeUint64, Unique: true, Nullable: true},
+	}
+	// AssistanceTable holds the schema information for the "assistance" table.
+	AssistanceTable = &schema.Table{
+		Name:       "assistance",
+		Columns:    AssistanceColumns,
+		PrimaryKey: []*schema.Column{AssistanceColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "assistance_store_store",
+				Columns:    []*schema.Column{AssistanceColumns[24]},
+				RefColumns: []*schema.Column{StoreColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "assistance_rider_rider",
+				Columns:    []*schema.Column{AssistanceColumns[25]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "assistance_subscribe_subscribe",
+				Columns:    []*schema.Column{AssistanceColumns[26]},
+				RefColumns: []*schema.Column{SubscribeColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "assistance_employee_assistances",
+				Columns:    []*schema.Column{AssistanceColumns[27]},
+				RefColumns: []*schema.Column{EmployeeColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "assistance_order_assistance",
+				Columns:    []*schema.Column{AssistanceColumns[28]},
+				RefColumns: []*schema.Column{OrderColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "assistance_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{AssistanceColumns[1]},
+			},
+			{
+				Name:    "assistance_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{AssistanceColumns[3]},
+			},
+			{
+				Name:    "assistance_out_trade_no",
+				Unique:  false,
+				Columns: []*schema.Column{AssistanceColumns[8]},
+			},
+			{
+				Name:    "assistance_status",
+				Unique:  false,
+				Columns: []*schema.Column{AssistanceColumns[7]},
+			},
+		},
+	}
 	// AttendanceColumns holds the columns for the "attendance" table.
 	AttendanceColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -2191,6 +2283,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AssistanceTable,
 		AttendanceTable,
 		BatteryModelTable,
 		BranchTable,
@@ -2231,6 +2324,14 @@ var (
 )
 
 func init() {
+	AssistanceTable.ForeignKeys[0].RefTable = StoreTable
+	AssistanceTable.ForeignKeys[1].RefTable = RiderTable
+	AssistanceTable.ForeignKeys[2].RefTable = SubscribeTable
+	AssistanceTable.ForeignKeys[3].RefTable = EmployeeTable
+	AssistanceTable.ForeignKeys[4].RefTable = OrderTable
+	AssistanceTable.Annotation = &entsql.Annotation{
+		Table: "assistance",
+	}
 	AttendanceTable.ForeignKeys[0].RefTable = EmployeeTable
 	AttendanceTable.ForeignKeys[1].RefTable = StoreTable
 	AttendanceTable.Annotation = &entsql.Annotation{

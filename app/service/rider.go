@@ -556,6 +556,9 @@ func (s *riderService) Permission(u *ent.Rider) (err error) {
     if !s.IsAuthed(u) {
         err = errors.New("骑手未实名")
     }
+    if NewAssistance().Unpaid(u.ID) != nil {
+        err = errors.New("救援订单未支付")
+    }
     if s.IsBlocked(u) {
         err = errors.New("骑手被封禁")
     }
