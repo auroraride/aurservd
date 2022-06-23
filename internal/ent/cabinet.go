@@ -71,6 +71,15 @@ type Cabinet struct {
 	// BatteryFullNum holds the value of the "battery_full_num" field.
 	// 满电电池数
 	BatteryFullNum uint `json:"battery_full_num,omitempty"`
+	// Lng holds the value of the "lng" field.
+	// 经度
+	Lng float64 `json:"lng,omitempty"`
+	// Lat holds the value of the "lat" field.
+	// 纬度
+	Lat float64 `json:"lat,omitempty"`
+	// Address holds the value of the "address" field.
+	// 详细地址
+	Address string `json:"address,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CabinetQuery when eager-loading is set.
 	Edges CabinetEdges `json:"edges"`
@@ -155,9 +164,11 @@ func (*Cabinet) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case cabinet.FieldCreator, cabinet.FieldLastModifier, cabinet.FieldBin:
 			values[i] = new([]byte)
+		case cabinet.FieldLng, cabinet.FieldLat:
+			values[i] = new(sql.NullFloat64)
 		case cabinet.FieldID, cabinet.FieldCityID, cabinet.FieldBranchID, cabinet.FieldDoors, cabinet.FieldStatus, cabinet.FieldHealth, cabinet.FieldBatteryNum, cabinet.FieldBatteryFullNum:
 			values[i] = new(sql.NullInt64)
-		case cabinet.FieldRemark, cabinet.FieldSn, cabinet.FieldBrand, cabinet.FieldSerial, cabinet.FieldName:
+		case cabinet.FieldRemark, cabinet.FieldSn, cabinet.FieldBrand, cabinet.FieldSerial, cabinet.FieldName, cabinet.FieldAddress:
 			values[i] = new(sql.NullString)
 		case cabinet.FieldCreatedAt, cabinet.FieldUpdatedAt, cabinet.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -299,6 +310,24 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				c.BatteryFullNum = uint(value.Int64)
 			}
+		case cabinet.FieldLng:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field lng", values[i])
+			} else if value.Valid {
+				c.Lng = value.Float64
+			}
+		case cabinet.FieldLat:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field lat", values[i])
+			} else if value.Valid {
+				c.Lat = value.Float64
+			}
+		case cabinet.FieldAddress:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field address", values[i])
+			} else if value.Valid {
+				c.Address = value.String
+			}
 		}
 	}
 	return nil
@@ -394,6 +423,12 @@ func (c *Cabinet) String() string {
 	builder.WriteString(fmt.Sprintf("%v", c.BatteryNum))
 	builder.WriteString(", battery_full_num=")
 	builder.WriteString(fmt.Sprintf("%v", c.BatteryFullNum))
+	builder.WriteString(", lng=")
+	builder.WriteString(fmt.Sprintf("%v", c.Lng))
+	builder.WriteString(", lat=")
+	builder.WriteString(fmt.Sprintf("%v", c.Lat))
+	builder.WriteString(", address=")
+	builder.WriteString(c.Address)
 	builder.WriteByte(')')
 	return builder.String()
 }

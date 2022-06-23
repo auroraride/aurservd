@@ -37,7 +37,7 @@ func NewBusinessWithEmployee(e *ent.Employee) *businessService {
 
 // CheckCity 检查城市
 func (s *businessService) CheckCity(cityID uint64) {
-    if *s.employee.Edges.Store.CityID != cityID {
+    if s.employee.Edges.Store.CityID != cityID {
         snag.Panic("不能跨城市操作")
     }
 }

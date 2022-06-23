@@ -208,6 +208,48 @@ func (cc *CabinetCreate) SetNillableBatteryFullNum(u *uint) *CabinetCreate {
 	return cc
 }
 
+// SetLng sets the "lng" field.
+func (cc *CabinetCreate) SetLng(f float64) *CabinetCreate {
+	cc.mutation.SetLng(f)
+	return cc
+}
+
+// SetNillableLng sets the "lng" field if the given value is not nil.
+func (cc *CabinetCreate) SetNillableLng(f *float64) *CabinetCreate {
+	if f != nil {
+		cc.SetLng(*f)
+	}
+	return cc
+}
+
+// SetLat sets the "lat" field.
+func (cc *CabinetCreate) SetLat(f float64) *CabinetCreate {
+	cc.mutation.SetLat(f)
+	return cc
+}
+
+// SetNillableLat sets the "lat" field if the given value is not nil.
+func (cc *CabinetCreate) SetNillableLat(f *float64) *CabinetCreate {
+	if f != nil {
+		cc.SetLat(*f)
+	}
+	return cc
+}
+
+// SetAddress sets the "address" field.
+func (cc *CabinetCreate) SetAddress(s string) *CabinetCreate {
+	cc.mutation.SetAddress(s)
+	return cc
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (cc *CabinetCreate) SetNillableAddress(s *string) *CabinetCreate {
+	if s != nil {
+		cc.SetAddress(*s)
+	}
+	return cc
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (cc *CabinetCreate) SetCity(c *City) *CabinetCreate {
 	return cc.SetCityID(c.ID)
@@ -561,6 +603,30 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Column: cabinet.FieldBatteryFullNum,
 		})
 		_node.BatteryFullNum = value
+	}
+	if value, ok := cc.mutation.Lng(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: cabinet.FieldLng,
+		})
+		_node.Lng = value
+	}
+	if value, ok := cc.mutation.Lat(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: cabinet.FieldLat,
+		})
+		_node.Lat = value
+	}
+	if value, ok := cc.mutation.Address(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: cabinet.FieldAddress,
+		})
+		_node.Address = value
 	}
 	if nodes := cc.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1001,6 +1067,72 @@ func (u *CabinetUpsert) AddBatteryFullNum(v uint) *CabinetUpsert {
 	return u
 }
 
+// SetLng sets the "lng" field.
+func (u *CabinetUpsert) SetLng(v float64) *CabinetUpsert {
+	u.Set(cabinet.FieldLng, v)
+	return u
+}
+
+// UpdateLng sets the "lng" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateLng() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldLng)
+	return u
+}
+
+// AddLng adds v to the "lng" field.
+func (u *CabinetUpsert) AddLng(v float64) *CabinetUpsert {
+	u.Add(cabinet.FieldLng, v)
+	return u
+}
+
+// ClearLng clears the value of the "lng" field.
+func (u *CabinetUpsert) ClearLng() *CabinetUpsert {
+	u.SetNull(cabinet.FieldLng)
+	return u
+}
+
+// SetLat sets the "lat" field.
+func (u *CabinetUpsert) SetLat(v float64) *CabinetUpsert {
+	u.Set(cabinet.FieldLat, v)
+	return u
+}
+
+// UpdateLat sets the "lat" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateLat() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldLat)
+	return u
+}
+
+// AddLat adds v to the "lat" field.
+func (u *CabinetUpsert) AddLat(v float64) *CabinetUpsert {
+	u.Add(cabinet.FieldLat, v)
+	return u
+}
+
+// ClearLat clears the value of the "lat" field.
+func (u *CabinetUpsert) ClearLat() *CabinetUpsert {
+	u.SetNull(cabinet.FieldLat)
+	return u
+}
+
+// SetAddress sets the "address" field.
+func (u *CabinetUpsert) SetAddress(v string) *CabinetUpsert {
+	u.Set(cabinet.FieldAddress, v)
+	return u
+}
+
+// UpdateAddress sets the "address" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateAddress() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldAddress)
+	return u
+}
+
+// ClearAddress clears the value of the "address" field.
+func (u *CabinetUpsert) ClearAddress() *CabinetUpsert {
+	u.SetNull(cabinet.FieldAddress)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1384,6 +1516,83 @@ func (u *CabinetUpsertOne) AddBatteryFullNum(v uint) *CabinetUpsertOne {
 func (u *CabinetUpsertOne) UpdateBatteryFullNum() *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.UpdateBatteryFullNum()
+	})
+}
+
+// SetLng sets the "lng" field.
+func (u *CabinetUpsertOne) SetLng(v float64) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetLng(v)
+	})
+}
+
+// AddLng adds v to the "lng" field.
+func (u *CabinetUpsertOne) AddLng(v float64) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.AddLng(v)
+	})
+}
+
+// UpdateLng sets the "lng" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateLng() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateLng()
+	})
+}
+
+// ClearLng clears the value of the "lng" field.
+func (u *CabinetUpsertOne) ClearLng() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.ClearLng()
+	})
+}
+
+// SetLat sets the "lat" field.
+func (u *CabinetUpsertOne) SetLat(v float64) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetLat(v)
+	})
+}
+
+// AddLat adds v to the "lat" field.
+func (u *CabinetUpsertOne) AddLat(v float64) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.AddLat(v)
+	})
+}
+
+// UpdateLat sets the "lat" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateLat() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateLat()
+	})
+}
+
+// ClearLat clears the value of the "lat" field.
+func (u *CabinetUpsertOne) ClearLat() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.ClearLat()
+	})
+}
+
+// SetAddress sets the "address" field.
+func (u *CabinetUpsertOne) SetAddress(v string) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetAddress(v)
+	})
+}
+
+// UpdateAddress sets the "address" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateAddress() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateAddress()
+	})
+}
+
+// ClearAddress clears the value of the "address" field.
+func (u *CabinetUpsertOne) ClearAddress() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.ClearAddress()
 	})
 }
 
@@ -1934,6 +2143,83 @@ func (u *CabinetUpsertBulk) AddBatteryFullNum(v uint) *CabinetUpsertBulk {
 func (u *CabinetUpsertBulk) UpdateBatteryFullNum() *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.UpdateBatteryFullNum()
+	})
+}
+
+// SetLng sets the "lng" field.
+func (u *CabinetUpsertBulk) SetLng(v float64) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetLng(v)
+	})
+}
+
+// AddLng adds v to the "lng" field.
+func (u *CabinetUpsertBulk) AddLng(v float64) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.AddLng(v)
+	})
+}
+
+// UpdateLng sets the "lng" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateLng() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateLng()
+	})
+}
+
+// ClearLng clears the value of the "lng" field.
+func (u *CabinetUpsertBulk) ClearLng() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.ClearLng()
+	})
+}
+
+// SetLat sets the "lat" field.
+func (u *CabinetUpsertBulk) SetLat(v float64) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetLat(v)
+	})
+}
+
+// AddLat adds v to the "lat" field.
+func (u *CabinetUpsertBulk) AddLat(v float64) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.AddLat(v)
+	})
+}
+
+// UpdateLat sets the "lat" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateLat() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateLat()
+	})
+}
+
+// ClearLat clears the value of the "lat" field.
+func (u *CabinetUpsertBulk) ClearLat() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.ClearLat()
+	})
+}
+
+// SetAddress sets the "address" field.
+func (u *CabinetUpsertBulk) SetAddress(v string) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetAddress(v)
+	})
+}
+
+// UpdateAddress sets the "address" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateAddress() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateAddress()
+	})
+}
+
+// ClearAddress clears the value of the "address" field.
+func (u *CabinetUpsertBulk) ClearAddress() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.ClearAddress()
 	})
 }
 

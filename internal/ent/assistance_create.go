@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -119,6 +120,12 @@ func (ac *AssistanceCreate) SetRiderID(u uint64) *AssistanceCreate {
 // SetSubscribeID sets the "subscribe_id" field.
 func (ac *AssistanceCreate) SetSubscribeID(u uint64) *AssistanceCreate {
 	ac.mutation.SetSubscribeID(u)
+	return ac
+}
+
+// SetCityID sets the "city_id" field.
+func (ac *AssistanceCreate) SetCityID(u uint64) *AssistanceCreate {
+	ac.mutation.SetCityID(u)
 	return ac
 }
 
@@ -270,16 +277,16 @@ func (ac *AssistanceCreate) SetNillableReason(s *string) *AssistanceCreate {
 	return ac
 }
 
-// SetBatteryPhoto sets the "battery_photo" field.
-func (ac *AssistanceCreate) SetBatteryPhoto(s string) *AssistanceCreate {
-	ac.mutation.SetBatteryPhoto(s)
+// SetDetectPhoto sets the "detect_photo" field.
+func (ac *AssistanceCreate) SetDetectPhoto(s string) *AssistanceCreate {
+	ac.mutation.SetDetectPhoto(s)
 	return ac
 }
 
-// SetNillableBatteryPhoto sets the "battery_photo" field if the given value is not nil.
-func (ac *AssistanceCreate) SetNillableBatteryPhoto(s *string) *AssistanceCreate {
+// SetNillableDetectPhoto sets the "detect_photo" field if the given value is not nil.
+func (ac *AssistanceCreate) SetNillableDetectPhoto(s *string) *AssistanceCreate {
 	if s != nil {
-		ac.SetBatteryPhoto(*s)
+		ac.SetDetectPhoto(*s)
 	}
 	return ac
 }
@@ -340,6 +347,48 @@ func (ac *AssistanceCreate) SetNillablePayAt(t *time.Time) *AssistanceCreate {
 	return ac
 }
 
+// SetAllocateAt sets the "allocate_at" field.
+func (ac *AssistanceCreate) SetAllocateAt(t time.Time) *AssistanceCreate {
+	ac.mutation.SetAllocateAt(t)
+	return ac
+}
+
+// SetNillableAllocateAt sets the "allocate_at" field if the given value is not nil.
+func (ac *AssistanceCreate) SetNillableAllocateAt(t *time.Time) *AssistanceCreate {
+	if t != nil {
+		ac.SetAllocateAt(*t)
+	}
+	return ac
+}
+
+// SetWait sets the "wait" field.
+func (ac *AssistanceCreate) SetWait(i int) *AssistanceCreate {
+	ac.mutation.SetWait(i)
+	return ac
+}
+
+// SetNillableWait sets the "wait" field if the given value is not nil.
+func (ac *AssistanceCreate) SetNillableWait(i *int) *AssistanceCreate {
+	if i != nil {
+		ac.SetWait(*i)
+	}
+	return ac
+}
+
+// SetFreeReason sets the "free_reason" field.
+func (ac *AssistanceCreate) SetFreeReason(s string) *AssistanceCreate {
+	ac.mutation.SetFreeReason(s)
+	return ac
+}
+
+// SetNillableFreeReason sets the "free_reason" field if the given value is not nil.
+func (ac *AssistanceCreate) SetNillableFreeReason(s *string) *AssistanceCreate {
+	if s != nil {
+		ac.SetFreeReason(*s)
+	}
+	return ac
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (ac *AssistanceCreate) SetStore(s *Store) *AssistanceCreate {
 	return ac.SetStoreID(s.ID)
@@ -353,6 +402,11 @@ func (ac *AssistanceCreate) SetRider(r *Rider) *AssistanceCreate {
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (ac *AssistanceCreate) SetSubscribe(s *Subscribe) *AssistanceCreate {
 	return ac.SetSubscribeID(s.ID)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (ac *AssistanceCreate) SetCity(c *City) *AssistanceCreate {
+	return ac.SetCityID(c.ID)
 }
 
 // SetOrder sets the "order" edge to the Order entity.
@@ -462,6 +516,14 @@ func (ac *AssistanceCreate) defaults() error {
 		v := assistance.DefaultStatus
 		ac.mutation.SetStatus(v)
 	}
+	if _, ok := ac.mutation.Cost(); !ok {
+		v := assistance.DefaultCost
+		ac.mutation.SetCost(v)
+	}
+	if _, ok := ac.mutation.Wait(); !ok {
+		v := assistance.DefaultWait
+		ac.mutation.SetWait(v)
+	}
 	return nil
 }
 
@@ -478,6 +540,9 @@ func (ac *AssistanceCreate) check() error {
 	}
 	if _, ok := ac.mutation.SubscribeID(); !ok {
 		return &ValidationError{Name: "subscribe_id", err: errors.New(`ent: missing required field "Assistance.subscribe_id"`)}
+	}
+	if _, ok := ac.mutation.CityID(); !ok {
+		return &ValidationError{Name: "city_id", err: errors.New(`ent: missing required field "Assistance.city_id"`)}
 	}
 	if _, ok := ac.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Assistance.status"`)}
@@ -500,11 +565,17 @@ func (ac *AssistanceCreate) check() error {
 	if _, ok := ac.mutation.BreakdownPhotos(); !ok {
 		return &ValidationError{Name: "breakdown_photos", err: errors.New(`ent: missing required field "Assistance.breakdown_photos"`)}
 	}
+	if _, ok := ac.mutation.Wait(); !ok {
+		return &ValidationError{Name: "wait", err: errors.New(`ent: missing required field "Assistance.wait"`)}
+	}
 	if _, ok := ac.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "Assistance.rider"`)}
 	}
 	if _, ok := ac.mutation.SubscribeID(); !ok {
 		return &ValidationError{Name: "subscribe", err: errors.New(`ent: missing required edge "Assistance.subscribe"`)}
+	}
+	if _, ok := ac.mutation.CityID(); !ok {
+		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Assistance.city"`)}
 	}
 	return nil
 }
@@ -636,7 +707,7 @@ func (ac *AssistanceCreate) createSpec() (*Assistance, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: assistance.FieldBreakdownDesc,
 		})
-		_node.BreakdownDesc = &value
+		_node.BreakdownDesc = value
 	}
 	if value, ok := ac.mutation.BreakdownPhotos(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -668,7 +739,7 @@ func (ac *AssistanceCreate) createSpec() (*Assistance, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: assistance.FieldDistance,
 		})
-		_node.Distance = &value
+		_node.Distance = value
 	}
 	if value, ok := ac.mutation.Reason(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -678,13 +749,13 @@ func (ac *AssistanceCreate) createSpec() (*Assistance, *sqlgraph.CreateSpec) {
 		})
 		_node.Reason = value
 	}
-	if value, ok := ac.mutation.BatteryPhoto(); ok {
+	if value, ok := ac.mutation.DetectPhoto(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: assistance.FieldBatteryPhoto,
+			Column: assistance.FieldDetectPhoto,
 		})
-		_node.BatteryPhoto = value
+		_node.DetectPhoto = value
 	}
 	if value, ok := ac.mutation.JointPhoto(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -700,7 +771,7 @@ func (ac *AssistanceCreate) createSpec() (*Assistance, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: assistance.FieldCost,
 		})
-		_node.Cost = &value
+		_node.Cost = value
 	}
 	if value, ok := ac.mutation.RefusedDesc(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -717,6 +788,30 @@ func (ac *AssistanceCreate) createSpec() (*Assistance, *sqlgraph.CreateSpec) {
 			Column: assistance.FieldPayAt,
 		})
 		_node.PayAt = &value
+	}
+	if value, ok := ac.mutation.AllocateAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: assistance.FieldAllocateAt,
+		})
+		_node.AllocateAt = &value
+	}
+	if value, ok := ac.mutation.Wait(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: assistance.FieldWait,
+		})
+		_node.Wait = value
+	}
+	if value, ok := ac.mutation.FreeReason(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: assistance.FieldFreeReason,
+		})
+		_node.FreeReason = &value
 	}
 	if nodes := ac.mutation.StoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -776,6 +871,26 @@ func (ac *AssistanceCreate) createSpec() (*Assistance, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.SubscribeID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assistance.CityTable,
+			Columns: []string{assistance.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ac.mutation.OrderIDs(); len(nodes) > 0 {
@@ -1007,6 +1122,18 @@ func (u *AssistanceUpsert) SetSubscribeID(v uint64) *AssistanceUpsert {
 // UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
 func (u *AssistanceUpsert) UpdateSubscribeID() *AssistanceUpsert {
 	u.SetExcluded(assistance.FieldSubscribeID)
+	return u
+}
+
+// SetCityID sets the "city_id" field.
+func (u *AssistanceUpsert) SetCityID(v uint64) *AssistanceUpsert {
+	u.Set(assistance.FieldCityID, v)
+	return u
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *AssistanceUpsert) UpdateCityID() *AssistanceUpsert {
+	u.SetExcluded(assistance.FieldCityID)
 	return u
 }
 
@@ -1244,21 +1371,21 @@ func (u *AssistanceUpsert) ClearReason() *AssistanceUpsert {
 	return u
 }
 
-// SetBatteryPhoto sets the "battery_photo" field.
-func (u *AssistanceUpsert) SetBatteryPhoto(v string) *AssistanceUpsert {
-	u.Set(assistance.FieldBatteryPhoto, v)
+// SetDetectPhoto sets the "detect_photo" field.
+func (u *AssistanceUpsert) SetDetectPhoto(v string) *AssistanceUpsert {
+	u.Set(assistance.FieldDetectPhoto, v)
 	return u
 }
 
-// UpdateBatteryPhoto sets the "battery_photo" field to the value that was provided on create.
-func (u *AssistanceUpsert) UpdateBatteryPhoto() *AssistanceUpsert {
-	u.SetExcluded(assistance.FieldBatteryPhoto)
+// UpdateDetectPhoto sets the "detect_photo" field to the value that was provided on create.
+func (u *AssistanceUpsert) UpdateDetectPhoto() *AssistanceUpsert {
+	u.SetExcluded(assistance.FieldDetectPhoto)
 	return u
 }
 
-// ClearBatteryPhoto clears the value of the "battery_photo" field.
-func (u *AssistanceUpsert) ClearBatteryPhoto() *AssistanceUpsert {
-	u.SetNull(assistance.FieldBatteryPhoto)
+// ClearDetectPhoto clears the value of the "detect_photo" field.
+func (u *AssistanceUpsert) ClearDetectPhoto() *AssistanceUpsert {
+	u.SetNull(assistance.FieldDetectPhoto)
 	return u
 }
 
@@ -1337,6 +1464,60 @@ func (u *AssistanceUpsert) UpdatePayAt() *AssistanceUpsert {
 // ClearPayAt clears the value of the "pay_at" field.
 func (u *AssistanceUpsert) ClearPayAt() *AssistanceUpsert {
 	u.SetNull(assistance.FieldPayAt)
+	return u
+}
+
+// SetAllocateAt sets the "allocate_at" field.
+func (u *AssistanceUpsert) SetAllocateAt(v time.Time) *AssistanceUpsert {
+	u.Set(assistance.FieldAllocateAt, v)
+	return u
+}
+
+// UpdateAllocateAt sets the "allocate_at" field to the value that was provided on create.
+func (u *AssistanceUpsert) UpdateAllocateAt() *AssistanceUpsert {
+	u.SetExcluded(assistance.FieldAllocateAt)
+	return u
+}
+
+// ClearAllocateAt clears the value of the "allocate_at" field.
+func (u *AssistanceUpsert) ClearAllocateAt() *AssistanceUpsert {
+	u.SetNull(assistance.FieldAllocateAt)
+	return u
+}
+
+// SetWait sets the "wait" field.
+func (u *AssistanceUpsert) SetWait(v int) *AssistanceUpsert {
+	u.Set(assistance.FieldWait, v)
+	return u
+}
+
+// UpdateWait sets the "wait" field to the value that was provided on create.
+func (u *AssistanceUpsert) UpdateWait() *AssistanceUpsert {
+	u.SetExcluded(assistance.FieldWait)
+	return u
+}
+
+// AddWait adds v to the "wait" field.
+func (u *AssistanceUpsert) AddWait(v int) *AssistanceUpsert {
+	u.Add(assistance.FieldWait, v)
+	return u
+}
+
+// SetFreeReason sets the "free_reason" field.
+func (u *AssistanceUpsert) SetFreeReason(v string) *AssistanceUpsert {
+	u.Set(assistance.FieldFreeReason, v)
+	return u
+}
+
+// UpdateFreeReason sets the "free_reason" field to the value that was provided on create.
+func (u *AssistanceUpsert) UpdateFreeReason() *AssistanceUpsert {
+	u.SetExcluded(assistance.FieldFreeReason)
+	return u
+}
+
+// ClearFreeReason clears the value of the "free_reason" field.
+func (u *AssistanceUpsert) ClearFreeReason() *AssistanceUpsert {
+	u.SetNull(assistance.FieldFreeReason)
 	return u
 }
 
@@ -1548,6 +1729,20 @@ func (u *AssistanceUpsertOne) SetSubscribeID(v uint64) *AssistanceUpsertOne {
 func (u *AssistanceUpsertOne) UpdateSubscribeID() *AssistanceUpsertOne {
 	return u.Update(func(s *AssistanceUpsert) {
 		s.UpdateSubscribeID()
+	})
+}
+
+// SetCityID sets the "city_id" field.
+func (u *AssistanceUpsertOne) SetCityID(v uint64) *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *AssistanceUpsertOne) UpdateCityID() *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdateCityID()
 	})
 }
 
@@ -1824,24 +2019,24 @@ func (u *AssistanceUpsertOne) ClearReason() *AssistanceUpsertOne {
 	})
 }
 
-// SetBatteryPhoto sets the "battery_photo" field.
-func (u *AssistanceUpsertOne) SetBatteryPhoto(v string) *AssistanceUpsertOne {
+// SetDetectPhoto sets the "detect_photo" field.
+func (u *AssistanceUpsertOne) SetDetectPhoto(v string) *AssistanceUpsertOne {
 	return u.Update(func(s *AssistanceUpsert) {
-		s.SetBatteryPhoto(v)
+		s.SetDetectPhoto(v)
 	})
 }
 
-// UpdateBatteryPhoto sets the "battery_photo" field to the value that was provided on create.
-func (u *AssistanceUpsertOne) UpdateBatteryPhoto() *AssistanceUpsertOne {
+// UpdateDetectPhoto sets the "detect_photo" field to the value that was provided on create.
+func (u *AssistanceUpsertOne) UpdateDetectPhoto() *AssistanceUpsertOne {
 	return u.Update(func(s *AssistanceUpsert) {
-		s.UpdateBatteryPhoto()
+		s.UpdateDetectPhoto()
 	})
 }
 
-// ClearBatteryPhoto clears the value of the "battery_photo" field.
-func (u *AssistanceUpsertOne) ClearBatteryPhoto() *AssistanceUpsertOne {
+// ClearDetectPhoto clears the value of the "detect_photo" field.
+func (u *AssistanceUpsertOne) ClearDetectPhoto() *AssistanceUpsertOne {
 	return u.Update(func(s *AssistanceUpsert) {
-		s.ClearBatteryPhoto()
+		s.ClearDetectPhoto()
 	})
 }
 
@@ -1933,6 +2128,69 @@ func (u *AssistanceUpsertOne) UpdatePayAt() *AssistanceUpsertOne {
 func (u *AssistanceUpsertOne) ClearPayAt() *AssistanceUpsertOne {
 	return u.Update(func(s *AssistanceUpsert) {
 		s.ClearPayAt()
+	})
+}
+
+// SetAllocateAt sets the "allocate_at" field.
+func (u *AssistanceUpsertOne) SetAllocateAt(v time.Time) *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetAllocateAt(v)
+	})
+}
+
+// UpdateAllocateAt sets the "allocate_at" field to the value that was provided on create.
+func (u *AssistanceUpsertOne) UpdateAllocateAt() *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdateAllocateAt()
+	})
+}
+
+// ClearAllocateAt clears the value of the "allocate_at" field.
+func (u *AssistanceUpsertOne) ClearAllocateAt() *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.ClearAllocateAt()
+	})
+}
+
+// SetWait sets the "wait" field.
+func (u *AssistanceUpsertOne) SetWait(v int) *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetWait(v)
+	})
+}
+
+// AddWait adds v to the "wait" field.
+func (u *AssistanceUpsertOne) AddWait(v int) *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.AddWait(v)
+	})
+}
+
+// UpdateWait sets the "wait" field to the value that was provided on create.
+func (u *AssistanceUpsertOne) UpdateWait() *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdateWait()
+	})
+}
+
+// SetFreeReason sets the "free_reason" field.
+func (u *AssistanceUpsertOne) SetFreeReason(v string) *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetFreeReason(v)
+	})
+}
+
+// UpdateFreeReason sets the "free_reason" field to the value that was provided on create.
+func (u *AssistanceUpsertOne) UpdateFreeReason() *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdateFreeReason()
+	})
+}
+
+// ClearFreeReason clears the value of the "free_reason" field.
+func (u *AssistanceUpsertOne) ClearFreeReason() *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.ClearFreeReason()
 	})
 }
 
@@ -2311,6 +2569,20 @@ func (u *AssistanceUpsertBulk) UpdateSubscribeID() *AssistanceUpsertBulk {
 	})
 }
 
+// SetCityID sets the "city_id" field.
+func (u *AssistanceUpsertBulk) SetCityID(v uint64) *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetCityID(v)
+	})
+}
+
+// UpdateCityID sets the "city_id" field to the value that was provided on create.
+func (u *AssistanceUpsertBulk) UpdateCityID() *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdateCityID()
+	})
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (u *AssistanceUpsertBulk) SetEmployeeID(v uint64) *AssistanceUpsertBulk {
 	return u.Update(func(s *AssistanceUpsert) {
@@ -2584,24 +2856,24 @@ func (u *AssistanceUpsertBulk) ClearReason() *AssistanceUpsertBulk {
 	})
 }
 
-// SetBatteryPhoto sets the "battery_photo" field.
-func (u *AssistanceUpsertBulk) SetBatteryPhoto(v string) *AssistanceUpsertBulk {
+// SetDetectPhoto sets the "detect_photo" field.
+func (u *AssistanceUpsertBulk) SetDetectPhoto(v string) *AssistanceUpsertBulk {
 	return u.Update(func(s *AssistanceUpsert) {
-		s.SetBatteryPhoto(v)
+		s.SetDetectPhoto(v)
 	})
 }
 
-// UpdateBatteryPhoto sets the "battery_photo" field to the value that was provided on create.
-func (u *AssistanceUpsertBulk) UpdateBatteryPhoto() *AssistanceUpsertBulk {
+// UpdateDetectPhoto sets the "detect_photo" field to the value that was provided on create.
+func (u *AssistanceUpsertBulk) UpdateDetectPhoto() *AssistanceUpsertBulk {
 	return u.Update(func(s *AssistanceUpsert) {
-		s.UpdateBatteryPhoto()
+		s.UpdateDetectPhoto()
 	})
 }
 
-// ClearBatteryPhoto clears the value of the "battery_photo" field.
-func (u *AssistanceUpsertBulk) ClearBatteryPhoto() *AssistanceUpsertBulk {
+// ClearDetectPhoto clears the value of the "detect_photo" field.
+func (u *AssistanceUpsertBulk) ClearDetectPhoto() *AssistanceUpsertBulk {
 	return u.Update(func(s *AssistanceUpsert) {
-		s.ClearBatteryPhoto()
+		s.ClearDetectPhoto()
 	})
 }
 
@@ -2693,6 +2965,69 @@ func (u *AssistanceUpsertBulk) UpdatePayAt() *AssistanceUpsertBulk {
 func (u *AssistanceUpsertBulk) ClearPayAt() *AssistanceUpsertBulk {
 	return u.Update(func(s *AssistanceUpsert) {
 		s.ClearPayAt()
+	})
+}
+
+// SetAllocateAt sets the "allocate_at" field.
+func (u *AssistanceUpsertBulk) SetAllocateAt(v time.Time) *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetAllocateAt(v)
+	})
+}
+
+// UpdateAllocateAt sets the "allocate_at" field to the value that was provided on create.
+func (u *AssistanceUpsertBulk) UpdateAllocateAt() *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdateAllocateAt()
+	})
+}
+
+// ClearAllocateAt clears the value of the "allocate_at" field.
+func (u *AssistanceUpsertBulk) ClearAllocateAt() *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.ClearAllocateAt()
+	})
+}
+
+// SetWait sets the "wait" field.
+func (u *AssistanceUpsertBulk) SetWait(v int) *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetWait(v)
+	})
+}
+
+// AddWait adds v to the "wait" field.
+func (u *AssistanceUpsertBulk) AddWait(v int) *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.AddWait(v)
+	})
+}
+
+// UpdateWait sets the "wait" field to the value that was provided on create.
+func (u *AssistanceUpsertBulk) UpdateWait() *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdateWait()
+	})
+}
+
+// SetFreeReason sets the "free_reason" field.
+func (u *AssistanceUpsertBulk) SetFreeReason(v string) *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetFreeReason(v)
+	})
+}
+
+// UpdateFreeReason sets the "free_reason" field to the value that was provided on create.
+func (u *AssistanceUpsertBulk) UpdateFreeReason() *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdateFreeReason()
+	})
+}
+
+// ClearFreeReason clears the value of the "free_reason" field.
+func (u *AssistanceUpsertBulk) ClearFreeReason() *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.ClearFreeReason()
 	})
 }
 

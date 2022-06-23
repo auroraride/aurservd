@@ -257,6 +257,80 @@ func (cu *CabinetUpdate) AddBatteryFullNum(u int) *CabinetUpdate {
 	return cu
 }
 
+// SetLng sets the "lng" field.
+func (cu *CabinetUpdate) SetLng(f float64) *CabinetUpdate {
+	cu.mutation.ResetLng()
+	cu.mutation.SetLng(f)
+	return cu
+}
+
+// SetNillableLng sets the "lng" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableLng(f *float64) *CabinetUpdate {
+	if f != nil {
+		cu.SetLng(*f)
+	}
+	return cu
+}
+
+// AddLng adds f to the "lng" field.
+func (cu *CabinetUpdate) AddLng(f float64) *CabinetUpdate {
+	cu.mutation.AddLng(f)
+	return cu
+}
+
+// ClearLng clears the value of the "lng" field.
+func (cu *CabinetUpdate) ClearLng() *CabinetUpdate {
+	cu.mutation.ClearLng()
+	return cu
+}
+
+// SetLat sets the "lat" field.
+func (cu *CabinetUpdate) SetLat(f float64) *CabinetUpdate {
+	cu.mutation.ResetLat()
+	cu.mutation.SetLat(f)
+	return cu
+}
+
+// SetNillableLat sets the "lat" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableLat(f *float64) *CabinetUpdate {
+	if f != nil {
+		cu.SetLat(*f)
+	}
+	return cu
+}
+
+// AddLat adds f to the "lat" field.
+func (cu *CabinetUpdate) AddLat(f float64) *CabinetUpdate {
+	cu.mutation.AddLat(f)
+	return cu
+}
+
+// ClearLat clears the value of the "lat" field.
+func (cu *CabinetUpdate) ClearLat() *CabinetUpdate {
+	cu.mutation.ClearLat()
+	return cu
+}
+
+// SetAddress sets the "address" field.
+func (cu *CabinetUpdate) SetAddress(s string) *CabinetUpdate {
+	cu.mutation.SetAddress(s)
+	return cu
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableAddress(s *string) *CabinetUpdate {
+	if s != nil {
+		cu.SetAddress(*s)
+	}
+	return cu
+}
+
+// ClearAddress clears the value of the "address" field.
+func (cu *CabinetUpdate) ClearAddress() *CabinetUpdate {
+	cu.mutation.ClearAddress()
+	return cu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (cu *CabinetUpdate) SetCity(c *City) *CabinetUpdate {
 	return cu.SetCityID(c.ID)
@@ -640,6 +714,59 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeUint,
 			Value:  value,
 			Column: cabinet.FieldBatteryFullNum,
+		})
+	}
+	if value, ok := cu.mutation.Lng(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: cabinet.FieldLng,
+		})
+	}
+	if value, ok := cu.mutation.AddedLng(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: cabinet.FieldLng,
+		})
+	}
+	if cu.mutation.LngCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: cabinet.FieldLng,
+		})
+	}
+	if value, ok := cu.mutation.Lat(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: cabinet.FieldLat,
+		})
+	}
+	if value, ok := cu.mutation.AddedLat(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: cabinet.FieldLat,
+		})
+	}
+	if cu.mutation.LatCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: cabinet.FieldLat,
+		})
+	}
+	if value, ok := cu.mutation.Address(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: cabinet.FieldAddress,
+		})
+	}
+	if cu.mutation.AddressCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: cabinet.FieldAddress,
 		})
 	}
 	if cu.mutation.CityCleared() {
@@ -1116,6 +1243,80 @@ func (cuo *CabinetUpdateOne) AddBatteryFullNum(u int) *CabinetUpdateOne {
 	return cuo
 }
 
+// SetLng sets the "lng" field.
+func (cuo *CabinetUpdateOne) SetLng(f float64) *CabinetUpdateOne {
+	cuo.mutation.ResetLng()
+	cuo.mutation.SetLng(f)
+	return cuo
+}
+
+// SetNillableLng sets the "lng" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableLng(f *float64) *CabinetUpdateOne {
+	if f != nil {
+		cuo.SetLng(*f)
+	}
+	return cuo
+}
+
+// AddLng adds f to the "lng" field.
+func (cuo *CabinetUpdateOne) AddLng(f float64) *CabinetUpdateOne {
+	cuo.mutation.AddLng(f)
+	return cuo
+}
+
+// ClearLng clears the value of the "lng" field.
+func (cuo *CabinetUpdateOne) ClearLng() *CabinetUpdateOne {
+	cuo.mutation.ClearLng()
+	return cuo
+}
+
+// SetLat sets the "lat" field.
+func (cuo *CabinetUpdateOne) SetLat(f float64) *CabinetUpdateOne {
+	cuo.mutation.ResetLat()
+	cuo.mutation.SetLat(f)
+	return cuo
+}
+
+// SetNillableLat sets the "lat" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableLat(f *float64) *CabinetUpdateOne {
+	if f != nil {
+		cuo.SetLat(*f)
+	}
+	return cuo
+}
+
+// AddLat adds f to the "lat" field.
+func (cuo *CabinetUpdateOne) AddLat(f float64) *CabinetUpdateOne {
+	cuo.mutation.AddLat(f)
+	return cuo
+}
+
+// ClearLat clears the value of the "lat" field.
+func (cuo *CabinetUpdateOne) ClearLat() *CabinetUpdateOne {
+	cuo.mutation.ClearLat()
+	return cuo
+}
+
+// SetAddress sets the "address" field.
+func (cuo *CabinetUpdateOne) SetAddress(s string) *CabinetUpdateOne {
+	cuo.mutation.SetAddress(s)
+	return cuo
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableAddress(s *string) *CabinetUpdateOne {
+	if s != nil {
+		cuo.SetAddress(*s)
+	}
+	return cuo
+}
+
+// ClearAddress clears the value of the "address" field.
+func (cuo *CabinetUpdateOne) ClearAddress() *CabinetUpdateOne {
+	cuo.mutation.ClearAddress()
+	return cuo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (cuo *CabinetUpdateOne) SetCity(c *City) *CabinetUpdateOne {
 	return cuo.SetCityID(c.ID)
@@ -1529,6 +1730,59 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 			Type:   field.TypeUint,
 			Value:  value,
 			Column: cabinet.FieldBatteryFullNum,
+		})
+	}
+	if value, ok := cuo.mutation.Lng(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: cabinet.FieldLng,
+		})
+	}
+	if value, ok := cuo.mutation.AddedLng(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: cabinet.FieldLng,
+		})
+	}
+	if cuo.mutation.LngCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: cabinet.FieldLng,
+		})
+	}
+	if value, ok := cuo.mutation.Lat(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: cabinet.FieldLat,
+		})
+	}
+	if value, ok := cuo.mutation.AddedLat(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: cabinet.FieldLat,
+		})
+	}
+	if cuo.mutation.LatCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: cabinet.FieldLat,
+		})
+	}
+	if value, ok := cuo.mutation.Address(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: cabinet.FieldAddress,
+		})
+	}
+	if cuo.mutation.AddressCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: cabinet.FieldAddress,
 		})
 	}
 	if cuo.mutation.CityCleared() {

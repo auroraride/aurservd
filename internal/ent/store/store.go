@@ -37,6 +37,12 @@ const (
 	FieldName = "name"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldLng holds the string denoting the lng field in the database.
+	FieldLng = "lng"
+	// FieldLat holds the string denoting the lat field in the database.
+	FieldLat = "lat"
+	// FieldAddress holds the string denoting the address field in the database.
+	FieldAddress = "address"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
@@ -110,6 +116,9 @@ var Columns = []string{
 	FieldSn,
 	FieldName,
 	FieldStatus,
+	FieldLng,
+	FieldLat,
+	FieldAddress,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

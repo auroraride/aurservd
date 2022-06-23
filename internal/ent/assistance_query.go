@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -32,6 +33,7 @@ type AssistanceQuery struct {
 	withStore     *StoreQuery
 	withRider     *RiderQuery
 	withSubscribe *SubscribeQuery
+	withCity      *CityQuery
 	withOrder     *OrderQuery
 	withEmployee  *EmployeeQuery
 	modifiers     []func(*sql.Selector)
@@ -130,6 +132,28 @@ func (aq *AssistanceQuery) QuerySubscribe() *SubscribeQuery {
 			sqlgraph.From(assistance.Table, assistance.FieldID, selector),
 			sqlgraph.To(subscribe.Table, subscribe.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, assistance.SubscribeTable, assistance.SubscribeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCity chains the current query on the "city" edge.
+func (aq *AssistanceQuery) QueryCity() *CityQuery {
+	query := &CityQuery{config: aq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assistance.Table, assistance.FieldID, selector),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assistance.CityTable, assistance.CityColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -365,6 +389,7 @@ func (aq *AssistanceQuery) Clone() *AssistanceQuery {
 		withStore:     aq.withStore.Clone(),
 		withRider:     aq.withRider.Clone(),
 		withSubscribe: aq.withSubscribe.Clone(),
+		withCity:      aq.withCity.Clone(),
 		withOrder:     aq.withOrder.Clone(),
 		withEmployee:  aq.withEmployee.Clone(),
 		// clone intermediate query.
@@ -404,6 +429,17 @@ func (aq *AssistanceQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *Assista
 		opt(query)
 	}
 	aq.withSubscribe = query
+	return aq
+}
+
+// WithCity tells the query-builder to eager-load the nodes that are connected to
+// the "city" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AssistanceQuery) WithCity(opts ...func(*CityQuery)) *AssistanceQuery {
+	query := &CityQuery{config: aq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withCity = query
 	return aq
 }
 
@@ -499,10 +535,11 @@ func (aq *AssistanceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*A
 	var (
 		nodes       = []*Assistance{}
 		_spec       = aq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			aq.withStore != nil,
 			aq.withRider != nil,
 			aq.withSubscribe != nil,
+			aq.withCity != nil,
 			aq.withOrder != nil,
 			aq.withEmployee != nil,
 		}
@@ -606,6 +643,32 @@ func (aq *AssistanceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*A
 			}
 			for i := range nodes {
 				nodes[i].Edges.Subscribe = n
+			}
+		}
+	}
+
+	if query := aq.withCity; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Assistance)
+		for i := range nodes {
+			fk := nodes[i].CityID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(city.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "city_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.City = n
 			}
 		}
 	}

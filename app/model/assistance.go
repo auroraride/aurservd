@@ -6,11 +6,12 @@
 package model
 
 const (
-    AssistanceStatusPending  uint8 = iota // 等待接单
-    AssistanceStatusApproved              // 已接单
-    AssistanceStatusRefused               // 已拒绝
-    AssistanceStatusFailed                // 救援失败
-    AssistanceStatusSuccess               // 救援成功
+    AssistanceStatusPending   uint8 = iota // 待分配
+    AssistanceStatusAllocated              // 已分配
+    AssistanceStatusRefused                // 已拒绝
+    AssistanceStatusFailed                 // 救援失败
+    AssistanceStatusUnpaid                 // 救援成功 - 待支付
+    AssistanceStatusSuccess                // 救援成功 - 已支付
 )
 
 type AssistanceCreateReq struct {
@@ -24,4 +25,62 @@ type AssistanceCreateReq struct {
 
 type AssistanceCreateRes struct {
     OutTradeNo string `json:"outTradeNo"` // 救援订单编码
+}
+
+type AssistanceNearbyRes struct {
+    ID       uint64   `json:"id"`       // 门店ID
+    Name     string   `json:"name"`     // 门店名称
+    Lng      float64  `json:"lng"`      // 经度
+    Lat      float64  `json:"lat"`      // 纬度
+    Distance float64  `json:"distance"` // 距离
+    Employee Employee `json:"employee"` // 当前员工
+}
+
+type AssistanceListReq struct {
+    PaginationReq
+
+    CityID  uint64 `json:"cityId"`                     // 城市ID
+    Keyword string `json:"keyword"`                    // 骑手姓名或电话
+    Start   string `json:"start"`                      // 救援订单发起时间开始
+    End     string `json:"end"`                        // 救援订单发起时间结束
+    Status  *uint8 `json:"status" enums:"0,1,2,3,4,5"` // 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付, 不携带此字段是获取全部
+}
+
+type AssistanceListRes struct {
+    ID       uint64     `json:"id"`
+    Status   uint8      `json:"status" enums:"0,1,2,3,4,5"` // 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
+    Cost     float64    `json:"cost"`                       // 费用, 未分配时为0
+    Distance float64    `json:"distance"`                   // 救援距离(米), 未分配时为0
+    Time     string     `json:"time"`                       // 救援发起时间
+    Rider    RiderBasic `json:"rider"`                      // 骑手信息
+    City     City       `json:"city"`                       // 城市
+    Employee *Employee  `json:"employee,omitempty"`         // 店员信息, 未分配此字段不存在
+    Store    *Store     `json:"store,omitempty"`            // 门店, 未分配此字段不存在
+}
+
+type AssistanceDetail struct {
+    AssistanceListRes
+    Lng             float64  `json:"lng"`                   // 经度
+    Lat             float64  `json:"lat"`                   // 纬度
+    Address         string   `json:"address"`               // 详细位置
+    Breakdown       string   `json:"breakdown"`             // 故障
+    BreakdownDesc   string   `json:"breakdownDesc"`         // 故障描述
+    BreakdownPhotos []string `json:"breakdownPhotos"`       // 故障照片
+    Reason          string   `json:"reason"`                // 成功救援 - 故障原因
+    DetectPhoto     string   `json:"detectPhoto"`           // 检测照片
+    JointPhoto      string   `json:"jointPhoto"`            // 合照
+    AllocateAt      string   `json:"allocateAt"`            // 分配时间
+    RefusedDesc     *string  `json:"refusedDesc,omitempty"` // 拒绝原因, 已拒绝会有此字段
+    PayAt           *string  `json:"payAt,omitempty"`       // 支付时间, 已支付会有此字段
+    FreeReason      *string  `json:"freeReason,omitempty"`  // 免费理由, 当订单被标记为免费的时候有此字段
+}
+
+type AssistanceAllocateReq struct {
+    ID      uint64 `json:"id" validate:"required" trans:"救援ID"`
+    StoreID uint64 `json:"storeId" validate:"required" trans:"门店ID"`
+}
+
+type AssistanceFreeReq struct {
+    ID     uint64 `json:"id" validate:"required" trans:"救援ID"`
+    Reason string `json:"reason" validate:"required" trans:"免费理由"`
 }

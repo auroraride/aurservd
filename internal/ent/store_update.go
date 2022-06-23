@@ -99,20 +99,6 @@ func (su *StoreUpdate) SetCityID(u uint64) *StoreUpdate {
 	return su
 }
 
-// SetNillableCityID sets the "city_id" field if the given value is not nil.
-func (su *StoreUpdate) SetNillableCityID(u *uint64) *StoreUpdate {
-	if u != nil {
-		su.SetCityID(*u)
-	}
-	return su
-}
-
-// ClearCityID clears the value of the "city_id" field.
-func (su *StoreUpdate) ClearCityID() *StoreUpdate {
-	su.mutation.ClearCityID()
-	return su
-}
-
 // SetEmployeeID sets the "employee_id" field.
 func (su *StoreUpdate) SetEmployeeID(u uint64) *StoreUpdate {
 	su.mutation.SetEmployeeID(u)
@@ -163,6 +149,80 @@ func (su *StoreUpdate) SetNillableStatus(u *uint8) *StoreUpdate {
 // AddStatus adds u to the "status" field.
 func (su *StoreUpdate) AddStatus(u int8) *StoreUpdate {
 	su.mutation.AddStatus(u)
+	return su
+}
+
+// SetLng sets the "lng" field.
+func (su *StoreUpdate) SetLng(f float64) *StoreUpdate {
+	su.mutation.ResetLng()
+	su.mutation.SetLng(f)
+	return su
+}
+
+// SetNillableLng sets the "lng" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableLng(f *float64) *StoreUpdate {
+	if f != nil {
+		su.SetLng(*f)
+	}
+	return su
+}
+
+// AddLng adds f to the "lng" field.
+func (su *StoreUpdate) AddLng(f float64) *StoreUpdate {
+	su.mutation.AddLng(f)
+	return su
+}
+
+// ClearLng clears the value of the "lng" field.
+func (su *StoreUpdate) ClearLng() *StoreUpdate {
+	su.mutation.ClearLng()
+	return su
+}
+
+// SetLat sets the "lat" field.
+func (su *StoreUpdate) SetLat(f float64) *StoreUpdate {
+	su.mutation.ResetLat()
+	su.mutation.SetLat(f)
+	return su
+}
+
+// SetNillableLat sets the "lat" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableLat(f *float64) *StoreUpdate {
+	if f != nil {
+		su.SetLat(*f)
+	}
+	return su
+}
+
+// AddLat adds f to the "lat" field.
+func (su *StoreUpdate) AddLat(f float64) *StoreUpdate {
+	su.mutation.AddLat(f)
+	return su
+}
+
+// ClearLat clears the value of the "lat" field.
+func (su *StoreUpdate) ClearLat() *StoreUpdate {
+	su.mutation.ClearLat()
+	return su
+}
+
+// SetAddress sets the "address" field.
+func (su *StoreUpdate) SetAddress(s string) *StoreUpdate {
+	su.mutation.SetAddress(s)
+	return su
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (su *StoreUpdate) SetNillableAddress(s *string) *StoreUpdate {
+	if s != nil {
+		su.SetAddress(*s)
+	}
+	return su
+}
+
+// ClearAddress clears the value of the "address" field.
+func (su *StoreUpdate) ClearAddress() *StoreUpdate {
+	su.mutation.ClearAddress()
 	return su
 }
 
@@ -389,6 +449,9 @@ func (su *StoreUpdate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (su *StoreUpdate) check() error {
+	if _, ok := su.mutation.CityID(); su.mutation.CityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Store.city"`)
+	}
 	if _, ok := su.mutation.BranchID(); su.mutation.BranchCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Store.branch"`)
 	}
@@ -484,6 +547,59 @@ func (su *StoreUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeUint8,
 			Value:  value,
 			Column: store.FieldStatus,
+		})
+	}
+	if value, ok := su.mutation.Lng(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: store.FieldLng,
+		})
+	}
+	if value, ok := su.mutation.AddedLng(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: store.FieldLng,
+		})
+	}
+	if su.mutation.LngCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: store.FieldLng,
+		})
+	}
+	if value, ok := su.mutation.Lat(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: store.FieldLat,
+		})
+	}
+	if value, ok := su.mutation.AddedLat(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: store.FieldLat,
+		})
+	}
+	if su.mutation.LatCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: store.FieldLat,
+		})
+	}
+	if value, ok := su.mutation.Address(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: store.FieldAddress,
+		})
+	}
+	if su.mutation.AddressCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: store.FieldAddress,
 		})
 	}
 	if su.mutation.CityCleared() {
@@ -836,20 +952,6 @@ func (suo *StoreUpdateOne) SetCityID(u uint64) *StoreUpdateOne {
 	return suo
 }
 
-// SetNillableCityID sets the "city_id" field if the given value is not nil.
-func (suo *StoreUpdateOne) SetNillableCityID(u *uint64) *StoreUpdateOne {
-	if u != nil {
-		suo.SetCityID(*u)
-	}
-	return suo
-}
-
-// ClearCityID clears the value of the "city_id" field.
-func (suo *StoreUpdateOne) ClearCityID() *StoreUpdateOne {
-	suo.mutation.ClearCityID()
-	return suo
-}
-
 // SetEmployeeID sets the "employee_id" field.
 func (suo *StoreUpdateOne) SetEmployeeID(u uint64) *StoreUpdateOne {
 	suo.mutation.SetEmployeeID(u)
@@ -900,6 +1002,80 @@ func (suo *StoreUpdateOne) SetNillableStatus(u *uint8) *StoreUpdateOne {
 // AddStatus adds u to the "status" field.
 func (suo *StoreUpdateOne) AddStatus(u int8) *StoreUpdateOne {
 	suo.mutation.AddStatus(u)
+	return suo
+}
+
+// SetLng sets the "lng" field.
+func (suo *StoreUpdateOne) SetLng(f float64) *StoreUpdateOne {
+	suo.mutation.ResetLng()
+	suo.mutation.SetLng(f)
+	return suo
+}
+
+// SetNillableLng sets the "lng" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableLng(f *float64) *StoreUpdateOne {
+	if f != nil {
+		suo.SetLng(*f)
+	}
+	return suo
+}
+
+// AddLng adds f to the "lng" field.
+func (suo *StoreUpdateOne) AddLng(f float64) *StoreUpdateOne {
+	suo.mutation.AddLng(f)
+	return suo
+}
+
+// ClearLng clears the value of the "lng" field.
+func (suo *StoreUpdateOne) ClearLng() *StoreUpdateOne {
+	suo.mutation.ClearLng()
+	return suo
+}
+
+// SetLat sets the "lat" field.
+func (suo *StoreUpdateOne) SetLat(f float64) *StoreUpdateOne {
+	suo.mutation.ResetLat()
+	suo.mutation.SetLat(f)
+	return suo
+}
+
+// SetNillableLat sets the "lat" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableLat(f *float64) *StoreUpdateOne {
+	if f != nil {
+		suo.SetLat(*f)
+	}
+	return suo
+}
+
+// AddLat adds f to the "lat" field.
+func (suo *StoreUpdateOne) AddLat(f float64) *StoreUpdateOne {
+	suo.mutation.AddLat(f)
+	return suo
+}
+
+// ClearLat clears the value of the "lat" field.
+func (suo *StoreUpdateOne) ClearLat() *StoreUpdateOne {
+	suo.mutation.ClearLat()
+	return suo
+}
+
+// SetAddress sets the "address" field.
+func (suo *StoreUpdateOne) SetAddress(s string) *StoreUpdateOne {
+	suo.mutation.SetAddress(s)
+	return suo
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (suo *StoreUpdateOne) SetNillableAddress(s *string) *StoreUpdateOne {
+	if s != nil {
+		suo.SetAddress(*s)
+	}
+	return suo
+}
+
+// ClearAddress clears the value of the "address" field.
+func (suo *StoreUpdateOne) ClearAddress() *StoreUpdateOne {
+	suo.mutation.ClearAddress()
 	return suo
 }
 
@@ -1139,6 +1315,9 @@ func (suo *StoreUpdateOne) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (suo *StoreUpdateOne) check() error {
+	if _, ok := suo.mutation.CityID(); suo.mutation.CityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Store.city"`)
+	}
 	if _, ok := suo.mutation.BranchID(); suo.mutation.BranchCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Store.branch"`)
 	}
@@ -1251,6 +1430,59 @@ func (suo *StoreUpdateOne) sqlSave(ctx context.Context) (_node *Store, err error
 			Type:   field.TypeUint8,
 			Value:  value,
 			Column: store.FieldStatus,
+		})
+	}
+	if value, ok := suo.mutation.Lng(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: store.FieldLng,
+		})
+	}
+	if value, ok := suo.mutation.AddedLng(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: store.FieldLng,
+		})
+	}
+	if suo.mutation.LngCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: store.FieldLng,
+		})
+	}
+	if value, ok := suo.mutation.Lat(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: store.FieldLat,
+		})
+	}
+	if value, ok := suo.mutation.AddedLat(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: store.FieldLat,
+		})
+	}
+	if suo.mutation.LatCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: store.FieldLat,
+		})
+	}
+	if value, ok := suo.mutation.Address(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: store.FieldAddress,
+		})
+	}
+	if suo.mutation.AddressCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: store.FieldAddress,
 		})
 	}
 	if suo.mutation.CityCleared() {

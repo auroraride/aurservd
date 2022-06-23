@@ -55,6 +55,9 @@ func (Cabinet) Fields() []ent.Field {
         field.JSON("bin", []model.CabinetBin{}).Optional().Comment("仓位信息"),
         field.Uint("battery_num").Default(0).Comment("电池总数"),
         field.Uint("battery_full_num").Default(0).Comment("满电电池数"),
+        field.Float("lng").Optional().Comment("经度"),
+        field.Float("lat").Optional().Comment("纬度"),
+        field.String("address").Optional().Comment("详细地址"),
     }
 }
 

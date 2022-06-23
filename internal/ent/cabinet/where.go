@@ -198,6 +198,27 @@ func BatteryFullNum(v uint) predicate.Cabinet {
 	})
 }
 
+// Lng applies equality check predicate on the "lng" field. It's identical to LngEQ.
+func Lng(v float64) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLng), v))
+	})
+}
+
+// Lat applies equality check predicate on the "lat" field. It's identical to LatEQ.
+func Lat(v float64) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLat), v))
+	})
+}
+
+// Address applies equality check predicate on the "address" field. It's identical to AddressEQ.
+func Address(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAddress), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
@@ -1552,6 +1573,311 @@ func BatteryFullNumLT(v uint) predicate.Cabinet {
 func BatteryFullNumLTE(v uint) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldBatteryFullNum), v))
+	})
+}
+
+// LngEQ applies the EQ predicate on the "lng" field.
+func LngEQ(v float64) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLng), v))
+	})
+}
+
+// LngNEQ applies the NEQ predicate on the "lng" field.
+func LngNEQ(v float64) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLng), v))
+	})
+}
+
+// LngIn applies the In predicate on the "lng" field.
+func LngIn(vs ...float64) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldLng), v...))
+	})
+}
+
+// LngNotIn applies the NotIn predicate on the "lng" field.
+func LngNotIn(vs ...float64) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldLng), v...))
+	})
+}
+
+// LngGT applies the GT predicate on the "lng" field.
+func LngGT(v float64) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldLng), v))
+	})
+}
+
+// LngGTE applies the GTE predicate on the "lng" field.
+func LngGTE(v float64) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldLng), v))
+	})
+}
+
+// LngLT applies the LT predicate on the "lng" field.
+func LngLT(v float64) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldLng), v))
+	})
+}
+
+// LngLTE applies the LTE predicate on the "lng" field.
+func LngLTE(v float64) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldLng), v))
+	})
+}
+
+// LngIsNil applies the IsNil predicate on the "lng" field.
+func LngIsNil() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldLng)))
+	})
+}
+
+// LngNotNil applies the NotNil predicate on the "lng" field.
+func LngNotNil() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldLng)))
+	})
+}
+
+// LatEQ applies the EQ predicate on the "lat" field.
+func LatEQ(v float64) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLat), v))
+	})
+}
+
+// LatNEQ applies the NEQ predicate on the "lat" field.
+func LatNEQ(v float64) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLat), v))
+	})
+}
+
+// LatIn applies the In predicate on the "lat" field.
+func LatIn(vs ...float64) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldLat), v...))
+	})
+}
+
+// LatNotIn applies the NotIn predicate on the "lat" field.
+func LatNotIn(vs ...float64) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldLat), v...))
+	})
+}
+
+// LatGT applies the GT predicate on the "lat" field.
+func LatGT(v float64) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldLat), v))
+	})
+}
+
+// LatGTE applies the GTE predicate on the "lat" field.
+func LatGTE(v float64) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldLat), v))
+	})
+}
+
+// LatLT applies the LT predicate on the "lat" field.
+func LatLT(v float64) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldLat), v))
+	})
+}
+
+// LatLTE applies the LTE predicate on the "lat" field.
+func LatLTE(v float64) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldLat), v))
+	})
+}
+
+// LatIsNil applies the IsNil predicate on the "lat" field.
+func LatIsNil() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldLat)))
+	})
+}
+
+// LatNotNil applies the NotNil predicate on the "lat" field.
+func LatNotNil() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldLat)))
+	})
+}
+
+// AddressEQ applies the EQ predicate on the "address" field.
+func AddressEQ(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAddress), v))
+	})
+}
+
+// AddressNEQ applies the NEQ predicate on the "address" field.
+func AddressNEQ(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAddress), v))
+	})
+}
+
+// AddressIn applies the In predicate on the "address" field.
+func AddressIn(vs ...string) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldAddress), v...))
+	})
+}
+
+// AddressNotIn applies the NotIn predicate on the "address" field.
+func AddressNotIn(vs ...string) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldAddress), v...))
+	})
+}
+
+// AddressGT applies the GT predicate on the "address" field.
+func AddressGT(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAddress), v))
+	})
+}
+
+// AddressGTE applies the GTE predicate on the "address" field.
+func AddressGTE(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAddress), v))
+	})
+}
+
+// AddressLT applies the LT predicate on the "address" field.
+func AddressLT(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAddress), v))
+	})
+}
+
+// AddressLTE applies the LTE predicate on the "address" field.
+func AddressLTE(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAddress), v))
+	})
+}
+
+// AddressContains applies the Contains predicate on the "address" field.
+func AddressContains(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldAddress), v))
+	})
+}
+
+// AddressHasPrefix applies the HasPrefix predicate on the "address" field.
+func AddressHasPrefix(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldAddress), v))
+	})
+}
+
+// AddressHasSuffix applies the HasSuffix predicate on the "address" field.
+func AddressHasSuffix(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldAddress), v))
+	})
+}
+
+// AddressIsNil applies the IsNil predicate on the "address" field.
+func AddressIsNil() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAddress)))
+	})
+}
+
+// AddressNotNil applies the NotNil predicate on the "address" field.
+func AddressNotNil() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAddress)))
+	})
+}
+
+// AddressEqualFold applies the EqualFold predicate on the "address" field.
+func AddressEqualFold(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldAddress), v))
+	})
+}
+
+// AddressContainsFold applies the ContainsFold predicate on the "address" field.
+func AddressContainsFold(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldAddress), v))
 	})
 }
 

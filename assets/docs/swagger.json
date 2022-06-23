@@ -1065,6 +1065,266 @@
                 }
             }
         },
+        "/manager/v1/assistance": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MC001 救援列表",
+                "operationId": "ManagerAssistanceList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市ID",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "救援订单发起时间结束",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "骑手姓名或电话",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "救援订单发起时间开始",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3,
+                            4,
+                            5
+                        ],
+                        "type": "integer",
+                        "description": "状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付, 不携带此字段是获取全部",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.AssistanceListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/assistance/allocate": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MC004 分配救援任务",
+                "operationId": "ManagerAssistanceAllocate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "分配参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssistanceAllocateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/assistance/free": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MC005 救援免费",
+                "operationId": "ManagerAssistanceFree",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "请求参数",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssistanceFreeReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/assistance/nearby": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MC003 附近门店",
+                "operationId": "ManagerAssistanceNearby",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "救援订单ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.AssistanceNearbyRes"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/assistance/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MC002 救援详情",
+                "operationId": "ManagerAssistanceDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "救援ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "救援详情",
+                        "schema": {
+                            "$ref": "#/definitions/model.AssistanceDetail"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/battery/model": {
             "get": {
                 "consumes": [
@@ -5156,12 +5416,6 @@
                         "in": "query"
                     },
                     {
-                        "type": "boolean",
-                        "description": "是否仅获取上班中的门店",
-                        "name": "dutyStore",
-                        "in": "query"
-                    },
-                    {
                         "type": "number",
                         "description": "纬度 ",
                         "name": "lat",
@@ -6182,6 +6436,23 @@
                 }
             }
         },
+        "model.AssistanceAllocateReq": {
+            "type": "object",
+            "required": [
+                "id",
+                "storeId"
+            ],
+            "properties": {
+                "id": {
+                    "description": "救援ID ",
+                    "type": "integer"
+                },
+                "storeId": {
+                    "description": "门店ID ",
+                    "type": "integer"
+                }
+            }
+        },
         "model.AssistanceCreateReq": {
             "type": "object",
             "required": [
@@ -6229,6 +6500,239 @@
             "properties": {
                 "outTradeNo": {
                     "description": "救援订单编码",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssistanceDetail": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "详细位置",
+                    "type": "string"
+                },
+                "allocateAt": {
+                    "description": "分配时间",
+                    "type": "string"
+                },
+                "breakdown": {
+                    "description": "故障",
+                    "type": "string"
+                },
+                "breakdownDesc": {
+                    "description": "故障描述",
+                    "type": "string"
+                },
+                "breakdownPhotos": {
+                    "description": "故障照片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "cost": {
+                    "description": "费用, 未分配时为0",
+                    "type": "number"
+                },
+                "detectPhoto": {
+                    "description": "检测照片",
+                    "type": "string"
+                },
+                "distance": {
+                    "description": "救援距离(米), 未分配时为0",
+                    "type": "number"
+                },
+                "employee": {
+                    "description": "店员信息, 未分配此字段不存在",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Employee"
+                        }
+                    ]
+                },
+                "freeReason": {
+                    "description": "免费理由, 当订单被标记为免费的时候有此字段",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "jointPhoto": {
+                    "description": "合照",
+                    "type": "string"
+                },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "payAt": {
+                    "description": "支付时间, 已支付会有此字段",
+                    "type": "string"
+                },
+                "reason": {
+                    "description": "成功救援 - 故障原因",
+                    "type": "string"
+                },
+                "refusedDesc": {
+                    "description": "拒绝原因, 已拒绝会有此字段",
+                    "type": "string"
+                },
+                "rider": {
+                    "description": "骑手信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderBasic"
+                        }
+                    ]
+                },
+                "status": {
+                    "description": "状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                },
+                "store": {
+                    "description": "门店, 未分配此字段不存在",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Store"
+                        }
+                    ]
+                },
+                "time": {
+                    "description": "救援发起时间",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssistanceFreeReq": {
+            "type": "object",
+            "required": [
+                "id",
+                "reason"
+            ],
+            "properties": {
+                "id": {
+                    "description": "救援ID ",
+                    "type": "integer"
+                },
+                "reason": {
+                    "description": "免费理由 ",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssistanceListRes": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "cost": {
+                    "description": "费用, 未分配时为0",
+                    "type": "number"
+                },
+                "distance": {
+                    "description": "救援距离(米), 未分配时为0",
+                    "type": "number"
+                },
+                "employee": {
+                    "description": "店员信息, 未分配此字段不存在",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Employee"
+                        }
+                    ]
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "rider": {
+                    "description": "骑手信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderBasic"
+                        }
+                    ]
+                },
+                "status": {
+                    "description": "状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3,
+                        4,
+                        5
+                    ]
+                },
+                "store": {
+                    "description": "门店, 未分配此字段不存在",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Store"
+                        }
+                    ]
+                },
+                "time": {
+                    "description": "救援发起时间",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssistanceNearbyRes": {
+            "type": "object",
+            "properties": {
+                "distance": {
+                    "description": "距离",
+                    "type": "number"
+                },
+                "employee": {
+                    "description": "当前员工",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Employee"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "门店ID",
+                    "type": "integer"
+                },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "name": {
+                    "description": "门店名称",
                     "type": "string"
                 }
             }

@@ -15,6 +15,18 @@ definitions:
       stsToken:
         type: string
     type: object
+  model.AssistanceAllocateReq:
+    properties:
+      id:
+        description: '救援ID '
+        type: integer
+      storeId:
+        description: '门店ID '
+        type: integer
+    required:
+    - id
+    - storeId
+    type: object
   model.AssistanceCreateReq:
     properties:
       address:
@@ -51,6 +63,161 @@ definitions:
     properties:
       outTradeNo:
         description: 救援订单编码
+        type: string
+    type: object
+  model.AssistanceDetail:
+    properties:
+      address:
+        description: 详细位置
+        type: string
+      allocateAt:
+        description: 分配时间
+        type: string
+      breakdown:
+        description: 故障
+        type: string
+      breakdownDesc:
+        description: 故障描述
+        type: string
+      breakdownPhotos:
+        description: 故障照片
+        items:
+          type: string
+        type: array
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      cost:
+        description: 费用, 未分配时为0
+        type: number
+      detectPhoto:
+        description: 检测照片
+        type: string
+      distance:
+        description: 救援距离(米), 未分配时为0
+        type: number
+      employee:
+        allOf:
+        - $ref: '#/definitions/model.Employee'
+        description: 店员信息, 未分配此字段不存在
+      freeReason:
+        description: 免费理由, 当订单被标记为免费的时候有此字段
+        type: string
+      id:
+        type: integer
+      jointPhoto:
+        description: 合照
+        type: string
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      payAt:
+        description: 支付时间, 已支付会有此字段
+        type: string
+      reason:
+        description: 成功救援 - 故障原因
+        type: string
+      refusedDesc:
+        description: 拒绝原因, 已拒绝会有此字段
+        type: string
+      rider:
+        allOf:
+        - $ref: '#/definitions/model.RiderBasic'
+        description: 骑手信息
+      status:
+        description: 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        type: integer
+      store:
+        allOf:
+        - $ref: '#/definitions/model.Store'
+        description: 门店, 未分配此字段不存在
+      time:
+        description: 救援发起时间
+        type: string
+    type: object
+  model.AssistanceFreeReq:
+    properties:
+      id:
+        description: '救援ID '
+        type: integer
+      reason:
+        description: '免费理由 '
+        type: string
+    required:
+    - id
+    - reason
+    type: object
+  model.AssistanceListRes:
+    properties:
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      cost:
+        description: 费用, 未分配时为0
+        type: number
+      distance:
+        description: 救援距离(米), 未分配时为0
+        type: number
+      employee:
+        allOf:
+        - $ref: '#/definitions/model.Employee'
+        description: 店员信息, 未分配此字段不存在
+      id:
+        type: integer
+      rider:
+        allOf:
+        - $ref: '#/definitions/model.RiderBasic'
+        description: 骑手信息
+      status:
+        description: 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        type: integer
+      store:
+        allOf:
+        - $ref: '#/definitions/model.Store'
+        description: 门店, 未分配此字段不存在
+      time:
+        description: 救援发起时间
+        type: string
+    type: object
+  model.AssistanceNearbyRes:
+    properties:
+      distance:
+        description: 距离
+        type: number
+      employee:
+        allOf:
+        - $ref: '#/definitions/model.Employee'
+        description: 当前员工
+      id:
+        description: 门店ID
+        type: integer
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      name:
+        description: 门店名称
         type: string
     type: object
   model.AttendanceCreateReq:
@@ -3704,6 +3871,177 @@ paths:
       summary: M3004 新增合同
       tags:
       - '[M]管理接口'
+  /manager/v1/assistance:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerAssistanceList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 城市ID
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 救援订单发起时间结束
+        in: query
+        name: end
+        type: string
+      - description: 骑手姓名或电话
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 救援订单发起时间开始
+        in: query
+        name: start
+        type: string
+      - description: 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付, 不携带此字段是获取全部
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.AssistanceListRes'
+                  type: array
+              type: object
+      summary: MC001 救援列表
+      tags:
+      - '[M]管理接口'
+  /manager/v1/assistance/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerAssistanceDetail
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 救援ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 救援详情
+          schema:
+            $ref: '#/definitions/model.AssistanceDetail'
+      summary: MC002 救援详情
+      tags:
+      - '[M]管理接口'
+  /manager/v1/assistance/allocate:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerAssistanceAllocate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 分配参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssistanceAllocateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MC004 分配救援任务
+      tags:
+      - '[M]管理接口'
+  /manager/v1/assistance/free:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerAssistanceFree
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求参数
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssistanceFreeReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MC005 救援免费
+      tags:
+      - '[M]管理接口'
+  /manager/v1/assistance/nearby:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerAssistanceNearby
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 救援订单ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.AssistanceNearbyRes'
+            type: array
+      summary: MC003 附近门店
+      tags:
+      - '[M]管理接口'
   /manager/v1/battery/model:
     get:
       consumes:
@@ -6341,10 +6679,6 @@ paths:
         in: query
         name: distance
         type: number
-      - description: 是否仅获取上班中的门店
-        in: query
-        name: dutyStore
-        type: boolean
       - description: '纬度 '
         in: query
         name: lat

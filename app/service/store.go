@@ -48,8 +48,8 @@ func NewStoreWithEmployee(e *ent.Employee) *storeService {
 }
 
 func (s *storeService) Query(id uint64) *ent.Store {
-    item, err := s.orm.QueryNotDeleted().WithEmployee().Where(store.ID(id)).Only(s.ctx)
-    if err != nil {
+    item, _ := s.orm.QueryNotDeleted().WithEmployee().Where(store.ID(id)).Only(s.ctx)
+    if item == nil {
         snag.Panic("未找到有效门店")
     }
     return item
@@ -76,6 +76,9 @@ func (s *storeService) Create(req *model.StoreCreateReq) model.StoreItem {
         SetBranch(b).
         SetCityID(b.CityID).
         SetSn(shortuuid.New()).
+        SetLng(b.Lng).
+        SetLat(b.Lat).
+        SetAddress(b.Address).
         SaveX(s.ctx)
 
     if len(req.Materials) > 0 {
@@ -109,7 +112,11 @@ func (s *storeService) Modify(req *model.StoreModifyReq) model.StoreItem {
     }
     if req.BranchID != nil {
         b := NewBranch().Query(*req.BranchID)
-        q.SetBranchID(*req.BranchID).SetCityID(b.CityID)
+        q.SetLng(b.Lng).
+            SetLat(b.Lat).
+            SetAddress(b.Address).
+            SetBranchID(*req.BranchID).
+            SetCityID(b.CityID)
     }
     q.SaveX(s.ctx)
     return s.Detail(item.ID)

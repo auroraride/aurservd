@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -46,6 +47,9 @@ type Assistance struct {
 	RiderID uint64 `json:"rider_id,omitempty"`
 	// SubscribeID holds the value of the "subscribe_id" field.
 	SubscribeID uint64 `json:"subscribe_id,omitempty"`
+	// CityID holds the value of the "city_id" field.
+	// 城市ID
+	CityID uint64 `json:"city_id,omitempty"`
 	// EmployeeID holds the value of the "employee_id" field.
 	// 店员ID
 	EmployeeID *uint64 `json:"employee_id,omitempty"`
@@ -53,7 +57,7 @@ type Assistance struct {
 	// 支付订单
 	OrderID *uint64 `json:"order_id,omitempty"`
 	// Status holds the value of the "status" field.
-	// 救援状态 0:等待接单 1:已接单 2:已拒绝 3:救援失败 4:救援成功
+	// 救援状态 0:待分配 1:已接单/已分配 2:已拒绝 3:救援失败 4:救援成功待支付 5:救援成功已支付
 	Status uint8 `json:"status,omitempty"`
 	// OutTradeNo holds the value of the "out_trade_no" field.
 	// 救援单号
@@ -72,7 +76,7 @@ type Assistance struct {
 	Breakdown string `json:"breakdown,omitempty"`
 	// BreakdownDesc holds the value of the "breakdown_desc" field.
 	// 故障描述
-	BreakdownDesc *string `json:"breakdown_desc,omitempty"`
+	BreakdownDesc string `json:"breakdown_desc,omitempty"`
 	// BreakdownPhotos holds the value of the "breakdown_photos" field.
 	// 故障照片
 	BreakdownPhotos []string `json:"breakdown_photos,omitempty"`
@@ -84,25 +88,34 @@ type Assistance struct {
 	CancelReasonDesc *string `json:"cancel_reason_desc,omitempty"`
 	// Distance holds the value of the "distance" field.
 	// 救援距离
-	Distance *float64 `json:"distance,omitempty"`
+	Distance float64 `json:"distance,omitempty"`
 	// Reason holds the value of the "reason" field.
 	// 救援原因
 	Reason string `json:"reason,omitempty"`
-	// BatteryPhoto holds the value of the "battery_photo" field.
-	// 电池照片
-	BatteryPhoto string `json:"battery_photo,omitempty"`
+	// DetectPhoto holds the value of the "detect_photo" field.
+	// 检测照片
+	DetectPhoto string `json:"detect_photo,omitempty"`
 	// JointPhoto holds the value of the "joint_photo" field.
 	// 与用户合影
 	JointPhoto string `json:"joint_photo,omitempty"`
 	// Cost holds the value of the "cost" field.
 	// 本次救援费用
-	Cost *float64 `json:"cost,omitempty"`
+	Cost float64 `json:"cost,omitempty"`
 	// RefusedDesc holds the value of the "refused_desc" field.
 	// 拒绝原因
 	RefusedDesc *string `json:"refused_desc,omitempty"`
 	// PayAt holds the value of the "pay_at" field.
 	// 支付时间
 	PayAt *time.Time `json:"pay_at,omitempty"`
+	// AllocateAt holds the value of the "allocate_at" field.
+	// 分配时间
+	AllocateAt *time.Time `json:"allocate_at,omitempty"`
+	// Wait holds the value of the "wait" field.
+	// 分配等待时间(s)
+	Wait int `json:"wait,omitempty"`
+	// FreeReason holds the value of the "free_reason" field.
+	// 免费理由
+	FreeReason *string `json:"free_reason,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssistanceQuery when eager-loading is set.
 	Edges AssistanceEdges `json:"edges"`
@@ -116,13 +129,15 @@ type AssistanceEdges struct {
 	Rider *Rider `json:"rider,omitempty"`
 	// Subscribe holds the value of the subscribe edge.
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
+	// City holds the value of the city edge.
+	City *City `json:"city,omitempty"`
 	// Order holds the value of the order edge.
 	Order *Order `json:"order,omitempty"`
 	// Employee holds the value of the employee edge.
 	Employee *Employee `json:"employee,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // StoreOrErr returns the Store value or an error if the edge
@@ -167,10 +182,24 @@ func (e AssistanceEdges) SubscribeOrErr() (*Subscribe, error) {
 	return nil, &NotLoadedError{edge: "subscribe"}
 }
 
+// CityOrErr returns the City value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AssistanceEdges) CityOrErr() (*City, error) {
+	if e.loadedTypes[3] {
+		if e.City == nil {
+			// The edge city was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: city.Label}
+		}
+		return e.City, nil
+	}
+	return nil, &NotLoadedError{edge: "city"}
+}
+
 // OrderOrErr returns the Order value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e AssistanceEdges) OrderOrErr() (*Order, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		if e.Order == nil {
 			// The edge order was loaded in eager-loading,
 			// but was not found.
@@ -184,7 +213,7 @@ func (e AssistanceEdges) OrderOrErr() (*Order, error) {
 // EmployeeOrErr returns the Employee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e AssistanceEdges) EmployeeOrErr() (*Employee, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		if e.Employee == nil {
 			// The edge employee was loaded in eager-loading,
 			// but was not found.
@@ -204,11 +233,11 @@ func (*Assistance) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case assistance.FieldLng, assistance.FieldLat, assistance.FieldDistance, assistance.FieldCost:
 			values[i] = new(sql.NullFloat64)
-		case assistance.FieldID, assistance.FieldStoreID, assistance.FieldRiderID, assistance.FieldSubscribeID, assistance.FieldEmployeeID, assistance.FieldOrderID, assistance.FieldStatus:
+		case assistance.FieldID, assistance.FieldStoreID, assistance.FieldRiderID, assistance.FieldSubscribeID, assistance.FieldCityID, assistance.FieldEmployeeID, assistance.FieldOrderID, assistance.FieldStatus, assistance.FieldWait:
 			values[i] = new(sql.NullInt64)
-		case assistance.FieldRemark, assistance.FieldOutTradeNo, assistance.FieldAddress, assistance.FieldBreakdown, assistance.FieldBreakdownDesc, assistance.FieldCancelReason, assistance.FieldCancelReasonDesc, assistance.FieldReason, assistance.FieldBatteryPhoto, assistance.FieldJointPhoto, assistance.FieldRefusedDesc:
+		case assistance.FieldRemark, assistance.FieldOutTradeNo, assistance.FieldAddress, assistance.FieldBreakdown, assistance.FieldBreakdownDesc, assistance.FieldCancelReason, assistance.FieldCancelReasonDesc, assistance.FieldReason, assistance.FieldDetectPhoto, assistance.FieldJointPhoto, assistance.FieldRefusedDesc, assistance.FieldFreeReason:
 			values[i] = new(sql.NullString)
-		case assistance.FieldCreatedAt, assistance.FieldUpdatedAt, assistance.FieldDeletedAt, assistance.FieldPayAt:
+		case assistance.FieldCreatedAt, assistance.FieldUpdatedAt, assistance.FieldDeletedAt, assistance.FieldPayAt, assistance.FieldAllocateAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Assistance", columns[i])
@@ -291,6 +320,12 @@ func (a *Assistance) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				a.SubscribeID = uint64(value.Int64)
 			}
+		case assistance.FieldCityID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field city_id", values[i])
+			} else if value.Valid {
+				a.CityID = uint64(value.Int64)
+			}
 		case assistance.FieldEmployeeID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field employee_id", values[i])
@@ -345,8 +380,7 @@ func (a *Assistance) assignValues(columns []string, values []interface{}) error 
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field breakdown_desc", values[i])
 			} else if value.Valid {
-				a.BreakdownDesc = new(string)
-				*a.BreakdownDesc = value.String
+				a.BreakdownDesc = value.String
 			}
 		case assistance.FieldBreakdownPhotos:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -374,8 +408,7 @@ func (a *Assistance) assignValues(columns []string, values []interface{}) error 
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field distance", values[i])
 			} else if value.Valid {
-				a.Distance = new(float64)
-				*a.Distance = value.Float64
+				a.Distance = value.Float64
 			}
 		case assistance.FieldReason:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -383,11 +416,11 @@ func (a *Assistance) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				a.Reason = value.String
 			}
-		case assistance.FieldBatteryPhoto:
+		case assistance.FieldDetectPhoto:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field battery_photo", values[i])
+				return fmt.Errorf("unexpected type %T for field detect_photo", values[i])
 			} else if value.Valid {
-				a.BatteryPhoto = value.String
+				a.DetectPhoto = value.String
 			}
 		case assistance.FieldJointPhoto:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -399,8 +432,7 @@ func (a *Assistance) assignValues(columns []string, values []interface{}) error 
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field cost", values[i])
 			} else if value.Valid {
-				a.Cost = new(float64)
-				*a.Cost = value.Float64
+				a.Cost = value.Float64
 			}
 		case assistance.FieldRefusedDesc:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -415,6 +447,26 @@ func (a *Assistance) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				a.PayAt = new(time.Time)
 				*a.PayAt = value.Time
+			}
+		case assistance.FieldAllocateAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field allocate_at", values[i])
+			} else if value.Valid {
+				a.AllocateAt = new(time.Time)
+				*a.AllocateAt = value.Time
+			}
+		case assistance.FieldWait:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field wait", values[i])
+			} else if value.Valid {
+				a.Wait = int(value.Int64)
+			}
+		case assistance.FieldFreeReason:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field free_reason", values[i])
+			} else if value.Valid {
+				a.FreeReason = new(string)
+				*a.FreeReason = value.String
 			}
 		}
 	}
@@ -434,6 +486,11 @@ func (a *Assistance) QueryRider() *RiderQuery {
 // QuerySubscribe queries the "subscribe" edge of the Assistance entity.
 func (a *Assistance) QuerySubscribe() *SubscribeQuery {
 	return (&AssistanceClient{config: a.config}).QuerySubscribe(a)
+}
+
+// QueryCity queries the "city" edge of the Assistance entity.
+func (a *Assistance) QueryCity() *CityQuery {
+	return (&AssistanceClient{config: a.config}).QueryCity(a)
 }
 
 // QueryOrder queries the "order" edge of the Assistance entity.
@@ -491,6 +548,8 @@ func (a *Assistance) String() string {
 	builder.WriteString(fmt.Sprintf("%v", a.RiderID))
 	builder.WriteString(", subscribe_id=")
 	builder.WriteString(fmt.Sprintf("%v", a.SubscribeID))
+	builder.WriteString(", city_id=")
+	builder.WriteString(fmt.Sprintf("%v", a.CityID))
 	if v := a.EmployeeID; v != nil {
 		builder.WriteString(", employee_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -511,10 +570,8 @@ func (a *Assistance) String() string {
 	builder.WriteString(a.Address)
 	builder.WriteString(", breakdown=")
 	builder.WriteString(a.Breakdown)
-	if v := a.BreakdownDesc; v != nil {
-		builder.WriteString(", breakdown_desc=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString(", breakdown_desc=")
+	builder.WriteString(a.BreakdownDesc)
 	builder.WriteString(", breakdown_photos=")
 	builder.WriteString(fmt.Sprintf("%v", a.BreakdownPhotos))
 	if v := a.CancelReason; v != nil {
@@ -525,20 +582,16 @@ func (a *Assistance) String() string {
 		builder.WriteString(", cancel_reason_desc=")
 		builder.WriteString(*v)
 	}
-	if v := a.Distance; v != nil {
-		builder.WriteString(", distance=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
+	builder.WriteString(", distance=")
+	builder.WriteString(fmt.Sprintf("%v", a.Distance))
 	builder.WriteString(", reason=")
 	builder.WriteString(a.Reason)
-	builder.WriteString(", battery_photo=")
-	builder.WriteString(a.BatteryPhoto)
+	builder.WriteString(", detect_photo=")
+	builder.WriteString(a.DetectPhoto)
 	builder.WriteString(", joint_photo=")
 	builder.WriteString(a.JointPhoto)
-	if v := a.Cost; v != nil {
-		builder.WriteString(", cost=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
+	builder.WriteString(", cost=")
+	builder.WriteString(fmt.Sprintf("%v", a.Cost))
 	if v := a.RefusedDesc; v != nil {
 		builder.WriteString(", refused_desc=")
 		builder.WriteString(*v)
@@ -546,6 +599,16 @@ func (a *Assistance) String() string {
 	if v := a.PayAt; v != nil {
 		builder.WriteString(", pay_at=")
 		builder.WriteString(v.Format(time.ANSIC))
+	}
+	if v := a.AllocateAt; v != nil {
+		builder.WriteString(", allocate_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", wait=")
+	builder.WriteString(fmt.Sprintf("%v", a.Wait))
+	if v := a.FreeReason; v != nil {
+		builder.WriteString(", free_reason=")
+		builder.WriteString(*v)
 	}
 	builder.WriteByte(')')
 	return builder.String()

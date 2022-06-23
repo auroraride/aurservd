@@ -487,6 +487,22 @@ func (c *AssistanceClient) QuerySubscribe(a *Assistance) *SubscribeQuery {
 	return query
 }
 
+// QueryCity queries the city edge of a Assistance.
+func (c *AssistanceClient) QueryCity(a *Assistance) *CityQuery {
+	query := &CityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(assistance.Table, assistance.FieldID, id),
+			sqlgraph.To(city.Table, city.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, assistance.CityTable, assistance.CityColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryOrder queries the order edge of a Assistance.
 func (c *AssistanceClient) QueryOrder(a *Assistance) *OrderQuery {
 	query := &OrderQuery{config: c.config}

@@ -123,12 +123,16 @@ type AssistanceMutation struct {
 	distance           *float64
 	adddistance        *float64
 	reason             *string
-	battery_photo      *string
+	detect_photo       *string
 	joint_photo        *string
 	cost               *float64
 	addcost            *float64
 	refused_desc       *string
 	pay_at             *time.Time
+	allocate_at        *time.Time
+	wait               *int
+	addwait            *int
+	free_reason        *string
 	clearedFields      map[string]struct{}
 	store              *uint64
 	clearedstore       bool
@@ -136,6 +140,8 @@ type AssistanceMutation struct {
 	clearedrider       bool
 	subscribe          *uint64
 	clearedsubscribe   bool
+	city               *uint64
+	clearedcity        bool
 	_order             *uint64
 	cleared_order      bool
 	employee           *uint64
@@ -632,6 +638,42 @@ func (m *AssistanceMutation) ResetSubscribeID() {
 	m.subscribe = nil
 }
 
+// SetCityID sets the "city_id" field.
+func (m *AssistanceMutation) SetCityID(u uint64) {
+	m.city = &u
+}
+
+// CityID returns the value of the "city_id" field in the mutation.
+func (m *AssistanceMutation) CityID() (r uint64, exists bool) {
+	v := m.city
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCityID returns the old "city_id" field's value of the Assistance entity.
+// If the Assistance object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AssistanceMutation) OldCityID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCityID: %w", err)
+	}
+	return oldValue.CityID, nil
+}
+
+// ResetCityID resets all changes to the "city_id" field.
+func (m *AssistanceMutation) ResetCityID() {
+	m.city = nil
+}
+
 // SetEmployeeID sets the "employee_id" field.
 func (m *AssistanceMutation) SetEmployeeID(u uint64) {
 	m.employee = &u
@@ -1023,7 +1065,7 @@ func (m *AssistanceMutation) BreakdownDesc() (r string, exists bool) {
 // OldBreakdownDesc returns the old "breakdown_desc" field's value of the Assistance entity.
 // If the Assistance object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AssistanceMutation) OldBreakdownDesc(ctx context.Context) (v *string, err error) {
+func (m *AssistanceMutation) OldBreakdownDesc(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldBreakdownDesc is only allowed on UpdateOne operations")
 	}
@@ -1207,7 +1249,7 @@ func (m *AssistanceMutation) Distance() (r float64, exists bool) {
 // OldDistance returns the old "distance" field's value of the Assistance entity.
 // If the Assistance object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AssistanceMutation) OldDistance(ctx context.Context) (v *float64, err error) {
+func (m *AssistanceMutation) OldDistance(ctx context.Context) (v float64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDistance is only allowed on UpdateOne operations")
 	}
@@ -1308,53 +1350,53 @@ func (m *AssistanceMutation) ResetReason() {
 	delete(m.clearedFields, assistance.FieldReason)
 }
 
-// SetBatteryPhoto sets the "battery_photo" field.
-func (m *AssistanceMutation) SetBatteryPhoto(s string) {
-	m.battery_photo = &s
+// SetDetectPhoto sets the "detect_photo" field.
+func (m *AssistanceMutation) SetDetectPhoto(s string) {
+	m.detect_photo = &s
 }
 
-// BatteryPhoto returns the value of the "battery_photo" field in the mutation.
-func (m *AssistanceMutation) BatteryPhoto() (r string, exists bool) {
-	v := m.battery_photo
+// DetectPhoto returns the value of the "detect_photo" field in the mutation.
+func (m *AssistanceMutation) DetectPhoto() (r string, exists bool) {
+	v := m.detect_photo
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldBatteryPhoto returns the old "battery_photo" field's value of the Assistance entity.
+// OldDetectPhoto returns the old "detect_photo" field's value of the Assistance entity.
 // If the Assistance object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AssistanceMutation) OldBatteryPhoto(ctx context.Context) (v string, err error) {
+func (m *AssistanceMutation) OldDetectPhoto(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBatteryPhoto is only allowed on UpdateOne operations")
+		return v, errors.New("OldDetectPhoto is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBatteryPhoto requires an ID field in the mutation")
+		return v, errors.New("OldDetectPhoto requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBatteryPhoto: %w", err)
+		return v, fmt.Errorf("querying old value for OldDetectPhoto: %w", err)
 	}
-	return oldValue.BatteryPhoto, nil
+	return oldValue.DetectPhoto, nil
 }
 
-// ClearBatteryPhoto clears the value of the "battery_photo" field.
-func (m *AssistanceMutation) ClearBatteryPhoto() {
-	m.battery_photo = nil
-	m.clearedFields[assistance.FieldBatteryPhoto] = struct{}{}
+// ClearDetectPhoto clears the value of the "detect_photo" field.
+func (m *AssistanceMutation) ClearDetectPhoto() {
+	m.detect_photo = nil
+	m.clearedFields[assistance.FieldDetectPhoto] = struct{}{}
 }
 
-// BatteryPhotoCleared returns if the "battery_photo" field was cleared in this mutation.
-func (m *AssistanceMutation) BatteryPhotoCleared() bool {
-	_, ok := m.clearedFields[assistance.FieldBatteryPhoto]
+// DetectPhotoCleared returns if the "detect_photo" field was cleared in this mutation.
+func (m *AssistanceMutation) DetectPhotoCleared() bool {
+	_, ok := m.clearedFields[assistance.FieldDetectPhoto]
 	return ok
 }
 
-// ResetBatteryPhoto resets all changes to the "battery_photo" field.
-func (m *AssistanceMutation) ResetBatteryPhoto() {
-	m.battery_photo = nil
-	delete(m.clearedFields, assistance.FieldBatteryPhoto)
+// ResetDetectPhoto resets all changes to the "detect_photo" field.
+func (m *AssistanceMutation) ResetDetectPhoto() {
+	m.detect_photo = nil
+	delete(m.clearedFields, assistance.FieldDetectPhoto)
 }
 
 // SetJointPhoto sets the "joint_photo" field.
@@ -1424,7 +1466,7 @@ func (m *AssistanceMutation) Cost() (r float64, exists bool) {
 // OldCost returns the old "cost" field's value of the Assistance entity.
 // If the Assistance object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AssistanceMutation) OldCost(ctx context.Context) (v *float64, err error) {
+func (m *AssistanceMutation) OldCost(ctx context.Context) (v float64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCost is only allowed on UpdateOne operations")
 	}
@@ -1574,6 +1616,160 @@ func (m *AssistanceMutation) ResetPayAt() {
 	delete(m.clearedFields, assistance.FieldPayAt)
 }
 
+// SetAllocateAt sets the "allocate_at" field.
+func (m *AssistanceMutation) SetAllocateAt(t time.Time) {
+	m.allocate_at = &t
+}
+
+// AllocateAt returns the value of the "allocate_at" field in the mutation.
+func (m *AssistanceMutation) AllocateAt() (r time.Time, exists bool) {
+	v := m.allocate_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAllocateAt returns the old "allocate_at" field's value of the Assistance entity.
+// If the Assistance object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AssistanceMutation) OldAllocateAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAllocateAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAllocateAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAllocateAt: %w", err)
+	}
+	return oldValue.AllocateAt, nil
+}
+
+// ClearAllocateAt clears the value of the "allocate_at" field.
+func (m *AssistanceMutation) ClearAllocateAt() {
+	m.allocate_at = nil
+	m.clearedFields[assistance.FieldAllocateAt] = struct{}{}
+}
+
+// AllocateAtCleared returns if the "allocate_at" field was cleared in this mutation.
+func (m *AssistanceMutation) AllocateAtCleared() bool {
+	_, ok := m.clearedFields[assistance.FieldAllocateAt]
+	return ok
+}
+
+// ResetAllocateAt resets all changes to the "allocate_at" field.
+func (m *AssistanceMutation) ResetAllocateAt() {
+	m.allocate_at = nil
+	delete(m.clearedFields, assistance.FieldAllocateAt)
+}
+
+// SetWait sets the "wait" field.
+func (m *AssistanceMutation) SetWait(i int) {
+	m.wait = &i
+	m.addwait = nil
+}
+
+// Wait returns the value of the "wait" field in the mutation.
+func (m *AssistanceMutation) Wait() (r int, exists bool) {
+	v := m.wait
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWait returns the old "wait" field's value of the Assistance entity.
+// If the Assistance object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AssistanceMutation) OldWait(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWait is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWait requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWait: %w", err)
+	}
+	return oldValue.Wait, nil
+}
+
+// AddWait adds i to the "wait" field.
+func (m *AssistanceMutation) AddWait(i int) {
+	if m.addwait != nil {
+		*m.addwait += i
+	} else {
+		m.addwait = &i
+	}
+}
+
+// AddedWait returns the value that was added to the "wait" field in this mutation.
+func (m *AssistanceMutation) AddedWait() (r int, exists bool) {
+	v := m.addwait
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetWait resets all changes to the "wait" field.
+func (m *AssistanceMutation) ResetWait() {
+	m.wait = nil
+	m.addwait = nil
+}
+
+// SetFreeReason sets the "free_reason" field.
+func (m *AssistanceMutation) SetFreeReason(s string) {
+	m.free_reason = &s
+}
+
+// FreeReason returns the value of the "free_reason" field in the mutation.
+func (m *AssistanceMutation) FreeReason() (r string, exists bool) {
+	v := m.free_reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFreeReason returns the old "free_reason" field's value of the Assistance entity.
+// If the Assistance object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AssistanceMutation) OldFreeReason(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFreeReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFreeReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFreeReason: %w", err)
+	}
+	return oldValue.FreeReason, nil
+}
+
+// ClearFreeReason clears the value of the "free_reason" field.
+func (m *AssistanceMutation) ClearFreeReason() {
+	m.free_reason = nil
+	m.clearedFields[assistance.FieldFreeReason] = struct{}{}
+}
+
+// FreeReasonCleared returns if the "free_reason" field was cleared in this mutation.
+func (m *AssistanceMutation) FreeReasonCleared() bool {
+	_, ok := m.clearedFields[assistance.FieldFreeReason]
+	return ok
+}
+
+// ResetFreeReason resets all changes to the "free_reason" field.
+func (m *AssistanceMutation) ResetFreeReason() {
+	m.free_reason = nil
+	delete(m.clearedFields, assistance.FieldFreeReason)
+}
+
 // ClearStore clears the "store" edge to the Store entity.
 func (m *AssistanceMutation) ClearStore() {
 	m.clearedstore = true
@@ -1652,6 +1848,32 @@ func (m *AssistanceMutation) ResetSubscribe() {
 	m.clearedsubscribe = false
 }
 
+// ClearCity clears the "city" edge to the City entity.
+func (m *AssistanceMutation) ClearCity() {
+	m.clearedcity = true
+}
+
+// CityCleared reports if the "city" edge to the City entity was cleared.
+func (m *AssistanceMutation) CityCleared() bool {
+	return m.clearedcity
+}
+
+// CityIDs returns the "city" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CityID instead. It exists only for internal usage by the builders.
+func (m *AssistanceMutation) CityIDs() (ids []uint64) {
+	if id := m.city; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCity resets all changes to the "city" edge.
+func (m *AssistanceMutation) ResetCity() {
+	m.city = nil
+	m.clearedcity = false
+}
+
 // ClearOrder clears the "order" edge to the Order entity.
 func (m *AssistanceMutation) ClearOrder() {
 	m.cleared_order = true
@@ -1723,7 +1945,7 @@ func (m *AssistanceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AssistanceMutation) Fields() []string {
-	fields := make([]string, 0, 28)
+	fields := make([]string, 0, 32)
 	if m.created_at != nil {
 		fields = append(fields, assistance.FieldCreatedAt)
 	}
@@ -1750,6 +1972,9 @@ func (m *AssistanceMutation) Fields() []string {
 	}
 	if m.subscribe != nil {
 		fields = append(fields, assistance.FieldSubscribeID)
+	}
+	if m.city != nil {
+		fields = append(fields, assistance.FieldCityID)
 	}
 	if m.employee != nil {
 		fields = append(fields, assistance.FieldEmployeeID)
@@ -1793,8 +2018,8 @@ func (m *AssistanceMutation) Fields() []string {
 	if m.reason != nil {
 		fields = append(fields, assistance.FieldReason)
 	}
-	if m.battery_photo != nil {
-		fields = append(fields, assistance.FieldBatteryPhoto)
+	if m.detect_photo != nil {
+		fields = append(fields, assistance.FieldDetectPhoto)
 	}
 	if m.joint_photo != nil {
 		fields = append(fields, assistance.FieldJointPhoto)
@@ -1807,6 +2032,15 @@ func (m *AssistanceMutation) Fields() []string {
 	}
 	if m.pay_at != nil {
 		fields = append(fields, assistance.FieldPayAt)
+	}
+	if m.allocate_at != nil {
+		fields = append(fields, assistance.FieldAllocateAt)
+	}
+	if m.wait != nil {
+		fields = append(fields, assistance.FieldWait)
+	}
+	if m.free_reason != nil {
+		fields = append(fields, assistance.FieldFreeReason)
 	}
 	return fields
 }
@@ -1834,6 +2068,8 @@ func (m *AssistanceMutation) Field(name string) (ent.Value, bool) {
 		return m.RiderID()
 	case assistance.FieldSubscribeID:
 		return m.SubscribeID()
+	case assistance.FieldCityID:
+		return m.CityID()
 	case assistance.FieldEmployeeID:
 		return m.EmployeeID()
 	case assistance.FieldOrderID:
@@ -1862,8 +2098,8 @@ func (m *AssistanceMutation) Field(name string) (ent.Value, bool) {
 		return m.Distance()
 	case assistance.FieldReason:
 		return m.Reason()
-	case assistance.FieldBatteryPhoto:
-		return m.BatteryPhoto()
+	case assistance.FieldDetectPhoto:
+		return m.DetectPhoto()
 	case assistance.FieldJointPhoto:
 		return m.JointPhoto()
 	case assistance.FieldCost:
@@ -1872,6 +2108,12 @@ func (m *AssistanceMutation) Field(name string) (ent.Value, bool) {
 		return m.RefusedDesc()
 	case assistance.FieldPayAt:
 		return m.PayAt()
+	case assistance.FieldAllocateAt:
+		return m.AllocateAt()
+	case assistance.FieldWait:
+		return m.Wait()
+	case assistance.FieldFreeReason:
+		return m.FreeReason()
 	}
 	return nil, false
 }
@@ -1899,6 +2141,8 @@ func (m *AssistanceMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldRiderID(ctx)
 	case assistance.FieldSubscribeID:
 		return m.OldSubscribeID(ctx)
+	case assistance.FieldCityID:
+		return m.OldCityID(ctx)
 	case assistance.FieldEmployeeID:
 		return m.OldEmployeeID(ctx)
 	case assistance.FieldOrderID:
@@ -1927,8 +2171,8 @@ func (m *AssistanceMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldDistance(ctx)
 	case assistance.FieldReason:
 		return m.OldReason(ctx)
-	case assistance.FieldBatteryPhoto:
-		return m.OldBatteryPhoto(ctx)
+	case assistance.FieldDetectPhoto:
+		return m.OldDetectPhoto(ctx)
 	case assistance.FieldJointPhoto:
 		return m.OldJointPhoto(ctx)
 	case assistance.FieldCost:
@@ -1937,6 +2181,12 @@ func (m *AssistanceMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldRefusedDesc(ctx)
 	case assistance.FieldPayAt:
 		return m.OldPayAt(ctx)
+	case assistance.FieldAllocateAt:
+		return m.OldAllocateAt(ctx)
+	case assistance.FieldWait:
+		return m.OldWait(ctx)
+	case assistance.FieldFreeReason:
+		return m.OldFreeReason(ctx)
 	}
 	return nil, fmt.Errorf("unknown Assistance field %s", name)
 }
@@ -2008,6 +2258,13 @@ func (m *AssistanceMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSubscribeID(v)
+		return nil
+	case assistance.FieldCityID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCityID(v)
 		return nil
 	case assistance.FieldEmployeeID:
 		v, ok := value.(uint64)
@@ -2107,12 +2364,12 @@ func (m *AssistanceMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetReason(v)
 		return nil
-	case assistance.FieldBatteryPhoto:
+	case assistance.FieldDetectPhoto:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBatteryPhoto(v)
+		m.SetDetectPhoto(v)
 		return nil
 	case assistance.FieldJointPhoto:
 		v, ok := value.(string)
@@ -2142,6 +2399,27 @@ func (m *AssistanceMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPayAt(v)
 		return nil
+	case assistance.FieldAllocateAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAllocateAt(v)
+		return nil
+	case assistance.FieldWait:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWait(v)
+		return nil
+	case assistance.FieldFreeReason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFreeReason(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Assistance field %s", name)
 }
@@ -2165,6 +2443,9 @@ func (m *AssistanceMutation) AddedFields() []string {
 	if m.addcost != nil {
 		fields = append(fields, assistance.FieldCost)
 	}
+	if m.addwait != nil {
+		fields = append(fields, assistance.FieldWait)
+	}
 	return fields
 }
 
@@ -2183,6 +2464,8 @@ func (m *AssistanceMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedDistance()
 	case assistance.FieldCost:
 		return m.AddedCost()
+	case assistance.FieldWait:
+		return m.AddedWait()
 	}
 	return nil, false
 }
@@ -2226,6 +2509,13 @@ func (m *AssistanceMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddCost(v)
+		return nil
+	case assistance.FieldWait:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddWait(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Assistance numeric field %s", name)
@@ -2271,8 +2561,8 @@ func (m *AssistanceMutation) ClearedFields() []string {
 	if m.FieldCleared(assistance.FieldReason) {
 		fields = append(fields, assistance.FieldReason)
 	}
-	if m.FieldCleared(assistance.FieldBatteryPhoto) {
-		fields = append(fields, assistance.FieldBatteryPhoto)
+	if m.FieldCleared(assistance.FieldDetectPhoto) {
+		fields = append(fields, assistance.FieldDetectPhoto)
 	}
 	if m.FieldCleared(assistance.FieldJointPhoto) {
 		fields = append(fields, assistance.FieldJointPhoto)
@@ -2285,6 +2575,12 @@ func (m *AssistanceMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(assistance.FieldPayAt) {
 		fields = append(fields, assistance.FieldPayAt)
+	}
+	if m.FieldCleared(assistance.FieldAllocateAt) {
+		fields = append(fields, assistance.FieldAllocateAt)
+	}
+	if m.FieldCleared(assistance.FieldFreeReason) {
+		fields = append(fields, assistance.FieldFreeReason)
 	}
 	return fields
 }
@@ -2336,8 +2632,8 @@ func (m *AssistanceMutation) ClearField(name string) error {
 	case assistance.FieldReason:
 		m.ClearReason()
 		return nil
-	case assistance.FieldBatteryPhoto:
-		m.ClearBatteryPhoto()
+	case assistance.FieldDetectPhoto:
+		m.ClearDetectPhoto()
 		return nil
 	case assistance.FieldJointPhoto:
 		m.ClearJointPhoto()
@@ -2350,6 +2646,12 @@ func (m *AssistanceMutation) ClearField(name string) error {
 		return nil
 	case assistance.FieldPayAt:
 		m.ClearPayAt()
+		return nil
+	case assistance.FieldAllocateAt:
+		m.ClearAllocateAt()
+		return nil
+	case assistance.FieldFreeReason:
+		m.ClearFreeReason()
 		return nil
 	}
 	return fmt.Errorf("unknown Assistance nullable field %s", name)
@@ -2385,6 +2687,9 @@ func (m *AssistanceMutation) ResetField(name string) error {
 		return nil
 	case assistance.FieldSubscribeID:
 		m.ResetSubscribeID()
+		return nil
+	case assistance.FieldCityID:
+		m.ResetCityID()
 		return nil
 	case assistance.FieldEmployeeID:
 		m.ResetEmployeeID()
@@ -2428,8 +2733,8 @@ func (m *AssistanceMutation) ResetField(name string) error {
 	case assistance.FieldReason:
 		m.ResetReason()
 		return nil
-	case assistance.FieldBatteryPhoto:
-		m.ResetBatteryPhoto()
+	case assistance.FieldDetectPhoto:
+		m.ResetDetectPhoto()
 		return nil
 	case assistance.FieldJointPhoto:
 		m.ResetJointPhoto()
@@ -2443,13 +2748,22 @@ func (m *AssistanceMutation) ResetField(name string) error {
 	case assistance.FieldPayAt:
 		m.ResetPayAt()
 		return nil
+	case assistance.FieldAllocateAt:
+		m.ResetAllocateAt()
+		return nil
+	case assistance.FieldWait:
+		m.ResetWait()
+		return nil
+	case assistance.FieldFreeReason:
+		m.ResetFreeReason()
+		return nil
 	}
 	return fmt.Errorf("unknown Assistance field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *AssistanceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.store != nil {
 		edges = append(edges, assistance.EdgeStore)
 	}
@@ -2458,6 +2772,9 @@ func (m *AssistanceMutation) AddedEdges() []string {
 	}
 	if m.subscribe != nil {
 		edges = append(edges, assistance.EdgeSubscribe)
+	}
+	if m.city != nil {
+		edges = append(edges, assistance.EdgeCity)
 	}
 	if m._order != nil {
 		edges = append(edges, assistance.EdgeOrder)
@@ -2484,6 +2801,10 @@ func (m *AssistanceMutation) AddedIDs(name string) []ent.Value {
 		if id := m.subscribe; id != nil {
 			return []ent.Value{*id}
 		}
+	case assistance.EdgeCity:
+		if id := m.city; id != nil {
+			return []ent.Value{*id}
+		}
 	case assistance.EdgeOrder:
 		if id := m._order; id != nil {
 			return []ent.Value{*id}
@@ -2498,7 +2819,7 @@ func (m *AssistanceMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *AssistanceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	return edges
 }
 
@@ -2512,7 +2833,7 @@ func (m *AssistanceMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *AssistanceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.clearedstore {
 		edges = append(edges, assistance.EdgeStore)
 	}
@@ -2521,6 +2842,9 @@ func (m *AssistanceMutation) ClearedEdges() []string {
 	}
 	if m.clearedsubscribe {
 		edges = append(edges, assistance.EdgeSubscribe)
+	}
+	if m.clearedcity {
+		edges = append(edges, assistance.EdgeCity)
 	}
 	if m.cleared_order {
 		edges = append(edges, assistance.EdgeOrder)
@@ -2541,6 +2865,8 @@ func (m *AssistanceMutation) EdgeCleared(name string) bool {
 		return m.clearedrider
 	case assistance.EdgeSubscribe:
 		return m.clearedsubscribe
+	case assistance.EdgeCity:
+		return m.clearedcity
 	case assistance.EdgeOrder:
 		return m.cleared_order
 	case assistance.EdgeEmployee:
@@ -2561,6 +2887,9 @@ func (m *AssistanceMutation) ClearEdge(name string) error {
 		return nil
 	case assistance.EdgeSubscribe:
 		m.ClearSubscribe()
+		return nil
+	case assistance.EdgeCity:
+		m.ClearCity()
 		return nil
 	case assistance.EdgeOrder:
 		m.ClearOrder()
@@ -2584,6 +2913,9 @@ func (m *AssistanceMutation) ResetEdge(name string) error {
 		return nil
 	case assistance.EdgeSubscribe:
 		m.ResetSubscribe()
+		return nil
+	case assistance.EdgeCity:
+		m.ResetCity()
 		return nil
 	case assistance.EdgeOrder:
 		m.ResetOrder()
@@ -9919,6 +10251,11 @@ type CabinetMutation struct {
 	addbattery_num      *int
 	battery_full_num    *uint
 	addbattery_full_num *int
+	lng                 *float64
+	addlng              *float64
+	lat                 *float64
+	addlat              *float64
+	address             *string
 	clearedFields       map[string]struct{}
 	city                *uint64
 	clearedcity         bool
@@ -10875,6 +11212,195 @@ func (m *CabinetMutation) ResetBatteryFullNum() {
 	m.addbattery_full_num = nil
 }
 
+// SetLng sets the "lng" field.
+func (m *CabinetMutation) SetLng(f float64) {
+	m.lng = &f
+	m.addlng = nil
+}
+
+// Lng returns the value of the "lng" field in the mutation.
+func (m *CabinetMutation) Lng() (r float64, exists bool) {
+	v := m.lng
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLng returns the old "lng" field's value of the Cabinet entity.
+// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CabinetMutation) OldLng(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLng is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLng requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLng: %w", err)
+	}
+	return oldValue.Lng, nil
+}
+
+// AddLng adds f to the "lng" field.
+func (m *CabinetMutation) AddLng(f float64) {
+	if m.addlng != nil {
+		*m.addlng += f
+	} else {
+		m.addlng = &f
+	}
+}
+
+// AddedLng returns the value that was added to the "lng" field in this mutation.
+func (m *CabinetMutation) AddedLng() (r float64, exists bool) {
+	v := m.addlng
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearLng clears the value of the "lng" field.
+func (m *CabinetMutation) ClearLng() {
+	m.lng = nil
+	m.addlng = nil
+	m.clearedFields[cabinet.FieldLng] = struct{}{}
+}
+
+// LngCleared returns if the "lng" field was cleared in this mutation.
+func (m *CabinetMutation) LngCleared() bool {
+	_, ok := m.clearedFields[cabinet.FieldLng]
+	return ok
+}
+
+// ResetLng resets all changes to the "lng" field.
+func (m *CabinetMutation) ResetLng() {
+	m.lng = nil
+	m.addlng = nil
+	delete(m.clearedFields, cabinet.FieldLng)
+}
+
+// SetLat sets the "lat" field.
+func (m *CabinetMutation) SetLat(f float64) {
+	m.lat = &f
+	m.addlat = nil
+}
+
+// Lat returns the value of the "lat" field in the mutation.
+func (m *CabinetMutation) Lat() (r float64, exists bool) {
+	v := m.lat
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLat returns the old "lat" field's value of the Cabinet entity.
+// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CabinetMutation) OldLat(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLat is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLat requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLat: %w", err)
+	}
+	return oldValue.Lat, nil
+}
+
+// AddLat adds f to the "lat" field.
+func (m *CabinetMutation) AddLat(f float64) {
+	if m.addlat != nil {
+		*m.addlat += f
+	} else {
+		m.addlat = &f
+	}
+}
+
+// AddedLat returns the value that was added to the "lat" field in this mutation.
+func (m *CabinetMutation) AddedLat() (r float64, exists bool) {
+	v := m.addlat
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearLat clears the value of the "lat" field.
+func (m *CabinetMutation) ClearLat() {
+	m.lat = nil
+	m.addlat = nil
+	m.clearedFields[cabinet.FieldLat] = struct{}{}
+}
+
+// LatCleared returns if the "lat" field was cleared in this mutation.
+func (m *CabinetMutation) LatCleared() bool {
+	_, ok := m.clearedFields[cabinet.FieldLat]
+	return ok
+}
+
+// ResetLat resets all changes to the "lat" field.
+func (m *CabinetMutation) ResetLat() {
+	m.lat = nil
+	m.addlat = nil
+	delete(m.clearedFields, cabinet.FieldLat)
+}
+
+// SetAddress sets the "address" field.
+func (m *CabinetMutation) SetAddress(s string) {
+	m.address = &s
+}
+
+// Address returns the value of the "address" field in the mutation.
+func (m *CabinetMutation) Address() (r string, exists bool) {
+	v := m.address
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAddress returns the old "address" field's value of the Cabinet entity.
+// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CabinetMutation) OldAddress(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAddress is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAddress requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAddress: %w", err)
+	}
+	return oldValue.Address, nil
+}
+
+// ClearAddress clears the value of the "address" field.
+func (m *CabinetMutation) ClearAddress() {
+	m.address = nil
+	m.clearedFields[cabinet.FieldAddress] = struct{}{}
+}
+
+// AddressCleared returns if the "address" field was cleared in this mutation.
+func (m *CabinetMutation) AddressCleared() bool {
+	_, ok := m.clearedFields[cabinet.FieldAddress]
+	return ok
+}
+
+// ResetAddress resets all changes to the "address" field.
+func (m *CabinetMutation) ResetAddress() {
+	m.address = nil
+	delete(m.clearedFields, cabinet.FieldAddress)
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *CabinetMutation) ClearCity() {
 	m.clearedcity = true
@@ -11108,7 +11634,7 @@ func (m *CabinetMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CabinetMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 21)
 	if m.created_at != nil {
 		fields = append(fields, cabinet.FieldCreatedAt)
 	}
@@ -11163,6 +11689,15 @@ func (m *CabinetMutation) Fields() []string {
 	if m.battery_full_num != nil {
 		fields = append(fields, cabinet.FieldBatteryFullNum)
 	}
+	if m.lng != nil {
+		fields = append(fields, cabinet.FieldLng)
+	}
+	if m.lat != nil {
+		fields = append(fields, cabinet.FieldLat)
+	}
+	if m.address != nil {
+		fields = append(fields, cabinet.FieldAddress)
+	}
 	return fields
 }
 
@@ -11207,6 +11742,12 @@ func (m *CabinetMutation) Field(name string) (ent.Value, bool) {
 		return m.BatteryNum()
 	case cabinet.FieldBatteryFullNum:
 		return m.BatteryFullNum()
+	case cabinet.FieldLng:
+		return m.Lng()
+	case cabinet.FieldLat:
+		return m.Lat()
+	case cabinet.FieldAddress:
+		return m.Address()
 	}
 	return nil, false
 }
@@ -11252,6 +11793,12 @@ func (m *CabinetMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldBatteryNum(ctx)
 	case cabinet.FieldBatteryFullNum:
 		return m.OldBatteryFullNum(ctx)
+	case cabinet.FieldLng:
+		return m.OldLng(ctx)
+	case cabinet.FieldLat:
+		return m.OldLat(ctx)
+	case cabinet.FieldAddress:
+		return m.OldAddress(ctx)
 	}
 	return nil, fmt.Errorf("unknown Cabinet field %s", name)
 }
@@ -11387,6 +11934,27 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetBatteryFullNum(v)
 		return nil
+	case cabinet.FieldLng:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLng(v)
+		return nil
+	case cabinet.FieldLat:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLat(v)
+		return nil
+	case cabinet.FieldAddress:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAddress(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Cabinet field %s", name)
 }
@@ -11410,6 +11978,12 @@ func (m *CabinetMutation) AddedFields() []string {
 	if m.addbattery_full_num != nil {
 		fields = append(fields, cabinet.FieldBatteryFullNum)
 	}
+	if m.addlng != nil {
+		fields = append(fields, cabinet.FieldLng)
+	}
+	if m.addlat != nil {
+		fields = append(fields, cabinet.FieldLat)
+	}
 	return fields
 }
 
@@ -11428,6 +12002,10 @@ func (m *CabinetMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedBatteryNum()
 	case cabinet.FieldBatteryFullNum:
 		return m.AddedBatteryFullNum()
+	case cabinet.FieldLng:
+		return m.AddedLng()
+	case cabinet.FieldLat:
+		return m.AddedLat()
 	}
 	return nil, false
 }
@@ -11472,6 +12050,20 @@ func (m *CabinetMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddBatteryFullNum(v)
 		return nil
+	case cabinet.FieldLng:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLng(v)
+		return nil
+	case cabinet.FieldLat:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLat(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Cabinet numeric field %s", name)
 }
@@ -11500,6 +12092,15 @@ func (m *CabinetMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(cabinet.FieldBin) {
 		fields = append(fields, cabinet.FieldBin)
+	}
+	if m.FieldCleared(cabinet.FieldLng) {
+		fields = append(fields, cabinet.FieldLng)
+	}
+	if m.FieldCleared(cabinet.FieldLat) {
+		fields = append(fields, cabinet.FieldLat)
+	}
+	if m.FieldCleared(cabinet.FieldAddress) {
+		fields = append(fields, cabinet.FieldAddress)
 	}
 	return fields
 }
@@ -11535,6 +12136,15 @@ func (m *CabinetMutation) ClearField(name string) error {
 		return nil
 	case cabinet.FieldBin:
 		m.ClearBin()
+		return nil
+	case cabinet.FieldLng:
+		m.ClearLng()
+		return nil
+	case cabinet.FieldLat:
+		m.ClearLat()
+		return nil
+	case cabinet.FieldAddress:
+		m.ClearAddress()
 		return nil
 	}
 	return fmt.Errorf("unknown Cabinet nullable field %s", name)
@@ -11597,6 +12207,15 @@ func (m *CabinetMutation) ResetField(name string) error {
 		return nil
 	case cabinet.FieldBatteryFullNum:
 		m.ResetBatteryFullNum()
+		return nil
+	case cabinet.FieldLng:
+		m.ResetLng()
+		return nil
+	case cabinet.FieldLat:
+		m.ResetLat()
+		return nil
+	case cabinet.FieldAddress:
+		m.ResetAddress()
 		return nil
 	}
 	return fmt.Errorf("unknown Cabinet field %s", name)
@@ -43022,6 +43641,11 @@ type StoreMutation struct {
 	name               *string
 	status             *uint8
 	addstatus          *int8
+	lng                *float64
+	addlng             *float64
+	lat                *float64
+	addlat             *float64
+	address            *string
 	clearedFields      map[string]struct{}
 	city               *uint64
 	clearedcity        bool
@@ -43426,7 +44050,7 @@ func (m *StoreMutation) CityID() (r uint64, exists bool) {
 // OldCityID returns the old "city_id" field's value of the Store entity.
 // If the Store object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StoreMutation) OldCityID(ctx context.Context) (v *uint64, err error) {
+func (m *StoreMutation) OldCityID(ctx context.Context) (v uint64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCityID is only allowed on UpdateOne operations")
 	}
@@ -43440,22 +44064,9 @@ func (m *StoreMutation) OldCityID(ctx context.Context) (v *uint64, err error) {
 	return oldValue.CityID, nil
 }
 
-// ClearCityID clears the value of the "city_id" field.
-func (m *StoreMutation) ClearCityID() {
-	m.city = nil
-	m.clearedFields[store.FieldCityID] = struct{}{}
-}
-
-// CityIDCleared returns if the "city_id" field was cleared in this mutation.
-func (m *StoreMutation) CityIDCleared() bool {
-	_, ok := m.clearedFields[store.FieldCityID]
-	return ok
-}
-
 // ResetCityID resets all changes to the "city_id" field.
 func (m *StoreMutation) ResetCityID() {
 	m.city = nil
-	delete(m.clearedFields, store.FieldCityID)
 }
 
 // SetEmployeeID sets the "employee_id" field.
@@ -43671,6 +44282,195 @@ func (m *StoreMutation) ResetStatus() {
 	m.addstatus = nil
 }
 
+// SetLng sets the "lng" field.
+func (m *StoreMutation) SetLng(f float64) {
+	m.lng = &f
+	m.addlng = nil
+}
+
+// Lng returns the value of the "lng" field in the mutation.
+func (m *StoreMutation) Lng() (r float64, exists bool) {
+	v := m.lng
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLng returns the old "lng" field's value of the Store entity.
+// If the Store object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StoreMutation) OldLng(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLng is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLng requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLng: %w", err)
+	}
+	return oldValue.Lng, nil
+}
+
+// AddLng adds f to the "lng" field.
+func (m *StoreMutation) AddLng(f float64) {
+	if m.addlng != nil {
+		*m.addlng += f
+	} else {
+		m.addlng = &f
+	}
+}
+
+// AddedLng returns the value that was added to the "lng" field in this mutation.
+func (m *StoreMutation) AddedLng() (r float64, exists bool) {
+	v := m.addlng
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearLng clears the value of the "lng" field.
+func (m *StoreMutation) ClearLng() {
+	m.lng = nil
+	m.addlng = nil
+	m.clearedFields[store.FieldLng] = struct{}{}
+}
+
+// LngCleared returns if the "lng" field was cleared in this mutation.
+func (m *StoreMutation) LngCleared() bool {
+	_, ok := m.clearedFields[store.FieldLng]
+	return ok
+}
+
+// ResetLng resets all changes to the "lng" field.
+func (m *StoreMutation) ResetLng() {
+	m.lng = nil
+	m.addlng = nil
+	delete(m.clearedFields, store.FieldLng)
+}
+
+// SetLat sets the "lat" field.
+func (m *StoreMutation) SetLat(f float64) {
+	m.lat = &f
+	m.addlat = nil
+}
+
+// Lat returns the value of the "lat" field in the mutation.
+func (m *StoreMutation) Lat() (r float64, exists bool) {
+	v := m.lat
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLat returns the old "lat" field's value of the Store entity.
+// If the Store object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StoreMutation) OldLat(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLat is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLat requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLat: %w", err)
+	}
+	return oldValue.Lat, nil
+}
+
+// AddLat adds f to the "lat" field.
+func (m *StoreMutation) AddLat(f float64) {
+	if m.addlat != nil {
+		*m.addlat += f
+	} else {
+		m.addlat = &f
+	}
+}
+
+// AddedLat returns the value that was added to the "lat" field in this mutation.
+func (m *StoreMutation) AddedLat() (r float64, exists bool) {
+	v := m.addlat
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearLat clears the value of the "lat" field.
+func (m *StoreMutation) ClearLat() {
+	m.lat = nil
+	m.addlat = nil
+	m.clearedFields[store.FieldLat] = struct{}{}
+}
+
+// LatCleared returns if the "lat" field was cleared in this mutation.
+func (m *StoreMutation) LatCleared() bool {
+	_, ok := m.clearedFields[store.FieldLat]
+	return ok
+}
+
+// ResetLat resets all changes to the "lat" field.
+func (m *StoreMutation) ResetLat() {
+	m.lat = nil
+	m.addlat = nil
+	delete(m.clearedFields, store.FieldLat)
+}
+
+// SetAddress sets the "address" field.
+func (m *StoreMutation) SetAddress(s string) {
+	m.address = &s
+}
+
+// Address returns the value of the "address" field in the mutation.
+func (m *StoreMutation) Address() (r string, exists bool) {
+	v := m.address
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAddress returns the old "address" field's value of the Store entity.
+// If the Store object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StoreMutation) OldAddress(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAddress is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAddress requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAddress: %w", err)
+	}
+	return oldValue.Address, nil
+}
+
+// ClearAddress clears the value of the "address" field.
+func (m *StoreMutation) ClearAddress() {
+	m.address = nil
+	m.clearedFields[store.FieldAddress] = struct{}{}
+}
+
+// AddressCleared returns if the "address" field was cleared in this mutation.
+func (m *StoreMutation) AddressCleared() bool {
+	_, ok := m.clearedFields[store.FieldAddress]
+	return ok
+}
+
+// ResetAddress resets all changes to the "address" field.
+func (m *StoreMutation) ResetAddress() {
+	m.address = nil
+	delete(m.clearedFields, store.FieldAddress)
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *StoreMutation) ClearCity() {
 	m.clearedcity = true
@@ -43678,7 +44478,7 @@ func (m *StoreMutation) ClearCity() {
 
 // CityCleared reports if the "city" edge to the City entity was cleared.
 func (m *StoreMutation) CityCleared() bool {
-	return m.CityIDCleared() || m.clearedcity
+	return m.clearedcity
 }
 
 // CityIDs returns the "city" edge IDs in the mutation.
@@ -43930,7 +44730,7 @@ func (m *StoreMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StoreMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 15)
 	if m.created_at != nil {
 		fields = append(fields, store.FieldCreatedAt)
 	}
@@ -43967,6 +44767,15 @@ func (m *StoreMutation) Fields() []string {
 	if m.status != nil {
 		fields = append(fields, store.FieldStatus)
 	}
+	if m.lng != nil {
+		fields = append(fields, store.FieldLng)
+	}
+	if m.lat != nil {
+		fields = append(fields, store.FieldLat)
+	}
+	if m.address != nil {
+		fields = append(fields, store.FieldAddress)
+	}
 	return fields
 }
 
@@ -43999,6 +44808,12 @@ func (m *StoreMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case store.FieldStatus:
 		return m.Status()
+	case store.FieldLng:
+		return m.Lng()
+	case store.FieldLat:
+		return m.Lat()
+	case store.FieldAddress:
+		return m.Address()
 	}
 	return nil, false
 }
@@ -44032,6 +44847,12 @@ func (m *StoreMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldName(ctx)
 	case store.FieldStatus:
 		return m.OldStatus(ctx)
+	case store.FieldLng:
+		return m.OldLng(ctx)
+	case store.FieldLat:
+		return m.OldLat(ctx)
+	case store.FieldAddress:
+		return m.OldAddress(ctx)
 	}
 	return nil, fmt.Errorf("unknown Store field %s", name)
 }
@@ -44125,6 +44946,27 @@ func (m *StoreMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetStatus(v)
 		return nil
+	case store.FieldLng:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLng(v)
+		return nil
+	case store.FieldLat:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLat(v)
+		return nil
+	case store.FieldAddress:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAddress(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Store field %s", name)
 }
@@ -44136,6 +44978,12 @@ func (m *StoreMutation) AddedFields() []string {
 	if m.addstatus != nil {
 		fields = append(fields, store.FieldStatus)
 	}
+	if m.addlng != nil {
+		fields = append(fields, store.FieldLng)
+	}
+	if m.addlat != nil {
+		fields = append(fields, store.FieldLat)
+	}
 	return fields
 }
 
@@ -44146,6 +44994,10 @@ func (m *StoreMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case store.FieldStatus:
 		return m.AddedStatus()
+	case store.FieldLng:
+		return m.AddedLng()
+	case store.FieldLat:
+		return m.AddedLat()
 	}
 	return nil, false
 }
@@ -44161,6 +45013,20 @@ func (m *StoreMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddStatus(v)
+		return nil
+	case store.FieldLng:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLng(v)
+		return nil
+	case store.FieldLat:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLat(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Store numeric field %s", name)
@@ -44182,11 +45048,17 @@ func (m *StoreMutation) ClearedFields() []string {
 	if m.FieldCleared(store.FieldRemark) {
 		fields = append(fields, store.FieldRemark)
 	}
-	if m.FieldCleared(store.FieldCityID) {
-		fields = append(fields, store.FieldCityID)
-	}
 	if m.FieldCleared(store.FieldEmployeeID) {
 		fields = append(fields, store.FieldEmployeeID)
+	}
+	if m.FieldCleared(store.FieldLng) {
+		fields = append(fields, store.FieldLng)
+	}
+	if m.FieldCleared(store.FieldLat) {
+		fields = append(fields, store.FieldLat)
+	}
+	if m.FieldCleared(store.FieldAddress) {
+		fields = append(fields, store.FieldAddress)
 	}
 	return fields
 }
@@ -44214,11 +45086,17 @@ func (m *StoreMutation) ClearField(name string) error {
 	case store.FieldRemark:
 		m.ClearRemark()
 		return nil
-	case store.FieldCityID:
-		m.ClearCityID()
-		return nil
 	case store.FieldEmployeeID:
 		m.ClearEmployeeID()
+		return nil
+	case store.FieldLng:
+		m.ClearLng()
+		return nil
+	case store.FieldLat:
+		m.ClearLat()
+		return nil
+	case store.FieldAddress:
+		m.ClearAddress()
 		return nil
 	}
 	return fmt.Errorf("unknown Store nullable field %s", name)
@@ -44263,6 +45141,15 @@ func (m *StoreMutation) ResetField(name string) error {
 		return nil
 	case store.FieldStatus:
 		m.ResetStatus()
+		return nil
+	case store.FieldLng:
+		m.ResetLng()
+		return nil
+	case store.FieldLat:
+		m.ResetLat()
+		return nil
+	case store.FieldAddress:
+		m.ResetAddress()
 		return nil
 	}
 	return fmt.Errorf("unknown Store field %s", name)

@@ -9,14 +9,19 @@ import (
     "context"
     "entgo.io/ent/dialect/sql"
     "fmt"
+    "github.com/LucaTheHacker/go-haversine"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/assistance"
-    "github.com/auroraride/aurservd/internal/ent/branch"
+    "github.com/auroraride/aurservd/internal/ent/city"
+    "github.com/auroraride/aurservd/internal/ent/employee"
+    "github.com/auroraride/aurservd/internal/ent/person"
+    "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
+    "github.com/golang-module/carbon/v2"
 )
 
 type assistanceService struct {
@@ -62,13 +67,142 @@ func (s *assistanceService) Breakdown() any {
 // Unpaid 是否有未支付的救援订单
 func (s *assistanceService) Unpaid(riderID uint64) *ent.Assistance {
     ass, _ := s.orm.QueryNotDeleted().
-        Where(assistance.Status(model.AssistanceStatusSuccess), assistance.CostGT(0), assistance.PayAtIsNil(), assistance.RiderID(riderID)).
+        Where(assistance.Status(model.AssistanceStatusUnpaid), assistance.RiderID(riderID)).
         First(s.ctx)
     return ass
 }
 
+func (s *assistanceService) List(req *model.AssistanceListReq) *model.PaginationRes {
+    q := s.orm.QueryNotDeleted().WithRider(func(rq *ent.RiderQuery) {
+        rq.WithPerson()
+    }).WithCity().WithStore().WithEmployee()
+    tt := tools.NewTime()
+    if req.Start != "" {
+        q.Where(assistance.CreatedAtGTE(tt.ParseDateStringX(req.Start)))
+    }
+    if req.End != "" {
+        q.Where(assistance.CreatedAtLT(carbon.Time2Carbon(tt.ParseDateStringX(req.Start)).StartOfDay().Tomorrow().Carbon2Time()))
+    }
+    if req.CityID != 0 {
+        q.Where(assistance.CityID(req.CityID))
+    }
+    if req.Keyword != "" {
+        q.Where(
+            assistance.HasRiderWith(rider.Or(
+                rider.HasPersonWith(person.NameContainsFold(req.Keyword)),
+                rider.PhoneContainsFold(req.Keyword),
+            )),
+        )
+    }
+    if req.Status != nil {
+        q.Where(assistance.Status(*req.Status))
+    }
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Assistance) model.AssistanceListRes {
+        return s.BasicInfo(item)
+    })
+}
+
+func (s *assistanceService) BasicInfo(item *ent.Assistance) model.AssistanceListRes {
+    r := item.Edges.Rider
+    p := r.Edges.Person
+    c := item.Edges.City
+    res := model.AssistanceListRes{
+        ID:       item.ID,
+        Status:   item.Status,
+        Cost:     item.Cost,
+        Distance: item.Distance,
+        Time:     item.CreatedAt.Format(carbon.DateTimeLayout),
+        Rider: model.RiderBasic{
+            ID:    r.ID,
+            Phone: r.Phone,
+            Name:  p.Name,
+        },
+        City: model.City{
+            ID:   c.ID,
+            Name: c.Name,
+        },
+    }
+
+    e := item.Edges.Employee
+    st := item.Edges.Store
+    if e != nil {
+        res.Employee = &model.Employee{
+            ID:    e.ID,
+            Name:  e.Name,
+            Phone: e.Phone,
+        }
+    }
+
+    if st != nil {
+        res.Store = &model.Store{
+            ID:   st.ID,
+            Name: st.Name,
+        }
+    }
+
+    return res
+}
+
+func (s *assistanceService) Query(id uint64) (*ent.Assistance, error) {
+    return s.orm.QueryNotDeleted().
+        Where(assistance.ID(id)).
+        First(s.ctx)
+}
+
+func (s *assistanceService) QueryX(id uint64) *ent.Assistance {
+    item, _ := s.Query(id)
+    if item == nil {
+        snag.Panic("未找到救援信息")
+    }
+    return item
+}
+
+func (s *assistanceService) QueryDetail(id uint64) (*ent.Assistance, error) {
+    return s.orm.QueryNotDeleted().
+        WithRider(func(rq *ent.RiderQuery) {
+            rq.WithPerson()
+        }).
+        WithCity().
+        WithStore().
+        WithEmployee().
+        Where(assistance.ID(id)).
+        First(s.ctx)
+}
+
+func (s *assistanceService) QueryDetailX(id uint64) *ent.Assistance {
+    item, _ := s.QueryDetail(id)
+    if item == nil {
+        snag.Panic("未找到救援信息")
+    }
+    return item
+}
+
+// Detail 救援详情
+func (s *assistanceService) Detail(id uint64) model.AssistanceDetail {
+    item := s.QueryDetailX(id)
+    res := model.AssistanceDetail{
+        AssistanceListRes: s.BasicInfo(item),
+        Lng:               item.Lng,
+        Lat:               item.Lat,
+        Address:           item.Address,
+        Breakdown:         item.Breakdown,
+        BreakdownDesc:     item.BreakdownDesc,
+        BreakdownPhotos:   item.BreakdownPhotos,
+        Reason:            item.Reason,
+        DetectPhoto:       item.DetectPhoto,
+        JointPhoto:        item.JointPhoto,
+        RefusedDesc:       item.RefusedDesc,
+        FreeReason:        item.FreeReason,
+    }
+    if item.PayAt != nil {
+        res.PayAt = tools.NewPointer().String(item.PayAt.Format(carbon.DateTimeLayout))
+    }
+
+    return res
+}
+
 // Create 发起救援订单
-// TODO 救援订单未支付的禁止办理所有业务
+// 救援订单未支付的禁止办理所有业务
 // TODO 救援订单支付状态可以直接在后台修改为不需要支付
 func (s *assistanceService) Create(req *model.AssistanceCreateReq) model.AssistanceCreateRes {
     sub := NewSubscribe().Recent(s.rider.ID)
@@ -96,6 +230,7 @@ func (s *assistanceService) Create(req *model.AssistanceCreateReq) model.Assista
         SetOutTradeNo(tools.NewUnique().NewSN28()).
         SetRiderID(s.rider.ID).
         SetSubscribeID(sub.ID).
+        SetCityID(sub.CityID).
         Save(s.ctx)
 
     if as == nil {
@@ -105,35 +240,108 @@ func (s *assistanceService) Create(req *model.AssistanceCreateReq) model.Assista
     return model.AssistanceCreateRes{OutTradeNo: as.OutTradeNo}
 }
 
-func (s *assistanceService) Nearby(req *model.IDQueryReq) any {
+// Nearby 救援订单附近门店
+func (s *assistanceService) Nearby(req *model.IDQueryReq) (items []model.AssistanceNearbyRes) {
     ass, _ := s.orm.QueryNotDeleted().Where(assistance.ID(req.ID)).First(s.ctx)
     if ass == nil {
         snag.Panic("未找到救援订单")
     }
 
-    var btemps []struct {
-        ID       uint64          `json:"id"`
-        Address  string          `json:"address"`
-        Lat      float64         `json:"lat"`
-        Lng      float64         `json:"lng"`
-        Distance float64         `json:"distance"`
-        Edges    ent.BranchEdges `json:"edges"`
+    var temps []struct {
+        ID       uint64  `json:"id"`
+        Name     string  `json:"name"`
+        Lng      float64 `json:"lng"`
+        Lat      float64 `json:"lat"`
+        Distance float64 `json:"distance"`
+        EID      uint64  `json:"eid"`
+        EName    string  `json:"e_ame"`
+        EPhone   string  `json:"e_hone"`
     }
 
-    _ = ar.Ent.Branch.QueryNotDeleted().
-        WithStores().
-        Where(branch.HasStoresWith(store.HasEmployee(), store.Status(model.StoreStatusOpen))).
-        Modify(func(sel *sql.Selector) {
-            bt := sql.Table(branch.Table)
-            sel.Select(bt.C(branch.FieldID), bt.C(branch.FieldAddress), bt.C(branch.FieldLat), bt.C(branch.FieldLng)).
-                Where(sql.P(func(b *sql.Builder) {
-                    b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), %f)`, branch.FieldGeom, ass.Lng, ass.Lat, 50000.0))
-                })).
-                AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(%s, ST_GeogFromText('POINT(%f %f)'))`, branch.FieldGeom, ass.Lng, ass.Lat)), "distance").
-                GroupBy(bt.C(branch.FieldID)).
-                OrderBy(sql.Asc("distance"))
-        }).
-        Scan(s.ctx, &btemps)
+    _ = ar.Ent.Store.QueryNotDeleted().
+        Where(store.EmployeeIDNotNil(), store.Status(model.StoreStatusOpen)).
+        Modify(
+            func(sel *sql.Selector) {
+                sel.Select(sel.C(store.FieldID), sel.C(store.FieldLng), sel.C(store.FieldLat), sel.C(store.FieldName)).
+                    Where(sql.P(func(b *sql.Builder) {
+                        b.WriteString(fmt.Sprintf(`ST_DWithin(ST_GeogFromText('SRID=4326;POINT('||%s||' '||%s||')'), ST_GeogFromText('POINT(%f %f)'), %f)`, store.FieldLng, store.FieldLat, ass.Lng, ass.Lat, 50000.0))
+                    })).
+                    AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(ST_GeogFromText('SRID=4326;POINT('||%s||' '||%s||')'), ST_GeogFromText('POINT(%f %f)'))`, store.FieldLng, store.FieldLat, ass.Lng, ass.Lat)), "distance").
+                    OrderBy(sql.Asc("distance"))
 
-    return nil
+                // 查找employee
+                emt := sql.Table(employee.Table)
+                sel.Join(emt).
+                    On(sel.C(store.FieldEmployeeID), emt.C(employee.FieldID)).
+                    AppendSelect(
+                        sql.As(emt.C(employee.FieldID), "eid"),
+                        sql.As(emt.C(employee.FieldName), "e_ame"),
+                        sql.As(emt.C(employee.FieldPhone), "e_hone"),
+                    )
+
+                // 查找city
+                ct := sql.Table(city.Table)
+                sel.Join(ct).
+                    On(sel.C(store.FieldCityID), ct.C(city.FieldID)).
+                    AppendSelect(
+                        sql.As(ct.C(city.FieldID), "cid"),
+                        sql.As(ct.C(city.FieldName), "c_name"),
+                    )
+            },
+        ).
+        Scan(s.ctx, &temps)
+
+    items = make([]model.AssistanceNearbyRes, len(temps))
+
+    for i, temp := range temps {
+        items[i] = model.AssistanceNearbyRes{
+            ID:       temp.ID,
+            Name:     temp.Name,
+            Lng:      temp.Lng,
+            Lat:      temp.Lat,
+            Distance: temp.Distance,
+            Employee: model.Employee{
+                ID:    temp.EID,
+                Name:  temp.EName,
+                Phone: temp.EPhone,
+            },
+        }
+    }
+
+    return
+}
+
+// Allocate 分配救援任务
+func (s *assistanceService) Allocate(req *model.AssistanceAllocateReq) {
+    st, _ := ar.Ent.Store.QueryNotDeleted().Where(store.ID(req.StoreID), store.EmployeeIDNotNil(), store.Status(model.StoreStatusOpen)).Only(s.ctx)
+    if st == nil {
+        snag.Panic("未找到营业中的门店")
+    }
+
+    item := s.QueryX(req.ID)
+
+    _, err := item.Update().
+        SetDistance(haversine.Distance(haversine.NewCoordinates(item.Lat, item.Lng), haversine.NewCoordinates(st.Lat, st.Lng)).Miles()).
+        SetStoreID(st.ID).
+        SetEmployeeID(*st.EmployeeID).
+        SetStatus(model.AssistanceStatusAllocated).
+        Save(s.ctx)
+
+    // TODO 门店端处理接单响应
+    if err != nil {
+        snag.Panic("分配失败")
+    }
+}
+
+// Free 救援免费
+func (s *assistanceService) Free(req *model.AssistanceFreeReq) {
+    item, _ := s.orm.QueryNotDeleted().Where(assistance.Status(model.AssistanceStatusUnpaid)).First(s.ctx)
+    if item == nil {
+        snag.Panic("未找到待支付订单")
+    }
+
+    _, err := item.Update().SetFreeReason(req.Reason).SetCost(0).SetStatus(model.AssistanceStatusSuccess).Save(s.ctx)
+    if err != nil {
+        snag.Panic("处理失败")
+    }
 }

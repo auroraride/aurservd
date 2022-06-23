@@ -53,6 +53,9 @@ func (Store) Fields() []ent.Field {
         field.String("sn").Immutable().Unique().Comment("门店编号"),
         field.String("name").Comment("门店名称"),
         field.Uint8("status").Default(0).Comment("门店状态 0维护 1营业 2休息 3隐藏"),
+        field.Float("lng").Optional().Comment("经度"),          // TODO 更换为必填
+        field.Float("lat").Optional().Comment("纬度"),          // TODO 更换为必填
+        field.String("address").Optional().Comment("详细地址"), // TODO 更换为必填
     }
 }
 
@@ -74,7 +77,7 @@ func (Store) Mixin() []ent.Mixin {
         internal.DeleteMixin{},
         internal.Modifier{},
 
-        CityMixin{Optional: true},
+        CityMixin{},
     }
 }
 

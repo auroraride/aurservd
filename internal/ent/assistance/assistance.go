@@ -31,6 +31,8 @@ const (
 	FieldRiderID = "rider_id"
 	// FieldSubscribeID holds the string denoting the subscribe_id field in the database.
 	FieldSubscribeID = "subscribe_id"
+	// FieldCityID holds the string denoting the city_id field in the database.
+	FieldCityID = "city_id"
 	// FieldEmployeeID holds the string denoting the employee_id field in the database.
 	FieldEmployeeID = "employee_id"
 	// FieldOrderID holds the string denoting the order_id field in the database.
@@ -59,8 +61,8 @@ const (
 	FieldDistance = "distance"
 	// FieldReason holds the string denoting the reason field in the database.
 	FieldReason = "reason"
-	// FieldBatteryPhoto holds the string denoting the battery_photo field in the database.
-	FieldBatteryPhoto = "battery_photo"
+	// FieldDetectPhoto holds the string denoting the detect_photo field in the database.
+	FieldDetectPhoto = "detect_photo"
 	// FieldJointPhoto holds the string denoting the joint_photo field in the database.
 	FieldJointPhoto = "joint_photo"
 	// FieldCost holds the string denoting the cost field in the database.
@@ -69,12 +71,20 @@ const (
 	FieldRefusedDesc = "refused_desc"
 	// FieldPayAt holds the string denoting the pay_at field in the database.
 	FieldPayAt = "pay_at"
+	// FieldAllocateAt holds the string denoting the allocate_at field in the database.
+	FieldAllocateAt = "allocate_at"
+	// FieldWait holds the string denoting the wait field in the database.
+	FieldWait = "wait"
+	// FieldFreeReason holds the string denoting the free_reason field in the database.
+	FieldFreeReason = "free_reason"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
+	// EdgeCity holds the string denoting the city edge name in mutations.
+	EdgeCity = "city"
 	// EdgeOrder holds the string denoting the order edge name in mutations.
 	EdgeOrder = "order"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -102,6 +112,13 @@ const (
 	SubscribeInverseTable = "subscribe"
 	// SubscribeColumn is the table column denoting the subscribe relation/edge.
 	SubscribeColumn = "subscribe_id"
+	// CityTable is the table that holds the city relation/edge.
+	CityTable = "assistance"
+	// CityInverseTable is the table name for the City entity.
+	// It exists in this package in order to avoid circular dependency with the "city" package.
+	CityInverseTable = "city"
+	// CityColumn is the table column denoting the city relation/edge.
+	CityColumn = "city_id"
 	// OrderTable is the table that holds the order relation/edge.
 	OrderTable = "assistance"
 	// OrderInverseTable is the table name for the Order entity.
@@ -130,6 +147,7 @@ var Columns = []string{
 	FieldStoreID,
 	FieldRiderID,
 	FieldSubscribeID,
+	FieldCityID,
 	FieldEmployeeID,
 	FieldOrderID,
 	FieldStatus,
@@ -144,11 +162,14 @@ var Columns = []string{
 	FieldCancelReasonDesc,
 	FieldDistance,
 	FieldReason,
-	FieldBatteryPhoto,
+	FieldDetectPhoto,
 	FieldJointPhoto,
 	FieldCost,
 	FieldRefusedDesc,
 	FieldPayAt,
+	FieldAllocateAt,
+	FieldWait,
+	FieldFreeReason,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -177,4 +198,8 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus uint8
+	// DefaultCost holds the default value on creation for the "cost" field.
+	DefaultCost float64
+	// DefaultWait holds the default value on creation for the "wait" field.
+	DefaultWait int
 )

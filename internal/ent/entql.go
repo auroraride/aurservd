@@ -68,6 +68,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			assistance.FieldStoreID:          {Type: field.TypeUint64, Column: assistance.FieldStoreID},
 			assistance.FieldRiderID:          {Type: field.TypeUint64, Column: assistance.FieldRiderID},
 			assistance.FieldSubscribeID:      {Type: field.TypeUint64, Column: assistance.FieldSubscribeID},
+			assistance.FieldCityID:           {Type: field.TypeUint64, Column: assistance.FieldCityID},
 			assistance.FieldEmployeeID:       {Type: field.TypeUint64, Column: assistance.FieldEmployeeID},
 			assistance.FieldOrderID:          {Type: field.TypeUint64, Column: assistance.FieldOrderID},
 			assistance.FieldStatus:           {Type: field.TypeUint8, Column: assistance.FieldStatus},
@@ -82,11 +83,14 @@ var schemaGraph = func() *sqlgraph.Schema {
 			assistance.FieldCancelReasonDesc: {Type: field.TypeString, Column: assistance.FieldCancelReasonDesc},
 			assistance.FieldDistance:         {Type: field.TypeFloat64, Column: assistance.FieldDistance},
 			assistance.FieldReason:           {Type: field.TypeString, Column: assistance.FieldReason},
-			assistance.FieldBatteryPhoto:     {Type: field.TypeString, Column: assistance.FieldBatteryPhoto},
+			assistance.FieldDetectPhoto:      {Type: field.TypeString, Column: assistance.FieldDetectPhoto},
 			assistance.FieldJointPhoto:       {Type: field.TypeString, Column: assistance.FieldJointPhoto},
 			assistance.FieldCost:             {Type: field.TypeFloat64, Column: assistance.FieldCost},
 			assistance.FieldRefusedDesc:      {Type: field.TypeString, Column: assistance.FieldRefusedDesc},
 			assistance.FieldPayAt:            {Type: field.TypeTime, Column: assistance.FieldPayAt},
+			assistance.FieldAllocateAt:       {Type: field.TypeTime, Column: assistance.FieldAllocateAt},
+			assistance.FieldWait:             {Type: field.TypeInt, Column: assistance.FieldWait},
+			assistance.FieldFreeReason:       {Type: field.TypeString, Column: assistance.FieldFreeReason},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -256,6 +260,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			cabinet.FieldBin:            {Type: field.TypeJSON, Column: cabinet.FieldBin},
 			cabinet.FieldBatteryNum:     {Type: field.TypeUint, Column: cabinet.FieldBatteryNum},
 			cabinet.FieldBatteryFullNum: {Type: field.TypeUint, Column: cabinet.FieldBatteryFullNum},
+			cabinet.FieldLng:            {Type: field.TypeFloat64, Column: cabinet.FieldLng},
+			cabinet.FieldLat:            {Type: field.TypeFloat64, Column: cabinet.FieldLat},
+			cabinet.FieldAddress:        {Type: field.TypeString, Column: cabinet.FieldAddress},
 		},
 	}
 	graph.Nodes[7] = &sqlgraph.Node{
@@ -885,6 +892,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			store.FieldSn:           {Type: field.TypeString, Column: store.FieldSn},
 			store.FieldName:         {Type: field.TypeString, Column: store.FieldName},
 			store.FieldStatus:       {Type: field.TypeUint8, Column: store.FieldStatus},
+			store.FieldLng:          {Type: field.TypeFloat64, Column: store.FieldLng},
+			store.FieldLat:          {Type: field.TypeFloat64, Column: store.FieldLat},
+			store.FieldAddress:      {Type: field.TypeString, Column: store.FieldAddress},
 		},
 	}
 	graph.Nodes[31] = &sqlgraph.Node{
@@ -1013,6 +1023,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Assistance",
 		"Subscribe",
+	)
+	graph.MustAddE(
+		"city",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assistance.CityTable,
+			Columns: []string{assistance.CityColumn},
+			Bidi:    false,
+		},
+		"Assistance",
+		"City",
 	)
 	graph.MustAddE(
 		"order",
@@ -2608,6 +2630,11 @@ func (f *AssistanceFilter) WhereSubscribeID(p entql.Uint64P) {
 	f.Where(p.Field(assistance.FieldSubscribeID))
 }
 
+// WhereCityID applies the entql uint64 predicate on the city_id field.
+func (f *AssistanceFilter) WhereCityID(p entql.Uint64P) {
+	f.Where(p.Field(assistance.FieldCityID))
+}
+
 // WhereEmployeeID applies the entql uint64 predicate on the employee_id field.
 func (f *AssistanceFilter) WhereEmployeeID(p entql.Uint64P) {
 	f.Where(p.Field(assistance.FieldEmployeeID))
@@ -2678,9 +2705,9 @@ func (f *AssistanceFilter) WhereReason(p entql.StringP) {
 	f.Where(p.Field(assistance.FieldReason))
 }
 
-// WhereBatteryPhoto applies the entql string predicate on the battery_photo field.
-func (f *AssistanceFilter) WhereBatteryPhoto(p entql.StringP) {
-	f.Where(p.Field(assistance.FieldBatteryPhoto))
+// WhereDetectPhoto applies the entql string predicate on the detect_photo field.
+func (f *AssistanceFilter) WhereDetectPhoto(p entql.StringP) {
+	f.Where(p.Field(assistance.FieldDetectPhoto))
 }
 
 // WhereJointPhoto applies the entql string predicate on the joint_photo field.
@@ -2701,6 +2728,21 @@ func (f *AssistanceFilter) WhereRefusedDesc(p entql.StringP) {
 // WherePayAt applies the entql time.Time predicate on the pay_at field.
 func (f *AssistanceFilter) WherePayAt(p entql.TimeP) {
 	f.Where(p.Field(assistance.FieldPayAt))
+}
+
+// WhereAllocateAt applies the entql time.Time predicate on the allocate_at field.
+func (f *AssistanceFilter) WhereAllocateAt(p entql.TimeP) {
+	f.Where(p.Field(assistance.FieldAllocateAt))
+}
+
+// WhereWait applies the entql int predicate on the wait field.
+func (f *AssistanceFilter) WhereWait(p entql.IntP) {
+	f.Where(p.Field(assistance.FieldWait))
+}
+
+// WhereFreeReason applies the entql string predicate on the free_reason field.
+func (f *AssistanceFilter) WhereFreeReason(p entql.StringP) {
+	f.Where(p.Field(assistance.FieldFreeReason))
 }
 
 // WhereHasStore applies a predicate to check if query has an edge store.
@@ -2739,6 +2781,20 @@ func (f *AssistanceFilter) WhereHasSubscribe() {
 // WhereHasSubscribeWith applies a predicate to check if query has an edge subscribe with a given conditions (other predicates).
 func (f *AssistanceFilter) WhereHasSubscribeWith(preds ...predicate.Subscribe) {
 	f.Where(entql.HasEdgeWith("subscribe", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCity applies a predicate to check if query has an edge city.
+func (f *AssistanceFilter) WhereHasCity() {
+	f.Where(entql.HasEdge("city"))
+}
+
+// WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
+func (f *AssistanceFilter) WhereHasCityWith(preds ...predicate.City) {
+	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -3718,6 +3774,21 @@ func (f *CabinetFilter) WhereBatteryNum(p entql.UintP) {
 // WhereBatteryFullNum applies the entql uint predicate on the battery_full_num field.
 func (f *CabinetFilter) WhereBatteryFullNum(p entql.UintP) {
 	f.Where(p.Field(cabinet.FieldBatteryFullNum))
+}
+
+// WhereLng applies the entql float64 predicate on the lng field.
+func (f *CabinetFilter) WhereLng(p entql.Float64P) {
+	f.Where(p.Field(cabinet.FieldLng))
+}
+
+// WhereLat applies the entql float64 predicate on the lat field.
+func (f *CabinetFilter) WhereLat(p entql.Float64P) {
+	f.Where(p.Field(cabinet.FieldLat))
+}
+
+// WhereAddress applies the entql string predicate on the address field.
+func (f *CabinetFilter) WhereAddress(p entql.StringP) {
+	f.Where(p.Field(cabinet.FieldAddress))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.
@@ -7397,6 +7468,21 @@ func (f *StoreFilter) WhereName(p entql.StringP) {
 // WhereStatus applies the entql uint8 predicate on the status field.
 func (f *StoreFilter) WhereStatus(p entql.Uint8P) {
 	f.Where(p.Field(store.FieldStatus))
+}
+
+// WhereLng applies the entql float64 predicate on the lng field.
+func (f *StoreFilter) WhereLng(p entql.Float64P) {
+	f.Where(p.Field(store.FieldLng))
+}
+
+// WhereLat applies the entql float64 predicate on the lat field.
+func (f *StoreFilter) WhereLat(p entql.Float64P) {
+	f.Where(p.Field(store.FieldLat))
+}
+
+// WhereAddress applies the entql string predicate on the address field.
+func (f *StoreFilter) WhereAddress(p entql.StringP) {
+	f.Where(p.Field(store.FieldAddress))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.

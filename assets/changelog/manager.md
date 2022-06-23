@@ -1,3 +1,19 @@
+## 2022-06-23
+
+#### 接口新增
+
+- [MC001 救援列表](http://localhost:5533/docs#tag/M/operation/ManagerAssistanceList)
+- [MC002 救援详情](http://localhost:5533/docs#tag/M/operation/ManagerAssistanceDetail)
+- [MC003 附近门店](http://localhost:5533/docs#tag/M/operation/ManagerAssistanceNearby)
+- [MC004 分配救援任务](http://localhost:5533/docs#tag/M/operation/ManagerAssistanceAllocate)
+- [MC005 救援免费](http://localhost:5533/docs#tag/M/operation/ManagerAssistanceFree)
+
+
+
+
+
+<br />
+
 ## 2022-06-21
 
 #### 接口调整

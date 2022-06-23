@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/assistance"
+	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -121,6 +122,12 @@ func (au *AssistanceUpdate) SetRiderID(u uint64) *AssistanceUpdate {
 // SetSubscribeID sets the "subscribe_id" field.
 func (au *AssistanceUpdate) SetSubscribeID(u uint64) *AssistanceUpdate {
 	au.mutation.SetSubscribeID(u)
+	return au
+}
+
+// SetCityID sets the "city_id" field.
+func (au *AssistanceUpdate) SetCityID(u uint64) *AssistanceUpdate {
+	au.mutation.SetCityID(u)
 	return au
 }
 
@@ -342,23 +349,23 @@ func (au *AssistanceUpdate) ClearReason() *AssistanceUpdate {
 	return au
 }
 
-// SetBatteryPhoto sets the "battery_photo" field.
-func (au *AssistanceUpdate) SetBatteryPhoto(s string) *AssistanceUpdate {
-	au.mutation.SetBatteryPhoto(s)
+// SetDetectPhoto sets the "detect_photo" field.
+func (au *AssistanceUpdate) SetDetectPhoto(s string) *AssistanceUpdate {
+	au.mutation.SetDetectPhoto(s)
 	return au
 }
 
-// SetNillableBatteryPhoto sets the "battery_photo" field if the given value is not nil.
-func (au *AssistanceUpdate) SetNillableBatteryPhoto(s *string) *AssistanceUpdate {
+// SetNillableDetectPhoto sets the "detect_photo" field if the given value is not nil.
+func (au *AssistanceUpdate) SetNillableDetectPhoto(s *string) *AssistanceUpdate {
 	if s != nil {
-		au.SetBatteryPhoto(*s)
+		au.SetDetectPhoto(*s)
 	}
 	return au
 }
 
-// ClearBatteryPhoto clears the value of the "battery_photo" field.
-func (au *AssistanceUpdate) ClearBatteryPhoto() *AssistanceUpdate {
-	au.mutation.ClearBatteryPhoto()
+// ClearDetectPhoto clears the value of the "detect_photo" field.
+func (au *AssistanceUpdate) ClearDetectPhoto() *AssistanceUpdate {
+	au.mutation.ClearDetectPhoto()
 	return au
 }
 
@@ -449,6 +456,67 @@ func (au *AssistanceUpdate) ClearPayAt() *AssistanceUpdate {
 	return au
 }
 
+// SetAllocateAt sets the "allocate_at" field.
+func (au *AssistanceUpdate) SetAllocateAt(t time.Time) *AssistanceUpdate {
+	au.mutation.SetAllocateAt(t)
+	return au
+}
+
+// SetNillableAllocateAt sets the "allocate_at" field if the given value is not nil.
+func (au *AssistanceUpdate) SetNillableAllocateAt(t *time.Time) *AssistanceUpdate {
+	if t != nil {
+		au.SetAllocateAt(*t)
+	}
+	return au
+}
+
+// ClearAllocateAt clears the value of the "allocate_at" field.
+func (au *AssistanceUpdate) ClearAllocateAt() *AssistanceUpdate {
+	au.mutation.ClearAllocateAt()
+	return au
+}
+
+// SetWait sets the "wait" field.
+func (au *AssistanceUpdate) SetWait(i int) *AssistanceUpdate {
+	au.mutation.ResetWait()
+	au.mutation.SetWait(i)
+	return au
+}
+
+// SetNillableWait sets the "wait" field if the given value is not nil.
+func (au *AssistanceUpdate) SetNillableWait(i *int) *AssistanceUpdate {
+	if i != nil {
+		au.SetWait(*i)
+	}
+	return au
+}
+
+// AddWait adds i to the "wait" field.
+func (au *AssistanceUpdate) AddWait(i int) *AssistanceUpdate {
+	au.mutation.AddWait(i)
+	return au
+}
+
+// SetFreeReason sets the "free_reason" field.
+func (au *AssistanceUpdate) SetFreeReason(s string) *AssistanceUpdate {
+	au.mutation.SetFreeReason(s)
+	return au
+}
+
+// SetNillableFreeReason sets the "free_reason" field if the given value is not nil.
+func (au *AssistanceUpdate) SetNillableFreeReason(s *string) *AssistanceUpdate {
+	if s != nil {
+		au.SetFreeReason(*s)
+	}
+	return au
+}
+
+// ClearFreeReason clears the value of the "free_reason" field.
+func (au *AssistanceUpdate) ClearFreeReason() *AssistanceUpdate {
+	au.mutation.ClearFreeReason()
+	return au
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (au *AssistanceUpdate) SetStore(s *Store) *AssistanceUpdate {
 	return au.SetStoreID(s.ID)
@@ -462,6 +530,11 @@ func (au *AssistanceUpdate) SetRider(r *Rider) *AssistanceUpdate {
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (au *AssistanceUpdate) SetSubscribe(s *Subscribe) *AssistanceUpdate {
 	return au.SetSubscribeID(s.ID)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (au *AssistanceUpdate) SetCity(c *City) *AssistanceUpdate {
+	return au.SetCityID(c.ID)
 }
 
 // SetOrder sets the "order" edge to the Order entity.
@@ -494,6 +567,12 @@ func (au *AssistanceUpdate) ClearRider() *AssistanceUpdate {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (au *AssistanceUpdate) ClearSubscribe() *AssistanceUpdate {
 	au.mutation.ClearSubscribe()
+	return au
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (au *AssistanceUpdate) ClearCity() *AssistanceUpdate {
+	au.mutation.ClearCity()
 	return au
 }
 
@@ -591,6 +670,9 @@ func (au *AssistanceUpdate) check() error {
 	}
 	if _, ok := au.mutation.SubscribeID(); au.mutation.SubscribeCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Assistance.subscribe"`)
+	}
+	if _, ok := au.mutation.CityID(); au.mutation.CityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Assistance.city"`)
 	}
 	return nil
 }
@@ -807,17 +889,17 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: assistance.FieldReason,
 		})
 	}
-	if value, ok := au.mutation.BatteryPhoto(); ok {
+	if value, ok := au.mutation.DetectPhoto(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: assistance.FieldBatteryPhoto,
+			Column: assistance.FieldDetectPhoto,
 		})
 	}
-	if au.mutation.BatteryPhotoCleared() {
+	if au.mutation.DetectPhotoCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
-			Column: assistance.FieldBatteryPhoto,
+			Column: assistance.FieldDetectPhoto,
 		})
 	}
 	if value, ok := au.mutation.JointPhoto(); ok {
@@ -877,6 +959,46 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: assistance.FieldPayAt,
+		})
+	}
+	if value, ok := au.mutation.AllocateAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: assistance.FieldAllocateAt,
+		})
+	}
+	if au.mutation.AllocateAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: assistance.FieldAllocateAt,
+		})
+	}
+	if value, ok := au.mutation.Wait(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: assistance.FieldWait,
+		})
+	}
+	if value, ok := au.mutation.AddedWait(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: assistance.FieldWait,
+		})
+	}
+	if value, ok := au.mutation.FreeReason(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: assistance.FieldFreeReason,
+		})
+	}
+	if au.mutation.FreeReasonCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: assistance.FieldFreeReason,
 		})
 	}
 	if au.mutation.StoreCleared() {
@@ -976,6 +1098,41 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assistance.CityTable,
+			Columns: []string{assistance.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assistance.CityTable,
+			Columns: []string{assistance.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
 				},
 			},
 		}
@@ -1160,6 +1317,12 @@ func (auo *AssistanceUpdateOne) SetRiderID(u uint64) *AssistanceUpdateOne {
 // SetSubscribeID sets the "subscribe_id" field.
 func (auo *AssistanceUpdateOne) SetSubscribeID(u uint64) *AssistanceUpdateOne {
 	auo.mutation.SetSubscribeID(u)
+	return auo
+}
+
+// SetCityID sets the "city_id" field.
+func (auo *AssistanceUpdateOne) SetCityID(u uint64) *AssistanceUpdateOne {
+	auo.mutation.SetCityID(u)
 	return auo
 }
 
@@ -1381,23 +1544,23 @@ func (auo *AssistanceUpdateOne) ClearReason() *AssistanceUpdateOne {
 	return auo
 }
 
-// SetBatteryPhoto sets the "battery_photo" field.
-func (auo *AssistanceUpdateOne) SetBatteryPhoto(s string) *AssistanceUpdateOne {
-	auo.mutation.SetBatteryPhoto(s)
+// SetDetectPhoto sets the "detect_photo" field.
+func (auo *AssistanceUpdateOne) SetDetectPhoto(s string) *AssistanceUpdateOne {
+	auo.mutation.SetDetectPhoto(s)
 	return auo
 }
 
-// SetNillableBatteryPhoto sets the "battery_photo" field if the given value is not nil.
-func (auo *AssistanceUpdateOne) SetNillableBatteryPhoto(s *string) *AssistanceUpdateOne {
+// SetNillableDetectPhoto sets the "detect_photo" field if the given value is not nil.
+func (auo *AssistanceUpdateOne) SetNillableDetectPhoto(s *string) *AssistanceUpdateOne {
 	if s != nil {
-		auo.SetBatteryPhoto(*s)
+		auo.SetDetectPhoto(*s)
 	}
 	return auo
 }
 
-// ClearBatteryPhoto clears the value of the "battery_photo" field.
-func (auo *AssistanceUpdateOne) ClearBatteryPhoto() *AssistanceUpdateOne {
-	auo.mutation.ClearBatteryPhoto()
+// ClearDetectPhoto clears the value of the "detect_photo" field.
+func (auo *AssistanceUpdateOne) ClearDetectPhoto() *AssistanceUpdateOne {
+	auo.mutation.ClearDetectPhoto()
 	return auo
 }
 
@@ -1488,6 +1651,67 @@ func (auo *AssistanceUpdateOne) ClearPayAt() *AssistanceUpdateOne {
 	return auo
 }
 
+// SetAllocateAt sets the "allocate_at" field.
+func (auo *AssistanceUpdateOne) SetAllocateAt(t time.Time) *AssistanceUpdateOne {
+	auo.mutation.SetAllocateAt(t)
+	return auo
+}
+
+// SetNillableAllocateAt sets the "allocate_at" field if the given value is not nil.
+func (auo *AssistanceUpdateOne) SetNillableAllocateAt(t *time.Time) *AssistanceUpdateOne {
+	if t != nil {
+		auo.SetAllocateAt(*t)
+	}
+	return auo
+}
+
+// ClearAllocateAt clears the value of the "allocate_at" field.
+func (auo *AssistanceUpdateOne) ClearAllocateAt() *AssistanceUpdateOne {
+	auo.mutation.ClearAllocateAt()
+	return auo
+}
+
+// SetWait sets the "wait" field.
+func (auo *AssistanceUpdateOne) SetWait(i int) *AssistanceUpdateOne {
+	auo.mutation.ResetWait()
+	auo.mutation.SetWait(i)
+	return auo
+}
+
+// SetNillableWait sets the "wait" field if the given value is not nil.
+func (auo *AssistanceUpdateOne) SetNillableWait(i *int) *AssistanceUpdateOne {
+	if i != nil {
+		auo.SetWait(*i)
+	}
+	return auo
+}
+
+// AddWait adds i to the "wait" field.
+func (auo *AssistanceUpdateOne) AddWait(i int) *AssistanceUpdateOne {
+	auo.mutation.AddWait(i)
+	return auo
+}
+
+// SetFreeReason sets the "free_reason" field.
+func (auo *AssistanceUpdateOne) SetFreeReason(s string) *AssistanceUpdateOne {
+	auo.mutation.SetFreeReason(s)
+	return auo
+}
+
+// SetNillableFreeReason sets the "free_reason" field if the given value is not nil.
+func (auo *AssistanceUpdateOne) SetNillableFreeReason(s *string) *AssistanceUpdateOne {
+	if s != nil {
+		auo.SetFreeReason(*s)
+	}
+	return auo
+}
+
+// ClearFreeReason clears the value of the "free_reason" field.
+func (auo *AssistanceUpdateOne) ClearFreeReason() *AssistanceUpdateOne {
+	auo.mutation.ClearFreeReason()
+	return auo
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (auo *AssistanceUpdateOne) SetStore(s *Store) *AssistanceUpdateOne {
 	return auo.SetStoreID(s.ID)
@@ -1501,6 +1725,11 @@ func (auo *AssistanceUpdateOne) SetRider(r *Rider) *AssistanceUpdateOne {
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (auo *AssistanceUpdateOne) SetSubscribe(s *Subscribe) *AssistanceUpdateOne {
 	return auo.SetSubscribeID(s.ID)
+}
+
+// SetCity sets the "city" edge to the City entity.
+func (auo *AssistanceUpdateOne) SetCity(c *City) *AssistanceUpdateOne {
+	return auo.SetCityID(c.ID)
 }
 
 // SetOrder sets the "order" edge to the Order entity.
@@ -1533,6 +1762,12 @@ func (auo *AssistanceUpdateOne) ClearRider() *AssistanceUpdateOne {
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (auo *AssistanceUpdateOne) ClearSubscribe() *AssistanceUpdateOne {
 	auo.mutation.ClearSubscribe()
+	return auo
+}
+
+// ClearCity clears the "city" edge to the City entity.
+func (auo *AssistanceUpdateOne) ClearCity() *AssistanceUpdateOne {
+	auo.mutation.ClearCity()
 	return auo
 }
 
@@ -1643,6 +1878,9 @@ func (auo *AssistanceUpdateOne) check() error {
 	}
 	if _, ok := auo.mutation.SubscribeID(); auo.mutation.SubscribeCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Assistance.subscribe"`)
+	}
+	if _, ok := auo.mutation.CityID(); auo.mutation.CityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Assistance.city"`)
 	}
 	return nil
 }
@@ -1876,17 +2114,17 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 			Column: assistance.FieldReason,
 		})
 	}
-	if value, ok := auo.mutation.BatteryPhoto(); ok {
+	if value, ok := auo.mutation.DetectPhoto(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: assistance.FieldBatteryPhoto,
+			Column: assistance.FieldDetectPhoto,
 		})
 	}
-	if auo.mutation.BatteryPhotoCleared() {
+	if auo.mutation.DetectPhotoCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
-			Column: assistance.FieldBatteryPhoto,
+			Column: assistance.FieldDetectPhoto,
 		})
 	}
 	if value, ok := auo.mutation.JointPhoto(); ok {
@@ -1946,6 +2184,46 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: assistance.FieldPayAt,
+		})
+	}
+	if value, ok := auo.mutation.AllocateAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: assistance.FieldAllocateAt,
+		})
+	}
+	if auo.mutation.AllocateAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: assistance.FieldAllocateAt,
+		})
+	}
+	if value, ok := auo.mutation.Wait(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: assistance.FieldWait,
+		})
+	}
+	if value, ok := auo.mutation.AddedWait(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: assistance.FieldWait,
+		})
+	}
+	if value, ok := auo.mutation.FreeReason(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: assistance.FieldFreeReason,
+		})
+	}
+	if auo.mutation.FreeReasonCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: assistance.FieldFreeReason,
 		})
 	}
 	if auo.mutation.StoreCleared() {
@@ -2045,6 +2323,41 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.CityCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assistance.CityTable,
+			Columns: []string{assistance.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.CityIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   assistance.CityTable,
+			Columns: []string{assistance.CityColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: city.FieldID,
 				},
 			},
 		}

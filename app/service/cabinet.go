@@ -157,7 +157,11 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
     }
     if req.BranchID != nil {
         b := NewBranch().Query(*req.BranchID)
-        q.SetBranchID(*req.BranchID).SetCityID(b.CityID)
+        q.SetLng(b.Lng).
+            SetLat(b.Lat).
+            SetAddress(b.Address).
+            SetBranchID(*req.BranchID).
+            SetCityID(b.CityID)
     }
     if req.Status != nil {
         q.SetStatus(*req.Status)

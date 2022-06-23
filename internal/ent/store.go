@@ -38,7 +38,7 @@ type Store struct {
 	Remark string `json:"remark,omitempty"`
 	// CityID holds the value of the "city_id" field.
 	// 城市ID
-	CityID *uint64 `json:"city_id,omitempty"`
+	CityID uint64 `json:"city_id,omitempty"`
 	// EmployeeID holds the value of the "employee_id" field.
 	// 上班员工ID
 	EmployeeID *uint64 `json:"employee_id,omitempty"`
@@ -54,6 +54,15 @@ type Store struct {
 	// Status holds the value of the "status" field.
 	// 门店状态 0维护 1营业 2休息 3隐藏
 	Status uint8 `json:"status,omitempty"`
+	// Lng holds the value of the "lng" field.
+	// 经度
+	Lng float64 `json:"lng,omitempty"`
+	// Lat holds the value of the "lat" field.
+	// 纬度
+	Lat float64 `json:"lat,omitempty"`
+	// Address holds the value of the "address" field.
+	// 详细地址
+	Address string `json:"address,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the StoreQuery when eager-loading is set.
 	Edges StoreEdges `json:"edges"`
@@ -154,9 +163,11 @@ func (*Store) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case store.FieldCreator, store.FieldLastModifier:
 			values[i] = new([]byte)
+		case store.FieldLng, store.FieldLat:
+			values[i] = new(sql.NullFloat64)
 		case store.FieldID, store.FieldCityID, store.FieldEmployeeID, store.FieldBranchID, store.FieldStatus:
 			values[i] = new(sql.NullInt64)
-		case store.FieldRemark, store.FieldSn, store.FieldName:
+		case store.FieldRemark, store.FieldSn, store.FieldName, store.FieldAddress:
 			values[i] = new(sql.NullString)
 		case store.FieldCreatedAt, store.FieldUpdatedAt, store.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -226,8 +237,7 @@ func (s *Store) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field city_id", values[i])
 			} else if value.Valid {
-				s.CityID = new(uint64)
-				*s.CityID = uint64(value.Int64)
+				s.CityID = uint64(value.Int64)
 			}
 		case store.FieldEmployeeID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -259,6 +269,24 @@ func (s *Store) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
 				s.Status = uint8(value.Int64)
+			}
+		case store.FieldLng:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field lng", values[i])
+			} else if value.Valid {
+				s.Lng = value.Float64
+			}
+		case store.FieldLat:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field lat", values[i])
+			} else if value.Valid {
+				s.Lat = value.Float64
+			}
+		case store.FieldAddress:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field address", values[i])
+			} else if value.Valid {
+				s.Address = value.String
 			}
 		}
 	}
@@ -332,10 +360,8 @@ func (s *Store) String() string {
 	builder.WriteString(fmt.Sprintf("%v", s.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(s.Remark)
-	if v := s.CityID; v != nil {
-		builder.WriteString(", city_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
+	builder.WriteString(", city_id=")
+	builder.WriteString(fmt.Sprintf("%v", s.CityID))
 	if v := s.EmployeeID; v != nil {
 		builder.WriteString(", employee_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -348,6 +374,12 @@ func (s *Store) String() string {
 	builder.WriteString(s.Name)
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", s.Status))
+	builder.WriteString(", lng=")
+	builder.WriteString(fmt.Sprintf("%v", s.Lng))
+	builder.WriteString(", lat=")
+	builder.WriteString(fmt.Sprintf("%v", s.Lat))
+	builder.WriteString(", address=")
+	builder.WriteString(s.Address)
 	builder.WriteByte(')')
 	return builder.String()
 }

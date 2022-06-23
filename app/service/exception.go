@@ -66,14 +66,10 @@ func (s *exceptionService) Create(req *model.ExceptionEmployeeReq) {
         snag.Panic("请求参数错误")
     }
 
-    if s.employee.Edges.Store.CityID == nil {
-        snag.Panic("门店所在城市异常")
-    }
-
     ec := s.orm.Create().
         SetEmployee(s.employee).
         SetStore(s.employee.Edges.Store).
-        SetCityID(*s.employee.Edges.Store.CityID).
+        SetCityID(s.employee.Edges.Store.CityID).
         SetNum(req.Num).
         SetReason(req.Reason).
         SetDescription(req.Description).

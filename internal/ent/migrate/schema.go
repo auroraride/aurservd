@@ -18,7 +18,7 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
-		{Name: "status", Type: field.TypeUint8, Comment: "救援状态 0:等待接单 1:已接单 2:已拒绝 3:救援失败 4:救援成功", Default: 0},
+		{Name: "status", Type: field.TypeUint8, Comment: "救援状态 0:待分配 1:已接单/已分配 2:已拒绝 3:救援失败 4:救援成功待支付 5:救援成功已支付", Default: 0},
 		{Name: "out_trade_no", Type: field.TypeString, Comment: "救援单号"},
 		{Name: "lng", Type: field.TypeFloat64, Comment: "经度"},
 		{Name: "lat", Type: field.TypeFloat64, Comment: "纬度"},
@@ -30,14 +30,18 @@ var (
 		{Name: "cancel_reason_desc", Type: field.TypeString, Comment: "取消原因详细描述", Nullable: true},
 		{Name: "distance", Type: field.TypeFloat64, Comment: "救援距离", Nullable: true},
 		{Name: "reason", Type: field.TypeString, Comment: "救援原因", Nullable: true},
-		{Name: "battery_photo", Type: field.TypeString, Comment: "电池照片", Nullable: true},
+		{Name: "detect_photo", Type: field.TypeString, Comment: "检测照片", Nullable: true},
 		{Name: "joint_photo", Type: field.TypeString, Comment: "与用户合影", Nullable: true},
-		{Name: "cost", Type: field.TypeFloat64, Comment: "本次救援费用", Nullable: true},
+		{Name: "cost", Type: field.TypeFloat64, Comment: "本次救援费用", Nullable: true, Default: 0},
 		{Name: "refused_desc", Type: field.TypeString, Comment: "拒绝原因", Nullable: true},
 		{Name: "pay_at", Type: field.TypeTime, Comment: "支付时间", Nullable: true},
+		{Name: "allocate_at", Type: field.TypeTime, Comment: "分配时间", Nullable: true},
+		{Name: "wait", Type: field.TypeInt, Comment: "分配等待时间(s)", Default: 0},
+		{Name: "free_reason", Type: field.TypeString, Comment: "免费理由", Nullable: true},
 		{Name: "store_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64},
 		{Name: "subscribe_id", Type: field.TypeUint64},
+		{Name: "city_id", Type: field.TypeUint64},
 		{Name: "employee_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "order_id", Type: field.TypeUint64, Unique: true, Nullable: true},
 	}
@@ -49,31 +53,37 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "assistance_store_store",
-				Columns:    []*schema.Column{AssistanceColumns[24]},
+				Columns:    []*schema.Column{AssistanceColumns[27]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "assistance_rider_rider",
-				Columns:    []*schema.Column{AssistanceColumns[25]},
+				Columns:    []*schema.Column{AssistanceColumns[28]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "assistance_subscribe_subscribe",
-				Columns:    []*schema.Column{AssistanceColumns[26]},
+				Columns:    []*schema.Column{AssistanceColumns[29]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
+				Symbol:     "assistance_city_city",
+				Columns:    []*schema.Column{AssistanceColumns[30]},
+				RefColumns: []*schema.Column{CityColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
 				Symbol:     "assistance_employee_assistances",
-				Columns:    []*schema.Column{AssistanceColumns[27]},
+				Columns:    []*schema.Column{AssistanceColumns[31]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "assistance_order_assistance",
-				Columns:    []*schema.Column{AssistanceColumns[28]},
+				Columns:    []*schema.Column{AssistanceColumns[32]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -418,6 +428,9 @@ var (
 		{Name: "bin", Type: field.TypeJSON, Comment: "仓位信息", Nullable: true},
 		{Name: "battery_num", Type: field.TypeUint, Comment: "电池总数", Default: 0},
 		{Name: "battery_full_num", Type: field.TypeUint, Comment: "满电电池数", Default: 0},
+		{Name: "lng", Type: field.TypeFloat64, Comment: "经度", Nullable: true},
+		{Name: "lat", Type: field.TypeFloat64, Comment: "纬度", Nullable: true},
+		{Name: "address", Type: field.TypeString, Comment: "详细地址", Nullable: true},
 		{Name: "branch_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -429,13 +442,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cabinet_branch_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[17]},
+				Columns:    []*schema.Column{CabinetColumns[20]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "cabinet_city_city",
-				Columns:    []*schema.Column{CabinetColumns[18]},
+				Columns:    []*schema.Column{CabinetColumns[21]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -454,7 +467,7 @@ var (
 			{
 				Name:    "cabinet_branch_id",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[17]},
+				Columns: []*schema.Column{CabinetColumns[20]},
 			},
 			{
 				Name:    "cabinet_brand",
@@ -1920,9 +1933,12 @@ var (
 		{Name: "sn", Type: field.TypeString, Unique: true, Comment: "门店编号"},
 		{Name: "name", Type: field.TypeString, Comment: "门店名称"},
 		{Name: "status", Type: field.TypeUint8, Comment: "门店状态 0维护 1营业 2休息 3隐藏", Default: 0},
+		{Name: "lng", Type: field.TypeFloat64, Comment: "经度", Nullable: true},
+		{Name: "lat", Type: field.TypeFloat64, Comment: "纬度", Nullable: true},
+		{Name: "address", Type: field.TypeString, Comment: "详细地址", Nullable: true},
 		{Name: "branch_id", Type: field.TypeUint64},
 		{Name: "employee_id", Type: field.TypeUint64, Unique: true, Nullable: true},
-		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
+		{Name: "city_id", Type: field.TypeUint64},
 	}
 	// StoreTable holds the schema information for the "store" table.
 	StoreTable = &schema.Table{
@@ -1932,21 +1948,21 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "store_branch_stores",
-				Columns:    []*schema.Column{StoreColumns[10]},
+				Columns:    []*schema.Column{StoreColumns[13]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "store_employee_store",
-				Columns:    []*schema.Column{StoreColumns[11]},
+				Columns:    []*schema.Column{StoreColumns[14]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "store_city_city",
-				Columns:    []*schema.Column{StoreColumns[12]},
+				Columns:    []*schema.Column{StoreColumns[15]},
 				RefColumns: []*schema.Column{CityColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -2327,8 +2343,9 @@ func init() {
 	AssistanceTable.ForeignKeys[0].RefTable = StoreTable
 	AssistanceTable.ForeignKeys[1].RefTable = RiderTable
 	AssistanceTable.ForeignKeys[2].RefTable = SubscribeTable
-	AssistanceTable.ForeignKeys[3].RefTable = EmployeeTable
-	AssistanceTable.ForeignKeys[4].RefTable = OrderTable
+	AssistanceTable.ForeignKeys[3].RefTable = CityTable
+	AssistanceTable.ForeignKeys[4].RefTable = EmployeeTable
+	AssistanceTable.ForeignKeys[5].RefTable = OrderTable
 	AssistanceTable.Annotation = &entsql.Annotation{
 		Table: "assistance",
 	}

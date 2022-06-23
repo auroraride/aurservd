@@ -103,14 +103,6 @@ func (sc *StoreCreate) SetCityID(u uint64) *StoreCreate {
 	return sc
 }
 
-// SetNillableCityID sets the "city_id" field if the given value is not nil.
-func (sc *StoreCreate) SetNillableCityID(u *uint64) *StoreCreate {
-	if u != nil {
-		sc.SetCityID(*u)
-	}
-	return sc
-}
-
 // SetEmployeeID sets the "employee_id" field.
 func (sc *StoreCreate) SetEmployeeID(u uint64) *StoreCreate {
 	sc.mutation.SetEmployeeID(u)
@@ -153,6 +145,48 @@ func (sc *StoreCreate) SetStatus(u uint8) *StoreCreate {
 func (sc *StoreCreate) SetNillableStatus(u *uint8) *StoreCreate {
 	if u != nil {
 		sc.SetStatus(*u)
+	}
+	return sc
+}
+
+// SetLng sets the "lng" field.
+func (sc *StoreCreate) SetLng(f float64) *StoreCreate {
+	sc.mutation.SetLng(f)
+	return sc
+}
+
+// SetNillableLng sets the "lng" field if the given value is not nil.
+func (sc *StoreCreate) SetNillableLng(f *float64) *StoreCreate {
+	if f != nil {
+		sc.SetLng(*f)
+	}
+	return sc
+}
+
+// SetLat sets the "lat" field.
+func (sc *StoreCreate) SetLat(f float64) *StoreCreate {
+	sc.mutation.SetLat(f)
+	return sc
+}
+
+// SetNillableLat sets the "lat" field if the given value is not nil.
+func (sc *StoreCreate) SetNillableLat(f *float64) *StoreCreate {
+	if f != nil {
+		sc.SetLat(*f)
+	}
+	return sc
+}
+
+// SetAddress sets the "address" field.
+func (sc *StoreCreate) SetAddress(s string) *StoreCreate {
+	sc.mutation.SetAddress(s)
+	return sc
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (sc *StoreCreate) SetNillableAddress(s *string) *StoreCreate {
+	if s != nil {
+		sc.SetAddress(*s)
 	}
 	return sc
 }
@@ -325,6 +359,9 @@ func (sc *StoreCreate) check() error {
 	if _, ok := sc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Store.updated_at"`)}
 	}
+	if _, ok := sc.mutation.CityID(); !ok {
+		return &ValidationError{Name: "city_id", err: errors.New(`ent: missing required field "Store.city_id"`)}
+	}
 	if _, ok := sc.mutation.BranchID(); !ok {
 		return &ValidationError{Name: "branch_id", err: errors.New(`ent: missing required field "Store.branch_id"`)}
 	}
@@ -336,6 +373,9 @@ func (sc *StoreCreate) check() error {
 	}
 	if _, ok := sc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Store.status"`)}
+	}
+	if _, ok := sc.mutation.CityID(); !ok {
+		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Store.city"`)}
 	}
 	if _, ok := sc.mutation.BranchID(); !ok {
 		return &ValidationError{Name: "branch", err: errors.New(`ent: missing required edge "Store.branch"`)}
@@ -440,6 +480,30 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 		})
 		_node.Status = value
 	}
+	if value, ok := sc.mutation.Lng(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: store.FieldLng,
+		})
+		_node.Lng = value
+	}
+	if value, ok := sc.mutation.Lat(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: store.FieldLat,
+		})
+		_node.Lat = value
+	}
+	if value, ok := sc.mutation.Address(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: store.FieldAddress,
+		})
+		_node.Address = value
+	}
 	if nodes := sc.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -457,7 +521,7 @@ func (sc *StoreCreate) createSpec() (*Store, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.CityID = &nodes[0]
+		_node.CityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := sc.mutation.BranchIDs(); len(nodes) > 0 {
@@ -719,12 +783,6 @@ func (u *StoreUpsert) UpdateCityID() *StoreUpsert {
 	return u
 }
 
-// ClearCityID clears the value of the "city_id" field.
-func (u *StoreUpsert) ClearCityID() *StoreUpsert {
-	u.SetNull(store.FieldCityID)
-	return u
-}
-
 // SetEmployeeID sets the "employee_id" field.
 func (u *StoreUpsert) SetEmployeeID(v uint64) *StoreUpsert {
 	u.Set(store.FieldEmployeeID, v)
@@ -794,6 +852,72 @@ func (u *StoreUpsert) UpdateStatus() *StoreUpsert {
 // AddStatus adds v to the "status" field.
 func (u *StoreUpsert) AddStatus(v uint8) *StoreUpsert {
 	u.Add(store.FieldStatus, v)
+	return u
+}
+
+// SetLng sets the "lng" field.
+func (u *StoreUpsert) SetLng(v float64) *StoreUpsert {
+	u.Set(store.FieldLng, v)
+	return u
+}
+
+// UpdateLng sets the "lng" field to the value that was provided on create.
+func (u *StoreUpsert) UpdateLng() *StoreUpsert {
+	u.SetExcluded(store.FieldLng)
+	return u
+}
+
+// AddLng adds v to the "lng" field.
+func (u *StoreUpsert) AddLng(v float64) *StoreUpsert {
+	u.Add(store.FieldLng, v)
+	return u
+}
+
+// ClearLng clears the value of the "lng" field.
+func (u *StoreUpsert) ClearLng() *StoreUpsert {
+	u.SetNull(store.FieldLng)
+	return u
+}
+
+// SetLat sets the "lat" field.
+func (u *StoreUpsert) SetLat(v float64) *StoreUpsert {
+	u.Set(store.FieldLat, v)
+	return u
+}
+
+// UpdateLat sets the "lat" field to the value that was provided on create.
+func (u *StoreUpsert) UpdateLat() *StoreUpsert {
+	u.SetExcluded(store.FieldLat)
+	return u
+}
+
+// AddLat adds v to the "lat" field.
+func (u *StoreUpsert) AddLat(v float64) *StoreUpsert {
+	u.Add(store.FieldLat, v)
+	return u
+}
+
+// ClearLat clears the value of the "lat" field.
+func (u *StoreUpsert) ClearLat() *StoreUpsert {
+	u.SetNull(store.FieldLat)
+	return u
+}
+
+// SetAddress sets the "address" field.
+func (u *StoreUpsert) SetAddress(v string) *StoreUpsert {
+	u.Set(store.FieldAddress, v)
+	return u
+}
+
+// UpdateAddress sets the "address" field to the value that was provided on create.
+func (u *StoreUpsert) UpdateAddress() *StoreUpsert {
+	u.SetExcluded(store.FieldAddress)
+	return u
+}
+
+// ClearAddress clears the value of the "address" field.
+func (u *StoreUpsert) ClearAddress() *StoreUpsert {
+	u.SetNull(store.FieldAddress)
 	return u
 }
 
@@ -976,13 +1100,6 @@ func (u *StoreUpsertOne) UpdateCityID() *StoreUpsertOne {
 	})
 }
 
-// ClearCityID clears the value of the "city_id" field.
-func (u *StoreUpsertOne) ClearCityID() *StoreUpsertOne {
-	return u.Update(func(s *StoreUpsert) {
-		s.ClearCityID()
-	})
-}
-
 // SetEmployeeID sets the "employee_id" field.
 func (u *StoreUpsertOne) SetEmployeeID(v uint64) *StoreUpsertOne {
 	return u.Update(func(s *StoreUpsert) {
@@ -1064,6 +1181,83 @@ func (u *StoreUpsertOne) AddStatus(v uint8) *StoreUpsertOne {
 func (u *StoreUpsertOne) UpdateStatus() *StoreUpsertOne {
 	return u.Update(func(s *StoreUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// SetLng sets the "lng" field.
+func (u *StoreUpsertOne) SetLng(v float64) *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetLng(v)
+	})
+}
+
+// AddLng adds v to the "lng" field.
+func (u *StoreUpsertOne) AddLng(v float64) *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.AddLng(v)
+	})
+}
+
+// UpdateLng sets the "lng" field to the value that was provided on create.
+func (u *StoreUpsertOne) UpdateLng() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateLng()
+	})
+}
+
+// ClearLng clears the value of the "lng" field.
+func (u *StoreUpsertOne) ClearLng() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.ClearLng()
+	})
+}
+
+// SetLat sets the "lat" field.
+func (u *StoreUpsertOne) SetLat(v float64) *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetLat(v)
+	})
+}
+
+// AddLat adds v to the "lat" field.
+func (u *StoreUpsertOne) AddLat(v float64) *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.AddLat(v)
+	})
+}
+
+// UpdateLat sets the "lat" field to the value that was provided on create.
+func (u *StoreUpsertOne) UpdateLat() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateLat()
+	})
+}
+
+// ClearLat clears the value of the "lat" field.
+func (u *StoreUpsertOne) ClearLat() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.ClearLat()
+	})
+}
+
+// SetAddress sets the "address" field.
+func (u *StoreUpsertOne) SetAddress(v string) *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetAddress(v)
+	})
+}
+
+// UpdateAddress sets the "address" field to the value that was provided on create.
+func (u *StoreUpsertOne) UpdateAddress() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateAddress()
+	})
+}
+
+// ClearAddress clears the value of the "address" field.
+func (u *StoreUpsertOne) ClearAddress() *StoreUpsertOne {
+	return u.Update(func(s *StoreUpsert) {
+		s.ClearAddress()
 	})
 }
 
@@ -1410,13 +1604,6 @@ func (u *StoreUpsertBulk) UpdateCityID() *StoreUpsertBulk {
 	})
 }
 
-// ClearCityID clears the value of the "city_id" field.
-func (u *StoreUpsertBulk) ClearCityID() *StoreUpsertBulk {
-	return u.Update(func(s *StoreUpsert) {
-		s.ClearCityID()
-	})
-}
-
 // SetEmployeeID sets the "employee_id" field.
 func (u *StoreUpsertBulk) SetEmployeeID(v uint64) *StoreUpsertBulk {
 	return u.Update(func(s *StoreUpsert) {
@@ -1498,6 +1685,83 @@ func (u *StoreUpsertBulk) AddStatus(v uint8) *StoreUpsertBulk {
 func (u *StoreUpsertBulk) UpdateStatus() *StoreUpsertBulk {
 	return u.Update(func(s *StoreUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// SetLng sets the "lng" field.
+func (u *StoreUpsertBulk) SetLng(v float64) *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetLng(v)
+	})
+}
+
+// AddLng adds v to the "lng" field.
+func (u *StoreUpsertBulk) AddLng(v float64) *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.AddLng(v)
+	})
+}
+
+// UpdateLng sets the "lng" field to the value that was provided on create.
+func (u *StoreUpsertBulk) UpdateLng() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateLng()
+	})
+}
+
+// ClearLng clears the value of the "lng" field.
+func (u *StoreUpsertBulk) ClearLng() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.ClearLng()
+	})
+}
+
+// SetLat sets the "lat" field.
+func (u *StoreUpsertBulk) SetLat(v float64) *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetLat(v)
+	})
+}
+
+// AddLat adds v to the "lat" field.
+func (u *StoreUpsertBulk) AddLat(v float64) *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.AddLat(v)
+	})
+}
+
+// UpdateLat sets the "lat" field to the value that was provided on create.
+func (u *StoreUpsertBulk) UpdateLat() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateLat()
+	})
+}
+
+// ClearLat clears the value of the "lat" field.
+func (u *StoreUpsertBulk) ClearLat() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.ClearLat()
+	})
+}
+
+// SetAddress sets the "address" field.
+func (u *StoreUpsertBulk) SetAddress(v string) *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.SetAddress(v)
+	})
+}
+
+// UpdateAddress sets the "address" field to the value that was provided on create.
+func (u *StoreUpsertBulk) UpdateAddress() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.UpdateAddress()
+	})
+}
+
+// ClearAddress clears the value of the "address" field.
+func (u *StoreUpsertBulk) ClearAddress() *StoreUpsertBulk {
+	return u.Update(func(s *StoreUpsert) {
+		s.ClearAddress()
 	})
 }
 

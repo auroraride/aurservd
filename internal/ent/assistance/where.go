@@ -142,6 +142,13 @@ func SubscribeID(v uint64) predicate.Assistance {
 	})
 }
 
+// CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
+func CityID(v uint64) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCityID), v))
+	})
+}
+
 // EmployeeID applies equality check predicate on the "employee_id" field. It's identical to EmployeeIDEQ.
 func EmployeeID(v uint64) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
@@ -233,10 +240,10 @@ func Reason(v string) predicate.Assistance {
 	})
 }
 
-// BatteryPhoto applies equality check predicate on the "battery_photo" field. It's identical to BatteryPhotoEQ.
-func BatteryPhoto(v string) predicate.Assistance {
+// DetectPhoto applies equality check predicate on the "detect_photo" field. It's identical to DetectPhotoEQ.
+func DetectPhoto(v string) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBatteryPhoto), v))
+		s.Where(sql.EQ(s.C(FieldDetectPhoto), v))
 	})
 }
 
@@ -265,6 +272,27 @@ func RefusedDesc(v string) predicate.Assistance {
 func PayAt(v time.Time) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldPayAt), v))
+	})
+}
+
+// AllocateAt applies equality check predicate on the "allocate_at" field. It's identical to AllocateAtEQ.
+func AllocateAt(v time.Time) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAllocateAt), v))
+	})
+}
+
+// Wait applies equality check predicate on the "wait" field. It's identical to WaitEQ.
+func Wait(v int) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldWait), v))
+	})
+}
+
+// FreeReason applies equality check predicate on the "free_reason" field. It's identical to FreeReasonEQ.
+func FreeReason(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldFreeReason), v))
 	})
 }
 
@@ -818,6 +846,54 @@ func SubscribeIDNotIn(vs ...uint64) predicate.Assistance {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldSubscribeID), v...))
+	})
+}
+
+// CityIDEQ applies the EQ predicate on the "city_id" field.
+func CityIDEQ(v uint64) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCityID), v))
+	})
+}
+
+// CityIDNEQ applies the NEQ predicate on the "city_id" field.
+func CityIDNEQ(v uint64) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldCityID), v))
+	})
+}
+
+// CityIDIn applies the In predicate on the "city_id" field.
+func CityIDIn(vs ...uint64) predicate.Assistance {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Assistance(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldCityID), v...))
+	})
+}
+
+// CityIDNotIn applies the NotIn predicate on the "city_id" field.
+func CityIDNotIn(vs ...uint64) predicate.Assistance {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Assistance(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldCityID), v...))
 	})
 }
 
@@ -2096,22 +2172,22 @@ func ReasonContainsFold(v string) predicate.Assistance {
 	})
 }
 
-// BatteryPhotoEQ applies the EQ predicate on the "battery_photo" field.
-func BatteryPhotoEQ(v string) predicate.Assistance {
+// DetectPhotoEQ applies the EQ predicate on the "detect_photo" field.
+func DetectPhotoEQ(v string) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBatteryPhoto), v))
+		s.Where(sql.EQ(s.C(FieldDetectPhoto), v))
 	})
 }
 
-// BatteryPhotoNEQ applies the NEQ predicate on the "battery_photo" field.
-func BatteryPhotoNEQ(v string) predicate.Assistance {
+// DetectPhotoNEQ applies the NEQ predicate on the "detect_photo" field.
+func DetectPhotoNEQ(v string) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBatteryPhoto), v))
+		s.Where(sql.NEQ(s.C(FieldDetectPhoto), v))
 	})
 }
 
-// BatteryPhotoIn applies the In predicate on the "battery_photo" field.
-func BatteryPhotoIn(vs ...string) predicate.Assistance {
+// DetectPhotoIn applies the In predicate on the "detect_photo" field.
+func DetectPhotoIn(vs ...string) predicate.Assistance {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -2123,12 +2199,12 @@ func BatteryPhotoIn(vs ...string) predicate.Assistance {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldBatteryPhoto), v...))
+		s.Where(sql.In(s.C(FieldDetectPhoto), v...))
 	})
 }
 
-// BatteryPhotoNotIn applies the NotIn predicate on the "battery_photo" field.
-func BatteryPhotoNotIn(vs ...string) predicate.Assistance {
+// DetectPhotoNotIn applies the NotIn predicate on the "detect_photo" field.
+func DetectPhotoNotIn(vs ...string) predicate.Assistance {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -2140,84 +2216,84 @@ func BatteryPhotoNotIn(vs ...string) predicate.Assistance {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldBatteryPhoto), v...))
+		s.Where(sql.NotIn(s.C(FieldDetectPhoto), v...))
 	})
 }
 
-// BatteryPhotoGT applies the GT predicate on the "battery_photo" field.
-func BatteryPhotoGT(v string) predicate.Assistance {
+// DetectPhotoGT applies the GT predicate on the "detect_photo" field.
+func DetectPhotoGT(v string) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldBatteryPhoto), v))
+		s.Where(sql.GT(s.C(FieldDetectPhoto), v))
 	})
 }
 
-// BatteryPhotoGTE applies the GTE predicate on the "battery_photo" field.
-func BatteryPhotoGTE(v string) predicate.Assistance {
+// DetectPhotoGTE applies the GTE predicate on the "detect_photo" field.
+func DetectPhotoGTE(v string) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldBatteryPhoto), v))
+		s.Where(sql.GTE(s.C(FieldDetectPhoto), v))
 	})
 }
 
-// BatteryPhotoLT applies the LT predicate on the "battery_photo" field.
-func BatteryPhotoLT(v string) predicate.Assistance {
+// DetectPhotoLT applies the LT predicate on the "detect_photo" field.
+func DetectPhotoLT(v string) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldBatteryPhoto), v))
+		s.Where(sql.LT(s.C(FieldDetectPhoto), v))
 	})
 }
 
-// BatteryPhotoLTE applies the LTE predicate on the "battery_photo" field.
-func BatteryPhotoLTE(v string) predicate.Assistance {
+// DetectPhotoLTE applies the LTE predicate on the "detect_photo" field.
+func DetectPhotoLTE(v string) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldBatteryPhoto), v))
+		s.Where(sql.LTE(s.C(FieldDetectPhoto), v))
 	})
 }
 
-// BatteryPhotoContains applies the Contains predicate on the "battery_photo" field.
-func BatteryPhotoContains(v string) predicate.Assistance {
+// DetectPhotoContains applies the Contains predicate on the "detect_photo" field.
+func DetectPhotoContains(v string) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldBatteryPhoto), v))
+		s.Where(sql.Contains(s.C(FieldDetectPhoto), v))
 	})
 }
 
-// BatteryPhotoHasPrefix applies the HasPrefix predicate on the "battery_photo" field.
-func BatteryPhotoHasPrefix(v string) predicate.Assistance {
+// DetectPhotoHasPrefix applies the HasPrefix predicate on the "detect_photo" field.
+func DetectPhotoHasPrefix(v string) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldBatteryPhoto), v))
+		s.Where(sql.HasPrefix(s.C(FieldDetectPhoto), v))
 	})
 }
 
-// BatteryPhotoHasSuffix applies the HasSuffix predicate on the "battery_photo" field.
-func BatteryPhotoHasSuffix(v string) predicate.Assistance {
+// DetectPhotoHasSuffix applies the HasSuffix predicate on the "detect_photo" field.
+func DetectPhotoHasSuffix(v string) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldBatteryPhoto), v))
+		s.Where(sql.HasSuffix(s.C(FieldDetectPhoto), v))
 	})
 }
 
-// BatteryPhotoIsNil applies the IsNil predicate on the "battery_photo" field.
-func BatteryPhotoIsNil() predicate.Assistance {
+// DetectPhotoIsNil applies the IsNil predicate on the "detect_photo" field.
+func DetectPhotoIsNil() predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldBatteryPhoto)))
+		s.Where(sql.IsNull(s.C(FieldDetectPhoto)))
 	})
 }
 
-// BatteryPhotoNotNil applies the NotNil predicate on the "battery_photo" field.
-func BatteryPhotoNotNil() predicate.Assistance {
+// DetectPhotoNotNil applies the NotNil predicate on the "detect_photo" field.
+func DetectPhotoNotNil() predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldBatteryPhoto)))
+		s.Where(sql.NotNull(s.C(FieldDetectPhoto)))
 	})
 }
 
-// BatteryPhotoEqualFold applies the EqualFold predicate on the "battery_photo" field.
-func BatteryPhotoEqualFold(v string) predicate.Assistance {
+// DetectPhotoEqualFold applies the EqualFold predicate on the "detect_photo" field.
+func DetectPhotoEqualFold(v string) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldBatteryPhoto), v))
+		s.Where(sql.EqualFold(s.C(FieldDetectPhoto), v))
 	})
 }
 
-// BatteryPhotoContainsFold applies the ContainsFold predicate on the "battery_photo" field.
-func BatteryPhotoContainsFold(v string) predicate.Assistance {
+// DetectPhotoContainsFold applies the ContainsFold predicate on the "detect_photo" field.
+func DetectPhotoContainsFold(v string) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldBatteryPhoto), v))
+		s.Where(sql.ContainsFold(s.C(FieldDetectPhoto), v))
 	})
 }
 
@@ -2651,6 +2727,297 @@ func PayAtNotNil() predicate.Assistance {
 	})
 }
 
+// AllocateAtEQ applies the EQ predicate on the "allocate_at" field.
+func AllocateAtEQ(v time.Time) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAllocateAt), v))
+	})
+}
+
+// AllocateAtNEQ applies the NEQ predicate on the "allocate_at" field.
+func AllocateAtNEQ(v time.Time) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAllocateAt), v))
+	})
+}
+
+// AllocateAtIn applies the In predicate on the "allocate_at" field.
+func AllocateAtIn(vs ...time.Time) predicate.Assistance {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Assistance(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldAllocateAt), v...))
+	})
+}
+
+// AllocateAtNotIn applies the NotIn predicate on the "allocate_at" field.
+func AllocateAtNotIn(vs ...time.Time) predicate.Assistance {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Assistance(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldAllocateAt), v...))
+	})
+}
+
+// AllocateAtGT applies the GT predicate on the "allocate_at" field.
+func AllocateAtGT(v time.Time) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAllocateAt), v))
+	})
+}
+
+// AllocateAtGTE applies the GTE predicate on the "allocate_at" field.
+func AllocateAtGTE(v time.Time) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAllocateAt), v))
+	})
+}
+
+// AllocateAtLT applies the LT predicate on the "allocate_at" field.
+func AllocateAtLT(v time.Time) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAllocateAt), v))
+	})
+}
+
+// AllocateAtLTE applies the LTE predicate on the "allocate_at" field.
+func AllocateAtLTE(v time.Time) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAllocateAt), v))
+	})
+}
+
+// AllocateAtIsNil applies the IsNil predicate on the "allocate_at" field.
+func AllocateAtIsNil() predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAllocateAt)))
+	})
+}
+
+// AllocateAtNotNil applies the NotNil predicate on the "allocate_at" field.
+func AllocateAtNotNil() predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAllocateAt)))
+	})
+}
+
+// WaitEQ applies the EQ predicate on the "wait" field.
+func WaitEQ(v int) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldWait), v))
+	})
+}
+
+// WaitNEQ applies the NEQ predicate on the "wait" field.
+func WaitNEQ(v int) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldWait), v))
+	})
+}
+
+// WaitIn applies the In predicate on the "wait" field.
+func WaitIn(vs ...int) predicate.Assistance {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Assistance(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldWait), v...))
+	})
+}
+
+// WaitNotIn applies the NotIn predicate on the "wait" field.
+func WaitNotIn(vs ...int) predicate.Assistance {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Assistance(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldWait), v...))
+	})
+}
+
+// WaitGT applies the GT predicate on the "wait" field.
+func WaitGT(v int) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldWait), v))
+	})
+}
+
+// WaitGTE applies the GTE predicate on the "wait" field.
+func WaitGTE(v int) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldWait), v))
+	})
+}
+
+// WaitLT applies the LT predicate on the "wait" field.
+func WaitLT(v int) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldWait), v))
+	})
+}
+
+// WaitLTE applies the LTE predicate on the "wait" field.
+func WaitLTE(v int) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldWait), v))
+	})
+}
+
+// FreeReasonEQ applies the EQ predicate on the "free_reason" field.
+func FreeReasonEQ(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldFreeReason), v))
+	})
+}
+
+// FreeReasonNEQ applies the NEQ predicate on the "free_reason" field.
+func FreeReasonNEQ(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldFreeReason), v))
+	})
+}
+
+// FreeReasonIn applies the In predicate on the "free_reason" field.
+func FreeReasonIn(vs ...string) predicate.Assistance {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Assistance(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldFreeReason), v...))
+	})
+}
+
+// FreeReasonNotIn applies the NotIn predicate on the "free_reason" field.
+func FreeReasonNotIn(vs ...string) predicate.Assistance {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Assistance(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldFreeReason), v...))
+	})
+}
+
+// FreeReasonGT applies the GT predicate on the "free_reason" field.
+func FreeReasonGT(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldFreeReason), v))
+	})
+}
+
+// FreeReasonGTE applies the GTE predicate on the "free_reason" field.
+func FreeReasonGTE(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldFreeReason), v))
+	})
+}
+
+// FreeReasonLT applies the LT predicate on the "free_reason" field.
+func FreeReasonLT(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldFreeReason), v))
+	})
+}
+
+// FreeReasonLTE applies the LTE predicate on the "free_reason" field.
+func FreeReasonLTE(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldFreeReason), v))
+	})
+}
+
+// FreeReasonContains applies the Contains predicate on the "free_reason" field.
+func FreeReasonContains(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldFreeReason), v))
+	})
+}
+
+// FreeReasonHasPrefix applies the HasPrefix predicate on the "free_reason" field.
+func FreeReasonHasPrefix(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldFreeReason), v))
+	})
+}
+
+// FreeReasonHasSuffix applies the HasSuffix predicate on the "free_reason" field.
+func FreeReasonHasSuffix(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldFreeReason), v))
+	})
+}
+
+// FreeReasonIsNil applies the IsNil predicate on the "free_reason" field.
+func FreeReasonIsNil() predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldFreeReason)))
+	})
+}
+
+// FreeReasonNotNil applies the NotNil predicate on the "free_reason" field.
+func FreeReasonNotNil() predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldFreeReason)))
+	})
+}
+
+// FreeReasonEqualFold applies the EqualFold predicate on the "free_reason" field.
+func FreeReasonEqualFold(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldFreeReason), v))
+	})
+}
+
+// FreeReasonContainsFold applies the ContainsFold predicate on the "free_reason" field.
+func FreeReasonContainsFold(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldFreeReason), v))
+	})
+}
+
 // HasStore applies the HasEdge predicate on the "store" edge.
 func HasStore() predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
@@ -2726,6 +3093,34 @@ func HasSubscribeWith(preds ...predicate.Subscribe) predicate.Assistance {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(SubscribeInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCity applies the HasEdge predicate on the "city" edge.
+func HasCity() predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CityTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCityWith applies the HasEdge predicate on the "city" edge with a given conditions (other predicates).
+func HasCityWith(preds ...predicate.City) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CityInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
