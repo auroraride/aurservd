@@ -206,7 +206,6 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
     if req.Distance == nil && req.CityID == nil {
         snag.Panic("距离和城市不能同时为空")
     }
-    // rows, err := s.orm.QueryContext(s.ctx, fmt.Sprintf(`SELECT id, name, ST_Distance(%s, ST_GeogFromText('POINT(108.949969 34.333489)')) AS distance FROM %s WHERE ST_DWithin(%s, ST_GeogFromText('POINT(108.949969 34.333489)'), 10000000) ORDER BY distance;`, branch.Table, branch.FieldGeom, branch.FieldGeom))
     q := s.orm.QueryNotDeleted().
         WithCabinets(func(cq *ent.CabinetQuery) {
             cq.WithBms()

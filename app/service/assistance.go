@@ -7,10 +7,14 @@ package service
 
 import (
     "context"
+    "entgo.io/ent/dialect/sql"
+    "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/assistance"
+    "github.com/auroraride/aurservd/internal/ent/branch"
+    "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
 )
@@ -99,4 +103,37 @@ func (s *assistanceService) Create(req *model.AssistanceCreateReq) model.Assista
     }
 
     return model.AssistanceCreateRes{OutTradeNo: as.OutTradeNo}
+}
+
+func (s *assistanceService) Nearby(req *model.IDQueryReq) any {
+    ass, _ := s.orm.QueryNotDeleted().Where(assistance.ID(req.ID)).First(s.ctx)
+    if ass == nil {
+        snag.Panic("未找到救援订单")
+    }
+
+    var btemps []struct {
+        ID       uint64          `json:"id"`
+        Address  string          `json:"address"`
+        Lat      float64         `json:"lat"`
+        Lng      float64         `json:"lng"`
+        Distance float64         `json:"distance"`
+        Edges    ent.BranchEdges `json:"edges"`
+    }
+
+    _ = ar.Ent.Branch.QueryNotDeleted().
+        WithStores().
+        Where(branch.HasStoresWith(store.HasEmployee(), store.Status(model.StoreStatusOpen))).
+        Modify(func(sel *sql.Selector) {
+            bt := sql.Table(branch.Table)
+            sel.Select(bt.C(branch.FieldID), bt.C(branch.FieldAddress), bt.C(branch.FieldLat), bt.C(branch.FieldLng)).
+                Where(sql.P(func(b *sql.Builder) {
+                    b.WriteString(fmt.Sprintf(`ST_DWithin(%s, ST_GeogFromText('POINT(%f %f)'), %f)`, branch.FieldGeom, ass.Lng, ass.Lat, 50000.0))
+                })).
+                AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(%s, ST_GeogFromText('POINT(%f %f)'))`, branch.FieldGeom, ass.Lng, ass.Lat)), "distance").
+                GroupBy(bt.C(branch.FieldID)).
+                OrderBy(sql.Asc("distance"))
+        }).
+        Scan(s.ctx, &btemps)
+
+    return nil
 }
