@@ -509,6 +509,7 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
             if item.Edges.Subscribes != nil && len(item.Edges.Subscribes) > 0 {
                 sub := item.Edges.Subscribes[0]
                 ri.Subscribe = &model.RiderItemSubscribe{
+                    ID:        sub.ID,
                     Status:    sub.Status,
                     Remaining: sub.Remaining,
                     Model:     sub.Model,

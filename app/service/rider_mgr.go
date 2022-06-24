@@ -241,7 +241,7 @@ func (s *riderMgrService) UnSubscribe(subscribeID uint64) {
         snag.Panic("无法退订, 骑士卡当前状态错误")
     }
 
-    lgr := logging.NewOperateLog().SetEmployee(s.employeeInfo)
+    lgr := logging.NewOperateLog()
     stockReq := &model.StockWithRiderReq{
         RiderID:   sub.RiderID,
         Model:     sub.Model,
