@@ -222,15 +222,15 @@ definitions:
     type: object
   model.AssistanceRefuseReq:
     properties:
-      desc:
-        description: '拒绝原因 '
-        type: string
       id:
         description: '救援ID '
         type: integer
+      reason:
+        description: '拒绝原因 '
+        type: string
     required:
-    - desc
     - id
+    - reason
     type: object
   model.AttendanceCreateReq:
     properties:

@@ -6789,17 +6789,17 @@ const docTemplate = `{
         "model.AssistanceRefuseReq": {
             "type": "object",
             "required": [
-                "desc",
-                "id"
+                "id",
+                "reason"
             ],
             "properties": {
-                "desc": {
-                    "description": "拒绝原因 ",
-                    "type": "string"
-                },
                 "id": {
                     "description": "救援ID ",
                     "type": "integer"
+                },
+                "reason": {
+                    "description": "拒绝原因 ",
+                    "type": "string"
                 }
             }
         },

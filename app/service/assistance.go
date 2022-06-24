@@ -23,6 +23,7 @@ import (
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     log "github.com/sirupsen/logrus"
+    "time"
 )
 
 type assistanceService struct {
@@ -74,9 +75,26 @@ func (s *assistanceService) Unpaid(riderID uint64) *ent.Assistance {
 }
 
 func (s *assistanceService) List(req *model.AssistanceListReq) *model.PaginationRes {
-    q := s.orm.QueryNotDeleted().WithRider(func(rq *ent.RiderQuery) {
-        rq.WithPerson()
-    }).WithCity().WithStore().WithEmployee()
+    q := s.orm.QueryNotDeleted().
+        WithRider(func(rq *ent.RiderQuery) {
+            rq.WithPerson()
+        }).
+        WithCity().
+        WithStore().
+        WithEmployee().
+        Order(func(sel *sql.Selector) {
+            sel.OrderExpr(sql.Raw(fmt.Sprintf(
+                "POSITION(%s::text in '%d,%d,%d,%d,%d,%d')",
+                sel.C(store.FieldStatus),
+                model.AssistanceStatusPending,
+                model.AssistanceStatusAllocated,
+                model.AssistanceStatusUnpaid,
+                model.AssistanceStatusFailed,
+                model.AssistanceStatusRefused,
+                model.AssistanceStatusSuccess,
+            )))
+        }).
+        Unique(false)
     tt := tools.NewTime()
     if req.Start != "" {
         q.Where(assistance.CreatedAtGTE(tt.ParseDateStringX(req.Start)))
@@ -202,6 +220,16 @@ func (s *assistanceService) Detail(id uint64) model.AssistanceDetail {
     return res
 }
 
+func (s *assistanceService) Current(riderID uint64) *ent.Assistance {
+    item, _ := s.orm.QueryNotDeleted().
+        Where(
+            assistance.RiderID(riderID),
+            assistance.StatusIn(model.AssistanceStatusProcessing...),
+        ).
+        First(s.ctx)
+    return item
+}
+
 // Create 发起救援订单
 // 救援订单未支付的禁止办理所有业务
 // TODO 救援订单支付状态可以直接在后台修改为不需要支付
@@ -215,7 +243,7 @@ func (s *assistanceService) Create(req *model.AssistanceCreateReq) model.Assista
     NewRiderPermissionWithRider(s.rider).BusinessX()
 
     // 检查是否已有救援订单
-    if exists, _ := s.orm.QueryNotDeleted().Where(assistance.RiderID(s.rider.ID)).Exist(s.ctx); exists {
+    if exists := s.Current(s.rider.ID); exists != nil {
         snag.Panic("当前有进行中的救援订单")
     }
 
@@ -323,13 +351,18 @@ func (s *assistanceService) Allocate(req *model.AssistanceAllocateReq) {
         snag.Panic("未找到营业中的门店")
     }
 
-    item := s.QueryX(req.ID)
+    item, _ := s.orm.QueryNotDeleted().Where(assistance.ID(req.ID), assistance.StatusIn(model.AssistanceStatusPending, model.AssistanceStatusAllocated)).First(s.ctx)
+    if item == nil {
+        snag.Panic("未找到有效救援")
+    }
 
     _, err := item.Update().
         SetDistance(haversine.Distance(haversine.NewCoordinates(item.Lat, item.Lng), haversine.NewCoordinates(st.Lat, st.Lng)).Miles()).
         SetStoreID(st.ID).
         SetEmployeeID(*st.EmployeeID).
         SetStatus(model.AssistanceStatusAllocated).
+        SetAllocateAt(time.Now()).
+        SetWait(int(time.Now().Sub(item.CreatedAt).Seconds())).
         Save(s.ctx)
 
     // TODO 处理接单响应
@@ -353,7 +386,11 @@ func (s *assistanceService) Free(req *model.AssistanceFreeReq) {
         snag.Panic("未找到待支付订单")
     }
 
-    _, err := item.Update().SetFreeReason(req.Reason).SetCost(0).SetStatus(model.AssistanceStatusSuccess).Save(s.ctx)
+    _, err := item.Update().
+        SetFreeReason(req.Reason).
+        SetCost(0).
+        SetStatus(model.AssistanceStatusSuccess).
+        Save(s.ctx)
     if err != nil {
         snag.Panic("处理失败")
     }
@@ -365,7 +402,10 @@ func (s *assistanceService) Free(req *model.AssistanceFreeReq) {
         SetRef(item).
         SetModifier(s.modifier).
         SetOperate(model.OperateAssistanceFree).
-        SetDiff(fmt.Sprintf("%s (%.2f元)", model.AssistanceStatus(item.Status), item.Cost), model.AssistanceStatus(model.AssistanceStatusSuccess)).
+        SetDiff(
+            fmt.Sprintf("%s (%.2f元)", model.AssistanceStatus(item.Status), item.Cost),
+            fmt.Sprintf("%s (%s)", model.AssistanceStatus(model.AssistanceStatusSuccess), req.Reason),
+        ).
         Send()
 }
 
@@ -381,7 +421,7 @@ func (s *assistanceService) Refuse(req *model.AssistanceRefuseReq) {
         ClearStoreID().
         ClearCost().
         SetStatus(model.AssistanceStatusRefused).
-        SetRefusedDesc(req.Desc).
+        SetRefusedDesc(req.Reason).
         Save(s.ctx)
 
     if err != nil {
@@ -395,6 +435,9 @@ func (s *assistanceService) Refuse(req *model.AssistanceRefuseReq) {
         SetRef(item).
         SetModifier(s.modifier).
         SetOperate(model.OperateAssistanceRefuse).
-        SetDiff(model.AssistanceStatus(item.Status), model.AssistanceStatus(model.AssistanceStatusRefused)).
+        SetDiff(
+            model.AssistanceStatus(item.Status),
+            fmt.Sprintf("%s (%s)", model.AssistanceStatus(model.AssistanceStatusRefused), req.Reason),
+        ).
         Send()
 }

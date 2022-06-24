@@ -14,6 +14,13 @@ const (
     AssistanceStatusSuccess                // 救援成功 - 已支付
 )
 
+// AssistanceStatusProcessing 获取进行中的状态
+var AssistanceStatusProcessing = []uint8{
+    AssistanceStatusPending,
+    AssistanceStatusAllocated,
+    AssistanceStatusUnpaid,
+}
+
 func AssistanceStatus(u uint8) string {
     switch u {
     case AssistanceStatusAllocated:
@@ -103,6 +110,6 @@ type AssistanceFreeReq struct {
 }
 
 type AssistanceRefuseReq struct {
-    ID   uint64 `json:"id" validate:"required" trans:"救援ID"`
-    Desc string `json:"desc" validate:"required" trans:"拒绝原因"`
+    ID     uint64 `json:"id" validate:"required" trans:"救援ID"`
+    Reason string `json:"reason" validate:"required" trans:"拒绝原因"`
 }
