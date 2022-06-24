@@ -92,3 +92,19 @@ func (*assistance) Free(c echo.Context) (err error) {
     service.NewAssistanceWithModifier(ctx.Modifier).Free(req)
     return ctx.SendResponse()
 }
+
+// Refuse
+// @ID           ManagerAssistanceRefuse
+// @Router       /manager/v1/assistance/refuse [POST]
+// @Summary      MC006 拒绝救援
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.AssistanceRefuseReq  true  "拒绝请求"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*assistance) Refuse(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.AssistanceRefuseReq](c)
+    service.NewAssistanceWithModifier(ctx.Modifier).Refuse(req)
+    return ctx.SendResponse()
+}

@@ -10,6 +10,7 @@ import (
     "entgo.io/ent/dialect/sql"
     "fmt"
     "github.com/LucaTheHacker/go-haversine"
+    "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -331,10 +332,18 @@ func (s *assistanceService) Allocate(req *model.AssistanceAllocateReq) {
         SetStatus(model.AssistanceStatusAllocated).
         Save(s.ctx)
 
-    // TODO 门店端处理接单响应
+    // TODO 处理接单响应
     if err != nil {
         snag.Panic("分配失败")
     }
+
+    // 记录日志
+    go logging.NewOperateLog().
+        SetRef(item).
+        SetModifier(s.modifier).
+        SetOperate(model.OperateAssistanceAllocate).
+        SetDiff(model.AssistanceStatus(item.Status), model.AssistanceStatus(model.AssistanceStatusAllocated)).
+        Send()
 }
 
 // Free 救援免费
@@ -348,4 +357,44 @@ func (s *assistanceService) Free(req *model.AssistanceFreeReq) {
     if err != nil {
         snag.Panic("处理失败")
     }
+
+    // TODO 处理免费响应
+
+    // 记录日志
+    go logging.NewOperateLog().
+        SetRef(item).
+        SetModifier(s.modifier).
+        SetOperate(model.OperateAssistanceFree).
+        SetDiff(fmt.Sprintf("%s (%.2f元)", model.AssistanceStatus(item.Status), item.Cost), model.AssistanceStatus(model.AssistanceStatusSuccess)).
+        Send()
+}
+
+// Refuse 拒绝救援
+func (s *assistanceService) Refuse(req *model.AssistanceRefuseReq) {
+    item := s.QueryX(req.ID)
+    if item.Status == model.AssistanceStatusSuccess || item.Status == model.AssistanceStatusUnpaid {
+        snag.Panic("救援状态错误")
+    }
+
+    _, err := item.Update().
+        ClearEmployeeID().
+        ClearStoreID().
+        ClearCost().
+        SetStatus(model.AssistanceStatusRefused).
+        SetRefusedDesc(req.Desc).
+        Save(s.ctx)
+
+    if err != nil {
+        snag.Panic("操作失败")
+    }
+
+    // TODO 处理拒绝响应
+
+    // 记录日志
+    go logging.NewOperateLog().
+        SetRef(item).
+        SetModifier(s.modifier).
+        SetOperate(model.OperateAssistanceRefuse).
+        SetDiff(model.AssistanceStatus(item.Status), model.AssistanceStatus(model.AssistanceStatusRefused)).
+        Send()
 }

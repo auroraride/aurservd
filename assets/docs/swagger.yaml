@@ -220,6 +220,18 @@ definitions:
         description: 门店名称
         type: string
     type: object
+  model.AssistanceRefuseReq:
+    properties:
+      desc:
+        description: '拒绝原因 '
+        type: string
+      id:
+        description: '救援ID '
+        type: integer
+    required:
+    - desc
+    - id
+    type: object
   model.AttendanceCreateReq:
     properties:
       address:
@@ -4040,6 +4052,33 @@ paths:
               $ref: '#/definitions/model.AssistanceNearbyRes'
             type: array
       summary: MC003 附近门店
+      tags:
+      - '[M]管理接口'
+  /manager/v1/assistance/refuse:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerAssistanceRefuse
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 拒绝请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssistanceRefuseReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MC006 拒绝救援
       tags:
       - '[M]管理接口'
   /manager/v1/battery/model:

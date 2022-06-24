@@ -14,6 +14,23 @@ const (
     AssistanceStatusSuccess                // 救援成功 - 已支付
 )
 
+func AssistanceStatus(u uint8) string {
+    switch u {
+    case AssistanceStatusAllocated:
+        return "已分配"
+    case AssistanceStatusRefused:
+        return "已拒绝"
+    case AssistanceStatusFailed:
+        return "已失败"
+    case AssistanceStatusUnpaid:
+        return "待支付"
+    case AssistanceStatusSuccess:
+        return "已支付"
+    default:
+        return "待分配"
+    }
+}
+
 type AssistanceCreateReq struct {
     Lng             float64  `json:"lng" validate:"required" trans:"经度"`
     Lat             float64  `json:"lat" validate:"required" trans:"纬度"`
@@ -83,4 +100,9 @@ type AssistanceAllocateReq struct {
 type AssistanceFreeReq struct {
     ID     uint64 `json:"id" validate:"required" trans:"救援ID"`
     Reason string `json:"reason" validate:"required" trans:"免费理由"`
+}
+
+type AssistanceRefuseReq struct {
+    ID   uint64 `json:"id" validate:"required" trans:"救援ID"`
+    Desc string `json:"desc" validate:"required" trans:"拒绝原因"`
 }

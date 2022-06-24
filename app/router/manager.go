@@ -128,4 +128,5 @@ func loadManagerRoutes() {
     g.GET("/assistance/nearby", mapi.Assistance.Nearby)
     g.POST("/assistance/allocate", mapi.Assistance.Allocate)
     g.POST("/assistance/free", mapi.Assistance.Free)
+    g.POST("/assistance/refuse", mapi.Assistance.Refuse)
 }

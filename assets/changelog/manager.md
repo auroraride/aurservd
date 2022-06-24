@@ -1,3 +1,15 @@
+## 2022-06-24
+
+#### 接口新增
+
+- [MC006 拒绝救援](http://localhost:5533/docs#tag/M/operation/ManagerAssistanceRefuse)
+
+
+
+
+
+<br />
+
 ## 2022-06-23
 
 #### 接口新增

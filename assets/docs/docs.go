@@ -1294,6 +1294,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/assistance/refuse": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MC006 拒绝救援",
+                "operationId": "ManagerAssistanceRefuse",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "拒绝请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssistanceRefuseReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/assistance/{id}": {
             "get": {
                 "consumes": [
@@ -6742,6 +6783,23 @@ const docTemplate = `{
                 "name": {
                     "description": "门店名称",
                     "type": "string"
+                }
+            }
+        },
+        "model.AssistanceRefuseReq": {
+            "type": "object",
+            "required": [
+                "desc",
+                "id"
+            ],
+            "properties": {
+                "desc": {
+                    "description": "拒绝原因 ",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "救援ID ",
+                    "type": "integer"
                 }
             }
         },

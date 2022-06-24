@@ -19,19 +19,22 @@ func (ot OperatorType) String() string {
 }
 
 const (
-    OperatePersonBan            = iota // 封禁身份
-    OperatePersonUnBan                 // 解封身份
-    OperateRiderBLock                  // 封禁账户
-    OperateRiderUnBLock                // 解封账户
-    OperateSubscribeAlter              // 修改订阅时间
-    OperateEnterprisePrepayment        // 企业预储值
-    OperateSubscribePause              // 暂停计费
-    OperateSubscribeContinue           // 继续计费
-    OperateDeposit                     // 调整押金
-    OperateProfile                     // 修改资料
-    OperateRefund                      // 处理退款
-    OperateHalt                        // 强制退租
-    OperateUnsubscribe                 // 骑手退租
+    OperatePersonBan            Operate = iota // 封禁身份
+    OperatePersonUnBan                         // 解封身份
+    OperateRiderBLock                          // 封禁账户
+    OperateRiderUnBLock                        // 解封账户
+    OperateSubscribeAlter                      // 修改订阅时间
+    OperateEnterprisePrepayment                // 企业预储值
+    OperateSubscribePause                      // 暂停计费
+    OperateSubscribeContinue                   // 继续计费
+    OperateDeposit                             // 调整押金
+    OperateProfile                             // 修改资料
+    OperateRefund                              // 处理退款
+    OperateHalt                                // 强制退租
+    OperateUnsubscribe                         // 骑手退租
+    OperateAssistanceAllocate                  // 救援分配
+    OperateAssistanceFree                      // 救援免费
+    OperateAssistanceRefuse                    // 救援拒绝
 )
 
 func (o Operate) String() string {
@@ -62,6 +65,12 @@ func (o Operate) String() string {
         return "强制退租"
     case OperateUnsubscribe:
         return "强制退租"
+    case OperateAssistanceAllocate:
+        return "救援分配"
+    case OperateAssistanceFree:
+        return "救援免费"
+    case OperateAssistanceRefuse:
+        return "救援拒绝"
     default:
         return "未知操作"
     }
