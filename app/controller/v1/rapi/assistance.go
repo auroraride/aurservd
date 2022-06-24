@@ -44,3 +44,19 @@ func (*assistance) Create(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.AssistanceCreateReq](c)
     return ctx.SendResponse(service.NewAssistanceWithRider(ctx.Rider).Create(req))
 }
+
+// Cancel
+// @ID           RiderAssistanceCancel
+// @Router       /rider/v1/assistance/cancel [POST]
+// @Summary      R5003 取消救援
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        body  body    model.AssistanceCancelReq  true  "取消请求"
+// @Success      200 {object}  model.StatusResponse  "请求成功"
+func (*assistance) Cancel(c echo.Context) (err error) {
+    ctx, req := app.RiderContextAndBinding[model.AssistanceCancelReq](c)
+    service.NewAssistanceWithRider(ctx.Rider).Cancel(req)
+    return ctx.SendResponse()
+}

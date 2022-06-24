@@ -232,7 +232,7 @@ func (s *assistanceService) Current(riderID uint64) *ent.Assistance {
 
 // Create 发起救援订单
 // 救援订单未支付的禁止办理所有业务
-// TODO 救援订单支付状态可以直接在后台修改为不需要支付
+// 救援订单支付状态可以直接在后台修改为不需要支付
 func (s *assistanceService) Create(req *model.AssistanceCreateReq) model.AssistanceCreateRes {
     sub := NewSubscribe().Recent(s.rider.ID)
     if sub == nil || sub.Status != model.SubscribeStatusUsing {
@@ -365,7 +365,7 @@ func (s *assistanceService) Allocate(req *model.AssistanceAllocateReq) {
         SetWait(int(time.Now().Sub(item.CreatedAt).Seconds())).
         Save(s.ctx)
 
-    // TODO 处理接单响应
+    // TODO 救援处理接单响应
     if err != nil {
         snag.Panic("分配失败")
     }
@@ -395,7 +395,7 @@ func (s *assistanceService) Free(req *model.AssistanceFreeReq) {
         snag.Panic("处理失败")
     }
 
-    // TODO 处理免费响应
+    // TODO 救援处理免费响应
 
     // 记录日志
     go logging.NewOperateLog().
@@ -428,7 +428,7 @@ func (s *assistanceService) Refuse(req *model.AssistanceRefuseReq) {
         snag.Panic("操作失败")
     }
 
-    // TODO 处理拒绝响应
+    // TODO 救援处理拒绝响应
 
     // 记录日志
     go logging.NewOperateLog().
@@ -440,4 +440,27 @@ func (s *assistanceService) Refuse(req *model.AssistanceRefuseReq) {
             fmt.Sprintf("%s (%s)", model.AssistanceStatus(model.AssistanceStatusRefused), req.Reason),
         ).
         Send()
+}
+
+// Cancel 取消救援
+func (s *assistanceService) Cancel(req *model.AssistanceCancelReq) {
+    // 查找未分配的救援
+    item, _ := s.orm.QueryNotDeleted().Where(assistance.OutTradeNo(req.OutTradeNo), assistance.RiderID(s.rider.ID)).First(s.ctx)
+    if item == nil {
+        snag.Panic("未找到救援信息")
+    }
+    if item.Status != model.AssistanceStatusPending {
+        snag.Panic("救援状态错误")
+    }
+    _, err := s.orm.SoftDeleteOne(item).
+        SetCancelReason(req.Reason).
+        SetCancelReasonDesc(req.Desc).
+        ClearCost().
+        Save(s.ctx)
+    if err != nil {
+        log.Error(err)
+        snag.Panic("取消失败")
+    }
+
+    // TODO 救援处理取消响应
 }

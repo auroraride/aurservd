@@ -27,6 +27,21 @@ definitions:
     - id
     - storeId
     type: object
+  model.AssistanceCancelReq:
+    properties:
+      desc:
+        description: 取消原因详细描述
+        type: string
+      outTradeNo:
+        description: '救援单号 '
+        type: string
+      reason:
+        description: '取消原因 '
+        type: string
+    required:
+    - outTradeNo
+    - reason
+    type: object
   model.AssistanceCreateReq:
     properties:
       address:
@@ -6644,6 +6659,33 @@ paths:
               type: string
             type: array
       summary: R5001 获取救援原因
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/assistance/cancel:
+    post:
+      consumes:
+      - application/json
+      operationId: RiderAssistanceCancel
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      - description: 取消请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssistanceCancelReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: R5003 取消救援
       tags:
       - '[R]骑手接口'
   /rider/v1/authenticator:

@@ -77,4 +77,5 @@ func loadRideRoutes() {
     // 救援
     g.GET("/assistance/breakdown", rapi.Assistance.Breakdown)
     g.POST("/assistance", rapi.Assistance.Create)
+    g.POST("/assistance/cancel", rapi.Assistance.Cancel)
 }

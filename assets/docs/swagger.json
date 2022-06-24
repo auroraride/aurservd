@@ -5343,6 +5343,47 @@
                 }
             }
         },
+        "/rider/v1/assistance/cancel": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R5003 取消救援",
+                "operationId": "RiderAssistanceCancel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "取消请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssistanceCancelReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/authenticator": {
             "post": {
                 "consumes": [
@@ -6491,6 +6532,27 @@
                 "storeId": {
                     "description": "门店ID ",
                     "type": "integer"
+                }
+            }
+        },
+        "model.AssistanceCancelReq": {
+            "type": "object",
+            "required": [
+                "outTradeNo",
+                "reason"
+            ],
+            "properties": {
+                "desc": {
+                    "description": "取消原因详细描述",
+                    "type": "string"
+                },
+                "outTradeNo": {
+                    "description": "救援单号 ",
+                    "type": "string"
+                },
+                "reason": {
+                    "description": "取消原因 ",
+                    "type": "string"
                 }
             }
         },

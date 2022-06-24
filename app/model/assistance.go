@@ -113,3 +113,9 @@ type AssistanceRefuseReq struct {
     ID     uint64 `json:"id" validate:"required" trans:"救援ID"`
     Reason string `json:"reason" validate:"required" trans:"拒绝原因"`
 }
+
+type AssistanceCancelReq struct {
+    OutTradeNo string `json:"outTradeNo" validate:"required" trans:"救援单号"`
+    Reason     string `json:"reason" validate:"required" trans:"取消原因"`
+    Desc       string `json:"desc"` // 取消原因详细描述
+}

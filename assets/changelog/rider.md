@@ -1,3 +1,15 @@
+## 2022-06-25
+
+#### 接口新增
+
+- [R5003 取消救援](http://localhost:5533/docs#tag/R/operation/RiderAssistanceCancel)
+
+
+
+
+
+<br />
+
 ## 2022-06-23
 
 #### 接口新增
