@@ -80,20 +80,15 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
     }
 
     // 查询设置电池型号
-    bms := make([]model.BatteryModel, len(req.Models))
     models := NewBattery().QueryModelsX(req.Models)
-    for i, bm := range models {
-        bms[i] = model.BatteryModel{
-            ID:    bm.ID,
-            Model: bm.Model,
-        }
+    for _, bm := range models {
+        res.Models = append(res.Models, bm.Model)
     }
     q.AddBms(models...)
 
     item := q.SaveX(s.ctx)
     res = new(model.CabinetItem)
     _ = copier.Copy(res, item)
-    res.Models = bms
 
     if item.Status == model.CabinetStatusNormal {
         go s.Deploy(item)
@@ -104,7 +99,7 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
 
 // List 查询电柜
 func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.PaginationRes) {
-    q := s.orm.QueryNotDeleted().WithCity()
+    q := s.orm.QueryNotDeleted().WithCity().WithBms()
     if req.Serial != nil {
         q.Where(cabinet.SerialContainsFold(*req.Serial))
     }
@@ -132,6 +127,10 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
                 ID:   city.ID,
                 Name: city.Name,
             }
+        }
+        bms := item.Edges.Bms
+        for _, bm := range bms {
+            res.Models = append(res.Models, bm.Model)
         }
         return res
     })

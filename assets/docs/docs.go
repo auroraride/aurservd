@@ -7506,7 +7506,7 @@ const docTemplate = `{
                     "description": "电池型号",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.BatteryModel"
+                        "type": "string"
                     }
                 },
                 "name": {
@@ -7746,7 +7746,7 @@ const docTemplate = `{
                     "description": "电池型号",
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.BatteryModel"
+                        "type": "string"
                     }
                 },
                 "name": {

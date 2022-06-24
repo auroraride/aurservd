@@ -14,7 +14,6 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/assistance"
-    "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
@@ -22,6 +21,7 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
+    log "github.com/sirupsen/logrus"
 )
 
 type assistanceService struct {
@@ -258,15 +258,15 @@ func (s *assistanceService) Nearby(req *model.IDQueryReq) (items []model.Assista
         EPhone   string  `json:"e_hone"`
     }
 
-    _ = ar.Ent.Store.QueryNotDeleted().
+    err := ar.Ent.Store.QueryNotDeleted().
         Where(store.EmployeeIDNotNil(), store.Status(model.StoreStatusOpen)).
         Modify(
             func(sel *sql.Selector) {
                 sel.Select(sel.C(store.FieldID), sel.C(store.FieldLng), sel.C(store.FieldLat), sel.C(store.FieldName)).
                     Where(sql.P(func(b *sql.Builder) {
-                        b.WriteString(fmt.Sprintf(`ST_DWithin(ST_GeogFromText('SRID=4326;POINT('||%s||' '||%s||')'), ST_GeogFromText('POINT(%f %f)'), %f)`, store.FieldLng, store.FieldLat, ass.Lng, ass.Lat, 50000.0))
+                        b.WriteString(fmt.Sprintf(`ST_DWithin(ST_GeogFromText('SRID=4326;POINT('||%s||' '||%s||')'), ST_GeogFromText('POINT(%f %f)'), %f)`, sel.C(store.FieldLng), sel.C(store.FieldLat), ass.Lng, ass.Lat, 50000.0))
                     })).
-                    AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(ST_GeogFromText('SRID=4326;POINT('||%s||' '||%s||')'), ST_GeogFromText('POINT(%f %f)'))`, store.FieldLng, store.FieldLat, ass.Lng, ass.Lat)), "distance").
+                    AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(ST_GeogFromText('SRID=4326;POINT('||%s||' '||%s||')'), ST_GeogFromText('POINT(%f %f)'))`, sel.C(store.FieldLng), sel.C(store.FieldLat), ass.Lng, ass.Lat)), "distance").
                     OrderBy(sql.Asc("distance"))
 
                 // 查找employee
@@ -279,17 +279,21 @@ func (s *assistanceService) Nearby(req *model.IDQueryReq) (items []model.Assista
                         sql.As(emt.C(employee.FieldPhone), "e_hone"),
                     )
 
-                // 查找city
-                ct := sql.Table(city.Table)
-                sel.Join(ct).
-                    On(sel.C(store.FieldCityID), ct.C(city.FieldID)).
-                    AppendSelect(
-                        sql.As(ct.C(city.FieldID), "cid"),
-                        sql.As(ct.C(city.FieldName), "c_name"),
-                    )
+                // // 查找city
+                // ct := sql.Table(city.Table)
+                // sel.Join(ct).
+                //     On(sel.C(store.FieldCityID), ct.C(city.FieldID)).
+                //     AppendSelect(
+                //         sql.As(ct.C(city.FieldID), "cid"),
+                //         sql.As(ct.C(city.FieldName), "c_name"),
+                //     )
             },
         ).
         Scan(s.ctx, &temps)
+
+    if err != nil {
+        log.Error(err)
+    }
 
     items = make([]model.AssistanceNearbyRes, len(temps))
 

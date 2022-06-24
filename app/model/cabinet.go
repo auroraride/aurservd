@@ -72,9 +72,9 @@ type CabinetItem struct {
     ID uint64 `json:"id"` // 电柜ID
     Sn string `json:"sn"` // 平台编码
     Cabinet
-    Models    []BatteryModel `json:"models"`              // 电池型号
-    City      *City          `json:"city,omitempty"`      // 城市
-    CreatedAt time.Time      `json:"createdAt,omitempty"` // 创建时间
+    Models    []string  `json:"models"`              // 电池型号
+    City      *City     `json:"city,omitempty"`      // 城市
+    CreatedAt time.Time `json:"createdAt,omitempty"` // 创建时间
 }
 
 // CabinetQueryReq 电柜查询请求

@@ -755,7 +755,7 @@ definitions:
       models:
         description: 电池型号
         items:
-          $ref: '#/definitions/model.BatteryModel'
+          type: string
         type: array
       name:
         description: '电柜名称 '
@@ -923,7 +923,7 @@ definitions:
       models:
         description: 电池型号
         items:
-          $ref: '#/definitions/model.BatteryModel'
+          type: string
         type: array
       name:
         description: '电柜名称 '

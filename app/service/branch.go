@@ -107,7 +107,17 @@ func (s *branchService) AddContract(id uint64, req *model.BranchContract) *ent.B
 // List 网点列表
 func (s *branchService) List(req *model.BranchListReq) *model.PaginationRes {
     q := s.orm.QueryNotDeleted().
-        Order(ent.Desc(branch.FieldID))
+        Order(ent.Desc(branch.FieldID)).
+        WithCity().
+        WithStores(func(sq *ent.StoreQuery) {
+            sq.Where(store.DeletedAtIsNil())
+        }).
+        WithCabinets(func(cq *ent.CabinetQuery) {
+            cq.Where(cabinet.DeletedAtIsNil()).WithBms()
+        }).
+        WithContracts(func(query *ent.BranchContractQuery) {
+            query.Order(ent.Desc(branchcontract.FieldID))
+        })
 
     if req.CityID != nil {
         q.Where(branch.CityID(*req.CityID))
@@ -116,13 +126,6 @@ func (s *branchService) List(req *model.BranchListReq) *model.PaginationRes {
     if req.Name != nil {
         q.Where(branch.NameContainsFold(*req.Name))
     }
-
-    q.WithCity().
-        WithStores().
-        WithCabinets().
-        WithContracts(func(query *ent.BranchContractQuery) {
-            query.Order(ent.Desc(branchcontract.FieldID))
-        })
 
     return model.ParsePaginationResponse[model.BranchItem, ent.Branch](
         q,
@@ -146,14 +149,16 @@ func (s *branchService) List(req *model.BranchListReq) *model.PaginationRes {
             }
             r.StoreTotal = len(item.Edges.Stores)
             for _, c := range item.Edges.Cabinets {
-                for _, cm := range c.Edges.Bms {
+                bms := c.Edges.Bms
+                if len(bms) > 0 {
+                    cm := bms[0]
                     str := strings.ToUpper(cm.Model)
 
                     if strings.HasPrefix(str, "60V") {
                         r.V60Total += 1
                     }
 
-                    if strings.HasPrefix(str, "70V") {
+                    if strings.HasPrefix(str, "72V") {
                         r.V72Total += 1
                     }
                 }
