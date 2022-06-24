@@ -206,7 +206,7 @@ func (s *assistanceService) Detail(id uint64) model.AssistanceDetail {
 // TODO 救援订单支付状态可以直接在后台修改为不需要支付
 func (s *assistanceService) Create(req *model.AssistanceCreateReq) model.AssistanceCreateRes {
     sub := NewSubscribe().Recent(s.rider.ID)
-    if sub.Status != model.SubscribeStatusUsing {
+    if sub == nil || sub.Status != model.SubscribeStatusUsing {
         snag.Panic("无法发起救援")
     }
 
