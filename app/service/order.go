@@ -448,6 +448,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
         _, err = tx.Subscribe.UpdateOneID(*trade.SubscribeID).
             AddRenewalDays(int(trade.Days)).
             AddRemaining(int(trade.Days)).
+            SetStatus(model.SubscribeStatusUsing).
             Save(ctx)
         if err != nil {
             log.Errorf("[ORDER PAID %s SUBSCRIBE(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
