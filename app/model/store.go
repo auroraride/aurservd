@@ -44,6 +44,12 @@ type Store struct {
     Name string `json:"name"` // 门店名称
 }
 
+type StoreLngLat struct {
+    Store
+    Lng float64 `json:"lng"`
+    Lat float64 `json:"lat"`
+}
+
 type StoreWithStatus struct {
     Store
     Status uint8 `json:"status"` // 门店状态

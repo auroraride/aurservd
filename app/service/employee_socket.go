@@ -8,11 +8,13 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/socket"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/gorilla/websocket"
+    "net/url"
     "sync"
 )
 
@@ -44,9 +46,9 @@ func NewEmployeeSocketWithEmployee(e *ent.Employee) *employeeSocketService {
     return s
 }
 
-func (s *employeeSocketService) DisConnect(conn *websocket.Conn) {
+func (s *employeeSocketService) DisConnect(hub *socket.WebsocketHub) {
     employeeClients.Range(func(key, value any) bool {
-        if _, ok := value.(*websocket.Conn); ok {
+        if v, ok := value.(*socket.WebsocketHub); ok && hub.ID == v.ID {
             employeeClients.Delete(key)
             return false
         }
@@ -54,44 +56,52 @@ func (s *employeeSocketService) DisConnect(conn *websocket.Conn) {
     })
 }
 
+// DisConnectByStoreID 删除原有的连接信息
 func (s *employeeSocketService) DisConnectByStoreID(storeID uint64) {
     client, ok := employeeClients.Load(storeID)
     if !ok {
         return
     }
     switch client.(type) {
-    case *websocket.Conn:
-        _ = client.(*websocket.Conn).Close()
+    case *socket.WebsocketHub:
+        _ = client.(*socket.WebsocketHub).Close()
         break
     }
 }
 
-func (s *employeeSocketService) Connect(conn *websocket.Conn, token string) *model.EmployeeSocketMessage {
+func (s *employeeSocketService) SendSocketMessage(hub *socket.WebsocketHub, message *model.EmployeeSocketMessage) {
+    _ = hub.WriteMessage(websocket.TextMessage, message.Bytes())
+}
+
+func (s *employeeSocketService) Connect(hub *socket.WebsocketHub, params url.Values) {
+    token := params.Get("token")
     id, _ := cache.Get(context.Background(), token).Uint64()
     emr, _ := ar.Ent.Employee.QueryNotDeleted().Where(employee.ID(id)).WithStore().First(s.ctx)
     if emr == nil {
-        return &model.EmployeeSocketMessage{
+        s.SendSocketMessage(hub, &model.EmployeeSocketMessage{
             Success: false,
             Message: "店员未找到",
-        }
+        })
+        return
     }
 
     eet := emr.Edges.Store
     if eet == nil {
-        return &model.EmployeeSocketMessage{
+        s.SendSocketMessage(hub, &model.EmployeeSocketMessage{
             Success: false,
             Message: "店员未上班",
-        }
+        })
+        return
     }
 
     // 存储连接信息
     s.DisConnectByStoreID(eet.ID)
-    employeeClients.Store(eet.ID, conn)
+    employeeClients.Store(eet.ID, hub)
 
-    return &model.EmployeeSocketMessage{
+    s.SendSocketMessage(hub, &model.EmployeeSocketMessage{
         Success: true,
         Message: "OK",
-    }
+    })
 }
 
 // Send 发送消息
@@ -102,8 +112,8 @@ func (s *employeeSocketService) Send(storeID uint64, res *model.EmployeeSocketMe
     }
 
     switch client.(type) {
-    case *websocket.Conn:
-        _ = client.(*websocket.Conn).WriteMessage(websocket.TextMessage, res.Bytes())
+    case *socket.WebsocketHub:
+        _ = client.(*socket.WebsocketHub).WriteMessage(websocket.TextMessage, res.Bytes())
         break
     }
 }

@@ -101,3 +101,8 @@ type CascaderOptionLevel3 struct {
     SelectOption
     Children *[]CascaderOptionLevel2 `json:"children"` // 级联选择子项目
 }
+
+type LngLat struct {
+    Lng float64 `json:"lng"`
+    Lat float64 `json:"lat"`
+}
