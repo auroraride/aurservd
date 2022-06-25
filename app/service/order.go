@@ -592,3 +592,26 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
         NewRiderOrder().Detail,
     )
 }
+
+// QueryStatus 查询订单状态
+func (s *orderService) QueryStatus(req *model.OrderStatusReq) (res model.OrderStatusRes) {
+    now := time.Now()
+    res = model.OrderStatusRes{
+        OutTradeNo: req.OutTradeNo,
+        Paid:       false,
+    }
+    for {
+        o, _ := ar.Ent.Order.QueryNotDeleted().Where(order.OutTradeNo(req.OutTradeNo)).First(s.ctx)
+
+        if o != nil && o.Status == model.OrderStatusPaid {
+            res.Paid = true
+            return
+        }
+
+        if time.Now().Sub(now).Seconds() > 30 {
+            return
+        }
+
+        time.Sleep(1 * time.Second)
+    }
+}

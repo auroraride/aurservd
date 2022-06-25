@@ -62,3 +62,18 @@ func (*assistance) Pay(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.AssistancePayReq](c)
     return ctx.SendResponse(service.NewAssistanceWithEmployee(ctx.Employee).Pay(req))
 }
+
+// PayStatus
+// @ID           EmployeeAssistancePayStatus
+// @Router       /employee/v1/assistance/pay [GET]
+// @Summary      E5004 救援支付状态
+// @Tags         [E]店员接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Employee-Token  header  string  true  "店员校验token"
+// @Param        outTradeNo     query  string  true  "订单编号"
+// @Success      200 {object}   model.OrderStatusRes  "请求成功"
+func (*assistance) PayStatus(c echo.Context) (err error) {
+    ctx, req := app.EmployeeContextAndBinding[model.OrderStatusReq](c)
+    return ctx.SendResponse(service.NewOrder().QueryStatus(req))
+}

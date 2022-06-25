@@ -3461,6 +3461,31 @@ paths:
       tags:
       - '[E]店员接口'
   /employee/v1/assistance/pay:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeAssistancePayStatus
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 订单编号
+        in: query
+        name: outTradeNo
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.OrderStatusRes'
+      summary: E5004 救援支付状态
+      tags:
+      - '[E]店员接口'
     post:
       consumes:
       - application/json

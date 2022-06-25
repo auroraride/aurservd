@@ -95,5 +95,5 @@ func (*order) Detail(c echo.Context) (err error) {
 // @Success      200 {object}   model.OrderStatusRes  "请求成功"
 func (*order) Status(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.OrderStatusReq](c)
-    return ctx.SendResponse(service.NewRiderOrderWithRider(ctx.Rider).QueryStatus(req))
+    return ctx.SendResponse(service.NewOrder().QueryStatus(req))
 }
