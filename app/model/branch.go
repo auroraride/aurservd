@@ -135,5 +135,5 @@ type BranchRidingReq struct {
 
 // BranchRidingRes 骑行规划时间返回
 type BranchRidingRes struct {
-    Minutes int `json:"minutes"` // 骑行规划时间(分钟)
+    Minutes float64 `json:"minutes"` // 骑行规划时间(分钟)
 }

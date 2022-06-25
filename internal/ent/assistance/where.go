@@ -296,6 +296,13 @@ func FreeReason(v string) predicate.Assistance {
 	})
 }
 
+// Duration applies equality check predicate on the "duration" field. It's identical to DurationEQ.
+func Duration(v int) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDuration), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
@@ -3015,6 +3022,96 @@ func FreeReasonEqualFold(v string) predicate.Assistance {
 func FreeReasonContainsFold(v string) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldFreeReason), v))
+	})
+}
+
+// DurationEQ applies the EQ predicate on the "duration" field.
+func DurationEQ(v int) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDuration), v))
+	})
+}
+
+// DurationNEQ applies the NEQ predicate on the "duration" field.
+func DurationNEQ(v int) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDuration), v))
+	})
+}
+
+// DurationIn applies the In predicate on the "duration" field.
+func DurationIn(vs ...int) predicate.Assistance {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Assistance(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDuration), v...))
+	})
+}
+
+// DurationNotIn applies the NotIn predicate on the "duration" field.
+func DurationNotIn(vs ...int) predicate.Assistance {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Assistance(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDuration), v...))
+	})
+}
+
+// DurationGT applies the GT predicate on the "duration" field.
+func DurationGT(v int) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDuration), v))
+	})
+}
+
+// DurationGTE applies the GTE predicate on the "duration" field.
+func DurationGTE(v int) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDuration), v))
+	})
+}
+
+// DurationLT applies the LT predicate on the "duration" field.
+func DurationLT(v int) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDuration), v))
+	})
+}
+
+// DurationLTE applies the LTE predicate on the "duration" field.
+func DurationLTE(v int) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDuration), v))
+	})
+}
+
+// DurationIsNil applies the IsNil predicate on the "duration" field.
+func DurationIsNil() predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldDuration)))
+	})
+}
+
+// DurationNotNil applies the NotNil predicate on the "duration" field.
+func DurationNotNil() predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldDuration)))
 	})
 }
 

@@ -9,9 +9,9 @@ import (
     "context"
     "entgo.io/ent/dialect/sql"
     "fmt"
-    "github.com/LucaTheHacker/go-haversine"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/internal/amap"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/assistance"
@@ -267,7 +267,6 @@ func (s *assistanceService) Create(req *model.AssistanceCreateReq) model.Assista
         SetStatus(model.AssistanceStatusPending).
         SetLng(req.Lng).
         SetLat(req.Lat).
-        // SetDistance(haversine.Distance(haversine.NewCoordinates(req.Lat, req.Lng), haversine.NewCoordinates(stb.Lat, stb.Lng)).Miles()).
         SetAddress(req.Address).
         SetBreakdown(req.Breakdown).
         SetBreakdownPhotos(req.BreakdownPhotos).
@@ -375,8 +374,11 @@ func (s *assistanceService) Allocate(req *model.AssistanceAllocateReq) {
 
     var err error
 
+    duration, distance := amap.New().DirectionRidingPlan(fmt.Sprintf("%f,%f", st.Lng, st.Lat), fmt.Sprintf("%f,%f", item.Lng, item.Lat))
+
     item, err = item.Update().
-        SetDistance(haversine.Distance(haversine.NewCoordinates(item.Lat, item.Lng), haversine.NewCoordinates(st.Lat, st.Lng)).Miles()).
+        SetDistance(distance).
+        SetDuration(duration).
         SetStoreID(st.ID).
         SetEmployeeID(*st.EmployeeID).
         SetStatus(model.AssistanceStatusAllocated).
@@ -496,4 +498,8 @@ func (s *assistanceService) Cancel(req *model.AssistanceCancelReq) {
         log.Error(err)
         snag.Panic("取消失败")
     }
+}
+
+func (s *assistanceService) RiderDetail() {
+
 }

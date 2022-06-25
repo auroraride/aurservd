@@ -9,7 +9,6 @@ import (
     "fmt"
     "github.com/go-resty/resty/v2"
     log "github.com/sirupsen/logrus"
-    "math"
     "strconv"
 )
 
@@ -52,17 +51,18 @@ func (a *amap) DirectionRiding(origin, destination string) (res *DirectionRiding
     return
 }
 
-// DirectionRidingMinutes 骑行规划
-func (a *amap) DirectionRidingMinutes(origin, destination string) (total int) {
+// DirectionRidingPlan 骑行规划
+func (a *amap) DirectionRidingPlan(origin, destination string) (seconds int, distance float64) {
     res := a.DirectionRiding(origin, destination)
     if res == nil || res.Status != "1" {
         return
     }
     for _, path := range res.Route.Paths {
-        for _, step := range path.Steps {
-            cost, _ := strconv.Atoi(step.Cost.Duration)
-            total += cost
-        }
+        cost, _ := strconv.Atoi(path.Duration)
+        d, err := strconv.ParseFloat(path.Distance, 10)
+        log.Println(err)
+        distance += d
+        seconds += cost
     }
-    return int(math.Round(float64(total) / 60.0))
+    return
 }

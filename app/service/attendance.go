@@ -72,11 +72,11 @@ func (s *attendanceService) check(req *model.AttendancePrecheck) (*ent.Store, fl
         snag.Panic("未找到门店地理信息")
     }
     distance := haversine.Distance(haversine.NewCoordinates(*req.Lat, *req.Lng), haversine.NewCoordinates(b.Lat, b.Lng))
-    miles := distance.Miles()
-    if miles > 1000 {
+    meters := distance.Kilometers() * 1000
+    if meters > 1000 {
         snag.Panic("距离过远")
     }
-    return st, miles, NewInventory().ListStockInventory(st.ID, model.InventoryListReq{Count: true})
+    return st, meters, NewInventory().ListStockInventory(st.ID, model.InventoryListReq{Count: true})
 }
 
 func (s *attendanceService) Precheck(req *model.AttendancePrecheck) []model.InventoryItemWithNum {

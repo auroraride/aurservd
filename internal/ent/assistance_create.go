@@ -389,6 +389,20 @@ func (ac *AssistanceCreate) SetNillableFreeReason(s *string) *AssistanceCreate {
 	return ac
 }
 
+// SetDuration sets the "duration" field.
+func (ac *AssistanceCreate) SetDuration(i int) *AssistanceCreate {
+	ac.mutation.SetDuration(i)
+	return ac
+}
+
+// SetNillableDuration sets the "duration" field if the given value is not nil.
+func (ac *AssistanceCreate) SetNillableDuration(i *int) *AssistanceCreate {
+	if i != nil {
+		ac.SetDuration(*i)
+	}
+	return ac
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (ac *AssistanceCreate) SetStore(s *Store) *AssistanceCreate {
 	return ac.SetStoreID(s.ID)
@@ -812,6 +826,14 @@ func (ac *AssistanceCreate) createSpec() (*Assistance, *sqlgraph.CreateSpec) {
 			Column: assistance.FieldFreeReason,
 		})
 		_node.FreeReason = &value
+	}
+	if value, ok := ac.mutation.Duration(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: assistance.FieldDuration,
+		})
+		_node.Duration = value
 	}
 	if nodes := ac.mutation.StoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1521,6 +1543,30 @@ func (u *AssistanceUpsert) ClearFreeReason() *AssistanceUpsert {
 	return u
 }
 
+// SetDuration sets the "duration" field.
+func (u *AssistanceUpsert) SetDuration(v int) *AssistanceUpsert {
+	u.Set(assistance.FieldDuration, v)
+	return u
+}
+
+// UpdateDuration sets the "duration" field to the value that was provided on create.
+func (u *AssistanceUpsert) UpdateDuration() *AssistanceUpsert {
+	u.SetExcluded(assistance.FieldDuration)
+	return u
+}
+
+// AddDuration adds v to the "duration" field.
+func (u *AssistanceUpsert) AddDuration(v int) *AssistanceUpsert {
+	u.Add(assistance.FieldDuration, v)
+	return u
+}
+
+// ClearDuration clears the value of the "duration" field.
+func (u *AssistanceUpsert) ClearDuration() *AssistanceUpsert {
+	u.SetNull(assistance.FieldDuration)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -2191,6 +2237,34 @@ func (u *AssistanceUpsertOne) UpdateFreeReason() *AssistanceUpsertOne {
 func (u *AssistanceUpsertOne) ClearFreeReason() *AssistanceUpsertOne {
 	return u.Update(func(s *AssistanceUpsert) {
 		s.ClearFreeReason()
+	})
+}
+
+// SetDuration sets the "duration" field.
+func (u *AssistanceUpsertOne) SetDuration(v int) *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetDuration(v)
+	})
+}
+
+// AddDuration adds v to the "duration" field.
+func (u *AssistanceUpsertOne) AddDuration(v int) *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.AddDuration(v)
+	})
+}
+
+// UpdateDuration sets the "duration" field to the value that was provided on create.
+func (u *AssistanceUpsertOne) UpdateDuration() *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdateDuration()
+	})
+}
+
+// ClearDuration clears the value of the "duration" field.
+func (u *AssistanceUpsertOne) ClearDuration() *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.ClearDuration()
 	})
 }
 
@@ -3028,6 +3102,34 @@ func (u *AssistanceUpsertBulk) UpdateFreeReason() *AssistanceUpsertBulk {
 func (u *AssistanceUpsertBulk) ClearFreeReason() *AssistanceUpsertBulk {
 	return u.Update(func(s *AssistanceUpsert) {
 		s.ClearFreeReason()
+	})
+}
+
+// SetDuration sets the "duration" field.
+func (u *AssistanceUpsertBulk) SetDuration(v int) *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetDuration(v)
+	})
+}
+
+// AddDuration adds v to the "duration" field.
+func (u *AssistanceUpsertBulk) AddDuration(v int) *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.AddDuration(v)
+	})
+}
+
+// UpdateDuration sets the "duration" field to the value that was provided on create.
+func (u *AssistanceUpsertBulk) UpdateDuration() *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdateDuration()
+	})
+}
+
+// ClearDuration clears the value of the "duration" field.
+func (u *AssistanceUpsertBulk) ClearDuration() *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.ClearDuration()
 	})
 }
 

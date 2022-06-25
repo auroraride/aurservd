@@ -116,6 +116,9 @@ type Assistance struct {
 	// FreeReason holds the value of the "free_reason" field.
 	// 免费理由
 	FreeReason *string `json:"free_reason,omitempty"`
+	// Duration holds the value of the "duration" field.
+	// 路径规划时间 (s)
+	Duration int `json:"duration,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssistanceQuery when eager-loading is set.
 	Edges AssistanceEdges `json:"edges"`
@@ -233,7 +236,7 @@ func (*Assistance) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case assistance.FieldLng, assistance.FieldLat, assistance.FieldDistance, assistance.FieldCost:
 			values[i] = new(sql.NullFloat64)
-		case assistance.FieldID, assistance.FieldStoreID, assistance.FieldRiderID, assistance.FieldSubscribeID, assistance.FieldCityID, assistance.FieldEmployeeID, assistance.FieldOrderID, assistance.FieldStatus, assistance.FieldWait:
+		case assistance.FieldID, assistance.FieldStoreID, assistance.FieldRiderID, assistance.FieldSubscribeID, assistance.FieldCityID, assistance.FieldEmployeeID, assistance.FieldOrderID, assistance.FieldStatus, assistance.FieldWait, assistance.FieldDuration:
 			values[i] = new(sql.NullInt64)
 		case assistance.FieldRemark, assistance.FieldOutTradeNo, assistance.FieldAddress, assistance.FieldBreakdown, assistance.FieldBreakdownDesc, assistance.FieldCancelReason, assistance.FieldCancelReasonDesc, assistance.FieldReason, assistance.FieldDetectPhoto, assistance.FieldJointPhoto, assistance.FieldRefusedDesc, assistance.FieldFreeReason:
 			values[i] = new(sql.NullString)
@@ -468,6 +471,12 @@ func (a *Assistance) assignValues(columns []string, values []interface{}) error 
 				a.FreeReason = new(string)
 				*a.FreeReason = value.String
 			}
+		case assistance.FieldDuration:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field duration", values[i])
+			} else if value.Valid {
+				a.Duration = int(value.Int64)
+			}
 		}
 	}
 	return nil
@@ -610,6 +619,8 @@ func (a *Assistance) String() string {
 		builder.WriteString(", free_reason=")
 		builder.WriteString(*v)
 	}
+	builder.WriteString(", duration=")
+	builder.WriteString(fmt.Sprintf("%v", a.Duration))
 	builder.WriteByte(')')
 	return builder.String()
 }

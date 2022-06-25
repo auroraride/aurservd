@@ -517,6 +517,33 @@ func (au *AssistanceUpdate) ClearFreeReason() *AssistanceUpdate {
 	return au
 }
 
+// SetDuration sets the "duration" field.
+func (au *AssistanceUpdate) SetDuration(i int) *AssistanceUpdate {
+	au.mutation.ResetDuration()
+	au.mutation.SetDuration(i)
+	return au
+}
+
+// SetNillableDuration sets the "duration" field if the given value is not nil.
+func (au *AssistanceUpdate) SetNillableDuration(i *int) *AssistanceUpdate {
+	if i != nil {
+		au.SetDuration(*i)
+	}
+	return au
+}
+
+// AddDuration adds i to the "duration" field.
+func (au *AssistanceUpdate) AddDuration(i int) *AssistanceUpdate {
+	au.mutation.AddDuration(i)
+	return au
+}
+
+// ClearDuration clears the value of the "duration" field.
+func (au *AssistanceUpdate) ClearDuration() *AssistanceUpdate {
+	au.mutation.ClearDuration()
+	return au
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (au *AssistanceUpdate) SetStore(s *Store) *AssistanceUpdate {
 	return au.SetStoreID(s.ID)
@@ -999,6 +1026,26 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: assistance.FieldFreeReason,
+		})
+	}
+	if value, ok := au.mutation.Duration(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: assistance.FieldDuration,
+		})
+	}
+	if value, ok := au.mutation.AddedDuration(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: assistance.FieldDuration,
+		})
+	}
+	if au.mutation.DurationCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Column: assistance.FieldDuration,
 		})
 	}
 	if au.mutation.StoreCleared() {
@@ -1712,6 +1759,33 @@ func (auo *AssistanceUpdateOne) ClearFreeReason() *AssistanceUpdateOne {
 	return auo
 }
 
+// SetDuration sets the "duration" field.
+func (auo *AssistanceUpdateOne) SetDuration(i int) *AssistanceUpdateOne {
+	auo.mutation.ResetDuration()
+	auo.mutation.SetDuration(i)
+	return auo
+}
+
+// SetNillableDuration sets the "duration" field if the given value is not nil.
+func (auo *AssistanceUpdateOne) SetNillableDuration(i *int) *AssistanceUpdateOne {
+	if i != nil {
+		auo.SetDuration(*i)
+	}
+	return auo
+}
+
+// AddDuration adds i to the "duration" field.
+func (auo *AssistanceUpdateOne) AddDuration(i int) *AssistanceUpdateOne {
+	auo.mutation.AddDuration(i)
+	return auo
+}
+
+// ClearDuration clears the value of the "duration" field.
+func (auo *AssistanceUpdateOne) ClearDuration() *AssistanceUpdateOne {
+	auo.mutation.ClearDuration()
+	return auo
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (auo *AssistanceUpdateOne) SetStore(s *Store) *AssistanceUpdateOne {
 	return auo.SetStoreID(s.ID)
@@ -2224,6 +2298,26 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: assistance.FieldFreeReason,
+		})
+	}
+	if value, ok := auo.mutation.Duration(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: assistance.FieldDuration,
+		})
+	}
+	if value, ok := auo.mutation.AddedDuration(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: assistance.FieldDuration,
+		})
+	}
+	if auo.mutation.DurationCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Column: assistance.FieldDuration,
 		})
 	}
 	if auo.mutation.StoreCleared() {

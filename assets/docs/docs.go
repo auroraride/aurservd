@@ -7411,7 +7411,7 @@ const docTemplate = `{
             "properties": {
                 "minutes": {
                     "description": "骑行规划时间(分钟)",
-                    "type": "integer"
+                    "type": "number"
                 }
             }
         },

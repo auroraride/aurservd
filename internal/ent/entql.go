@@ -91,6 +91,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			assistance.FieldAllocateAt:       {Type: field.TypeTime, Column: assistance.FieldAllocateAt},
 			assistance.FieldWait:             {Type: field.TypeInt, Column: assistance.FieldWait},
 			assistance.FieldFreeReason:       {Type: field.TypeString, Column: assistance.FieldFreeReason},
+			assistance.FieldDuration:         {Type: field.TypeInt, Column: assistance.FieldDuration},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -2743,6 +2744,11 @@ func (f *AssistanceFilter) WhereWait(p entql.IntP) {
 // WhereFreeReason applies the entql string predicate on the free_reason field.
 func (f *AssistanceFilter) WhereFreeReason(p entql.StringP) {
 	f.Where(p.Field(assistance.FieldFreeReason))
+}
+
+// WhereDuration applies the entql int predicate on the duration field.
+func (f *AssistanceFilter) WhereDuration(p entql.IntP) {
+	f.Where(p.Field(assistance.FieldDuration))
 }
 
 // WhereHasStore applies a predicate to check if query has an edge store.

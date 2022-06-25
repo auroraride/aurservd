@@ -77,6 +77,8 @@ const (
 	FieldWait = "wait"
 	// FieldFreeReason holds the string denoting the free_reason field in the database.
 	FieldFreeReason = "free_reason"
+	// FieldDuration holds the string denoting the duration field in the database.
+	FieldDuration = "duration"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
@@ -170,6 +172,7 @@ var Columns = []string{
 	FieldAllocateAt,
 	FieldWait,
 	FieldFreeReason,
+	FieldDuration,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

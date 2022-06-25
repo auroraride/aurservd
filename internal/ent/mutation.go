@@ -133,6 +133,8 @@ type AssistanceMutation struct {
 	wait               *int
 	addwait            *int
 	free_reason        *string
+	duration           *int
+	addduration        *int
 	clearedFields      map[string]struct{}
 	store              *uint64
 	clearedstore       bool
@@ -1770,6 +1772,76 @@ func (m *AssistanceMutation) ResetFreeReason() {
 	delete(m.clearedFields, assistance.FieldFreeReason)
 }
 
+// SetDuration sets the "duration" field.
+func (m *AssistanceMutation) SetDuration(i int) {
+	m.duration = &i
+	m.addduration = nil
+}
+
+// Duration returns the value of the "duration" field in the mutation.
+func (m *AssistanceMutation) Duration() (r int, exists bool) {
+	v := m.duration
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDuration returns the old "duration" field's value of the Assistance entity.
+// If the Assistance object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AssistanceMutation) OldDuration(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDuration is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDuration requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDuration: %w", err)
+	}
+	return oldValue.Duration, nil
+}
+
+// AddDuration adds i to the "duration" field.
+func (m *AssistanceMutation) AddDuration(i int) {
+	if m.addduration != nil {
+		*m.addduration += i
+	} else {
+		m.addduration = &i
+	}
+}
+
+// AddedDuration returns the value that was added to the "duration" field in this mutation.
+func (m *AssistanceMutation) AddedDuration() (r int, exists bool) {
+	v := m.addduration
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDuration clears the value of the "duration" field.
+func (m *AssistanceMutation) ClearDuration() {
+	m.duration = nil
+	m.addduration = nil
+	m.clearedFields[assistance.FieldDuration] = struct{}{}
+}
+
+// DurationCleared returns if the "duration" field was cleared in this mutation.
+func (m *AssistanceMutation) DurationCleared() bool {
+	_, ok := m.clearedFields[assistance.FieldDuration]
+	return ok
+}
+
+// ResetDuration resets all changes to the "duration" field.
+func (m *AssistanceMutation) ResetDuration() {
+	m.duration = nil
+	m.addduration = nil
+	delete(m.clearedFields, assistance.FieldDuration)
+}
+
 // ClearStore clears the "store" edge to the Store entity.
 func (m *AssistanceMutation) ClearStore() {
 	m.clearedstore = true
@@ -1945,7 +2017,7 @@ func (m *AssistanceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AssistanceMutation) Fields() []string {
-	fields := make([]string, 0, 32)
+	fields := make([]string, 0, 33)
 	if m.created_at != nil {
 		fields = append(fields, assistance.FieldCreatedAt)
 	}
@@ -2042,6 +2114,9 @@ func (m *AssistanceMutation) Fields() []string {
 	if m.free_reason != nil {
 		fields = append(fields, assistance.FieldFreeReason)
 	}
+	if m.duration != nil {
+		fields = append(fields, assistance.FieldDuration)
+	}
 	return fields
 }
 
@@ -2114,6 +2189,8 @@ func (m *AssistanceMutation) Field(name string) (ent.Value, bool) {
 		return m.Wait()
 	case assistance.FieldFreeReason:
 		return m.FreeReason()
+	case assistance.FieldDuration:
+		return m.Duration()
 	}
 	return nil, false
 }
@@ -2187,6 +2264,8 @@ func (m *AssistanceMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldWait(ctx)
 	case assistance.FieldFreeReason:
 		return m.OldFreeReason(ctx)
+	case assistance.FieldDuration:
+		return m.OldDuration(ctx)
 	}
 	return nil, fmt.Errorf("unknown Assistance field %s", name)
 }
@@ -2420,6 +2499,13 @@ func (m *AssistanceMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetFreeReason(v)
 		return nil
+	case assistance.FieldDuration:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDuration(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Assistance field %s", name)
 }
@@ -2446,6 +2532,9 @@ func (m *AssistanceMutation) AddedFields() []string {
 	if m.addwait != nil {
 		fields = append(fields, assistance.FieldWait)
 	}
+	if m.addduration != nil {
+		fields = append(fields, assistance.FieldDuration)
+	}
 	return fields
 }
 
@@ -2466,6 +2555,8 @@ func (m *AssistanceMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedCost()
 	case assistance.FieldWait:
 		return m.AddedWait()
+	case assistance.FieldDuration:
+		return m.AddedDuration()
 	}
 	return nil, false
 }
@@ -2516,6 +2607,13 @@ func (m *AssistanceMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddWait(v)
+		return nil
+	case assistance.FieldDuration:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDuration(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Assistance numeric field %s", name)
@@ -2581,6 +2679,9 @@ func (m *AssistanceMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(assistance.FieldFreeReason) {
 		fields = append(fields, assistance.FieldFreeReason)
+	}
+	if m.FieldCleared(assistance.FieldDuration) {
+		fields = append(fields, assistance.FieldDuration)
 	}
 	return fields
 }
@@ -2652,6 +2753,9 @@ func (m *AssistanceMutation) ClearField(name string) error {
 		return nil
 	case assistance.FieldFreeReason:
 		m.ClearFreeReason()
+		return nil
+	case assistance.FieldDuration:
+		m.ClearDuration()
 		return nil
 	}
 	return fmt.Errorf("unknown Assistance nullable field %s", name)
@@ -2756,6 +2860,9 @@ func (m *AssistanceMutation) ResetField(name string) error {
 		return nil
 	case assistance.FieldFreeReason:
 		m.ResetFreeReason()
+		return nil
+	case assistance.FieldDuration:
+		m.ResetDuration()
 		return nil
 	}
 	return fmt.Errorf("unknown Assistance field %s", name)

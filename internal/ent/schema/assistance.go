@@ -47,6 +47,7 @@ func (Assistance) Fields() []ent.Field {
         field.Time("allocate_at").Optional().Nillable().Comment("分配时间"),
         field.Int("wait").Default(0).Comment("分配等待时间(s)"),
         field.String("free_reason").Optional().Nillable().Comment("免费理由"),
+        field.Int("duration").Optional().Comment("路径规划时间 (s)"),
     }
 }
 
