@@ -7,6 +7,7 @@ package payment
 
 import (
     "context"
+    "errors"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
@@ -88,6 +89,29 @@ func (c *alipayClient) AppPay(pc *model.PaymentCache) (string, error) {
         TimeExpire: time.Now().Add(10 * time.Minute).Format(carbon.DateTimeLayout),
     }
     return c.TradeAppPay(trade)
+}
+
+func (c *alipayClient) Native(pc *model.PaymentCache) (string, error) {
+    cfg := ar.Config.Payment.Alipay
+    amount, subject, no := pc.GetPaymentArgs()
+    trade := alipay.TradePreCreate{
+        Trade: alipay.Trade{
+            TotalAmount: fmt.Sprintf("%.2f", amount),
+            NotifyURL:   cfg.NotifyUrl,
+            Subject:     subject,
+            OutTradeNo:  no,
+        },
+    }
+    res, err := c.TradePreCreate(trade)
+    if err != nil {
+        return "", err
+    }
+
+    if !res.IsSuccess() {
+        return "", errors.New("支付二维码生成失败")
+    }
+
+    return res.Content.QRCode, nil
 }
 
 // Refund 退款

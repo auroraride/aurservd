@@ -135,6 +135,10 @@ type AssistanceMutation struct {
 	free_reason        *string
 	duration           *int
 	addduration        *int
+	fail_reason        *string
+	process_at         *time.Time
+	price              *float64
+	addprice           *float64
 	clearedFields      map[string]struct{}
 	store              *uint64
 	clearedstore       bool
@@ -1842,6 +1846,174 @@ func (m *AssistanceMutation) ResetDuration() {
 	delete(m.clearedFields, assistance.FieldDuration)
 }
 
+// SetFailReason sets the "fail_reason" field.
+func (m *AssistanceMutation) SetFailReason(s string) {
+	m.fail_reason = &s
+}
+
+// FailReason returns the value of the "fail_reason" field in the mutation.
+func (m *AssistanceMutation) FailReason() (r string, exists bool) {
+	v := m.fail_reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFailReason returns the old "fail_reason" field's value of the Assistance entity.
+// If the Assistance object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AssistanceMutation) OldFailReason(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFailReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFailReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFailReason: %w", err)
+	}
+	return oldValue.FailReason, nil
+}
+
+// ClearFailReason clears the value of the "fail_reason" field.
+func (m *AssistanceMutation) ClearFailReason() {
+	m.fail_reason = nil
+	m.clearedFields[assistance.FieldFailReason] = struct{}{}
+}
+
+// FailReasonCleared returns if the "fail_reason" field was cleared in this mutation.
+func (m *AssistanceMutation) FailReasonCleared() bool {
+	_, ok := m.clearedFields[assistance.FieldFailReason]
+	return ok
+}
+
+// ResetFailReason resets all changes to the "fail_reason" field.
+func (m *AssistanceMutation) ResetFailReason() {
+	m.fail_reason = nil
+	delete(m.clearedFields, assistance.FieldFailReason)
+}
+
+// SetProcessAt sets the "process_at" field.
+func (m *AssistanceMutation) SetProcessAt(t time.Time) {
+	m.process_at = &t
+}
+
+// ProcessAt returns the value of the "process_at" field in the mutation.
+func (m *AssistanceMutation) ProcessAt() (r time.Time, exists bool) {
+	v := m.process_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProcessAt returns the old "process_at" field's value of the Assistance entity.
+// If the Assistance object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AssistanceMutation) OldProcessAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProcessAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProcessAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProcessAt: %w", err)
+	}
+	return oldValue.ProcessAt, nil
+}
+
+// ClearProcessAt clears the value of the "process_at" field.
+func (m *AssistanceMutation) ClearProcessAt() {
+	m.process_at = nil
+	m.clearedFields[assistance.FieldProcessAt] = struct{}{}
+}
+
+// ProcessAtCleared returns if the "process_at" field was cleared in this mutation.
+func (m *AssistanceMutation) ProcessAtCleared() bool {
+	_, ok := m.clearedFields[assistance.FieldProcessAt]
+	return ok
+}
+
+// ResetProcessAt resets all changes to the "process_at" field.
+func (m *AssistanceMutation) ResetProcessAt() {
+	m.process_at = nil
+	delete(m.clearedFields, assistance.FieldProcessAt)
+}
+
+// SetPrice sets the "price" field.
+func (m *AssistanceMutation) SetPrice(f float64) {
+	m.price = &f
+	m.addprice = nil
+}
+
+// Price returns the value of the "price" field in the mutation.
+func (m *AssistanceMutation) Price() (r float64, exists bool) {
+	v := m.price
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPrice returns the old "price" field's value of the Assistance entity.
+// If the Assistance object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AssistanceMutation) OldPrice(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPrice is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPrice requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPrice: %w", err)
+	}
+	return oldValue.Price, nil
+}
+
+// AddPrice adds f to the "price" field.
+func (m *AssistanceMutation) AddPrice(f float64) {
+	if m.addprice != nil {
+		*m.addprice += f
+	} else {
+		m.addprice = &f
+	}
+}
+
+// AddedPrice returns the value that was added to the "price" field in this mutation.
+func (m *AssistanceMutation) AddedPrice() (r float64, exists bool) {
+	v := m.addprice
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearPrice clears the value of the "price" field.
+func (m *AssistanceMutation) ClearPrice() {
+	m.price = nil
+	m.addprice = nil
+	m.clearedFields[assistance.FieldPrice] = struct{}{}
+}
+
+// PriceCleared returns if the "price" field was cleared in this mutation.
+func (m *AssistanceMutation) PriceCleared() bool {
+	_, ok := m.clearedFields[assistance.FieldPrice]
+	return ok
+}
+
+// ResetPrice resets all changes to the "price" field.
+func (m *AssistanceMutation) ResetPrice() {
+	m.price = nil
+	m.addprice = nil
+	delete(m.clearedFields, assistance.FieldPrice)
+}
+
 // ClearStore clears the "store" edge to the Store entity.
 func (m *AssistanceMutation) ClearStore() {
 	m.clearedstore = true
@@ -2017,7 +2189,7 @@ func (m *AssistanceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AssistanceMutation) Fields() []string {
-	fields := make([]string, 0, 33)
+	fields := make([]string, 0, 36)
 	if m.created_at != nil {
 		fields = append(fields, assistance.FieldCreatedAt)
 	}
@@ -2117,6 +2289,15 @@ func (m *AssistanceMutation) Fields() []string {
 	if m.duration != nil {
 		fields = append(fields, assistance.FieldDuration)
 	}
+	if m.fail_reason != nil {
+		fields = append(fields, assistance.FieldFailReason)
+	}
+	if m.process_at != nil {
+		fields = append(fields, assistance.FieldProcessAt)
+	}
+	if m.price != nil {
+		fields = append(fields, assistance.FieldPrice)
+	}
 	return fields
 }
 
@@ -2191,6 +2372,12 @@ func (m *AssistanceMutation) Field(name string) (ent.Value, bool) {
 		return m.FreeReason()
 	case assistance.FieldDuration:
 		return m.Duration()
+	case assistance.FieldFailReason:
+		return m.FailReason()
+	case assistance.FieldProcessAt:
+		return m.ProcessAt()
+	case assistance.FieldPrice:
+		return m.Price()
 	}
 	return nil, false
 }
@@ -2266,6 +2453,12 @@ func (m *AssistanceMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldFreeReason(ctx)
 	case assistance.FieldDuration:
 		return m.OldDuration(ctx)
+	case assistance.FieldFailReason:
+		return m.OldFailReason(ctx)
+	case assistance.FieldProcessAt:
+		return m.OldProcessAt(ctx)
+	case assistance.FieldPrice:
+		return m.OldPrice(ctx)
 	}
 	return nil, fmt.Errorf("unknown Assistance field %s", name)
 }
@@ -2506,6 +2699,27 @@ func (m *AssistanceMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDuration(v)
 		return nil
+	case assistance.FieldFailReason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFailReason(v)
+		return nil
+	case assistance.FieldProcessAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProcessAt(v)
+		return nil
+	case assistance.FieldPrice:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPrice(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Assistance field %s", name)
 }
@@ -2535,6 +2749,9 @@ func (m *AssistanceMutation) AddedFields() []string {
 	if m.addduration != nil {
 		fields = append(fields, assistance.FieldDuration)
 	}
+	if m.addprice != nil {
+		fields = append(fields, assistance.FieldPrice)
+	}
 	return fields
 }
 
@@ -2557,6 +2774,8 @@ func (m *AssistanceMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedWait()
 	case assistance.FieldDuration:
 		return m.AddedDuration()
+	case assistance.FieldPrice:
+		return m.AddedPrice()
 	}
 	return nil, false
 }
@@ -2614,6 +2833,13 @@ func (m *AssistanceMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddDuration(v)
+		return nil
+	case assistance.FieldPrice:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPrice(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Assistance numeric field %s", name)
@@ -2682,6 +2908,15 @@ func (m *AssistanceMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(assistance.FieldDuration) {
 		fields = append(fields, assistance.FieldDuration)
+	}
+	if m.FieldCleared(assistance.FieldFailReason) {
+		fields = append(fields, assistance.FieldFailReason)
+	}
+	if m.FieldCleared(assistance.FieldProcessAt) {
+		fields = append(fields, assistance.FieldProcessAt)
+	}
+	if m.FieldCleared(assistance.FieldPrice) {
+		fields = append(fields, assistance.FieldPrice)
 	}
 	return fields
 }
@@ -2756,6 +2991,15 @@ func (m *AssistanceMutation) ClearField(name string) error {
 		return nil
 	case assistance.FieldDuration:
 		m.ClearDuration()
+		return nil
+	case assistance.FieldFailReason:
+		m.ClearFailReason()
+		return nil
+	case assistance.FieldProcessAt:
+		m.ClearProcessAt()
+		return nil
+	case assistance.FieldPrice:
+		m.ClearPrice()
 		return nil
 	}
 	return fmt.Errorf("unknown Assistance nullable field %s", name)
@@ -2863,6 +3107,15 @@ func (m *AssistanceMutation) ResetField(name string) error {
 		return nil
 	case assistance.FieldDuration:
 		m.ResetDuration()
+		return nil
+	case assistance.FieldFailReason:
+		m.ResetFailReason()
+		return nil
+	case assistance.FieldProcessAt:
+		m.ResetProcessAt()
+		return nil
+	case assistance.FieldPrice:
+		m.ResetPrice()
 		return nil
 	}
 	return fmt.Errorf("unknown Assistance field %s", name)

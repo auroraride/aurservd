@@ -1,0 +1,50 @@
+// Copyright (C) liasica. 2022-present.
+//
+// Created at 2022-06-25
+// Based on aurservd by liasica, magicrolan@qq.com.
+
+package eapi
+
+import (
+    "github.com/auroraride/aurservd/app"
+    "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/service"
+    "github.com/labstack/echo/v4"
+)
+
+type assistance struct{}
+
+var Assistance = new(assistance)
+
+// Detail
+// @ID           EmployeeAssistanceDetail
+// @Router       /employee/v1/assistance/{id} [GET]
+// @Summary      E5001 获取救援详情
+// @Tags         [E]店员接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Employee-Token  header  string  true  "店员校验token"
+// @Param        id  path  uint64  true  "救援ID"
+// @Success      200  {object}  model.AssistanceEmployeeDetailRes  "请求成功"
+func (*assistance) Detail(c echo.Context) (err error) {
+    ctx, req := app.EmployeeContextAndBinding[model.IDParamReq](c)
+    return ctx.SendResponse(
+        service.NewAssistanceWithEmployee(ctx.Employee).EmployeeDetail(req.ID),
+    )
+}
+
+// Process
+// @ID           EmployeeAssistanceProcess
+// @Router       /employee/v1/assistance/process [POST]
+// @Summary      E5002 处理救援
+// @Tags         [E]店员接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Employee-Token  header  string  true  "店员校验token"
+// @Param        body  body     model.AssistanceProcessReq  true  "救援处理详情"
+// @Success      200  {object}  model.AssistanceProcessRes  "请求成功"
+func (*assistance) Process(c echo.Context) (err error) {
+    ctx, req := app.EmployeeContextAndBinding[model.AssistanceProcessReq](c)
+
+    return ctx.SendResponse(service.NewAssistanceWithEmployee(ctx.Employee).Process(req))
+}

@@ -25,3 +25,9 @@ func (*decimalTool) Sub(f1, f2 float64) float64 {
     f, _ := decimal.NewFromFloat(f1).Sub(decimal.NewFromFloat(f2)).Float64()
     return f
 }
+
+// Mul returns f1 × f2
+func (*decimalTool) Mul(f1, f2 float64) float64 {
+    f, _ := decimal.NewFromFloat(f1).Mul(decimal.NewFromFloat(f2)).Float64()
+    return f
+}

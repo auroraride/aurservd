@@ -544,6 +544,73 @@ func (au *AssistanceUpdate) ClearDuration() *AssistanceUpdate {
 	return au
 }
 
+// SetFailReason sets the "fail_reason" field.
+func (au *AssistanceUpdate) SetFailReason(s string) *AssistanceUpdate {
+	au.mutation.SetFailReason(s)
+	return au
+}
+
+// SetNillableFailReason sets the "fail_reason" field if the given value is not nil.
+func (au *AssistanceUpdate) SetNillableFailReason(s *string) *AssistanceUpdate {
+	if s != nil {
+		au.SetFailReason(*s)
+	}
+	return au
+}
+
+// ClearFailReason clears the value of the "fail_reason" field.
+func (au *AssistanceUpdate) ClearFailReason() *AssistanceUpdate {
+	au.mutation.ClearFailReason()
+	return au
+}
+
+// SetProcessAt sets the "process_at" field.
+func (au *AssistanceUpdate) SetProcessAt(t time.Time) *AssistanceUpdate {
+	au.mutation.SetProcessAt(t)
+	return au
+}
+
+// SetNillableProcessAt sets the "process_at" field if the given value is not nil.
+func (au *AssistanceUpdate) SetNillableProcessAt(t *time.Time) *AssistanceUpdate {
+	if t != nil {
+		au.SetProcessAt(*t)
+	}
+	return au
+}
+
+// ClearProcessAt clears the value of the "process_at" field.
+func (au *AssistanceUpdate) ClearProcessAt() *AssistanceUpdate {
+	au.mutation.ClearProcessAt()
+	return au
+}
+
+// SetPrice sets the "price" field.
+func (au *AssistanceUpdate) SetPrice(f float64) *AssistanceUpdate {
+	au.mutation.ResetPrice()
+	au.mutation.SetPrice(f)
+	return au
+}
+
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (au *AssistanceUpdate) SetNillablePrice(f *float64) *AssistanceUpdate {
+	if f != nil {
+		au.SetPrice(*f)
+	}
+	return au
+}
+
+// AddPrice adds f to the "price" field.
+func (au *AssistanceUpdate) AddPrice(f float64) *AssistanceUpdate {
+	au.mutation.AddPrice(f)
+	return au
+}
+
+// ClearPrice clears the value of the "price" field.
+func (au *AssistanceUpdate) ClearPrice() *AssistanceUpdate {
+	au.mutation.ClearPrice()
+	return au
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (au *AssistanceUpdate) SetStore(s *Store) *AssistanceUpdate {
 	return au.SetStoreID(s.ID)
@@ -1046,6 +1113,52 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Column: assistance.FieldDuration,
+		})
+	}
+	if value, ok := au.mutation.FailReason(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: assistance.FieldFailReason,
+		})
+	}
+	if au.mutation.FailReasonCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: assistance.FieldFailReason,
+		})
+	}
+	if value, ok := au.mutation.ProcessAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: assistance.FieldProcessAt,
+		})
+	}
+	if au.mutation.ProcessAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: assistance.FieldProcessAt,
+		})
+	}
+	if value, ok := au.mutation.Price(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: assistance.FieldPrice,
+		})
+	}
+	if value, ok := au.mutation.AddedPrice(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: assistance.FieldPrice,
+		})
+	}
+	if au.mutation.PriceCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: assistance.FieldPrice,
 		})
 	}
 	if au.mutation.StoreCleared() {
@@ -1786,6 +1899,73 @@ func (auo *AssistanceUpdateOne) ClearDuration() *AssistanceUpdateOne {
 	return auo
 }
 
+// SetFailReason sets the "fail_reason" field.
+func (auo *AssistanceUpdateOne) SetFailReason(s string) *AssistanceUpdateOne {
+	auo.mutation.SetFailReason(s)
+	return auo
+}
+
+// SetNillableFailReason sets the "fail_reason" field if the given value is not nil.
+func (auo *AssistanceUpdateOne) SetNillableFailReason(s *string) *AssistanceUpdateOne {
+	if s != nil {
+		auo.SetFailReason(*s)
+	}
+	return auo
+}
+
+// ClearFailReason clears the value of the "fail_reason" field.
+func (auo *AssistanceUpdateOne) ClearFailReason() *AssistanceUpdateOne {
+	auo.mutation.ClearFailReason()
+	return auo
+}
+
+// SetProcessAt sets the "process_at" field.
+func (auo *AssistanceUpdateOne) SetProcessAt(t time.Time) *AssistanceUpdateOne {
+	auo.mutation.SetProcessAt(t)
+	return auo
+}
+
+// SetNillableProcessAt sets the "process_at" field if the given value is not nil.
+func (auo *AssistanceUpdateOne) SetNillableProcessAt(t *time.Time) *AssistanceUpdateOne {
+	if t != nil {
+		auo.SetProcessAt(*t)
+	}
+	return auo
+}
+
+// ClearProcessAt clears the value of the "process_at" field.
+func (auo *AssistanceUpdateOne) ClearProcessAt() *AssistanceUpdateOne {
+	auo.mutation.ClearProcessAt()
+	return auo
+}
+
+// SetPrice sets the "price" field.
+func (auo *AssistanceUpdateOne) SetPrice(f float64) *AssistanceUpdateOne {
+	auo.mutation.ResetPrice()
+	auo.mutation.SetPrice(f)
+	return auo
+}
+
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (auo *AssistanceUpdateOne) SetNillablePrice(f *float64) *AssistanceUpdateOne {
+	if f != nil {
+		auo.SetPrice(*f)
+	}
+	return auo
+}
+
+// AddPrice adds f to the "price" field.
+func (auo *AssistanceUpdateOne) AddPrice(f float64) *AssistanceUpdateOne {
+	auo.mutation.AddPrice(f)
+	return auo
+}
+
+// ClearPrice clears the value of the "price" field.
+func (auo *AssistanceUpdateOne) ClearPrice() *AssistanceUpdateOne {
+	auo.mutation.ClearPrice()
+	return auo
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (auo *AssistanceUpdateOne) SetStore(s *Store) *AssistanceUpdateOne {
 	return auo.SetStoreID(s.ID)
@@ -2318,6 +2498,52 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Column: assistance.FieldDuration,
+		})
+	}
+	if value, ok := auo.mutation.FailReason(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: assistance.FieldFailReason,
+		})
+	}
+	if auo.mutation.FailReasonCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: assistance.FieldFailReason,
+		})
+	}
+	if value, ok := auo.mutation.ProcessAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: assistance.FieldProcessAt,
+		})
+	}
+	if auo.mutation.ProcessAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: assistance.FieldProcessAt,
+		})
+	}
+	if value, ok := auo.mutation.Price(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: assistance.FieldPrice,
+		})
+	}
+	if value, ok := auo.mutation.AddedPrice(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: assistance.FieldPrice,
+		})
+	}
+	if auo.mutation.PriceCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Column: assistance.FieldPrice,
 		})
 	}
 	if auo.mutation.StoreCleared() {

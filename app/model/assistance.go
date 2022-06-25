@@ -97,6 +97,7 @@ type AssistanceDetail struct {
     RefusedDesc     *string  `json:"refusedDesc,omitempty"` // 拒绝原因, 已拒绝会有此字段
     PayAt           *string  `json:"payAt,omitempty"`       // 支付时间, 已支付会有此字段
     FreeReason      *string  `json:"freeReason,omitempty"`  // 免费理由, 当订单被标记为免费的时候有此字段
+    FailReason      *string  `json:"failReason,omitempty"`  // 失败原因, 救援失败的时候有此字段
 }
 
 type AssistanceAllocateReq struct {
@@ -118,4 +119,40 @@ type AssistanceCancelReq struct {
     OutTradeNo string `json:"outTradeNo" validate:"required" trans:"救援单号"`
     Reason     string `json:"reason" validate:"required" trans:"取消原因"`
     Desc       string `json:"desc"` // 取消原因详细描述
+}
+
+type AssistanceEmployeeDetailRes struct {
+    ID              uint64     `json:"id"`
+    Status          uint8      `json:"status"`          // 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
+    Rider           RiderBasic `json:"rider"`           // 骑手信息
+    Lng             float64    `json:"lng"`             // 经度
+    Lat             float64    `json:"lat"`             // 纬度
+    Address         string     `json:"address"`         // 详细位置
+    Breakdown       string     `json:"breakdown"`       // 故障
+    BreakdownDesc   string     `json:"breakdownDesc"`   // 故障描述
+    BreakdownPhotos []string   `json:"breakdownPhotos"` // 故障照片
+    Reason          string     `json:"reason"`          // 成功救援 - 故障原因
+    DetectPhoto     string     `json:"detectPhoto"`     // 检测照片
+    JointPhoto      string     `json:"jointPhoto"`      // 合照
+    FailReason      string     `json:"failReason"`      // 失败原因
+
+    Configure struct {
+        Breakdown []string `json:"breakdown"` // 救援原因<选择>
+    } `json:"configure"`
+}
+
+type AssistanceProcessReq struct {
+    ID uint64 `json:"id" validate:"required"`
+
+    Success    bool   `json:"success"`    // 救援结果, TRUE成功 FALSE失败
+    FailReason string `json:"failReason"` // 失败原因, 救援失败的时候必填
+
+    Pay         bool   `json:"pay"`         // 是否需要付费, 救援成功需要店员判断是否需要付费
+    Reason      string `json:"reason"`      // 救援原因, 救援成功必填
+    DetectPhoto string `json:"detectPhoto"` // 检测照片, 救援成功必填
+    JointPhoto  string `json:"jointPhoto" ` // 合照, 救援成功必填
+}
+
+type AssistanceProcessRes struct {
+    Cost float64 `json:"cost"` // 待支付金额, 待支付为0则无需支付
 }

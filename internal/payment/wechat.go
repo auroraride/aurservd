@@ -7,6 +7,7 @@ package payment
 
 import (
     "context"
+    "errors"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/cache"
@@ -21,6 +22,7 @@ import (
     "github.com/wechatpay-apiv3/wechatpay-go/core/option"
     "github.com/wechatpay-apiv3/wechatpay-go/services/payments"
     "github.com/wechatpay-apiv3/wechatpay-go/services/payments/app"
+    "github.com/wechatpay-apiv3/wechatpay-go/services/payments/native"
     "github.com/wechatpay-apiv3/wechatpay-go/services/refunddomestic"
     "github.com/wechatpay-apiv3/wechatpay-go/utils"
     "io/ioutil"
@@ -150,6 +152,37 @@ func (c *wechatClient) AppPay(pc *model.PaymentCache) (string, error) {
     b, _ := jsoniter.Marshal(out)
 
     return string(b), nil
+}
+
+func (c *wechatClient) Native(pc *model.PaymentCache) (string, error) {
+    amount, subject, no := pc.GetPaymentArgs()
+    cfg := ar.Config.Payment.Wechat
+
+    svc := native.NativeApiService{Client: c.Client}
+    resp, result, err := svc.Prepay(context.Background(), native.PrepayRequest{
+        Appid:       core.String(cfg.AppID),
+        Mchid:       core.String(cfg.MchID),
+        Description: core.String(subject),
+        OutTradeNo:  core.String(no),
+        TimeExpire:  core.Time(time.Now().Add(10 * time.Minute)),
+        NotifyUrl:   core.String(cfg.NotifyUrl),
+        Amount: &native.Amount{
+            Currency: core.String("CNY"),
+            Total:    core.Int64(int64(math.Round(amount * 100))),
+        },
+    })
+
+    if err != nil {
+        b, _ := ioutil.ReadAll(result.Response.Body)
+        log.Errorf("微信支付调用失败: %#v, %s", err, string(b))
+        return "", err
+    }
+
+    if resp.CodeUrl == nil {
+        return "", errors.New("支付二维码获取失败")
+    }
+
+    return *resp.CodeUrl, nil
 }
 
 type WechatPayResponse struct {

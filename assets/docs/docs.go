@@ -138,6 +138,86 @@ const docTemplate = `{
                 }
             }
         },
+        "/employee/v1/assistance/process": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E5002 处理救援",
+                "operationId": "EmployeeAssistanceProcess",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "救援处理详情",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssistanceProcessReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.AssistanceProcessRes"
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/v1/assistance/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E5001 获取救援详情",
+                "operationId": "EmployeeAssistanceDetail",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "救援ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.AssistanceEmployeeDetailRes"
+                        }
+                    }
+                }
+            }
+        },
         "/employee/v1/attendance": {
             "post": {
                 "consumes": [
@@ -6701,6 +6781,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "failReason": {
+                    "description": "失败原因, 救援失败的时候有此字段",
+                    "type": "string"
+                },
                 "freeReason": {
                     "description": "免费理由, 当订单被标记为免费的时候有此字段",
                     "type": "string"
@@ -6763,6 +6847,81 @@ const docTemplate = `{
                 "time": {
                     "description": "救援发起时间",
                     "type": "string"
+                }
+            }
+        },
+        "model.AssistanceEmployeeDetailRes": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "description": "详细位置",
+                    "type": "string"
+                },
+                "breakdown": {
+                    "description": "故障",
+                    "type": "string"
+                },
+                "breakdownDesc": {
+                    "description": "故障描述",
+                    "type": "string"
+                },
+                "breakdownPhotos": {
+                    "description": "故障照片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "configure": {
+                    "type": "object",
+                    "properties": {
+                        "breakdown": {
+                            "description": "救援原因\u003c选择\u003e",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "detectPhoto": {
+                    "description": "检测照片",
+                    "type": "string"
+                },
+                "failReason": {
+                    "description": "失败原因",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "jointPhoto": {
+                    "description": "合照",
+                    "type": "string"
+                },
+                "lat": {
+                    "description": "纬度",
+                    "type": "number"
+                },
+                "lng": {
+                    "description": "经度",
+                    "type": "number"
+                },
+                "reason": {
+                    "description": "成功救援 - 故障原因",
+                    "type": "string"
+                },
+                "rider": {
+                    "description": "骑手信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderBasic"
+                        }
+                    ]
+                },
+                "status": {
+                    "description": "状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付",
+                    "type": "integer"
                 }
             }
         },
@@ -6877,6 +7036,50 @@ const docTemplate = `{
                 "name": {
                     "description": "门店名称",
                     "type": "string"
+                }
+            }
+        },
+        "model.AssistanceProcessReq": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "detectPhoto": {
+                    "description": "检测照片, 救援成功必填",
+                    "type": "string"
+                },
+                "failReason": {
+                    "description": "失败原因, 救援失败的时候必填",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "jointPhoto": {
+                    "description": "合照, 救援成功必填",
+                    "type": "string"
+                },
+                "pay": {
+                    "description": "是否需要付费, 救援成功需要店员判断是否需要付费",
+                    "type": "boolean"
+                },
+                "reason": {
+                    "description": "救援原因, 救援成功必填",
+                    "type": "string"
+                },
+                "success": {
+                    "description": "救援结果, TRUE成功 FALSE失败",
+                    "type": "boolean"
+                }
+            }
+        },
+        "model.AssistanceProcessRes": {
+            "type": "object",
+            "properties": {
+                "cost": {
+                    "description": "待支付金额, 待支付为0则无需支付",
+                    "type": "number"
                 }
             }
         },

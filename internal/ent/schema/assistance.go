@@ -48,6 +48,9 @@ func (Assistance) Fields() []ent.Field {
         field.Int("wait").Default(0).Comment("分配等待时间(s)"),
         field.String("free_reason").Optional().Nillable().Comment("免费理由"),
         field.Int("duration").Optional().Comment("路径规划时间 (s)"),
+        field.String("fail_reason").Optional().Nillable().Comment("失败原因"),
+        field.Time("process_at").Optional().Nillable().Comment("救援处理时间"),
+        field.Float("price").Optional().Comment("救援费用单价 元/公里"),
     }
 }
 

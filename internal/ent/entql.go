@@ -92,6 +92,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			assistance.FieldWait:             {Type: field.TypeInt, Column: assistance.FieldWait},
 			assistance.FieldFreeReason:       {Type: field.TypeString, Column: assistance.FieldFreeReason},
 			assistance.FieldDuration:         {Type: field.TypeInt, Column: assistance.FieldDuration},
+			assistance.FieldFailReason:       {Type: field.TypeString, Column: assistance.FieldFailReason},
+			assistance.FieldProcessAt:        {Type: field.TypeTime, Column: assistance.FieldProcessAt},
+			assistance.FieldPrice:            {Type: field.TypeFloat64, Column: assistance.FieldPrice},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -2749,6 +2752,21 @@ func (f *AssistanceFilter) WhereFreeReason(p entql.StringP) {
 // WhereDuration applies the entql int predicate on the duration field.
 func (f *AssistanceFilter) WhereDuration(p entql.IntP) {
 	f.Where(p.Field(assistance.FieldDuration))
+}
+
+// WhereFailReason applies the entql string predicate on the fail_reason field.
+func (f *AssistanceFilter) WhereFailReason(p entql.StringP) {
+	f.Where(p.Field(assistance.FieldFailReason))
+}
+
+// WhereProcessAt applies the entql time.Time predicate on the process_at field.
+func (f *AssistanceFilter) WhereProcessAt(p entql.TimeP) {
+	f.Where(p.Field(assistance.FieldProcessAt))
+}
+
+// WherePrice applies the entql float64 predicate on the price field.
+func (f *AssistanceFilter) WherePrice(p entql.Float64P) {
+	f.Where(p.Field(assistance.FieldPrice))
 }
 
 // WhereHasStore applies a predicate to check if query has an edge store.

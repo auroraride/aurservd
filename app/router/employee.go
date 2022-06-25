@@ -13,6 +13,9 @@ import (
 func loadEmployeeRoutes() {
     g := root.Group("employee/v1")
 
+    // socket
+    g.Any("/socket", eapi.Socket.Employee)
+
     g.Use(middleware.EmployeeMiddleware())
 
     // 打卡考勤
@@ -43,6 +46,7 @@ func loadEmployeeRoutes() {
     g.GET("/rider", eapi.Rider.Detail, middleware.EmployeeDutyMiddleware())
     g.GET("/rider/exchange", eapi.Rider.Exchange, middleware.EmployeeDutyMiddleware())
 
-    // socket
-    g.Any("/socket", eapi.Socket.Employee)
+    // 救援
+    g.GET("/assistance/:id", eapi.Assistance.Detail)
+    g.POST("/assistance/process", eapi.Assistance.Process)
 }

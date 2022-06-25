@@ -303,6 +303,27 @@ func Duration(v int) predicate.Assistance {
 	})
 }
 
+// FailReason applies equality check predicate on the "fail_reason" field. It's identical to FailReasonEQ.
+func FailReason(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldFailReason), v))
+	})
+}
+
+// ProcessAt applies equality check predicate on the "process_at" field. It's identical to ProcessAtEQ.
+func ProcessAt(v time.Time) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldProcessAt), v))
+	})
+}
+
+// Price applies equality check predicate on the "price" field. It's identical to PriceEQ.
+func Price(v float64) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPrice), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
@@ -3112,6 +3133,311 @@ func DurationIsNil() predicate.Assistance {
 func DurationNotNil() predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldDuration)))
+	})
+}
+
+// FailReasonEQ applies the EQ predicate on the "fail_reason" field.
+func FailReasonEQ(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldFailReason), v))
+	})
+}
+
+// FailReasonNEQ applies the NEQ predicate on the "fail_reason" field.
+func FailReasonNEQ(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldFailReason), v))
+	})
+}
+
+// FailReasonIn applies the In predicate on the "fail_reason" field.
+func FailReasonIn(vs ...string) predicate.Assistance {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Assistance(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldFailReason), v...))
+	})
+}
+
+// FailReasonNotIn applies the NotIn predicate on the "fail_reason" field.
+func FailReasonNotIn(vs ...string) predicate.Assistance {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Assistance(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldFailReason), v...))
+	})
+}
+
+// FailReasonGT applies the GT predicate on the "fail_reason" field.
+func FailReasonGT(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldFailReason), v))
+	})
+}
+
+// FailReasonGTE applies the GTE predicate on the "fail_reason" field.
+func FailReasonGTE(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldFailReason), v))
+	})
+}
+
+// FailReasonLT applies the LT predicate on the "fail_reason" field.
+func FailReasonLT(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldFailReason), v))
+	})
+}
+
+// FailReasonLTE applies the LTE predicate on the "fail_reason" field.
+func FailReasonLTE(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldFailReason), v))
+	})
+}
+
+// FailReasonContains applies the Contains predicate on the "fail_reason" field.
+func FailReasonContains(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldFailReason), v))
+	})
+}
+
+// FailReasonHasPrefix applies the HasPrefix predicate on the "fail_reason" field.
+func FailReasonHasPrefix(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldFailReason), v))
+	})
+}
+
+// FailReasonHasSuffix applies the HasSuffix predicate on the "fail_reason" field.
+func FailReasonHasSuffix(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldFailReason), v))
+	})
+}
+
+// FailReasonIsNil applies the IsNil predicate on the "fail_reason" field.
+func FailReasonIsNil() predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldFailReason)))
+	})
+}
+
+// FailReasonNotNil applies the NotNil predicate on the "fail_reason" field.
+func FailReasonNotNil() predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldFailReason)))
+	})
+}
+
+// FailReasonEqualFold applies the EqualFold predicate on the "fail_reason" field.
+func FailReasonEqualFold(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldFailReason), v))
+	})
+}
+
+// FailReasonContainsFold applies the ContainsFold predicate on the "fail_reason" field.
+func FailReasonContainsFold(v string) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldFailReason), v))
+	})
+}
+
+// ProcessAtEQ applies the EQ predicate on the "process_at" field.
+func ProcessAtEQ(v time.Time) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldProcessAt), v))
+	})
+}
+
+// ProcessAtNEQ applies the NEQ predicate on the "process_at" field.
+func ProcessAtNEQ(v time.Time) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldProcessAt), v))
+	})
+}
+
+// ProcessAtIn applies the In predicate on the "process_at" field.
+func ProcessAtIn(vs ...time.Time) predicate.Assistance {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Assistance(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldProcessAt), v...))
+	})
+}
+
+// ProcessAtNotIn applies the NotIn predicate on the "process_at" field.
+func ProcessAtNotIn(vs ...time.Time) predicate.Assistance {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Assistance(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldProcessAt), v...))
+	})
+}
+
+// ProcessAtGT applies the GT predicate on the "process_at" field.
+func ProcessAtGT(v time.Time) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldProcessAt), v))
+	})
+}
+
+// ProcessAtGTE applies the GTE predicate on the "process_at" field.
+func ProcessAtGTE(v time.Time) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldProcessAt), v))
+	})
+}
+
+// ProcessAtLT applies the LT predicate on the "process_at" field.
+func ProcessAtLT(v time.Time) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldProcessAt), v))
+	})
+}
+
+// ProcessAtLTE applies the LTE predicate on the "process_at" field.
+func ProcessAtLTE(v time.Time) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldProcessAt), v))
+	})
+}
+
+// ProcessAtIsNil applies the IsNil predicate on the "process_at" field.
+func ProcessAtIsNil() predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldProcessAt)))
+	})
+}
+
+// ProcessAtNotNil applies the NotNil predicate on the "process_at" field.
+func ProcessAtNotNil() predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldProcessAt)))
+	})
+}
+
+// PriceEQ applies the EQ predicate on the "price" field.
+func PriceEQ(v float64) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPrice), v))
+	})
+}
+
+// PriceNEQ applies the NEQ predicate on the "price" field.
+func PriceNEQ(v float64) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPrice), v))
+	})
+}
+
+// PriceIn applies the In predicate on the "price" field.
+func PriceIn(vs ...float64) predicate.Assistance {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Assistance(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldPrice), v...))
+	})
+}
+
+// PriceNotIn applies the NotIn predicate on the "price" field.
+func PriceNotIn(vs ...float64) predicate.Assistance {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Assistance(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldPrice), v...))
+	})
+}
+
+// PriceGT applies the GT predicate on the "price" field.
+func PriceGT(v float64) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPrice), v))
+	})
+}
+
+// PriceGTE applies the GTE predicate on the "price" field.
+func PriceGTE(v float64) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPrice), v))
+	})
+}
+
+// PriceLT applies the LT predicate on the "price" field.
+func PriceLT(v float64) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPrice), v))
+	})
+}
+
+// PriceLTE applies the LTE predicate on the "price" field.
+func PriceLTE(v float64) predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPrice), v))
+	})
+}
+
+// PriceIsNil applies the IsNil predicate on the "price" field.
+func PriceIsNil() predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPrice)))
+	})
+}
+
+// PriceNotNil applies the NotNil predicate on the "price" field.
+func PriceNotNil() predicate.Assistance {
+	return predicate.Assistance(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPrice)))
 	})
 }
 

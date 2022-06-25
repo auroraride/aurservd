@@ -116,6 +116,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.Employee'
         description: 店员信息, 未分配此字段不存在
+      failReason:
+        description: 失败原因, 救援失败的时候有此字段
+        type: string
       freeReason:
         description: 免费理由, 当订单被标记为免费的时候有此字段
         type: string
@@ -160,6 +163,58 @@ definitions:
       time:
         description: 救援发起时间
         type: string
+    type: object
+  model.AssistanceEmployeeDetailRes:
+    properties:
+      address:
+        description: 详细位置
+        type: string
+      breakdown:
+        description: 故障
+        type: string
+      breakdownDesc:
+        description: 故障描述
+        type: string
+      breakdownPhotos:
+        description: 故障照片
+        items:
+          type: string
+        type: array
+      configure:
+        properties:
+          breakdown:
+            description: 救援原因<选择>
+            items:
+              type: string
+            type: array
+        type: object
+      detectPhoto:
+        description: 检测照片
+        type: string
+      failReason:
+        description: 失败原因
+        type: string
+      id:
+        type: integer
+      jointPhoto:
+        description: 合照
+        type: string
+      lat:
+        description: 纬度
+        type: number
+      lng:
+        description: 经度
+        type: number
+      reason:
+        description: 成功救援 - 故障原因
+        type: string
+      rider:
+        allOf:
+        - $ref: '#/definitions/model.RiderBasic'
+        description: 骑手信息
+      status:
+        description: 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
+        type: integer
     type: object
   model.AssistanceFreeReq:
     properties:
@@ -234,6 +289,37 @@ definitions:
       name:
         description: 门店名称
         type: string
+    type: object
+  model.AssistanceProcessReq:
+    properties:
+      detectPhoto:
+        description: 检测照片, 救援成功必填
+        type: string
+      failReason:
+        description: 失败原因, 救援失败的时候必填
+        type: string
+      id:
+        type: integer
+      jointPhoto:
+        description: 合照, 救援成功必填
+        type: string
+      pay:
+        description: 是否需要付费, 救援成功需要店员判断是否需要付费
+        type: boolean
+      reason:
+        description: 救援原因, 救援成功必填
+        type: string
+      success:
+        description: 救援结果, TRUE成功 FALSE失败
+        type: boolean
+    required:
+    - id
+    type: object
+  model.AssistanceProcessRes:
+    properties:
+      cost:
+        description: 待支付金额, 待支付为0则无需支付
+        type: number
     type: object
   model.AssistanceRefuseReq:
     properties:
@@ -3294,6 +3380,59 @@ paths:
       summary: C3 获取阿里云oss临时凭证
       tags:
       - '[C]公共接口'
+  /employee/v1/assistance/{id}:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeAssistanceDetail
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 救援ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AssistanceEmployeeDetailRes'
+      summary: E5001 获取救援详情
+      tags:
+      - '[E]店员接口'
+  /employee/v1/assistance/process:
+    post:
+      consumes:
+      - application/json
+      operationId: EmployeeAssistanceProcess
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 救援处理详情
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssistanceProcessReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AssistanceProcessRes'
+      summary: E5002 处理救援
+      tags:
+      - '[E]店员接口'
   /employee/v1/attendance:
     post:
       consumes:

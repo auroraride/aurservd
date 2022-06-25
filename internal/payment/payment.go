@@ -12,6 +12,7 @@ import (
 
 type Payment interface {
     AppPay(prepay *model.PaymentCache) (string, error)
+    Native(pc *model.PaymentCache) (string, error)
     Notification(req *http.Request) *model.PaymentCache
     Refund(req *model.PaymentRefund)
 }

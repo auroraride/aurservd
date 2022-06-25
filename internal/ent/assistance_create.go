@@ -403,6 +403,48 @@ func (ac *AssistanceCreate) SetNillableDuration(i *int) *AssistanceCreate {
 	return ac
 }
 
+// SetFailReason sets the "fail_reason" field.
+func (ac *AssistanceCreate) SetFailReason(s string) *AssistanceCreate {
+	ac.mutation.SetFailReason(s)
+	return ac
+}
+
+// SetNillableFailReason sets the "fail_reason" field if the given value is not nil.
+func (ac *AssistanceCreate) SetNillableFailReason(s *string) *AssistanceCreate {
+	if s != nil {
+		ac.SetFailReason(*s)
+	}
+	return ac
+}
+
+// SetProcessAt sets the "process_at" field.
+func (ac *AssistanceCreate) SetProcessAt(t time.Time) *AssistanceCreate {
+	ac.mutation.SetProcessAt(t)
+	return ac
+}
+
+// SetNillableProcessAt sets the "process_at" field if the given value is not nil.
+func (ac *AssistanceCreate) SetNillableProcessAt(t *time.Time) *AssistanceCreate {
+	if t != nil {
+		ac.SetProcessAt(*t)
+	}
+	return ac
+}
+
+// SetPrice sets the "price" field.
+func (ac *AssistanceCreate) SetPrice(f float64) *AssistanceCreate {
+	ac.mutation.SetPrice(f)
+	return ac
+}
+
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (ac *AssistanceCreate) SetNillablePrice(f *float64) *AssistanceCreate {
+	if f != nil {
+		ac.SetPrice(*f)
+	}
+	return ac
+}
+
 // SetStore sets the "store" edge to the Store entity.
 func (ac *AssistanceCreate) SetStore(s *Store) *AssistanceCreate {
 	return ac.SetStoreID(s.ID)
@@ -834,6 +876,30 @@ func (ac *AssistanceCreate) createSpec() (*Assistance, *sqlgraph.CreateSpec) {
 			Column: assistance.FieldDuration,
 		})
 		_node.Duration = value
+	}
+	if value, ok := ac.mutation.FailReason(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: assistance.FieldFailReason,
+		})
+		_node.FailReason = &value
+	}
+	if value, ok := ac.mutation.ProcessAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: assistance.FieldProcessAt,
+		})
+		_node.ProcessAt = &value
+	}
+	if value, ok := ac.mutation.Price(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: assistance.FieldPrice,
+		})
+		_node.Price = value
 	}
 	if nodes := ac.mutation.StoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1567,6 +1633,66 @@ func (u *AssistanceUpsert) ClearDuration() *AssistanceUpsert {
 	return u
 }
 
+// SetFailReason sets the "fail_reason" field.
+func (u *AssistanceUpsert) SetFailReason(v string) *AssistanceUpsert {
+	u.Set(assistance.FieldFailReason, v)
+	return u
+}
+
+// UpdateFailReason sets the "fail_reason" field to the value that was provided on create.
+func (u *AssistanceUpsert) UpdateFailReason() *AssistanceUpsert {
+	u.SetExcluded(assistance.FieldFailReason)
+	return u
+}
+
+// ClearFailReason clears the value of the "fail_reason" field.
+func (u *AssistanceUpsert) ClearFailReason() *AssistanceUpsert {
+	u.SetNull(assistance.FieldFailReason)
+	return u
+}
+
+// SetProcessAt sets the "process_at" field.
+func (u *AssistanceUpsert) SetProcessAt(v time.Time) *AssistanceUpsert {
+	u.Set(assistance.FieldProcessAt, v)
+	return u
+}
+
+// UpdateProcessAt sets the "process_at" field to the value that was provided on create.
+func (u *AssistanceUpsert) UpdateProcessAt() *AssistanceUpsert {
+	u.SetExcluded(assistance.FieldProcessAt)
+	return u
+}
+
+// ClearProcessAt clears the value of the "process_at" field.
+func (u *AssistanceUpsert) ClearProcessAt() *AssistanceUpsert {
+	u.SetNull(assistance.FieldProcessAt)
+	return u
+}
+
+// SetPrice sets the "price" field.
+func (u *AssistanceUpsert) SetPrice(v float64) *AssistanceUpsert {
+	u.Set(assistance.FieldPrice, v)
+	return u
+}
+
+// UpdatePrice sets the "price" field to the value that was provided on create.
+func (u *AssistanceUpsert) UpdatePrice() *AssistanceUpsert {
+	u.SetExcluded(assistance.FieldPrice)
+	return u
+}
+
+// AddPrice adds v to the "price" field.
+func (u *AssistanceUpsert) AddPrice(v float64) *AssistanceUpsert {
+	u.Add(assistance.FieldPrice, v)
+	return u
+}
+
+// ClearPrice clears the value of the "price" field.
+func (u *AssistanceUpsert) ClearPrice() *AssistanceUpsert {
+	u.SetNull(assistance.FieldPrice)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -2265,6 +2391,76 @@ func (u *AssistanceUpsertOne) UpdateDuration() *AssistanceUpsertOne {
 func (u *AssistanceUpsertOne) ClearDuration() *AssistanceUpsertOne {
 	return u.Update(func(s *AssistanceUpsert) {
 		s.ClearDuration()
+	})
+}
+
+// SetFailReason sets the "fail_reason" field.
+func (u *AssistanceUpsertOne) SetFailReason(v string) *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetFailReason(v)
+	})
+}
+
+// UpdateFailReason sets the "fail_reason" field to the value that was provided on create.
+func (u *AssistanceUpsertOne) UpdateFailReason() *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdateFailReason()
+	})
+}
+
+// ClearFailReason clears the value of the "fail_reason" field.
+func (u *AssistanceUpsertOne) ClearFailReason() *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.ClearFailReason()
+	})
+}
+
+// SetProcessAt sets the "process_at" field.
+func (u *AssistanceUpsertOne) SetProcessAt(v time.Time) *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetProcessAt(v)
+	})
+}
+
+// UpdateProcessAt sets the "process_at" field to the value that was provided on create.
+func (u *AssistanceUpsertOne) UpdateProcessAt() *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdateProcessAt()
+	})
+}
+
+// ClearProcessAt clears the value of the "process_at" field.
+func (u *AssistanceUpsertOne) ClearProcessAt() *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.ClearProcessAt()
+	})
+}
+
+// SetPrice sets the "price" field.
+func (u *AssistanceUpsertOne) SetPrice(v float64) *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetPrice(v)
+	})
+}
+
+// AddPrice adds v to the "price" field.
+func (u *AssistanceUpsertOne) AddPrice(v float64) *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.AddPrice(v)
+	})
+}
+
+// UpdatePrice sets the "price" field to the value that was provided on create.
+func (u *AssistanceUpsertOne) UpdatePrice() *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdatePrice()
+	})
+}
+
+// ClearPrice clears the value of the "price" field.
+func (u *AssistanceUpsertOne) ClearPrice() *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.ClearPrice()
 	})
 }
 
@@ -3130,6 +3326,76 @@ func (u *AssistanceUpsertBulk) UpdateDuration() *AssistanceUpsertBulk {
 func (u *AssistanceUpsertBulk) ClearDuration() *AssistanceUpsertBulk {
 	return u.Update(func(s *AssistanceUpsert) {
 		s.ClearDuration()
+	})
+}
+
+// SetFailReason sets the "fail_reason" field.
+func (u *AssistanceUpsertBulk) SetFailReason(v string) *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetFailReason(v)
+	})
+}
+
+// UpdateFailReason sets the "fail_reason" field to the value that was provided on create.
+func (u *AssistanceUpsertBulk) UpdateFailReason() *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdateFailReason()
+	})
+}
+
+// ClearFailReason clears the value of the "fail_reason" field.
+func (u *AssistanceUpsertBulk) ClearFailReason() *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.ClearFailReason()
+	})
+}
+
+// SetProcessAt sets the "process_at" field.
+func (u *AssistanceUpsertBulk) SetProcessAt(v time.Time) *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetProcessAt(v)
+	})
+}
+
+// UpdateProcessAt sets the "process_at" field to the value that was provided on create.
+func (u *AssistanceUpsertBulk) UpdateProcessAt() *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdateProcessAt()
+	})
+}
+
+// ClearProcessAt clears the value of the "process_at" field.
+func (u *AssistanceUpsertBulk) ClearProcessAt() *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.ClearProcessAt()
+	})
+}
+
+// SetPrice sets the "price" field.
+func (u *AssistanceUpsertBulk) SetPrice(v float64) *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetPrice(v)
+	})
+}
+
+// AddPrice adds v to the "price" field.
+func (u *AssistanceUpsertBulk) AddPrice(v float64) *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.AddPrice(v)
+	})
+}
+
+// UpdatePrice sets the "price" field to the value that was provided on create.
+func (u *AssistanceUpsertBulk) UpdatePrice() *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdatePrice()
+	})
+}
+
+// ClearPrice clears the value of the "price" field.
+func (u *AssistanceUpsertBulk) ClearPrice() *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.ClearPrice()
 	})
 }
 

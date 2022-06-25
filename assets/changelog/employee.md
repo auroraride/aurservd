@@ -1,3 +1,16 @@
+## 2022-06-25
+
+#### 接口新增
+
+- [E5001 获取救援详情](http://localhost:5533/docs#tag/E/operation/EmployeeAssistanceDetail)
+- [E5002 处理救援](http://localhost:5533/docs#tag/E/operation/EmployeeAssistanceProcess)
+
+
+
+
+
+<br />
+
 ## 2022-06-21
 
 #### 接口调整

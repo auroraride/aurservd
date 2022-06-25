@@ -22,7 +22,9 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
+    "github.com/jinzhu/copier"
     log "github.com/sirupsen/logrus"
+    "strconv"
     "time"
 )
 
@@ -214,6 +216,7 @@ func (s *assistanceService) Detail(id uint64) model.AssistanceDetail {
         JointPhoto:        item.JointPhoto,
         RefusedDesc:       item.RefusedDesc,
         FreeReason:        item.FreeReason,
+        FailReason:        item.FailReason,
     }
     if item.PayAt != nil {
         res.PayAt = tools.NewPointer().String(item.PayAt.Format(carbon.DateTimeLayout))
@@ -500,6 +503,86 @@ func (s *assistanceService) Cancel(req *model.AssistanceCancelReq) {
     }
 }
 
-func (s *assistanceService) RiderDetail() {
+// EmployeeDetail 门店端显示救援详情
+func (s *assistanceService) EmployeeDetail(id uint64) (res model.AssistanceEmployeeDetailRes) {
+    ass, _ := s.orm.QueryNotDeleted().
+        Where(assistance.ID(id), assistance.EmployeeID(s.employee.ID)).
+        WithRider(func(rq *ent.RiderQuery) {
+            rq.WithPerson()
+        }).
+        First(s.ctx)
+    if ass == nil {
+        snag.Panic("未找到救援信息")
+    }
+    _ = copier.Copy(&res, ass)
 
+    r := ass.Edges.Rider
+    if r == nil {
+        return
+    }
+    res.Rider = model.RiderBasic{
+        ID:    r.ID,
+        Phone: r.Phone,
+    }
+
+    p := r.Edges.Person
+    if p == nil {
+        return
+    }
+
+    res.Rider.Name = p.Name
+
+    return
+}
+
+func (s *assistanceService) Process(req *model.AssistanceProcessReq) (res model.AssistanceProcessRes) {
+    ass, _ := s.orm.QueryNotDeleted().
+        Where(assistance.ID(req.ID), assistance.EmployeeID(s.employee.ID), assistance.Status(model.AssistanceStatusAllocated)).
+        WithRider(func(rq *ent.RiderQuery) {
+            rq.WithPerson()
+        }).
+        First(s.ctx)
+    if ass == nil {
+        snag.Panic("未找到有效救援信息")
+    }
+
+    up := ass.Update().SetProcessAt(time.Now())
+
+    if req.Success {
+        if req.Reason == "" || req.JointPhoto == "" || req.DetectPhoto == "" {
+            snag.Panic("参数错误")
+        }
+
+        up.SetReason(req.Reason).
+            SetJointPhoto(req.JointPhoto).
+            SetDetectPhoto(req.DetectPhoto)
+
+        status := model.AssistanceStatusUnpaid
+        var cost, price float64
+
+        if req.Pay {
+            price, _ = strconv.ParseFloat(NewSetting().GetSetting("RESCUE_FEE").(string), 10)
+            cost = tools.NewDecimal().Mul(price, ass.Distance/1000.0)
+        }
+
+        if cost == 0 {
+            status = model.AssistanceStatusSuccess
+        }
+
+        up.SetPrice(price).SetCost(cost).SetStatus(status)
+
+        res.Cost = cost
+    } else {
+        if req.FailReason == "" {
+            snag.Panic("参数错误")
+        }
+        up.SetStatus(model.AssistanceStatusFailed).SetFailReason(req.FailReason)
+    }
+
+    _, err := up.Save(s.ctx)
+    if err != nil {
+        snag.Panic("处理失败")
+    }
+
+    return
 }

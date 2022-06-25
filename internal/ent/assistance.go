@@ -119,6 +119,15 @@ type Assistance struct {
 	// Duration holds the value of the "duration" field.
 	// 路径规划时间 (s)
 	Duration int `json:"duration,omitempty"`
+	// FailReason holds the value of the "fail_reason" field.
+	// 失败原因
+	FailReason *string `json:"fail_reason,omitempty"`
+	// ProcessAt holds the value of the "process_at" field.
+	// 救援处理时间
+	ProcessAt *time.Time `json:"process_at,omitempty"`
+	// Price holds the value of the "price" field.
+	// 救援费用单价 元/公里
+	Price float64 `json:"price,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssistanceQuery when eager-loading is set.
 	Edges AssistanceEdges `json:"edges"`
@@ -234,13 +243,13 @@ func (*Assistance) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case assistance.FieldCreator, assistance.FieldLastModifier, assistance.FieldBreakdownPhotos:
 			values[i] = new([]byte)
-		case assistance.FieldLng, assistance.FieldLat, assistance.FieldDistance, assistance.FieldCost:
+		case assistance.FieldLng, assistance.FieldLat, assistance.FieldDistance, assistance.FieldCost, assistance.FieldPrice:
 			values[i] = new(sql.NullFloat64)
 		case assistance.FieldID, assistance.FieldStoreID, assistance.FieldRiderID, assistance.FieldSubscribeID, assistance.FieldCityID, assistance.FieldEmployeeID, assistance.FieldOrderID, assistance.FieldStatus, assistance.FieldWait, assistance.FieldDuration:
 			values[i] = new(sql.NullInt64)
-		case assistance.FieldRemark, assistance.FieldOutTradeNo, assistance.FieldAddress, assistance.FieldBreakdown, assistance.FieldBreakdownDesc, assistance.FieldCancelReason, assistance.FieldCancelReasonDesc, assistance.FieldReason, assistance.FieldDetectPhoto, assistance.FieldJointPhoto, assistance.FieldRefusedDesc, assistance.FieldFreeReason:
+		case assistance.FieldRemark, assistance.FieldOutTradeNo, assistance.FieldAddress, assistance.FieldBreakdown, assistance.FieldBreakdownDesc, assistance.FieldCancelReason, assistance.FieldCancelReasonDesc, assistance.FieldReason, assistance.FieldDetectPhoto, assistance.FieldJointPhoto, assistance.FieldRefusedDesc, assistance.FieldFreeReason, assistance.FieldFailReason:
 			values[i] = new(sql.NullString)
-		case assistance.FieldCreatedAt, assistance.FieldUpdatedAt, assistance.FieldDeletedAt, assistance.FieldPayAt, assistance.FieldAllocateAt:
+		case assistance.FieldCreatedAt, assistance.FieldUpdatedAt, assistance.FieldDeletedAt, assistance.FieldPayAt, assistance.FieldAllocateAt, assistance.FieldProcessAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Assistance", columns[i])
@@ -477,6 +486,26 @@ func (a *Assistance) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				a.Duration = int(value.Int64)
 			}
+		case assistance.FieldFailReason:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field fail_reason", values[i])
+			} else if value.Valid {
+				a.FailReason = new(string)
+				*a.FailReason = value.String
+			}
+		case assistance.FieldProcessAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field process_at", values[i])
+			} else if value.Valid {
+				a.ProcessAt = new(time.Time)
+				*a.ProcessAt = value.Time
+			}
+		case assistance.FieldPrice:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field price", values[i])
+			} else if value.Valid {
+				a.Price = value.Float64
+			}
 		}
 	}
 	return nil
@@ -621,6 +650,16 @@ func (a *Assistance) String() string {
 	}
 	builder.WriteString(", duration=")
 	builder.WriteString(fmt.Sprintf("%v", a.Duration))
+	if v := a.FailReason; v != nil {
+		builder.WriteString(", fail_reason=")
+		builder.WriteString(*v)
+	}
+	if v := a.ProcessAt; v != nil {
+		builder.WriteString(", process_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", price=")
+	builder.WriteString(fmt.Sprintf("%v", a.Price))
 	builder.WriteByte(')')
 	return builder.String()
 }
