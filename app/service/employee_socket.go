@@ -33,11 +33,5 @@ func (s *employeeSocketService) Connect(token string) (uint64, error) {
     if emr == nil {
         return 0, errors.New("店员未找到")
     }
-
-    eet := emr.Edges.Store
-    if eet == nil {
-        return 0, errors.New("店员未上班")
-    }
-
     return id, nil
 }
