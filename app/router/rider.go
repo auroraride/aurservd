@@ -14,6 +14,9 @@ import (
 func loadRideRoutes() {
     g := root.Group("rider/v1")
 
+    // socket
+    g.Any("/socket", rapi.Socket.Rider)
+
     g.Any("/callback", rapi.Callback.RiderCallback, middleware.BodyDump())                            // 骑手api回调中心
     g.Any("/callback/esign", rapi.Callback.ESignCallback, middleware.BodyDumpRaw())                   // esign回调中心
     g.Any("/callback/alipay", rapi.Callback.AlipayCallback, middleware.BodyDumpRaw())                 // 骑手支付宝回调中心

@@ -20,6 +20,7 @@ import (
 var (
     riderAuthSkipper = map[string]bool{
         "/rider/v1/signin": true,
+        "/rider/v1/socket": true,
     }
 )
 

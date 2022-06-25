@@ -6,7 +6,8 @@
 package rapi
 
 import (
-    "github.com/auroraride/aurservd/app"
+    "github.com/auroraride/aurservd/app/service"
+    "github.com/auroraride/aurservd/app/socket"
     "github.com/labstack/echo/v4"
 )
 
@@ -14,8 +15,7 @@ type socketapi struct{}
 
 var Socket = new(socketapi)
 
-func (*socketapi) Socket(c echo.Context) (err error) {
-    ctx := app.Context(c)
-
-    return ctx.SendResponse()
+func (*socketapi) Rider(c echo.Context) (err error) {
+    srv := service.NewRiderSocket()
+    return socket.Wrap(c, srv)
 }
