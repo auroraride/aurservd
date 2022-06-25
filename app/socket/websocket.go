@@ -87,10 +87,7 @@ func Wrap(c echo.Context, ws Websocket) error {
     var id uint64
     id, err = ws.Connect(c.QueryParam("token"))
     if err != nil {
-        hub.SendMessage(&model.SocketMessage{
-            Error: err.Error(),
-        })
-        return err
+        hub.SendMessage(&model.SocketMessage{Error: err.Error()})
     } else {
         hub.SendMessage(&model.SocketMessage{Error: ""})
     }
