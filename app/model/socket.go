@@ -33,10 +33,18 @@ func (res *EmployeeSocketMessage) Bytes() []byte {
 type RiderSocketMessage struct {
     SocketMessage
 
-    Assistance *AssistanceRiderSocketMessage `json:"assistance,omitempty"` // 救援消息
+    Assistance *AssistanceSocketMessage `json:"assistance,omitempty"` // 救援消息
 }
 
 func (res *RiderSocketMessage) Bytes() []byte {
     b, _ := json.Marshal(res)
     return b
+}
+
+type AssistanceSocketMessage struct {
+    Status   uint8        `json:"status"`
+    Store    *StoreLngLat `json:"store,omitempty"`
+    Employee *Employee    `json:"employee,omitemptyz"`
+    Rider    LngLat       `json:"rider"`
+    Seconds  int64        `json:"seconds"`
 }

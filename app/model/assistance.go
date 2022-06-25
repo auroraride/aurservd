@@ -119,11 +119,3 @@ type AssistanceCancelReq struct {
     Reason     string `json:"reason" validate:"required" trans:"取消原因"`
     Desc       string `json:"desc"` // 取消原因详细描述
 }
-
-type AssistanceRiderSocketMessage struct {
-    Status   uint8       `json:"status"`
-    Store    StoreLngLat `json:"store"`
-    Employee Employee    `json:"employee"`
-    Rider    LngLat      `json:"rider"`
-    Seconds  int64       `json:"seconds"`
-}

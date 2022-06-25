@@ -5392,6 +5392,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/assistance/current": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R5004 当前救援",
+                "operationId": "RiderAssistanceCurrent",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "救援信息, 救援不存在的时候返回data为null",
+                        "schema": {
+                            "$ref": "#/definitions/model.AssistanceSocketMessage"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/authenticator": {
             "post": {
                 "consumes": [
@@ -6862,6 +6894,38 @@ const docTemplate = `{
                 "reason": {
                     "description": "拒绝原因 ",
                     "type": "string"
+                }
+            }
+        },
+        "model.AssistanceSocketMessage": {
+            "type": "object",
+            "properties": {
+                "employee": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Employee"
+                        }
+                    ]
+                },
+                "rider": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.LngLat"
+                        }
+                    ]
+                },
+                "seconds": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "store": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreLngLat"
+                        }
+                    ]
                 }
             }
         },
@@ -8947,6 +9011,17 @@ const docTemplate = `{
                 "item": {}
             }
         },
+        "model.LngLat": {
+            "type": "object",
+            "properties": {
+                "lat": {
+                    "type": "number"
+                },
+                "lng": {
+                    "type": "number"
+                }
+            }
+        },
         "model.LogOperate": {
             "type": "object",
             "properties": {
@@ -10620,6 +10695,24 @@ const docTemplate = `{
                 "status": {
                     "description": "状态",
                     "type": "integer"
+                }
+            }
+        },
+        "model.StoreLngLat": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "lng": {
+                    "type": "number"
+                },
+                "name": {
+                    "description": "门店名称",
+                    "type": "string"
                 }
             }
         },

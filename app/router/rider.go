@@ -81,4 +81,5 @@ func loadRideRoutes() {
     g.GET("/assistance/breakdown", rapi.Assistance.Breakdown)
     g.POST("/assistance", rapi.Assistance.Create)
     g.POST("/assistance/cancel", rapi.Assistance.Cancel)
+    g.GET("/assistance/current", rapi.Assistance.Current)
 }

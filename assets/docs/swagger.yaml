@@ -247,6 +247,22 @@ definitions:
     - id
     - reason
     type: object
+  model.AssistanceSocketMessage:
+    properties:
+      employee:
+        allOf:
+        - $ref: '#/definitions/model.Employee'
+      rider:
+        allOf:
+        - $ref: '#/definitions/model.LngLat'
+      seconds:
+        type: integer
+      status:
+        type: integer
+      store:
+        allOf:
+        - $ref: '#/definitions/model.StoreLngLat'
+    type: object
   model.AttendanceCreateReq:
     properties:
       address:
@@ -1715,6 +1731,13 @@ definitions:
     properties:
       item: {}
     type: object
+  model.LngLat:
+    properties:
+      lat:
+        type: number
+      lng:
+        type: number
+    type: object
   model.LogOperate:
     properties:
       after:
@@ -2863,6 +2886,18 @@ definitions:
       status:
         description: 状态
         type: integer
+    type: object
+  model.StoreLngLat:
+    properties:
+      id:
+        type: integer
+      lat:
+        type: number
+      lng:
+        type: number
+      name:
+        description: 门店名称
+        type: string
     type: object
   model.StoreModifyReq:
     properties:
@@ -6686,6 +6721,27 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: R5003 取消救援
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/assistance/current:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderAssistanceCurrent
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 救援信息, 救援不存在的时候返回data为null
+          schema:
+            $ref: '#/definitions/model.AssistanceSocketMessage'
+      summary: R5004 当前救援
       tags:
       - '[R]骑手接口'
   /rider/v1/authenticator:

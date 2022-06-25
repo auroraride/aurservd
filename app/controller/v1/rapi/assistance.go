@@ -60,3 +60,17 @@ func (*assistance) Cancel(c echo.Context) (err error) {
     service.NewAssistanceWithRider(ctx.Rider).Cancel(req)
     return ctx.SendResponse()
 }
+
+// Current
+// @ID           RiderAssistanceCurrent
+// @Router       /rider/v1/assistance/current [GET]
+// @Summary      R5004 当前救援
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Success      200 {object}  model.AssistanceSocketMessage  "救援信息, 救援不存在的时候返回data为null"
+func (*assistance) Current(c echo.Context) (err error) {
+    ctx := app.ContextX[app.RiderContext](c)
+    return ctx.SendResponse(service.NewAssistance().CurrentMessage(ctx.Rider.ID))
+}
