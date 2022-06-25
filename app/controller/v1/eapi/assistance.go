@@ -45,6 +45,20 @@ func (*assistance) Detail(c echo.Context) (err error) {
 // @Success      200  {object}  model.AssistanceProcessRes  "请求成功"
 func (*assistance) Process(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.AssistanceProcessReq](c)
-
     return ctx.SendResponse(service.NewAssistanceWithEmployee(ctx.Employee).Process(req))
+}
+
+// Pay
+// @ID           EmployeeAssistancePay
+// @Router       /employee/v1/assistance/pay [POST]
+// @Summary      E5003 救援支付
+// @Tags         [E]店员接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Employee-Token  header  string  true  "店员校验token"
+// @Param        body  body     model.AssistancePayReq  true  "支付信息"
+// @Success      200  {object}  model.AssistancePayRes  "请求成功"
+func (*assistance) Pay(c echo.Context) (err error) {
+    ctx, req := app.EmployeeContextAndBinding[model.AssistancePayReq](c)
+    return ctx.SendResponse(service.NewAssistanceWithEmployee(ctx.Employee).Pay(req))
 }

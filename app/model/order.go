@@ -6,13 +6,13 @@
 package model
 
 const (
-    OrderTypeNewly     uint = iota + 1 // 新签, 需要计算业绩
-    OrderTypeRenewal                   // 续签, 无需计算业绩
-    OrderTypeAgain                     // 重签, 相当于新签, 需要判定是否计算业绩
-    OrderTypeTransform                 // 更改电池, 相当于续签 无需计算业绩 TODO 更改电池逻辑
-    OrderTypeRescue                    // 救援
-    OrderTypeFee                       // 滞纳金
-    OrderTypeDeposit                   // 押金
+    OrderTypeNewly      uint = iota + 1 // 新签, 需要计算业绩
+    OrderTypeRenewal                    // 续签, 无需计算业绩
+    OrderTypeAgain                      // 重签, 相当于新签, 需要判定是否计算业绩
+    OrderTypeTransform                  // 更改电池, 相当于续签 无需计算业绩 TODO 更改电池逻辑
+    OrderTypeAssistance                 // 救援
+    OrderTypeFee                        // 滞纳金
+    OrderTypeDeposit                    // 押金
 )
 
 var (

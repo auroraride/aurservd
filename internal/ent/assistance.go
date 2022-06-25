@@ -59,9 +59,6 @@ type Assistance struct {
 	// Status holds the value of the "status" field.
 	// 救援状态 0:待分配 1:已接单/已分配 2:已拒绝 3:救援失败 4:救援成功待支付 5:救援成功已支付
 	Status uint8 `json:"status,omitempty"`
-	// OutTradeNo holds the value of the "out_trade_no" field.
-	// 救援单号
-	OutTradeNo string `json:"out_trade_no,omitempty"`
 	// Lng holds the value of the "lng" field.
 	// 经度
 	Lng float64 `json:"lng,omitempty"`
@@ -247,7 +244,7 @@ func (*Assistance) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullFloat64)
 		case assistance.FieldID, assistance.FieldStoreID, assistance.FieldRiderID, assistance.FieldSubscribeID, assistance.FieldCityID, assistance.FieldEmployeeID, assistance.FieldOrderID, assistance.FieldStatus, assistance.FieldWait, assistance.FieldDuration:
 			values[i] = new(sql.NullInt64)
-		case assistance.FieldRemark, assistance.FieldOutTradeNo, assistance.FieldAddress, assistance.FieldBreakdown, assistance.FieldBreakdownDesc, assistance.FieldCancelReason, assistance.FieldCancelReasonDesc, assistance.FieldReason, assistance.FieldDetectPhoto, assistance.FieldJointPhoto, assistance.FieldRefusedDesc, assistance.FieldFreeReason, assistance.FieldFailReason:
+		case assistance.FieldRemark, assistance.FieldAddress, assistance.FieldBreakdown, assistance.FieldBreakdownDesc, assistance.FieldCancelReason, assistance.FieldCancelReasonDesc, assistance.FieldReason, assistance.FieldDetectPhoto, assistance.FieldJointPhoto, assistance.FieldRefusedDesc, assistance.FieldFreeReason, assistance.FieldFailReason:
 			values[i] = new(sql.NullString)
 		case assistance.FieldCreatedAt, assistance.FieldUpdatedAt, assistance.FieldDeletedAt, assistance.FieldPayAt, assistance.FieldAllocateAt, assistance.FieldProcessAt:
 			values[i] = new(sql.NullTime)
@@ -357,12 +354,6 @@ func (a *Assistance) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
 				a.Status = uint8(value.Int64)
-			}
-		case assistance.FieldOutTradeNo:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field out_trade_no", values[i])
-			} else if value.Valid {
-				a.OutTradeNo = value.String
 			}
 		case assistance.FieldLng:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
@@ -598,8 +589,6 @@ func (a *Assistance) String() string {
 	}
 	builder.WriteString(", status=")
 	builder.WriteString(fmt.Sprintf("%v", a.Status))
-	builder.WriteString(", out_trade_no=")
-	builder.WriteString(a.OutTradeNo)
 	builder.WriteString(", lng=")
 	builder.WriteString(fmt.Sprintf("%v", a.Lng))
 	builder.WriteString(", lat=")

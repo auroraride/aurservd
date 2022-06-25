@@ -170,13 +170,6 @@ func Status(v uint8) predicate.Assistance {
 	})
 }
 
-// OutTradeNo applies equality check predicate on the "out_trade_no" field. It's identical to OutTradeNoEQ.
-func OutTradeNo(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOutTradeNo), v))
-	})
-}
-
 // Lng applies equality check predicate on the "lng" field. It's identical to LngEQ.
 func Lng(v float64) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
@@ -1122,117 +1115,6 @@ func StatusLT(v uint8) predicate.Assistance {
 func StatusLTE(v uint8) predicate.Assistance {
 	return predicate.Assistance(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldStatus), v))
-	})
-}
-
-// OutTradeNoEQ applies the EQ predicate on the "out_trade_no" field.
-func OutTradeNoEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldOutTradeNo), v))
-	})
-}
-
-// OutTradeNoNEQ applies the NEQ predicate on the "out_trade_no" field.
-func OutTradeNoNEQ(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldOutTradeNo), v))
-	})
-}
-
-// OutTradeNoIn applies the In predicate on the "out_trade_no" field.
-func OutTradeNoIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldOutTradeNo), v...))
-	})
-}
-
-// OutTradeNoNotIn applies the NotIn predicate on the "out_trade_no" field.
-func OutTradeNoNotIn(vs ...string) predicate.Assistance {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Assistance(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldOutTradeNo), v...))
-	})
-}
-
-// OutTradeNoGT applies the GT predicate on the "out_trade_no" field.
-func OutTradeNoGT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldOutTradeNo), v))
-	})
-}
-
-// OutTradeNoGTE applies the GTE predicate on the "out_trade_no" field.
-func OutTradeNoGTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldOutTradeNo), v))
-	})
-}
-
-// OutTradeNoLT applies the LT predicate on the "out_trade_no" field.
-func OutTradeNoLT(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldOutTradeNo), v))
-	})
-}
-
-// OutTradeNoLTE applies the LTE predicate on the "out_trade_no" field.
-func OutTradeNoLTE(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldOutTradeNo), v))
-	})
-}
-
-// OutTradeNoContains applies the Contains predicate on the "out_trade_no" field.
-func OutTradeNoContains(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldOutTradeNo), v))
-	})
-}
-
-// OutTradeNoHasPrefix applies the HasPrefix predicate on the "out_trade_no" field.
-func OutTradeNoHasPrefix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldOutTradeNo), v))
-	})
-}
-
-// OutTradeNoHasSuffix applies the HasSuffix predicate on the "out_trade_no" field.
-func OutTradeNoHasSuffix(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldOutTradeNo), v))
-	})
-}
-
-// OutTradeNoEqualFold applies the EqualFold predicate on the "out_trade_no" field.
-func OutTradeNoEqualFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldOutTradeNo), v))
-	})
-}
-
-// OutTradeNoContainsFold applies the ContainsFold predicate on the "out_trade_no" field.
-func OutTradeNoContainsFold(v string) predicate.Assistance {
-	return predicate.Assistance(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldOutTradeNo), v))
 	})
 }
 

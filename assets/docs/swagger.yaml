@@ -76,9 +76,8 @@ definitions:
     type: object
   model.AssistanceCreateRes:
     properties:
-      outTradeNo:
-        description: 救援订单编码
-        type: string
+      id:
+        type: integer
     type: object
   model.AssistanceDetail:
     properties:
@@ -288,6 +287,54 @@ definitions:
         type: number
       name:
         description: 门店名称
+        type: string
+    type: object
+  model.AssistancePayReq:
+    properties:
+      id:
+        description: '救援ID '
+        type: integer
+      payway:
+        description: 支付方式 1支付宝 2微信
+        enum:
+        - 1
+        - 2
+        type: integer
+    required:
+    - id
+    - payway
+    type: object
+  model.AssistancePayRes:
+    properties:
+      cost:
+        description: 费用
+        type: number
+      distance:
+        description: 救援距离
+        type: string
+      id:
+        type: integer
+      model:
+        description: 电池型号
+        type: string
+      outTradeNo:
+        description: 订单二维码 (用做查询支付结果)
+        type: string
+      qr:
+        description: 支付码
+        type: string
+      reason:
+        description: 救援原因
+        type: string
+      rider:
+        allOf:
+        - $ref: '#/definitions/model.RiderBasic'
+        description: 骑手信息
+      status:
+        description: 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
+        type: integer
+      time:
+        description: 发起时间
         type: string
     type: object
   model.AssistanceProcessReq:
@@ -3411,6 +3458,33 @@ paths:
           schema:
             $ref: '#/definitions/model.AssistanceEmployeeDetailRes'
       summary: E5001 获取救援详情
+      tags:
+      - '[E]店员接口'
+  /employee/v1/assistance/pay:
+    post:
+      consumes:
+      - application/json
+      operationId: EmployeeAssistancePay
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      - description: 支付信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AssistancePayReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.AssistancePayRes'
+      summary: E5003 救援支付
       tags:
       - '[E]店员接口'
   /employee/v1/assistance/process:

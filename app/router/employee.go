@@ -49,4 +49,5 @@ func loadEmployeeRoutes() {
     // 救援
     g.GET("/assistance/:id", eapi.Assistance.Detail)
     g.POST("/assistance/process", eapi.Assistance.Process)
+    g.POST("/assistance/pay", eapi.Assistance.Pay)
 }

@@ -71,9 +71,12 @@ type PaymentOverdueFee struct {
 }
 
 type PaymentAssistance struct {
-    Subject    string  `json:"subject"`    // 支付信息
-    Cost       float64 `json:"cost"`       // 费用
-    OutTradeNo string  `json:"outTradeNo"` // 订单号
+    ID         uint64  `json:"id"`                // 救援ID
+    Payway     uint8   `json:"payway"`            // 支付方式
+    Subject    string  `json:"subject"`           // 支付信息
+    Cost       float64 `json:"cost"`              // 费用
+    OutTradeNo string  `json:"outTradeNo"`        // 订单号
+    TradeNo    string  `json:"tradeNo,omitempty"` // 支付单号
 }
 
 // PaymentCache 支付缓存

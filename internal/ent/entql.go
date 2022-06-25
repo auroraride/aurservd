@@ -72,7 +72,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			assistance.FieldEmployeeID:       {Type: field.TypeUint64, Column: assistance.FieldEmployeeID},
 			assistance.FieldOrderID:          {Type: field.TypeUint64, Column: assistance.FieldOrderID},
 			assistance.FieldStatus:           {Type: field.TypeUint8, Column: assistance.FieldStatus},
-			assistance.FieldOutTradeNo:       {Type: field.TypeString, Column: assistance.FieldOutTradeNo},
 			assistance.FieldLng:              {Type: field.TypeFloat64, Column: assistance.FieldLng},
 			assistance.FieldLat:              {Type: field.TypeFloat64, Column: assistance.FieldLat},
 			assistance.FieldAddress:          {Type: field.TypeString, Column: assistance.FieldAddress},
@@ -2652,11 +2651,6 @@ func (f *AssistanceFilter) WhereOrderID(p entql.Uint64P) {
 // WhereStatus applies the entql uint8 predicate on the status field.
 func (f *AssistanceFilter) WhereStatus(p entql.Uint8P) {
 	f.Where(p.Field(assistance.FieldStatus))
-}
-
-// WhereOutTradeNo applies the entql string predicate on the out_trade_no field.
-func (f *AssistanceFilter) WhereOutTradeNo(p entql.StringP) {
-	f.Where(p.Field(assistance.FieldOutTradeNo))
 }
 
 // WhereLng applies the entql float64 predicate on the lng field.

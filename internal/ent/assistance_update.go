@@ -192,12 +192,6 @@ func (au *AssistanceUpdate) AddStatus(u int8) *AssistanceUpdate {
 	return au
 }
 
-// SetOutTradeNo sets the "out_trade_no" field.
-func (au *AssistanceUpdate) SetOutTradeNo(s string) *AssistanceUpdate {
-	au.mutation.SetOutTradeNo(s)
-	return au
-}
-
 // SetLng sets the "lng" field.
 func (au *AssistanceUpdate) SetLng(f float64) *AssistanceUpdate {
 	au.mutation.ResetLng()
@@ -853,13 +847,6 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeUint8,
 			Value:  value,
 			Column: assistance.FieldStatus,
-		})
-	}
-	if value, ok := au.mutation.OutTradeNo(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldOutTradeNo,
 		})
 	}
 	if value, ok := au.mutation.Lng(); ok {
@@ -1544,12 +1531,6 @@ func (auo *AssistanceUpdateOne) SetNillableStatus(u *uint8) *AssistanceUpdateOne
 // AddStatus adds u to the "status" field.
 func (auo *AssistanceUpdateOne) AddStatus(u int8) *AssistanceUpdateOne {
 	auo.mutation.AddStatus(u)
-	return auo
-}
-
-// SetOutTradeNo sets the "out_trade_no" field.
-func (auo *AssistanceUpdateOne) SetOutTradeNo(s string) *AssistanceUpdateOne {
-	auo.mutation.SetOutTradeNo(s)
 	return auo
 }
 
@@ -2238,13 +2219,6 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 			Type:   field.TypeUint8,
 			Value:  value,
 			Column: assistance.FieldStatus,
-		})
-	}
-	if value, ok := auo.mutation.OutTradeNo(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldOutTradeNo,
 		})
 	}
 	if value, ok := auo.mutation.Lng(); ok {

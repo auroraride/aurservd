@@ -68,11 +68,11 @@ func init() {
 	// assistance.DefaultStatus holds the default value on creation for the status field.
 	assistance.DefaultStatus = assistanceDescStatus.Default.(uint8)
 	// assistanceDescCost is the schema descriptor for cost field.
-	assistanceDescCost := assistanceFields[16].Descriptor()
+	assistanceDescCost := assistanceFields[15].Descriptor()
 	// assistance.DefaultCost holds the default value on creation for the cost field.
 	assistance.DefaultCost = assistanceDescCost.Default.(float64)
 	// assistanceDescWait is the schema descriptor for wait field.
-	assistanceDescWait := assistanceFields[20].Descriptor()
+	assistanceDescWait := assistanceFields[19].Descriptor()
 	// assistance.DefaultWait holds the default value on creation for the wait field.
 	assistance.DefaultWait = assistanceDescWait.Default.(int)
 	attendanceMixin := schema.Attendance{}.Mixin()

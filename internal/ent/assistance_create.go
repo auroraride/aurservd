@@ -171,12 +171,6 @@ func (ac *AssistanceCreate) SetNillableStatus(u *uint8) *AssistanceCreate {
 	return ac
 }
 
-// SetOutTradeNo sets the "out_trade_no" field.
-func (ac *AssistanceCreate) SetOutTradeNo(s string) *AssistanceCreate {
-	ac.mutation.SetOutTradeNo(s)
-	return ac
-}
-
 // SetLng sets the "lng" field.
 func (ac *AssistanceCreate) SetLng(f float64) *AssistanceCreate {
 	ac.mutation.SetLng(f)
@@ -603,9 +597,6 @@ func (ac *AssistanceCreate) check() error {
 	if _, ok := ac.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Assistance.status"`)}
 	}
-	if _, ok := ac.mutation.OutTradeNo(); !ok {
-		return &ValidationError{Name: "out_trade_no", err: errors.New(`ent: missing required field "Assistance.out_trade_no"`)}
-	}
 	if _, ok := ac.mutation.Lng(); !ok {
 		return &ValidationError{Name: "lng", err: errors.New(`ent: missing required field "Assistance.lng"`)}
 	}
@@ -716,14 +707,6 @@ func (ac *AssistanceCreate) createSpec() (*Assistance, *sqlgraph.CreateSpec) {
 			Column: assistance.FieldStatus,
 		})
 		_node.Status = value
-	}
-	if value, ok := ac.mutation.OutTradeNo(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: assistance.FieldOutTradeNo,
-		})
-		_node.OutTradeNo = value
 	}
 	if value, ok := ac.mutation.Lng(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -1276,18 +1259,6 @@ func (u *AssistanceUpsert) UpdateStatus() *AssistanceUpsert {
 // AddStatus adds v to the "status" field.
 func (u *AssistanceUpsert) AddStatus(v uint8) *AssistanceUpsert {
 	u.Add(assistance.FieldStatus, v)
-	return u
-}
-
-// SetOutTradeNo sets the "out_trade_no" field.
-func (u *AssistanceUpsert) SetOutTradeNo(v string) *AssistanceUpsert {
-	u.Set(assistance.FieldOutTradeNo, v)
-	return u
-}
-
-// UpdateOutTradeNo sets the "out_trade_no" field to the value that was provided on create.
-func (u *AssistanceUpsert) UpdateOutTradeNo() *AssistanceUpsert {
-	u.SetExcluded(assistance.FieldOutTradeNo)
 	return u
 }
 
@@ -1978,20 +1949,6 @@ func (u *AssistanceUpsertOne) AddStatus(v uint8) *AssistanceUpsertOne {
 func (u *AssistanceUpsertOne) UpdateStatus() *AssistanceUpsertOne {
 	return u.Update(func(s *AssistanceUpsert) {
 		s.UpdateStatus()
-	})
-}
-
-// SetOutTradeNo sets the "out_trade_no" field.
-func (u *AssistanceUpsertOne) SetOutTradeNo(v string) *AssistanceUpsertOne {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.SetOutTradeNo(v)
-	})
-}
-
-// UpdateOutTradeNo sets the "out_trade_no" field to the value that was provided on create.
-func (u *AssistanceUpsertOne) UpdateOutTradeNo() *AssistanceUpsertOne {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.UpdateOutTradeNo()
 	})
 }
 
@@ -2913,20 +2870,6 @@ func (u *AssistanceUpsertBulk) AddStatus(v uint8) *AssistanceUpsertBulk {
 func (u *AssistanceUpsertBulk) UpdateStatus() *AssistanceUpsertBulk {
 	return u.Update(func(s *AssistanceUpsert) {
 		s.UpdateStatus()
-	})
-}
-
-// SetOutTradeNo sets the "out_trade_no" field.
-func (u *AssistanceUpsertBulk) SetOutTradeNo(v string) *AssistanceUpsertBulk {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.SetOutTradeNo(v)
-	})
-}
-
-// UpdateOutTradeNo sets the "out_trade_no" field to the value that was provided on create.
-func (u *AssistanceUpsertBulk) UpdateOutTradeNo() *AssistanceUpsertBulk {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.UpdateOutTradeNo()
 	})
 }
 

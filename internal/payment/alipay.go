@@ -38,7 +38,7 @@ func newAlipayClient() *alipay.Client {
     return client
 }
 
-func newNotifyClient() *alipay.Client {
+func newAlipayNotifyClient() *alipay.Client {
     cfg := ar.Config.Payment.Alipay
     client := newAlipayClient()
     var err error
@@ -57,7 +57,7 @@ func newNotifyClient() *alipay.Client {
     return client
 }
 
-func newRefundClient() *alipay.Client {
+func newAlipayRefundClient() *alipay.Client {
     cfg := ar.Config.Payment.Alipay
     client := newAlipayClient()
     err := client.LoadAliPayRootCertFromFile(cfg.RootCert) // 加载支付宝根证书
@@ -93,6 +93,16 @@ func (c *alipayClient) AppPay(pc *model.PaymentCache) (string, error) {
 
 func (c *alipayClient) Native(pc *model.PaymentCache) (string, error) {
     cfg := ar.Config.Payment.Alipay
+
+    err := c.Client.LoadAliPayRootCertFromFile(cfg.RootCert) // 加载支付宝根证书
+    if err != nil {
+        snag.Panic(err)
+    }
+    err = c.Client.LoadAliPayPublicCertFromFile(cfg.PublicCert) // 加载支付宝公钥证书
+    if err != nil {
+        snag.Panic(err)
+    }
+
     amount, subject, no := pc.GetPaymentArgs()
     trade := alipay.TradePreCreate{
         Trade: alipay.Trade{
@@ -108,7 +118,7 @@ func (c *alipayClient) Native(pc *model.PaymentCache) (string, error) {
     }
 
     if !res.IsSuccess() {
-        return "", errors.New("支付二维码生成失败")
+        return "", errors.New("支付宝二维码生成失败")
     }
 
     return res.Content.QRCode, nil
@@ -170,15 +180,20 @@ func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
             pc.Subscribe.TradeNo = result.TradeNo
         }
         return pc
-    case model.PaymentCacheTypeRefund:
-        pc.Refund.Success = true
-        pc.Refund.Request = true
-        pc.Refund.Time = carbon.Parse(result.GmtRefund).Carbon2Time()
-        return pc
     case model.PaymentCacheTypeOverdueFee:
         if result.TradeStatus == alipay.TradeStatusSuccess {
             pc.OverDueFee.TradeNo = result.TradeNo
         }
+        return pc
+    case model.PaymentCacheTypeAssistance:
+        if result.TradeStatus == alipay.TradeStatusSuccess {
+            pc.Assistance.TradeNo = result.TradeNo
+        }
+        return pc
+    case model.PaymentCacheTypeRefund:
+        pc.Refund.Success = true
+        pc.Refund.Request = true
+        pc.Refund.Time = carbon.Parse(result.GmtRefund).Carbon2Time()
         return pc
     }
 

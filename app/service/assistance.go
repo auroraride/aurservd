@@ -19,6 +19,8 @@ import (
     "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/store"
+    "github.com/auroraride/aurservd/internal/payment"
+    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
@@ -274,7 +276,6 @@ func (s *assistanceService) Create(req *model.AssistanceCreateReq) model.Assista
         SetBreakdown(req.Breakdown).
         SetBreakdownPhotos(req.BreakdownPhotos).
         SetBreakdownDesc(req.BreakdownDesc).
-        SetOutTradeNo(tools.NewUnique().NewSN28()).
         SetRiderID(s.rider.ID).
         SetSubscribeID(sub.ID).
         SetCityID(sub.CityID).
@@ -284,7 +285,7 @@ func (s *assistanceService) Create(req *model.AssistanceCreateReq) model.Assista
         snag.Panic("救援发起失败")
     }
 
-    return model.AssistanceCreateRes{OutTradeNo: as.OutTradeNo}
+    return model.AssistanceCreateRes{ID: as.ID}
 }
 
 // Nearby 救援订单附近门店
@@ -588,20 +589,141 @@ func (s *assistanceService) Process(req *model.AssistanceProcessReq) (res model.
     return
 }
 
-func (s *assistanceService) Pay(id uint64) {
+// Pay 支付救援
+func (s *assistanceService) Pay(req *model.AssistancePayReq) model.AssistancePayRes {
     ass, _ := s.orm.QueryNotDeleted().
         Where(
             assistance.EmployeeID(s.employee.ID),
             assistance.Status(model.AssistanceStatusUnpaid),
             assistance.CostGT(0),
-            assistance.ID(id),
+            assistance.ID(req.ID),
         ).
         WithRider(func(rq *ent.RiderQuery) {
             rq.WithPerson()
         }).
+        WithSubscribe().
         First(s.ctx)
 
     if ass == nil {
         snag.Panic("未找到待支付救援详情")
     }
+
+    no := tools.NewUnique().NewSN()
+    cost := ass.Cost
+
+    // TODO DEBUG 模式支付一分钱
+    mode := ar.Config.App.Mode
+    if mode == "debug" || mode == "next" {
+        cost = 0.01
+    }
+    // TODO DEBUG 记得删除
+
+    pc := &model.PaymentCache{
+        CacheType: model.PaymentCacheTypeAssistance,
+        Assistance: &model.PaymentAssistance{
+            Subject:    fmt.Sprintf("%.2f公里救援", ass.Distance/1000),
+            Payway:     req.Payway,
+            Cost:       cost,
+            OutTradeNo: no,
+            ID:         ass.ID,
+        },
+    }
+
+    var qr string
+    var err error
+
+    // 生成预支付订单
+    switch req.Payway {
+    case model.OrderPaywayAlipay:
+        qr, err = payment.NewAlipay().Native(pc)
+        break
+    case model.OrderPaywayWechat:
+        qr, err = payment.NewWechat().Native(pc)
+        break
+    }
+
+    if err != nil {
+        snag.Panic(err)
+    }
+
+    if qr == "" {
+        snag.Panic("支付二维码生成失败")
+    }
+
+    err = cache.Set(s.ctx, no, pc, 20*time.Minute).Err()
+    if err != nil {
+        snag.Panic("支付二维码生成失败")
+    }
+
+    res := model.AssistancePayRes{
+        AssistanceEmployeeListRes: model.AssistanceEmployeeListRes{
+            ID:       ass.ID,
+            Status:   ass.Status,
+            Rider:    model.RiderBasic{},
+            Cost:     ass.Cost,
+            Time:     ass.CreatedAt.Format(carbon.DateTimeLayout),
+            Reason:   ass.Reason,
+            Distance: fmt.Sprintf("%.2fkm", ass.Distance/1000.0),
+        },
+
+        QR:         qr,
+        OutTradeNo: no,
+    }
+
+    sub := ass.Edges.Subscribe
+    if sub != nil {
+        res.Model = sub.Model
+    }
+
+    r := ass.Edges.Rider
+    if r != nil {
+        res.Rider = model.RiderBasic{
+            ID:    r.ID,
+            Phone: r.Phone,
+        }
+
+        p := r.Edges.Person
+        if p != nil {
+            res.Rider.Name = p.Name
+        }
+    }
+
+    return res
+}
+
+// Paid 支付回调
+func (s *assistanceService) Paid(trade *model.PaymentAssistance) {
+    ass, _ := s.orm.QueryNotDeleted().Where(assistance.ID(trade.ID)).First(s.ctx)
+    if ass == nil {
+        return
+    }
+
+    ctx := context.Background()
+    tx, _ := ar.Ent.Tx(ctx)
+
+    o, err := tx.Order.Create().
+        SetPayway(trade.Payway).
+        SetAmount(trade.Cost).
+        SetOutTradeNo(trade.OutTradeNo).
+        SetTradeNo(trade.TradeNo).
+        SetTotal(trade.Cost).
+        SetCityID(ass.CityID).
+        SetSubscribeID(ass.SubscribeID).
+        SetType(model.OrderTypeAssistance).
+        SetRiderID(ass.RiderID).
+        Save(ctx)
+    if err != nil {
+        log.Errorf("[ASSISTANCE PAID %s ERROR]: %s", trade.OutTradeNo, err.Error())
+        _ = tx.Rollback()
+        return
+    }
+
+    _, err = tx.Assistance.UpdateOne(ass).SetStatus(model.AssistanceStatusSuccess).SetPayAt(time.Now()).SetOrderID(o.ID).Save(ctx)
+    if err != nil {
+        log.Errorf("[ASSISTANCE PAID %s ERROR UPDATE %d]: %s", trade.OutTradeNo, ass.ID, err.Error())
+        _ = tx.Rollback()
+        return
+    }
+
+    _ = tx.Commit()
 }

@@ -39,8 +39,6 @@ const (
 	FieldOrderID = "order_id"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
-	// FieldOutTradeNo holds the string denoting the out_trade_no field in the database.
-	FieldOutTradeNo = "out_trade_no"
 	// FieldLng holds the string denoting the lng field in the database.
 	FieldLng = "lng"
 	// FieldLat holds the string denoting the lat field in the database.
@@ -159,7 +157,6 @@ var Columns = []string{
 	FieldEmployeeID,
 	FieldOrderID,
 	FieldStatus,
-	FieldOutTradeNo,
 	FieldLng,
 	FieldLat,
 	FieldAddress,

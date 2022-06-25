@@ -189,6 +189,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
             deposit = 0.01
         }
     }
+    // TODO DEBUG 记得删除
 
     total, _ := decimal.NewFromFloat(price).Add(decimal.NewFromFloat(deposit)).Float64()
 
@@ -296,6 +297,9 @@ func (s *orderService) DoPayment(pc *model.PaymentCache) {
     switch pc.CacheType {
     case model.PaymentCacheTypePlan:
         s.OrderPaid(pc.Subscribe)
+        break
+    case model.PaymentCacheTypeAssistance:
+        NewAssistance().Paid(pc.Assistance)
         break
     case model.PaymentCacheTypeRefund:
         s.RefundSuccess(pc.Refund)

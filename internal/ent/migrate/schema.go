@@ -19,7 +19,6 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "status", Type: field.TypeUint8, Comment: "救援状态 0:待分配 1:已接单/已分配 2:已拒绝 3:救援失败 4:救援成功待支付 5:救援成功已支付", Default: 0},
-		{Name: "out_trade_no", Type: field.TypeString, Comment: "救援单号"},
 		{Name: "lng", Type: field.TypeFloat64, Comment: "经度"},
 		{Name: "lat", Type: field.TypeFloat64, Comment: "纬度"},
 		{Name: "address", Type: field.TypeString, Comment: "详细地址"},
@@ -57,37 +56,37 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "assistance_store_store",
-				Columns:    []*schema.Column{AssistanceColumns[31]},
+				Columns:    []*schema.Column{AssistanceColumns[30]},
 				RefColumns: []*schema.Column{StoreColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "assistance_rider_rider",
-				Columns:    []*schema.Column{AssistanceColumns[32]},
+				Columns:    []*schema.Column{AssistanceColumns[31]},
 				RefColumns: []*schema.Column{RiderColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "assistance_subscribe_subscribe",
-				Columns:    []*schema.Column{AssistanceColumns[33]},
+				Columns:    []*schema.Column{AssistanceColumns[32]},
 				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "assistance_city_city",
-				Columns:    []*schema.Column{AssistanceColumns[34]},
+				Columns:    []*schema.Column{AssistanceColumns[33]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "assistance_employee_assistances",
-				Columns:    []*schema.Column{AssistanceColumns[35]},
+				Columns:    []*schema.Column{AssistanceColumns[34]},
 				RefColumns: []*schema.Column{EmployeeColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "assistance_order_assistance",
-				Columns:    []*schema.Column{AssistanceColumns[36]},
+				Columns:    []*schema.Column{AssistanceColumns[35]},
 				RefColumns: []*schema.Column{OrderColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -102,11 +101,6 @@ var (
 				Name:    "assistance_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{AssistanceColumns[3]},
-			},
-			{
-				Name:    "assistance_out_trade_no",
-				Unique:  false,
-				Columns: []*schema.Column{AssistanceColumns[8]},
 			},
 			{
 				Name:    "assistance_status",

@@ -130,6 +130,47 @@
                 }
             }
         },
+        "/employee/v1/assistance/pay": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E5003 救援支付",
+                "operationId": "EmployeeAssistancePay",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "支付信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AssistancePayReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.AssistancePayRes"
+                        }
+                    }
+                }
+            }
+        },
         "/employee/v1/assistance/process": {
             "post": {
                 "consumes": [
@@ -6713,9 +6754,8 @@
         "model.AssistanceCreateRes": {
             "type": "object",
             "properties": {
-                "outTradeNo": {
-                    "description": "救援订单编码",
-                    "type": "string"
+                "id": {
+                    "type": "integer"
                 }
             }
         },
@@ -7027,6 +7067,75 @@
                 },
                 "name": {
                     "description": "门店名称",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssistancePayReq": {
+            "type": "object",
+            "required": [
+                "id",
+                "payway"
+            ],
+            "properties": {
+                "id": {
+                    "description": "救援ID ",
+                    "type": "integer"
+                },
+                "payway": {
+                    "description": "支付方式 1支付宝 2微信",
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
+        "model.AssistancePayRes": {
+            "type": "object",
+            "properties": {
+                "cost": {
+                    "description": "费用",
+                    "type": "number"
+                },
+                "distance": {
+                    "description": "救援距离",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
+                "outTradeNo": {
+                    "description": "订单二维码 (用做查询支付结果)",
+                    "type": "string"
+                },
+                "qr": {
+                    "description": "支付码",
+                    "type": "string"
+                },
+                "reason": {
+                    "description": "救援原因",
+                    "type": "string"
+                },
+                "rider": {
+                    "description": "骑手信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderBasic"
+                        }
+                    ]
+                },
+                "status": {
+                    "description": "状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付",
+                    "type": "integer"
+                },
+                "time": {
+                    "description": "发起时间",
                     "type": "string"
                 }
             }

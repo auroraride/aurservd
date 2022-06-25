@@ -109,7 +109,6 @@ type AssistanceMutation struct {
 	remark             *string
 	status             *uint8
 	addstatus          *int8
-	out_trade_no       *string
 	lng                *float64
 	addlng             *float64
 	lat                *float64
@@ -832,42 +831,6 @@ func (m *AssistanceMutation) AddedStatus() (r int8, exists bool) {
 func (m *AssistanceMutation) ResetStatus() {
 	m.status = nil
 	m.addstatus = nil
-}
-
-// SetOutTradeNo sets the "out_trade_no" field.
-func (m *AssistanceMutation) SetOutTradeNo(s string) {
-	m.out_trade_no = &s
-}
-
-// OutTradeNo returns the value of the "out_trade_no" field in the mutation.
-func (m *AssistanceMutation) OutTradeNo() (r string, exists bool) {
-	v := m.out_trade_no
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldOutTradeNo returns the old "out_trade_no" field's value of the Assistance entity.
-// If the Assistance object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AssistanceMutation) OldOutTradeNo(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldOutTradeNo is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldOutTradeNo requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldOutTradeNo: %w", err)
-	}
-	return oldValue.OutTradeNo, nil
-}
-
-// ResetOutTradeNo resets all changes to the "out_trade_no" field.
-func (m *AssistanceMutation) ResetOutTradeNo() {
-	m.out_trade_no = nil
 }
 
 // SetLng sets the "lng" field.
@@ -2189,7 +2152,7 @@ func (m *AssistanceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AssistanceMutation) Fields() []string {
-	fields := make([]string, 0, 36)
+	fields := make([]string, 0, 35)
 	if m.created_at != nil {
 		fields = append(fields, assistance.FieldCreatedAt)
 	}
@@ -2228,9 +2191,6 @@ func (m *AssistanceMutation) Fields() []string {
 	}
 	if m.status != nil {
 		fields = append(fields, assistance.FieldStatus)
-	}
-	if m.out_trade_no != nil {
-		fields = append(fields, assistance.FieldOutTradeNo)
 	}
 	if m.lng != nil {
 		fields = append(fields, assistance.FieldLng)
@@ -2332,8 +2292,6 @@ func (m *AssistanceMutation) Field(name string) (ent.Value, bool) {
 		return m.OrderID()
 	case assistance.FieldStatus:
 		return m.Status()
-	case assistance.FieldOutTradeNo:
-		return m.OutTradeNo()
 	case assistance.FieldLng:
 		return m.Lng()
 	case assistance.FieldLat:
@@ -2413,8 +2371,6 @@ func (m *AssistanceMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldOrderID(ctx)
 	case assistance.FieldStatus:
 		return m.OldStatus(ctx)
-	case assistance.FieldOutTradeNo:
-		return m.OldOutTradeNo(ctx)
 	case assistance.FieldLng:
 		return m.OldLng(ctx)
 	case assistance.FieldLat:
@@ -2558,13 +2514,6 @@ func (m *AssistanceMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatus(v)
-		return nil
-	case assistance.FieldOutTradeNo:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetOutTradeNo(v)
 		return nil
 	case assistance.FieldLng:
 		v, ok := value.(float64)
@@ -3047,9 +2996,6 @@ func (m *AssistanceMutation) ResetField(name string) error {
 		return nil
 	case assistance.FieldStatus:
 		m.ResetStatus()
-		return nil
-	case assistance.FieldOutTradeNo:
-		m.ResetOutTradeNo()
 		return nil
 	case assistance.FieldLng:
 		m.ResetLng()

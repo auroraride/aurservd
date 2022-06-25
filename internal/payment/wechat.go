@@ -260,6 +260,9 @@ func (c *wechatClient) Notification(req *http.Request) *model.PaymentCache {
     case model.PaymentCacheTypeOverdueFee:
         pc.OverDueFee.TradeNo = *(transaction.TransactionId)
         break
+    case model.PaymentCacheTypeAssistance:
+        pc.Assistance.TradeNo = *(transaction.TransactionId)
+        break
     default:
         return nil
     }

@@ -28,7 +28,6 @@ func (Assistance) Fields() []ent.Field {
         field.Uint64("employee_id").Optional().Nillable().Comment("店员ID"),
         field.Uint64("order_id").Optional().Nillable().Comment("支付订单"),
         field.Uint8("status").Default(0).Comment("救援状态 0:待分配 1:已接单/已分配 2:已拒绝 3:救援失败 4:救援成功待支付 5:救援成功已支付"),
-        field.String("out_trade_no").Comment("救援单号"),
         field.Float("lng").Comment("经度"),
         field.Float("lat").Comment("纬度"),
         field.String("address").Comment("详细地址"),
@@ -77,7 +76,6 @@ func (Assistance) Mixin() []ent.Mixin {
 
 func (Assistance) Indexes() []ent.Index {
     return []ent.Index{
-        index.Fields("out_trade_no"),
         index.Fields("status"),
     }
 }
