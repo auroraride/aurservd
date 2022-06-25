@@ -44,5 +44,5 @@ func loadEmployeeRoutes() {
     g.GET("/rider/exchange", eapi.Rider.Exchange, middleware.EmployeeDutyMiddleware())
 
     // socket
-    g.Any("/speech", eapi.Speech.Store)
+    g.Any("/socket", eapi.Socket.Employee)
 }

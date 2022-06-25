@@ -1,6 +1,6 @@
 // Copyright (C) liasica. 2022-present.
 //
-// Created at 2022-06-22
+// Created at 2022-06-25
 // Based on aurservd by liasica, magicrolan@qq.com.
 
 package eapi
@@ -13,13 +13,12 @@ import (
     "net/http"
 )
 
-type speech struct{}
+type socket struct{}
 
-var Speech = new(speech)
+var Socket = new(socket)
 
-var upgrader = websocket.Upgrader{}
-
-func (*speech) Store(c echo.Context) error {
+func (*socket) Employee(c echo.Context) error {
+    var upgrader = websocket.Upgrader{}
     upgrader.CheckOrigin = func(r *http.Request) bool { return true }
     ws, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
 
@@ -28,17 +27,17 @@ func (*speech) Store(c echo.Context) error {
         return err
     }
 
-    srv := service.NewSpeech()
+    srv := service.NewEmployeeSocket()
     key := c.Request().Header.Get("Sec-WebSocket-Key")
 
     defer func(ws *websocket.Conn) {
         log.Infof("%s disconnect", key)
-        srv.SpeecherDisConnect(ws)
+        srv.DisConnect(ws)
         _ = ws.Close()
     }(ws)
 
     token := c.QueryParam("token")
-    register := srv.SpeecherConnect(ws, token)
+    register := srv.Connect(ws, token)
     _ = ws.WriteMessage(websocket.TextMessage, register.Bytes())
 
     for {
@@ -47,7 +46,7 @@ func (*speech) Store(c echo.Context) error {
             break
         }
 
-        ws.WriteMessage(websocket.PongMessage, nil)
+        _ = ws.WriteMessage(websocket.PongMessage, nil)
     }
 
     return nil

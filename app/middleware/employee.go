@@ -19,7 +19,7 @@ import (
 var (
     employeeAuthSkipper = map[string]bool{
         "/employee/v1/signin": true,
-        "/employee/v1/speech": true,
+        "/employee/v1/socket": true,
     }
 )
 
