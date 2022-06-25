@@ -5,6 +5,17 @@
 
 package rapi
 
-type socket struct{}
+import (
+    "github.com/auroraride/aurservd/app"
+    "github.com/labstack/echo/v4"
+)
 
-var Socket = new(socket)
+type socketapi struct{}
+
+var Socket = new(socketapi)
+
+func (*socketapi) Socket(c echo.Context) (err error) {
+    ctx := app.Context(c)
+
+    return ctx.SendResponse()
+}

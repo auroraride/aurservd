@@ -8,6 +8,7 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/socket"
 )
 
 type speechService struct {
@@ -20,12 +21,10 @@ func NewSpeech() *speechService {
     }
 }
 
-func (s *speechService) SendSpeech(storeID uint64, message string) {
+// SendSpeech 发送播报内容
+func (s *speechService) SendSpeech(employeeID uint64, message string) {
     res := &model.EmployeeSocketMessage{
-        Success: true,
-        Message: "OK",
-        Speech:  message,
+        Speech: message,
     }
-
-    NewEmployeeSocket().Send(storeID, res)
+    socket.GetClientID(NewEmployeeSocket(), employeeID).SendMessage(res)
 }

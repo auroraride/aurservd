@@ -5,8 +5,6 @@
 
 package model
 
-import "encoding/json"
-
 type Employee struct {
     ID    uint64 `json:"id"`
     Name  string `json:"name"`  // 店员名称
@@ -90,15 +88,4 @@ type EmployeeListRes struct {
 type EmployeeEnableReq struct {
     ID     uint64 `json:"id" validate:"required" trans:"店员ID"`
     Enable bool   `json:"enable"` // 修改店员启用状态 true:启用 false:禁用
-}
-
-type EmployeeSocketMessage struct {
-    Success bool   `json:"success"`
-    Message string `json:"message"`
-    Speech  string `json:"speech,omitempty"`
-}
-
-func (res *EmployeeSocketMessage) Bytes() []byte {
-    b, _ := json.Marshal(res)
-    return b
 }

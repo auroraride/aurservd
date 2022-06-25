@@ -105,7 +105,8 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
     message := sub.Model
     message = strings.ReplaceAll(message, "AH", "安")
     message = strings.ReplaceAll(message, "V", "伏")
-    NewSpeech().SendSpeech(item.ID, fmt.Sprintf("%s扫码换电%s", s.rider.Edges.Person.Name, message))
+    // 发送播报信息给店员
+    NewSpeech().SendSpeech(ee.ID, fmt.Sprintf("%s扫码换电%s", s.rider.Edges.Person.Name, message))
 
     return &model.ExchangeStoreRes{
         Model:     subd.Model,

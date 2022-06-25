@@ -120,7 +120,7 @@ type AssistanceCancelReq struct {
     Desc       string `json:"desc"` // 取消原因详细描述
 }
 
-type AssistanceMessage struct {
+type AssistanceRiderSocketMessage struct {
     Status   uint8       `json:"status"`
     Store    StoreLngLat `json:"store"`
     Employee Employee    `json:"employee"`
