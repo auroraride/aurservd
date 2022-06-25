@@ -371,8 +371,11 @@ func (s *assistanceService) Allocate(req *model.AssistanceAllocateReq) {
     if item == nil {
         snag.Panic("未找到有效救援")
     }
+    before := item.Status
 
-    _, err := item.Update().
+    var err error
+
+    item, err = item.Update().
         SetDistance(haversine.Distance(haversine.NewCoordinates(item.Lat, item.Lng), haversine.NewCoordinates(st.Lat, st.Lng)).Miles()).
         SetStoreID(st.ID).
         SetEmployeeID(*st.EmployeeID).
@@ -388,14 +391,16 @@ func (s *assistanceService) Allocate(req *model.AssistanceAllocateReq) {
     // 救援处理接单响应
     // 发送信息给骑手
     go NewAssistanceSocket().SendRider(item.RiderID, item)
-    // TODO 发送消息给门店
+
+    // 发送消息给门店
+    go NewAssistanceSocket().SenderEmployee(*st.EmployeeID, item)
 
     // 记录日志
     go logging.NewOperateLog().
         SetRef(item).
         SetModifier(s.modifier).
         SetOperate(model.OperateAssistanceAllocate).
-        SetDiff(model.AssistanceStatus(item.Status), model.AssistanceStatus(model.AssistanceStatusAllocated)).
+        SetDiff(model.AssistanceStatus(before), model.AssistanceStatus(item.Status)).
         Send()
 }
 
@@ -406,7 +411,10 @@ func (s *assistanceService) Free(req *model.AssistanceFreeReq) {
         snag.Panic("未找到待支付订单")
     }
 
-    _, err := item.Update().
+    before := fmt.Sprintf("%s (%.2f元)", model.AssistanceStatus(item.Status), item.Cost)
+    var err error
+
+    item, err = item.Update().
         SetFreeReason(req.Reason).
         SetCost(0).
         SetStatus(model.AssistanceStatusSuccess).
@@ -418,7 +426,6 @@ func (s *assistanceService) Free(req *model.AssistanceFreeReq) {
     // 救援处理免费响应
     // 发送信息给骑手
     go NewAssistanceSocket().SendRider(item.RiderID, item)
-    // TODO 发送消息给门店
 
     // 记录日志
     go logging.NewOperateLog().
@@ -426,7 +433,7 @@ func (s *assistanceService) Free(req *model.AssistanceFreeReq) {
         SetModifier(s.modifier).
         SetOperate(model.OperateAssistanceFree).
         SetDiff(
-            fmt.Sprintf("%s (%.2f元)", model.AssistanceStatus(item.Status), item.Cost),
+            before,
             fmt.Sprintf("%s (%s)", model.AssistanceStatus(model.AssistanceStatusSuccess), req.Reason),
         ).
         Send()
@@ -439,7 +446,10 @@ func (s *assistanceService) Refuse(req *model.AssistanceRefuseReq) {
         snag.Panic("救援状态错误")
     }
 
-    _, err := item.Update().
+    before := model.AssistanceStatus(item.Status)
+
+    var err error
+    item, err = item.Update().
         ClearEmployeeID().
         ClearStoreID().
         ClearCost().
@@ -461,7 +471,7 @@ func (s *assistanceService) Refuse(req *model.AssistanceRefuseReq) {
         SetModifier(s.modifier).
         SetOperate(model.OperateAssistanceRefuse).
         SetDiff(
-            model.AssistanceStatus(item.Status),
+            before,
             fmt.Sprintf("%s (%s)", model.AssistanceStatus(model.AssistanceStatusRefused), req.Reason),
         ).
         Send()

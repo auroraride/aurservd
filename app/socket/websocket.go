@@ -32,6 +32,9 @@ type WebsocketHub struct {
 
 // SendMessage 发送消息
 func (hub *WebsocketHub) SendMessage(message model.SocketBinaryMessage) {
+    if hub == nil {
+        return
+    }
     _ = hub.WriteMessage(websocket.TextMessage, message.Bytes())
 }
 
@@ -93,6 +96,7 @@ func Wrap(c echo.Context, ws Websocket) error {
     }
 
     key := GetKey(ws, id)
+    log.Infof("%s Socket connected", key)
 
     // 断开已有的
     client := GetClient(key)

@@ -14,6 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/store"
+    "github.com/auroraride/aurservd/pkg/tools"
     log "github.com/sirupsen/logrus"
     "time"
 )
@@ -75,12 +76,15 @@ func (s *assistanceSocketService) Detail(ass *ent.Assistance) (message *model.As
     }
 
     if ass.Status == model.AssistanceStatusPending {
-        message.Seconds = int64(time.Now().Sub(ass.CreatedAt).Seconds())
+        message.Seconds = int(time.Now().Sub(ass.CreatedAt).Seconds())
+    } else {
+        message.Seconds = ass.Wait
     }
 
     return
 }
 
+// SendRider 发送消息给骑手端
 func (s *assistanceSocketService) SendRider(riderID uint64, ass *ent.Assistance) {
     message, err := s.Detail(ass)
     if err != nil {
@@ -89,4 +93,12 @@ func (s *assistanceSocketService) SendRider(riderID uint64, ass *ent.Assistance)
     }
 
     socket.GetClientID(NewRiderSocket(), riderID).SendMessage(&model.RiderSocketMessage{Assistance: message})
+}
+
+// SenderEmployee 发送消息给门店端
+func (s *assistanceSocketService) SenderEmployee(employeeID uint64, ass *ent.Assistance) {
+    socket.GetClientID(NewEmployeeSocket(), employeeID).SendMessage(&model.EmployeeSocketMessage{
+        Speech:       "您有一条救援任务",
+        AssistanceID: tools.NewPointerInterface(ass.ID),
+    })
 }

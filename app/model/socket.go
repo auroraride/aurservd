@@ -22,7 +22,8 @@ func (res *SocketMessage) Bytes() []byte {
 
 type EmployeeSocketMessage struct {
     SocketMessage
-    Speech string `json:"speech,omitempty"` // 播报消息
+    Speech       string  `json:"speech,omitempty"`       // 播报消息
+    AssistanceID *uint64 `json:"assistanceId,omitempty"` // 救援ID
 }
 
 func (res *EmployeeSocketMessage) Bytes() []byte {
@@ -44,7 +45,7 @@ func (res *RiderSocketMessage) Bytes() []byte {
 type AssistanceSocketMessage struct {
     Status   uint8        `json:"status"`
     Store    *StoreLngLat `json:"store,omitempty"`
-    Employee *Employee    `json:"employee,omitemptyz"`
+    Employee *Employee    `json:"employee,omitempty"`
     Rider    LngLat       `json:"rider"`
-    Seconds  int64        `json:"seconds"`
+    Seconds  int          `json:"seconds"`
 }
