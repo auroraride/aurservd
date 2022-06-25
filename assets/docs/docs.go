@@ -6658,7 +6658,7 @@ const docTemplate = `{
         "model.AssistanceCancelReq": {
             "type": "object",
             "required": [
-                "outTradeNo",
+                "id",
                 "reason"
             ],
             "properties": {
@@ -6666,9 +6666,9 @@ const docTemplate = `{
                     "description": "取消原因详细描述",
                     "type": "string"
                 },
-                "outTradeNo": {
-                    "description": "救援单号 ",
-                    "type": "string"
+                "id": {
+                    "description": "救援ID ",
+                    "type": "integer"
                 },
                 "reason": {
                     "description": "取消原因 ",
@@ -7104,13 +7104,18 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "employee": {
+                    "description": "店员信息",
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.Employee"
                         }
                     ]
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "rider": {
+                    "description": "骑手坐标",
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.LngLat"
@@ -7118,12 +7123,15 @@ const docTemplate = `{
                     ]
                 },
                 "seconds": {
+                    "description": "距离分配等待时间",
                     "type": "integer"
                 },
                 "status": {
+                    "description": "状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付",
                     "type": "integer"
                 },
                 "store": {
+                    "description": "门店信息",
                     "allOf": [
                         {
                             "$ref": "#/definitions/model.StoreLngLat"

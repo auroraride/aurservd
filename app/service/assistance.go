@@ -485,7 +485,7 @@ func (s *assistanceService) Refuse(req *model.AssistanceRefuseReq) {
 // Cancel 取消救援
 func (s *assistanceService) Cancel(req *model.AssistanceCancelReq) {
     // 查找未分配的救援
-    item, _ := s.orm.QueryNotDeleted().Where(assistance.OutTradeNo(req.OutTradeNo), assistance.RiderID(s.rider.ID)).First(s.ctx)
+    item, _ := s.orm.QueryNotDeleted().Where(assistance.ID(req.ID), assistance.RiderID(s.rider.ID)).First(s.ctx)
     if item == nil {
         snag.Panic("未找到救援信息")
     }
@@ -535,6 +535,7 @@ func (s *assistanceService) EmployeeDetail(id uint64) (res model.AssistanceEmplo
     return
 }
 
+// Process 处理救援
 func (s *assistanceService) Process(req *model.AssistanceProcessReq) (res model.AssistanceProcessRes) {
     ass, _ := s.orm.QueryNotDeleted().
         Where(assistance.ID(req.ID), assistance.EmployeeID(s.employee.ID), assistance.Status(model.AssistanceStatusAllocated)).
@@ -585,4 +586,22 @@ func (s *assistanceService) Process(req *model.AssistanceProcessReq) (res model.
     }
 
     return
+}
+
+func (s *assistanceService) Pay(id uint64) {
+    ass, _ := s.orm.QueryNotDeleted().
+        Where(
+            assistance.EmployeeID(s.employee.ID),
+            assistance.Status(model.AssistanceStatusUnpaid),
+            assistance.CostGT(0),
+            assistance.ID(id),
+        ).
+        WithRider(func(rq *ent.RiderQuery) {
+            rq.WithPerson()
+        }).
+        First(s.ctx)
+
+    if ass == nil {
+        snag.Panic("未找到待支付救援详情")
+    }
 }
