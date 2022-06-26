@@ -15,6 +15,7 @@ func Execute() {
     rootCmd.AddCommand(
         cityCmd,
         managerCmd,
+        importCmd,
         serverCommand(),
     )
     _ = rootCmd.Execute()

@@ -180,7 +180,7 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
 }
 
 // BatteryModels 列出企业可用电压型号
-func (s *enterpriseRiderService) BatteryModels(req *model.EnterprisePriceBatteryModelListReq) []model.EnterprisePriceBatteryModelListRes {
+func (s *enterpriseRiderService) BatteryModels(req *model.EnterprisePriceBatteryModelListReq) []string {
     if s.rider.EnterpriseID == nil {
         snag.Panic("非企业骑手")
     }
@@ -189,13 +189,10 @@ func (s *enterpriseRiderService) BatteryModels(req *model.EnterprisePriceBattery
         Where(enterpriseprice.EnterpriseID(*s.rider.EnterpriseID), enterpriseprice.CityID(req.CityID)).
         All(s.ctx)
 
-    res := make([]model.EnterprisePriceBatteryModelListRes, len(items))
+    res := make([]string, len(items))
 
     for i, item := range items {
-        res[i] = model.EnterprisePriceBatteryModelListRes{
-            Model: item.Model,
-            ID:    item.ID,
-        }
+        res[i] = item.Model
     }
     return res
 }
@@ -206,7 +203,7 @@ func (s *enterpriseRiderService) ChooseBatteryModel(req *model.EnterpriseRiderSu
     if enterpriseID == nil {
         snag.Panic("非企业骑手")
     }
-    ep, _ := ar.Ent.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(*enterpriseID)).First(s.ctx)
+    ep, _ := ar.Ent.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(*enterpriseID), enterpriseprice.Model(req.Model)).First(s.ctx)
     if ep == nil {
         snag.Panic("未找到电池")
     }

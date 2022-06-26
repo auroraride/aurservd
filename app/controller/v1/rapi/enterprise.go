@@ -25,7 +25,7 @@ var Enterprise = new(enterprise)
 // @Produce      json
 // @Param        X-Rider-Token  header  string  true  "骑手校验token"
 // @Param        cityId  query  uint64  true  "城市ID"
-// @Success      200  {object}  []model.EnterprisePriceBatteryModelListRes  "请求成功"
+// @Success      200  {object}  []string  "请求成功"
 func (*enterprise) Battery(c echo.Context) (err error) {
     ctx, req := app.RiderContextAndBinding[model.EnterprisePriceBatteryModelListReq](c)
     return ctx.SendResponse(service.NewEnterpriseRiderWithRider(ctx.Rider).BatteryModels(req))

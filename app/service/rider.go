@@ -609,7 +609,7 @@ func (s *riderService) DepositPaid(riderID uint64) model.RiderDepositRes {
     res := model.RiderDepositRes{
         Deposit: 0,
     }
-    if o == nil {
+    if o != nil {
         res.Deposit = o.Amount
     }
     return res

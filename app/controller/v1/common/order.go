@@ -19,7 +19,7 @@ var Order = new(order)
 func (*order) Paytest(c echo.Context) (err error) {
     ctx := app.Context(c)
     result := new(model.OrderCreateRes)
-    prepay, no, _ := payment.NewWechat().AppPayDemo()
+    prepay, no, _ := payment.NewAlipay().AppPayDemo()
     result.OutTradeNo = no
     result.Prepay = prepay
 

@@ -1581,14 +1581,6 @@ definitions:
     - model
     - price
     type: object
-  model.EnterprisePriceBatteryModelListRes:
-    properties:
-      id:
-        type: integer
-      model:
-        description: 电池型号
-        type: string
-    type: object
   model.EnterprisePriceWithCity:
     properties:
       city:
@@ -1708,11 +1700,11 @@ definitions:
     type: object
   model.EnterpriseRiderSubscribeChooseReq:
     properties:
-      id:
-        description: '型号ID '
-        type: integer
+      model:
+        description: '电池型号 '
+        type: string
     required:
-    - id
+    - model
     type: object
   model.EnterpriseRiderSubscribeChooseRes:
     properties:
@@ -7500,7 +7492,7 @@ paths:
           description: 请求成功
           schema:
             items:
-              $ref: '#/definitions/model.EnterprisePriceBatteryModelListRes'
+              type: string
             type: array
       summary: R3010 企业骑手获取可用电池
       tags:

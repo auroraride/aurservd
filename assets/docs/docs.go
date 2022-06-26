@@ -6258,7 +6258,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.EnterprisePriceBatteryModelListRes"
+                                "type": "string"
                             }
                         }
                     }
@@ -9128,18 +9128,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.EnterprisePriceBatteryModelListRes": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "model": {
-                    "description": "电池型号",
-                    "type": "string"
-                }
-            }
-        },
         "model.EnterprisePriceWithCity": {
             "type": "object",
             "properties": {
@@ -9311,12 +9299,12 @@ const docTemplate = `{
         "model.EnterpriseRiderSubscribeChooseReq": {
             "type": "object",
             "required": [
-                "id"
+                "model"
             ],
             "properties": {
-                "id": {
-                    "description": "型号ID ",
-                    "type": "integer"
+                "model": {
+                    "description": "电池型号 ",
+                    "type": "string"
                 }
             }
         },

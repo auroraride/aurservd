@@ -153,7 +153,7 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
     storeID := s.employee.Edges.Store.ID
 
     // 激活
-    _, err := tx.Subscribe.UpdateOneID(info.ID).
+    newsub, err := tx.Subscribe.UpdateOneID(info.ID).
         SetStatus(model.SubscribeStatusUsing).
         SetStartAt(time.Now()).
         SetEmployeeID(s.employee.ID).
@@ -182,9 +182,12 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
 
     _ = tx.Commit()
 
-    // 更新团签账单
     if info.EnterpriseID != nil {
+        // 更新团签账单
         go NewEnterprise().UpdateStatement(sub.Edges.Enterprise)
+    } else {
+        // 更新个签订阅
+        go NewSubscribe().UpdateStatus(newsub)
     }
 
     // 保存业务日志

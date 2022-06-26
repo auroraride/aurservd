@@ -120,13 +120,8 @@ type EnterprisePriceBatteryModelListReq struct {
     CityID uint64 `json:"cityId" validate:"required" query:"cityId" trans:"城市ID"`
 }
 
-type EnterprisePriceBatteryModelListRes struct {
-    ID    uint64 `json:"id"`
-    Model string `json:"model"` // 电池型号
-}
-
 type EnterpriseRiderSubscribeChooseReq struct {
-    ID uint64 `json:"id" validate:"required" trans:"型号ID"`
+    Model string `json:"model" validate:"required" trans:"电池型号"`
 }
 
 type EnterpriseRiderSubscribeChooseRes struct {

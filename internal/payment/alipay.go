@@ -26,8 +26,6 @@ var _alipay *alipayClient
 
 type alipayClient struct {
     *alipay.Client
-    notifyClient *alipay.Client
-    refundClient *alipay.Client
 }
 
 func newAlipayClient() *alipay.Client {
@@ -36,32 +34,11 @@ func newAlipayClient() *alipay.Client {
     if err != nil {
         snag.Panic(err)
     }
-    return client
-}
-
-func newAlipayNotifyClient() *alipay.Client {
-    cfg := ar.Config.Payment.Alipay
-    client := newAlipayClient()
-    var err error
     err = client.LoadAppPublicCertFromFile(cfg.AppPublicCert) // 加载应用公钥证书
     if err != nil {
         snag.Panic(err)
     }
     err = client.LoadAliPayRootCertFromFile(cfg.RootCert) // 加载支付宝根证书
-    if err != nil {
-        snag.Panic(err)
-    }
-    err = client.LoadAliPayPublicCertFromFile(cfg.PublicCert) // 加载支付宝公钥证书
-    if err != nil {
-        snag.Panic(err)
-    }
-    return client
-}
-
-func newAlipayRefundClient() *alipay.Client {
-    cfg := ar.Config.Payment.Alipay
-    client := newAlipayClient()
-    err := client.LoadAliPayRootCertFromFile(cfg.RootCert) // 加载支付宝根证书
     if err != nil {
         snag.Panic(err)
     }
@@ -109,18 +86,21 @@ func (c *alipayClient) AppPay(pc *model.PaymentCache) (string, error) {
     return c.TradeAppPay(trade)
 }
 
-func (c *alipayClient) AppPayDemo() (string, error) {
+func (c *alipayClient) AppPayDemo() (string, string, error) {
     cfg := ar.Config.Payment.Alipay
+    no := tools.NewUnique().NewSN()
     trade := alipay.TradeAppPay{
         Trade: alipay.Trade{
             TotalAmount: fmt.Sprintf("%.2f", 0.01),
             NotifyURL:   cfg.NotifyUrl,
             Subject:     "测试支付",
-            OutTradeNo:  tools.NewUnique().NewSN(),
+            OutTradeNo:  no,
         },
         TimeExpire: time.Now().Add(10 * time.Minute).Format(carbon.DateTimeLayout),
     }
-    return c.TradeAppPay(trade)
+
+    s, err := c.TradeAppPay(trade)
+    return s, no, err
 }
 
 func (c *alipayClient) Native(pc *model.PaymentCache) (string, error) {
@@ -151,7 +131,7 @@ func (c *alipayClient) Native(pc *model.PaymentCache) (string, error) {
 
 // Refund 退款
 func (c *alipayClient) Refund(req *model.PaymentRefund) {
-    result, err := c.refundClient.TradeRefund(alipay.TradeRefund{
+    result, err := c.Client.TradeRefund(alipay.TradeRefund{
         TradeNo:      req.TradeNo,
         OutRequestNo: req.OutRefundNo,
         RefundAmount: fmt.Sprintf("%.2f", req.RefundAmount),
@@ -179,7 +159,7 @@ func (c *alipayClient) Refund(req *model.PaymentRefund) {
 
 // Notification 支付宝回调
 func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
-    result, err := c.notifyClient.GetTradeNotification(req)
+    result, err := c.Client.GetTradeNotification(req)
     b, _ := jsoniter.MarshalIndent(result, "", "  ")
     log.Infof("支付宝反馈\n%s", b)
     if err != nil {
