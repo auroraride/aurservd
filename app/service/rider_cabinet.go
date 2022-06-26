@@ -66,11 +66,6 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
     // 检查用户是否可以办理业务
     NewRiderPermissionWithRider(s.rider).BusinessX()
 
-    // 是否企业用户
-    if s.rider.Edges.Enterprise != nil {
-        // TODO 企业状态是否可以换电
-    }
-
     // 是否有生效中套餐
     subd, _ := NewSubscribe().RecentDetail(s.rider.ID)
     if subd == nil || subd.Status != model.SubscribeStatusUsing {

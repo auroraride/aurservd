@@ -82,7 +82,6 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
         snag.Panic("未找到有效订阅")
     }
 
-    // TODO 判定门店物资是否匹配电压型号
     if subd.Status != model.SubscribeStatusUsing {
         snag.Panic("骑士卡状态异常")
     }

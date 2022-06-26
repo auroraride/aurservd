@@ -55,7 +55,6 @@ func (s *branchService) Query(id uint64) *ent.Branch {
 func (s *branchService) Create(req *model.BranchCreateReq) {
     tx, _ := ar.Ent.Tx(s.ctx)
 
-    // TODO: 校验城市是否启用
     b, err := s.orm.Create().
         SetName(*req.Name).
         SetAddress(*req.Address).
@@ -83,7 +82,6 @@ func (s *branchService) Create(req *model.BranchCreateReq) {
 }
 
 // AddContract 新增合同
-// TODO 从结构体新增
 func (s *branchService) AddContract(id uint64, req *model.BranchContract) *ent.BranchContract {
     return ar.Ent.BranchContract.Create().
         SetBranchID(id).

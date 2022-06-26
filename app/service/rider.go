@@ -83,9 +83,6 @@ func (s *riderService) IsAuthed(u *ent.Rider) bool {
 
 // IsNewDevice 检查是否是新设备
 func (s *riderService) IsNewDevice(u *ent.Rider, device *model.Device) bool {
-    if ar.Config.App.Debug.Phone[u.Phone] {
-        return false
-    }
     return u.LastDevice != device.Serial || u.IsNewDevice
 }
 
@@ -157,11 +154,15 @@ func (s *riderService) Signout(u *ent.Rider) {
 
 // SetNewDevice 更新用户设备
 func (s *riderService) SetNewDevice(u *ent.Rider, device *model.Device) {
+    isNew := true
+    if ar.Config.App.Debug.Phone[u.Phone] {
+        isNew = false
+    }
     _, err := ar.Ent.Rider.
         UpdateOneID(u.ID).
         SetLastDevice(device.Serial).
         SetDeviceType(device.Type.Raw()).
-        SetIsNewDevice(true).
+        SetIsNewDevice(isNew).
         Save(context.Background())
     if err != nil {
         snag.Panic(err)

@@ -486,9 +486,10 @@ func (s *cabinetService) Usable(cab *ent.Cabinet) (op model.RiderCabinetOperateP
 }
 
 // Health 判定电柜是否可用
-// TODO 上次获取状态多久后标记为offline
+// TODO 状态更新多久算离线 现在是5分钟
 func (s *cabinetService) Health(cab *ent.Cabinet) bool {
     return cab.Status == model.CabinetStatusNormal &&
         cab.Health == model.CabinetHealthStatusOnline &&
+        time.Now().Sub(cab.UpdatedAt).Minutes() < 5 &&
         len(cab.Bin) > 0
 }

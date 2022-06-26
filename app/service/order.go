@@ -111,7 +111,6 @@ func (s *orderService) PreconditionRenewal(sub *model.Subscribe) {
 }
 
 // Create 创建订单
-// TODO 需要做更改电池逻辑, 退款 + 推送订单
 func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCreateRes) {
     if req.OrderType == model.OrderTypeFee {
         return s.CreateFee(s.rider.ID, req.Payway)
@@ -363,8 +362,6 @@ func (s *orderService) FeePaid(trade *model.PaymentOverdueFee) {
 }
 
 // OrderPaid 订单成功支付
-// TODO 业绩提成逻辑
-// TODO 2续签 3重签 4更改电池 5救援 6滞纳金 逻辑
 func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
     // 查询订单是否已存在
     if exists, err := ar.Ent.Order.Query().Where(order.OutTradeNo(trade.OutTradeNo)).Exist(s.ctx); err == nil && exists {
@@ -530,9 +527,7 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
     q := s.orm.QueryNotDeleted().
         Order(ent.Desc(order.FieldCreatedAt)).
         WithCity().
-        WithPlan(func(pq *ent.PlanQuery) {
-            pq.WithPms()
-        }).
+        WithPlan().
         WithCity().
         WithRider(func(rq *ent.RiderQuery) {
             rq.WithPerson()
@@ -562,11 +557,9 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
     if req.CityID != nil {
         q.Where(order.CityID(*req.CityID))
     }
-    // TODO 救援订单
     if req.EmployeeName != nil {
         q.Where(order.HasSubscribeWith(subscribe.HasEmployeeWith(employee.NameContainsFold(*req.EmployeeName))))
     }
-    // TODO 救援订单
     if req.StoreName != nil {
         q.Where(order.HasSubscribeWith(subscribe.HasStoreWith(store.NameContainsFold(*req.StoreName))))
     }

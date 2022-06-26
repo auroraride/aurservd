@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/business"
+    "github.com/auroraride/aurservd/internal/ent/contract"
     "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -227,7 +228,6 @@ func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
 
 // UnSubscribe 退租
 // 会抹去欠费情况
-// TODO 是否适用于团签骑手
 // TODO 管理端强制退组库存如何操作
 func (s *riderMgrService) UnSubscribe(subscribeID uint64) {
     var bls *businessLogService
@@ -284,6 +284,9 @@ func (s *riderMgrService) UnSubscribe(subscribeID uint64) {
     ), tx.Rollback)
 
     _ = tx.Commit()
+
+    // 查询并标记用户合同为失效
+    _, _ = ar.Ent.Contract.Update().Where(contract.RiderID(sub.ID)).SetEffective(false).Save(s.ctx)
 
     before := fmt.Sprintf(
         "%s剩余天数: %d",

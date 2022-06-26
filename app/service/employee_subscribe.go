@@ -115,7 +115,6 @@ func (s *employeeSubscribeService) Inactive(qr string) (*model.SubscribeActiveIn
         },
     }
 
-    // TODO 企业订单店员是否有提成?
     if sub.EnterpriseID == nil {
         o := sub.Edges.InitialOrder
         if o == nil || o.Status != model.OrderStatusPaid {

@@ -50,9 +50,7 @@ func (s *riderOrderService) List(riderID uint64, req model.PaginationReq) *model
     }
     q := s.orm.QueryNotDeleted().
         WithCity().
-        WithPlan(func(pq *ent.PlanQuery) {
-            pq.WithPms()
-        }).
+        WithPlan().
         Order(ent.Desc(order.FieldCreatedAt)).
         Where(
             order.RiderID(riderID),
@@ -95,15 +93,9 @@ func (s *riderOrderService) Detail(item *ent.Order) model.RiderOrder {
             Name: op.Name,
             Days: op.Days,
         }
-        for _, pm := range op.Edges.Pms {
-            res.Models = append(res.Models, model.BatteryModel{
-                ID:    pm.ID,
-                Model: pm.Model,
-            })
-        }
     }
 
-    // rider
+    // 骑手信息
     or := item.Edges.Rider
     if or != nil {
         res.Rider = model.RiderBasic{
@@ -118,6 +110,7 @@ func (s *riderOrderService) Detail(item *ent.Order) model.RiderOrder {
     // store
     osub := item.Edges.Subscribe
     if osub != nil {
+        res.Model = osub.Model
         os := osub.Edges.Store
         if os != nil {
             res.Store = &model.Store{

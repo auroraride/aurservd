@@ -38,7 +38,7 @@ func NewContract() *contractService {
 }
 
 // Effective 查询骑手是否存在生效中的合同
-// TODO 需要实现逻辑: 当用户退租之后触发合同失效, 需要重新签订
+// 当用户退租之后触发合同失效, 需要重新签订
 func (s *contractService) Effective(u *ent.Rider) bool {
     if u.Contractual {
         return true

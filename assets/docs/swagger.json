@@ -10508,13 +10508,6 @@
                     "description": "电池型号 (可为空)",
                     "type": "string"
                 },
-                "models": {
-                    "description": "可用型号, 非骑士卡订阅订单无此字段",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.BatteryModel"
-                    }
-                },
                 "outTradeNo": {
                     "description": "订单编号",
                     "type": "string"

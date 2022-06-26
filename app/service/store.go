@@ -123,7 +123,6 @@ func (s *storeService) Modify(req *model.StoreModifyReq) model.StoreItem {
 }
 
 // Detail 获取门店详情
-// TODO 店员
 func (s *storeService) Detail(id uint64) model.StoreItem {
     item, err := s.orm.QueryNotDeleted().
         Where(store.ID(id)).
