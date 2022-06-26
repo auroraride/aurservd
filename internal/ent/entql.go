@@ -90,10 +90,11 @@ var schemaGraph = func() *sqlgraph.Schema {
 			assistance.FieldAllocateAt:       {Type: field.TypeTime, Column: assistance.FieldAllocateAt},
 			assistance.FieldWait:             {Type: field.TypeInt, Column: assistance.FieldWait},
 			assistance.FieldFreeReason:       {Type: field.TypeString, Column: assistance.FieldFreeReason},
-			assistance.FieldDuration:         {Type: field.TypeInt, Column: assistance.FieldDuration},
 			assistance.FieldFailReason:       {Type: field.TypeString, Column: assistance.FieldFailReason},
 			assistance.FieldProcessAt:        {Type: field.TypeTime, Column: assistance.FieldProcessAt},
 			assistance.FieldPrice:            {Type: field.TypeFloat64, Column: assistance.FieldPrice},
+			assistance.FieldNaviDuration:     {Type: field.TypeInt, Column: assistance.FieldNaviDuration},
+			assistance.FieldNaviPolylines:    {Type: field.TypeJSON, Column: assistance.FieldNaviPolylines},
 		},
 	}
 	graph.Nodes[1] = &sqlgraph.Node{
@@ -2743,11 +2744,6 @@ func (f *AssistanceFilter) WhereFreeReason(p entql.StringP) {
 	f.Where(p.Field(assistance.FieldFreeReason))
 }
 
-// WhereDuration applies the entql int predicate on the duration field.
-func (f *AssistanceFilter) WhereDuration(p entql.IntP) {
-	f.Where(p.Field(assistance.FieldDuration))
-}
-
 // WhereFailReason applies the entql string predicate on the fail_reason field.
 func (f *AssistanceFilter) WhereFailReason(p entql.StringP) {
 	f.Where(p.Field(assistance.FieldFailReason))
@@ -2761,6 +2757,16 @@ func (f *AssistanceFilter) WhereProcessAt(p entql.TimeP) {
 // WherePrice applies the entql float64 predicate on the price field.
 func (f *AssistanceFilter) WherePrice(p entql.Float64P) {
 	f.Where(p.Field(assistance.FieldPrice))
+}
+
+// WhereNaviDuration applies the entql int predicate on the navi_duration field.
+func (f *AssistanceFilter) WhereNaviDuration(p entql.IntP) {
+	f.Where(p.Field(assistance.FieldNaviDuration))
+}
+
+// WhereNaviPolylines applies the entql json.RawMessage predicate on the navi_polylines field.
+func (f *AssistanceFilter) WhereNaviPolylines(p entql.BytesP) {
+	f.Where(p.Field(assistance.FieldNaviPolylines))
 }
 
 // WhereHasStore applies a predicate to check if query has an edge store.

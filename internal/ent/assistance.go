@@ -113,9 +113,6 @@ type Assistance struct {
 	// FreeReason holds the value of the "free_reason" field.
 	// 免费理由
 	FreeReason *string `json:"free_reason,omitempty"`
-	// Duration holds the value of the "duration" field.
-	// 路径规划时间 (s)
-	Duration int `json:"duration,omitempty"`
 	// FailReason holds the value of the "fail_reason" field.
 	// 失败原因
 	FailReason *string `json:"fail_reason,omitempty"`
@@ -125,6 +122,12 @@ type Assistance struct {
 	// Price holds the value of the "price" field.
 	// 救援费用单价 元/公里
 	Price float64 `json:"price,omitempty"`
+	// NaviDuration holds the value of the "navi_duration" field.
+	// 路径导航规划时间 (s)
+	NaviDuration int `json:"navi_duration,omitempty"`
+	// NaviPolylines holds the value of the "navi_polylines" field.
+	// 路径导航规划坐标组
+	NaviPolylines []string `json:"navi_polylines,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssistanceQuery when eager-loading is set.
 	Edges AssistanceEdges `json:"edges"`
@@ -238,11 +241,11 @@ func (*Assistance) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case assistance.FieldCreator, assistance.FieldLastModifier, assistance.FieldBreakdownPhotos:
+		case assistance.FieldCreator, assistance.FieldLastModifier, assistance.FieldBreakdownPhotos, assistance.FieldNaviPolylines:
 			values[i] = new([]byte)
 		case assistance.FieldLng, assistance.FieldLat, assistance.FieldDistance, assistance.FieldCost, assistance.FieldPrice:
 			values[i] = new(sql.NullFloat64)
-		case assistance.FieldID, assistance.FieldStoreID, assistance.FieldRiderID, assistance.FieldSubscribeID, assistance.FieldCityID, assistance.FieldEmployeeID, assistance.FieldOrderID, assistance.FieldStatus, assistance.FieldWait, assistance.FieldDuration:
+		case assistance.FieldID, assistance.FieldStoreID, assistance.FieldRiderID, assistance.FieldSubscribeID, assistance.FieldCityID, assistance.FieldEmployeeID, assistance.FieldOrderID, assistance.FieldStatus, assistance.FieldWait, assistance.FieldNaviDuration:
 			values[i] = new(sql.NullInt64)
 		case assistance.FieldRemark, assistance.FieldAddress, assistance.FieldBreakdown, assistance.FieldBreakdownDesc, assistance.FieldCancelReason, assistance.FieldCancelReasonDesc, assistance.FieldReason, assistance.FieldDetectPhoto, assistance.FieldJointPhoto, assistance.FieldRefusedDesc, assistance.FieldFreeReason, assistance.FieldFailReason:
 			values[i] = new(sql.NullString)
@@ -471,12 +474,6 @@ func (a *Assistance) assignValues(columns []string, values []interface{}) error 
 				a.FreeReason = new(string)
 				*a.FreeReason = value.String
 			}
-		case assistance.FieldDuration:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field duration", values[i])
-			} else if value.Valid {
-				a.Duration = int(value.Int64)
-			}
 		case assistance.FieldFailReason:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field fail_reason", values[i])
@@ -496,6 +493,20 @@ func (a *Assistance) assignValues(columns []string, values []interface{}) error 
 				return fmt.Errorf("unexpected type %T for field price", values[i])
 			} else if value.Valid {
 				a.Price = value.Float64
+			}
+		case assistance.FieldNaviDuration:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field navi_duration", values[i])
+			} else if value.Valid {
+				a.NaviDuration = int(value.Int64)
+			}
+		case assistance.FieldNaviPolylines:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field navi_polylines", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &a.NaviPolylines); err != nil {
+					return fmt.Errorf("unmarshal field navi_polylines: %w", err)
+				}
 			}
 		}
 	}
@@ -637,8 +648,6 @@ func (a *Assistance) String() string {
 		builder.WriteString(", free_reason=")
 		builder.WriteString(*v)
 	}
-	builder.WriteString(", duration=")
-	builder.WriteString(fmt.Sprintf("%v", a.Duration))
 	if v := a.FailReason; v != nil {
 		builder.WriteString(", fail_reason=")
 		builder.WriteString(*v)
@@ -649,6 +658,10 @@ func (a *Assistance) String() string {
 	}
 	builder.WriteString(", price=")
 	builder.WriteString(fmt.Sprintf("%v", a.Price))
+	builder.WriteString(", navi_duration=")
+	builder.WriteString(fmt.Sprintf("%v", a.NaviDuration))
+	builder.WriteString(", navi_polylines=")
+	builder.WriteString(fmt.Sprintf("%v", a.NaviPolylines))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -80,7 +80,7 @@ func (*assistance) PayStatus(c echo.Context) (err error) {
 
 // List
 // @ID           EmployeeAssistanceList
-// @Router       /rider/v1/assistance [GET]
+// @Router       /employee/v1/assistance [GET]
 // @Summary      E5005 救援列表
 // @Tags         [E]店员接口
 // @Accept       json
@@ -91,4 +91,18 @@ func (*assistance) PayStatus(c echo.Context) (err error) {
 func (*assistance) List(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.PaginationReq](c)
     return ctx.SendResponse(service.NewAssistanceWithEmployee(ctx.Employee).SimpleList(*req))
+}
+
+// Overview
+// @ID           EmployeeAssistanceOverview
+// @Router       /employee/v1/assistance/overview [GET]
+// @Summary      E5006 救援总览
+// @Tags         [E]店员接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Employee-Token  header  string  true  "店员校验token"
+// @Success      200  {object}  model.AssistanceEmployeeOverview  "总览"
+func (*assistance) Overview(c echo.Context) (err error) {
+    ctx := app.ContextX[app.EmployeeContext](c)
+    return ctx.SendResponse(service.NewAssistance().EmployeeOverview(ctx.Employee.ID))
 }

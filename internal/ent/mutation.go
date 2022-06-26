@@ -132,12 +132,13 @@ type AssistanceMutation struct {
 	wait               *int
 	addwait            *int
 	free_reason        *string
-	duration           *int
-	addduration        *int
 	fail_reason        *string
 	process_at         *time.Time
 	price              *float64
 	addprice           *float64
+	navi_duration      *int
+	addnavi_duration   *int
+	navi_polylines     *[]string
 	clearedFields      map[string]struct{}
 	store              *uint64
 	clearedstore       bool
@@ -1739,76 +1740,6 @@ func (m *AssistanceMutation) ResetFreeReason() {
 	delete(m.clearedFields, assistance.FieldFreeReason)
 }
 
-// SetDuration sets the "duration" field.
-func (m *AssistanceMutation) SetDuration(i int) {
-	m.duration = &i
-	m.addduration = nil
-}
-
-// Duration returns the value of the "duration" field in the mutation.
-func (m *AssistanceMutation) Duration() (r int, exists bool) {
-	v := m.duration
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDuration returns the old "duration" field's value of the Assistance entity.
-// If the Assistance object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AssistanceMutation) OldDuration(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDuration is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDuration requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDuration: %w", err)
-	}
-	return oldValue.Duration, nil
-}
-
-// AddDuration adds i to the "duration" field.
-func (m *AssistanceMutation) AddDuration(i int) {
-	if m.addduration != nil {
-		*m.addduration += i
-	} else {
-		m.addduration = &i
-	}
-}
-
-// AddedDuration returns the value that was added to the "duration" field in this mutation.
-func (m *AssistanceMutation) AddedDuration() (r int, exists bool) {
-	v := m.addduration
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ClearDuration clears the value of the "duration" field.
-func (m *AssistanceMutation) ClearDuration() {
-	m.duration = nil
-	m.addduration = nil
-	m.clearedFields[assistance.FieldDuration] = struct{}{}
-}
-
-// DurationCleared returns if the "duration" field was cleared in this mutation.
-func (m *AssistanceMutation) DurationCleared() bool {
-	_, ok := m.clearedFields[assistance.FieldDuration]
-	return ok
-}
-
-// ResetDuration resets all changes to the "duration" field.
-func (m *AssistanceMutation) ResetDuration() {
-	m.duration = nil
-	m.addduration = nil
-	delete(m.clearedFields, assistance.FieldDuration)
-}
-
 // SetFailReason sets the "fail_reason" field.
 func (m *AssistanceMutation) SetFailReason(s string) {
 	m.fail_reason = &s
@@ -1975,6 +1906,125 @@ func (m *AssistanceMutation) ResetPrice() {
 	m.price = nil
 	m.addprice = nil
 	delete(m.clearedFields, assistance.FieldPrice)
+}
+
+// SetNaviDuration sets the "navi_duration" field.
+func (m *AssistanceMutation) SetNaviDuration(i int) {
+	m.navi_duration = &i
+	m.addnavi_duration = nil
+}
+
+// NaviDuration returns the value of the "navi_duration" field in the mutation.
+func (m *AssistanceMutation) NaviDuration() (r int, exists bool) {
+	v := m.navi_duration
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNaviDuration returns the old "navi_duration" field's value of the Assistance entity.
+// If the Assistance object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AssistanceMutation) OldNaviDuration(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNaviDuration is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNaviDuration requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNaviDuration: %w", err)
+	}
+	return oldValue.NaviDuration, nil
+}
+
+// AddNaviDuration adds i to the "navi_duration" field.
+func (m *AssistanceMutation) AddNaviDuration(i int) {
+	if m.addnavi_duration != nil {
+		*m.addnavi_duration += i
+	} else {
+		m.addnavi_duration = &i
+	}
+}
+
+// AddedNaviDuration returns the value that was added to the "navi_duration" field in this mutation.
+func (m *AssistanceMutation) AddedNaviDuration() (r int, exists bool) {
+	v := m.addnavi_duration
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearNaviDuration clears the value of the "navi_duration" field.
+func (m *AssistanceMutation) ClearNaviDuration() {
+	m.navi_duration = nil
+	m.addnavi_duration = nil
+	m.clearedFields[assistance.FieldNaviDuration] = struct{}{}
+}
+
+// NaviDurationCleared returns if the "navi_duration" field was cleared in this mutation.
+func (m *AssistanceMutation) NaviDurationCleared() bool {
+	_, ok := m.clearedFields[assistance.FieldNaviDuration]
+	return ok
+}
+
+// ResetNaviDuration resets all changes to the "navi_duration" field.
+func (m *AssistanceMutation) ResetNaviDuration() {
+	m.navi_duration = nil
+	m.addnavi_duration = nil
+	delete(m.clearedFields, assistance.FieldNaviDuration)
+}
+
+// SetNaviPolylines sets the "navi_polylines" field.
+func (m *AssistanceMutation) SetNaviPolylines(s []string) {
+	m.navi_polylines = &s
+}
+
+// NaviPolylines returns the value of the "navi_polylines" field in the mutation.
+func (m *AssistanceMutation) NaviPolylines() (r []string, exists bool) {
+	v := m.navi_polylines
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNaviPolylines returns the old "navi_polylines" field's value of the Assistance entity.
+// If the Assistance object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AssistanceMutation) OldNaviPolylines(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNaviPolylines is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNaviPolylines requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNaviPolylines: %w", err)
+	}
+	return oldValue.NaviPolylines, nil
+}
+
+// ClearNaviPolylines clears the value of the "navi_polylines" field.
+func (m *AssistanceMutation) ClearNaviPolylines() {
+	m.navi_polylines = nil
+	m.clearedFields[assistance.FieldNaviPolylines] = struct{}{}
+}
+
+// NaviPolylinesCleared returns if the "navi_polylines" field was cleared in this mutation.
+func (m *AssistanceMutation) NaviPolylinesCleared() bool {
+	_, ok := m.clearedFields[assistance.FieldNaviPolylines]
+	return ok
+}
+
+// ResetNaviPolylines resets all changes to the "navi_polylines" field.
+func (m *AssistanceMutation) ResetNaviPolylines() {
+	m.navi_polylines = nil
+	delete(m.clearedFields, assistance.FieldNaviPolylines)
 }
 
 // ClearStore clears the "store" edge to the Store entity.
@@ -2152,7 +2202,7 @@ func (m *AssistanceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AssistanceMutation) Fields() []string {
-	fields := make([]string, 0, 35)
+	fields := make([]string, 0, 36)
 	if m.created_at != nil {
 		fields = append(fields, assistance.FieldCreatedAt)
 	}
@@ -2246,9 +2296,6 @@ func (m *AssistanceMutation) Fields() []string {
 	if m.free_reason != nil {
 		fields = append(fields, assistance.FieldFreeReason)
 	}
-	if m.duration != nil {
-		fields = append(fields, assistance.FieldDuration)
-	}
 	if m.fail_reason != nil {
 		fields = append(fields, assistance.FieldFailReason)
 	}
@@ -2257,6 +2304,12 @@ func (m *AssistanceMutation) Fields() []string {
 	}
 	if m.price != nil {
 		fields = append(fields, assistance.FieldPrice)
+	}
+	if m.navi_duration != nil {
+		fields = append(fields, assistance.FieldNaviDuration)
+	}
+	if m.navi_polylines != nil {
+		fields = append(fields, assistance.FieldNaviPolylines)
 	}
 	return fields
 }
@@ -2328,14 +2381,16 @@ func (m *AssistanceMutation) Field(name string) (ent.Value, bool) {
 		return m.Wait()
 	case assistance.FieldFreeReason:
 		return m.FreeReason()
-	case assistance.FieldDuration:
-		return m.Duration()
 	case assistance.FieldFailReason:
 		return m.FailReason()
 	case assistance.FieldProcessAt:
 		return m.ProcessAt()
 	case assistance.FieldPrice:
 		return m.Price()
+	case assistance.FieldNaviDuration:
+		return m.NaviDuration()
+	case assistance.FieldNaviPolylines:
+		return m.NaviPolylines()
 	}
 	return nil, false
 }
@@ -2407,14 +2462,16 @@ func (m *AssistanceMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldWait(ctx)
 	case assistance.FieldFreeReason:
 		return m.OldFreeReason(ctx)
-	case assistance.FieldDuration:
-		return m.OldDuration(ctx)
 	case assistance.FieldFailReason:
 		return m.OldFailReason(ctx)
 	case assistance.FieldProcessAt:
 		return m.OldProcessAt(ctx)
 	case assistance.FieldPrice:
 		return m.OldPrice(ctx)
+	case assistance.FieldNaviDuration:
+		return m.OldNaviDuration(ctx)
+	case assistance.FieldNaviPolylines:
+		return m.OldNaviPolylines(ctx)
 	}
 	return nil, fmt.Errorf("unknown Assistance field %s", name)
 }
@@ -2641,13 +2698,6 @@ func (m *AssistanceMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetFreeReason(v)
 		return nil
-	case assistance.FieldDuration:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDuration(v)
-		return nil
 	case assistance.FieldFailReason:
 		v, ok := value.(string)
 		if !ok {
@@ -2668,6 +2718,20 @@ func (m *AssistanceMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPrice(v)
+		return nil
+	case assistance.FieldNaviDuration:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNaviDuration(v)
+		return nil
+	case assistance.FieldNaviPolylines:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNaviPolylines(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Assistance field %s", name)
@@ -2695,11 +2759,11 @@ func (m *AssistanceMutation) AddedFields() []string {
 	if m.addwait != nil {
 		fields = append(fields, assistance.FieldWait)
 	}
-	if m.addduration != nil {
-		fields = append(fields, assistance.FieldDuration)
-	}
 	if m.addprice != nil {
 		fields = append(fields, assistance.FieldPrice)
+	}
+	if m.addnavi_duration != nil {
+		fields = append(fields, assistance.FieldNaviDuration)
 	}
 	return fields
 }
@@ -2721,10 +2785,10 @@ func (m *AssistanceMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedCost()
 	case assistance.FieldWait:
 		return m.AddedWait()
-	case assistance.FieldDuration:
-		return m.AddedDuration()
 	case assistance.FieldPrice:
 		return m.AddedPrice()
+	case assistance.FieldNaviDuration:
+		return m.AddedNaviDuration()
 	}
 	return nil, false
 }
@@ -2776,19 +2840,19 @@ func (m *AssistanceMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddWait(v)
 		return nil
-	case assistance.FieldDuration:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddDuration(v)
-		return nil
 	case assistance.FieldPrice:
 		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddPrice(v)
+		return nil
+	case assistance.FieldNaviDuration:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddNaviDuration(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Assistance numeric field %s", name)
@@ -2855,9 +2919,6 @@ func (m *AssistanceMutation) ClearedFields() []string {
 	if m.FieldCleared(assistance.FieldFreeReason) {
 		fields = append(fields, assistance.FieldFreeReason)
 	}
-	if m.FieldCleared(assistance.FieldDuration) {
-		fields = append(fields, assistance.FieldDuration)
-	}
 	if m.FieldCleared(assistance.FieldFailReason) {
 		fields = append(fields, assistance.FieldFailReason)
 	}
@@ -2866,6 +2927,12 @@ func (m *AssistanceMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(assistance.FieldPrice) {
 		fields = append(fields, assistance.FieldPrice)
+	}
+	if m.FieldCleared(assistance.FieldNaviDuration) {
+		fields = append(fields, assistance.FieldNaviDuration)
+	}
+	if m.FieldCleared(assistance.FieldNaviPolylines) {
+		fields = append(fields, assistance.FieldNaviPolylines)
 	}
 	return fields
 }
@@ -2938,9 +3005,6 @@ func (m *AssistanceMutation) ClearField(name string) error {
 	case assistance.FieldFreeReason:
 		m.ClearFreeReason()
 		return nil
-	case assistance.FieldDuration:
-		m.ClearDuration()
-		return nil
 	case assistance.FieldFailReason:
 		m.ClearFailReason()
 		return nil
@@ -2949,6 +3013,12 @@ func (m *AssistanceMutation) ClearField(name string) error {
 		return nil
 	case assistance.FieldPrice:
 		m.ClearPrice()
+		return nil
+	case assistance.FieldNaviDuration:
+		m.ClearNaviDuration()
+		return nil
+	case assistance.FieldNaviPolylines:
+		m.ClearNaviPolylines()
 		return nil
 	}
 	return fmt.Errorf("unknown Assistance nullable field %s", name)
@@ -3051,9 +3121,6 @@ func (m *AssistanceMutation) ResetField(name string) error {
 	case assistance.FieldFreeReason:
 		m.ResetFreeReason()
 		return nil
-	case assistance.FieldDuration:
-		m.ResetDuration()
-		return nil
 	case assistance.FieldFailReason:
 		m.ResetFailReason()
 		return nil
@@ -3062,6 +3129,12 @@ func (m *AssistanceMutation) ResetField(name string) error {
 		return nil
 	case assistance.FieldPrice:
 		m.ResetPrice()
+		return nil
+	case assistance.FieldNaviDuration:
+		m.ResetNaviDuration()
+		return nil
+	case assistance.FieldNaviPolylines:
+		m.ResetNaviPolylines()
 		return nil
 	}
 	return fmt.Errorf("unknown Assistance field %s", name)

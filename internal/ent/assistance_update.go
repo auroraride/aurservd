@@ -511,33 +511,6 @@ func (au *AssistanceUpdate) ClearFreeReason() *AssistanceUpdate {
 	return au
 }
 
-// SetDuration sets the "duration" field.
-func (au *AssistanceUpdate) SetDuration(i int) *AssistanceUpdate {
-	au.mutation.ResetDuration()
-	au.mutation.SetDuration(i)
-	return au
-}
-
-// SetNillableDuration sets the "duration" field if the given value is not nil.
-func (au *AssistanceUpdate) SetNillableDuration(i *int) *AssistanceUpdate {
-	if i != nil {
-		au.SetDuration(*i)
-	}
-	return au
-}
-
-// AddDuration adds i to the "duration" field.
-func (au *AssistanceUpdate) AddDuration(i int) *AssistanceUpdate {
-	au.mutation.AddDuration(i)
-	return au
-}
-
-// ClearDuration clears the value of the "duration" field.
-func (au *AssistanceUpdate) ClearDuration() *AssistanceUpdate {
-	au.mutation.ClearDuration()
-	return au
-}
-
 // SetFailReason sets the "fail_reason" field.
 func (au *AssistanceUpdate) SetFailReason(s string) *AssistanceUpdate {
 	au.mutation.SetFailReason(s)
@@ -602,6 +575,45 @@ func (au *AssistanceUpdate) AddPrice(f float64) *AssistanceUpdate {
 // ClearPrice clears the value of the "price" field.
 func (au *AssistanceUpdate) ClearPrice() *AssistanceUpdate {
 	au.mutation.ClearPrice()
+	return au
+}
+
+// SetNaviDuration sets the "navi_duration" field.
+func (au *AssistanceUpdate) SetNaviDuration(i int) *AssistanceUpdate {
+	au.mutation.ResetNaviDuration()
+	au.mutation.SetNaviDuration(i)
+	return au
+}
+
+// SetNillableNaviDuration sets the "navi_duration" field if the given value is not nil.
+func (au *AssistanceUpdate) SetNillableNaviDuration(i *int) *AssistanceUpdate {
+	if i != nil {
+		au.SetNaviDuration(*i)
+	}
+	return au
+}
+
+// AddNaviDuration adds i to the "navi_duration" field.
+func (au *AssistanceUpdate) AddNaviDuration(i int) *AssistanceUpdate {
+	au.mutation.AddNaviDuration(i)
+	return au
+}
+
+// ClearNaviDuration clears the value of the "navi_duration" field.
+func (au *AssistanceUpdate) ClearNaviDuration() *AssistanceUpdate {
+	au.mutation.ClearNaviDuration()
+	return au
+}
+
+// SetNaviPolylines sets the "navi_polylines" field.
+func (au *AssistanceUpdate) SetNaviPolylines(s []string) *AssistanceUpdate {
+	au.mutation.SetNaviPolylines(s)
+	return au
+}
+
+// ClearNaviPolylines clears the value of the "navi_polylines" field.
+func (au *AssistanceUpdate) ClearNaviPolylines() *AssistanceUpdate {
+	au.mutation.ClearNaviPolylines()
 	return au
 }
 
@@ -1082,26 +1094,6 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: assistance.FieldFreeReason,
 		})
 	}
-	if value, ok := au.mutation.Duration(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: assistance.FieldDuration,
-		})
-	}
-	if value, ok := au.mutation.AddedDuration(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: assistance.FieldDuration,
-		})
-	}
-	if au.mutation.DurationCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Column: assistance.FieldDuration,
-		})
-	}
 	if value, ok := au.mutation.FailReason(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -1146,6 +1138,39 @@ func (au *AssistanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Column: assistance.FieldPrice,
+		})
+	}
+	if value, ok := au.mutation.NaviDuration(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: assistance.FieldNaviDuration,
+		})
+	}
+	if value, ok := au.mutation.AddedNaviDuration(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: assistance.FieldNaviDuration,
+		})
+	}
+	if au.mutation.NaviDurationCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Column: assistance.FieldNaviDuration,
+		})
+	}
+	if value, ok := au.mutation.NaviPolylines(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: assistance.FieldNaviPolylines,
+		})
+	}
+	if au.mutation.NaviPolylinesCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: assistance.FieldNaviPolylines,
 		})
 	}
 	if au.mutation.StoreCleared() {
@@ -1853,33 +1878,6 @@ func (auo *AssistanceUpdateOne) ClearFreeReason() *AssistanceUpdateOne {
 	return auo
 }
 
-// SetDuration sets the "duration" field.
-func (auo *AssistanceUpdateOne) SetDuration(i int) *AssistanceUpdateOne {
-	auo.mutation.ResetDuration()
-	auo.mutation.SetDuration(i)
-	return auo
-}
-
-// SetNillableDuration sets the "duration" field if the given value is not nil.
-func (auo *AssistanceUpdateOne) SetNillableDuration(i *int) *AssistanceUpdateOne {
-	if i != nil {
-		auo.SetDuration(*i)
-	}
-	return auo
-}
-
-// AddDuration adds i to the "duration" field.
-func (auo *AssistanceUpdateOne) AddDuration(i int) *AssistanceUpdateOne {
-	auo.mutation.AddDuration(i)
-	return auo
-}
-
-// ClearDuration clears the value of the "duration" field.
-func (auo *AssistanceUpdateOne) ClearDuration() *AssistanceUpdateOne {
-	auo.mutation.ClearDuration()
-	return auo
-}
-
 // SetFailReason sets the "fail_reason" field.
 func (auo *AssistanceUpdateOne) SetFailReason(s string) *AssistanceUpdateOne {
 	auo.mutation.SetFailReason(s)
@@ -1944,6 +1942,45 @@ func (auo *AssistanceUpdateOne) AddPrice(f float64) *AssistanceUpdateOne {
 // ClearPrice clears the value of the "price" field.
 func (auo *AssistanceUpdateOne) ClearPrice() *AssistanceUpdateOne {
 	auo.mutation.ClearPrice()
+	return auo
+}
+
+// SetNaviDuration sets the "navi_duration" field.
+func (auo *AssistanceUpdateOne) SetNaviDuration(i int) *AssistanceUpdateOne {
+	auo.mutation.ResetNaviDuration()
+	auo.mutation.SetNaviDuration(i)
+	return auo
+}
+
+// SetNillableNaviDuration sets the "navi_duration" field if the given value is not nil.
+func (auo *AssistanceUpdateOne) SetNillableNaviDuration(i *int) *AssistanceUpdateOne {
+	if i != nil {
+		auo.SetNaviDuration(*i)
+	}
+	return auo
+}
+
+// AddNaviDuration adds i to the "navi_duration" field.
+func (auo *AssistanceUpdateOne) AddNaviDuration(i int) *AssistanceUpdateOne {
+	auo.mutation.AddNaviDuration(i)
+	return auo
+}
+
+// ClearNaviDuration clears the value of the "navi_duration" field.
+func (auo *AssistanceUpdateOne) ClearNaviDuration() *AssistanceUpdateOne {
+	auo.mutation.ClearNaviDuration()
+	return auo
+}
+
+// SetNaviPolylines sets the "navi_polylines" field.
+func (auo *AssistanceUpdateOne) SetNaviPolylines(s []string) *AssistanceUpdateOne {
+	auo.mutation.SetNaviPolylines(s)
+	return auo
+}
+
+// ClearNaviPolylines clears the value of the "navi_polylines" field.
+func (auo *AssistanceUpdateOne) ClearNaviPolylines() *AssistanceUpdateOne {
+	auo.mutation.ClearNaviPolylines()
 	return auo
 }
 
@@ -2454,26 +2491,6 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 			Column: assistance.FieldFreeReason,
 		})
 	}
-	if value, ok := auo.mutation.Duration(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: assistance.FieldDuration,
-		})
-	}
-	if value, ok := auo.mutation.AddedDuration(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: assistance.FieldDuration,
-		})
-	}
-	if auo.mutation.DurationCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Column: assistance.FieldDuration,
-		})
-	}
 	if value, ok := auo.mutation.FailReason(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -2518,6 +2535,39 @@ func (auo *AssistanceUpdateOne) sqlSave(ctx context.Context) (_node *Assistance,
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeFloat64,
 			Column: assistance.FieldPrice,
+		})
+	}
+	if value, ok := auo.mutation.NaviDuration(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: assistance.FieldNaviDuration,
+		})
+	}
+	if value, ok := auo.mutation.AddedNaviDuration(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: assistance.FieldNaviDuration,
+		})
+	}
+	if auo.mutation.NaviDurationCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Column: assistance.FieldNaviDuration,
+		})
+	}
+	if value, ok := auo.mutation.NaviPolylines(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: assistance.FieldNaviPolylines,
+		})
+	}
+	if auo.mutation.NaviPolylinesCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Column: assistance.FieldNaviPolylines,
 		})
 	}
 	if auo.mutation.StoreCleared() {

@@ -75,14 +75,16 @@ const (
 	FieldWait = "wait"
 	// FieldFreeReason holds the string denoting the free_reason field in the database.
 	FieldFreeReason = "free_reason"
-	// FieldDuration holds the string denoting the duration field in the database.
-	FieldDuration = "duration"
 	// FieldFailReason holds the string denoting the fail_reason field in the database.
 	FieldFailReason = "fail_reason"
 	// FieldProcessAt holds the string denoting the process_at field in the database.
 	FieldProcessAt = "process_at"
 	// FieldPrice holds the string denoting the price field in the database.
 	FieldPrice = "price"
+	// FieldNaviDuration holds the string denoting the navi_duration field in the database.
+	FieldNaviDuration = "navi_duration"
+	// FieldNaviPolylines holds the string denoting the navi_polylines field in the database.
+	FieldNaviPolylines = "navi_polylines"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
@@ -175,10 +177,11 @@ var Columns = []string{
 	FieldAllocateAt,
 	FieldWait,
 	FieldFreeReason,
-	FieldDuration,
 	FieldFailReason,
 	FieldProcessAt,
 	FieldPrice,
+	FieldNaviDuration,
+	FieldNaviPolylines,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

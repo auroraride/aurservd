@@ -77,7 +77,7 @@ func (*assistance) Current(c echo.Context) (err error) {
 
 // List
 // @ID           RiderAssistanceList
-// @Router       /employee/v1/assistance [GET]
+// @Router       /rider/v1/assistance [GET]
 // @Summary      R5005 救援列表
 // @Tags         [R]骑手接口
 // @Accept       json

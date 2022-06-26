@@ -383,20 +383,6 @@ func (ac *AssistanceCreate) SetNillableFreeReason(s *string) *AssistanceCreate {
 	return ac
 }
 
-// SetDuration sets the "duration" field.
-func (ac *AssistanceCreate) SetDuration(i int) *AssistanceCreate {
-	ac.mutation.SetDuration(i)
-	return ac
-}
-
-// SetNillableDuration sets the "duration" field if the given value is not nil.
-func (ac *AssistanceCreate) SetNillableDuration(i *int) *AssistanceCreate {
-	if i != nil {
-		ac.SetDuration(*i)
-	}
-	return ac
-}
-
 // SetFailReason sets the "fail_reason" field.
 func (ac *AssistanceCreate) SetFailReason(s string) *AssistanceCreate {
 	ac.mutation.SetFailReason(s)
@@ -436,6 +422,26 @@ func (ac *AssistanceCreate) SetNillablePrice(f *float64) *AssistanceCreate {
 	if f != nil {
 		ac.SetPrice(*f)
 	}
+	return ac
+}
+
+// SetNaviDuration sets the "navi_duration" field.
+func (ac *AssistanceCreate) SetNaviDuration(i int) *AssistanceCreate {
+	ac.mutation.SetNaviDuration(i)
+	return ac
+}
+
+// SetNillableNaviDuration sets the "navi_duration" field if the given value is not nil.
+func (ac *AssistanceCreate) SetNillableNaviDuration(i *int) *AssistanceCreate {
+	if i != nil {
+		ac.SetNaviDuration(*i)
+	}
+	return ac
+}
+
+// SetNaviPolylines sets the "navi_polylines" field.
+func (ac *AssistanceCreate) SetNaviPolylines(s []string) *AssistanceCreate {
+	ac.mutation.SetNaviPolylines(s)
 	return ac
 }
 
@@ -852,14 +858,6 @@ func (ac *AssistanceCreate) createSpec() (*Assistance, *sqlgraph.CreateSpec) {
 		})
 		_node.FreeReason = &value
 	}
-	if value, ok := ac.mutation.Duration(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: assistance.FieldDuration,
-		})
-		_node.Duration = value
-	}
 	if value, ok := ac.mutation.FailReason(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -883,6 +881,22 @@ func (ac *AssistanceCreate) createSpec() (*Assistance, *sqlgraph.CreateSpec) {
 			Column: assistance.FieldPrice,
 		})
 		_node.Price = value
+	}
+	if value, ok := ac.mutation.NaviDuration(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: assistance.FieldNaviDuration,
+		})
+		_node.NaviDuration = value
+	}
+	if value, ok := ac.mutation.NaviPolylines(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: assistance.FieldNaviPolylines,
+		})
+		_node.NaviPolylines = value
 	}
 	if nodes := ac.mutation.StoreIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1580,30 +1594,6 @@ func (u *AssistanceUpsert) ClearFreeReason() *AssistanceUpsert {
 	return u
 }
 
-// SetDuration sets the "duration" field.
-func (u *AssistanceUpsert) SetDuration(v int) *AssistanceUpsert {
-	u.Set(assistance.FieldDuration, v)
-	return u
-}
-
-// UpdateDuration sets the "duration" field to the value that was provided on create.
-func (u *AssistanceUpsert) UpdateDuration() *AssistanceUpsert {
-	u.SetExcluded(assistance.FieldDuration)
-	return u
-}
-
-// AddDuration adds v to the "duration" field.
-func (u *AssistanceUpsert) AddDuration(v int) *AssistanceUpsert {
-	u.Add(assistance.FieldDuration, v)
-	return u
-}
-
-// ClearDuration clears the value of the "duration" field.
-func (u *AssistanceUpsert) ClearDuration() *AssistanceUpsert {
-	u.SetNull(assistance.FieldDuration)
-	return u
-}
-
 // SetFailReason sets the "fail_reason" field.
 func (u *AssistanceUpsert) SetFailReason(v string) *AssistanceUpsert {
 	u.Set(assistance.FieldFailReason, v)
@@ -1661,6 +1651,48 @@ func (u *AssistanceUpsert) AddPrice(v float64) *AssistanceUpsert {
 // ClearPrice clears the value of the "price" field.
 func (u *AssistanceUpsert) ClearPrice() *AssistanceUpsert {
 	u.SetNull(assistance.FieldPrice)
+	return u
+}
+
+// SetNaviDuration sets the "navi_duration" field.
+func (u *AssistanceUpsert) SetNaviDuration(v int) *AssistanceUpsert {
+	u.Set(assistance.FieldNaviDuration, v)
+	return u
+}
+
+// UpdateNaviDuration sets the "navi_duration" field to the value that was provided on create.
+func (u *AssistanceUpsert) UpdateNaviDuration() *AssistanceUpsert {
+	u.SetExcluded(assistance.FieldNaviDuration)
+	return u
+}
+
+// AddNaviDuration adds v to the "navi_duration" field.
+func (u *AssistanceUpsert) AddNaviDuration(v int) *AssistanceUpsert {
+	u.Add(assistance.FieldNaviDuration, v)
+	return u
+}
+
+// ClearNaviDuration clears the value of the "navi_duration" field.
+func (u *AssistanceUpsert) ClearNaviDuration() *AssistanceUpsert {
+	u.SetNull(assistance.FieldNaviDuration)
+	return u
+}
+
+// SetNaviPolylines sets the "navi_polylines" field.
+func (u *AssistanceUpsert) SetNaviPolylines(v []string) *AssistanceUpsert {
+	u.Set(assistance.FieldNaviPolylines, v)
+	return u
+}
+
+// UpdateNaviPolylines sets the "navi_polylines" field to the value that was provided on create.
+func (u *AssistanceUpsert) UpdateNaviPolylines() *AssistanceUpsert {
+	u.SetExcluded(assistance.FieldNaviPolylines)
+	return u
+}
+
+// ClearNaviPolylines clears the value of the "navi_polylines" field.
+func (u *AssistanceUpsert) ClearNaviPolylines() *AssistanceUpsert {
+	u.SetNull(assistance.FieldNaviPolylines)
 	return u
 }
 
@@ -2323,34 +2355,6 @@ func (u *AssistanceUpsertOne) ClearFreeReason() *AssistanceUpsertOne {
 	})
 }
 
-// SetDuration sets the "duration" field.
-func (u *AssistanceUpsertOne) SetDuration(v int) *AssistanceUpsertOne {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.SetDuration(v)
-	})
-}
-
-// AddDuration adds v to the "duration" field.
-func (u *AssistanceUpsertOne) AddDuration(v int) *AssistanceUpsertOne {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.AddDuration(v)
-	})
-}
-
-// UpdateDuration sets the "duration" field to the value that was provided on create.
-func (u *AssistanceUpsertOne) UpdateDuration() *AssistanceUpsertOne {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.UpdateDuration()
-	})
-}
-
-// ClearDuration clears the value of the "duration" field.
-func (u *AssistanceUpsertOne) ClearDuration() *AssistanceUpsertOne {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.ClearDuration()
-	})
-}
-
 // SetFailReason sets the "fail_reason" field.
 func (u *AssistanceUpsertOne) SetFailReason(v string) *AssistanceUpsertOne {
 	return u.Update(func(s *AssistanceUpsert) {
@@ -2418,6 +2422,55 @@ func (u *AssistanceUpsertOne) UpdatePrice() *AssistanceUpsertOne {
 func (u *AssistanceUpsertOne) ClearPrice() *AssistanceUpsertOne {
 	return u.Update(func(s *AssistanceUpsert) {
 		s.ClearPrice()
+	})
+}
+
+// SetNaviDuration sets the "navi_duration" field.
+func (u *AssistanceUpsertOne) SetNaviDuration(v int) *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetNaviDuration(v)
+	})
+}
+
+// AddNaviDuration adds v to the "navi_duration" field.
+func (u *AssistanceUpsertOne) AddNaviDuration(v int) *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.AddNaviDuration(v)
+	})
+}
+
+// UpdateNaviDuration sets the "navi_duration" field to the value that was provided on create.
+func (u *AssistanceUpsertOne) UpdateNaviDuration() *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdateNaviDuration()
+	})
+}
+
+// ClearNaviDuration clears the value of the "navi_duration" field.
+func (u *AssistanceUpsertOne) ClearNaviDuration() *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.ClearNaviDuration()
+	})
+}
+
+// SetNaviPolylines sets the "navi_polylines" field.
+func (u *AssistanceUpsertOne) SetNaviPolylines(v []string) *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetNaviPolylines(v)
+	})
+}
+
+// UpdateNaviPolylines sets the "navi_polylines" field to the value that was provided on create.
+func (u *AssistanceUpsertOne) UpdateNaviPolylines() *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdateNaviPolylines()
+	})
+}
+
+// ClearNaviPolylines clears the value of the "navi_polylines" field.
+func (u *AssistanceUpsertOne) ClearNaviPolylines() *AssistanceUpsertOne {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.ClearNaviPolylines()
 	})
 }
 
@@ -3244,34 +3297,6 @@ func (u *AssistanceUpsertBulk) ClearFreeReason() *AssistanceUpsertBulk {
 	})
 }
 
-// SetDuration sets the "duration" field.
-func (u *AssistanceUpsertBulk) SetDuration(v int) *AssistanceUpsertBulk {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.SetDuration(v)
-	})
-}
-
-// AddDuration adds v to the "duration" field.
-func (u *AssistanceUpsertBulk) AddDuration(v int) *AssistanceUpsertBulk {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.AddDuration(v)
-	})
-}
-
-// UpdateDuration sets the "duration" field to the value that was provided on create.
-func (u *AssistanceUpsertBulk) UpdateDuration() *AssistanceUpsertBulk {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.UpdateDuration()
-	})
-}
-
-// ClearDuration clears the value of the "duration" field.
-func (u *AssistanceUpsertBulk) ClearDuration() *AssistanceUpsertBulk {
-	return u.Update(func(s *AssistanceUpsert) {
-		s.ClearDuration()
-	})
-}
-
 // SetFailReason sets the "fail_reason" field.
 func (u *AssistanceUpsertBulk) SetFailReason(v string) *AssistanceUpsertBulk {
 	return u.Update(func(s *AssistanceUpsert) {
@@ -3339,6 +3364,55 @@ func (u *AssistanceUpsertBulk) UpdatePrice() *AssistanceUpsertBulk {
 func (u *AssistanceUpsertBulk) ClearPrice() *AssistanceUpsertBulk {
 	return u.Update(func(s *AssistanceUpsert) {
 		s.ClearPrice()
+	})
+}
+
+// SetNaviDuration sets the "navi_duration" field.
+func (u *AssistanceUpsertBulk) SetNaviDuration(v int) *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetNaviDuration(v)
+	})
+}
+
+// AddNaviDuration adds v to the "navi_duration" field.
+func (u *AssistanceUpsertBulk) AddNaviDuration(v int) *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.AddNaviDuration(v)
+	})
+}
+
+// UpdateNaviDuration sets the "navi_duration" field to the value that was provided on create.
+func (u *AssistanceUpsertBulk) UpdateNaviDuration() *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdateNaviDuration()
+	})
+}
+
+// ClearNaviDuration clears the value of the "navi_duration" field.
+func (u *AssistanceUpsertBulk) ClearNaviDuration() *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.ClearNaviDuration()
+	})
+}
+
+// SetNaviPolylines sets the "navi_polylines" field.
+func (u *AssistanceUpsertBulk) SetNaviPolylines(v []string) *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.SetNaviPolylines(v)
+	})
+}
+
+// UpdateNaviPolylines sets the "navi_polylines" field to the value that was provided on create.
+func (u *AssistanceUpsertBulk) UpdateNaviPolylines() *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.UpdateNaviPolylines()
+	})
+}
+
+// ClearNaviPolylines clears the value of the "navi_polylines" field.
+func (u *AssistanceUpsertBulk) ClearNaviPolylines() *AssistanceUpsertBulk {
+	return u.Update(func(s *AssistanceUpsert) {
+		s.ClearNaviPolylines()
 	})
 }
 

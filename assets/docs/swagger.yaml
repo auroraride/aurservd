@@ -189,6 +189,9 @@ definitions:
       detectPhoto:
         description: 检测照片
         type: string
+      distance:
+        description: 救援距离
+        type: string
       failReason:
         description: 失败原因
         type: string
@@ -203,6 +206,17 @@ definitions:
       lng:
         description: 经度
         type: number
+      minutes:
+        description: 总用时 (分钟)
+        type: number
+      model:
+        description: 电池型号
+        type: string
+      polylines:
+        description: 路径规划
+        items:
+          type: string
+        type: array
       reason:
         description: 成功救援 - 故障原因
         type: string
@@ -217,6 +231,21 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.StoreLngLat'
         description: 门店详情
+      time:
+        description: 发起时间
+        type: string
+    type: object
+  model.AssistanceEmployeeOverview:
+    properties:
+      distance:
+        description: 总里程
+        type: number
+      success:
+        description: 成功次数
+        type: integer
+      times:
+        description: 总次数
+        type: integer
     type: object
   model.AssistanceFreeReq:
     properties:
@@ -3476,11 +3505,11 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: RiderAssistanceList
+      operationId: EmployeeAssistanceList
       parameters:
-      - description: 骑手校验token
+      - description: 店员校验token
         in: header
-        name: X-Rider-Token
+        name: X-Employee-Token
         required: true
         type: string
       - description: 当前页, 从1开始, 默认1
@@ -3505,9 +3534,9 @@ paths:
                     $ref: '#/definitions/model.AssistanceSimpleListRes'
                   type: array
               type: object
-      summary: R5005 救援列表
+      summary: E5005 救援列表
       tags:
-      - '[R]骑手接口'
+      - '[E]店员接口'
   /employee/v1/assistance/{id}:
     get:
       consumes:
@@ -3532,6 +3561,27 @@ paths:
           schema:
             $ref: '#/definitions/model.AssistanceEmployeeDetailRes'
       summary: E5001 获取救援详情
+      tags:
+      - '[E]店员接口'
+  /employee/v1/assistance/overview:
+    get:
+      consumes:
+      - application/json
+      operationId: EmployeeAssistanceOverview
+      parameters:
+      - description: 店员校验token
+        in: header
+        name: X-Employee-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 总览
+          schema:
+            $ref: '#/definitions/model.AssistanceEmployeeOverview'
+      summary: E5006 救援总览
       tags:
       - '[E]店员接口'
   /employee/v1/assistance/pay:
@@ -6969,11 +7019,11 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: EmployeeAssistanceList
+      operationId: RiderAssistanceList
       parameters:
-      - description: 店员校验token
+      - description: 骑手校验token
         in: header
-        name: X-Employee-Token
+        name: X-Rider-Token
         required: true
         type: string
       - description: 当前页, 从1开始, 默认1
@@ -6998,9 +7048,9 @@ paths:
                     $ref: '#/definitions/model.AssistanceSimpleListRes'
                   type: array
               type: object
-      summary: E5005 救援列表
+      summary: R5005 救援列表
       tags:
-      - '[E]店员接口'
+      - '[R]骑手接口'
     post:
       consumes:
       - application/json

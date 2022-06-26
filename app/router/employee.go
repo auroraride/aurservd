@@ -52,4 +52,5 @@ func loadEmployeeRoutes() {
     g.POST("/assistance/pay", eapi.Assistance.Pay)
     g.GET("/assistance/pay", eapi.Assistance.PayStatus)
     g.GET("/assistance", eapi.Assistance.List)
+    g.GET("/assistance/overview", eapi.Assistance.Overview)
 }

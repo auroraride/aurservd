@@ -123,23 +123,28 @@ type AssistanceCancelReq struct {
 
 type AssistanceEmployeeDetailRes struct {
     ID              uint64      `json:"id"`
-    Status          uint8       `json:"status"`          // 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
-    Rider           RiderBasic  `json:"rider"`           // 骑手信息
-    Lng             float64     `json:"lng"`             // 经度
-    Lat             float64     `json:"lat"`             // 纬度
-    Address         string      `json:"address"`         // 详细位置
-    Breakdown       string      `json:"breakdown"`       // 故障
-    BreakdownDesc   string      `json:"breakdownDesc"`   // 故障描述
-    BreakdownPhotos []string    `json:"breakdownPhotos"` // 故障照片
-    Reason          string      `json:"reason"`          // 成功救援 - 故障原因
-    DetectPhoto     string      `json:"detectPhoto"`     // 检测照片
-    JointPhoto      string      `json:"jointPhoto"`      // 合照
-    FailReason      string      `json:"failReason"`      // 失败原因
-    Store           StoreLngLat `json:"store"`           // 门店详情
+    Status          uint8       `json:"status"`             // 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
+    Rider           RiderBasic  `json:"rider"`              // 骑手信息
+    Lng             float64     `json:"lng"`                // 经度
+    Lat             float64     `json:"lat"`                // 纬度
+    Address         string      `json:"address"`            // 详细位置
+    Breakdown       string      `json:"breakdown"`          // 故障
+    BreakdownDesc   string      `json:"breakdownDesc"`      // 故障描述
+    BreakdownPhotos []string    `json:"breakdownPhotos"`    // 故障照片
+    Reason          string      `json:"reason"`             // 成功救援 - 故障原因
+    DetectPhoto     string      `json:"detectPhoto"`        // 检测照片
+    JointPhoto      string      `json:"jointPhoto"`         // 合照
+    FailReason      string      `json:"failReason"`         // 失败原因
+    Store           StoreLngLat `json:"store"`              // 门店详情
+    Time            string      `json:"time"`               // 发起时间
+    Distance        string      `json:"distance,omitempty"` // 救援距离
+    Minutes         float64     `json:"minutes,omitempty"`  // 总用时 (分钟)
+    Model           string      `json:"model"`              // 电池型号
 
+    Polylines []string `json:"polylines,omitempty"` // 路径规划
     Configure struct {
         Breakdown []interface{} `json:"breakdown"` // 救援原因<选择>
-    } `json:"configure"`
+    } `json:"configure,omitempty"`
 }
 
 type AssistanceProcessReq struct {
@@ -180,4 +185,10 @@ type AssistancePayRes struct {
 
     OutTradeNo string `json:"outTradeNo"` // 订单二维码 (用做查询支付结果)
     QR         string `json:"qr"`         // 支付码
+}
+
+type AssistanceEmployeeOverview struct {
+    Times    int     `json:"times"`    // 总次数
+    Success  int     `json:"success"`  // 成功次数
+    Distance float64 `json:"distance"` // 总里程
 }

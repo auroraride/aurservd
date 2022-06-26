@@ -7,6 +7,7 @@
 - [E5003 救援支付](http://localhost:5533/docs#tag/E/operation/EmployeeAssistancePay)
 - [E5004 救援支付状态](http://localhost:5533/docs#tag/E/operation/EmployeeAssistancePayStatus)
 - [E5005 救援列表](http://localhost:5533/docs#tag/E/operation/EmployeeAssistanceList)
+- [E5006 救援总览](http://localhost:5533/docs#tag/E/operation/EmployeeAssistanceOverview)
 
 
 

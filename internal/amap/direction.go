@@ -10,6 +10,7 @@ import (
     "github.com/go-resty/resty/v2"
     log "github.com/sirupsen/logrus"
     "strconv"
+    "strings"
 )
 
 type DirectionRidingRes struct {
@@ -31,6 +32,7 @@ type DirectionRidingRes struct {
                 Cost         struct {
                     Duration string `json:"duration,omitempty"`
                 } `json:"cost,omitempty"`
+                Polyline string `json:"polyline,omitempty"`
             } `json:"steps,omitempty"`
         } `json:"paths,omitempty"`
     } `json:"route,omitempty"`
@@ -39,7 +41,7 @@ type DirectionRidingRes struct {
 func (a *amap) DirectionRiding(origin, destination string) (res *DirectionRidingRes) {
     res = new(DirectionRidingRes)
     r, err := resty.New().R().SetResult(res).Get(fmt.Sprintf(
-        `https://restapi.amap.com/v5/direction/electrobike?key=%s&origin=%s&destination=%s&show_fields=cost`,
+        `https://restapi.amap.com/v5/direction/electrobike?key=%s&origin=%s&destination=%s&show_fields=cost,polyline`,
         a.Key,
         origin,
         destination,
@@ -52,17 +54,19 @@ func (a *amap) DirectionRiding(origin, destination string) (res *DirectionRiding
 }
 
 // DirectionRidingPlan 骑行规划
-func (a *amap) DirectionRidingPlan(origin, destination string) (seconds int, distance float64) {
+func (a *amap) DirectionRidingPlan(origin, destination string) (seconds int, distance float64, polylines []string) {
     res := a.DirectionRiding(origin, destination)
     if res == nil || res.Status != "1" {
         return
     }
     for _, path := range res.Route.Paths {
         cost, _ := strconv.Atoi(path.Duration)
-        d, err := strconv.ParseFloat(path.Distance, 10)
-        log.Println(err)
+        d, _ := strconv.ParseFloat(path.Distance, 10)
         distance += d
         seconds += cost
+        for _, step := range path.Steps {
+            polylines = append(polylines, strings.TrimSpace(step.Polyline))
+        }
     }
     return
 }

@@ -26,7 +26,9 @@ import (
     "github.com/golang-module/carbon/v2"
     "github.com/jinzhu/copier"
     log "github.com/sirupsen/logrus"
+    "math"
     "strconv"
+    "strings"
     "time"
 )
 
@@ -378,11 +380,12 @@ func (s *assistanceService) Allocate(req *model.AssistanceAllocateReq) {
 
     var err error
 
-    duration, distance := amap.New().DirectionRidingPlan(fmt.Sprintf("%f,%f", st.Lng, st.Lat), fmt.Sprintf("%f,%f", item.Lng, item.Lat))
+    duration, distance, polylines := amap.New().DirectionRidingPlan(fmt.Sprintf("%f,%f", st.Lng, st.Lat), fmt.Sprintf("%f,%f", item.Lng, item.Lat))
 
     item, err = item.Update().
         SetDistance(distance).
-        SetDuration(duration).
+        SetNaviDuration(duration).
+        SetNaviPolylines(polylines).
         SetStoreID(st.ID).
         SetEmployeeID(*st.EmployeeID).
         SetStatus(model.AssistanceStatusAllocated).
@@ -512,6 +515,7 @@ func (s *assistanceService) EmployeeDetail(id uint64) (res model.AssistanceEmplo
             rq.WithPerson()
         }).
         WithStore().
+        WithSubscribe().
         First(s.ctx)
     if ass == nil {
         snag.Panic("未找到救援信息")
@@ -547,6 +551,26 @@ func (s *assistanceService) EmployeeDetail(id uint64) (res model.AssistanceEmplo
             Lng: st.Lng,
             Lat: st.Lat,
         }
+    }
+
+    sub := ass.Edges.Subscribe
+    if sub != nil {
+        res.Model = sub.Model
+    }
+
+    res.Time = ass.CreatedAt.Format(carbon.DateTimeLayout)
+    if ass.Distance > 0 {
+        res.Distance = fmt.Sprintf("%.2fkm", ass.Distance/1000.0)
+    }
+
+    if ass.ProcessAt != nil {
+        res.Minutes = math.Round(ass.ProcessAt.Sub(ass.CreatedAt).Minutes())
+    } else if ass.Status == model.AssistanceStatusAllocated {
+        res.Minutes = math.Round(time.Now().Sub(ass.CreatedAt).Minutes())
+    }
+
+    for _, polyline := range ass.NaviPolylines {
+        res.Polylines = append(res.Polylines, strings.Split(strings.TrimSpace(polyline), ";")...)
     }
 
     return
@@ -776,4 +800,19 @@ func (s *assistanceService) SimpleList(req model.PaginationReq) *model.Paginatio
     return model.ParsePaginationResponse(q, req, func(item *ent.Assistance) model.AssistanceSimpleListRes {
         return s.SimpleInfo(item)
     })
+}
+
+func (s *assistanceService) EmployeeOverview(employeeID uint64) model.AssistanceEmployeeOverview {
+    items, _ := s.orm.QueryNotDeleted().
+        Where(assistance.EmployeeID(employeeID)).
+        All(s.ctx)
+    res := model.AssistanceEmployeeOverview{Times: len(items)}
+    for _, item := range items {
+        if item.Status == model.AssistanceStatusUnpaid || item.Status == model.AssistanceStatusSuccess {
+            res.Success += 1
+            res.Distance += item.Distance / 1000.0
+        }
+    }
+    res.Distance, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", res.Distance), 64)
+    return res
 }

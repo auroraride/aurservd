@@ -147,15 +147,15 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[R]骑手接口"
+                    "[E]店员接口"
                 ],
-                "summary": "R5005 救援列表",
-                "operationId": "RiderAssistanceList",
+                "summary": "E5005 救援列表",
+                "operationId": "EmployeeAssistanceList",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "骑手校验token",
-                        "name": "X-Rider-Token",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
                         "in": "header",
                         "required": true
                     },
@@ -192,6 +192,38 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/employee/v1/assistance/overview": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[E]店员接口"
+                ],
+                "summary": "E5006 救援总览",
+                "operationId": "EmployeeAssistanceOverview",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "店员校验token",
+                        "name": "X-Employee-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "总览",
+                        "schema": {
+                            "$ref": "#/definitions/model.AssistanceEmployeeOverview"
                         }
                     }
                 }
@@ -5501,15 +5533,15 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "[E]店员接口"
+                    "[R]骑手接口"
                 ],
-                "summary": "E5005 救援列表",
-                "operationId": "EmployeeAssistanceList",
+                "summary": "R5005 救援列表",
+                "operationId": "RiderAssistanceList",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "店员校验token",
-                        "name": "X-Employee-Token",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
                         "in": "header",
                         "required": true
                     },
@@ -7079,6 +7111,10 @@ const docTemplate = `{
                     "description": "检测照片",
                     "type": "string"
                 },
+                "distance": {
+                    "description": "救援距离",
+                    "type": "string"
+                },
                 "failReason": {
                     "description": "失败原因",
                     "type": "string"
@@ -7097,6 +7133,21 @@ const docTemplate = `{
                 "lng": {
                     "description": "经度",
                     "type": "number"
+                },
+                "minutes": {
+                    "description": "总用时 (分钟)",
+                    "type": "number"
+                },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
+                "polylines": {
+                    "description": "路径规划",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "reason": {
                     "description": "成功救援 - 故障原因",
@@ -7121,6 +7172,27 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.StoreLngLat"
                         }
                     ]
+                },
+                "time": {
+                    "description": "发起时间",
+                    "type": "string"
+                }
+            }
+        },
+        "model.AssistanceEmployeeOverview": {
+            "type": "object",
+            "properties": {
+                "distance": {
+                    "description": "总里程",
+                    "type": "number"
+                },
+                "success": {
+                    "description": "成功次数",
+                    "type": "integer"
+                },
+                "times": {
+                    "description": "总次数",
+                    "type": "integer"
                 }
             }
         },
