@@ -162,20 +162,20 @@ type AssistancePayReq struct {
     Payway uint8  `json:"payway" validate:"required" trans:"支付方式" enums:"1,2"` // 1支付宝 2微信
 }
 
-type AssistanceEmployeeListRes struct {
+type AssistanceSimpleListRes struct {
     ID       uint64     `json:"id"`
-    Status   uint8      `json:"status"`   // 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
-    Rider    RiderBasic `json:"rider"`    // 骑手信息
-    Cost     float64    `json:"cost"`     // 费用
-    Time     string     `json:"time"`     // 发起时间
-    Reason   string     `json:"reason"`   // 救援原因
-    Distance string     `json:"distance"` // 救援距离
-    Model    string     `json:"model"`    // 电池型号
-
+    Status   uint8      `json:"status"`          // 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
+    Rider    RiderBasic `json:"rider"`           // 骑手信息
+    Cost     float64    `json:"cost"`            // 费用
+    Time     string     `json:"time"`            // 发起时间
+    Reason   string     `json:"reason"`          // 救援原因
+    Distance string     `json:"distance"`        // 救援距离
+    Model    string     `json:"model"`           // 电池型号
+    Store    *Store     `json:"store,omitempty"` // 门店
 }
 
 type AssistancePayRes struct {
-    AssistanceEmployeeListRes
+    AssistanceSimpleListRes
 
     OutTradeNo string `json:"outTradeNo"` // 订单二维码 (用做查询支付结果)
     QR         string `json:"qr"`         // 支付码

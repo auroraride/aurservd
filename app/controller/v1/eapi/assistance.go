@@ -77,3 +77,18 @@ func (*assistance) PayStatus(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.OrderStatusReq](c)
     return ctx.SendResponse(service.NewOrder().QueryStatus(req))
 }
+
+// List
+// @ID           EmployeeAssistanceList
+// @Router       /rider/v1/assistance [GET]
+// @Summary      E5005 救援列表
+// @Tags         [E]店员接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Employee-Token  header  string  true  "店员校验token"
+// @Param        query  query   model.PaginationReq  true  "分页参数"
+// @Success      200  {object}  model.Pagination{items=[]model.AssistanceSimpleListRes}  "请求成功"
+func (*assistance) List(c echo.Context) (err error) {
+    ctx, req := app.EmployeeContextAndBinding[model.PaginationReq](c)
+    return ctx.SendResponse(service.NewAssistanceWithEmployee(ctx.Employee).SimpleList(*req))
+}

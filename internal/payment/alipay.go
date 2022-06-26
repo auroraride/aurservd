@@ -75,6 +75,23 @@ func NewAlipay() *alipayClient {
     return _alipay
 }
 
+func (c *alipayClient) loadCerts() {
+    cfg := ar.Config.Payment.Alipay
+
+    err := c.Client.LoadAppPublicCertFromFile(cfg.AppPublicCert) // 加载应用公钥证书
+    if err != nil {
+        snag.Panic(err)
+    }
+    err = c.Client.LoadAliPayRootCertFromFile(cfg.RootCert) // 加载支付宝根证书
+    if err != nil {
+        snag.Panic(err)
+    }
+    err = c.Client.LoadAliPayPublicCertFromFile(cfg.PublicCert) // 加载支付宝公钥证书
+    if err != nil {
+        snag.Panic(err)
+    }
+}
+
 // AppPay app支付
 func (c *alipayClient) AppPay(pc *model.PaymentCache) (string, error) {
     cfg := ar.Config.Payment.Alipay
@@ -94,14 +111,7 @@ func (c *alipayClient) AppPay(pc *model.PaymentCache) (string, error) {
 func (c *alipayClient) Native(pc *model.PaymentCache) (string, error) {
     cfg := ar.Config.Payment.Alipay
 
-    err := c.Client.LoadAliPayRootCertFromFile(cfg.RootCert) // 加载支付宝根证书
-    if err != nil {
-        snag.Panic(err)
-    }
-    err = c.Client.LoadAliPayPublicCertFromFile(cfg.PublicCert) // 加载支付宝公钥证书
-    if err != nil {
-        snag.Panic(err)
-    }
+    c.loadCerts()
 
     amount, subject, no := pc.GetPaymentArgs()
     trade := alipay.TradePreCreate{

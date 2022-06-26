@@ -589,6 +589,46 @@ func (s *assistanceService) Process(req *model.AssistanceProcessReq) (res model.
     return
 }
 
+func (s *assistanceService) SimpleInfo(ass *ent.Assistance) model.AssistanceSimpleListRes {
+    res := model.AssistanceSimpleListRes{
+        ID:       ass.ID,
+        Status:   ass.Status,
+        Rider:    model.RiderBasic{},
+        Cost:     ass.Cost,
+        Time:     ass.CreatedAt.Format(carbon.DateTimeLayout),
+        Reason:   ass.Reason,
+        Distance: fmt.Sprintf("%.2fkm", ass.Distance/1000.0),
+    }
+
+    sub := ass.Edges.Subscribe
+    if sub != nil {
+        res.Model = sub.Model
+    }
+
+    r := ass.Edges.Rider
+    if r != nil {
+        res.Rider = model.RiderBasic{
+            ID:    r.ID,
+            Phone: r.Phone,
+        }
+
+        p := r.Edges.Person
+        if p != nil {
+            res.Rider.Name = p.Name
+        }
+    }
+
+    st := ass.Edges.Store
+    if st != nil {
+        res.Store = &model.Store{
+            ID:   st.ID,
+            Name: st.Name,
+        }
+    }
+
+    return res
+}
+
 // Pay 支付救援
 func (s *assistanceService) Pay(req *model.AssistancePayReq) model.AssistancePayRes {
     ass, _ := s.orm.QueryNotDeleted().
@@ -602,6 +642,7 @@ func (s *assistanceService) Pay(req *model.AssistancePayReq) model.AssistancePay
             rq.WithPerson()
         }).
         WithSubscribe().
+        WithStore().
         First(s.ctx)
 
     if ass == nil {
@@ -656,36 +697,10 @@ func (s *assistanceService) Pay(req *model.AssistancePayReq) model.AssistancePay
     }
 
     res := model.AssistancePayRes{
-        AssistanceEmployeeListRes: model.AssistanceEmployeeListRes{
-            ID:       ass.ID,
-            Status:   ass.Status,
-            Rider:    model.RiderBasic{},
-            Cost:     ass.Cost,
-            Time:     ass.CreatedAt.Format(carbon.DateTimeLayout),
-            Reason:   ass.Reason,
-            Distance: fmt.Sprintf("%.2fkm", ass.Distance/1000.0),
-        },
+        AssistanceSimpleListRes: s.SimpleInfo(ass),
 
         QR:         qr,
         OutTradeNo: no,
-    }
-
-    sub := ass.Edges.Subscribe
-    if sub != nil {
-        res.Model = sub.Model
-    }
-
-    r := ass.Edges.Rider
-    if r != nil {
-        res.Rider = model.RiderBasic{
-            ID:    r.ID,
-            Phone: r.Phone,
-        }
-
-        p := r.Edges.Person
-        if p != nil {
-            res.Rider.Name = p.Name
-        }
     }
 
     return res
@@ -726,4 +741,23 @@ func (s *assistanceService) Paid(trade *model.PaymentAssistance) {
     }
 
     _ = tx.Commit()
+}
+
+// SimpleList 简单列表
+func (s *assistanceService) SimpleList(req model.PaginationReq) *model.PaginationRes {
+    q := s.orm.QueryNotDeleted().Order(ent.Desc(assistance.FieldCreatedAt)).WithSubscribe().WithRider(func(rq *ent.RiderQuery) {
+        rq.WithPerson()
+    }).WithStore()
+
+    if s.rider != nil {
+        q.Where(assistance.RiderID(s.rider.ID))
+    }
+
+    if s.employee != nil {
+        q.Where(assistance.EmployeeID(s.employee.ID))
+    }
+
+    return model.ParsePaginationResponse(q, req, func(item *ent.Assistance) model.AssistanceSimpleListRes {
+        return s.SimpleInfo(item)
+    })
 }

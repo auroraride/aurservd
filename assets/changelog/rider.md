@@ -4,6 +4,7 @@
 
 - [R5003 取消救援](http://localhost:5533/docs#tag/R/operation/RiderAssistanceCancel)
 - [R5004 当前救援](http://localhost:5533/docs#tag/R/operation/RiderAssistanceCurrent)
+- [R5005 救援列表](http://localhost:5533/docs#tag/R/operation/RiderAssistanceList)
 
 
 

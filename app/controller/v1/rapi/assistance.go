@@ -74,3 +74,18 @@ func (*assistance) Current(c echo.Context) (err error) {
     ctx := app.ContextX[app.RiderContext](c)
     return ctx.SendResponse(service.NewAssistance().CurrentMessage(ctx.Rider.ID))
 }
+
+// List
+// @ID           RiderAssistanceList
+// @Router       /employee/v1/assistance [GET]
+// @Summary      R5005 救援列表
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Param        query  query   model.PaginationReq  true  "分页参数"
+// @Success      200  {object}  model.Pagination{items=[]model.AssistanceSimpleListRes}  "请求成功"
+func (*assistance) List(c echo.Context) (err error) {
+    ctx, req := app.RiderContextAndBinding[model.PaginationReq](c)
+    return ctx.SendResponse(service.NewAssistanceWithRider(ctx.Rider).SimpleList(*req))
+}
