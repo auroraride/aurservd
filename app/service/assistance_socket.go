@@ -49,8 +49,9 @@ func (s *assistanceSocketService) Detail(ass *ent.Assistance) (message *model.As
     }
 
     message = &model.AssistanceSocketMessage{
-        ID:     ass.ID,
-        Status: ass.Status,
+        ID:        ass.ID,
+        Status:    ass.Status,
+        Breakdown: ass.Breakdown,
         Rider: model.LngLat{
             Lng: ass.Lng,
             Lat: ass.Lat,

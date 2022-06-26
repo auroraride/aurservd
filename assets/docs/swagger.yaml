@@ -449,6 +449,9 @@ definitions:
     type: object
   model.AssistanceSocketMessage:
     properties:
+      breakdown:
+        description: 故障原因
+        type: string
       employee:
         allOf:
         - $ref: '#/definitions/model.Employee'

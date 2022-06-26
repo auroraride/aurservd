@@ -341,14 +341,27 @@ func (s *assistanceService) Nearby(req *model.IDQueryReq) (items []model.Assista
         ).
         Scan(s.ctx, &temps)
 
+    // 查找执行中的救援员工ID
+    ids, _ := s.orm.QueryNotDeleted().
+        Where(assistance.Status(model.AssistanceStatusAllocated), assistance.EmployeeIDNotNil()).
+        Select(assistance.FieldEmployeeID).
+        Ints(s.ctx)
+    idsm := make(map[uint64]bool)
+    for _, id := range ids {
+        idsm[uint64(id)] = true
+    }
+
     if err != nil {
         log.Error(err)
     }
 
-    items = make([]model.AssistanceNearbyRes, len(temps))
+    items = make([]model.AssistanceNearbyRes, 0)
 
-    for i, temp := range temps {
-        items[i] = model.AssistanceNearbyRes{
+    for _, temp := range temps {
+        if idsm[temp.EID] {
+            continue
+        }
+        items = append(items, model.AssistanceNearbyRes{
             ID:       temp.ID,
             Name:     temp.Name,
             Lng:      temp.Lng,
@@ -359,7 +372,7 @@ func (s *assistanceService) Nearby(req *model.IDQueryReq) (items []model.Assista
                 Name:  temp.EName,
                 Phone: temp.EPhone,
             },
-        }
+        })
     }
 
     return
@@ -367,7 +380,18 @@ func (s *assistanceService) Nearby(req *model.IDQueryReq) (items []model.Assista
 
 // Allocate 分配救援任务
 func (s *assistanceService) Allocate(req *model.AssistanceAllocateReq) {
-    st, _ := ar.Ent.Store.QueryNotDeleted().Where(store.ID(req.StoreID), store.EmployeeIDNotNil(), store.Status(model.StoreStatusOpen)).Only(s.ctx)
+    st, _ := ar.Ent.Store.QueryNotDeleted().
+        Where(
+            store.ID(req.StoreID),
+            store.EmployeeIDNotNil(),
+            store.Status(model.StoreStatusOpen),
+            store.HasEmployeeWith(
+                employee.Not(employee.HasAssistancesWith(
+                    assistance.Status(model.AssistanceStatusAllocated),
+                )),
+            ),
+        ).
+        Only(s.ctx)
     if st == nil {
         snag.Panic("未找到营业中的门店")
     }

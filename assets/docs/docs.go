@@ -7499,6 +7499,10 @@ const docTemplate = `{
         "model.AssistanceSocketMessage": {
             "type": "object",
             "properties": {
+                "breakdown": {
+                    "description": "故障原因",
+                    "type": "string"
+                },
                 "employee": {
                     "description": "店员信息",
                     "allOf": [
