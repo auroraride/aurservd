@@ -7071,9 +7071,7 @@ const docTemplate = `{
                         "breakdown": {
                             "description": "救援原因\u003c选择\u003e",
                             "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
+                            "items": {}
                         }
                     }
                 },
@@ -7115,6 +7113,14 @@ const docTemplate = `{
                 "status": {
                     "description": "状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付",
                     "type": "integer"
+                },
+                "store": {
+                    "description": "门店详情",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.StoreLngLat"
+                        }
+                    ]
                 }
             }
         },

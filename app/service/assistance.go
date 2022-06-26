@@ -511,6 +511,7 @@ func (s *assistanceService) EmployeeDetail(id uint64) (res model.AssistanceEmplo
         WithRider(func(rq *ent.RiderQuery) {
             rq.WithPerson()
         }).
+        WithStore().
         First(s.ctx)
     if ass == nil {
         snag.Panic("未找到救援信息")
@@ -532,6 +533,21 @@ func (s *assistanceService) EmployeeDetail(id uint64) (res model.AssistanceEmplo
     }
 
     res.Rider.Name = p.Name
+
+    // 救援原因
+    res.Configure.Breakdown = s.Breakdown().([]interface{})
+
+    st := ass.Edges.Store
+    if st != nil {
+        res.Store = model.StoreLngLat{
+            Store: model.Store{
+                ID:   st.ID,
+                Name: st.Name,
+            },
+            Lng: st.Lng,
+            Lat: st.Lat,
+        }
+    }
 
     return
 }

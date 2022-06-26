@@ -122,22 +122,23 @@ type AssistanceCancelReq struct {
 }
 
 type AssistanceEmployeeDetailRes struct {
-    ID              uint64     `json:"id"`
-    Status          uint8      `json:"status"`          // 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
-    Rider           RiderBasic `json:"rider"`           // 骑手信息
-    Lng             float64    `json:"lng"`             // 经度
-    Lat             float64    `json:"lat"`             // 纬度
-    Address         string     `json:"address"`         // 详细位置
-    Breakdown       string     `json:"breakdown"`       // 故障
-    BreakdownDesc   string     `json:"breakdownDesc"`   // 故障描述
-    BreakdownPhotos []string   `json:"breakdownPhotos"` // 故障照片
-    Reason          string     `json:"reason"`          // 成功救援 - 故障原因
-    DetectPhoto     string     `json:"detectPhoto"`     // 检测照片
-    JointPhoto      string     `json:"jointPhoto"`      // 合照
-    FailReason      string     `json:"failReason"`      // 失败原因
+    ID              uint64      `json:"id"`
+    Status          uint8       `json:"status"`          // 状态 0:待分配 1:已分配 2:已拒绝 3:已失败 4:待支付 5:已支付
+    Rider           RiderBasic  `json:"rider"`           // 骑手信息
+    Lng             float64     `json:"lng"`             // 经度
+    Lat             float64     `json:"lat"`             // 纬度
+    Address         string      `json:"address"`         // 详细位置
+    Breakdown       string      `json:"breakdown"`       // 故障
+    BreakdownDesc   string      `json:"breakdownDesc"`   // 故障描述
+    BreakdownPhotos []string    `json:"breakdownPhotos"` // 故障照片
+    Reason          string      `json:"reason"`          // 成功救援 - 故障原因
+    DetectPhoto     string      `json:"detectPhoto"`     // 检测照片
+    JointPhoto      string      `json:"jointPhoto"`      // 合照
+    FailReason      string      `json:"failReason"`      // 失败原因
+    Store           StoreLngLat `json:"store"`           // 门店详情
 
     Configure struct {
-        Breakdown []string `json:"breakdown"` // 救援原因<选择>
+        Breakdown []interface{} `json:"breakdown"` // 救援原因<选择>
     } `json:"configure"`
 }
 
