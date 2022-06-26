@@ -17,7 +17,7 @@ import (
 )
 
 type Websocket interface {
-    Connect(token string) (uint64, error)
+    Connect(hub *WebsocketHub, token string) (uint64, error)
     Prefix() string
 }
 
@@ -88,7 +88,7 @@ func Wrap(c echo.Context, ws Websocket) error {
     }(conn)
 
     var id uint64
-    id, err = ws.Connect(c.QueryParam("token"))
+    id, err = ws.Connect(hub, c.QueryParam("token"))
     if err != nil {
         hub.SendMessage(&model.SocketMessage{Error: err.Error()})
     } else {

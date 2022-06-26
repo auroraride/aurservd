@@ -8,6 +8,7 @@ package service
 import (
     "context"
     "errors"
+    "github.com/auroraride/aurservd/app/socket"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/pkg/cache"
@@ -27,7 +28,7 @@ func (s *riderSocketService) Prefix() string {
     return "RIDER"
 }
 
-func (s *riderSocketService) Connect(token string) (uint64, error) {
+func (s *riderSocketService) Connect(hub *socket.WebsocketHub, token string) (uint64, error) {
     id, _ := cache.Get(context.Background(), token).Uint64()
     r, _ := ar.Ent.Rider.QueryNotDeleted().Where(rider.ID(id)).First(s.ctx)
     if r == nil {
