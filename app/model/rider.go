@@ -190,3 +190,7 @@ func NewRiderPermissionError(message string, params ...bool) *RiderPermissionErr
     }
     return err
 }
+
+type RiderDepositRes struct {
+    Deposit float64 `json:"deposit"`
+}

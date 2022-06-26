@@ -603,6 +603,18 @@ func (s *riderService) DepositOrder(riderID uint64) *ent.Order {
     return o
 }
 
+// DepositPaid 已缴押金
+func (s *riderService) DepositPaid(riderID uint64) model.RiderDepositRes {
+    o := s.DepositOrder(riderID)
+    res := model.RiderDepositRes{
+        Deposit: 0,
+    }
+    if o == nil {
+        res.Deposit = o.Amount
+    }
+    return res
+}
+
 // Deposit 获取用户应交押金
 func (s *riderService) Deposit(riderID uint64) float64 {
     o := s.DepositOrder(riderID)

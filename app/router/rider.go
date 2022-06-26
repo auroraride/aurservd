@@ -40,6 +40,7 @@ func loadRideRoutes() {
 
     g.GET("/demo", rapi.Rider.Demo)       // 测试空白页面
     g.GET("/profile", rapi.Rider.Profile) // 获取用户信息
+    g.GET("/deposit", rapi.Rider.Deposit)
 
     // 已开通城市
     g.GET("/city", rapi.City.List)

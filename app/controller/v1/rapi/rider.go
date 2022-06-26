@@ -137,3 +137,17 @@ func (r *rider) Profile(c echo.Context) error {
     profile.Token = ctx.Token
     return ctx.SendResponse(profile)
 }
+
+// Deposit
+// @ID           RiderRiderDeposit
+// @Router       /rider/v1/deposit [GET]
+// @Summary      R1007 获取已缴押金
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Success      200 {object}   model.RiderDepositRes  "请求成功"
+func (*rider) Deposit(c echo.Context) (err error) {
+    ctx := app.ContextX[app.RiderContext](c)
+    return ctx.SendResponse(service.NewRider().DepositPaid(ctx.Rider.ID))
+}

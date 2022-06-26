@@ -2408,6 +2408,11 @@ definitions:
     - phone
     - relation
     type: object
+  model.RiderDepositRes:
+    properties:
+      deposit:
+        type: number
+    type: object
   model.RiderEmployeeSearchRes:
     properties:
       authStatus:
@@ -7449,6 +7454,27 @@ paths:
           schema:
             $ref: '#/definitions/model.ContractSignRes'
       summary: R3005 签署合同
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/deposit:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderRiderDeposit
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.RiderDepositRes'
+      summary: R1007 获取已缴押金
       tags:
       - '[R]骑手接口'
   /rider/v1/enterprise/battery:

@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
@@ -102,6 +103,20 @@ func (c *alipayClient) AppPay(pc *model.PaymentCache) (string, error) {
             NotifyURL:   cfg.NotifyUrl,
             Subject:     subject,
             OutTradeNo:  no,
+        },
+        TimeExpire: time.Now().Add(10 * time.Minute).Format(carbon.DateTimeLayout),
+    }
+    return c.TradeAppPay(trade)
+}
+
+func (c *alipayClient) AppPayDemo() (string, error) {
+    cfg := ar.Config.Payment.Alipay
+    trade := alipay.TradeAppPay{
+        Trade: alipay.Trade{
+            TotalAmount: fmt.Sprintf("%.2f", 0.01),
+            NotifyURL:   cfg.NotifyUrl,
+            Subject:     "测试支付",
+            OutTradeNo:  tools.NewUnique().NewSN(),
         },
         TimeExpire: time.Now().Add(10 * time.Minute).Format(carbon.DateTimeLayout),
     }

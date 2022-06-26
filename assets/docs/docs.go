@@ -6191,6 +6191,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/deposit": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R1007 获取已缴押金",
+                "operationId": "RiderRiderDeposit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderDepositRes"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/enterprise/battery": {
             "get": {
                 "consumes": [
@@ -10283,6 +10315,14 @@ const docTemplate = `{
                 "relation": {
                     "description": "关系 ",
                     "type": "string"
+                }
+            }
+        },
+        "model.RiderDepositRes": {
+            "type": "object",
+            "properties": {
+                "deposit": {
+                    "type": "number"
                 }
             }
         },
