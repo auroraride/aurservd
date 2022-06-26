@@ -1745,6 +1745,7 @@ var (
 		{Name: "esign_account_id", Type: field.TypeString, Comment: "E签宝账户ID", Nullable: true},
 		{Name: "plan_at", Type: field.TypeTime, Comment: "骑行卡到期日期", Nullable: true, SchemaType: map[string]string{"postgres": "date"}},
 		{Name: "blocked", Type: field.TypeBool, Comment: "是否封禁骑手账号", Default: false},
+		{Name: "contractual", Type: field.TypeBool, Comment: "是否标记为无需签约", Nullable: true, Default: false},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "person_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
@@ -1757,19 +1758,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "rider_enterprise_riders",
-				Columns:    []*schema.Column{RiderColumns[18]},
+				Columns:    []*schema.Column{RiderColumns[19]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_person_rider",
-				Columns:    []*schema.Column{RiderColumns[19]},
+				Columns:    []*schema.Column{RiderColumns[20]},
 				RefColumns: []*schema.Column{PersonColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_enterprise_station_station",
-				Columns:    []*schema.Column{RiderColumns[20]},
+				Columns:    []*schema.Column{RiderColumns[21]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

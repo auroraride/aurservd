@@ -702,6 +702,10 @@ func init() {
 	riderDescBlocked := riderFields[12].Descriptor()
 	// rider.DefaultBlocked holds the default value on creation for the blocked field.
 	rider.DefaultBlocked = riderDescBlocked.Default.(bool)
+	// riderDescContractual is the schema descriptor for contractual field.
+	riderDescContractual := riderFields[13].Descriptor()
+	// rider.DefaultContractual holds the default value on creation for the contractual field.
+	rider.DefaultContractual = riderDescContractual.Default.(bool)
 	settingMixin := schema.Setting{}.Mixin()
 	settingMixinHooks1 := settingMixin[1].Hooks()
 	setting.Hooks[0] = settingMixinHooks1[0]

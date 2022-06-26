@@ -280,6 +280,20 @@ func (rc *RiderCreate) SetNillableBlocked(b *bool) *RiderCreate {
 	return rc
 }
 
+// SetContractual sets the "contractual" field.
+func (rc *RiderCreate) SetContractual(b bool) *RiderCreate {
+	rc.mutation.SetContractual(b)
+	return rc
+}
+
+// SetNillableContractual sets the "contractual" field if the given value is not nil.
+func (rc *RiderCreate) SetNillableContractual(b *bool) *RiderCreate {
+	if b != nil {
+		rc.SetContractual(*b)
+	}
+	return rc
+}
+
 // SetStation sets the "station" edge to the EnterpriseStation entity.
 func (rc *RiderCreate) SetStation(e *EnterpriseStation) *RiderCreate {
 	return rc.SetStationID(e.ID)
@@ -486,6 +500,10 @@ func (rc *RiderCreate) defaults() error {
 		v := rider.DefaultBlocked
 		rc.mutation.SetBlocked(v)
 	}
+	if _, ok := rc.mutation.Contractual(); !ok {
+		v := rider.DefaultContractual
+		rc.mutation.SetContractual(v)
+	}
 	return nil
 }
 
@@ -684,6 +702,14 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			Column: rider.FieldBlocked,
 		})
 		_node.Blocked = value
+	}
+	if value, ok := rc.mutation.Contractual(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: rider.FieldContractual,
+		})
+		_node.Contractual = value
 	}
 	if nodes := rc.mutation.StationIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1249,6 +1275,24 @@ func (u *RiderUpsert) UpdateBlocked() *RiderUpsert {
 	return u
 }
 
+// SetContractual sets the "contractual" field.
+func (u *RiderUpsert) SetContractual(v bool) *RiderUpsert {
+	u.Set(rider.FieldContractual, v)
+	return u
+}
+
+// UpdateContractual sets the "contractual" field to the value that was provided on create.
+func (u *RiderUpsert) UpdateContractual() *RiderUpsert {
+	u.SetExcluded(rider.FieldContractual)
+	return u
+}
+
+// ClearContractual clears the value of the "contractual" field.
+func (u *RiderUpsert) ClearContractual() *RiderUpsert {
+	u.SetNull(rider.FieldContractual)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1688,6 +1732,27 @@ func (u *RiderUpsertOne) SetBlocked(v bool) *RiderUpsertOne {
 func (u *RiderUpsertOne) UpdateBlocked() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.UpdateBlocked()
+	})
+}
+
+// SetContractual sets the "contractual" field.
+func (u *RiderUpsertOne) SetContractual(v bool) *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetContractual(v)
+	})
+}
+
+// UpdateContractual sets the "contractual" field to the value that was provided on create.
+func (u *RiderUpsertOne) UpdateContractual() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateContractual()
+	})
+}
+
+// ClearContractual clears the value of the "contractual" field.
+func (u *RiderUpsertOne) ClearContractual() *RiderUpsertOne {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearContractual()
 	})
 }
 
@@ -2294,6 +2359,27 @@ func (u *RiderUpsertBulk) SetBlocked(v bool) *RiderUpsertBulk {
 func (u *RiderUpsertBulk) UpdateBlocked() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.UpdateBlocked()
+	})
+}
+
+// SetContractual sets the "contractual" field.
+func (u *RiderUpsertBulk) SetContractual(v bool) *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.SetContractual(v)
+	})
+}
+
+// UpdateContractual sets the "contractual" field to the value that was provided on create.
+func (u *RiderUpsertBulk) UpdateContractual() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.UpdateContractual()
+	})
+}
+
+// ClearContractual clears the value of the "contractual" field.
+func (u *RiderUpsertBulk) ClearContractual() *RiderUpsertBulk {
+	return u.Update(func(s *RiderUpsert) {
+		s.ClearContractual()
 	})
 }
 

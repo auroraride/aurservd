@@ -53,6 +53,8 @@ const (
 	FieldPlanAt = "plan_at"
 	// FieldBlocked holds the string denoting the blocked field in the database.
 	FieldBlocked = "blocked"
+	// FieldContractual holds the string denoting the contractual field in the database.
+	FieldContractual = "contractual"
 	// EdgeStation holds the string denoting the station edge name in mutations.
 	EdgeStation = "station"
 	// EdgePerson holds the string denoting the person edge name in mutations.
@@ -161,6 +163,7 @@ var Columns = []string{
 	FieldEsignAccountID,
 	FieldPlanAt,
 	FieldBlocked,
+	FieldContractual,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -197,4 +200,6 @@ var (
 	PushIDValidator func(string) error
 	// DefaultBlocked holds the default value on creation for the "blocked" field.
 	DefaultBlocked bool
+	// DefaultContractual holds the default value on creation for the "contractual" field.
+	DefaultContractual bool
 )

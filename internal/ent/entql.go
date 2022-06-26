@@ -822,6 +822,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rider.FieldEsignAccountID: {Type: field.TypeString, Column: rider.FieldEsignAccountID},
 			rider.FieldPlanAt:         {Type: field.TypeTime, Column: rider.FieldPlanAt},
 			rider.FieldBlocked:        {Type: field.TypeBool, Column: rider.FieldBlocked},
+			rider.FieldContractual:    {Type: field.TypeBool, Column: rider.FieldContractual},
 		},
 	}
 	graph.Nodes[28] = &sqlgraph.Node{
@@ -7015,6 +7016,11 @@ func (f *RiderFilter) WherePlanAt(p entql.TimeP) {
 // WhereBlocked applies the entql bool predicate on the blocked field.
 func (f *RiderFilter) WhereBlocked(p entql.BoolP) {
 	f.Where(p.Field(rider.FieldBlocked))
+}
+
+// WhereContractual applies the entql bool predicate on the contractual field.
+func (f *RiderFilter) WhereContractual(p entql.BoolP) {
+	f.Where(p.Field(rider.FieldContractual))
 }
 
 // WhereHasStation applies a predicate to check if query has an edge station.
