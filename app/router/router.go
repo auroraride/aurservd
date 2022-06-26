@@ -26,6 +26,8 @@ var (
 
 func Run() {
     e = echo.New()
+    e.Static("/pages", "public/pages")
+
     root = e.Group("/")
 
     // 校验规则
