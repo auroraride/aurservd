@@ -32,6 +32,7 @@ def deploy(path, tag) {
         --network host \
         -v /var/www/${path}.auroraride.com/config:/app/config \
         -v /var/www/${path}.auroraride.com/runtime:/app/runtime \
+        -v /var/www/${path}.auroraride.com/public:/app/public \
         registry-vpc.cn-beijing.aliyuncs.com/liasica/aurservd:$tag
         docker image prune -f
         docker container prune -f
