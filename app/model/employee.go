@@ -34,15 +34,15 @@ type EmployeeActivityListReq struct {
 }
 
 type EmployeeActivityListRes struct {
-    ID              uint64  `json:"id"`
-    Name            string  `json:"name"`            // 姓名
-    Phone           string  `json:"phone"`           // 电话
-    City            City    `json:"city"`            // 城市
-    Store           *Store  `json:"store,omitempty"` // 当前上班门店, 字段为空的时候是休息状态
-    ExchangeTimes   int     `json:"exchangeTimes"`   // 换电次数
-    Amount          float64 `json:"amount"`          // 业绩金额
-    AssistanceTimes int     `json:"assistanceTimes"` // 救援次数 TODO: 待实现
-    AssistanceMiles float64 `json:"assistanceMiles"` // 救援里程(米) TODO: 待实现
+    ID               uint64  `json:"id"`
+    Name             string  `json:"name"`             // 姓名
+    Phone            string  `json:"phone"`            // 电话
+    City             City    `json:"city"`             // 城市
+    Store            *Store  `json:"store,omitempty"`  // 当前上班门店, 字段为空的时候是休息状态
+    ExchangeTimes    int     `json:"exchangeTimes"`    // 换电次数
+    Amount           float64 `json:"amount"`           // 业绩金额
+    AssistanceTimes  int     `json:"assistanceTimes"`  // 救援次数
+    AssistanceMeters float64 `json:"assistanceMeters"` // 救援里程(米)
 }
 
 type EmployeeDeleteReq struct {

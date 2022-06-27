@@ -11,6 +11,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/assistance"
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/pkg/cache"
@@ -158,7 +159,10 @@ func (s *employeeService) Activity(req *model.EmployeeActivityListReq) *model.Pa
         WithStore().
         WithCity().
         WithExchanges().
-        WithCommissions()
+        WithCommissions().
+        WithAssistances(func(aq *ent.AssistanceQuery) {
+            aq.Where(assistance.StatusIn(model.AssistanceStatusSuccess, model.AssistanceStatusUnpaid))
+        })
 
     if req.Keyword != nil {
         q.Where(
@@ -203,6 +207,11 @@ func (s *employeeService) Activity(req *model.EmployeeActivityListReq) *model.Pa
 
         for _, cm := range item.Edges.Commissions {
             res.Amount = tools.NewDecimal().Sum(cm.Amount, res.Amount)
+        }
+
+        for _, ass := range item.Edges.Assistances {
+            res.AssistanceTimes += 1
+            res.AssistanceMeters += ass.Distance
         }
         return res
     })
