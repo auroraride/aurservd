@@ -12,7 +12,6 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     log "github.com/sirupsen/logrus"
-    "sync"
     "time"
 )
 
@@ -55,39 +54,31 @@ func StartCabinetProvider(providers ...Provider) {
 
                 length := len(items)
 
-                var wg sync.WaitGroup
-                wg.Add(length)
-
                 logs := make([]any, length)
                 for i, item := range items {
                     // 未获取到电柜状态设置为离线
                     up := ar.Ent.Cabinet.UpdateOne(item).SetHealth(model.CabinetHealthStatusOffline)
-                    go func(i int, item *ent.Cabinet) {
-                        l := provider.UpdateStatus(up, item)
-                        if l != nil {
-                            // 日志归并
-                            logs[i] = l
-                        }
+                    l := provider.UpdateStatus(up, item)
+                    if l != nil {
+                        // 日志归并
+                        logs[i] = l
+                    }
 
-                        // 存储电柜信息
-                        ca := up.SaveX(context.Background())
+                    // 存储电柜信息
+                    ca := up.SaveX(context.Background())
 
-                        go func() {
-                            // 保存历史仓位信息(转换后的)
-                            lg := GenerateSlsStatusLogGroup(ca)
-                            if lg != nil {
-                                err = ali.NewSls().PutLogs(slsCfg.Project, slsCfg.CabinetLog, lg)
-                                if err != nil {
-                                    log.Errorf("阿里云SLS提交失败: %#v", err)
-                                }
+                    // 提交日志
+                    go func() {
+                        // 保存历史仓位信息(转换后的)
+                        lg := GenerateSlsStatusLogGroup(ca)
+                        if lg != nil {
+                            err = ali.NewSls().PutLogs(slsCfg.Project, slsCfg.CabinetLog, lg)
+                            if err != nil {
+                                log.Errorf("阿里云SLS提交失败: %#v", err)
                             }
-                        }()
-
-                        wg.Done()
-                    }(i, item)
+                        }
+                    }()
                 }
-
-                wg.Wait()
 
                 // 写入电柜日志
                 provider.Logger().Write(times, logs)
