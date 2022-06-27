@@ -299,6 +299,11 @@ func (s *riderMgrService) UnSubscribe(subscribeID uint64) {
 
     // 记录业务日志
     bls.SaveAsync(business.TypeUnsubscribe)
+
+    // 更新企业账单
+    if sub.EnterpriseID != nil {
+        go NewEnterprise().UpdateStatementByID(*sub.EnterpriseID)
+    }
 }
 
 // Deposit 手动调整押金

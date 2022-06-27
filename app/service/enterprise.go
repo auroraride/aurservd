@@ -367,6 +367,13 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
     return
 }
 
+func (s *enterpriseService) UpdateStatementByID(id uint64) {
+    e, _ := ar.Ent.Enterprise.QueryNotDeleted().Where(enterprise.ID(id)).First(s.ctx)
+    if e != nil {
+        NewEnterprise().UpdateStatement(e)
+    }
+}
+
 // UpdateStatement 更新企业账单
 func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
     sta, bills := s.CalculateStatement(e, time.Now())
