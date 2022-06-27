@@ -188,8 +188,7 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
 
     // log.Infof("云动状态获取结果：%s", string(r.Body()))
     if err != nil || res.Code != 0 {
-        msg := fmt.Sprintf("云动状态获取失败, serial: %s, err: %#v, res: %s", item.Serial, err, res)
-        log.Error(msg)
+        msg := fmt.Sprintf("云动状态获取失败, serial: %s, err: %s, res: %s", item.Serial, err.Error(), res)
         return msg
     }
 

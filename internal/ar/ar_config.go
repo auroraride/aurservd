@@ -34,12 +34,10 @@ type EsignConfig struct {
     Redirect string
     Group    struct {
         Scene      string
-        FlowId     string
         TemplateId string
     }
     Person struct {
         Scene      string
-        FlowId     string
         TemplateId string
     }
 }

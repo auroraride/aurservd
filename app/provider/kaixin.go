@@ -160,16 +160,14 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
     r, err := client.Post(url)
 
     if err != nil {
-        msg := fmt.Sprintf("凯信状态获取失败, serial: %s, err: %#v", item.Serial, err)
-        log.Error(msg)
+        msg := fmt.Sprintf("凯信状态获取失败, serial: %s, err: %s", item.Serial, err.Error())
         return msg
     }
 
     // log.Infof("凯信状态获取结果：%s", string(r.Body()))
     err = jsoniter.Unmarshal(r.Body(), res)
     if err != nil {
-        msg := fmt.Sprintf("凯信状态获取失败, serial: %s, err: %#v", item.Serial, err)
-        log.Error(msg)
+        msg := fmt.Sprintf("凯信状态解析失败, serial: %s, body: %s, err: %s", item.Serial, r.Body(), err.Error())
         return msg
     }
 

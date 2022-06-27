@@ -18,9 +18,9 @@ import (
 )
 
 const (
-    snKey      = "sn"      // 合同编号
-    entSignKey = "entSign" // 企业签章控件名称
-    psnSignKey = "psnSign" // 个人签章控件名称
+    snKey      = "sn"  // 合同编号
+    entSignKey = "ent" // 企业签章控件名称
+    psnSignKey = "psn" // 个人签章控件名称
 )
 
 type contractService struct {
@@ -58,7 +58,7 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
     }
 
     var (
-        sn           = tools.NewUnique().NewSN28()
+        sn           = tools.NewUnique().NewSN()
         cfg          = s.esign.Config
         orm          = ar.Ent
         person       = u.Edges.Person

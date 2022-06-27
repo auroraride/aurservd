@@ -87,7 +87,7 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
     }
     info := NewCabinet().Usable(cab)
     if info.EmptyBin == nil {
-        snag.Panic("电柜目前不可用")
+        snag.Panic("电柜仓位不可用")
     }
 
     uid := shortuuid.New()
