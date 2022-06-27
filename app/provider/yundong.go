@@ -168,7 +168,7 @@ func (r *YDStatusRes) GetBins() (bins []YDBin) {
 }
 
 func (p *yundong) Cabinets() ([]*ent.Cabinet, error) {
-    return ar.Ent.Cabinet.Query().Where(cabinet.Brand(model.CabinetBrandYundong.Value())).All(context.Background())
+    return ar.Ent.Cabinet.Query().Where(cabinet.Brand(model.CabinetBrandYundong.Value()), cabinet.Status(model.CabinetStatusNormal)).All(context.Background())
 }
 
 func (p *yundong) Brand() string {
@@ -187,8 +187,12 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
     }
 
     // log.Infof("云动状态获取结果：%s", string(r.Body()))
-    if err != nil || res.Code != 0 {
+    if err != nil {
         msg := fmt.Sprintf("云动状态获取失败, serial: %s, err: %s, res: %s", item.Serial, err.Error(), res)
+        return msg
+    }
+    if res.Code != 0 {
+        msg := fmt.Sprintf("云动状态解析失败, serial: %s, res: %s", item.Serial, res)
         return msg
     }
 

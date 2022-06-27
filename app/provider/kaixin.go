@@ -33,7 +33,7 @@ func (p *kaixin) Reboot(code string, serial string) bool {
 }
 
 func (p *kaixin) Cabinets() ([]*ent.Cabinet, error) {
-    return ar.Ent.Cabinet.Query().Where(cabinet.Brand(model.CabinetBrandKaixin.Value())).All(context.Background())
+    return ar.Ent.Cabinet.Query().Where(cabinet.Brand(model.CabinetBrandKaixin.Value()), cabinet.Status(model.CabinetStatusNormal)).All(context.Background())
 }
 
 func (p *kaixin) Brand() string {
@@ -164,10 +164,9 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
         return msg
     }
 
-    // log.Infof("凯信状态获取结果：%s", string(r.Body()))
     err = jsoniter.Unmarshal(r.Body(), res)
     if err != nil {
-        msg := fmt.Sprintf("凯信状态解析失败, serial: %s, body: %s, err: %s", item.Serial, r.Body(), err.Error())
+        msg := fmt.Sprintf("凯信状态解析失败, serial: %s, body: %s", item.Serial, r.Body())
         return msg
     }
 
