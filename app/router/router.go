@@ -107,7 +107,7 @@ func Run() {
 
     // 载入路由
     loadDocRoutes()      // 文档
-    loadKaixinRoutes()   // 凯信
+    loadCabinetRoutes()  // 电柜回调
     loadCommonRoutes()   // 公共API
     loadRideRoutes()     // 骑手路由
     loadManagerRoutes()  // 管理员路由
