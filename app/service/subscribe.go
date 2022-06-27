@@ -15,6 +15,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
+    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
@@ -342,7 +343,13 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
 // PausedDays 计算寄存天数
 // 寄存天数 = 结束寄存当天0点 - 寄存当日24点(第二天0点)
 func (s *subscribeService) PausedDays(start time.Time, end time.Time) int {
-    return int(math.Abs(float64(carbon.Time2Carbon(start).StartOfDay().AddDay().DiffInDays(carbon.Time2Carbon(end).StartOfDay()))))
+    days := int(math.Abs(float64(carbon.Time2Carbon(start).StartOfDay().AddDay().DiffInDays(carbon.Time2Carbon(end).StartOfDay()))))
+    // 判定寄存时间是否超限, 寄存时间超限后会继续计费
+    max := cache.Int(model.SettingPauseMaxDays)
+    if days >= max {
+        days = max
+    }
+    return days
 }
 
 // OverdueFee 计算逾期费用

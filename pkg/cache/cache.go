@@ -32,10 +32,19 @@ func CreateClient(addr, password string, db int) {
 }
 
 func Float64(key string) float64 {
-    f := float64(80)
+    var f float64
     saved, err := client.Get(context.Background(), key).Float64()
     if err == nil {
         f = saved
     }
     return f
+}
+
+func Int(key string) int {
+    var res int
+    saved, err := client.Get(context.Background(), key).Int()
+    if err == nil {
+        res = saved
+    }
+    return res
 }
