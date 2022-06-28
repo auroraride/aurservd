@@ -106,12 +106,13 @@ func (*cabinet) Detail(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body  model.CabinetDoorOperateReq  true  "柜门操作请求"
+// @Param        body  body     model.CabinetDoorOperateReq  true  "柜门操作请求"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) DoorOperate(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetDoorOperateReq](c)
     m := ctx.Modifier
-    status, err := service.NewCabinetWithModifier(ctx.Modifier).DoorOperate(req, model.CabinetDoorOperator{
+    var status bool
+    status, err = service.NewCabinetWithModifier(ctx.Modifier).DoorOperate(req, model.CabinetDoorOperator{
         ID:    m.ID,
         Role:  model.CabinetDoorOperatorRoleManager,
         Name:  m.Name,

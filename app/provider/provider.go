@@ -65,7 +65,7 @@ func StartCabinetProvider(providers ...Provider) {
                     }
 
                     // 存储电柜信息
-                    ca := up.SaveX(context.Background())
+                    ca, _ := up.Save(context.Background())
 
                     // 提交日志
                     go func() {

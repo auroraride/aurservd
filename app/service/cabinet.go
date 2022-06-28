@@ -304,8 +304,6 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
         if req.Remark == "" {
             err = errors.New("该操作必须携带操作原因")
             return
-        } else {
-            req.Remark = ""
         }
     }
     var prov provider.Provider
@@ -322,9 +320,16 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
     state = prov.DoorOperate(operator.Name+"-"+opId, item.Serial, op, *req.Index)
     // 如果成功, 重新获取状态更新数据
     if state {
-        // 更新仓位备注
+        log.Infof("%s操作成功[%s %s]", item.Serial, req.Operation.String(), req.Remark)
         bins := item.Bin
-        bins[*req.Index].Remark = req.Remark
+        // 如果是锁仓, 需要更新仓位备注
+        if *req.Operation == model.CabinetDoorOperateLock {
+            bins[*req.Index].Remark = req.Remark
+        }
+        // 如果是解锁, 需要清除仓位备注
+        if *req.Operation == model.CabinetDoorOperateUnlock {
+            bins[*req.Index].Remark = ""
+        }
         prov.UpdateStatus(up, item)
         up.SetBin(bins).SaveX(s.ctx)
     }
