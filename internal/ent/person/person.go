@@ -45,6 +45,8 @@ const (
 	FieldAuthResult = "auth_result"
 	// FieldAuthAt holds the string denoting the auth_at field in the database.
 	FieldAuthAt = "auth_at"
+	// FieldEsignAccountID holds the string denoting the esign_account_id field in the database.
+	FieldEsignAccountID = "esign_account_id"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// Table holds the table name of the person in the database.
@@ -77,6 +79,7 @@ var Columns = []string{
 	FieldAuthFace,
 	FieldAuthResult,
 	FieldAuthAt,
+	FieldEsignAccountID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

@@ -37,6 +37,7 @@ func (Person) Fields() []ent.Field {
         field.String("auth_face").Optional().Comment("实名认证人脸照片"),
         field.JSON("auth_result", &model.FaceVerifyResult{}).Optional().Comment("实名认证结果详情"),
         field.Time("auth_at").Nillable().Optional().Comment("实名认证结果获取时间"),
+        field.String("esign_account_id").Optional().Comment("E签宝账户ID"),
     }
 }
 

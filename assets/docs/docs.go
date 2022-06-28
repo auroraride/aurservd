@@ -8715,10 +8715,18 @@ const docTemplate = `{
         },
         "model.ContractSignReq": {
             "type": "object",
+            "required": [
+                "cityId",
+                "model"
+            ],
             "properties": {
-                "enterpriseId": {
-                    "description": "企业ID",
+                "cityId": {
+                    "description": "城市ID ",
                     "type": "integer"
+                },
+                "model": {
+                    "description": "电池型号 ",
+                    "type": "string"
                 },
                 "planId": {
                     "description": "骑士卡ID",

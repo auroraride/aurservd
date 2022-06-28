@@ -59,7 +59,6 @@ func (Rider) Fields() []ent.Field {
         field.String("last_face").Optional().Nillable().Comment("上次登录人脸"),
         field.String("push_id").MaxLen(60).Optional().Comment("推送ID"),
         field.Time("last_signin_at").Nillable().Optional().Comment("最后登录时间"),
-        field.String("esign_account_id").Optional().Comment("E签宝账户ID"),
         field.Time("plan_at").SchemaType(map[string]string{dialect.Postgres: "date"}).Optional().Comment("骑行卡到期日期"),
         field.Bool("blocked").Default(false).Comment("是否封禁骑手账号"),
         field.Bool("contractual").Default(false).Optional().Comment("是否标记为无需签约"),

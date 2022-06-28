@@ -12,10 +12,13 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/contract"
+    "github.com/auroraride/aurservd/internal/ent/enterprise"
+    "github.com/auroraride/aurservd/internal/ent/enterprisestation"
     "github.com/auroraride/aurservd/internal/esign"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
+    "math"
     "strconv"
     "strings"
     "time"
@@ -56,8 +59,43 @@ func (s *contractService) Effective(u *ent.Rider) bool {
     return exists
 }
 
+// planData 个签合同数据
 func (s *contractService) planData(planID uint64, m ar.Map) {
-    // p := NewPlan().QueryEffectiveWithID(planID)
+    p := NewPlan().QueryEffectiveWithID(planID)
+    month := math.Round(float64(p.Days) / 31.0)
+    price := p.Price
+    if month > 1 {
+        price = price / month
+    }
+    m["month"] = fmt.Sprintf("%.0f", month)
+    m["payMonth"] = fmt.Sprintf("%.0f", month)
+    m["price"] = fmt.Sprintf("%.2f", price)
+    m["amount"] = fmt.Sprintf("%.2f", p.Price)
+}
+
+func (s *contractService) enterpriseData(u *ent.Rider, m ar.Map) {
+    e := u.Edges.Enterprise
+    if e == nil {
+        e, _ = ar.Ent.Enterprise.QueryNotDeleted().Where(enterprise.ID(*u.EnterpriseID)).First(s.ctx)
+    }
+    if e == nil {
+        snag.Panic("骑手企业查找失败")
+    }
+
+    sta := u.Edges.Station
+    if sta == nil {
+        sta, _ = ar.Ent.EnterpriseStation.QueryNotDeleted().Where(enterprisestation.ID(*u.StationID)).First(s.ctx)
+    }
+    if sta == nil {
+        snag.Panic("骑手站点查找失败")
+    }
+
+    // entName entPhone station payerEnt
+    m["entName"] = e.Name
+    m["entPhone"] = e.ContactPhone
+    m["station"] = sta.Name
+    m["payMonth"] = 1
+    m["payerEnt"] = true
 }
 
 // Sign 签署合同
@@ -80,14 +118,11 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
         m            = make(ar.Map)
         sn           = tools.NewUnique().NewSN()
         cfg          = s.esign.Config
-        orm          = ar.Ent
         p            = NewPerson().GetNormalAuthedPerson(u)
-        accountId    = u.EsignAccountID
+        accountId    = p.EsignAccountID
         isEnterprise = u.EnterpriseID != nil
         templateId   = cfg.Person.TemplateId
-        req          = esign.CreateFlowReq{
-            Scene: cfg.Person.Scene,
-        }
+        scene        = cfg.Person.Scene
     )
 
     m["sn"] = sn
@@ -108,15 +143,21 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
     m["riderDay"] = now[2]
     m["contactPhone"] = u.Contact.Phone
 
-    // TODO v72 v60 price month amount payMonth
-    m["v72"] = true
-    m["price"] = "100.00"
-    m["month"] = "1"
-    m["amount"] = "290.00"
-    m["payMonth"] = "1"
+    // 电池型号
+    if strings.HasPrefix(strings.ToUpper(params.Model), "72V") {
+        m["v72"] = true
+    } else {
+        m["v60"] = true
+    }
+
+    if params.PlanID != nil {
+        s.planData(*params.PlanID, m)
+    }
 
     if isEnterprise {
         templateId = cfg.Group.TemplateId
+        scene = cfg.Group.Scene
+        s.enterpriseData(u, m)
     }
 
     // 创建 / 获取 签约个人账号
@@ -132,7 +173,7 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
             snag.Panic("签署账号生成失败")
         }
         // 保存个人账号
-        err := orm.Rider.UpdateOneID(u.ID).SetEsignAccountID(accountId).Exec(context.Background())
+        err := p.Update().SetEsignAccountID(accountId).Exec(context.Background())
         if err != nil {
             snag.Panic(err)
         }
@@ -142,7 +183,10 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
     s.esign.SetSn(sn)
 
     // 设置个人账户ID
-    req.PersonAccountId = accountId
+    req := esign.CreateFlowReq{
+        Scene:           scene,
+        PersonAccountId: accountId,
+    }
 
     // 获取模板控件
     tmpl := s.esign.DocTemplate(templateId)

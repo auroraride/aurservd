@@ -295,26 +295,6 @@ func (ru *RiderUpdate) ClearLastSigninAt() *RiderUpdate {
 	return ru
 }
 
-// SetEsignAccountID sets the "esign_account_id" field.
-func (ru *RiderUpdate) SetEsignAccountID(s string) *RiderUpdate {
-	ru.mutation.SetEsignAccountID(s)
-	return ru
-}
-
-// SetNillableEsignAccountID sets the "esign_account_id" field if the given value is not nil.
-func (ru *RiderUpdate) SetNillableEsignAccountID(s *string) *RiderUpdate {
-	if s != nil {
-		ru.SetEsignAccountID(*s)
-	}
-	return ru
-}
-
-// ClearEsignAccountID clears the value of the "esign_account_id" field.
-func (ru *RiderUpdate) ClearEsignAccountID() *RiderUpdate {
-	ru.mutation.ClearEsignAccountID()
-	return ru
-}
-
 // SetPlanAt sets the "plan_at" field.
 func (ru *RiderUpdate) SetPlanAt(t time.Time) *RiderUpdate {
 	ru.mutation.SetPlanAt(t)
@@ -885,19 +865,6 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: rider.FieldLastSigninAt,
-		})
-	}
-	if value, ok := ru.mutation.EsignAccountID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldEsignAccountID,
-		})
-	}
-	if ru.mutation.EsignAccountIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: rider.FieldEsignAccountID,
 		})
 	}
 	if value, ok := ru.mutation.PlanAt(); ok {
@@ -1638,26 +1605,6 @@ func (ruo *RiderUpdateOne) ClearLastSigninAt() *RiderUpdateOne {
 	return ruo
 }
 
-// SetEsignAccountID sets the "esign_account_id" field.
-func (ruo *RiderUpdateOne) SetEsignAccountID(s string) *RiderUpdateOne {
-	ruo.mutation.SetEsignAccountID(s)
-	return ruo
-}
-
-// SetNillableEsignAccountID sets the "esign_account_id" field if the given value is not nil.
-func (ruo *RiderUpdateOne) SetNillableEsignAccountID(s *string) *RiderUpdateOne {
-	if s != nil {
-		ruo.SetEsignAccountID(*s)
-	}
-	return ruo
-}
-
-// ClearEsignAccountID clears the value of the "esign_account_id" field.
-func (ruo *RiderUpdateOne) ClearEsignAccountID() *RiderUpdateOne {
-	ruo.mutation.ClearEsignAccountID()
-	return ruo
-}
-
 // SetPlanAt sets the "plan_at" field.
 func (ruo *RiderUpdateOne) SetPlanAt(t time.Time) *RiderUpdateOne {
 	ruo.mutation.SetPlanAt(t)
@@ -2258,19 +2205,6 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: rider.FieldLastSigninAt,
-		})
-	}
-	if value, ok := ruo.mutation.EsignAccountID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: rider.FieldEsignAccountID,
-		})
-	}
-	if ruo.mutation.EsignAccountIDCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: rider.FieldEsignAccountID,
 		})
 	}
 	if value, ok := ruo.mutation.PlanAt(); ok {

@@ -36301,6 +36301,7 @@ type PersonMutation struct {
 	auth_face        *string
 	auth_result      **model.FaceVerifyResult
 	auth_at          *time.Time
+	esign_account_id *string
 	clearedFields    map[string]struct{}
 	rider            map[uint64]struct{}
 	removedrider     map[uint64]struct{}
@@ -37154,6 +37155,55 @@ func (m *PersonMutation) ResetAuthAt() {
 	delete(m.clearedFields, person.FieldAuthAt)
 }
 
+// SetEsignAccountID sets the "esign_account_id" field.
+func (m *PersonMutation) SetEsignAccountID(s string) {
+	m.esign_account_id = &s
+}
+
+// EsignAccountID returns the value of the "esign_account_id" field in the mutation.
+func (m *PersonMutation) EsignAccountID() (r string, exists bool) {
+	v := m.esign_account_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEsignAccountID returns the old "esign_account_id" field's value of the Person entity.
+// If the Person object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PersonMutation) OldEsignAccountID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEsignAccountID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEsignAccountID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEsignAccountID: %w", err)
+	}
+	return oldValue.EsignAccountID, nil
+}
+
+// ClearEsignAccountID clears the value of the "esign_account_id" field.
+func (m *PersonMutation) ClearEsignAccountID() {
+	m.esign_account_id = nil
+	m.clearedFields[person.FieldEsignAccountID] = struct{}{}
+}
+
+// EsignAccountIDCleared returns if the "esign_account_id" field was cleared in this mutation.
+func (m *PersonMutation) EsignAccountIDCleared() bool {
+	_, ok := m.clearedFields[person.FieldEsignAccountID]
+	return ok
+}
+
+// ResetEsignAccountID resets all changes to the "esign_account_id" field.
+func (m *PersonMutation) ResetEsignAccountID() {
+	m.esign_account_id = nil
+	delete(m.clearedFields, person.FieldEsignAccountID)
+}
+
 // AddRiderIDs adds the "rider" edge to the Rider entity by ids.
 func (m *PersonMutation) AddRiderIDs(ids ...uint64) {
 	if m.rider == nil {
@@ -37227,7 +37277,7 @@ func (m *PersonMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PersonMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 17)
 	if m.created_at != nil {
 		fields = append(fields, person.FieldCreatedAt)
 	}
@@ -37276,6 +37326,9 @@ func (m *PersonMutation) Fields() []string {
 	if m.auth_at != nil {
 		fields = append(fields, person.FieldAuthAt)
 	}
+	if m.esign_account_id != nil {
+		fields = append(fields, person.FieldEsignAccountID)
+	}
 	return fields
 }
 
@@ -37316,6 +37369,8 @@ func (m *PersonMutation) Field(name string) (ent.Value, bool) {
 		return m.AuthResult()
 	case person.FieldAuthAt:
 		return m.AuthAt()
+	case person.FieldEsignAccountID:
+		return m.EsignAccountID()
 	}
 	return nil, false
 }
@@ -37357,6 +37412,8 @@ func (m *PersonMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldAuthResult(ctx)
 	case person.FieldAuthAt:
 		return m.OldAuthAt(ctx)
+	case person.FieldEsignAccountID:
+		return m.OldEsignAccountID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Person field %s", name)
 }
@@ -37478,6 +37535,13 @@ func (m *PersonMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAuthAt(v)
 		return nil
+	case person.FieldEsignAccountID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEsignAccountID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Person field %s", name)
 }
@@ -37565,6 +37629,9 @@ func (m *PersonMutation) ClearedFields() []string {
 	if m.FieldCleared(person.FieldAuthAt) {
 		fields = append(fields, person.FieldAuthAt)
 	}
+	if m.FieldCleared(person.FieldEsignAccountID) {
+		fields = append(fields, person.FieldEsignAccountID)
+	}
 	return fields
 }
 
@@ -37608,6 +37675,9 @@ func (m *PersonMutation) ClearField(name string) error {
 		return nil
 	case person.FieldAuthAt:
 		m.ClearAuthAt()
+		return nil
+	case person.FieldEsignAccountID:
+		m.ClearEsignAccountID()
 		return nil
 	}
 	return fmt.Errorf("unknown Person nullable field %s", name)
@@ -37664,6 +37734,9 @@ func (m *PersonMutation) ResetField(name string) error {
 		return nil
 	case person.FieldAuthAt:
 		m.ResetAuthAt()
+		return nil
+	case person.FieldEsignAccountID:
+		m.ResetEsignAccountID()
 		return nil
 	}
 	return fmt.Errorf("unknown Person field %s", name)
@@ -39471,7 +39544,6 @@ type RiderMutation struct {
 	last_face         *string
 	push_id           *string
 	last_signin_at    *time.Time
-	esign_account_id  *string
 	plan_at           *time.Time
 	blocked           *bool
 	contractual       *bool
@@ -40405,55 +40477,6 @@ func (m *RiderMutation) ResetLastSigninAt() {
 	delete(m.clearedFields, rider.FieldLastSigninAt)
 }
 
-// SetEsignAccountID sets the "esign_account_id" field.
-func (m *RiderMutation) SetEsignAccountID(s string) {
-	m.esign_account_id = &s
-}
-
-// EsignAccountID returns the value of the "esign_account_id" field in the mutation.
-func (m *RiderMutation) EsignAccountID() (r string, exists bool) {
-	v := m.esign_account_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldEsignAccountID returns the old "esign_account_id" field's value of the Rider entity.
-// If the Rider object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RiderMutation) OldEsignAccountID(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldEsignAccountID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldEsignAccountID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldEsignAccountID: %w", err)
-	}
-	return oldValue.EsignAccountID, nil
-}
-
-// ClearEsignAccountID clears the value of the "esign_account_id" field.
-func (m *RiderMutation) ClearEsignAccountID() {
-	m.esign_account_id = nil
-	m.clearedFields[rider.FieldEsignAccountID] = struct{}{}
-}
-
-// EsignAccountIDCleared returns if the "esign_account_id" field was cleared in this mutation.
-func (m *RiderMutation) EsignAccountIDCleared() bool {
-	_, ok := m.clearedFields[rider.FieldEsignAccountID]
-	return ok
-}
-
-// ResetEsignAccountID resets all changes to the "esign_account_id" field.
-func (m *RiderMutation) ResetEsignAccountID() {
-	m.esign_account_id = nil
-	delete(m.clearedFields, rider.FieldEsignAccountID)
-}
-
 // SetPlanAt sets the "plan_at" field.
 func (m *RiderMutation) SetPlanAt(t time.Time) {
 	m.plan_at = &t
@@ -41009,7 +41032,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 21)
+	fields := make([]string, 0, 20)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -41060,9 +41083,6 @@ func (m *RiderMutation) Fields() []string {
 	}
 	if m.last_signin_at != nil {
 		fields = append(fields, rider.FieldLastSigninAt)
-	}
-	if m.esign_account_id != nil {
-		fields = append(fields, rider.FieldEsignAccountID)
 	}
 	if m.plan_at != nil {
 		fields = append(fields, rider.FieldPlanAt)
@@ -41115,8 +41135,6 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.PushID()
 	case rider.FieldLastSigninAt:
 		return m.LastSigninAt()
-	case rider.FieldEsignAccountID:
-		return m.EsignAccountID()
 	case rider.FieldPlanAt:
 		return m.PlanAt()
 	case rider.FieldBlocked:
@@ -41166,8 +41184,6 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldPushID(ctx)
 	case rider.FieldLastSigninAt:
 		return m.OldLastSigninAt(ctx)
-	case rider.FieldEsignAccountID:
-		return m.OldEsignAccountID(ctx)
 	case rider.FieldPlanAt:
 		return m.OldPlanAt(ctx)
 	case rider.FieldBlocked:
@@ -41302,13 +41318,6 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetLastSigninAt(v)
 		return nil
-	case rider.FieldEsignAccountID:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetEsignAccountID(v)
-		return nil
 	case rider.FieldPlanAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -41414,9 +41423,6 @@ func (m *RiderMutation) ClearedFields() []string {
 	if m.FieldCleared(rider.FieldLastSigninAt) {
 		fields = append(fields, rider.FieldLastSigninAt)
 	}
-	if m.FieldCleared(rider.FieldEsignAccountID) {
-		fields = append(fields, rider.FieldEsignAccountID)
-	}
 	if m.FieldCleared(rider.FieldPlanAt) {
 		fields = append(fields, rider.FieldPlanAt)
 	}
@@ -41475,9 +41481,6 @@ func (m *RiderMutation) ClearField(name string) error {
 		return nil
 	case rider.FieldLastSigninAt:
 		m.ClearLastSigninAt()
-		return nil
-	case rider.FieldEsignAccountID:
-		m.ClearEsignAccountID()
 		return nil
 	case rider.FieldPlanAt:
 		m.ClearPlanAt()
@@ -41543,9 +41546,6 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldLastSigninAt:
 		m.ResetLastSigninAt()
-		return nil
-	case rider.FieldEsignAccountID:
-		m.ResetEsignAccountID()
 		return nil
 	case rider.FieldPlanAt:
 		m.ResetPlanAt()

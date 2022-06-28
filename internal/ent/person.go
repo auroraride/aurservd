@@ -63,6 +63,9 @@ type Person struct {
 	// AuthAt holds the value of the "auth_at" field.
 	// 实名认证结果获取时间
 	AuthAt *time.Time `json:"auth_at,omitempty"`
+	// EsignAccountID holds the value of the "esign_account_id" field.
+	// E签宝账户ID
+	EsignAccountID string `json:"esign_account_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PersonQuery when eager-loading is set.
 	Edges PersonEdges `json:"edges"`
@@ -97,7 +100,7 @@ func (*Person) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case person.FieldID, person.FieldStatus, person.FieldIDCardType:
 			values[i] = new(sql.NullInt64)
-		case person.FieldRemark, person.FieldName, person.FieldIDCardNumber, person.FieldIDCardPortrait, person.FieldIDCardNational, person.FieldAuthFace:
+		case person.FieldRemark, person.FieldName, person.FieldIDCardNumber, person.FieldIDCardPortrait, person.FieldIDCardNational, person.FieldAuthFace, person.FieldEsignAccountID:
 			values[i] = new(sql.NullString)
 		case person.FieldCreatedAt, person.FieldUpdatedAt, person.FieldDeletedAt, person.FieldAuthAt:
 			values[i] = new(sql.NullTime)
@@ -226,6 +229,12 @@ func (pe *Person) assignValues(columns []string, values []interface{}) error {
 				pe.AuthAt = new(time.Time)
 				*pe.AuthAt = value.Time
 			}
+		case person.FieldEsignAccountID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field esign_account_id", values[i])
+			} else if value.Valid {
+				pe.EsignAccountID = value.String
+			}
 		}
 	}
 	return nil
@@ -295,6 +304,8 @@ func (pe *Person) String() string {
 		builder.WriteString(", auth_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", esign_account_id=")
+	builder.WriteString(pe.EsignAccountID)
 	builder.WriteByte(')')
 	return builder.String()
 }

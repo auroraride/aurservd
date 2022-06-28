@@ -69,9 +69,6 @@ type Rider struct {
 	// LastSigninAt holds the value of the "last_signin_at" field.
 	// 最后登录时间
 	LastSigninAt *time.Time `json:"last_signin_at,omitempty"`
-	// EsignAccountID holds the value of the "esign_account_id" field.
-	// E签宝账户ID
-	EsignAccountID string `json:"esign_account_id,omitempty"`
 	// PlanAt holds the value of the "plan_at" field.
 	// 骑行卡到期日期
 	PlanAt time.Time `json:"plan_at,omitempty"`
@@ -218,7 +215,7 @@ func (*Rider) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullBool)
 		case rider.FieldID, rider.FieldStationID, rider.FieldPersonID, rider.FieldEnterpriseID, rider.FieldDeviceType:
 			values[i] = new(sql.NullInt64)
-		case rider.FieldRemark, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID, rider.FieldEsignAccountID:
+		case rider.FieldRemark, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID:
 			values[i] = new(sql.NullString)
 		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastSigninAt, rider.FieldPlanAt:
 			values[i] = new(sql.NullTime)
@@ -357,12 +354,6 @@ func (r *Rider) assignValues(columns []string, values []interface{}) error {
 				r.LastSigninAt = new(time.Time)
 				*r.LastSigninAt = value.Time
 			}
-		case rider.FieldEsignAccountID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field esign_account_id", values[i])
-			} else if value.Valid {
-				r.EsignAccountID = value.String
-			}
 		case rider.FieldPlanAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field plan_at", values[i])
@@ -500,8 +491,6 @@ func (r *Rider) String() string {
 		builder.WriteString(", last_signin_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	builder.WriteString(", esign_account_id=")
-	builder.WriteString(r.EsignAccountID)
 	builder.WriteString(", plan_at=")
 	builder.WriteString(r.PlanAt.Format(time.ANSIC))
 	builder.WriteString(", blocked=")

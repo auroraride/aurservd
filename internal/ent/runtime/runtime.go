@@ -699,11 +699,11 @@ func init() {
 	// rider.PushIDValidator is a validator for the "push_id" field. It is called by the builders before save.
 	rider.PushIDValidator = riderDescPushID.Validators[0].(func(string) error)
 	// riderDescBlocked is the schema descriptor for blocked field.
-	riderDescBlocked := riderFields[12].Descriptor()
+	riderDescBlocked := riderFields[11].Descriptor()
 	// rider.DefaultBlocked holds the default value on creation for the blocked field.
 	rider.DefaultBlocked = riderDescBlocked.Default.(bool)
 	// riderDescContractual is the schema descriptor for contractual field.
-	riderDescContractual := riderFields[13].Descriptor()
+	riderDescContractual := riderFields[12].Descriptor()
 	// rider.DefaultContractual holds the default value on creation for the contractual field.
 	rider.DefaultContractual = riderDescContractual.Default.(bool)
 	settingMixin := schema.Setting{}.Mixin()

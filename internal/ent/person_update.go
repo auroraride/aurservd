@@ -262,6 +262,26 @@ func (pu *PersonUpdate) ClearAuthAt() *PersonUpdate {
 	return pu
 }
 
+// SetEsignAccountID sets the "esign_account_id" field.
+func (pu *PersonUpdate) SetEsignAccountID(s string) *PersonUpdate {
+	pu.mutation.SetEsignAccountID(s)
+	return pu
+}
+
+// SetNillableEsignAccountID sets the "esign_account_id" field if the given value is not nil.
+func (pu *PersonUpdate) SetNillableEsignAccountID(s *string) *PersonUpdate {
+	if s != nil {
+		pu.SetEsignAccountID(*s)
+	}
+	return pu
+}
+
+// ClearEsignAccountID clears the value of the "esign_account_id" field.
+func (pu *PersonUpdate) ClearEsignAccountID() *PersonUpdate {
+	pu.mutation.ClearEsignAccountID()
+	return pu
+}
+
 // AddRiderIDs adds the "rider" edge to the Rider entity by IDs.
 func (pu *PersonUpdate) AddRiderIDs(ids ...uint64) *PersonUpdate {
 	pu.mutation.AddRiderIDs(ids...)
@@ -583,6 +603,19 @@ func (pu *PersonUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: person.FieldAuthAt,
 		})
 	}
+	if value, ok := pu.mutation.EsignAccountID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: person.FieldEsignAccountID,
+		})
+	}
+	if pu.mutation.EsignAccountIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: person.FieldEsignAccountID,
+		})
+	}
 	if pu.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -885,6 +918,26 @@ func (puo *PersonUpdateOne) SetNillableAuthAt(t *time.Time) *PersonUpdateOne {
 // ClearAuthAt clears the value of the "auth_at" field.
 func (puo *PersonUpdateOne) ClearAuthAt() *PersonUpdateOne {
 	puo.mutation.ClearAuthAt()
+	return puo
+}
+
+// SetEsignAccountID sets the "esign_account_id" field.
+func (puo *PersonUpdateOne) SetEsignAccountID(s string) *PersonUpdateOne {
+	puo.mutation.SetEsignAccountID(s)
+	return puo
+}
+
+// SetNillableEsignAccountID sets the "esign_account_id" field if the given value is not nil.
+func (puo *PersonUpdateOne) SetNillableEsignAccountID(s *string) *PersonUpdateOne {
+	if s != nil {
+		puo.SetEsignAccountID(*s)
+	}
+	return puo
+}
+
+// ClearEsignAccountID clears the value of the "esign_account_id" field.
+func (puo *PersonUpdateOne) ClearEsignAccountID() *PersonUpdateOne {
+	puo.mutation.ClearEsignAccountID()
 	return puo
 }
 
@@ -1237,6 +1290,19 @@ func (puo *PersonUpdateOne) sqlSave(ctx context.Context) (_node *Person, err err
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: person.FieldAuthAt,
+		})
+	}
+	if value, ok := puo.mutation.EsignAccountID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: person.FieldEsignAccountID,
+		})
+	}
+	if puo.mutation.EsignAccountIDCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: person.FieldEsignAccountID,
 		})
 	}
 	if puo.mutation.RiderCleared() {

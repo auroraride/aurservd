@@ -1620,6 +1620,7 @@ var (
 		{Name: "auth_face", Type: field.TypeString, Comment: "实名认证人脸照片", Nullable: true},
 		{Name: "auth_result", Type: field.TypeJSON, Comment: "实名认证结果详情", Nullable: true},
 		{Name: "auth_at", Type: field.TypeTime, Comment: "实名认证结果获取时间", Nullable: true},
+		{Name: "esign_account_id", Type: field.TypeString, Comment: "E签宝账户ID", Nullable: true},
 	}
 	// PersonTable holds the schema information for the "person" table.
 	PersonTable = &schema.Table{
@@ -1742,7 +1743,6 @@ var (
 		{Name: "last_face", Type: field.TypeString, Comment: "上次登录人脸", Nullable: true},
 		{Name: "push_id", Type: field.TypeString, Comment: "推送ID", Nullable: true, Size: 60},
 		{Name: "last_signin_at", Type: field.TypeTime, Comment: "最后登录时间", Nullable: true},
-		{Name: "esign_account_id", Type: field.TypeString, Comment: "E签宝账户ID", Nullable: true},
 		{Name: "plan_at", Type: field.TypeTime, Comment: "骑行卡到期日期", Nullable: true, SchemaType: map[string]string{"postgres": "date"}},
 		{Name: "blocked", Type: field.TypeBool, Comment: "是否封禁骑手账号", Default: false},
 		{Name: "contractual", Type: field.TypeBool, Comment: "是否标记为无需签约", Nullable: true, Default: false},
@@ -1758,19 +1758,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "rider_enterprise_riders",
-				Columns:    []*schema.Column{RiderColumns[19]},
+				Columns:    []*schema.Column{RiderColumns[18]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_person_rider",
-				Columns:    []*schema.Column{RiderColumns[20]},
+				Columns:    []*schema.Column{RiderColumns[19]},
 				RefColumns: []*schema.Column{PersonColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_enterprise_station_station",
-				Columns:    []*schema.Column{RiderColumns[21]},
+				Columns:    []*schema.Column{RiderColumns[20]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
