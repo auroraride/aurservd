@@ -57,6 +57,7 @@ type CreateByTemplateRes struct {
 }
 
 // DocTemplate 查询模板文件详情
+// TemplateID 获取查看 https://open.esign.cn/doc/detail?id=opendoc%2Fsaasapi-std%2Fqih56s&namespace=opendoc%2Fsaasapi-std
 func (e *Esign) DocTemplate(templateId string) *DocTemplateRes {
     res := new(DocTemplateRes)
     e.request(fmt.Sprintf(docTemplateUrl, templateId), methodGet, nil, res)

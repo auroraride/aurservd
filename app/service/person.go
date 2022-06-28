@@ -11,6 +11,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/pkg/snag"
 )
@@ -63,4 +64,30 @@ func (s *personService) Ban(req *model.PersonBanReq) {
         ol.SetOperate(model.OperatePersonUnBan).SetDiff(bd, nb)
     }
     ol.Send()
+}
+
+// GetNormalAuthedPerson 获取正常骑手已实名认证的信息
+func (s *personService) GetNormalAuthedPerson(u *ent.Rider) *ent.Person {
+    if u.Blocked {
+        snag.Panic("你已被封禁")
+    }
+
+    p := u.Edges.Person
+    if p == nil && u.PersonID != nil {
+        p, _ = ar.Ent.Person.QueryNotDeleted().Where(person.ID(*u.PersonID)).First(s.ctx)
+    }
+
+    if p == nil {
+        snag.Panic("未找到实名认证信息")
+    }
+
+    if model.PersonAuthStatus(p.Status).RequireAuth() {
+        snag.Panic("未实名认证")
+    }
+
+    if p.Banned {
+        snag.Panic("你已被拉黑")
+    }
+
+    return p
 }

@@ -15,12 +15,17 @@ import (
     "github.com/auroraride/aurservd/internal/esign"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
+    "github.com/golang-module/carbon/v2"
+    "strconv"
+    "strings"
+    "time"
 )
 
 const (
-    snKey      = "sn"  // 合同编号
-    entSignKey = "ent" // 企业签章控件名称
-    psnSignKey = "psn" // 个人签章控件名称
+    snKey      = "sn"         // 合同编号
+    aurSeal    = "aurSeal"    // 平台签章控件名称
+    riderSeal  = "riderSeal"  // 骑手签章控件名称
+    pagingSeal = "pagingSeal" // 骑缝章
 )
 
 type contractService struct {
@@ -51,17 +56,32 @@ func (s *contractService) Effective(u *ent.Rider) bool {
     return exists
 }
 
+func (s *contractService) planData(planID uint64, m ar.Map) {
+    // p := NewPlan().QueryEffectiveWithID(planID)
+}
+
 // Sign 签署合同
 func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) model.ContractSignRes {
     if s.Effective(u) {
         return model.ContractSignRes{Effective: true}
     }
 
+    if u.Contact == nil {
+        snag.Panic("未补充紧急联系人")
+    }
+
+    now := make([]int, 3)
+    arr := strings.Split(time.Now().Format(carbon.DateLayout), "-")
+    for i, a := range arr {
+        now[i], _ = strconv.Atoi(a)
+    }
+
     var (
+        m            = make(ar.Map)
         sn           = tools.NewUnique().NewSN()
         cfg          = s.esign.Config
         orm          = ar.Ent
-        person       = u.Edges.Person
+        p            = NewPerson().GetNormalAuthedPerson(u)
         accountId    = u.EsignAccountID
         isEnterprise = u.EnterpriseID != nil
         templateId   = cfg.Person.TemplateId
@@ -69,6 +89,31 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
             Scene: cfg.Person.Scene,
         }
     )
+
+    m["sn"] = sn
+    m["name"] = p.Name
+    m["riderName"] = p.Name
+    m["signName"] = p.Name
+    m["idcard"] = p.IDCardNumber
+    m["address"] = p.AuthResult.Address
+    m["phone"] = u.Phone
+    m["startYear"] = now[0]
+    m["startMonth"] = now[1]
+    m["startDay"] = now[2]
+    m["aurYear"] = now[0]
+    m["aurMonth"] = now[1]
+    m["aurDay"] = now[2]
+    m["riderYear"] = now[0]
+    m["riderMonth"] = now[1]
+    m["riderDay"] = now[2]
+    m["contactPhone"] = u.Contact.Phone
+
+    // TODO v72 v60 price month amount payMonth
+    m["v72"] = true
+    m["price"] = "100.00"
+    m["month"] = "1"
+    m["amount"] = "290.00"
+    m["payMonth"] = "1"
 
     if isEnterprise {
         templateId = cfg.Group.TemplateId
@@ -78,9 +123,9 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
     if accountId == "" {
         accountId = s.esign.CreatePersonAccount(esign.CreatePersonAccountReq{
             ThirdPartyUserId: u.Phone,
-            Name:             person.Name,
+            Name:             p.Name,
             IdType:           "CRED_PSN_CH_IDCARD",
-            IdNumber:         person.IDCardNumber,
+            IdNumber:         p.IDCardNumber,
             Mobile:           u.Phone,
         })
         if accountId == "" {
@@ -101,26 +146,24 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
 
     // 获取模板控件
     tmpl := s.esign.DocTemplate(templateId)
-    m := make(ar.Map)
     for _, com := range tmpl.StructComponents {
         switch com.Key {
         case snKey:
             m[snKey] = sn
-        case entSignKey:
+            break
+        case aurSeal:
             req.EntSignBean = esign.PosBean{
                 PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
                 PosX:    com.Context.Pos.X,
                 PosY:    com.Context.Pos.Y,
             }
-        case psnSignKey:
+            break
+        case riderSeal:
             req.PsnSignBean = esign.PosBean{
                 PosPage: fmt.Sprintf("%v", com.Context.Pos.Page),
                 PosX:    com.Context.Pos.X,
                 PosY:    com.Context.Pos.Y,
             }
-        default:
-            // todo 动态配置真实值
-            m[com.Key] = com.Key
         }
     }
     // 填充内容生成PDF
