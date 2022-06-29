@@ -245,12 +245,6 @@ func (s *cabinetService) UpdateStatus(item *ent.Cabinet) {
     }
     up := s.orm.UpdateOne(item)
     prov.UpdateStatus(up, item)
-    v, err := up.Save(s.ctx)
-    if err != nil {
-        log.Errorf("电柜状态更新失败: %s", err)
-    } else {
-        *item = *v
-    }
 }
 
 // DoorOpenStatus 获取柜门状态
@@ -321,17 +315,15 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
     // 如果成功, 重新获取状态更新数据
     if state {
         log.Infof("%s操作成功[%s %s]", item.Serial, req.Operation.String(), req.Remark)
-        bins := item.Bin
         // 如果是锁仓, 需要更新仓位备注
         if *req.Operation == model.CabinetDoorOperateLock {
-            bins[*req.Index].Remark = req.Remark
+            item.Bin[*req.Index].Remark = req.Remark
         }
         // 如果是解锁, 需要清除仓位备注
         if *req.Operation == model.CabinetDoorOperateUnlock {
-            bins[*req.Index].Remark = ""
+            item.Bin[*req.Index].Remark = ""
         }
         prov.UpdateStatus(up, item)
-        up.SetBin(bins).SaveX(s.ctx)
     }
     go func() {
         // 上传日志
@@ -385,7 +377,6 @@ func (s *cabinetService) Reboot(req *model.IDPostReq) bool {
     if state {
         // 更新仓位备注
         prov.UpdateStatus(up, item)
-        up.SaveX(s.ctx)
     }
 
     brand := model.CabinetBrand(item.Brand)

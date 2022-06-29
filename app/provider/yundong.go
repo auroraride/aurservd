@@ -207,39 +207,47 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) {
         for index, ds := range doors {
             e := model.NewBatteryElectricity(utils.NewNumber().Decimal(ds.Soc))
             hasBattery := ds.Putbattery == 1
+            isFull := e.IsBatteryFull()
+            voltage := utils.NewNumber().Decimal(float64(ds.Totalv) / 1000)
+            current := utils.NewNumber().Decimal(float64(ds.Chargei) / 1000)
             if hasBattery {
                 num += 1
             }
-            errs := make([]string, 0)
-            bin := model.CabinetBin{
-                Index:       index,
-                Name:        fmt.Sprintf("%d号仓", index+1),
-                BatterySN:   ds.BatterySN,
-                Full:        e.IsBatteryFull(),
-                Battery:     hasBattery,
-                Electricity: e,
-                OpenStatus:  ds.Doorstatus == 1,
-                DoorHealth:  ds.IsEnable,
-                Current:     utils.NewNumber().Decimal(float64(ds.Chargei) / 1000),
-                Voltage:     utils.NewNumber().Decimal(float64(ds.Totalv) / 1000),
-            }
-            if bin.Full {
+            if isFull {
                 full += 1
             }
-            if hasBattery && bin.Voltage == 0 && bin.Current == 0 && bin.Electricity == 0 {
+            errs := make([]string, 0)
+            if hasBattery && voltage == 0 && current == 0 && e == 0 {
                 errs = append(errs, model.CabinetBinBatteryFault)
             }
-            bin.ChargerErrors = errs
-            bins[index] = bin
-            if len(item.Bin) > index {
-                bins[index].Remark = item.Bin[index].Remark
+
+            bin := model.CabinetBin{
+                Index:         index,
+                Name:          fmt.Sprintf("%d号仓", index+1),
+                BatterySN:     ds.BatterySN,
+                Full:          isFull,
+                Battery:       hasBattery,
+                Electricity:   e,
+                OpenStatus:    ds.Doorstatus == 1,
+                DoorHealth:    ds.IsEnable,
+                Current:       current,
+                Voltage:       voltage,
+                ChargerErrors: errs,
             }
+
+            if len(item.Bin) > index {
+                bin.Remark = item.Bin[index].Remark
+            }
+
+            bins[index] = bin
         }
-        up.SetBin(bins).
+        v, _ := up.SetBin(bins).
             SetBatteryNum(num).
             SetBatteryFullNum(full).
             SetHealth(uint8(res.Data.Isonline)).
-            SetDoors(uint(len(doors)))
+            SetDoors(uint(len(doors))).
+            Save(context.Background())
+        *item = *v
     }
     p.logger.Write(res)
     return

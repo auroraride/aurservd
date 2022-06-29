@@ -136,14 +136,20 @@ func (r *KXStatusRes) GetBins() (bins []KXBin) {
     return
 }
 
-func GetChargerErrors(n int) (errors []string) {
+func (p *kaixin) GetChargerErrors(n int) (errors []string) {
     errors = make([]string, 0)
     if n == 0 {
         return
     }
     // 分隔字符串
     for _, s := range strings.Split(strconv.Itoa(n), "") {
-        errors = append(errors, s)
+        v, ok := p.errors[s]
+        if ok {
+            errors = append(errors, v)
+        } else {
+            errors = append(errors, s)
+        }
+
     }
     return
 }
@@ -178,39 +184,50 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) {
         for index, ds := range doors {
             e := model.NewBatteryElectricity(utils.NewNumber().Decimal(ds.Cpg))
             hasBattery := ds.Bex == 2
+            current := utils.NewNumber().Decimal(ds.Bci)
+            isFull := e.IsBatteryFull()
             if hasBattery {
                 num += 1
             }
-            if e.IsBatteryFull() {
+            if isFull {
                 full += 1
             }
-            errs := GetChargerErrors(ds.Bft)
-            bin := model.CabinetBin{
-                Index:       index,
-                Name:        fmt.Sprintf("%d号仓", index+1),
-                BatterySN:   ds.Bcd,
-                Full:        e.IsBatteryFull(),
-                Battery:     hasBattery,
-                Electricity: e,
-                OpenStatus:  ds.Dst == 1,
-                DoorHealth:  ds.Dft == 1,
-                Current:     utils.NewNumber().Decimal(ds.Bci),
-                Voltage:     utils.NewNumber().Decimal(ds.Bcu),
-            }
-            if bin.Voltage == 0 && hasBattery {
+
+            // 错误列表
+            errs := p.GetChargerErrors(ds.Bft)
+
+            voltage := utils.NewNumber().Decimal(ds.Bcu)
+            if voltage == 0 && hasBattery {
                 errs = append(errs, model.CabinetBinBatteryFault)
             }
-            bin.ChargerErrors = errs
-            bins[index] = bin
-            if len(item.Bin) > index {
-                bins[index].Remark = item.Bin[index].Remark
+
+            bin := model.CabinetBin{
+                Index:         index,
+                Name:          fmt.Sprintf("%d号仓", index+1),
+                BatterySN:     ds.Bcd,
+                Full:          isFull,
+                Battery:       hasBattery,
+                Electricity:   e,
+                OpenStatus:    ds.Dst == 1,
+                DoorHealth:    ds.Dft == 1,
+                Current:       current,
+                Voltage:       voltage,
+                ChargerErrors: errs,
             }
+
+            if len(item.Bin) > index {
+                bin.Remark = item.Bin[index].Remark
+            }
+
+            bins[index] = bin
         }
-        up.SetBatteryFullNum(full).
+        v, _ := up.SetBatteryFullNum(full).
             SetBatteryNum(num).
             SetBin(bins).
             SetHealth(model.CabinetHealthStatusOnline).
-            SetDoors(uint(len(doors)))
+            SetDoors(uint(len(doors))).
+            Save(context.Background())
+        *item = *v
     }
     p.logger.Write(res)
     return
@@ -222,6 +239,7 @@ type KXOperationRes KXRes[any]
 func (p *kaixin) DoorOperate(code, serial, operation string, door int) (state bool) {
     res := new(KXOperationRes)
     url := p.GetUrl(kaixinUrlDoorOperation)
+    // 凯信操作柜门index从1开始
     d := strconv.Itoa(door + 1)
     client := resty.New().R().
         SetFormData(map[string]string{

@@ -161,6 +161,12 @@ type CabinetBin struct {
     Remark        string             `json:"remark"`        // 备注
 }
 
+// CabinetBinRemark 仓位备注
+type CabinetBinRemark struct {
+    Index  int    `json:"index"`  // 仓位index
+    Remark string `json:"remark"` // 备注信息
+}
+
 // CabinetSnParamReq sn请求
 type CabinetSnParamReq struct {
     Sn string `json:"sn" param:"sn" validate:"required"`
