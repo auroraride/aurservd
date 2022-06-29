@@ -7,6 +7,7 @@ package provider
 
 import (
     "context"
+    "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
@@ -15,12 +16,14 @@ import (
     "time"
 )
 
+type LogCallback func(data any)
+
 type Provider interface {
     PrepareRequest()
     Cabinets() ([]*ent.Cabinet, error)
     Brand() string
     Logger() *Logger
-    UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any
+    UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet)
     DoorOperate(code, serial, operation string, door int) bool
     Reboot(code string, serial string) bool
 }
@@ -43,8 +46,8 @@ func StartCabinetProvider(providers ...Provider) {
             for {
                 times += 1
                 provider.PrepareRequest()
-                // log.Infof("开始 第%d轮 轮询获取%s电柜状态", times, provider.Brand())
-                // start := time.Now()
+                provider.Logger().Write(fmt.Sprintf("开始 第%d轮 轮询获取%s电柜状态", times, provider.Brand()))
+                start := time.Now()
 
                 items, err := provider.Cabinets()
                 if err != nil {
@@ -52,17 +55,10 @@ func StartCabinetProvider(providers ...Provider) {
                     return
                 }
 
-                length := len(items)
-
-                logs := make([]any, length)
-                for i, item := range items {
+                for _, item := range items {
                     // 未获取到电柜状态设置为离线
                     up := ar.Ent.Cabinet.UpdateOne(item).SetHealth(model.CabinetHealthStatusOffline)
-                    l := provider.UpdateStatus(up, item)
-                    if l != nil {
-                        // 日志归并
-                        logs[i] = l
-                    }
+                    provider.UpdateStatus(up, item)
 
                     // 存储电柜信息
                     ca, _ := up.Save(context.Background())
@@ -81,8 +77,8 @@ func StartCabinetProvider(providers ...Provider) {
                 }
 
                 // 写入电柜日志
-                provider.Logger().Write(times, logs)
-                // log.Infof("%s电柜 第%d轮 状态轮询完成, 耗时%.2fs", provider.Brand(), times, time.Now().Sub(start).Seconds())
+                provider.Logger().Write(fmt.Sprintf("%s电柜 第%d轮 状态轮询完成, 耗时%.2fs\n\n", provider.Brand(), times, time.Now().Sub(start).Seconds()))
+
                 time.Sleep(1 * time.Minute)
             }
         }()

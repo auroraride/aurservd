@@ -125,7 +125,7 @@ func (r *KXStatusRes) CountBins() (n int) {
 }
 
 // GetBins 获取仓位
-func (r KXStatusRes) GetBins() (bins []KXBin) {
+func (r *KXStatusRes) GetBins() (bins []KXBin) {
     bins = make([]KXBin, r.CountBins())
     for _, d := range r.Data {
         for _, bin := range d.Content {
@@ -148,7 +148,7 @@ func GetChargerErrors(n int) (errors []string) {
     return
 }
 
-func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
+func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) {
     res := new(KXStatusRes)
     url := p.GetUrl(kaixinUrlDetailData)
     client := resty.New().R().
@@ -160,14 +160,14 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
     r, err := client.Post(url)
 
     if err != nil {
-        msg := fmt.Sprintf("凯信状态获取失败, serial: %s, err: %s", item.Serial, err.Error())
-        return msg
+        p.logger.Write(fmt.Sprintf("凯信状态获取失败, serial: %s, err: %s", item.Serial, err.Error()))
+        return
     }
 
     err = jsoniter.Unmarshal(r.Body(), res)
     if err != nil {
-        msg := fmt.Sprintf("凯信状态解析失败, serial: %s, body: %s", item.Serial, r.Body())
-        return msg
+        p.logger.Write(fmt.Sprintf("凯信状态解析失败, serial: %s, body: %s", item.Serial, r.Body()))
+        return
     }
 
     if res.State == "ok" {
@@ -212,7 +212,8 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
             SetHealth(model.CabinetHealthStatusOnline).
             SetDoors(uint(len(doors)))
     }
-    return res
+    p.logger.Write(res)
+    return
 }
 
 type KXOperationRes KXRes[any]

@@ -29,7 +29,6 @@ func GenerateSlsStatusLogGroup(cab *ent.Cabinet) (lg *sls.LogGroup) {
         c.Errors = strings.Join(bin.ChargerErrors, ",")
         c.Brand = model.CabinetBrand(cab.Brand).String()
         c.Time = time.Now().Format(carbon.DateTimeLayout)
-        c.Health = cab.Health
         logs[i] = &sls.Log{
             Time:     t,
             Contents: logging.GenerateLogContent(c),

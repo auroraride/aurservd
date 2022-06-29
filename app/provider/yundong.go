@@ -175,7 +175,7 @@ func (p *yundong) Brand() string {
     return "云动"
 }
 
-func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any {
+func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) {
     res := new(YDStatusRes)
     _, err := p.RequestClient(false).
         SetResult(res).
@@ -183,17 +183,18 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
     // token 请求失败, 重新请求token后重试
     if res.Code == 1000 && p.retryTimes < 1 {
         p.retryTimes += 1
-        return p.UpdateStatus(up, item)
+        p.UpdateStatus(up, item)
+        return
     }
 
     // log.Infof("云动状态获取结果：%s", string(r.Body()))
     if err != nil {
-        msg := fmt.Sprintf("云动状态获取失败, serial: %s, err: %s, res: %s", item.Serial, err.Error(), res)
-        return msg
+        p.logger.Write(fmt.Sprintf("云动状态获取失败, serial: %s, err: %s, res: %s", item.Serial, err.Error(), res))
+        return
     }
     if res.Code != 0 {
-        msg := fmt.Sprintf("云动状态解析失败, serial: %s, res: %s", item.Serial, res)
-        return msg
+        p.logger.Write(fmt.Sprintf("云动状态解析失败, serial: %s, res: %s", item.Serial, res))
+        return
     }
 
     // 仓位信息
@@ -240,7 +241,8 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) any 
             SetHealth(uint8(res.Data.Isonline)).
             SetDoors(uint(len(doors)))
     }
-    return res
+    p.logger.Write(res)
+    return
 }
 
 // DoorOperate 云动柜门操作

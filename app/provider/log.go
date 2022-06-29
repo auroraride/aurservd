@@ -34,27 +34,33 @@ func NewLogger(name string) *Logger {
     }
 }
 
-func (l *Logger) Write(times int, data any) {
+func (l *Logger) Write(message any) {
+    var b []byte
+    switch message.(type) {
+    case string:
+        b = []byte(message.(string))
+        break
+    case []byte:
+        b = message.([]byte)
+        break
+    default:
+        buffer := &bytes.Buffer{}
+        encoder := jsoniter.NewEncoder(buffer)
+        encoder.SetEscapeHTML(false)
+        _ = encoder.Encode(message)
+        b = buffer.Bytes()
+        break
+    }
+
+    // 写入文件
     path := fmt.Sprintf("runtime/logs/%s/%s.log", l.name, time.Now().Format(carbon.DateLayout))
     _ = utils.NewFile(path).CreateDirectoryIfNotExist()
 
-    buffer := &bytes.Buffer{}
-    encoder := jsoniter.NewEncoder(buffer)
-    encoder.SetEscapeHTML(false)
-    _ = encoder.Encode(logData{
-        Time:   time.Now().Format(carbon.DateTimeLayout),
-        Times:  times,
-        Result: data,
-    })
-    // buffer.WriteString("\n")
-
-    // 写入日志文件
-    l.mu.Lock()
-    defer l.mu.Unlock()
-
     file, _ := os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644)
-    _, _ = file.Write(buffer.Bytes())
-    if err := file.Close(); err != nil {
-        return
-    }
+
+    defer func(file *os.File) {
+        _ = file.Close()
+    }(file)
+
+    _, _ = file.Write(b)
 }
