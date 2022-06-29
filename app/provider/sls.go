@@ -18,17 +18,18 @@ import (
 )
 
 // GenerateSlsStatusLogGroup 生成status log日志
-func GenerateSlsStatusLogGroup(cabinet *ent.Cabinet) (lg *sls.LogGroup) {
+func GenerateSlsStatusLogGroup(cab *ent.Cabinet) (lg *sls.LogGroup) {
     t := tea.Uint32(uint32(time.Now().Unix()))
     lg = &sls.LogGroup{}
-    logs := make([]*sls.Log, len(cabinet.Bin))
-    for i, bin := range cabinet.Bin {
+    logs := make([]*sls.Log, len(cab.Bin))
+    for i, bin := range cab.Bin {
         c := new(logging.CabinetLog)
         _ = copier.Copy(c, bin)
-        c.Serial = cabinet.Serial
+        c.Serial = cab.Serial
         c.Errors = strings.Join(bin.ChargerErrors, ",")
-        c.Brand = model.CabinetBrand(cabinet.Brand).String()
+        c.Brand = model.CabinetBrand(cab.Brand).String()
         c.Time = time.Now().Format(carbon.DateTimeLayout)
+        c.Health = cab.Health
         logs[i] = &sls.Log{
             Time:     t,
             Contents: logging.GenerateLogContent(c),

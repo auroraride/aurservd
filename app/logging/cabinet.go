@@ -26,6 +26,7 @@ type CabinetLog struct {
     Errors      string                   `json:"errors" sls:"故障信息" index:"doc"`
     Remark      string                   `json:"remark" sls:"备注"`
     Time        string                   `json:"time" sls:"记录时间" index:"doc"`
+    Health      uint8                    `json:"health" sls:"电柜状态" index:"doc"`
 }
 
 func (c *CabinetLog) GetLogstoreName() string {
