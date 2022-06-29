@@ -352,7 +352,7 @@ func (s *riderService) Status(u *ent.Rider) uint8 {
 // List 骑手列表
 func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
     q := ar.Ent.Rider.
-        Query().
+        QueryNotDeleted().
         WithPerson().
         WithOrders(func(oq *ent.OrderQuery) {
             oq.Where(
