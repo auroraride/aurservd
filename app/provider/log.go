@@ -35,20 +35,22 @@ func NewLogger(name string) *Logger {
 }
 
 func (l *Logger) Write(message any) {
-    var b []byte
+    buffer := &bytes.Buffer{}
+    buffer.WriteString(time.Now().Format(carbon.TimeLayout))
+    buffer.WriteString(" ")
     switch message.(type) {
     case string:
-        b = []byte(message.(string))
+        buffer.WriteString(message.(string))
         break
     case []byte:
-        b = message.([]byte)
+        buffer.Write(message.([]byte))
         break
     default:
-        buffer := &bytes.Buffer{}
-        encoder := jsoniter.NewEncoder(buffer)
+        b := &bytes.Buffer{}
+        encoder := jsoniter.NewEncoder(b)
         encoder.SetEscapeHTML(false)
         _ = encoder.Encode(message)
-        b = buffer.Bytes()
+        buffer.Write(b.Bytes())
         break
     }
 
@@ -62,5 +64,5 @@ func (l *Logger) Write(message any) {
         _ = file.Close()
     }(file)
 
-    _, _ = file.Write(b)
+    _, _ = file.Write(buffer.Bytes())
 }

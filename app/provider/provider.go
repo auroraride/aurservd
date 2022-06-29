@@ -46,7 +46,7 @@ func StartCabinetProvider(providers ...Provider) {
             for {
                 times += 1
                 provider.PrepareRequest()
-                provider.Logger().Write(fmt.Sprintf("开始 第%d轮 轮询获取%s电柜状态", times, provider.Brand()))
+                provider.Logger().Write(fmt.Sprintf("开始第%d次%s电柜状态轮询\n", times, provider.Brand()))
                 start := time.Now()
 
                 items, err := provider.Cabinets()
@@ -77,7 +77,7 @@ func StartCabinetProvider(providers ...Provider) {
                 }
 
                 // 写入电柜日志
-                provider.Logger().Write(fmt.Sprintf("%s电柜 第%d轮 状态轮询完成, 耗时%.2fs\n\n", provider.Brand(), times, time.Now().Sub(start).Seconds()))
+                provider.Logger().Write(fmt.Sprintf("完成第%d次%s电柜状态轮询, 耗时%.2fs\n\n", times, provider.Brand(), time.Now().Sub(start).Seconds()))
 
                 time.Sleep(1 * time.Minute)
             }
