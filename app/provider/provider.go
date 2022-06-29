@@ -74,6 +74,8 @@ func StartCabinetProvider(providers ...Provider) {
                             }
                         }
                     }()
+
+                    time.Sleep(time.Duration((60000-int(time.Now().Sub(start).Milliseconds()))/len(items)) * time.Millisecond)
                 }
 
                 // 写入电柜日志
