@@ -21,12 +21,6 @@ type Logger struct {
     name string
 }
 
-type logData struct {
-    Time   string `json:"time"`
-    Times  int    `json:"times"`
-    Result any    `json:"result"`
-}
-
 func NewLogger(name string) *Logger {
     return &Logger{
         mu:   sync.Mutex{},

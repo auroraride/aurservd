@@ -95,6 +95,7 @@ const (
 	TypeSubscribePause       = "SubscribePause"
 )
 
+/** AssistanceMutation START */
 // AssistanceMutation represents an operation that mutates the Assistance nodes in the graph.
 type AssistanceMutation struct {
 	config
@@ -3306,6 +3307,9 @@ func (m *AssistanceMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Assistance edge %s", name)
 }
 
+/** AssistanceMutation END */
+
+/** AttendanceMutation START */
 // AttendanceMutation represents an operation that mutates the Attendance nodes in the graph.
 type AttendanceMutation struct {
 	config
@@ -4825,6 +4829,9 @@ func (m *AttendanceMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Attendance edge %s", name)
 }
 
+/** AttendanceMutation END */
+
+/** BatteryModelMutation START */
 // BatteryModelMutation represents an operation that mutates the BatteryModel nodes in the graph.
 type BatteryModelMutation struct {
 	config
@@ -5769,6 +5776,9 @@ func (m *BatteryModelMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown BatteryModel edge %s", name)
 }
 
+/** BatteryModelMutation END */
+
+/** BranchMutation START */
 // BranchMutation represents an operation that mutates the Branch nodes in the graph.
 type BranchMutation struct {
 	config
@@ -7263,6 +7273,9 @@ func (m *BranchMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Branch edge %s", name)
 }
 
+/** BranchMutation END */
+
+/** BranchContractMutation START */
 // BranchContractMutation represents an operation that mutates the BranchContract nodes in the graph.
 type BranchContractMutation struct {
 	config
@@ -8989,6 +9002,9 @@ func (m *BranchContractMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown BranchContract edge %s", name)
 }
 
+/** BranchContractMutation END */
+
+/** BusinessMutation START */
 // BusinessMutation represents an operation that mutates the Business nodes in the graph.
 type BusinessMutation struct {
 	config
@@ -10603,6 +10619,9 @@ func (m *BusinessMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Business edge %s", name)
 }
 
+/** BusinessMutation END */
+
+/** CabinetMutation START */
 // CabinetMutation represents an operation that mutates the Cabinet nodes in the graph.
 type CabinetMutation struct {
 	config
@@ -12772,6 +12791,9 @@ func (m *CabinetMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Cabinet edge %s", name)
 }
 
+/** CabinetMutation END */
+
+/** CabinetFaultMutation START */
 // CabinetFaultMutation represents an operation that mutates the CabinetFault nodes in the graph.
 type CabinetFaultMutation struct {
 	config
@@ -14147,6 +14169,9 @@ func (m *CabinetFaultMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown CabinetFault edge %s", name)
 }
 
+/** CabinetFaultMutation END */
+
+/** CityMutation START */
 // CityMutation represents an operation that mutates the City nodes in the graph.
 type CityMutation struct {
 	config
@@ -15505,6 +15530,9 @@ func (m *CityMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown City edge %s", name)
 }
 
+/** CityMutation END */
+
+/** CommissionMutation START */
 // CommissionMutation represents an operation that mutates the Commission nodes in the graph.
 type CommissionMutation struct {
 	config
@@ -16569,6 +16597,9 @@ func (m *CommissionMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Commission edge %s", name)
 }
 
+/** CommissionMutation END */
+
+/** ContractMutation START */
 // ContractMutation represents an operation that mutates the Contract nodes in the graph.
 type ContractMutation struct {
 	config
@@ -17663,6 +17694,9 @@ func (m *ContractMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Contract edge %s", name)
 }
 
+/** ContractMutation END */
+
+/** EmployeeMutation START */
 // EmployeeMutation represents an operation that mutates the Employee nodes in the graph.
 type EmployeeMutation struct {
 	config
@@ -19144,6 +19178,9 @@ func (m *EmployeeMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Employee edge %s", name)
 }
 
+/** EmployeeMutation END */
+
+/** EnterpriseMutation START */
 // EnterpriseMutation represents an operation that mutates the Enterprise nodes in the graph.
 type EnterpriseMutation struct {
 	config
@@ -21188,6 +21225,9 @@ func (m *EnterpriseMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Enterprise edge %s", name)
 }
 
+/** EnterpriseMutation END */
+
+/** EnterpriseBillMutation START */
 // EnterpriseBillMutation represents an operation that mutates the EnterpriseBill nodes in the graph.
 type EnterpriseBillMutation struct {
 	config
@@ -22779,6 +22819,9 @@ func (m *EnterpriseBillMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown EnterpriseBill edge %s", name)
 }
 
+/** EnterpriseBillMutation END */
+
+/** EnterpriseContractMutation START */
 // EnterpriseContractMutation represents an operation that mutates the EnterpriseContract nodes in the graph.
 type EnterpriseContractMutation struct {
 	config
@@ -23713,6 +23756,9 @@ func (m *EnterpriseContractMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown EnterpriseContract edge %s", name)
 }
 
+/** EnterpriseContractMutation END */
+
+/** EnterprisePrepaymentMutation START */
 // EnterprisePrepaymentMutation represents an operation that mutates the EnterprisePrepayment nodes in the graph.
 type EnterprisePrepaymentMutation struct {
 	config
@@ -24572,6 +24618,9 @@ func (m *EnterprisePrepaymentMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown EnterprisePrepayment edge %s", name)
 }
 
+/** EnterprisePrepaymentMutation END */
+
+/** EnterprisePriceMutation START */
 // EnterprisePriceMutation represents an operation that mutates the EnterprisePrice nodes in the graph.
 type EnterprisePriceMutation struct {
 	config
@@ -25584,6 +25633,9 @@ func (m *EnterprisePriceMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown EnterprisePrice edge %s", name)
 }
 
+/** EnterprisePriceMutation END */
+
+/** EnterpriseStatementMutation START */
 // EnterpriseStatementMutation represents an operation that mutates the EnterpriseStatement nodes in the graph.
 type EnterpriseStatementMutation struct {
 	config
@@ -27060,6 +27112,9 @@ func (m *EnterpriseStatementMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown EnterpriseStatement edge %s", name)
 }
 
+/** EnterpriseStatementMutation END */
+
+/** EnterpriseStationMutation START */
 // EnterpriseStationMutation represents an operation that mutates the EnterpriseStation nodes in the graph.
 type EnterpriseStationMutation struct {
 	config
@@ -27886,6 +27941,9 @@ func (m *EnterpriseStationMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown EnterpriseStation edge %s", name)
 }
 
+/** EnterpriseStationMutation END */
+
+/** ExceptionMutation START */
 // ExceptionMutation represents an operation that mutates the Exception nodes in the graph.
 type ExceptionMutation struct {
 	config
@@ -29357,6 +29415,9 @@ func (m *ExceptionMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Exception edge %s", name)
 }
 
+/** ExceptionMutation END */
+
+/** ExchangeMutation START */
 // ExchangeMutation represents an operation that mutates the Exchange nodes in the graph.
 type ExchangeMutation struct {
 	config
@@ -31152,6 +31213,9 @@ func (m *ExchangeMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Exchange edge %s", name)
 }
 
+/** ExchangeMutation END */
+
+/** InventoryMutation START */
 // InventoryMutation represents an operation that mutates the Inventory nodes in the graph.
 type InventoryMutation struct {
 	config
@@ -32028,6 +32092,9 @@ func (m *InventoryMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Inventory edge %s", name)
 }
 
+/** InventoryMutation END */
+
+/** ManagerMutation START */
 // ManagerMutation represents an operation that mutates the Manager nodes in the graph.
 type ManagerMutation struct {
 	config
@@ -32923,6 +32990,9 @@ func (m *ManagerMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Manager edge %s", name)
 }
 
+/** ManagerMutation END */
+
+/** OrderMutation START */
 // OrderMutation represents an operation that mutates the Order nodes in the graph.
 type OrderMutation struct {
 	config
@@ -35150,6 +35220,9 @@ func (m *OrderMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Order edge %s", name)
 }
 
+/** OrderMutation END */
+
+/** OrderRefundMutation START */
 // OrderRefundMutation represents an operation that mutates the OrderRefund nodes in the graph.
 type OrderRefundMutation struct {
 	config
@@ -36277,6 +36350,9 @@ func (m *OrderRefundMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown OrderRefund edge %s", name)
 }
 
+/** OrderRefundMutation END */
+
+/** PersonMutation START */
 // PersonMutation represents an operation that mutates the Person nodes in the graph.
 type PersonMutation struct {
 	config
@@ -37826,6 +37902,9 @@ func (m *PersonMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Person edge %s", name)
 }
 
+/** PersonMutation END */
+
+/** PlanMutation START */
 // PlanMutation represents an operation that mutates the Plan nodes in the graph.
 type PlanMutation struct {
 	config
@@ -39523,6 +39602,9 @@ func (m *PlanMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Plan edge %s", name)
 }
 
+/** PlanMutation END */
+
+/** RiderMutation START */
 // RiderMutation represents an operation that mutates the Rider nodes in the graph.
 type RiderMutation struct {
 	config
@@ -41828,6 +41910,9 @@ func (m *RiderMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Rider edge %s", name)
 }
 
+/** RiderMutation END */
+
+/** SettingMutation START */
 // SettingMutation represents an operation that mutates the Setting nodes in the graph.
 type SettingMutation struct {
 	config
@@ -42577,6 +42662,9 @@ func (m *SettingMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Setting edge %s", name)
 }
 
+/** SettingMutation END */
+
+/** StockMutation START */
 // StockMutation represents an operation that mutates the Stock nodes in the graph.
 type StockMutation struct {
 	config
@@ -44077,6 +44165,9 @@ func (m *StockMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Stock edge %s", name)
 }
 
+/** StockMutation END */
+
+/** StoreMutation START */
 // StoreMutation represents an operation that mutates the Store nodes in the graph.
 type StoreMutation struct {
 	config
@@ -45797,6 +45888,9 @@ func (m *StoreMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Store edge %s", name)
 }
 
+/** StoreMutation END */
+
+/** SubscribeMutation START */
 // SubscribeMutation represents an operation that mutates the Subscribe nodes in the graph.
 type SubscribeMutation struct {
 	config
@@ -48833,6 +48927,9 @@ func (m *SubscribeMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Subscribe edge %s", name)
 }
 
+/** SubscribeMutation END */
+
+/** SubscribeAlterMutation START */
 // SubscribeAlterMutation represents an operation that mutates the SubscribeAlter nodes in the graph.
 type SubscribeAlterMutation struct {
 	config
@@ -49890,6 +49987,9 @@ func (m *SubscribeAlterMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown SubscribeAlter edge %s", name)
 }
 
+/** SubscribeAlterMutation END */
+
+/** SubscribePauseMutation START */
 // SubscribePauseMutation represents an operation that mutates the SubscribePause nodes in the graph.
 type SubscribePauseMutation struct {
 	config
@@ -51230,3 +51330,5 @@ func (m *SubscribePauseMutation) ResetEdge(name string) error {
 	}
 	return fmt.Errorf("unknown SubscribePause edge %s", name)
 }
+
+/** SubscribePauseMutation END */
