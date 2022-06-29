@@ -41,7 +41,7 @@ func (*rider) Detail(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Employee-Token  header  string  true  "店员校验token"
-// @Param        query  query  model.RiderExchangeReq  true  "换电记录筛选项"
+// @Param        query  query   model.RiderExchangeReq  true  "换电记录筛选项"
 // @Success      200  {object}  model.PaginationRes{items=[]model.ExchangeRiderListRes}  "请求成功"
 func (*rider) Exchange(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.RiderExchangeReq](c)

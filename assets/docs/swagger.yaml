@@ -6231,6 +6231,32 @@ paths:
       summary: M7001 列举骑手
       tags:
       - '[M]管理接口'
+  /manager/v1/rider/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: ManagerRiderDelete
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 骑手ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M7011 删除骑手
+      tags:
+      - '[M]管理接口'
   /manager/v1/rider/ban:
     post:
       consumes:

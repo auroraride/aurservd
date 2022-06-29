@@ -1,3 +1,17 @@
+## 2022-06-29
+
+#### 接口新增
+
+- [M7011 删除骑手](http://localhost:5533/docs#tag/M/operation/ManagerRiderDelete)
+
+
+
+
+
+
+
+<br />
+
 ## 2022-06-24
 
 #### 接口新增
