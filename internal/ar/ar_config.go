@@ -24,6 +24,13 @@ var Config *config
 //go:embed default_config.yml
 var defaultConfigStr string
 
+type Version struct {
+    Version     string `json:"version"`
+    Description string `json:"description"`
+    Link        string `json:"link"`
+    Enable      bool   `json:"enable"`
+}
+
 type EsignConfig struct {
     Appid    string
     BaseUrl  string
@@ -182,6 +189,8 @@ type config struct {
             NotifyUrl     string
         }
     }
+    Android Version
+    IOS     Version `mapstructure:"ios"`
 }
 
 func readConfig() error {

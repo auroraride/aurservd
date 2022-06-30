@@ -8,6 +8,7 @@ package router
 import (
     "fmt"
     "github.com/auroraride/aurservd/app"
+    "github.com/auroraride/aurservd/app/controller"
     "github.com/auroraride/aurservd/app/middleware"
     "github.com/auroraride/aurservd/app/request"
     "github.com/auroraride/aurservd/internal/ar"
@@ -26,6 +27,7 @@ var (
 
 func Run() {
     e = echo.New()
+
     e.Static("/pages", "public/pages")
 
     root = e.Group("/")
@@ -106,6 +108,8 @@ func Run() {
     )
 
     // 载入路由
+    root.GET("app/version", controller.Version.Get)
+
     loadDocRoutes()      // 文档
     loadCabinetRoutes()  // 电柜回调
     loadCommonRoutes()   // 公共API
