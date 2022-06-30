@@ -166,9 +166,7 @@ func init() {
 	business.UpdateDefaultUpdatedAt = businessDescUpdatedAt.UpdateDefault.(func() time.Time)
 	cabinetMixin := schema.Cabinet{}.Mixin()
 	cabinetMixinHooks2 := cabinetMixin[2].Hooks()
-	cabinetHooks := schema.Cabinet{}.Hooks()
 	cabinet.Hooks[0] = cabinetMixinHooks2[0]
-	cabinet.Hooks[1] = cabinetHooks[0]
 	cabinetMixinFields0 := cabinetMixin[0].Fields()
 	_ = cabinetMixinFields0
 	cabinetFields := schema.Cabinet{}.Fields()

@@ -17,6 +17,7 @@ import (
     "github.com/go-resty/resty/v2"
     jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
+    "regexp"
     "strconv"
     "strings"
 )
@@ -239,18 +240,34 @@ type KXOperationRes KXRes[any]
 
 // DoorOperate 操作柜门
 func (p *kaixin) DoorOperate(code, serial, operation string, door int) (state bool) {
+    return p.doDoorOperate(code, serial, operation, door, "")
+}
+
+// BatteryBind 绑定电池
+func (p *kaixin) BatteryBind(code, serial, model string, door int) (state bool) {
+    re := regexp.MustCompile(`(?m)(\d+)V(\d+)AH`)
+    battery := re.ReplaceAllString(strings.ToUpper(model), `JG10${1}${2}`)
+    battery += fmt.Sprintf("%02d%02d", door+1, utils.RandomIntMaxMin(0, 99))
+    return p.doDoorOperate(code, serial, "6", door, battery)
+}
+
+func (p *kaixin) doDoorOperate(code, serial, operation string, door int, battery string) (state bool) {
     res := new(KXOperationRes)
     url := p.GetUrl(kaixinUrlDoorOperation)
     // 凯信操作柜门index从1开始
     d := strconv.Itoa(door + 1)
+    data := map[string]string{
+        "user":      code,
+        "cupboard":  serial,
+        "checkcode": utils.Md5String(utils.Md5String(code+serial+d+operation) + p.key),
+        "door":      d,
+        "operation": operation,
+    }
+    if battery != "" {
+        data["battery"] = battery
+    }
     client := resty.New().R().
-        SetFormData(map[string]string{
-            "user":      code,
-            "cupboard":  serial,
-            "checkcode": utils.Md5String(utils.Md5String(code+serial+d+operation) + p.key),
-            "door":      d,
-            "operation": operation,
-        })
+        SetFormData(data)
     r, err := client.Post(url)
     log.Info(string(r.Body()))
 

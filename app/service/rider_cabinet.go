@@ -10,6 +10,7 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/provider"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/cache"
@@ -29,6 +30,7 @@ type riderCabinetService struct {
     maxTime  time.Duration // 单步骤最大处理时长
     logger   *logging.ExchangeLog
 
+    model            string
     step             model.RiderCabinetOperateStep
     cabinet          *ent.Cabinet
     putInElectricity model.BatteryElectricity
@@ -185,6 +187,7 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
         Electricity: be,
         Model:       info.Model,
     }
+    s.model = sub.Model
 
     // 更换UUID缓存内容为步骤状态
     cache.Del(s.ctx, uid)
@@ -310,7 +313,12 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus() (ds model.CabinetBinDoo
 
     // 验证是否放入旧电池
     if step == model.RiderCabinetOperateStepPutInto {
-        if bin.Battery {
+        // 凯信电柜需要绑定电池
+        bind := true
+        if s.info.Brand == model.CabinetBrandKaixin {
+            bind = provider.NewKaixin().BatteryBind(s.rider.Edges.Person.Name+"-"+shortuuid.New(), s.info.Serial, s.model, s.operating.EmptyIndex)
+        }
+        if bin.Battery && bind {
             s.putInElectricity = bin.Electricity
             return model.CabinetBinDoorStatusClose
         }
