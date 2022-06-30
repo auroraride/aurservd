@@ -8,6 +8,7 @@ package script
 import (
     pvd "github.com/auroraride/aurservd/app/provider"
     "github.com/auroraride/aurservd/app/router"
+    "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/app/task"
     "github.com/spf13/cobra"
 )
@@ -18,6 +19,8 @@ func serverCommand() *cobra.Command {
         Use:   "server",
         Short: "启动API服务",
         Run: func(cmd *cobra.Command, args []string) {
+            // 初始化数据
+            service.DatabaseInitial()
 
             // 启动电柜服务
             go pvd.Run()

@@ -1,19 +1,43 @@
 // Copyright (C) liasica. 2022-present.
 //
-// Created at 2022-02-28
+// Created at 2022-06-30
 // Based on aurservd by liasica, magicrolan@qq.com.
 
-package db
+package service
 
 import (
     "context"
     "github.com/auroraride/aurservd/assets"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/manager"
+    "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/utils"
     jsoniter "github.com/json-iterator/go"
     log "github.com/sirupsen/logrus"
 )
 
-func insertCity(client *ent.Client) {
+func DatabaseInitial() {
+    cityInitial()
+    managerInitial()
+}
+
+func managerInitial() {
+    client := ent.Database.Manager
+    p := "18888888888"
+
+    if e, _ := client.QueryNotDeleted().Where(manager.Phone(p)).Exist(context.Background()); e {
+        return
+    }
+
+    password, _ := utils.PasswordGenerate("AuroraAdmin@2022#!")
+    client.Create().
+        SetName("超级管理员").
+        SetPhone(p).
+        SetPassword(password).
+        ExecX(context.Background())
+}
+
+func cityInitial() {
     type R struct {
         Adcode   uint64  `json:"adcode"`
         Name     string  `json:"name"`
@@ -24,20 +48,26 @@ func insertCity(client *ent.Client) {
     }
 
     ctx := context.Background()
-    tx, _ := client.Tx(ctx)
+
+    if c, _ := ent.Database.City.Query().Count(context.Background()); c > 0 {
+        return
+    }
+
+    tx, _ := ent.Database.Tx(ctx)
     // 导入城市
     log.Println("导入城市")
     var items []R
     err := jsoniter.Unmarshal(assets.City, &items)
     if err == nil {
         for _, item := range items {
-            parent := client.City.Create().
+            parent, err := tx.City.Create().
                 SetID(item.Adcode).
                 SetName(item.Name).
                 SetCode(item.Code).
-                SaveX(ctx)
+                Save(ctx)
+            snag.PanicIfErrorX(err, tx.Rollback)
             for _, child := range item.Children {
-                client.City.Create().
+                _, err = tx.City.Create().
                     SetID(child.Adcode).
                     SetName(child.Name).
                     SetCode(child.Code).
@@ -45,7 +75,8 @@ func insertCity(client *ent.Client) {
                     SetParent(parent).
                     SetLat(child.Lat).
                     SetLng(child.Lng).
-                    SaveX(ctx)
+                    Save(ctx)
+                snag.PanicIfErrorX(err, tx.Rollback)
             }
         }
     }
