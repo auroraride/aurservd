@@ -323,7 +323,7 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
         if *req.Operation == model.CabinetDoorOperateUnlock {
             item.Bin[*req.Index].Remark = ""
         }
-        prov.UpdateStatus(up, item)
+        _ = prov.UpdateStatus(up, item)
     }
     go func() {
         // 上传日志

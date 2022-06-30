@@ -189,12 +189,8 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) erro
 
     // log.Infof("云动状态获取结果：%s", string(r.Body()))
     if err != nil {
-        p.logger.Write(fmt.Sprintf("云动状态获取失败, serial: %s, err: %s, res: %s", item.Serial, err.Error(), res))
+        p.logger.Write(fmt.Sprintf("云动状态获取失败, serial: %s, err: %s, res: %s\n", item.Serial, err.Error(), res))
         return err
-    }
-    if res.Code != 0 {
-        p.logger.Write(fmt.Sprintf("云动状态解析失败, serial: %s, res: %s", item.Serial, res))
-        return errors.New("云动状态解析失败")
     }
 
     // 仓位信息
