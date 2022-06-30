@@ -60,7 +60,7 @@ func StartCabinetProvider(providers ...Provider) {
                     err = provider.UpdateStatus(up, item)
 
                     // 提交日志
-                    if err == nil {
+                    if err == nil && item.Health == model.CabinetHealthStatusOnline {
                         go func() {
                             // 保存历史仓位信息(转换后的)
                             lg := GenerateSlsStatusLogGroup(item)
