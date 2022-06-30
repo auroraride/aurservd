@@ -8,7 +8,6 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/inventory"
     "github.com/auroraride/aurservd/internal/ent/predicate"
@@ -25,7 +24,7 @@ type inventoryService struct {
 func NewInventory() *inventoryService {
     return &inventoryService{
         ctx: context.Background(),
-        orm: ar.Ent.Inventory,
+        orm: ent.Database.Inventory,
     }
 }
 

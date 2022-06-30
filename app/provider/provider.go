@@ -56,7 +56,7 @@ func StartCabinetProvider(providers ...Provider) {
 
                 for _, item := range items {
                     // 未获取到电柜状态设置为离线
-                    up := ar.Ent.Cabinet.UpdateOne(item).SetHealth(model.CabinetHealthStatusOffline)
+                    up := ent.Database.Cabinet.UpdateOne(item).SetHealth(model.CabinetHealthStatusOffline)
                     err = provider.UpdateStatus(up, item)
 
                     // 提交日志

@@ -10,7 +10,6 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/internal/ent/contract"
@@ -66,7 +65,7 @@ func NewRiderMgrWithEmployee(e *ent.Employee) *riderMgrService {
 }
 
 func (s *riderMgrService) QuerySubscribeWithRider(subscribeID uint64) *ent.Subscribe {
-    item, _ := ar.Ent.Subscribe.QueryNotDeleted().Where(subscribe.ID(subscribeID)).WithRider().Only(s.ctx)
+    item, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.ID(subscribeID)).WithRider().Only(s.ctx)
     if item == nil {
         snag.Panic("未找到对应订阅")
     }
@@ -91,7 +90,7 @@ func (s *riderMgrService) PauseSubscribe(subscribeID uint64) {
         snag.Panic("团签用户无法办理")
     }
 
-    tx, _ := ar.Ent.Tx(s.ctx)
+    tx, _ := ent.Database.Tx(s.ctx)
 
     spc := tx.SubscribePause.Create().
         SetStartAt(time.Now()).
@@ -155,7 +154,7 @@ func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
 
     sub := s.QuerySubscribeWithRider(subscribeID)
 
-    sp, _ := ar.Ent.SubscribePause.QueryNotDeleted().
+    sp, _ := ent.Database.SubscribePause.QueryNotDeleted().
         Where(subscribepause.SubscribeID(sub.ID), subscribepause.EndAtIsNil()).
         Order(ent.Desc(subscribepause.FieldCreatedAt)).
         First(s.ctx)
@@ -164,7 +163,7 @@ func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
         snag.Panic("无暂停中的骑士卡")
     }
 
-    tx, _ := ar.Ent.Tx(s.ctx)
+    tx, _ := ent.Database.Tx(s.ctx)
 
     now := time.Now()
 
@@ -265,7 +264,7 @@ func (s *riderMgrService) UnSubscribe(subscribeID uint64) {
         bls = NewBusinessLogWithEmployee(s.employee, sub)
     }
 
-    tx, _ := ar.Ent.Tx(s.ctx)
+    tx, _ := ent.Database.Tx(s.ctx)
 
     _, err := tx.Subscribe.
         UpdateOneID(sub.ID).
@@ -286,7 +285,7 @@ func (s *riderMgrService) UnSubscribe(subscribeID uint64) {
     _ = tx.Commit()
 
     // 查询并标记用户合同为失效
-    _, _ = ar.Ent.Contract.Update().Where(contract.RiderID(sub.ID)).SetEffective(false).Save(s.ctx)
+    _, _ = ent.Database.Contract.Update().Where(contract.RiderID(sub.ID)).SetEffective(false).Save(s.ctx)
 
     before := fmt.Sprintf(
         "%s剩余天数: %d",
@@ -309,7 +308,7 @@ func (s *riderMgrService) UnSubscribe(subscribeID uint64) {
 // Deposit 手动调整押金
 func (s *riderMgrService) Deposit(req *model.RiderMgrDepositReq) {
     r := NewRider().Query(req.ID)
-    o, _ := ar.Ent.Order.QueryNotDeleted().
+    o, _ := ent.Database.Order.QueryNotDeleted().
         Where(
             order.RiderID(req.ID),
             order.Status(model.OrderStatusPaid),
@@ -324,7 +323,7 @@ func (s *riderMgrService) Deposit(req *model.RiderMgrDepositReq) {
     }
 
     var err error
-    tx, _ := ar.Ent.Tx(s.ctx)
+    tx, _ := ent.Database.Tx(s.ctx)
     if o != nil {
         before = o.Amount
         _, err = tx.Order.SoftDeleteOne(o).Save(s.ctx)
@@ -363,7 +362,7 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
         snag.Panic("参数错误")
     }
 
-    tx, _ := ar.Ent.Tx(s.ctx)
+    tx, _ := ent.Database.Tx(s.ctx)
 
     var err error
     r := NewRiderWithModifier(s.modifier).Query(req.ID)
@@ -416,7 +415,7 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
 }
 
 func (s *riderMgrService) QueryPhone(phone string) model.RiderEmployeeSearchRes {
-    r, _ := ar.Ent.Rider.QueryNotDeleted().WithPerson().Where(rider.Phone(phone)).WithEnterprise().First(s.ctx)
+    r, _ := ent.Database.Rider.QueryNotDeleted().WithPerson().Where(rider.Phone(phone)).WithEnterprise().First(s.ctx)
     if r == nil {
         snag.Panic("未找到骑手")
     }

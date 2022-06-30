@@ -47,7 +47,7 @@ func NewRider() *riderService {
     return &riderService{
         cacheKeyPrefix: "RIDER_",
         ctx:            context.Background(),
-        orm:            ar.Ent.Rider,
+        orm:            ent.Database.Rider,
     }
 }
 
@@ -67,7 +67,7 @@ func NewRiderWithRider(u *ent.Rider) *riderService {
 
 // GetRiderById 根据ID获取骑手及其实名状态
 func (s *riderService) GetRiderById(id uint64) (u *ent.Rider, err error) {
-    return ar.Ent.Rider.
+    return ent.Database.Rider.
         QueryNotDeleted().
         WithPerson().
         WithEnterprise().
@@ -100,7 +100,7 @@ func (s *riderService) IsBlocked(u *ent.Rider) bool {
 // Signin 骑手登录
 func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (res *model.RiderSigninRes, err error) {
     ctx := context.Background()
-    orm := ar.Ent.Rider
+    orm := ent.Database.Rider
     var u *ent.Rider
 
     u, err = orm.QueryNotDeleted().Where(rider.Phone(req.Phone)).WithPerson().WithEnterprise().Only(ctx)
@@ -158,7 +158,7 @@ func (s *riderService) SetNewDevice(u *ent.Rider, device *model.Device) {
     if ar.Config.App.Debug.Phone[u.Phone] {
         isNew = false
     }
-    _, err := ar.Ent.Rider.
+    _, err := ent.Database.Rider.
         UpdateOneID(u.ID).
         SetLastDevice(device.Serial).
         SetDeviceType(device.Type.Raw()).
@@ -217,7 +217,7 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
         Spoofing:       res.VerifyResult.Spoofing,
     }
     // 判断用户是否被封禁
-    banned, _ := ar.Ent.Person.QueryNotDeleted().Where(person.IDCardNumber(detail.IdCardNumber), person.Banned(true)).Exist(context.Background())
+    banned, _ := ent.Database.Person.QueryNotDeleted().Where(person.IDCardNumber(detail.IdCardNumber), person.Banned(true)).Exist(context.Background())
     if banned {
         snag.Panic(snag.StatusForbidden, ar.BannedMessage)
     }
@@ -230,7 +230,7 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
     nm := oss.UploadBase64ImageJpeg(prefix+"national.jpg", res.IdcardImages.BackBase64)
 
     icNum := vr.IdCardNumber
-    id, err := ar.Ent.Person.
+    id, err := ent.Database.Person.
         Create().
         SetStatus(model.PersonAuthenticated.Raw()).
         SetIDCardNumber(icNum).
@@ -249,9 +249,9 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 
     // 判断ID是否等于实名认证的ID, 如果不是, 则删除
     if u.PersonID != nil && *u.PersonID != id {
-        _ = ar.Ent.Person.DeleteOneID(*u.PersonID).Exec(s.ctx)
+        _ = ent.Database.Person.DeleteOneID(*u.PersonID).Exec(s.ctx)
     }
-    err = ar.Ent.Rider.
+    err = ent.Database.Rider.
         UpdateOneID(u.ID).
         SetPersonID(id).
         SetLastFace(fm).
@@ -281,7 +281,7 @@ func (s *riderService) FaceResult(c *app.RiderContext, token string) (success bo
     // 上传人脸图
     p := u.Edges.Person
     fm := ali.NewOss().UploadUrlFile(fmt.Sprintf("%s-%s/face-%s.jpg", p.Name, p.IDCardNumber, u.LastDevice), res.Result.Image)
-    err = ar.Ent.Rider.
+    err = ent.Database.Rider.
         UpdateOneID(u.ID).
         SetLastFace(fm).
         SetIsNewDevice(false).
@@ -298,7 +298,7 @@ func (s *riderService) UpdateContact(u *ent.Rider, contact *model.RiderContact) 
     if u.Phone == contact.Phone {
         snag.Panic("紧急联系人手机号不能是当前手机号")
     }
-    err := ar.Ent.Rider.UpdateOneID(u.ID).SetContact(contact).Exec(context.Background())
+    err := ent.Database.Rider.UpdateOneID(u.ID).SetContact(contact).Exec(context.Background())
     if err != nil {
         snag.Panic(err)
     }
@@ -320,7 +320,7 @@ func (s *riderService) ExtendTokenTime(id uint64, token string) {
     ctx := context.Background()
     cache.Set(ctx, key, token, 7*24*time.Hour)
     cache.Set(ctx, token, id, 7*24*time.Hour)
-    _ = ar.Ent.Rider.
+    _ = ent.Database.Rider.
         UpdateOneID(id).
         SetLastSigninAt(time.Now()).
         Exec(context.Background())
@@ -351,7 +351,7 @@ func (s *riderService) Status(u *ent.Rider) uint8 {
 
 // List 骑手列表
 func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
-    q := ar.Ent.Rider.
+    q := ent.Database.Rider.
         QueryNotDeleted().
         WithPerson().
         WithOrders(func(oq *ent.OrderQuery) {
@@ -529,7 +529,7 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
 }
 
 func (s *riderService) Query(id uint64) *ent.Rider {
-    item, err := ar.Ent.Rider.QueryNotDeleted().Where(rider.ID(id)).WithPerson().Only(s.ctx)
+    item, err := ent.Database.Rider.QueryNotDeleted().Where(rider.ID(id)).WithPerson().Only(s.ctx)
     if err != nil || item == nil {
         snag.Panic("未找到骑手")
     }
@@ -594,7 +594,7 @@ func (s *riderService) Block(req *model.RiderBlockReq) {
 
 // DepositOrder 获取骑手押金订单
 func (s *riderService) DepositOrder(riderID uint64) *ent.Order {
-    o, _ := ar.Ent.Order.QueryNotDeleted().Where(
+    o, _ := ent.Database.Order.QueryNotDeleted().Where(
         order.RiderID(riderID),
         order.Status(model.OrderStatusPaid),
         order.Type(model.OrderTypeDeposit),
@@ -706,7 +706,7 @@ func (s *riderService) GetLogs(req *model.RiderLogReq) *model.PaginationRes {
 }
 
 func (s *riderService) Delete(req *model.IDParamReq) {
-    sub, _ := ar.Ent.Subscribe.QueryNotDeleted().Where(
+    sub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(
         subscribe.RiderID(req.ID),
         subscribe.StatusNotIn(model.SubscribeStatusUnSubscribed, model.SubscribeStatusCanceled),
     ).First(s.ctx)

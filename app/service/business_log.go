@@ -8,7 +8,6 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -26,8 +25,8 @@ type businessLogService struct {
 func NewBusinessLog(sub *ent.Subscribe) *businessLogService {
     s := &businessLogService{
         ctx:     context.Background(),
-        orm:     ar.Ent.Business,
-        creator: ar.Ent.Business.Create(),
+        orm:     ent.Database.Business,
+        creator: ent.Database.Business.Create(),
     }
     s.setSubscribe(sub)
     return s

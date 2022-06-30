@@ -9,7 +9,6 @@ import (
     "context"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/orderrefund"
     "github.com/auroraride/aurservd/internal/payment"
@@ -62,7 +61,7 @@ func (s *refundService) Refund(riderID uint64, req *model.RefundReq) (res model.
 
     sub := NewSubscribe().Recent(riderID)
 
-    tx, _ := ar.Ent.Tx(s.ctx)
+    tx, _ := ent.Database.Tx(s.ctx)
 
     var id uint64
     no := tools.NewUnique().NewSN28()
@@ -126,7 +125,7 @@ func (s *refundService) Refund(riderID uint64, req *model.RefundReq) (res model.
 // RefundAudit 退款审核
 func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
     // 查询退款订单
-    or, _ := ar.Ent.OrderRefund.QueryNotDeleted().Where(orderrefund.OutRefundNo(req.OutRefundNo)).WithOrder().First(s.ctx)
+    or, _ := ent.Database.OrderRefund.QueryNotDeleted().Where(orderrefund.OutRefundNo(req.OutRefundNo)).WithOrder().First(s.ctx)
 
     if or == nil {
         snag.Panic("未找到退款订单")
@@ -196,7 +195,7 @@ func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
     if prepay.Refund.Success {
         NewOrder().RefundSuccess(prepay.Refund)
     } else {
-        tx, _ := ar.Ent.Tx(s.ctx)
+        tx, _ := ent.Database.Tx(s.ctx)
         _, err := tx.OrderRefund.UpdateOne(or).SetStatus(status).SetRemark(req.Remark).Save(s.ctx)
         snag.PanicIfErrorX(err, tx.Rollback)
 

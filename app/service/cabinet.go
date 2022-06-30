@@ -38,7 +38,7 @@ type cabinetService struct {
 func NewCabinet() *cabinetService {
     return &cabinetService{
         ctx: context.Background(),
-        orm: ar.Ent.Cabinet,
+        orm: ent.Database.Cabinet,
     }
 }
 
@@ -139,7 +139,7 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
 // Modify 修改电柜
 func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
     c := s.QueryOne(req.ID)
-    tx, _ := ar.Ent.Tx(s.ctx)
+    tx, _ := ent.Database.Tx(s.ctx)
     q := tx.Cabinet.UpdateOne(c)
     if req.Models != nil {
         q.ClearBms()
@@ -209,7 +209,7 @@ func (s *cabinetService) Deploy(c *ent.Cabinet) {
     }
 
     // 查找电柜
-    b, _ := ar.Ent.Branch.QueryNotDeleted().Where(branch.ID(*c.BranchID)).WithCity().First(s.ctx)
+    b, _ := ent.Database.Branch.QueryNotDeleted().Where(branch.ID(*c.BranchID)).WithCity().First(s.ctx)
     if b == nil || b.Edges.City == nil {
         snag.Panic("投产失败, 未找到网点信息, 请将电柜改为未投放并调整好网点重试")
     }
@@ -301,7 +301,7 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
         }
     }
     var prov provider.Provider
-    up := ar.Ent.Cabinet.UpdateOne(item).SetHealth(model.CabinetHealthStatusOnline)
+    up := ent.Database.Cabinet.UpdateOne(item).SetHealth(model.CabinetHealthStatusOnline)
     switch brand {
     case model.CabinetBrandYundong:
         prov = provider.NewYundong()
@@ -373,7 +373,7 @@ func (s *cabinetService) Reboot(req *model.IDPostReq) bool {
     state = prov.Reboot(s.modifier.Name+"-"+opId, item.Serial)
 
     // 如果成功, 重新获取状态更新数据
-    up := ar.Ent.Cabinet.UpdateOne(item).SetHealth(model.CabinetHealthStatusOnline)
+    up := ent.Database.Cabinet.UpdateOne(item).SetHealth(model.CabinetHealthStatusOnline)
     if state {
         // 更新仓位备注
         prov.UpdateStatus(up, item)

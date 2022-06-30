@@ -40,7 +40,7 @@ type contractService struct {
 func NewContract() *contractService {
     return &contractService{
         esign: esign.New(),
-        orm:   ar.Ent.Contract,
+        orm:   ent.Database.Contract,
         ctx:   context.Background(),
     }
 }
@@ -76,7 +76,7 @@ func (s *contractService) planData(planID uint64, m ar.Map) {
 func (s *contractService) enterpriseData(u *ent.Rider, m ar.Map) {
     e := u.Edges.Enterprise
     if e == nil {
-        e, _ = ar.Ent.Enterprise.QueryNotDeleted().Where(enterprise.ID(*u.EnterpriseID)).First(s.ctx)
+        e, _ = ent.Database.Enterprise.QueryNotDeleted().Where(enterprise.ID(*u.EnterpriseID)).First(s.ctx)
     }
     if e == nil {
         snag.Panic("骑手企业查找失败")
@@ -84,7 +84,7 @@ func (s *contractService) enterpriseData(u *ent.Rider, m ar.Map) {
 
     sta := u.Edges.Station
     if sta == nil {
-        sta, _ = ar.Ent.EnterpriseStation.QueryNotDeleted().Where(enterprisestation.ID(*u.StationID)).First(s.ctx)
+        sta, _ = ent.Database.EnterpriseStation.QueryNotDeleted().Where(enterprisestation.ID(*u.StationID)).First(s.ctx)
     }
     if sta == nil {
         snag.Panic("骑手站点查找失败")
@@ -225,7 +225,7 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
     link := s.esign.ExecuteUrl(flowId, accountId)
 
     // 存储合同信息
-    err := ar.Ent.Contract.Create().
+    err := ent.Database.Contract.Create().
         SetFlowID(flowId).
         SetRiderID(u.ID).
         SetStatus(model.ContractStatusPending.Raw()).
@@ -242,7 +242,7 @@ func (s *contractService) Sign(u *ent.Rider, params *model.ContractSignReq) mode
 
 // Result 合同签署结果
 func (s *contractService) Result(u *ent.Rider, sn string) model.StatusResponse {
-    orm := ar.Ent.Contract
+    orm := ent.Database.Contract
     // 查询合同是否存在
     c, err := orm.QueryNotDeleted().
         Where(contract.Sn(sn), contract.RiderID(u.ID)).

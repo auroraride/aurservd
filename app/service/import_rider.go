@@ -10,7 +10,6 @@ import (
     "encoding/csv"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/employee"
@@ -104,30 +103,30 @@ func (s *importRiderService) ParseCSV(path string) {
 }
 
 func (s *importRiderService) insert(items []riderCsvData) {
-    qe := ar.Ent.Employee.QueryNotDeleted().Where(employee.Name("曹博文")).FirstX(s.ctx)
+    qe := ent.Database.Employee.QueryNotDeleted().Where(employee.Name("曹博文")).FirstX(s.ctx)
 
     var subs []*ent.Subscribe
 
-    tx, _ := ar.Ent.Tx(s.ctx)
+    tx, _ := ent.Database.Tx(s.ctx)
     for _, item := range items {
         var p *ent.Person
         var r *ent.Rider
         var sub *ent.Subscribe
         var err error
 
-        if exists, _ := ar.Ent.Rider.QueryNotDeleted().Where(rider.Phone(item.Phone)).Exist(s.ctx); exists {
+        if exists, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(item.Phone)).Exist(s.ctx); exists {
             snag.Panic(fmt.Sprintf("%s已存在", item.Phone))
         }
 
         // 查找骑行卡
         days, _ := strconv.Atoi(item.Days)
-        qp := ar.Ent.Plan.QueryNotDeleted().Where(plan.Name(item.Plan), plan.Days(uint(days))).FirstX(s.ctx)
+        qp := ent.Database.Plan.QueryNotDeleted().Where(plan.Name(item.Plan), plan.Days(uint(days))).FirstX(s.ctx)
 
         // 查找门店
-        qs := ar.Ent.Store.QueryNotDeleted().Where(store.Name(item.Store)).FirstX(s.ctx)
+        qs := ent.Database.Store.QueryNotDeleted().Where(store.Name(item.Store)).FirstX(s.ctx)
 
         // 查找城市
-        qc := ar.Ent.City.QueryNotDeleted().Where(city.Name(item.City)).FirstX(s.ctx)
+        qc := ent.Database.City.QueryNotDeleted().Where(city.Name(item.City)).FirstX(s.ctx)
 
         // 结束时间
         end := carbon.Parse(item.End)

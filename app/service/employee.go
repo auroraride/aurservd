@@ -37,7 +37,7 @@ func NewEmployee() *employeeService {
     return &employeeService{
         cacheKeyPrefix: "EMPLOYEE_",
         ctx:            context.Background(),
-        orm:            ar.Ent.Employee,
+        orm:            ent.Database.Employee,
     }
 }
 

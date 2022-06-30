@@ -9,7 +9,6 @@ import (
     "context"
     "encoding/json"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/setting"
     "github.com/auroraride/aurservd/pkg/cache"
@@ -30,7 +29,7 @@ type settingService struct {
 func NewSetting() *settingService {
     return &settingService{
         ctx: context.Background(),
-        orm: ar.Ent.Setting,
+        orm: ent.Database.Setting,
     }
 }
 

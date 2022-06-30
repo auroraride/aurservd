@@ -11,7 +11,6 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/assets"
     "github.com/auroraride/aurservd/internal/amap"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/city"
     jsoniter "github.com/json-iterator/go"
@@ -50,7 +49,7 @@ func cityCenterCmd() *cobra.Command {
                 Name:  "初始管理员",
                 Phone: "18888888888",
             }
-            orm := ar.Ent.City
+            orm := ent.Database.City
             for _, item := range items {
                 for _, child := range item.Children {
                     orm.UpdateOneID(child.Adcode).
@@ -71,7 +70,7 @@ func cityAmapCenterCmd() *cobra.Command {
         Short: "获取城市中心点",
         Run: func(cmd *cobra.Command, args []string) {
             // 城市列表
-            orm := ar.Ent.City
+            orm := ent.Database.City
             items := orm.Query().
                 Where(city.ParentIDNotNil()).
                 Where(city.Or(
@@ -110,7 +109,7 @@ func cityJsonCmd() *cobra.Command {
                 Lat      float64 `json:"lat,omitempty"`
                 Children []City  `json:"children,omitempty"`
             }
-            models := ar.Ent.City.Query().WithChildren(func(cq *ent.CityQuery) {
+            models := ent.Database.City.Query().WithChildren(func(cq *ent.CityQuery) {
                 cq.Order(ent.Asc(city.FieldID))
             }).Order(ent.Asc(city.FieldID)).Where(city.ParentIDIsNil()).AllX(context.Background())
             items := make([]City, len(models))

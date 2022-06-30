@@ -10,7 +10,6 @@ import (
     "entgo.io/ent/dialect/sql"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/branchcontract"
@@ -31,7 +30,7 @@ type branchService struct {
 
 func NewBranch() *branchService {
     return &branchService{
-        orm: ar.Ent.Branch,
+        orm: ent.Database.Branch,
         ctx: context.Background(),
     }
 }
@@ -53,7 +52,7 @@ func (s *branchService) Query(id uint64) *ent.Branch {
 
 // Create 新增网点
 func (s *branchService) Create(req *model.BranchCreateReq) {
-    tx, _ := ar.Ent.Tx(s.ctx)
+    tx, _ := ent.Database.Tx(s.ctx)
 
     b, err := s.orm.Create().
         SetName(*req.Name).
@@ -83,7 +82,7 @@ func (s *branchService) Create(req *model.BranchCreateReq) {
 
 // AddContract 新增合同
 func (s *branchService) AddContract(id uint64, req *model.BranchContract) *ent.BranchContract {
-    return ar.Ent.BranchContract.Create().
+    return ent.Database.BranchContract.Create().
         SetBranchID(id).
         SetLandlordName(req.LandlordName).
         SetIDCardNumber(req.IDCardNumber).
@@ -259,7 +258,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
 
     // 进行关联查询
     // 门店
-    stores := ar.Ent.Store.QueryNotDeleted().Where(store.BranchIDIn(ids...)).AllX(s.ctx)
+    stores := ent.Database.Store.QueryNotDeleted().Where(store.BranchIDIn(ids...)).AllX(s.ctx)
     for _, es := range stores {
         if es.Status == model.StoreStatusOpen {
             s.facility(itemsMap[es.BranchID].FacilityMap, model.BranchFacility{
@@ -274,7 +273,7 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
     }
 
     // 电柜
-    cabinets := ar.Ent.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithBms().AllX(s.ctx)
+    cabinets := ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithBms().AllX(s.ctx)
     for _, c := range cabinets {
         if c.Status == model.CabinetStatusNormal {
             fa := model.BranchFacility{
@@ -341,7 +340,7 @@ func (s *branchService) facility(mp map[string]*model.BranchFacility, info model
 }
 
 func (s *branchService) Sheet(req *model.BranchContractSheetReq) {
-    bc, _ := ar.Ent.BranchContract.QueryNotDeleted().Where(branchcontract.ID(req.ID)).First(s.ctx)
+    bc, _ := ent.Database.BranchContract.QueryNotDeleted().Where(branchcontract.ID(req.ID)).First(s.ctx)
     if bc == nil {
         snag.Panic("未找到合同信息")
     }

@@ -8,6 +8,7 @@ package boot
 import (
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/payment"
     "github.com/auroraride/aurservd/pkg/logger"
     "os"
@@ -35,7 +36,7 @@ func Bootstrap() {
     })
 
     // 加载数据库
-    ar.OpenDatabase()
+    ent.Database = ent.OpenDatabase(ar.Config.Database.Postgres.Dsn, ar.Config.App.SQL)
 
     // 加载其他数据
 

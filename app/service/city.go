@@ -8,7 +8,6 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -22,7 +21,7 @@ type cityService struct {
 
 func NewCity() *cityService {
     return &cityService{
-        orm: ar.Ent.City,
+        orm: ent.Database.City,
         ctx: context.Background(),
     }
 }

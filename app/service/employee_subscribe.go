@@ -8,7 +8,6 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -60,7 +59,7 @@ func (s *employeeSubscribeService) Inactive(qr string) (*model.SubscribeActiveIn
     }
     id, _ := strconv.ParseUint(strings.TrimSpace(qr), 10, 64)
     // 查询订单状态
-    sub, _ := ar.Ent.Subscribe.QueryNotDeleted().
+    sub, _ := ent.Database.Subscribe.QueryNotDeleted().
         Where(
             subscribe.ID(id),
             subscribe.RefundAtIsNil(),
@@ -149,7 +148,7 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
     info, sub := s.Inactive(req.Qrcode)
     NewBusinessWithEmployee(s.employee).CheckCity(info.City.ID)
 
-    tx, _ := ar.Ent.Tx(s.ctx)
+    tx, _ := ent.Database.Tx(s.ctx)
     storeID := s.employee.Edges.Store.ID
 
     // 激活

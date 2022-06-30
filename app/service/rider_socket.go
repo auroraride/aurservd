@@ -9,7 +9,7 @@ import (
     "context"
     "errors"
     "github.com/auroraride/aurservd/app/socket"
-    "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/pkg/cache"
 )
@@ -30,7 +30,7 @@ func (s *riderSocketService) Prefix() string {
 
 func (s *riderSocketService) Connect(hub *socket.WebsocketHub, token string) (uint64, error) {
     id, _ := cache.Get(context.Background(), token).Uint64()
-    r, _ := ar.Ent.Rider.QueryNotDeleted().Where(rider.ID(id)).First(s.ctx)
+    r, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.ID(id)).First(s.ctx)
     if r == nil {
         return 0, errors.New("骑手未找到")
     }

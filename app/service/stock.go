@@ -12,7 +12,6 @@ import (
     "errors"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/exception"
@@ -39,7 +38,7 @@ type stockService struct {
 func NewStock() *stockService {
     return &stockService{
         ctx: context.Background(),
-        orm: ar.Ent.Stock,
+        orm: ent.Database.Stock,
     }
 }
 
@@ -65,7 +64,7 @@ func NewStockWithEmployee(e *ent.Employee) *stockService {
 }
 
 func (s *stockService) List(req *model.StockListReq) *model.PaginationRes {
-    q := ar.Ent.Store.QueryNotDeleted().
+    q := ent.Database.Store.QueryNotDeleted().
         Where(
             store.Or(
                 store.HasStocks(),
@@ -244,7 +243,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
         snag.Panic("平台之间无法调拨物资")
     }
 
-    tx, _ := ar.Ent.Tx(s.ctx)
+    tx, _ := ent.Database.Tx(s.ctx)
 
     // 调出检查
     name := req.Name
@@ -299,7 +298,7 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
 }
 
 func (s *stockService) Overview() (res model.StockOverview) {
-    rows, err := ar.Ent.QueryContext(s.ctx, `SELECT DISTINCT ABS(SUM(num)) AS sum,
+    rows, err := ent.Database.QueryContext(s.ctx, `SELECT DISTINCT ABS(SUM(num)) AS sum,
                 NOT store_id IS NULL AND num < 0 AS outbound,
                 NOT store_id IS NULL AND num > 0 AS inbound,
                 store_id IS NULL                 AS plaform

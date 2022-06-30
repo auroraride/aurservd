@@ -62,7 +62,6 @@ func (*inventory) Delete(c echo.Context) (err error) {
     return ctx.SendResponse()
 }
 
-
 // Transferable
 // @ID           ManagerInventoryTransferable
 // @Router       /manager/v1/inventory/transferable [GET]

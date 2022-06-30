@@ -9,7 +9,6 @@ import (
     "context"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -32,7 +31,7 @@ type exchangeService struct {
 func NewExchange() *exchangeService {
     return &exchangeService{
         ctx: context.Background(),
-        orm: ar.Ent.Exchange,
+        orm: ent.Database.Exchange,
     }
 }
 
@@ -119,7 +118,7 @@ func (s *exchangeService) Store(req *model.ExchangeStoreReq) *model.ExchangeStor
 func (s *exchangeService) Overview(riderID uint64) (res model.ExchangeOverview) {
     res.Times, _ = s.orm.QueryNotDeleted().Where(exchange.RiderID(riderID), exchange.Success(true)).Count(s.ctx)
     // 总使用天数
-    items, _ := ar.Ent.Subscribe.QueryNotDeleted().Where(subscribe.RiderID(riderID)).All(s.ctx)
+    items, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.RiderID(riderID)).All(s.ctx)
     for _, item := range items {
         switch item.Status {
         case model.SubscribeStatusInactive:
@@ -180,7 +179,7 @@ func (s *exchangeService) RiderList(riderID uint64, req model.PaginationReq) *mo
 func (s *exchangeService) listBasicQuery(req *model.ExchangeListReq) *ent.ExchangeQuery {
     tt := tools.NewTime()
 
-    q := ar.Ent.Exchange.
+    q := ent.Database.Exchange.
         QueryNotDeleted().
         WithRider(func(rq *ent.RiderQuery) {
             rq.WithPerson()

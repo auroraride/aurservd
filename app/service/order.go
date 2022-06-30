@@ -41,7 +41,7 @@ type orderService struct {
 func NewOrder() *orderService {
     return &orderService{
         ctx: context.Background(),
-        orm: ar.Ent.Order,
+        orm: ent.Database.Order,
     }
 }
 
@@ -132,7 +132,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
     }
 
     // 查询是否有退款中的押金
-    if exists, _ := ar.Ent.Order.QueryNotDeleted().Where(
+    if exists, _ := ent.Database.Order.QueryNotDeleted().Where(
         order.RiderID(s.rider.ID),
         // order.Type(model.OrderTypeDeposit),
         order.Status(model.OrderStatusRefundPending),
@@ -312,7 +312,7 @@ func (s *orderService) DoPayment(pc *model.PaymentCache) {
 func (s *orderService) FeePaid(trade *model.PaymentOverdueFee) {
 
     // 查询欠费订单是否已存在
-    if exists, err := ar.Ent.Order.Query().Where(order.OutTradeNo(trade.OutTradeNo)).Exist(s.ctx); err == nil && exists {
+    if exists, err := ent.Database.Order.Query().Where(order.OutTradeNo(trade.OutTradeNo)).Exist(s.ctx); err == nil && exists {
         return
     }
 
@@ -320,7 +320,7 @@ func (s *orderService) FeePaid(trade *model.PaymentOverdueFee) {
     log.Infof("[FEE PAID %s] %s", trade.OutTradeNo, j)
 
     ctx := context.Background()
-    tx, _ := ar.Ent.Tx(ctx)
+    tx, _ := ent.Database.Tx(ctx)
 
     _, err := tx.Order.Create().
         SetPayway(trade.Payway).
@@ -364,7 +364,7 @@ func (s *orderService) FeePaid(trade *model.PaymentOverdueFee) {
 // OrderPaid 订单成功支付
 func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
     // 查询订单是否已存在
-    if exists, err := ar.Ent.Order.Query().Where(order.OutTradeNo(trade.OutTradeNo)).Exist(s.ctx); err == nil && exists {
+    if exists, err := ent.Database.Order.Query().Where(order.OutTradeNo(trade.OutTradeNo)).Exist(s.ctx); err == nil && exists {
         return
     }
 
@@ -372,7 +372,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
     log.Infof("[ORDER PAID %s] %s", trade.OutTradeNo, j)
 
     ctx := context.Background()
-    tx, _ := ar.Ent.Tx(ctx)
+    tx, _ := ent.Database.Tx(ctx)
 
     // 创建订单
     oc := tx.Order.Create().
@@ -486,7 +486,7 @@ func (s *orderService) RefundSuccess(req *model.PaymentRefund) {
     log.Infof("%s(OrderID:%d) [退款]退款完成, 实际退款时间: %s", req.OutRefundNo, req.OrderID, req.Time)
 
     // 更新订单
-    _, err := ar.Ent.Order.UpdateOneID(req.OrderID).
+    _, err := ent.Database.Order.UpdateOneID(req.OrderID).
         SetStatus(model.OrderStatusRefundSuccess).
         SetRefundAt(req.Time).
         Save(ctx)
@@ -496,7 +496,7 @@ func (s *orderService) RefundSuccess(req *model.PaymentRefund) {
     log.Infof("%s(OrderID:%d) [退款]原订单更新完成", req.OutRefundNo, req.OrderID)
 
     // 更新退款订单
-    _, err = ar.Ent.OrderRefund.Update().
+    _, err = ent.Database.OrderRefund.Update().
         Where(orderrefund.OutRefundNo(req.OutRefundNo)).
         SetStatus(model.RefundStatusSuccess).
         SetRefundAt(req.Time).
@@ -507,14 +507,14 @@ func (s *orderService) RefundSuccess(req *model.PaymentRefund) {
     log.Infof("%s(OrderID:%d) [退款]退款订单更新完成", req.OutRefundNo, req.OrderID)
 
     // 更新骑士卡
-    _, err = ar.Ent.Subscribe.Update().Where(subscribe.InitialOrderID(req.OrderID)).SetRefundAt(req.Time).SetStatus(model.SubscribeStatusCanceled).Save(ctx)
+    _, err = ent.Database.Subscribe.Update().Where(subscribe.InitialOrderID(req.OrderID)).SetRefundAt(req.Time).SetStatus(model.SubscribeStatusCanceled).Save(ctx)
     if err != nil {
         log.Error(err)
     }
     log.Infof("%s(OrderID:%d) [退款]骑士卡更新完成", req.OutRefundNo, req.OrderID)
 
     // 删除提成订单
-    err = ar.Ent.Commission.SoftDelete().Where(commission.OrderID(req.OrderID)).SetRemark("用户已退款").Exec(ctx)
+    err = ent.Database.Commission.SoftDelete().Where(commission.OrderID(req.OrderID)).SetRemark("用户已退款").Exec(ctx)
     if err != nil {
         log.Error(err)
     }
@@ -594,7 +594,7 @@ func (s *orderService) QueryStatus(req *model.OrderStatusReq) (res model.OrderSt
         Paid:       false,
     }
     for {
-        o, _ := ar.Ent.Order.QueryNotDeleted().Where(order.OutTradeNo(req.OutTradeNo)).First(s.ctx)
+        o, _ := ent.Database.Order.QueryNotDeleted().Where(order.OutTradeNo(req.OutTradeNo)).First(s.ctx)
 
         if o != nil && o.Status == model.OrderStatusPaid {
             res.Paid = true

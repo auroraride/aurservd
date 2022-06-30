@@ -10,7 +10,7 @@ import (
     "errors"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/socket"
-    "github.com/auroraride/aurservd/internal/ar"
+    "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/assistance"
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/pkg/cache"
@@ -33,13 +33,13 @@ func (s *employeeSocketService) Prefix() string {
 
 func (s *employeeSocketService) Connect(hub *socket.WebsocketHub, token string) (uint64, error) {
     id, _ := cache.Get(context.Background(), token).Uint64()
-    emr, _ := ar.Ent.Employee.QueryNotDeleted().Where(employee.ID(id)).WithStore().First(s.ctx)
+    emr, _ := ent.Database.Employee.QueryNotDeleted().Where(employee.ID(id)).WithStore().First(s.ctx)
     if emr == nil {
         return 0, errors.New("店员未找到")
     }
 
     // 查询最近的救援订单
-    ass, _ := ar.Ent.Assistance.QueryNotDeleted().Where(assistance.EmployeeID(id), assistance.Status(model.AssistanceStatusAllocated)).First(s.ctx)
+    ass, _ := ent.Database.Assistance.QueryNotDeleted().Where(assistance.EmployeeID(id), assistance.Status(model.AssistanceStatusAllocated)).First(s.ctx)
     if ass != nil {
         hub.SendMessage(&model.EmployeeSocketMessage{
             Speech:       "您有一条救援任务正在进行中",

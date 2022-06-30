@@ -8,7 +8,6 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/batterymodel"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -23,7 +22,7 @@ type batteryService struct {
 func NewBattery() *batteryService {
     return &batteryService{
         ctx: context.Background(),
-        orm: ar.Ent.BatteryModel,
+        orm: ent.Database.BatteryModel,
     }
 }
 

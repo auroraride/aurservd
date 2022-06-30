@@ -8,7 +8,6 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/business"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -99,7 +98,7 @@ func (s *businessService) Plans(subscribeID uint64) {
 func (s *businessService) listBasicQuery(req *model.BusinessListReq) *ent.BusinessQuery {
     tt := tools.NewTime()
 
-    q := ar.Ent.Business.
+    q := ent.Database.Business.
         QueryNotDeleted().
         WithRider(func(rq *ent.RiderQuery) {
             rq.WithPerson()

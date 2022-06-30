@@ -9,7 +9,6 @@ import (
     "context"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/enterpriseprice"
     "github.com/auroraride/aurservd/internal/ent/person"
@@ -59,13 +58,13 @@ func NewEnterpriseRiderWithEmployee(e *ent.Employee) *enterpriseRiderService {
 // Create 新增骑手
 func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) model.EnterpriseRider {
     // 查询是否存在
-    if ar.Ent.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).ExistX(s.ctx) {
+    if ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).ExistX(s.ctx) {
         snag.Panic("此手机号已存在")
     }
 
     stat := NewEnterpriseStation().Query(req.StationID)
 
-    tx, _ := ar.Ent.Tx(s.ctx)
+    tx, _ := ent.Database.Tx(s.ctx)
     // 创建person
     p, err := tx.Person.Create().SetName(req.Name).Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
@@ -91,7 +90,7 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 
 // List 列举骑手
 func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.PaginationRes {
-    q := ar.Ent.Rider.
+    q := ent.Database.Rider.
         QueryNotDeleted().
         WithPerson().
         WithSubscribes(func(sq *ent.SubscribeQuery) {
@@ -185,7 +184,7 @@ func (s *enterpriseRiderService) BatteryModels(req *model.EnterprisePriceBattery
         snag.Panic("非企业骑手")
     }
 
-    items, _ := ar.Ent.EnterprisePrice.QueryNotDeleted().
+    items, _ := ent.Database.EnterprisePrice.QueryNotDeleted().
         Where(enterpriseprice.EnterpriseID(*s.rider.EnterpriseID), enterpriseprice.CityID(req.CityID)).
         All(s.ctx)
 
@@ -203,12 +202,12 @@ func (s *enterpriseRiderService) ChooseBatteryModel(req *model.EnterpriseRiderSu
     if enterpriseID == nil {
         snag.Panic("非企业骑手")
     }
-    ep, _ := ar.Ent.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(*enterpriseID), enterpriseprice.Model(req.Model)).First(s.ctx)
+    ep, _ := ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(*enterpriseID), enterpriseprice.Model(req.Model)).First(s.ctx)
     if ep == nil {
         snag.Panic("未找到电池")
     }
     // 判断骑手是否有使用中的电池
-    sub, _ := ar.Ent.Subscribe.QueryNotDeleted().Where(
+    sub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(
         subscribe.EnterpriseID(*s.rider.EnterpriseID),
         subscribe.RiderID(s.rider.ID),
         subscribe.Status(model.SubscribeStatusUsing),
@@ -218,7 +217,7 @@ func (s *enterpriseRiderService) ChooseBatteryModel(req *model.EnterpriseRiderSu
     }
     var err error
     if sub == nil {
-        sub, err = ar.Ent.Subscribe.Create().
+        sub, err = ent.Database.Subscribe.Create().
             SetEnterpriseID(*s.rider.EnterpriseID).
             SetStationID(*s.rider.StationID).
             SetModel(ep.Model).
@@ -244,7 +243,7 @@ func (s *enterpriseRiderService) ChooseBatteryModel(req *model.EnterpriseRiderSu
 func (s *enterpriseRiderService) SubscribeStatus(req *model.EnterpriseRiderSubscribeStatusReq) bool {
     now := time.Now()
     for {
-        sub, _ := ar.Ent.Subscribe.QueryNotDeleted().Where(
+        sub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(
             subscribe.ID(req.ID),
         ).First(s.ctx)
         if sub == nil {

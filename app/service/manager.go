@@ -32,7 +32,7 @@ type managerService struct {
 func NewManager() *managerService {
     return &managerService{
         cacheKeyPrefix: "MANAGER_",
-        orm:            ar.Ent.Manager,
+        orm:            ent.Database.Manager,
         ctx:            context.Background(),
     }
 }

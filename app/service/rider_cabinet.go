@@ -203,7 +203,7 @@ func (s *riderCabinetService) ProcessStepEnd(req *model.RiderCabinetOperating) {
     _ = cache.Get(s.ctx, req.UUID).Scan(res)
 
     // 保存数据库
-    _, _ = ar.Ent.Exchange.Create().
+    _, _ = ent.Database.Exchange.Create().
         SetRiderID(s.rider.ID).
         SetCityID(s.Info.CityID).
         SetDetail(&model.ExchangeCabinet{

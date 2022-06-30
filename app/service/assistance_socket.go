@@ -10,7 +10,6 @@ import (
     "errors"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/socket"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/store"
@@ -32,7 +31,7 @@ func NewAssistanceSocket() *assistanceSocketService {
 func (s *assistanceSocketService) Detail(ass *ent.Assistance) (message *model.AssistanceSocketMessage, err error) {
     st := ass.Edges.Store
     if st == nil && ass.StoreID != nil {
-        st, _ = ar.Ent.Store.QueryNotDeleted().Where(store.ID(*ass.StoreID)).First(s.ctx)
+        st, _ = ent.Database.Store.QueryNotDeleted().Where(store.ID(*ass.StoreID)).First(s.ctx)
         if st == nil {
             err = errors.New("未找到门店")
             return
@@ -41,7 +40,7 @@ func (s *assistanceSocketService) Detail(ass *ent.Assistance) (message *model.As
 
     e := ass.Edges.Employee
     if e == nil && ass.EmployeeID != nil {
-        e, _ = ar.Ent.Employee.QueryNotDeleted().Where(employee.ID(*ass.EmployeeID)).First(s.ctx)
+        e, _ = ent.Database.Employee.QueryNotDeleted().Where(employee.ID(*ass.EmployeeID)).First(s.ctx)
         if e == nil {
             err = errors.New("未找到店员")
             return

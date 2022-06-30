@@ -32,6 +32,7 @@ func Boot() {
     bootLogStore(cfg.Project, cfg.DoorLog, DoorOperateLog{})
     bootLogStore(cfg.Project, cfg.OperateLog, OperateLog{})
     bootLogStore(cfg.Project, cfg.ExchangeLog, ExchangeLog{})
+    bootLogStore(cfg.Project, cfg.HealthLog, HealthLog{})
 }
 
 // bootLogStore 自动创建logstore

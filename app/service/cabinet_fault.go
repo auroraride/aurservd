@@ -8,7 +8,6 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/cabinetfault"
@@ -26,7 +25,7 @@ type cabinetFaultService struct {
 func NewCabinetFault() *cabinetFaultService {
     return &cabinetFaultService{
         ctx: context.Background(),
-        orm: ar.Ent.CabinetFault,
+        orm: ent.Database.CabinetFault,
     }
 }
 
@@ -49,7 +48,7 @@ func (s *cabinetFaultService) Query(id uint64) *ent.CabinetFault {
 // Report 骑手故障上报
 func (s *cabinetFaultService) Report(rider *ent.Rider, req *model.CabinetFaultReportReq) bool {
     // 获取电柜信息
-    ca, _ := ar.Ent.Cabinet.QueryNotDeleted().
+    ca, _ := ent.Database.Cabinet.QueryNotDeleted().
         Where(
             cabinet.ID(req.CabinetID),
             cabinet.Status(model.CabinetStatusNormal),

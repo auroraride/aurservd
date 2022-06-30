@@ -11,7 +11,6 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/enterprise"
     "github.com/auroraride/aurservd/internal/ent/enterprisecontract"
@@ -38,7 +37,7 @@ type enterpriseService struct {
 func NewEnterprise() *enterpriseService {
     return &enterpriseService{
         ctx: context.Background(),
-        orm: ar.Ent.Enterprise,
+        orm: ent.Database.Enterprise,
     }
 }
 
@@ -71,7 +70,7 @@ func (s *enterpriseService) QueryX(id uint64) *ent.Enterprise {
 // Create 创建企业
 func (s *enterpriseService) Create(req *model.EnterpriseDetail) uint64 {
 
-    tx, err := ar.Ent.Tx(s.ctx)
+    tx, err := ent.Database.Tx(s.ctx)
     if err != nil {
         snag.Panic(err)
     }
@@ -97,7 +96,7 @@ func (s *enterpriseService) Modify(req *model.EnterpriseDetailWithID) {
         }
     }
 
-    tx, err := ar.Ent.Tx(s.ctx)
+    tx, err := ent.Database.Tx(s.ctx)
     if err != nil {
         snag.Panic(err)
     }
@@ -268,7 +267,7 @@ func (s *enterpriseService) QueryAllCollaborated() []*ent.Enterprise {
 
 // QueryAllUsingSubscribe 获取所有待结算骑手团签订阅
 func (s *enterpriseService) QueryAllUsingSubscribe(enterpriseID uint64, args ...any) []*ent.Subscribe {
-    q := ar.Ent.Subscribe.QueryNotDeleted().
+    q := ent.Database.Subscribe.QueryNotDeleted().
         Where(
             // 所属企业
             subscribe.EnterpriseID(enterpriseID),
@@ -298,7 +297,7 @@ func (s *enterpriseService) QueryAllUsingSubscribe(enterpriseID uint64, args ...
 func (s *enterpriseService) GetPrices(item *ent.Enterprise) (res map[string]float64) {
     var items []*ent.EnterprisePrice
     if item.Edges.Prices == nil {
-        items, _ = ar.Ent.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(item.ID)).All(s.ctx)
+        items, _ = ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(item.ID)).All(s.ctx)
     } else {
         items = item.Edges.Prices
     }
@@ -368,7 +367,7 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
 }
 
 func (s *enterpriseService) UpdateStatementByID(id uint64) {
-    e, _ := ar.Ent.Enterprise.QueryNotDeleted().Where(enterprise.ID(id)).First(s.ctx)
+    e, _ := ent.Database.Enterprise.QueryNotDeleted().Where(enterprise.ID(id)).First(s.ctx)
     if e != nil {
         NewEnterprise().UpdateStatement(e)
     }
@@ -435,7 +434,7 @@ func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float
     set := NewEnterpriseStatementWithModifier(s.modifier).Current(e)
 
     before := e.Balance
-    tx, _ := ar.Ent.Tx(s.ctx)
+    tx, _ := ent.Database.Tx(s.ctx)
 
     // 创建预付费记录
     _, err := tx.EnterprisePrepayment.Create().SetEnterpriseID(e.ID).SetAmount(req.Amount).SetRemark(req.Remark).Save(s.ctx)

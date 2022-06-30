@@ -9,7 +9,6 @@ import (
     "context"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -29,7 +28,7 @@ type storeService struct {
 func NewStore() *storeService {
     return &storeService{
         ctx: context.Background(),
-        orm: ar.Ent.Store,
+        orm: ent.Database.Store,
     }
 }
 

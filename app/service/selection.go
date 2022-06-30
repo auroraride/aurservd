@@ -9,7 +9,6 @@ import (
     "context"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/person"
@@ -34,7 +33,7 @@ func NewSelection() *selectionService {
 }
 
 func (s *selectionService) Plan(req *model.PlanSelectionReq) (items []model.CascaderOptionLevel3) {
-    q := ar.Ent.Plan.QueryNotDeleted().
+    q := ent.Database.Plan.QueryNotDeleted().
         Where(plan.ParentIDIsNil()).
         WithComplexes(func(pq *ent.PlanQuery) {
             pq.Where(plan.DeletedAtIsNil())
@@ -112,7 +111,7 @@ func (s *selectionService) Plan(req *model.PlanSelectionReq) (items []model.Casc
 }
 
 func (s *selectionService) Rider(req *model.RiderSelectionReq) (items []model.SelectOption) {
-    q := ar.Ent.Rider.QueryNotDeleted().WithPerson()
+    q := ent.Database.Rider.QueryNotDeleted().WithPerson()
     if req.Keyword != nil {
         q.Where(
             rider.Or(
@@ -139,7 +138,7 @@ func (s *selectionService) Rider(req *model.RiderSelectionReq) (items []model.Se
 }
 
 func (s *selectionService) Store() (items []*model.CascaderOptionLevel2) {
-    res, _ := ar.Ent.Store.QueryNotDeleted().WithCity().All(s.ctx)
+    res, _ := ent.Database.Store.QueryNotDeleted().WithCity().All(s.ctx)
 
     smap := make(map[uint64]*model.CascaderOptionLevel2)
 
@@ -185,7 +184,7 @@ func (s *selectionService) Store() (items []*model.CascaderOptionLevel2) {
 }
 
 func (s *selectionService) Employee() (items []*model.CascaderOptionLevel2) {
-    res, _ := ar.Ent.Employee.QueryNotDeleted().WithCity().All(s.ctx)
+    res, _ := ent.Database.Employee.QueryNotDeleted().WithCity().All(s.ctx)
 
     smap := make(map[uint64]*model.CascaderOptionLevel2)
 
@@ -225,7 +224,7 @@ func (s *selectionService) Employee() (items []*model.CascaderOptionLevel2) {
 }
 
 func (s *selectionService) City() (items []*model.CascaderOptionLevel2) {
-    res, _ := ar.Ent.City.QueryNotDeleted().WithChildren(func(cq *ent.CityQuery) {
+    res, _ := ent.Database.City.QueryNotDeleted().WithChildren(func(cq *ent.CityQuery) {
         cq.Where(city.Open(true))
     }).Where(
         city.ParentIDIsNil(),
@@ -257,7 +256,7 @@ func (s *selectionService) City() (items []*model.CascaderOptionLevel2) {
 }
 
 func (s *selectionService) Branch() (items []*model.CascaderOptionLevel2) {
-    res, _ := ar.Ent.Branch.QueryNotDeleted().WithCity().All(s.ctx)
+    res, _ := ent.Database.Branch.QueryNotDeleted().WithCity().All(s.ctx)
 
     smap := make(map[uint64]*model.CascaderOptionLevel2)
 

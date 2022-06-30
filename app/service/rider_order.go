@@ -8,7 +8,6 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -25,7 +24,7 @@ type riderOrderService struct {
 func NewRiderOrder() *riderOrderService {
     return &riderOrderService{
         ctx: context.Background(),
-        orm: ar.Ent.Order,
+        orm: ent.Database.Order,
     }
 }
 

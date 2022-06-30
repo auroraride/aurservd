@@ -58,7 +58,7 @@ func RiderMiddleware() echo.MiddlewareFunc {
             // 获取与判定是否需要更新骑手推送ID
             pushId := c.Request().Header.Get(app.HeaderPushId)
             if u.PushID != pushId {
-                _ = ar.Ent.Rider.UpdateOneID(u.ID).SetPushID(pushId).Exec(context.Background())
+                _ = ent.Database.Rider.UpdateOneID(u.ID).SetPushID(pushId).Exec(context.Background())
             }
 
             // 重载context

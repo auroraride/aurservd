@@ -8,7 +8,6 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/enterprisestation"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -25,7 +24,7 @@ type enterpriseStationService struct {
 func NewEnterpriseStation() *enterpriseStationService {
     return &enterpriseStationService{
         ctx: context.Background(),
-        orm: ar.Ent.EnterpriseStation,
+        orm: ent.Database.EnterpriseStation,
     }
 }
 

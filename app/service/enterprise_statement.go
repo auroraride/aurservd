@@ -8,7 +8,6 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/enterprise"
     "github.com/auroraride/aurservd/internal/ent/enterprisestatement"
@@ -33,7 +32,7 @@ type enterpriseStatementService struct {
 func NewEnterpriseStatement() *enterpriseStatementService {
     return &enterpriseStatementService{
         ctx: context.Background(),
-        orm: ar.Ent.EnterpriseStatement,
+        orm: ent.Database.EnterpriseStatement,
     }
 }
 
@@ -84,7 +83,7 @@ func (s *enterpriseStatementService) GetBill(req *model.StatementBillReq) *model
     }
 
     // 判定企业
-    e, _ := ar.Ent.Enterprise.QueryNotDeleted().Where(enterprise.ID(req.ID)).WithCity().First(s.ctx)
+    e, _ := ent.Database.Enterprise.QueryNotDeleted().Where(enterprise.ID(req.ID)).WithCity().First(s.ctx)
     if e == nil {
         snag.Panic("未找到企业")
     }
@@ -172,7 +171,7 @@ func (s *enterpriseStatementService) Bill(req *model.StatementClearBillReq) {
     // 下个账单开始日
     start := carbon.Time2Carbon(end).StartOfDay().AddDay().Carbon2Time()
 
-    tx, _ := ar.Ent.Tx(s.ctx)
+    tx, _ := ent.Database.Tx(s.ctx)
     _, err = tx.EnterpriseStatement.
         UpdateOneID(br.StatementID).
         SetSettledAt(time.Now()).

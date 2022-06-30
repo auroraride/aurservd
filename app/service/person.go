@@ -9,7 +9,6 @@ import (
     "context"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
@@ -25,7 +24,7 @@ type personService struct {
 func NewPerson() *personService {
     return &personService{
         ctx: context.Background(),
-        orm: ar.Ent.Person,
+        orm: ent.Database.Person,
     }
 }
 
@@ -37,7 +36,7 @@ func NewPersonWithModifier(m *model.Modifier) *personService {
 }
 
 func (s *personService) Query(id uint64) (*ent.Person, *ent.Rider) {
-    item, err := ar.Ent.Rider.QueryNotDeleted().WithPerson().Where(rider.ID(id)).Only(s.ctx)
+    item, err := ent.Database.Rider.QueryNotDeleted().WithPerson().Where(rider.ID(id)).Only(s.ctx)
     if err != nil || item == nil || item.Edges.Person == nil {
         snag.Panic("未找到骑手实名信息")
     }
@@ -74,7 +73,7 @@ func (s *personService) GetNormalAuthedPerson(u *ent.Rider) *ent.Person {
 
     p := u.Edges.Person
     if p == nil && u.PersonID != nil {
-        p, _ = ar.Ent.Person.QueryNotDeleted().Where(person.ID(*u.PersonID)).First(s.ctx)
+        p, _ = ent.Database.Person.QueryNotDeleted().Where(person.ID(*u.PersonID)).First(s.ctx)
     }
 
     if p == nil {

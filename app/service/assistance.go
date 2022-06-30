@@ -43,7 +43,7 @@ type assistanceService struct {
 func NewAssistance() *assistanceService {
     return &assistanceService{
         ctx: context.Background(),
-        orm: ar.Ent.Assistance,
+        orm: ent.Database.Assistance,
     }
 }
 
@@ -308,7 +308,7 @@ func (s *assistanceService) Nearby(req *model.IDQueryReq) (items []model.Assista
         EPhone   string  `json:"e_hone"`
     }
 
-    err := ar.Ent.Store.QueryNotDeleted().
+    err := ent.Database.Store.QueryNotDeleted().
         Where(store.EmployeeIDNotNil(), store.Status(model.StoreStatusOpen)).
         Modify(
             func(sel *sql.Selector) {
@@ -380,7 +380,7 @@ func (s *assistanceService) Nearby(req *model.IDQueryReq) (items []model.Assista
 
 // Allocate 分配救援任务
 func (s *assistanceService) Allocate(req *model.AssistanceAllocateReq) {
-    st, _ := ar.Ent.Store.QueryNotDeleted().
+    st, _ := ent.Database.Store.QueryNotDeleted().
         Where(
             store.ID(req.StoreID),
             store.EmployeeIDNotNil(),
@@ -778,7 +778,7 @@ func (s *assistanceService) Paid(trade *model.PaymentAssistance) {
     }
 
     ctx := context.Background()
-    tx, _ := ar.Ent.Tx(ctx)
+    tx, _ := ent.Database.Tx(ctx)
 
     o, err := tx.Order.Create().
         SetPayway(trade.Payway).

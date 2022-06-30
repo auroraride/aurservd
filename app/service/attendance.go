@@ -9,7 +9,6 @@ import (
     "context"
     "github.com/LucaTheHacker/go-haversine"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/attendance"
     "github.com/auroraride/aurservd/internal/ent/employee"
@@ -32,7 +31,7 @@ type attendanceService struct {
 func NewAttendance() *attendanceService {
     return &attendanceService{
         ctx: context.Background(),
-        orm: ar.Ent.Attendance,
+        orm: ent.Database.Attendance,
     }
 }
 
@@ -130,7 +129,7 @@ func (s *attendanceService) Create(req *model.AttendanceCreateReq) {
         })
     }
 
-    tx, _ := ar.Ent.Tx(s.ctx)
+    tx, _ := ent.Database.Tx(s.ctx)
     _, err := tx.Attendance.Create().
         SetEmployee(s.employee).
         SetStore(st).

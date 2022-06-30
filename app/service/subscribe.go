@@ -10,7 +10,6 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -35,7 +34,7 @@ type subscribeService struct {
 func NewSubscribe() *subscribeService {
     return &subscribeService{
         ctx: context.Background(),
-        orm: ar.Ent.Subscribe,
+        orm: ent.Database.Subscribe,
     }
 }
 
@@ -208,7 +207,7 @@ func (s *subscribeService) RecentDetail(riderID uint64) (*model.Subscribe, *ent.
 
 // QueryEffective 获取骑手当前生效中的订阅
 func (s *subscribeService) QueryEffective(riderID uint64) (*ent.Subscribe, error) {
-    return ar.Ent.Subscribe.QueryNotDeleted().
+    return ent.Database.Subscribe.QueryNotDeleted().
         Where(
             subscribe.RiderID(riderID),
             subscribe.StatusIn(
@@ -222,7 +221,7 @@ func (s *subscribeService) QueryEffective(riderID uint64) (*ent.Subscribe, error
 
 // QueryAllRidersEffective 获取所有骑手生效中的订阅
 func (s *subscribeService) QueryAllRidersEffective() []*ent.Subscribe {
-    items, _ := ar.Ent.Subscribe.Query().
+    items, _ := ent.Database.Subscribe.Query().
         Where(
             // 未退款
             subscribe.RefundAtIsNil(),
@@ -288,7 +287,7 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
 
     before := sub.Remaining
 
-    tx, err := ar.Ent.Tx(s.ctx)
+    tx, err := ent.Database.Tx(s.ctx)
     if err != nil {
         log.Error(err)
         snag.Panic("时间修改失败")

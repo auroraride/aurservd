@@ -8,7 +8,6 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/snag"
 )
@@ -24,7 +23,7 @@ type exceptionService struct {
 func NewException() *exceptionService {
     return &exceptionService{
         ctx: context.Background(),
-        orm: ar.Ent.Exception,
+        orm: ent.Database.Exception,
     }
 }
 

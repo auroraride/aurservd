@@ -8,7 +8,6 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/batterymodel"
     "github.com/auroraride/aurservd/internal/ent/city"
@@ -30,7 +29,7 @@ type planService struct {
 func NewPlan() *planService {
     return &planService{
         ctx: context.Background(),
-        orm: ar.Ent.Plan,
+        orm: ent.Database.Plan,
     }
 }
 
@@ -109,7 +108,7 @@ func (s *planService) cloneCreator(creator *ent.PlanCreate) *ent.PlanCreate {
 
 func (s *planService) getCitiesAndModels(reqCities []uint64, reqModels []string) (cities ent.Cities, pms ent.BatteryModels) {
     var err error
-    cities, err = ar.Ent.City.QueryNotDeleted().Where(city.IDIn(reqCities...)).All(s.ctx)
+    cities, err = ent.Database.City.QueryNotDeleted().Where(city.IDIn(reqCities...)).All(s.ctx)
     if err != nil {
         snag.Panic("城市参数错误")
     }
@@ -133,7 +132,7 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanWithComplexes {
     })
 
     // 开始创建
-    tx, _ := ar.Ent.Tx(s.ctx)
+    tx, _ := ent.Database.Tx(s.ctx)
     creator := tx.Plan.Create().
         SetName(req.Name).
         SetEnable(req.Enable).
@@ -192,7 +191,7 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanWithComplexes {
 //         return req.Complexes[i].Days < req.Complexes[j].Days
 //     })
 //
-//     tx, _ := ar.Ent.Tx(s.ctx)
+//     tx, _ := ent.Database.Tx(s.ctx)
 //
 //     var parent *ent.Plan
 //
