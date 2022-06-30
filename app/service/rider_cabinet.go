@@ -154,8 +154,7 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
     }
 
     // 缓存步骤
-    n, _ := cache.Get(s.ctx, info.Serial).Int()
-    if n > 0 {
+    if NewCabinet().Busy(info.Serial) {
         snag.Panic("电柜忙")
     }
 
