@@ -16,9 +16,9 @@ import (
 type HealthLog struct {
     Brand  string `json:"brand" sls:"品牌" index:"doc"`
     Serial string `json:"serial" sls:"编码" index:"doc"`
-    From   string `json:"from" sls:"旧状态" index:"from"`
-    To     string `json:"to" sls:"新状态" index:"to"` // 0离线 1在线 2故障
-    Time   string `json:"time" sls:"时间" index:"time"`
+    From   string `json:"from" sls:"旧状态" index:"doc"`
+    To     string `json:"to" sls:"新状态" index:"doc"` // 0离线 1在线 2故障
+    Time   string `json:"time" sls:"时间" index:"doc"`
 }
 
 func (l *HealthLog) GetLogstoreName() string {

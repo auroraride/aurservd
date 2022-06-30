@@ -125,8 +125,9 @@ type RiderCabinetOperateStatusReq struct {
 
 // CabinetExchangeProcess 电柜换电流程信息
 type CabinetExchangeProcess struct {
-    Step RiderCabinetOperateStep `json:"step"`
-    Info *RiderCabinetInfo       `json:"info"`
+    Step  RiderCabinetOperateStep `json:"step"`
+    Info  *RiderCabinetOperating  `json:"info"`
+    Rider *RiderBasic             `json:"rider"`
 }
 
 func (c *CabinetExchangeProcess) MarshalBinary() ([]byte, error) {
@@ -137,12 +138,18 @@ func (c *CabinetExchangeProcess) UnmarshalBinary(data []byte) error {
     return jsoniter.Unmarshal(data, c)
 }
 
+// CabinetProcessJob 获取电柜当前换电任务信息
+func CabinetProcessJob(serial string) (*CabinetExchangeProcess, bool) {
+    info := new(CabinetExchangeProcess)
+    err := cache.Get(context.Background(), serial).Scan(info)
+    if err != nil {
+        return nil, false
+    }
+    return info, info != nil && info.Step > 0
+}
+
 // CabinetBusying 查询电柜是否正在业务中
 func CabinetBusying(serial string) bool {
-    res := new(CabinetExchangeProcess)
-    err := cache.Get(context.Background(), serial).Scan(res)
-    if err != nil {
-        return false
-    }
-    return res != nil && res.Step > 0
+    _, busy := CabinetProcessJob(serial)
+    return busy
 }

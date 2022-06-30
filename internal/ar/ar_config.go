@@ -137,7 +137,8 @@ type config struct {
             DoorLog         string // 柜门操作日志logstore
             OperateLog      string // 管理端操作日志logstore
             ExchangeLog     string // 换电日志logstore
-            HealthLog       string // 换电柜在线日志logstore
+            HealthLog       string // 电柜在线变化日志logstore
+            BatteryLog      string // 电柜电池变化日志logstore
         }
     }
     Baidu struct {
