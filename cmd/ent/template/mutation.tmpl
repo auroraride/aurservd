@@ -12,15 +12,6 @@ in the LICENSE file in the root directory of this source tree.
 {{ template "header" $ }}
 
 import (
-	"context"
-	"fmt"
-	"sync"
-
-	{{- range $n := $.Nodes }}
-		{{ $n.PackageAlias }} "{{ $.Config.Package }}/{{ $n.PackageDir }}"
-		{{- template "import/types" $n }}
-	{{- end }}
-
 	"entgo.io/ent"
 )
 
@@ -41,7 +32,11 @@ const (
 {{ range $n := $.Nodes }}
 
 {{ $mutation := $n.MutationName }}
-/** {{ $mutation }} START */
+/** {{ $n.Name }} START */
+/*
+{{ $n.PackageAlias }} "{{ $.Config.Package }}/{{ $n.PackageDir }}"
+{{- template "import/types" $n }}
+*/
 // {{ $mutation }} represents an operation that mutates the {{ $n.Name }} nodes in the graph.
 type {{ $mutation }} struct {
 	config
@@ -701,7 +696,7 @@ func (m *{{ $mutation }}) ResetEdge(name string) error {
 	{{- end }}
 	return fmt.Errorf("unknown {{ $n.Name }} edge %s", name)
 }
-/** {{ $mutation }} END */
+/** {{ $n.Name }} END */
 {{ end }}
 
 {{ end }}

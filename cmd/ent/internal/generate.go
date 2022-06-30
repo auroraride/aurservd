@@ -72,6 +72,7 @@ func GenerateCmd(postRun ...func(*gen.Config)) *cobra.Command {
             ),
             // Args: cobra.ExactArgs(1),
             Run: func(cmd *cobra.Command, path []string) {
+                Clean()
 
                 if features == nil {
                     features = []string{"sql/modifier", "sql/upsert", "privacy", "entql", "sql/execquery"}
@@ -127,6 +128,8 @@ func GenerateCmd(postRun ...func(*gen.Config)) *cobra.Command {
                 for _, fn := range postRun {
                     fn(&cfg)
                 }
+
+                SplitMutation()
             },
         }
     )

@@ -31,22 +31,26 @@ var (
     }
 )
 
+func Clean(path ...string) {
+    p := defaultEntPath
+    if len(path) > 0 {
+        p = path[0]
+    }
+    fs, _ := ioutil.ReadDir(p)
+    for _, f := range fs {
+        name := f.Name()
+        if _, ok := removeNotable[name]; !ok {
+            _ = os.RemoveAll(filepath.Join(p, name))
+        }
+    }
+}
+
 func CleanCmd() *cobra.Command {
     return &cobra.Command{
         Use:   "clean [path]",
         Short: "clean generated go code for the ent directory",
         Run: func(cmd *cobra.Command, path []string) {
-            p := defaultEntPath
-            if len(path) > 0 {
-                p = path[0]
-            }
-            fs, _ := ioutil.ReadDir(p)
-            for _, f := range fs {
-                name := f.Name()
-                if _, ok := removeNotable[name]; !ok {
-                    _ = os.RemoveAll(filepath.Join(p, name))
-                }
-            }
+            Clean(path...)
         },
     }
 }
