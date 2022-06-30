@@ -6,7 +6,6 @@
 package provider
 
 import (
-    "context"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ali"
@@ -23,7 +22,7 @@ type Provider interface {
     Cabinets() ([]*ent.Cabinet, error)
     Brand() string
     Logger() *Logger
-    UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet)
+    UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) error
     DoorOperate(code, serial, operation string, door int) bool
     Reboot(code string, serial string) bool
 }
@@ -58,22 +57,21 @@ func StartCabinetProvider(providers ...Provider) {
                 for _, item := range items {
                     // 未获取到电柜状态设置为离线
                     up := ar.Ent.Cabinet.UpdateOne(item).SetHealth(model.CabinetHealthStatusOffline)
-                    provider.UpdateStatus(up, item)
-
-                    // 存储电柜信息
-                    ca, _ := up.Save(context.Background())
+                    err = provider.UpdateStatus(up, item)
 
                     // 提交日志
-                    go func() {
-                        // 保存历史仓位信息(转换后的)
-                        lg := GenerateSlsStatusLogGroup(ca)
-                        if lg != nil {
-                            err = ali.NewSls().PutLogs(slsCfg.Project, slsCfg.CabinetLog, lg)
-                            if err != nil {
-                                log.Errorf("阿里云SLS提交失败: %#v", err)
+                    if err == nil {
+                        go func() {
+                            // 保存历史仓位信息(转换后的)
+                            lg := GenerateSlsStatusLogGroup(item)
+                            if lg != nil {
+                                err = ali.NewSls().PutLogs(slsCfg.Project, slsCfg.CabinetLog, lg)
+                                if err != nil {
+                                    log.Errorf("阿里云SLS提交失败: %#v", err)
+                                }
                             }
-                        }
-                    }()
+                        }()
+                    }
 
                     time.Sleep(time.Duration((60000-int(time.Now().Sub(start).Milliseconds()))/len(items)) * time.Millisecond)
                 }

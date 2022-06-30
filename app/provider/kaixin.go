@@ -7,6 +7,7 @@ package provider
 
 import (
     "context"
+    "errors"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
@@ -154,7 +155,7 @@ func (p *kaixin) GetChargerErrors(n int) (errors []string) {
     return
 }
 
-func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) {
+func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) error {
     res := new(KXStatusRes)
     url := p.GetUrl(kaixinUrlDetailData)
     client := resty.New().R().
@@ -167,13 +168,13 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) {
 
     if err != nil {
         p.logger.Write(fmt.Sprintf("凯信状态获取失败, serial: %s, err: %s", item.Serial, err.Error()))
-        return
+        return err
     }
 
     err = jsoniter.Unmarshal(r.Body(), res)
     if err != nil {
         p.logger.Write(fmt.Sprintf("凯信状态解析失败, serial: %s, body: %s", item.Serial, r.Body()))
-        return
+        return err
     }
 
     if res.State == "ok" {
@@ -228,9 +229,10 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) {
             SetDoors(uint(len(doors))).
             Save(context.Background())
         *item = *v
+        return nil
     }
     p.logger.Write(res)
-    return
+    return errors.New("凯信状态获取失败")
 }
 
 type KXOperationRes KXRes[any]

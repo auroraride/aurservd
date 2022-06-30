@@ -7,6 +7,7 @@ package provider
 
 import (
     "context"
+    "errors"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
@@ -175,7 +176,7 @@ func (p *yundong) Brand() string {
     return "云动"
 }
 
-func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) {
+func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) error {
     res := new(YDStatusRes)
     _, err := p.RequestClient(false).
         SetResult(res).
@@ -183,18 +184,17 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) {
     // token 请求失败, 重新请求token后重试
     if res.Code == 1000 && p.retryTimes < 1 {
         p.retryTimes += 1
-        p.UpdateStatus(up, item)
-        return
+        return p.UpdateStatus(up, item)
     }
 
     // log.Infof("云动状态获取结果：%s", string(r.Body()))
     if err != nil {
         p.logger.Write(fmt.Sprintf("云动状态获取失败, serial: %s, err: %s, res: %s", item.Serial, err.Error(), res))
-        return
+        return err
     }
     if res.Code != 0 {
         p.logger.Write(fmt.Sprintf("云动状态解析失败, serial: %s, res: %s", item.Serial, res))
-        return
+        return errors.New("云动状态解析失败")
     }
 
     // 仓位信息
@@ -248,9 +248,10 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) {
             SetDoors(uint(len(doors))).
             Save(context.Background())
         *item = *v
+        return nil
     }
     p.logger.Write(res)
-    return
+    return errors.New("云动状态获取失败")
 }
 
 // DoorOperate 云动柜门操作
