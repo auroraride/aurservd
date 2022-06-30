@@ -32,7 +32,7 @@ func (l *HealthLog) Send() {
 
 func NewHealthLog(brand, serial string, updatedAt time.Time) *HealthLog {
     return &HealthLog{
-        Brand:  brand,
+        Brand:  model.CabinetBrand(brand).String(),
         Serial: serial,
         Time:   updatedAt.Format(carbon.DateTimeLayout),
     }

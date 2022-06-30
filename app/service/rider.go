@@ -374,8 +374,13 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
         } else {
             q.Where(
                 rider.Or(
-                    rider.HasPersonWith(person.NameContainsFold(*req.Keyword)),
-                    rider.PushIDContainsFold(*req.Keyword),
+                    rider.HasPersonWith(
+                        person.Or(
+                            person.NameContainsFold(*req.Keyword),
+                            person.IDCardNumberContainsFold(*req.Keyword),
+                        ),
+                    ),
+                    rider.PhoneContainsFold(*req.Keyword),
                 ),
             )
         }
@@ -455,6 +460,16 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
         default:
             q.Where(rider.HasSubscribesWith(subscribe.Status(rss)))
             break
+        }
+    }
+    if req.PlanID != nil {
+        q.Where(rider.HasSubscribesWith(subscribe.PlanID(*req.PlanID)))
+    }
+    if req.Enterprise != nil && *req.Enterprise != 0 {
+        if *req.Enterprise == 1 {
+            q.Where(rider.EnterpriseIDNotNil())
+        } else {
+            q.Where(rider.EnterpriseIDIsNil())
         }
     }
 

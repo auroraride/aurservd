@@ -29,11 +29,11 @@ type riderCabinetService struct {
     maxTime  time.Duration // 单步骤最大处理时长
     logger   *logging.ExchangeLog
 
-    Step             model.RiderCabinetOperateStep
-    Cabinet          *ent.Cabinet
-    PutInElectricity model.BatteryElectricity
-    Alternative      bool
-    Info             *model.RiderCabinetInfo
+    step             model.RiderCabinetOperateStep
+    cabinet          *ent.Cabinet
+    putInElectricity model.BatteryElectricity
+    alternative      bool
+    info             *model.RiderCabinetInfo
 
     subscribe *ent.Subscribe
     debug     bool
@@ -117,6 +117,11 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
     return res
 }
 
+// updateCabinetExchangeProcess 更新换电步骤信息
+func (s *riderCabinetService) updateCabinetExchangeProcess() {
+    cache.Set(s.ctx, s.info.Serial, &model.CabinetExchangeProcess{Info: s.info, Step: s.step}, s.maxTime)
+}
+
 // Process 处理换电
 func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
     // 检查用户是否可以办理业务
@@ -144,7 +149,7 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
         if req.Alternative != nil && *req.Alternative {
             index = info.Alternative.Index
             be = info.Alternative.Electricity
-            s.Alternative = true
+            s.alternative = true
         } else {
             snag.Panic("用户取消")
         }
@@ -154,9 +159,14 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
     }
 
     // 缓存步骤
-    if NewCabinet().Busy(info.Serial) {
+    if model.CabinetBusying(info.Serial) {
         snag.Panic("电柜忙")
     }
+
+    s.logger = logging.NewExchangeLog(s.rider.ID, uid, info.Serial, s.rider.Phone, be.IsBatteryFull())
+    s.step = model.RiderCabinetOperateStepOpenEmpty
+    s.cabinet = cab
+    s.info = info
 
     // 更换UUID缓存内容为步骤状态
     cache.Del(s.ctx, uid)
@@ -164,12 +174,8 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
         Step:   model.RiderCabinetOperateStepOpenEmpty,
         Status: model.RiderCabinetOperateStatusProcessing,
     }, s.maxTime)
-    cache.Set(s.ctx, info.Serial, model.RiderCabinetOperateStepOpenEmpty, s.maxTime)
 
-    s.logger = logging.NewExchangeLog(s.rider.ID, uid, info.Serial, s.rider.Phone, be.IsBatteryFull())
-    s.Step = model.RiderCabinetOperateStepOpenEmpty
-    s.Cabinet = cab
-    s.Info = info
+    s.updateCabinetExchangeProcess()
 
     // 处理换电流程
     go s.ProcessByStep(&model.RiderCabinetOperating{
@@ -185,9 +191,9 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
 
 // ProcessStepStart 步骤开始
 func (s *riderCabinetService) ProcessStepStart(req *model.RiderCabinetOperating) {
-    cache.Set(s.ctx, req.Serial, s.Step, s.maxTime)
+    s.updateCabinetExchangeProcess()
     cache.Set(s.ctx, req.UUID, &model.RiderCabinetOperateRes{
-        Step:   s.Step,
+        Step:   s.step,
         Status: model.RiderCabinetOperateStatusProcessing,
         Stop:   false,
     }, s.maxTime)
@@ -204,9 +210,9 @@ func (s *riderCabinetService) ProcessStepEnd(req *model.RiderCabinetOperating) {
     // 保存数据库
     _, _ = ent.Database.Exchange.Create().
         SetRiderID(s.rider.ID).
-        SetCityID(s.Info.CityID).
+        SetCityID(s.info.CityID).
         SetDetail(&model.ExchangeCabinet{
-            Alternative: s.Alternative,
+            Alternative: s.alternative,
             Info:        req,
             Result:      res,
         }).
@@ -232,13 +238,13 @@ func (s *riderCabinetService) ProcessByStep(req *model.RiderCabinetOperating) {
     time.Sleep(5 * time.Second)
 
     // 第二步: 长轮询判断仓门是否关闭
-    s.Step += 1
+    s.step += 1
     if !s.ProcessLog(req, s.ProcessDoor(req)) {
         return
     }
 
     // 第三步: 开启满电仓
-    s.Step += 1
+    s.step += 1
     if !s.ProcessLog(req, s.ProcessOpenBin(req)) {
         return
     }
@@ -246,7 +252,7 @@ func (s *riderCabinetService) ProcessByStep(req *model.RiderCabinetOperating) {
     time.Sleep(5 * time.Second)
 
     // 第四步: 长轮询判断仓门是否关闭
-    s.Step += 1
+    s.step += 1
     if !s.ProcessLog(req, s.ProcessDoor(req)) {
         return
     }
@@ -269,18 +275,18 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus(req *model.RiderCabinetOp
 
     // 获取仓位index
     index := req.EmptyIndex
-    step := s.Step
+    step := s.step
     if step == model.RiderCabinetOperateStepClose {
         index = req.FullIndex
     }
 
     // 获取仓门状态
-    ds = NewCabinet().DoorOpenStatus(s.Cabinet, index)
-    bin := s.Cabinet.Bin[index]
+    ds = NewCabinet().DoorOpenStatus(s.cabinet, index)
+    bin := s.cabinet.Bin[index]
 
     log.Infof(`[换电步骤 - 仓门检测]: {step:%s} %s - %d, 仓门Index: %d, 仓门状态: %s, 是否有电池: %t`,
-        s.Step,
-        s.Cabinet.Serial,
+        s.step,
+        s.cabinet.Serial,
         index,
         bin.Index,
         ds,
@@ -295,7 +301,7 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus(req *model.RiderCabinetOp
     // 验证是否放入旧电池
     if step == model.RiderCabinetOperateStepPutInto {
         if bin.Battery {
-            s.PutInElectricity = bin.Electricity
+            s.putInElectricity = bin.Electricity
             return model.CabinetBinDoorStatusClose
         }
         return model.CabinetBinDoorStatusBatteryEmpty
@@ -349,7 +355,7 @@ func (s *riderCabinetService) ProcessOpenBin(req *model.RiderCabinetOperating) (
 
     index := req.EmptyIndex
     id := req.ID
-    step := s.Step
+    step := s.step
     if step == model.RiderCabinetOperateStepOpenFull {
         index = req.FullIndex
     }
@@ -396,7 +402,7 @@ func (s *riderCabinetService) ProcessOpenBin(req *model.RiderCabinetOperating) (
     }
 
     log.Infof(`[换电步骤 - 仓门检测]: {step:%s} %d, 仓门Index: %d, 操作反馈: %t`,
-        s.Step,
+        s.step,
         id,
         index,
         status,
@@ -437,24 +443,24 @@ func (s *riderCabinetService) ProcessStatus(req *model.RiderCabinetOperateStatus
 
 // ProcessLog 处理步骤日志
 func (s *riderCabinetService) ProcessLog(req *model.RiderCabinetOperating, res *model.RiderCabinetOperateRes) bool {
-    res.Step = s.Step
-    res.Stop = s.Step == model.RiderCabinetOperateStepClose || res.Status == model.RiderCabinetOperateStatusFail
+    res.Step = s.step
+    res.Stop = s.step == model.RiderCabinetOperateStepClose || res.Status == model.RiderCabinetOperateStatusFail
 
     // 前两步是空仓, 后两步是满电仓位
     index := req.EmptyIndex
-    be := s.PutInElectricity
-    if s.Step >= model.RiderCabinetOperateStepOpenFull {
+    be := s.putInElectricity
+    if s.step >= model.RiderCabinetOperateStepOpenFull {
         index = req.FullIndex
         be = req.Electricity
     }
 
-    tools.NewLog().Infof("[换电步骤] {step:%s} %s", s.Step, res)
+    tools.NewLog().Infof("[换电步骤] {step:%s} %s", s.step, res)
 
     s.logger.Clone().
         SetBin(index).
         SetStatus(res.Status).
         SetMessage(res.Message).
-        SetStep(s.Step).
+        SetStep(s.step).
         SetElectricity(be).
         Send()
 

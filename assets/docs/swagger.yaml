@@ -6163,6 +6163,10 @@ paths:
         in: query
         name: authStatus
         type: integer
+      - description: 城市筛选
+        in: query
+        name: cityId
+        type: integer
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
@@ -6171,6 +6175,10 @@ paths:
         in: query
         name: end
         type: string
+      - description: 是否团签, 0:全部 1:团签 2:个签
+        in: query
+        name: enterprise
+        type: integer
       - description: 搜索关键词
         in: query
         name: keyword

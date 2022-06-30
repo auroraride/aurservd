@@ -6,6 +6,8 @@
 package model
 
 import (
+    "context"
+    "github.com/auroraride/aurservd/pkg/cache"
     jsoniter "github.com/json-iterator/go"
 )
 
@@ -119,4 +121,28 @@ func (c *RiderCabinetOperateRes) UnmarshalBinary(data []byte) error {
 // RiderCabinetOperateStatusReq 获取操作状态
 type RiderCabinetOperateStatusReq struct {
     UUID *string `json:"uuid" query:"uuid" trans:"操作ID"`
+}
+
+// CabinetExchangeProcess 电柜换电流程信息
+type CabinetExchangeProcess struct {
+    Step RiderCabinetOperateStep `json:"step"`
+    Info *RiderCabinetInfo       `json:"info"`
+}
+
+func (c *CabinetExchangeProcess) MarshalBinary() ([]byte, error) {
+    return jsoniter.Marshal(c)
+}
+
+func (c *CabinetExchangeProcess) UnmarshalBinary(data []byte) error {
+    return jsoniter.Unmarshal(data, c)
+}
+
+// CabinetBusying 查询电柜是否正在业务中
+func CabinetBusying(serial string) bool {
+    res := new(CabinetExchangeProcess)
+    err := cache.Get(context.Background(), serial).Scan(res)
+    if err != nil {
+        return false
+    }
+    return res != nil && res.Step > 0
 }

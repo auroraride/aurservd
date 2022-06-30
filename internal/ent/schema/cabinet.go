@@ -11,7 +11,6 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
-    "fmt"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
@@ -106,35 +105,59 @@ func (Cabinet) Indexes() []ent.Index {
     }
 }
 
-func (Cabinet) Hooks() []ent.Hook {
-    type intr interface {
-        Health() (r uint8, exists bool)
-        OldHealth(ctx context.Context) (v uint8, err error)
-        OldBrand(ctx context.Context) (v string, err error)
-        OldSerial(ctx context.Context) (v string, err error)
-        UpdatedAt() (r time.Time, exists bool)
-    }
+type cabinetMutation interface {
+    Health() (r uint8, exists bool)
+    OldHealth(ctx context.Context) (v uint8, err error)
+    OldBrand(ctx context.Context) (v string, err error)
+    OldSerial(ctx context.Context) (v string, err error)
+    UpdatedAt() (r time.Time, exists bool)
+    BatteryNum() (r uint, exists bool)
+    OldBatteryNum(ctx context.Context) (v uint, err error)
+    Bin() (r []model.CabinetBin, exists bool)
+    OldBin(ctx context.Context) (v []model.CabinetBin, err error)
+}
 
+func (Cabinet) Hooks() []ent.Hook {
     return []ent.Hook{
         hook.On(
             func(next ent.Mutator) ent.Mutator {
                 return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-                    if mt, ok := m.(intr); ok {
+                    if mt, ok := m.(cabinetMutation); ok {
                         // 监听状态变化
                         if from, err := mt.OldHealth(ctx); err == nil {
                             if to, exists := mt.Health(); exists && from != to {
-                                fmt.Println("状态发生了变化:", from, to)
                                 b, _ := mt.OldBrand(ctx)
                                 s, _ := mt.OldSerial(ctx)
                                 u, _ := mt.UpdatedAt()
                                 logging.NewHealthLog(b, s, u).SetStatus(from, to).Send()
                             }
                         }
+                        // 监听电池变化
+                        cabinetBatteryChange(mt, ctx)
                     }
                     return next.Mutate(ctx, m)
                 })
             },
             ent.OpUpdate|ent.OpUpdateOne,
         ),
+    }
+}
+
+func cabinetBatteryChange(cm cabinetMutation, ctx context.Context) {
+    nn, _ := cm.BatteryNum()
+    on, _ := cm.OldBatteryNum(ctx)
+    s, _ := cm.OldSerial(ctx)
+    diff := nn - on
+
+    if diff > 0 {
+        return
+    }
+
+    // 判断电柜是否正在执行业务
+    if model.CabinetBusying(s) {
+        diff -= 1
+    }
+
+    if diff > 0 {
     }
 }

@@ -4187,6 +4187,12 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
+                        "description": "城市筛选",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
                         "in": "query"
@@ -4195,6 +4201,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "注册结束时间, 格式为: 2022-01-01",
                         "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "是否团签, 0:全部 1:团签 2:个签",
+                        "name": "enterprise",
                         "in": "query"
                     },
                     {

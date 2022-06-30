@@ -19,7 +19,6 @@ import (
     "github.com/auroraride/aurservd/internal/ent/batterymodel"
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
-    "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/golang-module/carbon/v2"
     "github.com/jinzhu/copier"
@@ -488,13 +487,4 @@ func (s *cabinetService) Health(cab *ent.Cabinet) bool {
         cab.Health == model.CabinetHealthStatusOnline &&
         time.Now().Sub(cab.UpdatedAt).Minutes() < 5 &&
         len(cab.Bin) > 0
-}
-
-// Busy 查询电柜是否正在业务中
-func (s *cabinetService) Busy(serial string) bool {
-    n, err := cache.Get(s.ctx, serial).Int()
-    if err != nil {
-        return false
-    }
-    return n > 0
 }
