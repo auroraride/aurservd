@@ -236,20 +236,19 @@ func (s *cabinetService) Delete(req *model.CabinetDeleteReq) {
 }
 
 // UpdateStatus 立即更新电柜状态
-func (s *cabinetService) UpdateStatus(item *ent.Cabinet) {
+func (s *cabinetService) UpdateStatus(item *ent.Cabinet, params ...any) {
     var prov provider.Provider
     if item.Brand == model.CabinetBrandKaixin.Value() {
         prov = provider.NewKaixin()
     } else {
         prov = provider.NewYundong()
     }
-    up := s.orm.UpdateOne(item)
-    prov.UpdateStatus(up, item)
+    _ = prov.UpdateStatus(item, params...)
 }
 
 // DoorOpenStatus 获取柜门状态
-func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int) model.CabinetBinDoorStatus {
-    s.UpdateStatus(item)
+func (s *cabinetService) DoorOpenStatus(item *ent.Cabinet, index int, params ...any) model.CabinetBinDoorStatus {
+    s.UpdateStatus(item, params...)
     if len(item.Bin) < index {
         return model.CabinetBinDoorStatusUnknown
     }
@@ -278,7 +277,7 @@ func (s *cabinetService) Detail(id uint64) *model.CabinetDetailRes {
 }
 
 // DoorOperate 操作柜门
-func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator model.CabinetDoorOperator) (state bool, err error) {
+func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator model.CabinetDoorOperator, params ...any) (state bool, err error) {
     opId := shortuuid.New()
     now := time.Now()
     // 查找柜子和仓位
@@ -301,7 +300,6 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
         }
     }
     var prov provider.Provider
-    up := ent.Database.Cabinet.UpdateOne(item).SetHealth(model.CabinetHealthStatusOnline)
     switch brand {
     case model.CabinetBrandYundong:
         prov = provider.NewYundong()
@@ -323,7 +321,7 @@ func (s *cabinetService) DoorOperate(req *model.CabinetDoorOperateReq, operator 
         if *req.Operation == model.CabinetDoorOperateUnlock {
             item.Bin[*req.Index].Remark = ""
         }
-        _ = prov.UpdateStatus(up, item)
+        _ = prov.UpdateStatus(item, params...)
     }
     go func() {
         // 上传日志
@@ -373,10 +371,9 @@ func (s *cabinetService) Reboot(req *model.IDPostReq) bool {
     state = prov.Reboot(s.modifier.Name+"-"+opId, item.Serial)
 
     // 如果成功, 重新获取状态更新数据
-    up := ent.Database.Cabinet.UpdateOne(item).SetHealth(model.CabinetHealthStatusOnline)
     if state {
         // 更新仓位备注
-        prov.UpdateStatus(up, item)
+        _ = prov.UpdateStatus(item)
     }
 
     brand := model.CabinetBrand(item.Brand)

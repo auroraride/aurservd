@@ -24,7 +24,7 @@ type Provider interface {
     Cabinets() ([]*ent.Cabinet, error)
     Brand() string
     Logger() *Logger
-    UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) error
+    UpdateStatus(item *ent.Cabinet, params ...any) error
     DoorOperate(code, serial, operation string, door int) bool
     Reboot(code string, serial string) bool
 }
@@ -34,6 +34,32 @@ func Run() {
     kx := NewKaixin()
     if ar.Config.Cabinet.Provider {
         StartCabinetProvider(yd, kx)
+    }
+}
+
+// monitor 监控电柜变动
+// bins health num 旧数据
+func monitor(oldBins []model.CabinetBin, oldHealth uint8, oldNum uint, item *ent.Cabinet) {
+    // 监控在线变化
+    if oldHealth != item.Health {
+        logging.NewHealthLog(item.Brand, item.Serial, item.UpdatedAt).SetStatus(oldHealth, item.Health).Send()
+    }
+
+    // 监控电池变化
+    if oldNum != item.BatteryNum {
+        // 判断电柜是否正在执行业务
+        info, busy := model.CabinetProcessJob(item.Serial)
+        if busy {
+            oldNum = info.BatteryNum
+        }
+        diff := int(item.BatteryNum) - int(oldNum)
+        // 当前非业务状态或电池变动数量大于1时
+        if !busy || math.Abs(float64(diff)) > 1 {
+            logging.NewBatteryLog(item.Brand, item.Serial, int(oldNum), int(item.BatteryNum), item.UpdatedAt).
+                SetExchangeProcess(info).
+                SetBin(oldBins, item.Bin).
+                Send()
+        }
     }
 }
 
@@ -57,12 +83,8 @@ func StartCabinetProvider(providers ...Provider) {
                 }
 
                 for _, item := range items {
-                    health := item.Health
-                    oldBins := item.Bin
-                    oldNum := item.BatteryNum
                     // 未获取到电柜状态设置为离线
-                    up := ent.Database.Cabinet.UpdateOne(item).SetHealth(model.CabinetHealthStatusOffline)
-                    err = provider.UpdateStatus(up, item)
+                    err = provider.UpdateStatus(item)
 
                     if err == nil {
                         // 提交日志
@@ -77,22 +99,6 @@ func StartCabinetProvider(providers ...Provider) {
                                     }
                                 }
                             }()
-                        }
-                        // 监控在线变化
-                        if health != item.Health {
-                            logging.NewHealthLog(item.Brand, item.Serial, item.UpdatedAt).SetStatus(health, item.Health).Send()
-                        }
-                        // 监控电池变化
-                        if oldNum != item.BatteryNum {
-                            // 判断电柜是否正在执行业务
-                            info, busy := model.CabinetProcessJob(item.Serial)
-                            // 当前非业务状态或电池变动数量大于1时
-                            if !busy || math.Abs(float64(item.BatteryNum)-float64(oldNum)) > 1 {
-                                logging.NewBatteryLog(item.Brand, item.Serial, int(item.BatteryNum)-int(oldNum), item.UpdatedAt).
-                                    SetExchangeProcess(info).
-                                    SetBin(oldBins, item.Bin).
-                                    Send()
-                            }
                         }
                     }
 

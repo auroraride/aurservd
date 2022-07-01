@@ -156,7 +156,19 @@ func (p *kaixin) GetChargerErrors(n int) (errors []string) {
     return
 }
 
-func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) error {
+func (p *kaixin) UpdateStatus(item *ent.Cabinet, params ...any) error {
+    oldHealth := item.Health
+    oldBins := item.Bin
+    oldNum := item.BatteryNum
+
+    up := item.Update().SetHealth(model.CabinetHealthStatusOffline)
+
+    defer func(up *ent.CabinetUpdateOne, ctx context.Context) {
+        v, _ := up.Save(ctx)
+        *item = *v
+        monitor(oldBins, oldHealth, oldNum, item)
+    }(up, context.Background())
+
     res := new(KXStatusRes)
     url := p.GetUrl(kaixinUrlDetailData)
     client := resty.New().R().
@@ -177,6 +189,7 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) error
         p.logger.Write(fmt.Sprintf("凯信状态解析失败, serial: %s, body: %s\n", item.Serial, r.Body()))
         return err
     }
+    p.logger.Write(res)
 
     if res.State == "ok" {
         doors := res.GetBins()
@@ -223,16 +236,26 @@ func (p *kaixin) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) error
 
             bins[index] = bin
         }
-        v, _ := up.SetBatteryFullNum(full).
-            SetBatteryNum(num).
+
+        // 判断是否处于换电过程中, 如果处于换电过程中则不保存电池数量, 以避免电池变动数量大的情况出现
+        if len(params) > 0 {
+            switch params[0].(type) {
+            case bool:
+                if !params[0].(bool) {
+                    up.SetBatteryNum(num)
+                }
+                break
+            }
+        } else {
+            up.SetBatteryNum(num)
+        }
+
+        up.SetBatteryFullNum(full).
             SetBin(bins).
             SetHealth(model.CabinetHealthStatusOnline).
-            SetDoors(uint(len(doors))).
-            Save(context.Background())
-        *item = *v
+            SetDoors(uint(len(doors)))
         return nil
     }
-    p.logger.Write(res)
     return errors.New("凯信状态获取失败")
 }
 

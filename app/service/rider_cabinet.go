@@ -10,7 +10,6 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/provider"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/cache"
@@ -37,6 +36,7 @@ type riderCabinetService struct {
     alternative      bool
     info             *model.RiderCabinetInfo
     operating        *model.RiderCabinetOperating
+    batteryNum       uint // 换电开始时电池数量, 业务时应该监听业务发生时的电池数量，当业务流程中电池数量变动大于1的时候视为异常
 
     subscribe *ent.Subscribe
     debug     bool
@@ -123,8 +123,9 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
 // updateCabinetExchangeProcess 更新换电步骤信息
 func (s *riderCabinetService) updateCabinetExchangeProcess() {
     cache.Set(s.ctx, s.info.Serial, &model.CabinetExchangeProcess{
-        Info: s.operating,
-        Step: s.step,
+        Info:       s.operating,
+        Step:       s.step,
+        BatteryNum: s.batteryNum,
         Rider: &model.RiderBasic{
             ID:    s.rider.ID,
             Phone: s.rider.Phone,
@@ -177,6 +178,7 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
     s.logger = logging.NewExchangeLog(s.rider.ID, uid, info.Serial, s.rider.Phone, be.IsBatteryFull())
     s.step = model.RiderCabinetOperateStepOpenEmpty
     s.cabinet = cab
+    s.batteryNum = cab.BatteryNum
     s.info = info
     s.operating = &model.RiderCabinetOperating{
         UUID:        uid,
@@ -294,7 +296,7 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus() (ds model.CabinetBinDoo
     }
 
     // 获取仓门状态
-    ds = NewCabinet().DoorOpenStatus(s.cabinet, index)
+    ds = NewCabinet().DoorOpenStatus(s.cabinet, index, true)
     bin := s.cabinet.Bin[index]
 
     log.Infof(`[换电步骤 - 仓门检测]: {step:%s} %s - %d, 仓门Index: %d, 仓门状态: %s, 是否有电池: %t`,
@@ -314,11 +316,11 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus() (ds model.CabinetBinDoo
     // 验证是否放入旧电池
     if step == model.RiderCabinetOperateStepPutInto {
         // 凯信电柜需要绑定电池
-        bind := true
-        if s.info.Brand == model.CabinetBrandKaixin {
-            bind = provider.NewKaixin().BatteryBind(s.rider.Edges.Person.Name+"-"+shortuuid.New(), s.info.Serial, s.model, s.operating.EmptyIndex)
-        }
-        if bin.Battery && bind {
+        // bind := true
+        // if s.info.Brand == model.CabinetBrandKaixin {
+        //     bind = provider.NewKaixin().BatteryBind(s.rider.Edges.Person.Name+"-"+shortuuid.New(), s.info.Serial, s.model, s.operating.EmptyIndex)
+        // }
+        if bin.Battery {
             s.putInElectricity = bin.Electricity
             return model.CabinetBinDoorStatusClose
         }
@@ -413,7 +415,7 @@ func (s *riderCabinetService) ProcessOpenBin() (res *model.RiderCabinetOperateRe
             Role:  model.CabinetDoorOperatorRoleRider,
             Name:  r.Edges.Person.Name,
             Phone: r.Phone,
-        })
+        }, true)
         if err != nil {
             snag.Panic(err)
         }

@@ -125,9 +125,10 @@ type RiderCabinetOperateStatusReq struct {
 
 // CabinetExchangeProcess 电柜换电流程信息
 type CabinetExchangeProcess struct {
-    Step  RiderCabinetOperateStep `json:"step"`
-    Info  *RiderCabinetOperating  `json:"info"`
-    Rider *RiderBasic             `json:"rider"`
+    Step       RiderCabinetOperateStep `json:"step"`
+    Info       *RiderCabinetOperating  `json:"info"`
+    Rider      *RiderBasic             `json:"rider"`
+    BatteryNum uint                    `json:"batteryNum"` // 换电开始时电池数量, 业务时应该监听业务发生时的电池数量，当业务流程中电池数量变动大于1的时候视为异常
 }
 
 func (c *CabinetExchangeProcess) MarshalBinary() ([]byte, error) {
@@ -145,7 +146,7 @@ func CabinetProcessJob(serial string) (*CabinetExchangeProcess, bool) {
     if err != nil {
         return nil, false
     }
-    return info, info != nil && info.Step > 0
+    return info, info != nil && info.Step > 0 && info.Step <= 4
 }
 
 // CabinetBusying 查询电柜是否正在业务中

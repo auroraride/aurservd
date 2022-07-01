@@ -3578,6 +3578,107 @@
                 }
             }
         },
+        "/manager/v1/exchange": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M8003 换电列表",
+                "operationId": "ManagerExchangeList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "筛选对象 0:全部 1:个签 2:团签",
+                        "name": "aimed",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选店员(手机号或姓名)",
+                        "name": "employee",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选骑手姓名或电话",
+                        "name": "keyword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "换电类别 0:全部 1:电柜 2:门店",
+                        "name": "target",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.ExchangeManagerListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/fault/{id}": {
             "put": {
                 "consumes": [
@@ -4199,6 +4300,12 @@
                         "type": "integer",
                         "description": "是否团签, 0:全部 1:团签 2:个签",
                         "name": "enterprise",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "团签企业ID, `enterprise = 1`时才会生效",
+                        "name": "enterpriseId",
                         "in": "query"
                     },
                     {
@@ -8228,6 +8335,30 @@
                 }
             }
         },
+        "model.CabinetBasicInfo": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
+                    "type": "string",
+                    "enum": [
+                        "KAIXIN",
+                        "YUNDONG"
+                    ]
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "电柜名称",
+                    "type": "string"
+                },
+                "serial": {
+                    "description": "电柜编码",
+                    "type": "string"
+                }
+            }
+        },
         "model.CabinetBin": {
             "type": "object",
             "properties": {
@@ -8342,7 +8473,7 @@
                     "type": "string"
                 },
                 "serial": {
-                    "description": "电柜原始编码 ",
+                    "description": "电柜编码 ",
                     "type": "string"
                 },
                 "status": {
@@ -8423,7 +8554,7 @@
                     "type": "string"
                 },
                 "serial": {
-                    "description": "电柜原始编码 ",
+                    "description": "电柜编码 ",
                     "type": "string"
                 },
                 "sn": {
@@ -8663,7 +8794,7 @@
                     "type": "string"
                 },
                 "serial": {
-                    "description": "电柜原始编码 ",
+                    "description": "电柜编码 ",
                     "type": "string"
                 },
                 "sn": {
@@ -9551,6 +9682,62 @@
                 "fullIndex": {
                     "description": "满电仓位",
                     "type": "integer"
+                }
+            }
+        },
+        "model.ExchangeManagerListRes": {
+            "type": "object",
+            "properties": {
+                "cabinet": {
+                    "description": "电柜, 门店换电无此字段",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.CabinetBasicInfo"
+                        }
+                    ]
+                },
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "enterprise": {
+                    "description": "团签企业, 个签无此字段",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseBasic"
+                        }
+                    ]
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "骑手姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "骑手电话",
+                    "type": "string"
+                },
+                "store": {
+                    "description": "门店, 电柜换电无此字段",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Store"
+                        }
+                    ]
+                },
+                "time": {
+                    "description": "换电时间",
+                    "type": "string"
                 }
             }
         },

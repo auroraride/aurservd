@@ -75,12 +75,13 @@ type RiderSampleInfo struct {
 type RiderListReq struct {
     PaginationReq
 
-    Keyword    *string `json:"keyword" query:"keyword"`       // 搜索关键词
-    Modified   *bool   `json:"modified" query:"modified"`     // 是否被修改过
-    Start      *string `json:"start" query:"start"`           // 注册开始时间, 格式为: 2022-01-01
-    End        *string `json:"end" query:"end"`               // 注册结束时间, 格式为: 2022-01-01
-    Enterprise *uint8  `json:"enterprise" query:"enterprise"` // 是否团签, 0:全部 1:团签 2:个签
-    CityID     *uint64 `json:"cityId" query:"cityId"`         // 城市筛选
+    Keyword      *string `json:"keyword" query:"keyword"`           // 搜索关键词
+    Modified     *bool   `json:"modified" query:"modified"`         // 是否被修改过
+    Start        *string `json:"start" query:"start"`               // 注册开始时间, 格式为: 2022-01-01
+    End          *string `json:"end" query:"end"`                   // 注册结束时间, 格式为: 2022-01-01
+    Enterprise   *uint8  `json:"enterprise" query:"enterprise"`     // 是否团签, 0:全部 1:团签 2:个签
+    EnterpriseID *uint64 `json:"enterpriseId" query:"enterpriseId"` // 团签企业ID, `enterprise = 1`时才会生效
+    CityID       *uint64 `json:"cityId" query:"cityId"`             // 城市筛选
 
     Status          *uint8            `json:"status" enums:"0,1,2,3,4" query:"status"`                           // 用户状态 1:正常 2:已禁用 3:黑名单
     SubscribeStatus *uint8            `json:"subscribeStatus" enums:"0,1,2,3,4,5,11,99" query:"subscribeStatus"` // 业务状态 0:未激活 1:计费中 2:寄存中 3:已逾期 4:已退订 5:已取消 11: 即将到期 99:未使用

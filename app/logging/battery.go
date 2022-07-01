@@ -21,6 +21,8 @@ type BatteryLog struct {
     Number   int    `json:"number" sls:"变动数量" index:"doc"`
     Exchange string `json:"exchange" sls:"换电信息" index:"doc"`
     Time     string `json:"time" sls:"时间" index:"doc"`
+    From     int    `json:"from" sls:"变动前数量" index:"doc"`
+    To       int    `json:"to" sls:"变动后数量" index:"doc"`
 }
 
 func (l *BatteryLog) GetLogstoreName() string {
@@ -31,12 +33,14 @@ func (l *BatteryLog) Send() {
     PutLog(l)
 }
 
-func NewBatteryLog(brand, serial string, num int, updatedAt time.Time) *BatteryLog {
+func NewBatteryLog(brand, serial string, from, to int, updatedAt time.Time) *BatteryLog {
     return &BatteryLog{
         Brand:  model.CabinetBrand(brand).String(),
         Serial: serial,
         Time:   updatedAt.Format(carbon.DateTimeLayout),
-        Number: num,
+        Number: to - from,
+        From:   from,
+        To:     to,
     }
 }
 

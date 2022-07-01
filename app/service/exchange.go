@@ -10,6 +10,7 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/rider"
@@ -178,7 +179,7 @@ func (s *exchangeService) RiderList(riderID uint64, req model.PaginationReq) *mo
 }
 
 // listBasicQuery 列表基础查询语句
-func (s *exchangeService) listBasicQuery(req *model.ExchangeListReq) *ent.ExchangeQuery {
+func (s *exchangeService) listBasicQuery(req model.ExchangeListReq) *ent.ExchangeQuery {
     tt := tools.NewTime()
 
     q := ent.Database.Exchange.
@@ -186,10 +187,7 @@ func (s *exchangeService) listBasicQuery(req *model.ExchangeListReq) *ent.Exchan
         WithRider(func(rq *ent.RiderQuery) {
             rq.WithPerson()
         }).
-        WithEnterprise().
-        WithSubscribe(func(sq *ent.SubscribeQuery) {
-            sq.WithPlan()
-        })
+        WithEnterprise()
 
     if req.Start != nil {
         q.Where(exchange.CreatedAtGTE(tt.ParseDateStringX(*req.Start)))
@@ -223,7 +221,11 @@ func (s *exchangeService) listBasicQuery(req *model.ExchangeListReq) *ent.Exchan
 }
 
 func (s *exchangeService) EmployeeList(req *model.ExchangeListReq) *model.PaginationRes {
-    q := s.listBasicQuery(req).Where(exchange.EmployeeID(s.employee.ID))
+    q := s.listBasicQuery(*req).
+        WithSubscribe(func(sq *ent.SubscribeQuery) {
+            sq.WithPlan()
+        }).
+        Where(exchange.EmployeeID(s.employee.ID))
 
     return model.ParsePaginationResponse(
         q,
@@ -259,4 +261,77 @@ func (s *exchangeService) EmployeeList(req *model.ExchangeListReq) *model.Pagina
             return
         },
     )
+}
+
+func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.PaginationRes {
+    q := s.listBasicQuery(req.ExchangeListReq).
+        WithCity().
+        WithStore().
+        WithCabinet()
+
+    switch req.Target {
+    case 1:
+        q.Where(exchange.CabinetIDNotNil())
+        break
+    case 2:
+        q.Where(exchange.StoreIDNotNil())
+        break
+    }
+
+    if req.CityID != 0 {
+        q.Where(exchange.CityID(req.CityID))
+    }
+
+    if req.Employee != "" {
+        q.Where(
+            exchange.HasEmployeeWith(
+                employee.Or(
+                    employee.NameContainsFold(req.Employee),
+                    employee.PhoneContainsFold(req.Employee),
+                ),
+            ),
+        )
+    }
+
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Exchange) model.ExchangeManagerListRes {
+        res := model.ExchangeManagerListRes{
+            ID:    item.ID,
+            Name:  item.Edges.Rider.Edges.Person.Name,
+            Phone: item.Edges.Rider.Phone,
+            Time:  item.CreatedAt.Format(carbon.DateTimeLayout),
+            Model: item.Model,
+        }
+
+        e := item.Edges.Enterprise
+        if e != nil {
+            res.Enterprise = &model.EnterpriseBasic{
+                ID:   e.ID,
+                Name: e.Name,
+            }
+        }
+
+        es := item.Edges.Store
+        if es != nil {
+            res.Store = &model.Store{
+                ID:   es.ID,
+                Name: es.Name,
+            }
+        }
+
+        ec := item.Edges.City
+        if ec != nil {
+            res.City = model.City{ID: ec.ID, Name: ec.Name}
+        }
+
+        cab := item.Edges.Cabinet
+        if cab != nil {
+            res.Cabinet = &model.CabinetBasicInfo{
+                ID:     cab.ID,
+                Brand:  model.CabinetBrand(cab.Brand),
+                Serial: cab.Serial,
+                Name:   cab.Name,
+            }
+        }
+        return res
+    })
 }

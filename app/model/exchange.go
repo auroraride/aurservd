@@ -65,3 +65,22 @@ type ExchangeEmployeeListRes struct {
     Enterprise *EnterpriseBasic `json:"enterprise,omitempty"` // 团签企业, 个签无此字段
     Plan       *Plan            `json:"plan,omitempty"`       // 骑士卡, 团签无此字段
 }
+
+type ExchangeManagerListReq struct {
+    ExchangeListReq
+    Target   uint8  `json:"target" query:"target"`     // 换电类别 0:全部 1:电柜 2:门店
+    CityID   uint64 `json:"cityId" query:"cityId"`     // 城市
+    Employee string `json:"employee" query:"employee"` // 筛选店员(手机号或姓名)
+}
+
+type ExchangeManagerListRes struct {
+    ID         uint64            `json:"id"`
+    Name       string            `json:"name"`                 // 骑手姓名
+    Phone      string            `json:"phone"`                // 骑手电话
+    Time       string            `json:"time"`                 // 换电时间
+    Model      string            `json:"model"`                // 电池型号
+    Enterprise *EnterpriseBasic  `json:"enterprise,omitempty"` // 团签企业, 个签无此字段
+    Store      *Store            `json:"store,omitempty"`      // 门店, 电柜换电无此字段
+    Cabinet    *CabinetBasicInfo `json:"cabinet,omitempty"`    // 电柜, 门店换电无此字段
+    City       City              `json:"city"`                 // 城市
+}

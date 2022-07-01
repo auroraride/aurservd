@@ -176,7 +176,7 @@ func (p *yundong) Brand() string {
     return "云动"
 }
 
-func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) error {
+func (p *yundong) UpdateStatus(item *ent.Cabinet, params ...any) error {
     res := new(YDStatusRes)
     _, err := p.RequestClient(false).
         SetResult(res).
@@ -184,14 +184,27 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) erro
     // token 请求失败, 重新请求token后重试
     if res.Code == 1000 && p.retryTimes < 1 {
         p.retryTimes += 1
-        return p.UpdateStatus(up, item)
+        return p.UpdateStatus(item)
     }
+
+    up := item.Update().SetHealth(model.CabinetHealthStatusOffline)
+
+    oldHealth := item.Health
+    oldBins := item.Bin
+    oldNum := item.BatteryNum
+
+    defer func(up *ent.CabinetUpdateOne, ctx context.Context) {
+        v, _ := up.Save(ctx)
+        *item = *v
+        monitor(oldBins, oldHealth, oldNum, item)
+    }(up, context.Background())
 
     // log.Infof("云动状态获取结果：%s", string(r.Body()))
     if err != nil {
         p.logger.Write(fmt.Sprintf("云动状态获取失败, serial: %s, err: %s, res: %s\n", item.Serial, err.Error(), res))
         return err
     }
+    p.logger.Write(res)
 
     // 仓位信息
     if res.Code == 0 {
@@ -237,16 +250,26 @@ func (p *yundong) UpdateStatus(up *ent.CabinetUpdateOne, item *ent.Cabinet) erro
 
             bins[index] = bin
         }
-        v, _ := up.SetBin(bins).
-            SetBatteryNum(num).
+
+        // 判断是否处于换电过程中, 如果处于换电过程中则不保存电池数量, 以避免电池变动数量大的情况出现
+        if len(params) > 0 {
+            switch params[0].(type) {
+            case bool:
+                if !params[0].(bool) {
+                    up.SetBatteryNum(num)
+                }
+                break
+            }
+        } else {
+            up.SetBatteryNum(num)
+        }
+
+        up.SetBin(bins).
             SetBatteryFullNum(full).
             SetHealth(uint8(res.Data.Isonline)).
-            SetDoors(uint(len(doors))).
-            Save(context.Background())
-        *item = *v
+            SetDoors(uint(len(doors)))
         return nil
     }
-    p.logger.Write(res)
     return errors.New("云动状态获取失败")
 }
 

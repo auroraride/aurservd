@@ -467,7 +467,11 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
     }
     if req.Enterprise != nil && *req.Enterprise != 0 {
         if *req.Enterprise == 1 {
-            q.Where(rider.EnterpriseIDNotNil())
+            if req.EnterpriseID == nil {
+                q.Where(rider.EnterpriseIDNotNil())
+            } else {
+                q.Where(rider.EnterpriseID(*req.EnterpriseID))
+            }
         } else {
             q.Where(rider.EnterpriseIDIsNil())
         }

@@ -54,11 +54,18 @@ type Cabinet struct {
     BranchID *uint64      `json:"branchId"`                                                      // 网点
     Status   uint8        `json:"status" enums:"0,1,2"`                                          // 电柜状态 0未投放 1运营中 2维护中
     Brand    CabinetBrand `json:"brand" validate:"required" trans:"品牌" enums:"KAIXIN,YUNDONG"` // KAIXIN(凯信) YUNDONG(云动)
-    Serial   string       `json:"serial" validate:"required" trans:"电柜原始编码"`
+    Serial   string       `json:"serial" validate:"required" trans:"电柜编码"`
     Name     string       `json:"name" validate:"required" trans:"电柜名称"`
     Doors    uint         `json:"doors"` // 柜门数量
     Remark   *string      `json:"remark" trans:"备注"`
     Health   *uint8       `json:"health"` // 在线状态 0离线 1在线 2故障
+}
+
+type CabinetBasicInfo struct {
+    ID     uint64       `json:"id"`
+    Brand  CabinetBrand `json:"brand" enums:"KAIXIN,YUNDONG"` // 品牌: KAIXIN(凯信) YUNDONG(云动)
+    Serial string       `json:"serial"`                       // 电柜编码
+    Name   string       `json:"name"`                         // 电柜名称
 }
 
 // CabinetCreateReq 电柜创建请求

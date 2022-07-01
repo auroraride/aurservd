@@ -210,7 +210,7 @@ func (s *enterpriseRiderService) ChooseBatteryModel(req *model.EnterpriseRiderSu
     sub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(
         subscribe.EnterpriseID(*s.rider.EnterpriseID),
         subscribe.RiderID(s.rider.ID),
-        subscribe.Status(model.SubscribeStatusUsing),
+        subscribe.StatusIn(model.SubscribeStatusUsing, model.SubscribeStatusInactive),
     ).Order(ent.Desc(subscribe.FieldCreatedAt)).First(s.ctx)
     if sub != nil && sub.StartAt != nil {
         snag.Panic("已被激活, 无法重新选择电池")

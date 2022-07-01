@@ -879,6 +879,23 @@ definitions:
         description: 订阅ID
         type: integer
     type: object
+  model.CabinetBasicInfo:
+    properties:
+      brand:
+        description: 品牌 KAIXIN(凯信) YUNDONG(云动)
+        enum:
+        - KAIXIN
+        - YUNDONG
+        type: string
+      id:
+        type: integer
+      name:
+        description: 电柜名称
+        type: string
+      serial:
+        description: 电柜编码
+        type: string
+    type: object
   model.CabinetBin:
     properties:
       battery:
@@ -958,7 +975,7 @@ definitions:
         description: '备注 '
         type: string
       serial:
-        description: '电柜原始编码 '
+        description: '电柜编码 '
         type: string
       status:
         description: 电柜状态 0未投放 1运营中 2维护中
@@ -1017,7 +1034,7 @@ definitions:
         description: '备注 '
         type: string
       serial:
-        description: '电柜原始编码 '
+        description: '电柜编码 '
         type: string
       sn:
         description: 平台编码
@@ -1185,7 +1202,7 @@ definitions:
         description: '备注 '
         type: string
       serial:
-        description: '电柜原始编码 '
+        description: '电柜编码 '
         type: string
       sn:
         description: 平台编码
@@ -1821,6 +1838,39 @@ definitions:
       fullIndex:
         description: 满电仓位
         type: integer
+    type: object
+  model.ExchangeManagerListRes:
+    properties:
+      cabinet:
+        allOf:
+        - $ref: '#/definitions/model.CabinetBasicInfo'
+        description: 电柜, 门店换电无此字段
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      enterprise:
+        allOf:
+        - $ref: '#/definitions/model.EnterpriseBasic'
+        description: 团签企业, 个签无此字段
+      id:
+        type: integer
+      model:
+        description: 电池型号
+        type: string
+      name:
+        description: 骑手姓名
+        type: string
+      phone:
+        description: 骑手电话
+        type: string
+      store:
+        allOf:
+        - $ref: '#/definitions/model.Store'
+        description: 门店, 电柜换电无此字段
+      time:
+        description: 换电时间
+        type: string
     type: object
   model.ExchangeOverview:
     properties:
@@ -5773,6 +5823,70 @@ paths:
       summary: M9007 编辑站点
       tags:
       - '[M]管理接口'
+  /manager/v1/exchange:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerExchangeList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 筛选对象 0:全部 1:个签 2:团签
+        in: query
+        name: aimed
+        type: integer
+      - description: 城市
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 筛选店员(手机号或姓名)
+        in: query
+        name: employee
+        type: string
+      - description: '筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
+        in: query
+        name: end
+        type: string
+      - description: 筛选骑手姓名或电话
+        in: query
+        name: keyword
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: '筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
+        in: query
+        name: start
+        type: string
+      - description: 换电类别 0:全部 1:电柜 2:门店
+        in: query
+        name: target
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.ExchangeManagerListRes'
+                  type: array
+              type: object
+      summary: M8003 换电列表
+      tags:
+      - '[M]管理接口'
   /manager/v1/fault/{id}:
     put:
       consumes:
@@ -6178,6 +6292,10 @@ paths:
       - description: 是否团签, 0:全部 1:团签 2:个签
         in: query
         name: enterprise
+        type: integer
+      - description: 团签企业ID, `enterprise = 1`时才会生效
+        in: query
+        name: enterpriseId
         type: integer
       - description: 搜索关键词
         in: query
