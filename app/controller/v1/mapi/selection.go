@@ -102,3 +102,17 @@ func (*selection) Branch(c echo.Context) (err error) {
     ctx := app.Context(c)
     return ctx.SendResponse(service.NewSelection().Branch())
 }
+
+// Enterprise
+// @ID           ManagerSelectionEnterprise
+// @Router       /manager/v1/selection/enterprise [GET]
+// @Summary      MB007 筛选企业
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Success      200  {object}  []model.CascaderOptionLevel2  "请求成功"
+func (*selection) Enterprise(c echo.Context) (err error) {
+    ctx := app.Context(c)
+    return ctx.SendResponse(service.NewSelection().Enterprise())
+}

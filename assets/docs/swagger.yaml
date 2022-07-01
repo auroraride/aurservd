@@ -6466,6 +6466,29 @@ paths:
       summary: MB004 筛选店员
       tags:
       - '[M]管理接口'
+  /manager/v1/selection/enterprise:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionEnterprise
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CascaderOptionLevel2'
+            type: array
+      summary: MB007 筛选企业
+      tags:
+      - '[M]管理接口'
   /manager/v1/selection/plan:
     get:
       consumes:

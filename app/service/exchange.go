@@ -11,6 +11,8 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/exchange"
+    "github.com/auroraride/aurservd/internal/ent/person"
+    "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
@@ -195,6 +197,17 @@ func (s *exchangeService) listBasicQuery(req *model.ExchangeListReq) *ent.Exchan
 
     if req.End != nil {
         q.Where(exchange.CreatedAtLTE(tt.ParseDateStringX(*req.End)))
+    }
+
+    if req.Keyword != nil {
+        q.Where(
+            exchange.HasRiderWith(
+                rider.Or(
+                    rider.PhoneContainsFold(*req.Keyword),
+                    rider.HasPersonWith(person.NameContainsFold(*req.Keyword)),
+                ),
+            ),
+        )
     }
 
     switch req.Aimed {

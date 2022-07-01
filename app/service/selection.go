@@ -294,3 +294,43 @@ func (s *selectionService) Branch() (items []*model.CascaderOptionLevel2) {
 
     return
 }
+
+func (s *selectionService) Enterprise() (items []*model.CascaderOptionLevel2) {
+    res, _ := ent.Database.Enterprise.QueryNotDeleted().WithCity().All(s.ctx)
+
+    smap := make(map[uint64]*model.CascaderOptionLevel2)
+
+    for _, r := range res {
+        c := r.Edges.City
+        cid := c.ID
+        cname := c.Name
+
+        ol, ok := smap[cid]
+        if !ok {
+            ol = &model.CascaderOptionLevel2{
+                SelectOption: model.SelectOption{
+                    Value: cid,
+                    Label: cname,
+                },
+                Children: make([]model.SelectOption, 0),
+            }
+            smap[cid] = ol
+        }
+
+        ol.Children = append(ol.Children, model.SelectOption{
+            Value: r.ID,
+            Label: fmt.Sprintf("%s ", r.Name),
+        })
+    }
+
+    items = make([]*model.CascaderOptionLevel2, 0)
+    for _, m := range smap {
+        items = append(items, m)
+    }
+
+    sort.Slice(items, func(i, j int) bool {
+        return items[i].Value < items[j].Value
+    })
+
+    return
+}
