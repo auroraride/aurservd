@@ -198,6 +198,11 @@ func (s *enterpriseRiderService) BatteryModels(req *model.EnterprisePriceBattery
 
 // ChooseBatteryModel 选择电池型号
 func (s *enterpriseRiderService) ChooseBatteryModel(req *model.EnterpriseRiderSubscribeChooseReq) model.EnterpriseRiderSubscribeChooseRes {
+    // 查询骑手是否签约过
+    if !NewContract().Effective(s.rider) {
+        snag.Panic("请先签约")
+    }
+
     enterpriseID := s.rider.EnterpriseID
     if enterpriseID == nil {
         snag.Panic("非企业骑手")
