@@ -7,6 +7,8 @@ package service
 
 import (
     "context"
+    "entgo.io/ent/dialect/sql"
+    "entgo.io/ent/dialect/sql/sqljson"
     "errors"
     "github.com/alibabacloud-go/tea/tea"
     sls "github.com/aliyun/aliyun-log-go-sdk"
@@ -24,6 +26,7 @@ import (
     "github.com/jinzhu/copier"
     "github.com/lithammer/shortuuid/v4"
     log "github.com/sirupsen/logrus"
+    "regexp"
     "sort"
     "strconv"
     "time"
@@ -484,4 +487,81 @@ func (s *cabinetService) Health(cab *ent.Cabinet) bool {
         cab.Health == model.CabinetHealthStatusOnline &&
         time.Now().Sub(cab.UpdatedAt).Minutes() < 5 &&
         len(cab.Bin) > 0
+}
+
+func (s *cabinetService) Data(req *model.CabinetDataReq) *model.PaginationRes {
+    q := s.orm.QueryNotDeleted().WithBms()
+    switch req.Status {
+    case 1:
+        q.Where(cabinet.Status(model.CabinetHealthStatusOnline))
+        break
+    case 2:
+        q.Where(cabinet.Status(model.CabinetHealthStatusOffline))
+        break
+    case 3:
+        q.Modify(func(sel *sql.Selector) {
+            sel.Where(sqljson.ValueContains(sel.C(cabinet.FieldBin), []ar.Map{{"doorHealth": false}}))
+        })
+        break
+    }
+
+    if req.Name != "" {
+        q.Where(cabinet.NameContainsFold(req.Name))
+    }
+
+    if req.Serial != "" {
+        q.Where(cabinet.SerialContainsFold(req.Serial))
+    }
+
+    if req.CityID != 0 {
+        q.Where(cabinet.CityID(req.CityID))
+    }
+
+    if req.Brand != "" {
+        q.Where(cabinet.Brand(req.Brand.Value()))
+    }
+
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Cabinet) model.CabinetDataRes {
+        res := model.CabinetDataRes{
+            Name:       item.Name,
+            Serial:     item.Serial,
+            Model:      "",
+            Brand:      model.CabinetBrand(item.Brand).String(),
+            Online:     item.Health == model.CabinetHealthStatusOnline,
+            BinNum:     int(item.Doors),
+            BatteryNum: int(item.BatteryNum),
+            EmptyNum:   0,
+            LockNum:    0,
+            FullNum:    0,
+        }
+
+        bms := item.Edges.Bms
+        if len(bms) > 0 {
+            res.Model = regexp.MustCompile(`(?m)(\d+)V\d+AH`).ReplaceAllString(bms[0].Model, "${1}V")
+        }
+
+        res.Bins = make([]model.CabinetDataBin, len(item.Bin))
+        for i, bin := range item.Bin {
+
+            if bin.Battery {
+                if bin.Full {
+                    res.Bins[i].Status = model.CabinetDataBinStatusFull
+                    res.FullNum += 1
+                } else {
+                    res.Bins[i].Status = model.CabinetDataBinStatusCharging
+                }
+            } else {
+                res.Bins[i].Status = model.CabinetDataBinStatusEmpty
+                res.EmptyNum += 1
+            }
+
+            if !bin.DoorHealth {
+                res.Bins[i].Status = model.CabinetDataBinStatusLock
+                res.Bins[i].Remark = bin.Remark
+                res.LockNum += 1
+            }
+        }
+
+        return res
+    })
 }

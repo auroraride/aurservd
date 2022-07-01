@@ -2105,6 +2105,105 @@
                 }
             }
         },
+        "/manager/v1/cabinet/data": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M5010 电柜数据表",
+                "operationId": "ManagerCabinetData",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "KAIXIN",
+                            "YUNDONG"
+                        ],
+                        "type": "string",
+                        "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
+                        "name": "brand",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "城市",
+                        "name": "cityId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                        ],
+                        "type": "integer",
+                        "description": "电柜状态 0:全部 1:在线 2:离线 3:锁仓",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.CabinetDataRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/cabinet/door-operate": {
             "post": {
                 "consumes": [
@@ -2386,6 +2485,54 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/cabint/fault/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M5009 处理故障",
+                "operationId": "CabinetFaultDeal",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "故障ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "desc",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CabinetFaultDealReq"
+                        }
                     }
                 ],
                 "responses": {
@@ -3674,54 +3821,6 @@
                                     }
                                 }
                             ]
-                        }
-                    }
-                }
-            }
-        },
-        "/manager/v1/fault/{id}": {
-            "put": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "[M]管理接口"
-                ],
-                "summary": "M5009 处理故障",
-                "operationId": "CabinetFaultDeal",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "管理员校验token",
-                        "name": "X-Manager-Token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "故障ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "desc",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.CabinetFaultDealReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "请求成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -8484,6 +8583,77 @@
                         1,
                         2
                     ]
+                }
+            }
+        },
+        "model.CabinetDataBin": {
+            "type": "object",
+            "properties": {
+                "remark": {
+                    "description": "备注信息, 仅状态`3 锁仓`有此字段",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "状态 0:无电池 1:有电池未满电 2:满电 3:锁仓, 状态值大的优先显示",
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                }
+            }
+        },
+        "model.CabinetDataRes": {
+            "type": "object",
+            "properties": {
+                "batteryNum": {
+                    "description": "电池数量",
+                    "type": "integer"
+                },
+                "binNum": {
+                    "description": "仓位数量",
+                    "type": "integer"
+                },
+                "bins": {
+                    "description": "仓位信息",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CabinetDataBin"
+                    }
+                },
+                "brand": {
+                    "description": "品牌",
+                    "type": "string"
+                },
+                "emptyNum": {
+                    "description": "空仓数量",
+                    "type": "integer"
+                },
+                "fullNum": {
+                    "description": "满电数",
+                    "type": "integer"
+                },
+                "lockNum": {
+                    "description": "锁仓数",
+                    "type": "integer"
+                },
+                "model": {
+                    "description": "型号",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "名称",
+                    "type": "string"
+                },
+                "online": {
+                    "description": "是否在线",
+                    "type": "boolean"
+                },
+                "serial": {
+                    "description": "编号",
+                    "type": "string"
                 }
             }
         },

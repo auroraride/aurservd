@@ -159,7 +159,7 @@ func (*cabinet) Fault(c echo.Context) (err error) {
 
 // FaultDeal
 // @ID           CabinetFaultDeal
-// @Router       /manager/v1/fault/{id} [PUT]
+// @Router       /manager/v1/cabint/fault/{id} [PUT]
 // @Summary      M5009 处理故障
 // @Tags         [M]管理接口
 // @Accept       json
@@ -172,4 +172,19 @@ func (*cabinet) FaultDeal(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetFaultDealReq](c)
     service.NewCabinetFaultWithModifier(ctx.Modifier).Deal(req)
     return ctx.SendResponse()
+}
+
+// Data
+// @ID           ManagerCabinetData
+// @Router       /manager/v1/cabinet/data [GET]
+// @Summary      M5010 电柜数据表
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query   model.CabinetDataReq  false  "筛选数据"
+// @Success      200  {object}  model.PaginationRes{items=[]model.CabinetDataRes}  "请求成功"
+func (*cabinet) Data(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.CabinetDataReq](c)
+    return ctx.SendResponse(service.NewCabinet().Data(req))
 }

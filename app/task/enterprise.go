@@ -7,6 +7,7 @@ package task
 
 import (
     "github.com/auroraride/aurservd/app/service"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/robfig/cron/v3"
     log "github.com/sirupsen/logrus"
 )
@@ -19,6 +20,10 @@ func NewEnterprise() *enterpriseTask {
 }
 
 func (t *enterpriseTask) Start() {
+    if !ar.Config.App.Task {
+        return
+    }
+
     go t.Do()
 
     c := cron.New()

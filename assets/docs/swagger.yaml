@@ -990,6 +990,58 @@ definitions:
     - name
     - serial
     type: object
+  model.CabinetDataBin:
+    properties:
+      remark:
+        description: 备注信息, 仅状态`3 锁仓`有此字段
+        type: string
+      status:
+        description: 状态 0:无电池 1:有电池未满电 2:满电 3:锁仓, 状态值大的优先显示
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        type: integer
+    type: object
+  model.CabinetDataRes:
+    properties:
+      batteryNum:
+        description: 电池数量
+        type: integer
+      binNum:
+        description: 仓位数量
+        type: integer
+      bins:
+        description: 仓位信息
+        items:
+          $ref: '#/definitions/model.CabinetDataBin'
+        type: array
+      brand:
+        description: 品牌
+        type: string
+      emptyNum:
+        description: 空仓数量
+        type: integer
+      fullNum:
+        description: 满电数
+        type: integer
+      lockNum:
+        description: 锁仓数
+        type: integer
+      model:
+        description: 型号
+        type: string
+      name:
+        description: 名称
+        type: string
+      online:
+        description: 是否在线
+        type: boolean
+      serial:
+        description: 编号
+        type: string
+    type: object
   model.CabinetDetailRes:
     properties:
       bins:
@@ -4940,6 +4992,70 @@ paths:
       summary: M5003 编辑电柜
       tags:
       - '[M]管理接口'
+  /manager/v1/cabinet/data:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerCabinetData
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 品牌 KAIXIN(凯信) YUNDONG(云动)
+        enum:
+        - KAIXIN
+        - YUNDONG
+        in: query
+        name: brand
+        type: string
+      - description: 城市
+        in: query
+        name: cityId
+        type: integer
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 电柜名称
+        in: query
+        name: name
+        type: string
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 电柜编号
+        in: query
+        name: serial
+        type: string
+      - description: 电柜状态 0:全部 1:在线 2:离线 3:锁仓
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        in: query
+        name: status
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.CabinetDataRes'
+                  type: array
+              type: object
+      summary: M5010 电柜数据表
+      tags:
+      - '[M]管理接口'
   /manager/v1/cabinet/door-operate:
     post:
       consumes:
@@ -5046,6 +5162,38 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M5007 重启电柜
+      tags:
+      - '[M]管理接口'
+  /manager/v1/cabint/fault/{id}:
+    put:
+      consumes:
+      - application/json
+      operationId: CabinetFaultDeal
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 故障ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CabinetFaultDealReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M5009 处理故障
       tags:
       - '[M]管理接口'
   /manager/v1/city:
@@ -5885,38 +6033,6 @@ paths:
                   type: array
               type: object
       summary: M8003 换电列表
-      tags:
-      - '[M]管理接口'
-  /manager/v1/fault/{id}:
-    put:
-      consumes:
-      - application/json
-      operationId: CabinetFaultDeal
-      parameters:
-      - description: 管理员校验token
-        in: header
-        name: X-Manager-Token
-        required: true
-        type: string
-      - description: 故障ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: desc
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/model.CabinetFaultDealReq'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 请求成功
-          schema:
-            $ref: '#/definitions/model.StatusResponse'
-      summary: M5009 处理故障
       tags:
       - '[M]管理接口'
   /manager/v1/inventory:

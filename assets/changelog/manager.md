@@ -4,6 +4,7 @@
 
 - [MB007 筛选企业](http://localhost:5533/docs#tag/M/operation/ManagerSelectionEnterprise)
 - [M8003 换电列表](http://localhost:5533/docs#tag/M/operation/ManagerExchangeList)
+- [M5010 电柜数据表](http://localhost:5533/docs#tag/M/operation/ManagerCabinetData)
 
 
 

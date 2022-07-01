@@ -98,5 +98,10 @@ func (Cabinet) Indexes() []ent.Index {
                 dialect.Postgres: "GIN",
             }),
         ),
+        index.Fields("bin").Annotations(
+            entsql.IndexTypes(map[string]string{
+                dialect.Postgres: "GIN",
+            }),
+        ),
     }
 }

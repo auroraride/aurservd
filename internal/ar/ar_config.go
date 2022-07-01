@@ -58,6 +58,7 @@ type config struct {
         BodyLimit    string
         RateLimit    float64
         CabinetDebug bool
+        Task         bool
         Debug        struct {
             Phone map[string]bool
         }

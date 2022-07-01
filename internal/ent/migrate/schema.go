@@ -493,6 +493,16 @@ var (
 					},
 				},
 			},
+			{
+				Name:    "cabinet_bin",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetColumns[14]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
 		},
 	}
 	// CabinetFaultColumns holds the columns for the "cabinet_fault" table.

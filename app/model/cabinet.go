@@ -282,3 +282,39 @@ type YundongDeployInfo struct {
     Contact  string  `json:"contact"`
     City     string  `json:"city"`
 }
+
+type CabinetDataReq struct {
+    PaginationReq
+
+    Status uint8        `json:"status" enums:"0,1,2,3"`       // 电柜状态 0:全部 1:在线 2:离线 3:锁仓
+    Name   string       `json:"name"`                         // 电柜名称
+    Serial string       `json:"serial"`                       // 电柜编号
+    CityID uint64       `json:"cityId"`                       // 城市
+    Brand  CabinetBrand `json:"brand" enums:"KAIXIN,YUNDONG"` // 品牌 KAIXIN(凯信) YUNDONG(云动)
+}
+
+const (
+    CabinetDataBinStatusEmpty    uint8 = iota // 无电池
+    CabinetDataBinStatusCharging              // 充电中
+    CabinetDataBinStatusFull                  // 满电
+    CabinetDataBinStatusLock                  // 锁仓
+)
+
+type CabinetDataBin struct {
+    Status uint8  `json:"status" enums:"0,1,2,3"` // 状态 0:无电池 1:有电池未满电 2:满电 3:锁仓, 状态值大的优先显示
+    Remark string `json:"remark,omitempty"`       // 备注信息, 仅状态`3 锁仓`有此字段
+}
+
+type CabinetDataRes struct {
+    Name       string           `json:"name"`       // 名称
+    Serial     string           `json:"serial"`     // 编号
+    Model      string           `json:"model"`      // 型号
+    Brand      string           `json:"brand"`      // 品牌
+    Online     bool             `json:"online"`     // 是否在线
+    BinNum     int              `json:"binNum"`     // 仓位数量
+    BatteryNum int              `json:"batteryNum"` // 电池数量
+    EmptyNum   int              `json:"emptyNum"`   // 空仓数量
+    LockNum    int              `json:"lockNum"`    // 锁仓数
+    FullNum    int              `json:"fullNum"`    // 满电数
+    Bins       []CabinetDataBin `json:"bins"`       // 仓位信息
+}
