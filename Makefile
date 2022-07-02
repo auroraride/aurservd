@@ -15,3 +15,8 @@ dev:
 .PHONY: prod
 prod:
 	$(call deploy,prod)
+
+
+.PHONY: latest
+latest:
+	$(call deploy,latest)

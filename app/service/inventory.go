@@ -61,7 +61,9 @@ func (s *inventoryService) CreateOrModify(req *model.Inventory) {
 }
 
 func (s *inventoryService) List(params ...model.InventoryListReq) (items []model.Inventory) {
-    q := s.orm.QueryNotDeleted().Select(inventory.FieldName, inventory.FieldPurchase, inventory.FieldTransfer, inventory.FieldCount)
+    q := s.orm.QueryNotDeleted().
+        Order(ent.Asc(inventory.FieldCreatedAt)).
+        Select(inventory.FieldName, inventory.FieldPurchase, inventory.FieldTransfer, inventory.FieldCount)
     if len(params) > 0 {
         req := params[0]
         var or []predicate.Inventory
