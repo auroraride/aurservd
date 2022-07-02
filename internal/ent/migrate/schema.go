@@ -195,6 +195,16 @@ var (
 				Unique:  false,
 				Columns: []*schema.Column{BatteryModelColumns[3]},
 			},
+			{
+				Name:    "batterymodel_model",
+				Unique:  false,
+				Columns: []*schema.Column{BatteryModelColumns[7]},
+				Annotation: &entsql.IndexAnnotation{
+					Types: map[string]string{
+						"postgres": "GIN",
+					},
+				},
+			},
 		},
 	}
 	// BranchColumns holds the columns for the "branch" table.

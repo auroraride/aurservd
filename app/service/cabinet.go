@@ -10,6 +10,7 @@ import (
     "entgo.io/ent/dialect/sql"
     "entgo.io/ent/dialect/sql/sqljson"
     "errors"
+    "fmt"
     "github.com/alibabacloud-go/tea/tea"
     sls "github.com/aliyun/aliyun-log-go-sdk"
     "github.com/auroraride/aurservd/app/logging"
@@ -519,6 +520,11 @@ func (s *cabinetService) Data(req *model.CabinetDataReq) *model.PaginationRes {
 
     if req.Brand != "" {
         q.Where(cabinet.Brand(req.Brand.Value()))
+    }
+
+    if req.Votage != 0 {
+        bm := fmt.Sprintf("%.0fV", req.Votage)
+        q.Where(cabinet.HasBmsWith(batterymodel.ModelHasPrefix(bm)))
     }
 
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Cabinet) model.CabinetDataRes {

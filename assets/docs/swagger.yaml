@@ -5039,6 +5039,10 @@ paths:
         in: query
         name: status
         type: integer
+      - description: 电压型号筛选
+        in: query
+        name: votage
+        type: number
       produces:
       - application/json
       responses:

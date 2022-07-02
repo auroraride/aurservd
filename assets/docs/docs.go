@@ -2185,6 +2185,12 @@ const docTemplate = `{
                         "description": "电柜状态 0:全部 1:在线 2:离线 3:锁仓",
                         "name": "status",
                         "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "电压型号筛选",
+                        "name": "votage",
+                        "in": "query"
                     }
                 ],
                 "responses": {

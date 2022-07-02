@@ -99,9 +99,7 @@ func (s *inventoryService) ListInventory(req model.InventoryListReq) (items []mo
         })
     }
     for _, item := range s.List(req) {
-        if item.Count {
-            items = append(items, model.InventoryItem{Name: item.Name})
-        }
+        items = append(items, model.InventoryItem{Name: item.Name})
     }
     return
 }

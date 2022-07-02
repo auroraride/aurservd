@@ -5,11 +5,5 @@
 
 package internal
 
-import (
-    "github.com/auroraride/aurservd/app/model"
-    "github.com/auroraride/aurservd/app/service"
-)
-
 func Demo() {
-    service.NewCabinet().Data(&model.CabinetDataReq{Status: 3})
 }
