@@ -31,6 +31,11 @@ type Version struct {
     Enable      bool   `json:"enable"`
 }
 
+type AppVersion struct {
+    Android Version `json:"android"`
+    IOS     Version `json:"ios" mapstructure:"ios"`
+}
+
 type EsignConfig struct {
     Appid    string
     BaseUrl  string
@@ -190,8 +195,8 @@ type config struct {
             NotifyUrl     string
         }
     }
-    Android Version
-    IOS     Version `mapstructure:"ios"`
+    RiderApp    AppVersion
+    EmployeeApp AppVersion
 }
 
 func readConfig() error {
