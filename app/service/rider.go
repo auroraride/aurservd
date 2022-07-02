@@ -369,21 +369,17 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
         WithEnterprise()
     if req.Keyword != nil {
         // 判定是否id字段
-        if id, err := strconv.ParseUint(*req.Keyword, 10, 64); err == nil && id > 0 {
-            q.Where(rider.ID(id))
-        } else {
-            q.Where(
-                rider.Or(
-                    rider.HasPersonWith(
-                        person.Or(
-                            person.NameContainsFold(*req.Keyword),
-                            person.IDCardNumberContainsFold(*req.Keyword),
-                        ),
+        q.Where(
+            rider.Or(
+                rider.HasPersonWith(
+                    person.Or(
+                        person.NameContainsFold(*req.Keyword),
+                        person.IDCardNumberContainsFold(*req.Keyword),
                     ),
-                    rider.PhoneContainsFold(*req.Keyword),
                 ),
-            )
-        }
+                rider.PhoneContainsFold(*req.Keyword),
+            ),
+        )
     }
     if req.Start != nil {
         start := carbon.ParseByLayout(*req.Start, carbon.DateLayout)
