@@ -49,7 +49,7 @@ const (
     createFlowOneStepUrl = `/api/v2/signflows/createFlowOneStep`
 
     // executeUrl 获取签署链接
-    executeUrl = `/v1/signflows/%s/executeUrl?urlType=0&accountId=%s&appScheme=%s`
+    executeUrl = `/v1/signflows/%s/executeUrl?accountId=%s&appScheme=%s&urlType=0`
 
     // signResultUrl 签署结果查询
     signResultUrl = `/v1/signflows/%s`
@@ -68,9 +68,9 @@ type Esign struct {
 }
 
 type commonRes struct {
-    Code    int         `json:"code"`
-    Message string      `json:"message"`
-    Data    interface{} `json:"data"`
+    Code    int         `json:"code,omitempty"`
+    Message string      `json:"message,omitempty"`
+    Data    interface{} `json:"data,omitempty"`
 }
 
 func New() *Esign {
@@ -120,23 +120,26 @@ func (e *Esign) getSign(api, method, md5 string) (string, string) {
 }
 
 type reqLog struct {
-    Api    string      `json:"api,omitempty"`
-    Method string      `json:"method,omitempty"`
-    Body   interface{} `json:"body,omitempty"`
-    Res    interface{} `json:"res,omitempty"`
-    MD5    string      `json:"MD5,omitempty"`
-    Secret string      `json:"secret,omitempty"`
-    Sign   string      `json:"sign,omitempty"`
-    Raw    string      `json:"raw,omitempty"`
+    Api      string      `json:"api,omitempty"`
+    Method   string      `json:"method,omitempty"`
+    Body     interface{} `json:"body,omitempty"`
+    Res      interface{} `json:"res,omitempty"`
+    MD5      string      `json:"MD5,omitempty"`
+    Secret   string      `json:"secret,omitempty"`
+    Sign     string      `json:"sign,omitempty"`
+    Raw      string      `json:"raw,omitempty"`
+    Response interface{} `json:"response,omitempty"`
 }
 
 // request 请求
 func (e *Esign) request(api, method string, body interface{}, data interface{}) interface{} {
-    var md5 string
+    var md5, bodyString string
     res := new(commonRes)
     res.Data = data
-    bodyString, _ := e.serialization.Froze().MarshalToString(body)
-    md5 = utils.Md5Base64String(bodyString)
+    if body != nil {
+        bodyString, _ = e.serialization.Froze().MarshalToString(body)
+        md5 = utils.Md5Base64String(bodyString)
+    }
     singnature, raw := e.getSign(api, method, md5)
     req := resty.New().
         R().
@@ -146,11 +149,12 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
         SetHeader("Content-MD5", md5).
         SetHeader("X-Tsign-Open-Ca-Signature", singnature)
     var err error
+    var r *resty.Response
     switch method {
     case methodPost:
-        _, err = req.SetBody(body).Post(e.Config.BaseUrl + api)
+        r, err = req.SetBody(body).Post(e.Config.BaseUrl + api)
     case methodGet:
-        _, err = req.Get(e.Config.BaseUrl + api)
+        r, err = req.Get(e.Config.BaseUrl + api)
     }
     if err != nil {
         snag.Panic(err)
@@ -158,27 +162,30 @@ func (e *Esign) request(api, method string, body interface{}, data interface{}) 
     // 记录请求日志
     if e.Config.Log {
         logdata := reqLog{
-            Api:    api,
-            Method: method,
-            Body:   bodyString,
-            Res:    res,
-            MD5:    md5,
-            Secret: e.Config.Secret,
-            Sign:   singnature,
-            Raw:    raw,
+            Api:      api,
+            Method:   method,
+            Body:     bodyString,
+            Res:      res,
+            MD5:      md5,
+            Secret:   e.Config.Secret,
+            Sign:     singnature,
+            Raw:      raw,
+            Response: r.Body(),
         }
         logstr, _ := e.serialization.Froze().MarshalToString(logdata)
         log.Info(logstr)
     }
-    e.isResSuccess(res)
+    e.isResSuccess(r, res)
     return res.Data
 }
 
 // isResSuccess 返回是否成功
-func (e *Esign) isResSuccess(res *commonRes) {
-    switch res.Code {
-    case resSuccess, resExists:
-        return
+func (e *Esign) isResSuccess(r *resty.Response, res *commonRes) {
+    if r.IsSuccess() {
+        switch res.Code {
+        case resSuccess, resExists:
+            return
+        }
     }
     snag.Panic(res.Message)
 }

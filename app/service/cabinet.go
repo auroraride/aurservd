@@ -122,6 +122,16 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
     if req.Model != nil {
         q.Where(cabinet.HasBmsWith(batterymodel.Model(*req.Model)))
     }
+    if req.Health != 0 {
+        switch req.Health {
+        case 1:
+            q.Where(cabinet.Health(model.CabinetHealthStatusOnline))
+            break
+        case 2:
+            q.Where(cabinet.Health(model.CabinetHealthStatusOffline))
+            break
+        }
+    }
 
     return model.ParsePaginationResponse[model.CabinetItem, ent.Cabinet](q, req.PaginationReq, func(item *ent.Cabinet) (res model.CabinetItem) {
         _ = copier.Copy(&res, item)

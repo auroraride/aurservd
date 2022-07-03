@@ -2007,6 +2007,12 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "integer",
+                        "description": "在线状态",
+                        "name": "health",
+                        "in": "query"
+                    },
+                    {
                         "type": "string",
                         "description": "电池型号",
                         "name": "model",

@@ -94,6 +94,7 @@ type CabinetQueryReq struct {
     Brand  *string `json:"brand" query:"brand"`   // 电柜型号
     Status *uint8  `json:"status" query:"status"` // 电柜状态
     Model  *string `json:"model" query:"model"`   // 电池型号
+    Health uint8   `json:"health" query:"health"` // 在线状态
 }
 
 // CabinetModifyReq 电柜修改请求

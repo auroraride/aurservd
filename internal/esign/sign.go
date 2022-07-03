@@ -43,7 +43,7 @@ func (e *Esign) CreateFlowOneStep(data CreateFlowReq) string {
             AutoArchive:      true,
             AutoInitiate:     true,
             BusinessScene:    scene,
-            ContractValidity: time.Now().Add(30*time.Minute).UnixNano() / 1e6, // 半小时有效期
+            ContractValidity: time.Now().Add(24*30*time.Hour).UnixNano() / 1e6, // 30天有效期
             FlowConfigInfo: FlowConfigInfo{
                 RedirectDelayTime:        0,
                 NoticeDeveloperUrl:       e.Config.Callback,
@@ -102,9 +102,13 @@ type executeUrlRes struct {
 // ExecuteUrl 获取签署地址
 // @doc https://open.esign.cn/doc/detail?id=opendoc%2Fsaas_api%2Ffdtfqf&namespace=opendoc%2Fsaas_api
 // @doc https://open.esign.cn/doc/detail?id=opendoc%2Fpaas_api%2Fevvsef&namespace=opendoc%2Fpaas_api
-func (e *Esign) ExecuteUrl(flowId, accountId string) string {
+func (e *Esign) ExecuteUrl(flowId, accountId string, params ...string) string {
     res := new(executeUrlRes)
-    url := fmt.Sprintf(executeUrl, flowId, accountId, e.redirect)
+    redirect := e.redirect
+    if redirect == "" && len(params) > 0 {
+        redirect = params[0]
+    }
+    url := fmt.Sprintf(executeUrl, flowId, accountId, redirect)
     e.request(url, methodGet, nil, res)
     return res.ShortUrl
 }
