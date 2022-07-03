@@ -285,7 +285,7 @@ func (s *riderMgrService) UnSubscribe(subscribeID uint64) {
     _ = tx.Commit()
 
     // 查询并标记用户合同为失效
-    _, _ = ent.Database.Contract.Update().Where(contract.RiderID(sub.ID)).SetEffective(false).Save(s.ctx)
+    _, _ = ent.Database.Contract.Update().Where(contract.RiderID(sub.RiderID)).SetEffective(false).Save(s.ctx)
 
     before := fmt.Sprintf(
         "%s剩余天数: %d",
