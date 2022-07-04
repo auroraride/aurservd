@@ -287,12 +287,12 @@ type YundongDeployInfo struct {
 type CabinetDataReq struct {
     PaginationReq
 
-    Status uint8        `json:"status" enums:"0,1,2,3"`       // 电柜状态 0:全部 1:在线 2:离线 3:锁仓
-    Votage float64      `json:"votage"`                       // 电压型号筛选
-    Name   string       `json:"name"`                         // 电柜名称
-    Serial string       `json:"serial"`                       // 电柜编号
-    CityID uint64       `json:"cityId"`                       // 城市
-    Brand  CabinetBrand `json:"brand" enums:"KAIXIN,YUNDONG"` // 品牌 KAIXIN(凯信) YUNDONG(云动)
+    Status uint8        `json:"status" enums:"0,1,2,3" query:"status"`      // 电柜状态 0:全部 1:在线 2:离线 3:锁仓
+    Votage float64      `json:"votage" query:"votage"`                      // 电压型号筛选
+    Name   string       `json:"name" query:"name"`                          // 电柜名称
+    Serial string       `json:"serial" query:"serial"`                      // 电柜编号
+    CityID uint64       `json:"cityId" query:"cityId"`                      // 城市
+    Brand  CabinetBrand `json:"brand" enums:"KAIXIN,YUNDONG" query:"brand"` // 品牌 KAIXIN(凯信) YUNDONG(云动)
 }
 
 const (
