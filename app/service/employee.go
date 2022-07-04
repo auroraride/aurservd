@@ -12,7 +12,9 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/assistance"
+    "github.com/auroraride/aurservd/internal/ent/commission"
     "github.com/auroraride/aurservd/internal/ent/employee"
+    "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -155,13 +157,15 @@ func (s *employeeService) List(req *model.EmployeeListReq) *model.PaginationRes 
 
 // Activity 店员动态
 func (s *employeeService) Activity(req *model.EmployeeActivityListReq) *model.PaginationRes {
+    aq := new(ent.AssistanceQuery)
     q := s.orm.QueryNotDeleted().
         WithStore().
         WithCity().
         WithExchanges().
         WithCommissions().
-        WithAssistances(func(aq *ent.AssistanceQuery) {
-            aq.Where(assistance.StatusIn(model.AssistanceStatusSuccess, model.AssistanceStatusUnpaid))
+        WithAssistances(func(query *ent.AssistanceQuery) {
+            query.Where(assistance.StatusIn(model.AssistanceStatusSuccess, model.AssistanceStatusUnpaid))
+            *aq = *query
         })
 
     if req.Keyword != nil {
@@ -179,6 +183,30 @@ func (s *employeeService) Activity(req *model.EmployeeActivityListReq) *model.Pa
 
     if req.CityID != nil {
         q.Where(employee.CityID(*req.CityID))
+    }
+
+    tt := tools.NewTime()
+    if req.Start != nil {
+        rs := tt.ParseDateStringX(*req.Start)
+        q.WithExchanges(func(query *ent.ExchangeQuery) {
+            query.Where(exchange.CreatedAtGTE(rs))
+        }).WithCommissions(func(query *ent.CommissionQuery) {
+            query.Where(commission.CreatedAtGTE(rs))
+        }).WithAssistances(func(query *ent.AssistanceQuery) {
+            *query = *aq
+            query.Where(assistance.CreatedAtGTE(rs))
+        })
+    }
+    if req.End != nil {
+        re := tt.ParseDateStringX(*req.End).AddDate(0, 0, 1)
+        q.WithExchanges(func(query *ent.ExchangeQuery) {
+            query.Where(exchange.CreatedAtLT(re))
+        }).WithCommissions(func(query *ent.CommissionQuery) {
+            query.Where(commission.CreatedAtLT(re))
+        }).WithAssistances(func(query *ent.AssistanceQuery) {
+            *query = *aq
+            query.Where(assistance.CreatedAtLT(re))
+        })
     }
 
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Employee) model.EmployeeActivityListRes {
