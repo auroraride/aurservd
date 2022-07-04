@@ -80,6 +80,12 @@ type Cabinet struct {
 	// Address holds the value of the "address" field.
 	// 详细地址
 	Address string `json:"address,omitempty"`
+	// SimSn holds the value of the "sim_sn" field.
+	// SIM卡号
+	SimSn string `json:"sim_sn,omitempty"`
+	// SimDate holds the value of the "sim_date" field.
+	// SIM卡到期日期
+	SimDate time.Time `json:"sim_date,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CabinetQuery when eager-loading is set.
 	Edges CabinetEdges `json:"edges"`
@@ -168,9 +174,9 @@ func (*Cabinet) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullFloat64)
 		case cabinet.FieldID, cabinet.FieldCityID, cabinet.FieldBranchID, cabinet.FieldDoors, cabinet.FieldStatus, cabinet.FieldHealth, cabinet.FieldBatteryNum, cabinet.FieldBatteryFullNum:
 			values[i] = new(sql.NullInt64)
-		case cabinet.FieldRemark, cabinet.FieldSn, cabinet.FieldBrand, cabinet.FieldSerial, cabinet.FieldName, cabinet.FieldAddress:
+		case cabinet.FieldRemark, cabinet.FieldSn, cabinet.FieldBrand, cabinet.FieldSerial, cabinet.FieldName, cabinet.FieldAddress, cabinet.FieldSimSn:
 			values[i] = new(sql.NullString)
-		case cabinet.FieldCreatedAt, cabinet.FieldUpdatedAt, cabinet.FieldDeletedAt:
+		case cabinet.FieldCreatedAt, cabinet.FieldUpdatedAt, cabinet.FieldDeletedAt, cabinet.FieldSimDate:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Cabinet", columns[i])
@@ -328,6 +334,18 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				c.Address = value.String
 			}
+		case cabinet.FieldSimSn:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field sim_sn", values[i])
+			} else if value.Valid {
+				c.SimSn = value.String
+			}
+		case cabinet.FieldSimDate:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field sim_date", values[i])
+			} else if value.Valid {
+				c.SimDate = value.Time
+			}
 		}
 	}
 	return nil
@@ -429,6 +447,10 @@ func (c *Cabinet) String() string {
 	builder.WriteString(fmt.Sprintf("%v", c.Lat))
 	builder.WriteString(", address=")
 	builder.WriteString(c.Address)
+	builder.WriteString(", sim_sn=")
+	builder.WriteString(c.SimSn)
+	builder.WriteString(", sim_date=")
+	builder.WriteString(c.SimDate.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

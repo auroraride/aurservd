@@ -250,6 +250,34 @@ func (cc *CabinetCreate) SetNillableAddress(s *string) *CabinetCreate {
 	return cc
 }
 
+// SetSimSn sets the "sim_sn" field.
+func (cc *CabinetCreate) SetSimSn(s string) *CabinetCreate {
+	cc.mutation.SetSimSn(s)
+	return cc
+}
+
+// SetNillableSimSn sets the "sim_sn" field if the given value is not nil.
+func (cc *CabinetCreate) SetNillableSimSn(s *string) *CabinetCreate {
+	if s != nil {
+		cc.SetSimSn(*s)
+	}
+	return cc
+}
+
+// SetSimDate sets the "sim_date" field.
+func (cc *CabinetCreate) SetSimDate(t time.Time) *CabinetCreate {
+	cc.mutation.SetSimDate(t)
+	return cc
+}
+
+// SetNillableSimDate sets the "sim_date" field if the given value is not nil.
+func (cc *CabinetCreate) SetNillableSimDate(t *time.Time) *CabinetCreate {
+	if t != nil {
+		cc.SetSimDate(*t)
+	}
+	return cc
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (cc *CabinetCreate) SetCity(c *City) *CabinetCreate {
 	return cc.SetCityID(c.ID)
@@ -627,6 +655,22 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Column: cabinet.FieldAddress,
 		})
 		_node.Address = value
+	}
+	if value, ok := cc.mutation.SimSn(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: cabinet.FieldSimSn,
+		})
+		_node.SimSn = value
+	}
+	if value, ok := cc.mutation.SimDate(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: cabinet.FieldSimDate,
+		})
+		_node.SimDate = value
 	}
 	if nodes := cc.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1133,6 +1177,42 @@ func (u *CabinetUpsert) ClearAddress() *CabinetUpsert {
 	return u
 }
 
+// SetSimSn sets the "sim_sn" field.
+func (u *CabinetUpsert) SetSimSn(v string) *CabinetUpsert {
+	u.Set(cabinet.FieldSimSn, v)
+	return u
+}
+
+// UpdateSimSn sets the "sim_sn" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateSimSn() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldSimSn)
+	return u
+}
+
+// ClearSimSn clears the value of the "sim_sn" field.
+func (u *CabinetUpsert) ClearSimSn() *CabinetUpsert {
+	u.SetNull(cabinet.FieldSimSn)
+	return u
+}
+
+// SetSimDate sets the "sim_date" field.
+func (u *CabinetUpsert) SetSimDate(v time.Time) *CabinetUpsert {
+	u.Set(cabinet.FieldSimDate, v)
+	return u
+}
+
+// UpdateSimDate sets the "sim_date" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateSimDate() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldSimDate)
+	return u
+}
+
+// ClearSimDate clears the value of the "sim_date" field.
+func (u *CabinetUpsert) ClearSimDate() *CabinetUpsert {
+	u.SetNull(cabinet.FieldSimDate)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1593,6 +1673,48 @@ func (u *CabinetUpsertOne) UpdateAddress() *CabinetUpsertOne {
 func (u *CabinetUpsertOne) ClearAddress() *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.ClearAddress()
+	})
+}
+
+// SetSimSn sets the "sim_sn" field.
+func (u *CabinetUpsertOne) SetSimSn(v string) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetSimSn(v)
+	})
+}
+
+// UpdateSimSn sets the "sim_sn" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateSimSn() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateSimSn()
+	})
+}
+
+// ClearSimSn clears the value of the "sim_sn" field.
+func (u *CabinetUpsertOne) ClearSimSn() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.ClearSimSn()
+	})
+}
+
+// SetSimDate sets the "sim_date" field.
+func (u *CabinetUpsertOne) SetSimDate(v time.Time) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetSimDate(v)
+	})
+}
+
+// UpdateSimDate sets the "sim_date" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateSimDate() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateSimDate()
+	})
+}
+
+// ClearSimDate clears the value of the "sim_date" field.
+func (u *CabinetUpsertOne) ClearSimDate() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.ClearSimDate()
 	})
 }
 
@@ -2220,6 +2342,48 @@ func (u *CabinetUpsertBulk) UpdateAddress() *CabinetUpsertBulk {
 func (u *CabinetUpsertBulk) ClearAddress() *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.ClearAddress()
+	})
+}
+
+// SetSimSn sets the "sim_sn" field.
+func (u *CabinetUpsertBulk) SetSimSn(v string) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetSimSn(v)
+	})
+}
+
+// UpdateSimSn sets the "sim_sn" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateSimSn() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateSimSn()
+	})
+}
+
+// ClearSimSn clears the value of the "sim_sn" field.
+func (u *CabinetUpsertBulk) ClearSimSn() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.ClearSimSn()
+	})
+}
+
+// SetSimDate sets the "sim_date" field.
+func (u *CabinetUpsertBulk) SetSimDate(v time.Time) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetSimDate(v)
+	})
+}
+
+// UpdateSimDate sets the "sim_date" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateSimDate() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateSimDate()
+	})
+}
+
+// ClearSimDate clears the value of the "sim_date" field.
+func (u *CabinetUpsertBulk) ClearSimDate() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.ClearSimDate()
 	})
 }
 

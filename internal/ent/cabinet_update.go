@@ -331,6 +331,46 @@ func (cu *CabinetUpdate) ClearAddress() *CabinetUpdate {
 	return cu
 }
 
+// SetSimSn sets the "sim_sn" field.
+func (cu *CabinetUpdate) SetSimSn(s string) *CabinetUpdate {
+	cu.mutation.SetSimSn(s)
+	return cu
+}
+
+// SetNillableSimSn sets the "sim_sn" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableSimSn(s *string) *CabinetUpdate {
+	if s != nil {
+		cu.SetSimSn(*s)
+	}
+	return cu
+}
+
+// ClearSimSn clears the value of the "sim_sn" field.
+func (cu *CabinetUpdate) ClearSimSn() *CabinetUpdate {
+	cu.mutation.ClearSimSn()
+	return cu
+}
+
+// SetSimDate sets the "sim_date" field.
+func (cu *CabinetUpdate) SetSimDate(t time.Time) *CabinetUpdate {
+	cu.mutation.SetSimDate(t)
+	return cu
+}
+
+// SetNillableSimDate sets the "sim_date" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableSimDate(t *time.Time) *CabinetUpdate {
+	if t != nil {
+		cu.SetSimDate(*t)
+	}
+	return cu
+}
+
+// ClearSimDate clears the value of the "sim_date" field.
+func (cu *CabinetUpdate) ClearSimDate() *CabinetUpdate {
+	cu.mutation.ClearSimDate()
+	return cu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (cu *CabinetUpdate) SetCity(c *City) *CabinetUpdate {
 	return cu.SetCityID(c.ID)
@@ -767,6 +807,32 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: cabinet.FieldAddress,
+		})
+	}
+	if value, ok := cu.mutation.SimSn(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: cabinet.FieldSimSn,
+		})
+	}
+	if cu.mutation.SimSnCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: cabinet.FieldSimSn,
+		})
+	}
+	if value, ok := cu.mutation.SimDate(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: cabinet.FieldSimDate,
+		})
+	}
+	if cu.mutation.SimDateCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: cabinet.FieldSimDate,
 		})
 	}
 	if cu.mutation.CityCleared() {
@@ -1317,6 +1383,46 @@ func (cuo *CabinetUpdateOne) ClearAddress() *CabinetUpdateOne {
 	return cuo
 }
 
+// SetSimSn sets the "sim_sn" field.
+func (cuo *CabinetUpdateOne) SetSimSn(s string) *CabinetUpdateOne {
+	cuo.mutation.SetSimSn(s)
+	return cuo
+}
+
+// SetNillableSimSn sets the "sim_sn" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableSimSn(s *string) *CabinetUpdateOne {
+	if s != nil {
+		cuo.SetSimSn(*s)
+	}
+	return cuo
+}
+
+// ClearSimSn clears the value of the "sim_sn" field.
+func (cuo *CabinetUpdateOne) ClearSimSn() *CabinetUpdateOne {
+	cuo.mutation.ClearSimSn()
+	return cuo
+}
+
+// SetSimDate sets the "sim_date" field.
+func (cuo *CabinetUpdateOne) SetSimDate(t time.Time) *CabinetUpdateOne {
+	cuo.mutation.SetSimDate(t)
+	return cuo
+}
+
+// SetNillableSimDate sets the "sim_date" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableSimDate(t *time.Time) *CabinetUpdateOne {
+	if t != nil {
+		cuo.SetSimDate(*t)
+	}
+	return cuo
+}
+
+// ClearSimDate clears the value of the "sim_date" field.
+func (cuo *CabinetUpdateOne) ClearSimDate() *CabinetUpdateOne {
+	cuo.mutation.ClearSimDate()
+	return cuo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (cuo *CabinetUpdateOne) SetCity(c *City) *CabinetUpdateOne {
 	return cuo.SetCityID(c.ID)
@@ -1783,6 +1889,32 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Column: cabinet.FieldAddress,
+		})
+	}
+	if value, ok := cuo.mutation.SimSn(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: cabinet.FieldSimSn,
+		})
+	}
+	if cuo.mutation.SimSnCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: cabinet.FieldSimSn,
+		})
+	}
+	if value, ok := cuo.mutation.SimDate(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: cabinet.FieldSimDate,
+		})
+	}
+	if cuo.mutation.SimDateCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: cabinet.FieldSimDate,
 		})
 	}
 	if cuo.mutation.CityCleared() {

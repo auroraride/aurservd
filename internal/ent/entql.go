@@ -267,6 +267,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			cabinet.FieldLng:            {Type: field.TypeFloat64, Column: cabinet.FieldLng},
 			cabinet.FieldLat:            {Type: field.TypeFloat64, Column: cabinet.FieldLat},
 			cabinet.FieldAddress:        {Type: field.TypeString, Column: cabinet.FieldAddress},
+			cabinet.FieldSimSn:          {Type: field.TypeString, Column: cabinet.FieldSimSn},
+			cabinet.FieldSimDate:        {Type: field.TypeTime, Column: cabinet.FieldSimDate},
 		},
 	}
 	graph.Nodes[7] = &sqlgraph.Node{
@@ -3814,6 +3816,16 @@ func (f *CabinetFilter) WhereLat(p entql.Float64P) {
 // WhereAddress applies the entql string predicate on the address field.
 func (f *CabinetFilter) WhereAddress(p entql.StringP) {
 	f.Where(p.Field(cabinet.FieldAddress))
+}
+
+// WhereSimSn applies the entql string predicate on the sim_sn field.
+func (f *CabinetFilter) WhereSimSn(p entql.StringP) {
+	f.Where(p.Field(cabinet.FieldSimSn))
+}
+
+// WhereSimDate applies the entql time.Time predicate on the sim_date field.
+func (f *CabinetFilter) WhereSimDate(p entql.TimeP) {
+	f.Where(p.Field(cabinet.FieldSimDate))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.

@@ -48,6 +48,8 @@ type CabinetMutation struct {
 	lat                 *float64
 	addlat              *float64
 	address             *string
+	sim_sn              *string
+	sim_date            *time.Time
 	clearedFields       map[string]struct{}
 	city                *uint64
 	clearedcity         bool
@@ -1193,6 +1195,104 @@ func (m *CabinetMutation) ResetAddress() {
 	delete(m.clearedFields, cabinet.FieldAddress)
 }
 
+// SetSimSn sets the "sim_sn" field.
+func (m *CabinetMutation) SetSimSn(s string) {
+	m.sim_sn = &s
+}
+
+// SimSn returns the value of the "sim_sn" field in the mutation.
+func (m *CabinetMutation) SimSn() (r string, exists bool) {
+	v := m.sim_sn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSimSn returns the old "sim_sn" field's value of the Cabinet entity.
+// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CabinetMutation) OldSimSn(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSimSn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSimSn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSimSn: %w", err)
+	}
+	return oldValue.SimSn, nil
+}
+
+// ClearSimSn clears the value of the "sim_sn" field.
+func (m *CabinetMutation) ClearSimSn() {
+	m.sim_sn = nil
+	m.clearedFields[cabinet.FieldSimSn] = struct{}{}
+}
+
+// SimSnCleared returns if the "sim_sn" field was cleared in this mutation.
+func (m *CabinetMutation) SimSnCleared() bool {
+	_, ok := m.clearedFields[cabinet.FieldSimSn]
+	return ok
+}
+
+// ResetSimSn resets all changes to the "sim_sn" field.
+func (m *CabinetMutation) ResetSimSn() {
+	m.sim_sn = nil
+	delete(m.clearedFields, cabinet.FieldSimSn)
+}
+
+// SetSimDate sets the "sim_date" field.
+func (m *CabinetMutation) SetSimDate(t time.Time) {
+	m.sim_date = &t
+}
+
+// SimDate returns the value of the "sim_date" field in the mutation.
+func (m *CabinetMutation) SimDate() (r time.Time, exists bool) {
+	v := m.sim_date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSimDate returns the old "sim_date" field's value of the Cabinet entity.
+// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CabinetMutation) OldSimDate(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSimDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSimDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSimDate: %w", err)
+	}
+	return oldValue.SimDate, nil
+}
+
+// ClearSimDate clears the value of the "sim_date" field.
+func (m *CabinetMutation) ClearSimDate() {
+	m.sim_date = nil
+	m.clearedFields[cabinet.FieldSimDate] = struct{}{}
+}
+
+// SimDateCleared returns if the "sim_date" field was cleared in this mutation.
+func (m *CabinetMutation) SimDateCleared() bool {
+	_, ok := m.clearedFields[cabinet.FieldSimDate]
+	return ok
+}
+
+// ResetSimDate resets all changes to the "sim_date" field.
+func (m *CabinetMutation) ResetSimDate() {
+	m.sim_date = nil
+	delete(m.clearedFields, cabinet.FieldSimDate)
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *CabinetMutation) ClearCity() {
 	m.clearedcity = true
@@ -1426,7 +1526,7 @@ func (m *CabinetMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CabinetMutation) Fields() []string {
-	fields := make([]string, 0, 21)
+	fields := make([]string, 0, 23)
 	if m.created_at != nil {
 		fields = append(fields, cabinet.FieldCreatedAt)
 	}
@@ -1490,6 +1590,12 @@ func (m *CabinetMutation) Fields() []string {
 	if m.address != nil {
 		fields = append(fields, cabinet.FieldAddress)
 	}
+	if m.sim_sn != nil {
+		fields = append(fields, cabinet.FieldSimSn)
+	}
+	if m.sim_date != nil {
+		fields = append(fields, cabinet.FieldSimDate)
+	}
 	return fields
 }
 
@@ -1540,6 +1646,10 @@ func (m *CabinetMutation) Field(name string) (ent.Value, bool) {
 		return m.Lat()
 	case cabinet.FieldAddress:
 		return m.Address()
+	case cabinet.FieldSimSn:
+		return m.SimSn()
+	case cabinet.FieldSimDate:
+		return m.SimDate()
 	}
 	return nil, false
 }
@@ -1591,6 +1701,10 @@ func (m *CabinetMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldLat(ctx)
 	case cabinet.FieldAddress:
 		return m.OldAddress(ctx)
+	case cabinet.FieldSimSn:
+		return m.OldSimSn(ctx)
+	case cabinet.FieldSimDate:
+		return m.OldSimDate(ctx)
 	}
 	return nil, fmt.Errorf("unknown Cabinet field %s", name)
 }
@@ -1747,6 +1861,20 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAddress(v)
 		return nil
+	case cabinet.FieldSimSn:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSimSn(v)
+		return nil
+	case cabinet.FieldSimDate:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSimDate(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Cabinet field %s", name)
 }
@@ -1894,6 +2022,12 @@ func (m *CabinetMutation) ClearedFields() []string {
 	if m.FieldCleared(cabinet.FieldAddress) {
 		fields = append(fields, cabinet.FieldAddress)
 	}
+	if m.FieldCleared(cabinet.FieldSimSn) {
+		fields = append(fields, cabinet.FieldSimSn)
+	}
+	if m.FieldCleared(cabinet.FieldSimDate) {
+		fields = append(fields, cabinet.FieldSimDate)
+	}
 	return fields
 }
 
@@ -1937,6 +2071,12 @@ func (m *CabinetMutation) ClearField(name string) error {
 		return nil
 	case cabinet.FieldAddress:
 		m.ClearAddress()
+		return nil
+	case cabinet.FieldSimSn:
+		m.ClearSimSn()
+		return nil
+	case cabinet.FieldSimDate:
+		m.ClearSimDate()
 		return nil
 	}
 	return fmt.Errorf("unknown Cabinet nullable field %s", name)
@@ -2008,6 +2148,12 @@ func (m *CabinetMutation) ResetField(name string) error {
 		return nil
 	case cabinet.FieldAddress:
 		m.ResetAddress()
+		return nil
+	case cabinet.FieldSimSn:
+		m.ResetSimSn()
+		return nil
+	case cabinet.FieldSimDate:
+		m.ResetSimDate()
 		return nil
 	}
 	return fmt.Errorf("unknown Cabinet field %s", name)

@@ -23,6 +23,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     "github.com/jinzhu/copier"
     "github.com/lithammer/shortuuid/v4"
@@ -82,6 +83,10 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
         b := NewBranch().Query(*req.BranchID)
         q.SetBranchID(*req.BranchID).SetCityID(b.CityID)
     }
+    if req.SimSn != "" && req.SimDate != "" {
+        q.SetSimSn(req.SimSn).
+            SetSimDate(tools.NewTime().ParseDateStringX(req.SimDate))
+    }
 
     // 查询设置电池型号
     models := NewBattery().QueryModelsX(req.Models)
@@ -135,6 +140,13 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
 
     return model.ParsePaginationResponse[model.CabinetItem, ent.Cabinet](q, req.PaginationReq, func(item *ent.Cabinet) (res model.CabinetItem) {
         _ = copier.Copy(&res, item)
+
+        if !item.SimDate.IsZero() {
+            res.SimDate = item.SimDate.Format(carbon.DateLayout)
+        }
+
+        res.CreatedAt = item.CreatedAt.Format(carbon.DateTimeLayout)
+
         city := item.Edges.City
         if city != nil {
             res.City = &model.City{
@@ -195,6 +207,12 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
     if err != nil {
         _ = tx.Rollback()
         snag.Panic(err)
+    }
+    if req.SimSn != nil {
+        q.SetSimSn(*req.SimSn)
+    }
+    if req.SimDate != nil {
+        q.SetSimDate(tools.NewTime().ParseDateStringX(*req.SimDate))
     }
 
     err = s.checkDeploy(n.Status, n.BranchID)

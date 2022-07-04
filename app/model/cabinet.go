@@ -5,10 +5,6 @@
 
 package model
 
-import (
-    "time"
-)
-
 const (
     CabinetBinBatteryFault = "有电池无电压"
 )
@@ -71,7 +67,9 @@ type CabinetBasicInfo struct {
 // CabinetCreateReq 电柜创建请求
 type CabinetCreateReq struct {
     Cabinet
-    Models []string `json:"models" trans:"电池型号" validate:"required"`
+    Models  []string `json:"models" trans:"电池型号" validate:"required"`
+    SimSn   string   `json:"simSn,omitempty"`   // SIM卡号
+    SimDate string   `json:"simDate,omitempty"` // SIM卡到期日期, 例: 2022-06-01
 }
 
 // CabinetItem 电柜属性
@@ -79,9 +77,11 @@ type CabinetItem struct {
     ID uint64 `json:"id"` // 电柜ID
     Sn string `json:"sn"` // 平台编码
     Cabinet
-    Models    []string  `json:"models"`              // 电池型号
-    City      *City     `json:"city,omitempty"`      // 城市
-    CreatedAt time.Time `json:"createdAt,omitempty"` // 创建时间
+    Models    []string `json:"models"`              // 电池型号
+    City      *City    `json:"city,omitempty"`      // 城市
+    CreatedAt string   `json:"createdAt,omitempty"` // 创建时间
+    SimSn     string   `json:"simSn,omitempty"`     // SIM卡号
+    SimDate   string   `json:"simDate,omitempty"`   // SIM卡到期日期, 例: 2022-06-01
 }
 
 // CabinetQueryReq 电柜查询请求
@@ -108,6 +108,8 @@ type CabinetModifyReq struct {
     Doors    *uint         `json:"doors" trans:"柜门数量"`
     Remark   *string       `json:"remark" trans:"备注"`
     Models   *[]string     `json:"models" trans:"电池型号"`
+    SimSn    *string       `json:"simSn,omitempty"`   // SIM卡号
+    SimDate  *string       `json:"simDate,omitempty"` // SIM卡到期日期, 例: 2022-06-01
 }
 
 // CabinetDeleteReq 电柜删除请求

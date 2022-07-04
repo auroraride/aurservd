@@ -219,6 +219,20 @@ func Address(v string) predicate.Cabinet {
 	})
 }
 
+// SimSn applies equality check predicate on the "sim_sn" field. It's identical to SimSnEQ.
+func SimSn(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSimSn), v))
+	})
+}
+
+// SimDate applies equality check predicate on the "sim_date" field. It's identical to SimDateEQ.
+func SimDate(v time.Time) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSimDate), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
@@ -1878,6 +1892,221 @@ func AddressEqualFold(v string) predicate.Cabinet {
 func AddressContainsFold(v string) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldAddress), v))
+	})
+}
+
+// SimSnEQ applies the EQ predicate on the "sim_sn" field.
+func SimSnEQ(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSimSn), v))
+	})
+}
+
+// SimSnNEQ applies the NEQ predicate on the "sim_sn" field.
+func SimSnNEQ(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldSimSn), v))
+	})
+}
+
+// SimSnIn applies the In predicate on the "sim_sn" field.
+func SimSnIn(vs ...string) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldSimSn), v...))
+	})
+}
+
+// SimSnNotIn applies the NotIn predicate on the "sim_sn" field.
+func SimSnNotIn(vs ...string) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldSimSn), v...))
+	})
+}
+
+// SimSnGT applies the GT predicate on the "sim_sn" field.
+func SimSnGT(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldSimSn), v))
+	})
+}
+
+// SimSnGTE applies the GTE predicate on the "sim_sn" field.
+func SimSnGTE(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldSimSn), v))
+	})
+}
+
+// SimSnLT applies the LT predicate on the "sim_sn" field.
+func SimSnLT(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldSimSn), v))
+	})
+}
+
+// SimSnLTE applies the LTE predicate on the "sim_sn" field.
+func SimSnLTE(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldSimSn), v))
+	})
+}
+
+// SimSnContains applies the Contains predicate on the "sim_sn" field.
+func SimSnContains(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldSimSn), v))
+	})
+}
+
+// SimSnHasPrefix applies the HasPrefix predicate on the "sim_sn" field.
+func SimSnHasPrefix(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldSimSn), v))
+	})
+}
+
+// SimSnHasSuffix applies the HasSuffix predicate on the "sim_sn" field.
+func SimSnHasSuffix(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldSimSn), v))
+	})
+}
+
+// SimSnIsNil applies the IsNil predicate on the "sim_sn" field.
+func SimSnIsNil() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldSimSn)))
+	})
+}
+
+// SimSnNotNil applies the NotNil predicate on the "sim_sn" field.
+func SimSnNotNil() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldSimSn)))
+	})
+}
+
+// SimSnEqualFold applies the EqualFold predicate on the "sim_sn" field.
+func SimSnEqualFold(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldSimSn), v))
+	})
+}
+
+// SimSnContainsFold applies the ContainsFold predicate on the "sim_sn" field.
+func SimSnContainsFold(v string) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldSimSn), v))
+	})
+}
+
+// SimDateEQ applies the EQ predicate on the "sim_date" field.
+func SimDateEQ(v time.Time) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSimDate), v))
+	})
+}
+
+// SimDateNEQ applies the NEQ predicate on the "sim_date" field.
+func SimDateNEQ(v time.Time) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldSimDate), v))
+	})
+}
+
+// SimDateIn applies the In predicate on the "sim_date" field.
+func SimDateIn(vs ...time.Time) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldSimDate), v...))
+	})
+}
+
+// SimDateNotIn applies the NotIn predicate on the "sim_date" field.
+func SimDateNotIn(vs ...time.Time) predicate.Cabinet {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Cabinet(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldSimDate), v...))
+	})
+}
+
+// SimDateGT applies the GT predicate on the "sim_date" field.
+func SimDateGT(v time.Time) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldSimDate), v))
+	})
+}
+
+// SimDateGTE applies the GTE predicate on the "sim_date" field.
+func SimDateGTE(v time.Time) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldSimDate), v))
+	})
+}
+
+// SimDateLT applies the LT predicate on the "sim_date" field.
+func SimDateLT(v time.Time) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldSimDate), v))
+	})
+}
+
+// SimDateLTE applies the LTE predicate on the "sim_date" field.
+func SimDateLTE(v time.Time) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldSimDate), v))
+	})
+}
+
+// SimDateIsNil applies the IsNil predicate on the "sim_date" field.
+func SimDateIsNil() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldSimDate)))
+	})
+}
+
+// SimDateNotNil applies the NotNil predicate on the "sim_date" field.
+func SimDateNotNil() predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldSimDate)))
 	})
 }
 

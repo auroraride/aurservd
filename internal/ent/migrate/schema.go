@@ -440,6 +440,8 @@ var (
 		{Name: "lng", Type: field.TypeFloat64, Comment: "经度", Nullable: true},
 		{Name: "lat", Type: field.TypeFloat64, Comment: "纬度", Nullable: true},
 		{Name: "address", Type: field.TypeString, Comment: "详细地址", Nullable: true},
+		{Name: "sim_sn", Type: field.TypeString, Comment: "SIM卡号", Nullable: true},
+		{Name: "sim_date", Type: field.TypeTime, Comment: "SIM卡到期日期", Nullable: true, SchemaType: map[string]string{"postgres": "date"}},
 		{Name: "branch_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -451,13 +453,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cabinet_branch_cabinets",
-				Columns:    []*schema.Column{CabinetColumns[20]},
+				Columns:    []*schema.Column{CabinetColumns[22]},
 				RefColumns: []*schema.Column{BranchColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "cabinet_city_city",
-				Columns:    []*schema.Column{CabinetColumns[21]},
+				Columns:    []*schema.Column{CabinetColumns[23]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -476,7 +478,7 @@ var (
 			{
 				Name:    "cabinet_branch_id",
 				Unique:  false,
-				Columns: []*schema.Column{CabinetColumns[20]},
+				Columns: []*schema.Column{CabinetColumns[22]},
 			},
 			{
 				Name:    "cabinet_brand",

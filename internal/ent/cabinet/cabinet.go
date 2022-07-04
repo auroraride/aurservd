@@ -55,6 +55,10 @@ const (
 	FieldLat = "lat"
 	// FieldAddress holds the string denoting the address field in the database.
 	FieldAddress = "address"
+	// FieldSimSn holds the string denoting the sim_sn field in the database.
+	FieldSimSn = "sim_sn"
+	// FieldSimDate holds the string denoting the sim_date field in the database.
+	FieldSimDate = "sim_date"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
@@ -126,6 +130,8 @@ var Columns = []string{
 	FieldLng,
 	FieldLat,
 	FieldAddress,
+	FieldSimSn,
+	FieldSimDate,
 }
 
 var (
