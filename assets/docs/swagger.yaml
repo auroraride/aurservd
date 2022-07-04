@@ -4842,10 +4842,6 @@ paths:
         in: query
         name: current
         type: integer
-      - description: 在线状态
-        in: query
-        name: health
-        type: integer
       - description: 电池型号
         in: query
         name: model
@@ -4854,6 +4850,10 @@ paths:
         in: query
         name: name
         type: string
+      - description: 在线状态
+        in: query
+        name: online
+        type: integer
       - description: 每页数据, 默认20
         in: query
         name: pageSize

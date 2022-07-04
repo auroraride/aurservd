@@ -2007,12 +2007,6 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "description": "在线状态",
-                        "name": "health",
-                        "in": "query"
-                    },
-                    {
                         "type": "string",
                         "description": "电池型号",
                         "name": "model",
@@ -2022,6 +2016,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "电柜名称",
                         "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "在线状态",
+                        "name": "online",
                         "in": "query"
                     },
                     {

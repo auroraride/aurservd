@@ -122,8 +122,8 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
     if req.Model != nil {
         q.Where(cabinet.HasBmsWith(batterymodel.Model(*req.Model)))
     }
-    if req.Health != 0 {
-        switch req.Health {
+    if req.Online != 0 {
+        switch req.Online {
         case 1:
             q.Where(cabinet.Health(model.CabinetHealthStatusOnline))
             break
