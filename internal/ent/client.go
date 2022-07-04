@@ -37,6 +37,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -110,6 +111,8 @@ type Client struct {
 	Plan *PlanClient
 	// Rider is the client for interacting with the Rider builders.
 	Rider *RiderClient
+	// RiderFollowUp is the client for interacting with the RiderFollowUp builders.
+	RiderFollowUp *RiderFollowUpClient
 	// Setting is the client for interacting with the Setting builders.
 	Setting *SettingClient
 	// Stock is the client for interacting with the Stock builders.
@@ -163,6 +166,7 @@ func (c *Client) init() {
 	c.Person = NewPersonClient(c.config)
 	c.Plan = NewPlanClient(c.config)
 	c.Rider = NewRiderClient(c.config)
+	c.RiderFollowUp = NewRiderFollowUpClient(c.config)
 	c.Setting = NewSettingClient(c.config)
 	c.Stock = NewStockClient(c.config)
 	c.Store = NewStoreClient(c.config)
@@ -230,6 +234,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Person:               NewPersonClient(cfg),
 		Plan:                 NewPlanClient(cfg),
 		Rider:                NewRiderClient(cfg),
+		RiderFollowUp:        NewRiderFollowUpClient(cfg),
 		Setting:              NewSettingClient(cfg),
 		Stock:                NewStockClient(cfg),
 		Store:                NewStoreClient(cfg),
@@ -283,6 +288,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Person:               NewPersonClient(cfg),
 		Plan:                 NewPlanClient(cfg),
 		Rider:                NewRiderClient(cfg),
+		RiderFollowUp:        NewRiderFollowUpClient(cfg),
 		Setting:              NewSettingClient(cfg),
 		Stock:                NewStockClient(cfg),
 		Store:                NewStoreClient(cfg),
@@ -346,6 +352,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Person.Use(hooks...)
 	c.Plan.Use(hooks...)
 	c.Rider.Use(hooks...)
+	c.RiderFollowUp.Use(hooks...)
 	c.Setting.Use(hooks...)
 	c.Stock.Use(hooks...)
 	c.Store.Use(hooks...)
@@ -4512,10 +4519,149 @@ func (c *RiderClient) QueryStocks(r *Rider) *StockQuery {
 	return query
 }
 
+// QueryFollowups queries the followups edge of a Rider.
+func (c *RiderClient) QueryFollowups(r *Rider) *RiderFollowUpQuery {
+	query := &RiderFollowUpQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rider.Table, rider.FieldID, id),
+			sqlgraph.To(riderfollowup.Table, riderfollowup.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, rider.FollowupsTable, rider.FollowupsColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *RiderClient) Hooks() []Hook {
 	hooks := c.hooks.Rider
 	return append(hooks[:len(hooks):len(hooks)], rider.Hooks[:]...)
+}
+
+// RiderFollowUpClient is a client for the RiderFollowUp schema.
+type RiderFollowUpClient struct {
+	config
+}
+
+// NewRiderFollowUpClient returns a client for the RiderFollowUp from the given config.
+func NewRiderFollowUpClient(c config) *RiderFollowUpClient {
+	return &RiderFollowUpClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `riderfollowup.Hooks(f(g(h())))`.
+func (c *RiderFollowUpClient) Use(hooks ...Hook) {
+	c.hooks.RiderFollowUp = append(c.hooks.RiderFollowUp, hooks...)
+}
+
+// Create returns a create builder for RiderFollowUp.
+func (c *RiderFollowUpClient) Create() *RiderFollowUpCreate {
+	mutation := newRiderFollowUpMutation(c.config, OpCreate)
+	return &RiderFollowUpCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of RiderFollowUp entities.
+func (c *RiderFollowUpClient) CreateBulk(builders ...*RiderFollowUpCreate) *RiderFollowUpCreateBulk {
+	return &RiderFollowUpCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for RiderFollowUp.
+func (c *RiderFollowUpClient) Update() *RiderFollowUpUpdate {
+	mutation := newRiderFollowUpMutation(c.config, OpUpdate)
+	return &RiderFollowUpUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *RiderFollowUpClient) UpdateOne(rfu *RiderFollowUp) *RiderFollowUpUpdateOne {
+	mutation := newRiderFollowUpMutation(c.config, OpUpdateOne, withRiderFollowUp(rfu))
+	return &RiderFollowUpUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *RiderFollowUpClient) UpdateOneID(id uint64) *RiderFollowUpUpdateOne {
+	mutation := newRiderFollowUpMutation(c.config, OpUpdateOne, withRiderFollowUpID(id))
+	return &RiderFollowUpUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for RiderFollowUp.
+func (c *RiderFollowUpClient) Delete() *RiderFollowUpDelete {
+	mutation := newRiderFollowUpMutation(c.config, OpDelete)
+	return &RiderFollowUpDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *RiderFollowUpClient) DeleteOne(rfu *RiderFollowUp) *RiderFollowUpDeleteOne {
+	return c.DeleteOneID(rfu.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *RiderFollowUpClient) DeleteOneID(id uint64) *RiderFollowUpDeleteOne {
+	builder := c.Delete().Where(riderfollowup.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &RiderFollowUpDeleteOne{builder}
+}
+
+// Query returns a query builder for RiderFollowUp.
+func (c *RiderFollowUpClient) Query() *RiderFollowUpQuery {
+	return &RiderFollowUpQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a RiderFollowUp entity by its id.
+func (c *RiderFollowUpClient) Get(ctx context.Context, id uint64) (*RiderFollowUp, error) {
+	return c.Query().Where(riderfollowup.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *RiderFollowUpClient) GetX(ctx context.Context, id uint64) *RiderFollowUp {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryManager queries the manager edge of a RiderFollowUp.
+func (c *RiderFollowUpClient) QueryManager(rfu *RiderFollowUp) *ManagerQuery {
+	query := &ManagerQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := rfu.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(riderfollowup.Table, riderfollowup.FieldID, id),
+			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, riderfollowup.ManagerTable, riderfollowup.ManagerColumn),
+		)
+		fromV = sqlgraph.Neighbors(rfu.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRider queries the rider edge of a RiderFollowUp.
+func (c *RiderFollowUpClient) QueryRider(rfu *RiderFollowUp) *RiderQuery {
+	query := &RiderQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := rfu.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(riderfollowup.Table, riderfollowup.FieldID, id),
+			sqlgraph.To(rider.Table, rider.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, riderfollowup.RiderTable, riderfollowup.RiderColumn),
+		)
+		fromV = sqlgraph.Neighbors(rfu.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *RiderFollowUpClient) Hooks() []Hook {
+	hooks := c.hooks.RiderFollowUp
+	return append(hooks[:len(hooks):len(hooks)], riderfollowup.Hooks[:]...)
 }
 
 // SettingClient is a client for the Setting schema.

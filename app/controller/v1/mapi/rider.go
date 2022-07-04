@@ -125,3 +125,34 @@ func (*rider) Delete(c echo.Context) (err error) {
     service.NewRider().Delete(req)
     return ctx.SendResponse()
 }
+
+// FollowUpCreate
+// @ID           ManagerRiderFollowUpCreate
+// @Router       /manager/v1/rider/followup [POST]
+// @Summary      M7012 创建骑手跟进
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.RiderFollowUpCreateReq  true  "跟进请求"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*rider) FollowUpCreate(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.RiderFollowUpCreateReq](c)
+    service.NewRiderFollowupWithModifier(ctx.Modifier).Create(req)
+    return ctx.SendResponse()
+}
+
+// FollowUpList
+// @ID           ManagerRiderFollowUpList
+// @Router       /manager/v1/rider/followup [GET]
+// @Summary      M7013 获取骑手跟进
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query   model.RiderFollowUpListReq  true  "骑手跟进筛选请求"
+// @Success      200  {object}  model.PaginationRes{items=[]model.RiderFollowUpListRes}  "请求成功"
+func (*rider) FollowUpList(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.RiderFollowUpListReq](c)
+    return ctx.SendResponse(service.NewRiderFollowupWithModifier(ctx.Modifier).List(req))
+}

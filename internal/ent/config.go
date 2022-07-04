@@ -56,6 +56,7 @@ type hooks struct {
 	Person               []ent.Hook
 	Plan                 []ent.Hook
 	Rider                []ent.Hook
+	RiderFollowUp        []ent.Hook
 	Setting              []ent.Hook
 	Stock                []ent.Hook
 	Store                []ent.Hook

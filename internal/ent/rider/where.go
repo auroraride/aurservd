@@ -1871,6 +1871,34 @@ func HasStocksWith(preds ...predicate.Stock) predicate.Rider {
 	})
 }
 
+// HasFollowups applies the HasEdge predicate on the "followups" edge.
+func HasFollowups() predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(FollowupsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, FollowupsTable, FollowupsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasFollowupsWith applies the HasEdge predicate on the "followups" edge with a given conditions (other predicates).
+func HasFollowupsWith(preds ...predicate.RiderFollowUp) predicate.Rider {
+	return predicate.Rider(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(FollowupsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, FollowupsTable, FollowupsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Rider) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {

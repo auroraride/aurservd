@@ -2563,6 +2563,33 @@ definitions:
         description: 骑手订阅状态
         type: integer
     type: object
+  model.RiderFollowUpCreateReq:
+    properties:
+      remark:
+        description: '跟进信息 '
+        type: string
+      riderId:
+        description: '骑手ID '
+        type: integer
+    required:
+    - remark
+    - riderId
+    type: object
+  model.RiderFollowUpListRes:
+    properties:
+      id:
+        type: integer
+      manager:
+        allOf:
+        - $ref: '#/definitions/model.Modifier'
+        description: 管理员信息
+      remark:
+        description: 跟进信息
+        type: string
+      time:
+        description: 跟进时间
+        type: string
+    type: object
   model.RiderItem:
     properties:
       address:
@@ -6577,6 +6604,73 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M7003 封禁/解除封禁骑手账户
+      tags:
+      - '[M]管理接口'
+  /manager/v1/rider/followup:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerRiderFollowUpList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: '骑手ID '
+        in: query
+        name: riderId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.RiderFollowUpListRes'
+                  type: array
+              type: object
+      summary: M7013 获取骑手跟进
+      tags:
+      - '[M]管理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerRiderFollowUpCreate
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 跟进请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RiderFollowUpCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M7012 创建骑手跟进
       tags:
       - '[M]管理接口'
   /manager/v1/rider/log:

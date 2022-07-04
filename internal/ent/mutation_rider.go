@@ -65,6 +65,9 @@ type RiderMutation struct {
 	stocks            map[uint64]struct{}
 	removedstocks     map[uint64]struct{}
 	clearedstocks     bool
+	followups         map[uint64]struct{}
+	removedfollowups  map[uint64]struct{}
+	clearedfollowups  bool
 	done              bool
 	oldValue          func(context.Context) (*Rider, error)
 	predicates        []predicate.Rider
@@ -1506,6 +1509,60 @@ func (m *RiderMutation) ResetStocks() {
 	m.removedstocks = nil
 }
 
+// AddFollowupIDs adds the "followups" edge to the RiderFollowUp entity by ids.
+func (m *RiderMutation) AddFollowupIDs(ids ...uint64) {
+	if m.followups == nil {
+		m.followups = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.followups[ids[i]] = struct{}{}
+	}
+}
+
+// ClearFollowups clears the "followups" edge to the RiderFollowUp entity.
+func (m *RiderMutation) ClearFollowups() {
+	m.clearedfollowups = true
+}
+
+// FollowupsCleared reports if the "followups" edge to the RiderFollowUp entity was cleared.
+func (m *RiderMutation) FollowupsCleared() bool {
+	return m.clearedfollowups
+}
+
+// RemoveFollowupIDs removes the "followups" edge to the RiderFollowUp entity by IDs.
+func (m *RiderMutation) RemoveFollowupIDs(ids ...uint64) {
+	if m.removedfollowups == nil {
+		m.removedfollowups = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.followups, ids[i])
+		m.removedfollowups[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedFollowups returns the removed IDs of the "followups" edge to the RiderFollowUp entity.
+func (m *RiderMutation) RemovedFollowupsIDs() (ids []uint64) {
+	for id := range m.removedfollowups {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// FollowupsIDs returns the "followups" edge IDs in the mutation.
+func (m *RiderMutation) FollowupsIDs() (ids []uint64) {
+	for id := range m.followups {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetFollowups resets all changes to the "followups" edge.
+func (m *RiderMutation) ResetFollowups() {
+	m.followups = nil
+	m.clearedfollowups = false
+	m.removedfollowups = nil
+}
+
 // Where appends a list predicates to the RiderMutation builder.
 func (m *RiderMutation) Where(ps ...predicate.Rider) {
 	m.predicates = append(m.predicates, ps...)
@@ -2055,7 +2112,7 @@ func (m *RiderMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *RiderMutation) AddedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.station != nil {
 		edges = append(edges, rider.EdgeStation)
 	}
@@ -2082,6 +2139,9 @@ func (m *RiderMutation) AddedEdges() []string {
 	}
 	if m.stocks != nil {
 		edges = append(edges, rider.EdgeStocks)
+	}
+	if m.followups != nil {
+		edges = append(edges, rider.EdgeFollowups)
 	}
 	return edges
 }
@@ -2138,13 +2198,19 @@ func (m *RiderMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case rider.EdgeFollowups:
+		ids := make([]ent.Value, 0, len(m.followups))
+		for id := range m.followups {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *RiderMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.removedcontracts != nil {
 		edges = append(edges, rider.EdgeContracts)
 	}
@@ -2162,6 +2228,9 @@ func (m *RiderMutation) RemovedEdges() []string {
 	}
 	if m.removedstocks != nil {
 		edges = append(edges, rider.EdgeStocks)
+	}
+	if m.removedfollowups != nil {
+		edges = append(edges, rider.EdgeFollowups)
 	}
 	return edges
 }
@@ -2206,13 +2275,19 @@ func (m *RiderMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case rider.EdgeFollowups:
+		ids := make([]ent.Value, 0, len(m.removedfollowups))
+		for id := range m.removedfollowups {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *RiderMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.clearedstation {
 		edges = append(edges, rider.EdgeStation)
 	}
@@ -2240,6 +2315,9 @@ func (m *RiderMutation) ClearedEdges() []string {
 	if m.clearedstocks {
 		edges = append(edges, rider.EdgeStocks)
 	}
+	if m.clearedfollowups {
+		edges = append(edges, rider.EdgeFollowups)
+	}
 	return edges
 }
 
@@ -2265,6 +2343,8 @@ func (m *RiderMutation) EdgeCleared(name string) bool {
 		return m.clearedsubscribes
 	case rider.EdgeStocks:
 		return m.clearedstocks
+	case rider.EdgeFollowups:
+		return m.clearedfollowups
 	}
 	return false
 }
@@ -2316,6 +2396,9 @@ func (m *RiderMutation) ResetEdge(name string) error {
 		return nil
 	case rider.EdgeStocks:
 		m.ResetStocks()
+		return nil
+	case rider.EdgeFollowups:
+		m.ResetFollowups()
 		return nil
 	}
 	return fmt.Errorf("unknown Rider edge %s", name)

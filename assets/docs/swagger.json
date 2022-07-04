@@ -4586,6 +4586,111 @@
                 }
             }
         },
+        "/manager/v1/rider/followup": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7013 获取骑手跟进",
+                "operationId": "ManagerRiderFollowUpList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "骑手ID ",
+                        "name": "riderId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.RiderFollowUpListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M7012 创建骑手跟进",
+                "operationId": "ManagerRiderFollowUpCreate",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "跟进请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.RiderFollowUpCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/rider/log": {
             "get": {
                 "consumes": [
@@ -10842,6 +10947,47 @@
                 "subscribeStatus": {
                     "description": "骑手订阅状态",
                     "type": "integer"
+                }
+            }
+        },
+        "model.RiderFollowUpCreateReq": {
+            "type": "object",
+            "required": [
+                "remark",
+                "riderId"
+            ],
+            "properties": {
+                "remark": {
+                    "description": "跟进信息 ",
+                    "type": "string"
+                },
+                "riderId": {
+                    "description": "骑手ID ",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.RiderFollowUpListRes": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "manager": {
+                    "description": "管理员信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Modifier"
+                        }
+                    ]
+                },
+                "remark": {
+                    "description": "跟进信息",
+                    "type": "string"
+                },
+                "time": {
+                    "description": "跟进时间",
+                    "type": "string"
                 }
             }
         },

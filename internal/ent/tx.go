@@ -70,6 +70,8 @@ type Tx struct {
 	Plan *PlanClient
 	// Rider is the client for interacting with the Rider builders.
 	Rider *RiderClient
+	// RiderFollowUp is the client for interacting with the RiderFollowUp builders.
+	RiderFollowUp *RiderFollowUpClient
 	// Setting is the client for interacting with the Setting builders.
 	Setting *SettingClient
 	// Stock is the client for interacting with the Stock builders.
@@ -245,6 +247,7 @@ func (tx *Tx) init() {
 	tx.Person = NewPersonClient(tx.config)
 	tx.Plan = NewPlanClient(tx.config)
 	tx.Rider = NewRiderClient(tx.config)
+	tx.RiderFollowUp = NewRiderFollowUpClient(tx.config)
 	tx.Setting = NewSettingClient(tx.config)
 	tx.Stock = NewStockClient(tx.config)
 	tx.Store = NewStoreClient(tx.config)

@@ -32,6 +32,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -47,7 +48,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 34)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 35)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   assistance.Table,
@@ -829,6 +830,27 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[28] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
+			Table:   riderfollowup.Table,
+			Columns: riderfollowup.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: riderfollowup.FieldID,
+			},
+		},
+		Type: "RiderFollowUp",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			riderfollowup.FieldCreatedAt:    {Type: field.TypeTime, Column: riderfollowup.FieldCreatedAt},
+			riderfollowup.FieldUpdatedAt:    {Type: field.TypeTime, Column: riderfollowup.FieldUpdatedAt},
+			riderfollowup.FieldDeletedAt:    {Type: field.TypeTime, Column: riderfollowup.FieldDeletedAt},
+			riderfollowup.FieldCreator:      {Type: field.TypeJSON, Column: riderfollowup.FieldCreator},
+			riderfollowup.FieldLastModifier: {Type: field.TypeJSON, Column: riderfollowup.FieldLastModifier},
+			riderfollowup.FieldRemark:       {Type: field.TypeString, Column: riderfollowup.FieldRemark},
+			riderfollowup.FieldManagerID:    {Type: field.TypeUint64, Column: riderfollowup.FieldManagerID},
+			riderfollowup.FieldRiderID:      {Type: field.TypeUint64, Column: riderfollowup.FieldRiderID},
+		},
+	}
+	graph.Nodes[29] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
 			Table:   setting.Table,
 			Columns: setting.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -848,7 +870,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			setting.FieldContent:      {Type: field.TypeString, Column: setting.FieldContent},
 		},
 	}
-	graph.Nodes[29] = &sqlgraph.Node{
+	graph.Nodes[30] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   stock.Table,
 			Columns: stock.Columns,
@@ -876,7 +898,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			stock.FieldNum:          {Type: field.TypeInt, Column: stock.FieldNum},
 		},
 	}
-	graph.Nodes[30] = &sqlgraph.Node{
+	graph.Nodes[31] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   store.Table,
 			Columns: store.Columns,
@@ -904,7 +926,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			store.FieldAddress:      {Type: field.TypeString, Column: store.FieldAddress},
 		},
 	}
-	graph.Nodes[31] = &sqlgraph.Node{
+	graph.Nodes[32] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribe.Table,
 			Columns: subscribe.Columns,
@@ -946,7 +968,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldLastBillDate:      {Type: field.TypeTime, Column: subscribe.FieldLastBillDate},
 		},
 	}
-	graph.Nodes[32] = &sqlgraph.Node{
+	graph.Nodes[33] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribealter.Table,
 			Columns: subscribealter.Columns,
@@ -969,7 +991,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribealter.FieldDays:         {Type: field.TypeInt, Column: subscribealter.FieldDays},
 		},
 	}
-	graph.Nodes[33] = &sqlgraph.Node{
+	graph.Nodes[34] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribepause.Table,
 			Columns: subscribepause.Columns,
@@ -2206,6 +2228,42 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Rider",
 		"Stock",
+	)
+	graph.MustAddE(
+		"followups",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.FollowupsTable,
+			Columns: []string{rider.FollowupsColumn},
+			Bidi:    false,
+		},
+		"Rider",
+		"RiderFollowUp",
+	)
+	graph.MustAddE(
+		"manager",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   riderfollowup.ManagerTable,
+			Columns: []string{riderfollowup.ManagerColumn},
+			Bidi:    false,
+		},
+		"RiderFollowUp",
+		"Manager",
+	)
+	graph.MustAddE(
+		"rider",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   riderfollowup.RiderTable,
+			Columns: []string{riderfollowup.RiderColumn},
+			Bidi:    false,
+		},
+		"RiderFollowUp",
+		"Rider",
 	)
 	graph.MustAddE(
 		"manager",
@@ -7161,6 +7219,128 @@ func (f *RiderFilter) WhereHasStocksWith(preds ...predicate.Stock) {
 	})))
 }
 
+// WhereHasFollowups applies a predicate to check if query has an edge followups.
+func (f *RiderFilter) WhereHasFollowups() {
+	f.Where(entql.HasEdge("followups"))
+}
+
+// WhereHasFollowupsWith applies a predicate to check if query has an edge followups with a given conditions (other predicates).
+func (f *RiderFilter) WhereHasFollowupsWith(preds ...predicate.RiderFollowUp) {
+	f.Where(entql.HasEdgeWith("followups", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
+func (rfuq *RiderFollowUpQuery) addPredicate(pred func(s *sql.Selector)) {
+	rfuq.predicates = append(rfuq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the RiderFollowUpQuery builder.
+func (rfuq *RiderFollowUpQuery) Filter() *RiderFollowUpFilter {
+	return &RiderFollowUpFilter{rfuq.config, rfuq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *RiderFollowUpMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the RiderFollowUpMutation builder.
+func (m *RiderFollowUpMutation) Filter() *RiderFollowUpFilter {
+	return &RiderFollowUpFilter{m.config, m}
+}
+
+// RiderFollowUpFilter provides a generic filtering capability at runtime for RiderFollowUpQuery.
+type RiderFollowUpFilter struct {
+	config
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *RiderFollowUpFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[28].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *RiderFollowUpFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(riderfollowup.FieldID))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *RiderFollowUpFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(riderfollowup.FieldCreatedAt))
+}
+
+// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
+func (f *RiderFollowUpFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(riderfollowup.FieldUpdatedAt))
+}
+
+// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
+func (f *RiderFollowUpFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(riderfollowup.FieldDeletedAt))
+}
+
+// WhereCreator applies the entql json.RawMessage predicate on the creator field.
+func (f *RiderFollowUpFilter) WhereCreator(p entql.BytesP) {
+	f.Where(p.Field(riderfollowup.FieldCreator))
+}
+
+// WhereLastModifier applies the entql json.RawMessage predicate on the last_modifier field.
+func (f *RiderFollowUpFilter) WhereLastModifier(p entql.BytesP) {
+	f.Where(p.Field(riderfollowup.FieldLastModifier))
+}
+
+// WhereRemark applies the entql string predicate on the remark field.
+func (f *RiderFollowUpFilter) WhereRemark(p entql.StringP) {
+	f.Where(p.Field(riderfollowup.FieldRemark))
+}
+
+// WhereManagerID applies the entql uint64 predicate on the manager_id field.
+func (f *RiderFollowUpFilter) WhereManagerID(p entql.Uint64P) {
+	f.Where(p.Field(riderfollowup.FieldManagerID))
+}
+
+// WhereRiderID applies the entql uint64 predicate on the rider_id field.
+func (f *RiderFollowUpFilter) WhereRiderID(p entql.Uint64P) {
+	f.Where(p.Field(riderfollowup.FieldRiderID))
+}
+
+// WhereHasManager applies a predicate to check if query has an edge manager.
+func (f *RiderFollowUpFilter) WhereHasManager() {
+	f.Where(entql.HasEdge("manager"))
+}
+
+// WhereHasManagerWith applies a predicate to check if query has an edge manager with a given conditions (other predicates).
+func (f *RiderFollowUpFilter) WhereHasManagerWith(preds ...predicate.Manager) {
+	f.Where(entql.HasEdgeWith("manager", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasRider applies a predicate to check if query has an edge rider.
+func (f *RiderFollowUpFilter) WhereHasRider() {
+	f.Where(entql.HasEdge("rider"))
+}
+
+// WhereHasRiderWith applies a predicate to check if query has an edge rider with a given conditions (other predicates).
+func (f *RiderFollowUpFilter) WhereHasRiderWith(preds ...predicate.Rider) {
+	f.Where(entql.HasEdgeWith("rider", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (sq *SettingQuery) addPredicate(pred func(s *sql.Selector)) {
 	sq.predicates = append(sq.predicates, pred)
@@ -7190,7 +7370,7 @@ type SettingFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SettingFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[28].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[29].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -7270,7 +7450,7 @@ type StockFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *StockFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[29].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[30].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -7441,7 +7621,7 @@ type StoreFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *StoreFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[30].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[31].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -7640,7 +7820,7 @@ type SubscribeFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[31].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[32].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -7979,7 +8159,7 @@ type SubscribeAlterFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeAlterFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[32].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[33].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -8111,7 +8291,7 @@ type SubscribePauseFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribePauseFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[33].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[34].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

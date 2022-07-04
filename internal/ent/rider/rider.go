@@ -71,6 +71,8 @@ const (
 	EdgeSubscribes = "subscribes"
 	// EdgeStocks holds the string denoting the stocks edge name in mutations.
 	EdgeStocks = "stocks"
+	// EdgeFollowups holds the string denoting the followups edge name in mutations.
+	EdgeFollowups = "followups"
 	// Table holds the table name of the rider in the database.
 	Table = "rider"
 	// StationTable is the table that holds the station relation/edge.
@@ -136,6 +138,13 @@ const (
 	StocksInverseTable = "stock"
 	// StocksColumn is the table column denoting the stocks relation/edge.
 	StocksColumn = "rider_id"
+	// FollowupsTable is the table that holds the followups relation/edge.
+	FollowupsTable = "rider_follow_up"
+	// FollowupsInverseTable is the table name for the RiderFollowUp entity.
+	// It exists in this package in order to avoid circular dependency with the "riderfollowup" package.
+	FollowupsInverseTable = "rider_follow_up"
+	// FollowupsColumn is the table column denoting the followups relation/edge.
+	FollowupsColumn = "rider_id"
 )
 
 // Columns holds all SQL columns for rider fields.

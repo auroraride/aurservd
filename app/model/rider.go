@@ -197,3 +197,21 @@ func NewRiderPermissionError(message string, params ...bool) *RiderPermissionErr
 type RiderDepositRes struct {
     Deposit float64 `json:"deposit"`
 }
+
+type RiderFollowUpCreateReq struct {
+    RiderID uint64 `json:"riderId" trans:"骑手ID" validate:"required"`
+    Remark  string `json:"remark" trans:"跟进信息" validate:"required"`
+}
+
+type RiderFollowUpListReq struct {
+    PaginationReq
+
+    RiderID uint64 `json:"riderId" validate:"required" query:"riderId" trans:"骑手ID"`
+}
+
+type RiderFollowUpListRes struct {
+    ID      uint64   `json:"id"`
+    Manager Modifier `json:"manager"` // 管理员信息
+    Remark  string   `json:"remark"`  // 跟进信息
+    Time    string   `json:"time"`    // 跟进时间
+}

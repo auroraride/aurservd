@@ -21,6 +21,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
@@ -454,6 +455,21 @@ func (ru *RiderUpdate) AddStocks(s ...*Stock) *RiderUpdate {
 	return ru.AddStockIDs(ids...)
 }
 
+// AddFollowupIDs adds the "followups" edge to the RiderFollowUp entity by IDs.
+func (ru *RiderUpdate) AddFollowupIDs(ids ...uint64) *RiderUpdate {
+	ru.mutation.AddFollowupIDs(ids...)
+	return ru
+}
+
+// AddFollowups adds the "followups" edges to the RiderFollowUp entity.
+func (ru *RiderUpdate) AddFollowups(r ...*RiderFollowUp) *RiderUpdate {
+	ids := make([]uint64, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return ru.AddFollowupIDs(ids...)
+}
+
 // Mutation returns the RiderMutation object of the builder.
 func (ru *RiderUpdate) Mutation() *RiderMutation {
 	return ru.mutation
@@ -601,6 +617,27 @@ func (ru *RiderUpdate) RemoveStocks(s ...*Stock) *RiderUpdate {
 		ids[i] = s[i].ID
 	}
 	return ru.RemoveStockIDs(ids...)
+}
+
+// ClearFollowups clears all "followups" edges to the RiderFollowUp entity.
+func (ru *RiderUpdate) ClearFollowups() *RiderUpdate {
+	ru.mutation.ClearFollowups()
+	return ru
+}
+
+// RemoveFollowupIDs removes the "followups" edge to RiderFollowUp entities by IDs.
+func (ru *RiderUpdate) RemoveFollowupIDs(ids ...uint64) *RiderUpdate {
+	ru.mutation.RemoveFollowupIDs(ids...)
+	return ru
+}
+
+// RemoveFollowups removes "followups" edges to RiderFollowUp entities.
+func (ru *RiderUpdate) RemoveFollowups(r ...*RiderFollowUp) *RiderUpdate {
+	ids := make([]uint64, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return ru.RemoveFollowupIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1329,6 +1366,60 @@ func (ru *RiderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ru.mutation.FollowupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.FollowupsTable,
+			Columns: []string{rider.FollowupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: riderfollowup.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.RemovedFollowupsIDs(); len(nodes) > 0 && !ru.mutation.FollowupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.FollowupsTable,
+			Columns: []string{rider.FollowupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: riderfollowup.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.FollowupsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.FollowupsTable,
+			Columns: []string{rider.FollowupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: riderfollowup.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ru.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{rider.Label}
@@ -1764,6 +1855,21 @@ func (ruo *RiderUpdateOne) AddStocks(s ...*Stock) *RiderUpdateOne {
 	return ruo.AddStockIDs(ids...)
 }
 
+// AddFollowupIDs adds the "followups" edge to the RiderFollowUp entity by IDs.
+func (ruo *RiderUpdateOne) AddFollowupIDs(ids ...uint64) *RiderUpdateOne {
+	ruo.mutation.AddFollowupIDs(ids...)
+	return ruo
+}
+
+// AddFollowups adds the "followups" edges to the RiderFollowUp entity.
+func (ruo *RiderUpdateOne) AddFollowups(r ...*RiderFollowUp) *RiderUpdateOne {
+	ids := make([]uint64, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return ruo.AddFollowupIDs(ids...)
+}
+
 // Mutation returns the RiderMutation object of the builder.
 func (ruo *RiderUpdateOne) Mutation() *RiderMutation {
 	return ruo.mutation
@@ -1911,6 +2017,27 @@ func (ruo *RiderUpdateOne) RemoveStocks(s ...*Stock) *RiderUpdateOne {
 		ids[i] = s[i].ID
 	}
 	return ruo.RemoveStockIDs(ids...)
+}
+
+// ClearFollowups clears all "followups" edges to the RiderFollowUp entity.
+func (ruo *RiderUpdateOne) ClearFollowups() *RiderUpdateOne {
+	ruo.mutation.ClearFollowups()
+	return ruo
+}
+
+// RemoveFollowupIDs removes the "followups" edge to RiderFollowUp entities by IDs.
+func (ruo *RiderUpdateOne) RemoveFollowupIDs(ids ...uint64) *RiderUpdateOne {
+	ruo.mutation.RemoveFollowupIDs(ids...)
+	return ruo
+}
+
+// RemoveFollowups removes "followups" edges to RiderFollowUp entities.
+func (ruo *RiderUpdateOne) RemoveFollowups(r ...*RiderFollowUp) *RiderUpdateOne {
+	ids := make([]uint64, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return ruo.RemoveFollowupIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -2661,6 +2788,60 @@ func (ruo *RiderUpdateOne) sqlSave(ctx context.Context) (_node *Rider, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ruo.mutation.FollowupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.FollowupsTable,
+			Columns: []string{rider.FollowupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: riderfollowup.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.RemovedFollowupsIDs(); len(nodes) > 0 && !ruo.mutation.FollowupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.FollowupsTable,
+			Columns: []string{rider.FollowupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: riderfollowup.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.FollowupsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.FollowupsTable,
+			Columns: []string{rider.FollowupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: riderfollowup.FieldID,
 				},
 			},
 		}

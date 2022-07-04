@@ -83,6 +83,8 @@ func loadManagerRoutes() {
     g.POST("/rider/deposit", mapi.Rider.Deposit)
     g.POST("/rider/modify", mapi.Rider.Modify)
     g.DELETE("/rider/:id", mapi.Rider.Delete)
+    g.POST("/rider/followup", mapi.Rider.FollowUpCreate)
+    g.GET("/rider/followup", mapi.Rider.FollowUpList)
 
     // 业务
     g.GET("/order", mapi.Order.List)

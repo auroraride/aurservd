@@ -33,6 +33,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
 	"github.com/auroraride/aurservd/internal/ent/schema"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -706,6 +707,23 @@ func init() {
 	riderDescContractual := riderFields[12].Descriptor()
 	// rider.DefaultContractual holds the default value on creation for the contractual field.
 	rider.DefaultContractual = riderDescContractual.Default.(bool)
+	riderfollowupMixin := schema.RiderFollowUp{}.Mixin()
+	riderfollowupMixinHooks2 := riderfollowupMixin[2].Hooks()
+	riderfollowup.Hooks[0] = riderfollowupMixinHooks2[0]
+	riderfollowupMixinFields0 := riderfollowupMixin[0].Fields()
+	_ = riderfollowupMixinFields0
+	riderfollowupFields := schema.RiderFollowUp{}.Fields()
+	_ = riderfollowupFields
+	// riderfollowupDescCreatedAt is the schema descriptor for created_at field.
+	riderfollowupDescCreatedAt := riderfollowupMixinFields0[0].Descriptor()
+	// riderfollowup.DefaultCreatedAt holds the default value on creation for the created_at field.
+	riderfollowup.DefaultCreatedAt = riderfollowupDescCreatedAt.Default.(func() time.Time)
+	// riderfollowupDescUpdatedAt is the schema descriptor for updated_at field.
+	riderfollowupDescUpdatedAt := riderfollowupMixinFields0[1].Descriptor()
+	// riderfollowup.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	riderfollowup.DefaultUpdatedAt = riderfollowupDescUpdatedAt.Default.(func() time.Time)
+	// riderfollowup.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	riderfollowup.UpdateDefaultUpdatedAt = riderfollowupDescUpdatedAt.UpdateDefault.(func() time.Time)
 	settingMixin := schema.Setting{}.Mixin()
 	settingMixinHooks1 := settingMixin[1].Hooks()
 	setting.Hooks[0] = settingMixinHooks1[0]

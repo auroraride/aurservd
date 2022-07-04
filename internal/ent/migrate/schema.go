@@ -1830,6 +1830,50 @@ var (
 			},
 		},
 	}
+	// RiderFollowUpColumns holds the columns for the "rider_follow_up" table.
+	RiderFollowUpColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
+		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
+		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
+		{Name: "rider_id", Type: field.TypeUint64},
+		{Name: "manager_id", Type: field.TypeUint64},
+	}
+	// RiderFollowUpTable holds the schema information for the "rider_follow_up" table.
+	RiderFollowUpTable = &schema.Table{
+		Name:       "rider_follow_up",
+		Columns:    RiderFollowUpColumns,
+		PrimaryKey: []*schema.Column{RiderFollowUpColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "rider_follow_up_rider_followups",
+				Columns:    []*schema.Column{RiderFollowUpColumns[7]},
+				RefColumns: []*schema.Column{RiderColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "rider_follow_up_manager_manager",
+				Columns:    []*schema.Column{RiderFollowUpColumns[8]},
+				RefColumns: []*schema.Column{ManagerColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "riderfollowup_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{RiderFollowUpColumns[1]},
+			},
+			{
+				Name:    "riderfollowup_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{RiderFollowUpColumns[3]},
+			},
+		},
+	}
 	// SettingColumns holds the columns for the "setting" table.
 	SettingColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
@@ -2349,6 +2393,7 @@ var (
 		PersonTable,
 		PlanTable,
 		RiderTable,
+		RiderFollowUpTable,
 		SettingTable,
 		StockTable,
 		StoreTable,
@@ -2507,6 +2552,11 @@ func init() {
 	RiderTable.ForeignKeys[2].RefTable = EnterpriseStationTable
 	RiderTable.Annotation = &entsql.Annotation{
 		Table: "rider",
+	}
+	RiderFollowUpTable.ForeignKeys[0].RefTable = RiderTable
+	RiderFollowUpTable.ForeignKeys[1].RefTable = ManagerTable
+	RiderFollowUpTable.Annotation = &entsql.Annotation{
+		Table: "rider_follow_up",
 	}
 	SettingTable.Annotation = &entsql.Annotation{
 		Table: "setting",

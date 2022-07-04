@@ -103,9 +103,11 @@ type RiderEdges struct {
 	Subscribes []*Subscribe `json:"subscribes,omitempty"`
 	// Stocks holds the value of the stocks edge.
 	Stocks []*Stock `json:"stocks,omitempty"`
+	// Followups holds the value of the followups edge.
+	Followups []*RiderFollowUp `json:"followups,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [9]bool
+	loadedTypes [10]bool
 }
 
 // StationOrErr returns the Station value or an error if the edge
@@ -202,6 +204,15 @@ func (e RiderEdges) StocksOrErr() ([]*Stock, error) {
 		return e.Stocks, nil
 	}
 	return nil, &NotLoadedError{edge: "stocks"}
+}
+
+// FollowupsOrErr returns the Followups value or an error if the edge
+// was not loaded in eager-loading.
+func (e RiderEdges) FollowupsOrErr() ([]*RiderFollowUp, error) {
+	if e.loadedTypes[9] {
+		return e.Followups, nil
+	}
+	return nil, &NotLoadedError{edge: "followups"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -420,6 +431,11 @@ func (r *Rider) QuerySubscribes() *SubscribeQuery {
 // QueryStocks queries the "stocks" edge of the Rider entity.
 func (r *Rider) QueryStocks() *StockQuery {
 	return (&RiderClient{config: r.config}).QueryStocks(r)
+}
+
+// QueryFollowups queries the "followups" edge of the Rider entity.
+func (r *Rider) QueryFollowups() *RiderFollowUpQuery {
+	return (&RiderClient{config: r.config}).QueryFollowups(r)
 }
 
 // Update returns a builder for updating this Rider.

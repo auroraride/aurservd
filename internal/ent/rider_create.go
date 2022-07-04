@@ -20,6 +20,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/person"
 	"github.com/auroraride/aurservd/internal/ent/rider"
+	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
@@ -383,6 +384,21 @@ func (rc *RiderCreate) AddStocks(s ...*Stock) *RiderCreate {
 		ids[i] = s[i].ID
 	}
 	return rc.AddStockIDs(ids...)
+}
+
+// AddFollowupIDs adds the "followups" edge to the RiderFollowUp entity by IDs.
+func (rc *RiderCreate) AddFollowupIDs(ids ...uint64) *RiderCreate {
+	rc.mutation.AddFollowupIDs(ids...)
+	return rc
+}
+
+// AddFollowups adds the "followups" edges to the RiderFollowUp entity.
+func (rc *RiderCreate) AddFollowups(r ...*RiderFollowUp) *RiderCreate {
+	ids := make([]uint64, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return rc.AddFollowupIDs(ids...)
 }
 
 // Mutation returns the RiderMutation object of the builder.
@@ -855,6 +871,25 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.FollowupsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   rider.FollowupsTable,
+			Columns: []string{rider.FollowupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: riderfollowup.FieldID,
 				},
 			},
 		}

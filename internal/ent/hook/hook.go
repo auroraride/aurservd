@@ -373,6 +373,19 @@ func (f RiderFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return f(ctx, mv)
 }
 
+// The RiderFollowUpFunc type is an adapter to allow the use of ordinary
+// function as RiderFollowUp mutator.
+type RiderFollowUpFunc func(context.Context, *ent.RiderFollowUpMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f RiderFollowUpFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.RiderFollowUpMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RiderFollowUpMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The SettingFunc type is an adapter to allow the use of ordinary
 // function as Setting mutator.
 type SettingFunc func(context.Context, *ent.SettingMutation) (ent.Value, error)
