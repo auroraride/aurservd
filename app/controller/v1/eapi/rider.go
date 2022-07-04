@@ -29,7 +29,7 @@ var Rider = new(rider)
 func (*rider) Detail(c echo.Context) (err error) {
     ctx, req := app.EmployeeContextAndBinding[model.RiderPhoneSearchReq](c)
     return ctx.SendResponse(
-        service.NewRiderMgrWithEmployee(ctx.Employee).QueryPhone(req.Phone),
+        service.NewRiderMgrWithEmployee(ctx.Employee).EmployeeQueryPhone(req.Phone),
     )
 }
 

@@ -73,7 +73,6 @@ func (s *riderMgrService) QuerySubscribeWithRider(subscribeID uint64) *ent.Subsc
 }
 
 // PauseSubscribe 暂停计费
-// TODO 后台操作入库怎么处理
 func (s *riderMgrService) PauseSubscribe(subscribeID uint64) {
     if s.employee == nil && s.modifier == nil {
         snag.Panic("操作权限校验失败")
@@ -148,7 +147,6 @@ func (s *riderMgrService) PauseSubscribe(subscribeID uint64) {
 }
 
 // ContinueSubscribe 继续计费
-// TODO 后台操作出库怎么处理
 func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
     var bls *businessLogService
 
@@ -227,7 +225,6 @@ func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
 
 // UnSubscribe 退租
 // 会抹去欠费情况
-// TODO 管理端强制退组库存如何操作
 func (s *riderMgrService) UnSubscribe(subscribeID uint64) {
     var bls *businessLogService
 
@@ -414,7 +411,8 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
         Send()
 }
 
-func (s *riderMgrService) QueryPhone(phone string) model.RiderEmployeeSearchRes {
+// EmployeeQueryPhone 店员根据手机号查询骑手
+func (s *riderMgrService) EmployeeQueryPhone(phone string) model.RiderEmployeeSearchRes {
     r, _ := ent.Database.Rider.QueryNotDeleted().WithPerson().Where(rider.Phone(phone)).WithEnterprise().First(s.ctx)
     if r == nil {
         snag.Panic("未找到骑手")

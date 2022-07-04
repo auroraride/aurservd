@@ -5,6 +5,15 @@
 
 package model
 
+const (
+    RiderMgrOperateBlock    uint8 = iota + 1 // 禁用
+    RiderMgrOperateUnBlock                   // 解除禁用
+    RiderMgrOperateBan                       // 拉黑
+    RiderMgrOperateUnBan                     // 解除拉黑
+    RiderMgrOperatePause                     // 暂停计费
+    RiderMgrOperateContinue                  // 继续计费
+)
+
 type RiderMgrDepositReq struct {
     Amount float64 `json:"amount"` // 押金金额
     ID     uint64  `json:"id" validate:"required" trans:"骑手ID"`
@@ -27,4 +36,9 @@ type RiderEmployeeSearchRes struct {
     Plan            *Plan            `json:"plan,omitempty"`       // 骑行卡, 个签才有此字段, 团签无
     Overview        ExchangeOverview `json:"overview"`             // 换电预览
     SubscribeStatus uint8            `json:"subscribeStatus"`      // 骑手订阅状态
+}
+
+type RiderMgrBatchOperate struct {
+    Operate uint8    `json:"operate" validate:"required" enums:"1,2,3,4,5,6" trans:"操作类型"` // 1:禁用 2:解除禁用 3:拉黑 3:解除拉黑 4:暂停计费 5:继续计费
+    IDS     []uint64 `json:"ids" validate:"required,min=1"`                                    // 批量处理骑手ID
 }

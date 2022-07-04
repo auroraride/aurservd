@@ -8595,6 +8595,14 @@ const docTemplate = `{
                     "description": "电柜编码 ",
                     "type": "string"
                 },
+                "simDate": {
+                    "description": "SIM卡到期日期, 例: 2022-06-01",
+                    "type": "string"
+                },
+                "simSn": {
+                    "description": "SIM卡号",
+                    "type": "string"
+                },
                 "status": {
                     "description": "电柜状态 0未投放 1运营中 2维护中",
                     "type": "integer",
@@ -8745,6 +8753,14 @@ const docTemplate = `{
                 },
                 "serial": {
                     "description": "电柜编码 ",
+                    "type": "string"
+                },
+                "simDate": {
+                    "description": "SIM卡到期日期, 例: 2022-06-01",
+                    "type": "string"
+                },
+                "simSn": {
+                    "description": "SIM卡号",
                     "type": "string"
                 },
                 "sn": {
@@ -8985,6 +9001,14 @@ const docTemplate = `{
                 },
                 "serial": {
                     "description": "电柜编码 ",
+                    "type": "string"
+                },
+                "simDate": {
+                    "description": "SIM卡到期日期, 例: 2022-06-01",
+                    "type": "string"
+                },
+                "simSn": {
+                    "description": "SIM卡号",
                     "type": "string"
                 },
                 "sn": {

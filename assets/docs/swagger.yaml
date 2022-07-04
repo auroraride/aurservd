@@ -977,6 +977,12 @@ definitions:
       serial:
         description: '电柜编码 '
         type: string
+      simDate:
+        description: 'SIM卡到期日期, 例: 2022-06-01'
+        type: string
+      simSn:
+        description: SIM卡号
+        type: string
       status:
         description: 电柜状态 0未投放 1运营中 2维护中
         enum:
@@ -1087,6 +1093,12 @@ definitions:
         type: string
       serial:
         description: '电柜编码 '
+        type: string
+      simDate:
+        description: 'SIM卡到期日期, 例: 2022-06-01'
+        type: string
+      simSn:
+        description: SIM卡号
         type: string
       sn:
         description: 平台编码
@@ -1255,6 +1267,12 @@ definitions:
         type: string
       serial:
         description: '电柜编码 '
+        type: string
+      simDate:
+        description: 'SIM卡到期日期, 例: 2022-06-01'
+        type: string
+      simSn:
+        description: SIM卡号
         type: string
       sn:
         description: 平台编码
