@@ -71,6 +71,8 @@ type ExchangeManagerListReq struct {
     Target   uint8  `json:"target" query:"target"`     // 换电类别 0:全部 1:电柜 2:门店
     CityID   uint64 `json:"cityId" query:"cityId"`     // 城市
     Employee string `json:"employee" query:"employee"` // 筛选店员(手机号或姓名)
+    Start    string `json:"start" query:"start"`       // 开始时间
+    End      string `json:"end" query:"end"`           // 结束时间
 }
 
 type ExchangeManagerListRes struct {

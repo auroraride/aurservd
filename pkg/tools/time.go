@@ -78,3 +78,21 @@ func (t *timeTool) ParseDateStringX(str string) time.Time {
     }
     return res
 }
+
+// ParseNextDateString 格式化日期字符串到下一天
+func (*timeTool) ParseNextDateString(str string) (time.Time, error) {
+    res := carbon.ParseByLayout(str, carbon.DateLayout)
+    if res.Error != nil {
+        return time.Time{}, res.Error
+    }
+    return res.AddDay().Carbon2Time(), nil
+}
+
+func (t *timeTool) ParseNextDateStringX(str string) time.Time {
+    res, err := t.ParseNextDateString(str)
+    if err != nil {
+        log.Error(err)
+        snag.Panic("日期格式错误")
+    }
+    return res
+}

@@ -6089,7 +6089,7 @@ paths:
         in: query
         name: employee
         type: string
-      - description: '筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
+      - description: 结束时间
         in: query
         name: end
         type: string
@@ -6101,7 +6101,7 @@ paths:
         in: query
         name: pageSize
         type: integer
-      - description: '筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01'
+      - description: 开始时间
         in: query
         name: start
         type: string

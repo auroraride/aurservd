@@ -3792,7 +3792,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "筛选结束日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+                        "description": "结束时间",
                         "name": "end",
                         "in": "query"
                     },
@@ -3810,7 +3810,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "筛选开始日期, 格式为yyyy-mm-dd, 例如: 2022-06-01",
+                        "description": "开始时间",
                         "name": "start",
                         "in": "query"
                     },

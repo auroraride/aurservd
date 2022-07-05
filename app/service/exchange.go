@@ -293,6 +293,14 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
         )
     }
 
+    tt := tools.NewTime()
+    if req.Start != "" {
+        q.Where(exchange.CreatedAtGTE(tt.ParseDateStringX(req.Start)))
+    }
+    if req.End != "" {
+        q.Where(exchange.CreatedAtLT(tt.ParseNextDateStringX(req.End)))
+    }
+
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Exchange) model.ExchangeManagerListRes {
         res := model.ExchangeManagerListRes{
             ID:    item.ID,
