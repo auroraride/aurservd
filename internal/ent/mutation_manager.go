@@ -33,6 +33,8 @@ type ManagerMutation struct {
 	password       *string
 	last_signin_at *time.Time
 	clearedFields  map[string]struct{}
+	role           *uint64
+	clearedrole    bool
 	done           bool
 	oldValue       func(context.Context) (*Manager, error)
 	predicates     []predicate.Manager
@@ -404,6 +406,55 @@ func (m *ManagerMutation) ResetRemark() {
 	delete(m.clearedFields, manager.FieldRemark)
 }
 
+// SetRoleID sets the "role_id" field.
+func (m *ManagerMutation) SetRoleID(u uint64) {
+	m.role = &u
+}
+
+// RoleID returns the value of the "role_id" field in the mutation.
+func (m *ManagerMutation) RoleID() (r uint64, exists bool) {
+	v := m.role
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRoleID returns the old "role_id" field's value of the Manager entity.
+// If the Manager object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ManagerMutation) OldRoleID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRoleID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRoleID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRoleID: %w", err)
+	}
+	return oldValue.RoleID, nil
+}
+
+// ClearRoleID clears the value of the "role_id" field.
+func (m *ManagerMutation) ClearRoleID() {
+	m.role = nil
+	m.clearedFields[manager.FieldRoleID] = struct{}{}
+}
+
+// RoleIDCleared returns if the "role_id" field was cleared in this mutation.
+func (m *ManagerMutation) RoleIDCleared() bool {
+	_, ok := m.clearedFields[manager.FieldRoleID]
+	return ok
+}
+
+// ResetRoleID resets all changes to the "role_id" field.
+func (m *ManagerMutation) ResetRoleID() {
+	m.role = nil
+	delete(m.clearedFields, manager.FieldRoleID)
+}
+
 // SetPhone sets the "phone" field.
 func (m *ManagerMutation) SetPhone(s string) {
 	m.phone = &s
@@ -561,6 +612,32 @@ func (m *ManagerMutation) ResetLastSigninAt() {
 	delete(m.clearedFields, manager.FieldLastSigninAt)
 }
 
+// ClearRole clears the "role" edge to the Role entity.
+func (m *ManagerMutation) ClearRole() {
+	m.clearedrole = true
+}
+
+// RoleCleared reports if the "role" edge to the Role entity was cleared.
+func (m *ManagerMutation) RoleCleared() bool {
+	return m.RoleIDCleared() || m.clearedrole
+}
+
+// RoleIDs returns the "role" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RoleID instead. It exists only for internal usage by the builders.
+func (m *ManagerMutation) RoleIDs() (ids []uint64) {
+	if id := m.role; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetRole resets all changes to the "role" edge.
+func (m *ManagerMutation) ResetRole() {
+	m.role = nil
+	m.clearedrole = false
+}
+
 // Where appends a list predicates to the ManagerMutation builder.
 func (m *ManagerMutation) Where(ps ...predicate.Manager) {
 	m.predicates = append(m.predicates, ps...)
@@ -580,7 +657,7 @@ func (m *ManagerMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ManagerMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, manager.FieldCreatedAt)
 	}
@@ -598,6 +675,9 @@ func (m *ManagerMutation) Fields() []string {
 	}
 	if m.remark != nil {
 		fields = append(fields, manager.FieldRemark)
+	}
+	if m.role != nil {
+		fields = append(fields, manager.FieldRoleID)
 	}
 	if m.phone != nil {
 		fields = append(fields, manager.FieldPhone)
@@ -631,6 +711,8 @@ func (m *ManagerMutation) Field(name string) (ent.Value, bool) {
 		return m.LastModifier()
 	case manager.FieldRemark:
 		return m.Remark()
+	case manager.FieldRoleID:
+		return m.RoleID()
 	case manager.FieldPhone:
 		return m.Phone()
 	case manager.FieldName:
@@ -660,6 +742,8 @@ func (m *ManagerMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldLastModifier(ctx)
 	case manager.FieldRemark:
 		return m.OldRemark(ctx)
+	case manager.FieldRoleID:
+		return m.OldRoleID(ctx)
 	case manager.FieldPhone:
 		return m.OldPhone(ctx)
 	case manager.FieldName:
@@ -719,6 +803,13 @@ func (m *ManagerMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRemark(v)
 		return nil
+	case manager.FieldRoleID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRoleID(v)
+		return nil
 	case manager.FieldPhone:
 		v, ok := value.(string)
 		if !ok {
@@ -754,13 +845,16 @@ func (m *ManagerMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *ManagerMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *ManagerMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
 	return nil, false
 }
 
@@ -788,6 +882,9 @@ func (m *ManagerMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(manager.FieldRemark) {
 		fields = append(fields, manager.FieldRemark)
+	}
+	if m.FieldCleared(manager.FieldRoleID) {
+		fields = append(fields, manager.FieldRoleID)
 	}
 	if m.FieldCleared(manager.FieldLastSigninAt) {
 		fields = append(fields, manager.FieldLastSigninAt)
@@ -818,6 +915,9 @@ func (m *ManagerMutation) ClearField(name string) error {
 	case manager.FieldRemark:
 		m.ClearRemark()
 		return nil
+	case manager.FieldRoleID:
+		m.ClearRoleID()
+		return nil
 	case manager.FieldLastSigninAt:
 		m.ClearLastSigninAt()
 		return nil
@@ -847,6 +947,9 @@ func (m *ManagerMutation) ResetField(name string) error {
 	case manager.FieldRemark:
 		m.ResetRemark()
 		return nil
+	case manager.FieldRoleID:
+		m.ResetRoleID()
+		return nil
 	case manager.FieldPhone:
 		m.ResetPhone()
 		return nil
@@ -865,49 +968,77 @@ func (m *ManagerMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ManagerMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.role != nil {
+		edges = append(edges, manager.EdgeRole)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *ManagerMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case manager.EdgeRole:
+		if id := m.role; id != nil {
+			return []ent.Value{*id}
+		}
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ManagerMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *ManagerMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ManagerMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedrole {
+		edges = append(edges, manager.EdgeRole)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *ManagerMutation) EdgeCleared(name string) bool {
+	switch name {
+	case manager.EdgeRole:
+		return m.clearedrole
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *ManagerMutation) ClearEdge(name string) error {
+	switch name {
+	case manager.EdgeRole:
+		m.ClearRole()
+		return nil
+	}
 	return fmt.Errorf("unknown Manager unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *ManagerMutation) ResetEdge(name string) error {
+	switch name {
+	case manager.EdgeRole:
+		m.ResetRole()
+		return nil
+	}
 	return fmt.Errorf("unknown Manager edge %s", name)
 }
 

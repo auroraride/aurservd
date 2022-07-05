@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/role"
 )
 
 // ManagerUpdate is the builder for updating Manager entities.
@@ -87,6 +88,26 @@ func (mu *ManagerUpdate) ClearRemark() *ManagerUpdate {
 	return mu
 }
 
+// SetRoleID sets the "role_id" field.
+func (mu *ManagerUpdate) SetRoleID(u uint64) *ManagerUpdate {
+	mu.mutation.SetRoleID(u)
+	return mu
+}
+
+// SetNillableRoleID sets the "role_id" field if the given value is not nil.
+func (mu *ManagerUpdate) SetNillableRoleID(u *uint64) *ManagerUpdate {
+	if u != nil {
+		mu.SetRoleID(*u)
+	}
+	return mu
+}
+
+// ClearRoleID clears the value of the "role_id" field.
+func (mu *ManagerUpdate) ClearRoleID() *ManagerUpdate {
+	mu.mutation.ClearRoleID()
+	return mu
+}
+
 // SetPhone sets the "phone" field.
 func (mu *ManagerUpdate) SetPhone(s string) *ManagerUpdate {
 	mu.mutation.SetPhone(s)
@@ -125,9 +146,20 @@ func (mu *ManagerUpdate) ClearLastSigninAt() *ManagerUpdate {
 	return mu
 }
 
+// SetRole sets the "role" edge to the Role entity.
+func (mu *ManagerUpdate) SetRole(r *Role) *ManagerUpdate {
+	return mu.SetRoleID(r.ID)
+}
+
 // Mutation returns the ManagerMutation object of the builder.
 func (mu *ManagerUpdate) Mutation() *ManagerMutation {
 	return mu.mutation
+}
+
+// ClearRole clears the "role" edge to the Role entity.
+func (mu *ManagerUpdate) ClearRole() *ManagerUpdate {
+	mu.mutation.ClearRole()
+	return mu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -324,6 +356,41 @@ func (mu *ManagerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: manager.FieldLastSigninAt,
 		})
 	}
+	if mu.mutation.RoleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   manager.RoleTable,
+			Columns: []string{manager.RoleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: role.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RoleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   manager.RoleTable,
+			Columns: []string{manager.RoleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: role.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, mu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{manager.Label}
@@ -401,6 +468,26 @@ func (muo *ManagerUpdateOne) ClearRemark() *ManagerUpdateOne {
 	return muo
 }
 
+// SetRoleID sets the "role_id" field.
+func (muo *ManagerUpdateOne) SetRoleID(u uint64) *ManagerUpdateOne {
+	muo.mutation.SetRoleID(u)
+	return muo
+}
+
+// SetNillableRoleID sets the "role_id" field if the given value is not nil.
+func (muo *ManagerUpdateOne) SetNillableRoleID(u *uint64) *ManagerUpdateOne {
+	if u != nil {
+		muo.SetRoleID(*u)
+	}
+	return muo
+}
+
+// ClearRoleID clears the value of the "role_id" field.
+func (muo *ManagerUpdateOne) ClearRoleID() *ManagerUpdateOne {
+	muo.mutation.ClearRoleID()
+	return muo
+}
+
 // SetPhone sets the "phone" field.
 func (muo *ManagerUpdateOne) SetPhone(s string) *ManagerUpdateOne {
 	muo.mutation.SetPhone(s)
@@ -439,9 +526,20 @@ func (muo *ManagerUpdateOne) ClearLastSigninAt() *ManagerUpdateOne {
 	return muo
 }
 
+// SetRole sets the "role" edge to the Role entity.
+func (muo *ManagerUpdateOne) SetRole(r *Role) *ManagerUpdateOne {
+	return muo.SetRoleID(r.ID)
+}
+
 // Mutation returns the ManagerMutation object of the builder.
 func (muo *ManagerUpdateOne) Mutation() *ManagerMutation {
 	return muo.mutation
+}
+
+// ClearRole clears the "role" edge to the Role entity.
+func (muo *ManagerUpdateOne) ClearRole() *ManagerUpdateOne {
+	muo.mutation.ClearRole()
+	return muo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -667,6 +765,41 @@ func (muo *ManagerUpdateOne) sqlSave(ctx context.Context) (_node *Manager, err e
 			Type:   field.TypeTime,
 			Column: manager.FieldLastSigninAt,
 		})
+	}
+	if muo.mutation.RoleCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   manager.RoleTable,
+			Columns: []string{manager.RoleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: role.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RoleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   manager.RoleTable,
+			Columns: []string{manager.RoleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: role.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Manager{config: muo.config}
 	_spec.Assign = _node.assignValues

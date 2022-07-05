@@ -646,6 +646,28 @@ func (rfuq *RiderFollowUpQuery) PaginationResult(req model.PaginationReq) model.
 	}
 }
 
+// Pagination returns pagination query builder for RoleQuery.
+func (rq *RoleQuery) Pagination(req model.PaginationReq) *RoleQuery {
+	rq.Offset(req.GetOffset()).Limit(req.GetLimit())
+	return rq
+}
+
+// PaginationItems returns pagination query builder for RoleQuery.
+func (rq *RoleQuery) PaginationItemsX(req model.PaginationReq) any {
+	return rq.Pagination(req).AllX(context.Background())
+}
+
+// PaginationResult returns pagination for RoleQuery.
+func (rq *RoleQuery) PaginationResult(req model.PaginationReq) model.Pagination {
+	ids := rq.Clone().Select("id").GroupBy("id").IntsX(context.Background())
+	total := len(ids)
+	return model.Pagination{
+		Current: req.GetCurrent(),
+		Pages:   req.GetPages(total),
+		Total:   total,
+	}
+}
+
 // Pagination returns pagination query builder for SettingQuery.
 func (sq *SettingQuery) Pagination(req model.PaginationReq) *SettingQuery {
 	sq.Offset(req.GetOffset()).Limit(req.GetLimit())

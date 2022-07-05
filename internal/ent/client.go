@@ -38,6 +38,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
+	"github.com/auroraride/aurservd/internal/ent/role"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -113,6 +114,8 @@ type Client struct {
 	Rider *RiderClient
 	// RiderFollowUp is the client for interacting with the RiderFollowUp builders.
 	RiderFollowUp *RiderFollowUpClient
+	// Role is the client for interacting with the Role builders.
+	Role *RoleClient
 	// Setting is the client for interacting with the Setting builders.
 	Setting *SettingClient
 	// Stock is the client for interacting with the Stock builders.
@@ -167,6 +170,7 @@ func (c *Client) init() {
 	c.Plan = NewPlanClient(c.config)
 	c.Rider = NewRiderClient(c.config)
 	c.RiderFollowUp = NewRiderFollowUpClient(c.config)
+	c.Role = NewRoleClient(c.config)
 	c.Setting = NewSettingClient(c.config)
 	c.Stock = NewStockClient(c.config)
 	c.Store = NewStoreClient(c.config)
@@ -235,6 +239,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Plan:                 NewPlanClient(cfg),
 		Rider:                NewRiderClient(cfg),
 		RiderFollowUp:        NewRiderFollowUpClient(cfg),
+		Role:                 NewRoleClient(cfg),
 		Setting:              NewSettingClient(cfg),
 		Stock:                NewStockClient(cfg),
 		Store:                NewStoreClient(cfg),
@@ -289,6 +294,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Plan:                 NewPlanClient(cfg),
 		Rider:                NewRiderClient(cfg),
 		RiderFollowUp:        NewRiderFollowUpClient(cfg),
+		Role:                 NewRoleClient(cfg),
 		Setting:              NewSettingClient(cfg),
 		Stock:                NewStockClient(cfg),
 		Store:                NewStoreClient(cfg),
@@ -353,6 +359,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Plan.Use(hooks...)
 	c.Rider.Use(hooks...)
 	c.RiderFollowUp.Use(hooks...)
+	c.Role.Use(hooks...)
 	c.Setting.Use(hooks...)
 	c.Stock.Use(hooks...)
 	c.Store.Use(hooks...)
@@ -3680,6 +3687,22 @@ func (c *ManagerClient) GetX(ctx context.Context, id uint64) *Manager {
 	return obj
 }
 
+// QueryRole queries the role edge of a Manager.
+func (c *ManagerClient) QueryRole(m *Manager) *RoleQuery {
+	query := &RoleQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(manager.Table, manager.FieldID, id),
+			sqlgraph.To(role.Table, role.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, manager.RoleTable, manager.RoleColumn),
+		)
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ManagerClient) Hooks() []Hook {
 	hooks := c.hooks.Manager
@@ -4662,6 +4685,112 @@ func (c *RiderFollowUpClient) QueryRider(rfu *RiderFollowUp) *RiderQuery {
 func (c *RiderFollowUpClient) Hooks() []Hook {
 	hooks := c.hooks.RiderFollowUp
 	return append(hooks[:len(hooks):len(hooks)], riderfollowup.Hooks[:]...)
+}
+
+// RoleClient is a client for the Role schema.
+type RoleClient struct {
+	config
+}
+
+// NewRoleClient returns a client for the Role from the given config.
+func NewRoleClient(c config) *RoleClient {
+	return &RoleClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `role.Hooks(f(g(h())))`.
+func (c *RoleClient) Use(hooks ...Hook) {
+	c.hooks.Role = append(c.hooks.Role, hooks...)
+}
+
+// Create returns a create builder for Role.
+func (c *RoleClient) Create() *RoleCreate {
+	mutation := newRoleMutation(c.config, OpCreate)
+	return &RoleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Role entities.
+func (c *RoleClient) CreateBulk(builders ...*RoleCreate) *RoleCreateBulk {
+	return &RoleCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Role.
+func (c *RoleClient) Update() *RoleUpdate {
+	mutation := newRoleMutation(c.config, OpUpdate)
+	return &RoleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *RoleClient) UpdateOne(r *Role) *RoleUpdateOne {
+	mutation := newRoleMutation(c.config, OpUpdateOne, withRole(r))
+	return &RoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *RoleClient) UpdateOneID(id uint64) *RoleUpdateOne {
+	mutation := newRoleMutation(c.config, OpUpdateOne, withRoleID(id))
+	return &RoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Role.
+func (c *RoleClient) Delete() *RoleDelete {
+	mutation := newRoleMutation(c.config, OpDelete)
+	return &RoleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *RoleClient) DeleteOne(r *Role) *RoleDeleteOne {
+	return c.DeleteOneID(r.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *RoleClient) DeleteOneID(id uint64) *RoleDeleteOne {
+	builder := c.Delete().Where(role.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &RoleDeleteOne{builder}
+}
+
+// Query returns a query builder for Role.
+func (c *RoleClient) Query() *RoleQuery {
+	return &RoleQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Role entity by its id.
+func (c *RoleClient) Get(ctx context.Context, id uint64) (*Role, error) {
+	return c.Query().Where(role.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *RoleClient) GetX(ctx context.Context, id uint64) *Role {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryManagers queries the managers edge of a Role.
+func (c *RoleClient) QueryManagers(r *Role) *ManagerQuery {
+	query := &ManagerQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(role.Table, role.FieldID, id),
+			sqlgraph.To(manager.Table, manager.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, role.ManagersTable, role.ManagersColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *RoleClient) Hooks() []Hook {
+	return c.hooks.Role
 }
 
 // SettingClient is a client for the Setting schema.

@@ -10,6 +10,7 @@ import (
     "github.com/auroraride/aurservd/assets"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/manager"
+    "github.com/auroraride/aurservd/internal/ent/role"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/utils"
     jsoniter "github.com/json-iterator/go"
@@ -18,14 +19,16 @@ import (
 
 func DatabaseInitial() {
     cityInitial()
-    managerInitial()
+    managerInitial(roleInitial())
 }
 
-func managerInitial() {
+func managerInitial(r *ent.Role) {
     client := ent.Database.Manager
     p := "18888888888"
 
-    if e, _ := client.QueryNotDeleted().Where(manager.Phone(p)).Exist(context.Background()); e {
+    if e, _ := client.QueryNotDeleted().
+        Where(manager.Phone(p)).
+        Exist(context.Background()); e {
         return
     }
 
@@ -34,7 +37,18 @@ func managerInitial() {
         SetName("超级管理员").
         SetPhone(p).
         SetPassword(password).
+        SetRoleID(r.ID).
         ExecX(context.Background())
+}
+
+func roleInitial() *ent.Role {
+    client := ent.Database.Role
+    ctx := context.Background()
+    name := "超级管理员"
+    if e, _ := client.Query().Where(role.Buildin(true)).First(ctx); e != nil {
+        return e
+    }
+    return client.Create().SetName(name).SetSuper(true).SetBuildin(true).SaveX(ctx)
 }
 
 func cityInitial() {

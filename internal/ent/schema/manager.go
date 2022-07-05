@@ -30,9 +30,7 @@ func (mmm ManagerMixin) Edges() []ent.Edge {
     if !mmm.Optional {
         e.Required()
     }
-    return []ent.Edge{
-        e,
-    }
+    return []ent.Edge{e}
 }
 
 // Manager holds the schema definition for the Manager entity.
@@ -50,6 +48,7 @@ func (Manager) Annotations() []schema.Annotation {
 // Fields of the Manager.
 func (Manager) Fields() []ent.Field {
     return []ent.Field{
+        field.Uint64("role_id").Optional().Nillable().Comment("角色ID"),
         field.String("phone").MaxLen(30).Comment("账户/手机号"),
         field.String("name").MaxLen(30).Comment("姓名"),
         field.String("password").Comment("密码"),
@@ -59,7 +58,9 @@ func (Manager) Fields() []ent.Field {
 
 // Edges of the Manager.
 func (Manager) Edges() []ent.Edge {
-    return nil
+    return []ent.Edge{
+        edge.From("role", Role.Type).Unique().Ref("managers").Field("role_id"),
+    }
 }
 
 func (Manager) Mixin() []ent.Mixin {

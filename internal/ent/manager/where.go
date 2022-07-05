@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -117,6 +118,13 @@ func DeletedAt(v time.Time) predicate.Manager {
 func Remark(v string) predicate.Manager {
 	return predicate.Manager(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldRemark), v))
+	})
+}
+
+// RoleID applies equality check predicate on the "role_id" field. It's identical to RoleIDEQ.
+func RoleID(v uint64) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRoleID), v))
 	})
 }
 
@@ -543,6 +551,68 @@ func RemarkContainsFold(v string) predicate.Manager {
 	})
 }
 
+// RoleIDEQ applies the EQ predicate on the "role_id" field.
+func RoleIDEQ(v uint64) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRoleID), v))
+	})
+}
+
+// RoleIDNEQ applies the NEQ predicate on the "role_id" field.
+func RoleIDNEQ(v uint64) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRoleID), v))
+	})
+}
+
+// RoleIDIn applies the In predicate on the "role_id" field.
+func RoleIDIn(vs ...uint64) predicate.Manager {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Manager(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldRoleID), v...))
+	})
+}
+
+// RoleIDNotIn applies the NotIn predicate on the "role_id" field.
+func RoleIDNotIn(vs ...uint64) predicate.Manager {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Manager(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldRoleID), v...))
+	})
+}
+
+// RoleIDIsNil applies the IsNil predicate on the "role_id" field.
+func RoleIDIsNil() predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldRoleID)))
+	})
+}
+
+// RoleIDNotNil applies the NotNil predicate on the "role_id" field.
+func RoleIDNotNil() predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldRoleID)))
+	})
+}
+
 // PhoneEQ applies the EQ predicate on the "phone" field.
 func PhoneEQ(v string) predicate.Manager {
 	return predicate.Manager(func(s *sql.Selector) {
@@ -963,6 +1033,34 @@ func LastSigninAtIsNil() predicate.Manager {
 func LastSigninAtNotNil() predicate.Manager {
 	return predicate.Manager(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldLastSigninAt)))
+	})
+}
+
+// HasRole applies the HasEdge predicate on the "role" edge.
+func HasRole() predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(RoleTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, RoleTable, RoleColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRoleWith applies the HasEdge predicate on the "role" edge with a given conditions (other predicates).
+func HasRoleWith(preds ...predicate.Role) predicate.Manager {
+	return predicate.Manager(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(RoleInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, RoleTable, RoleColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

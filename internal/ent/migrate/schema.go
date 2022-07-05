@@ -1438,12 +1438,21 @@ var (
 		{Name: "name", Type: field.TypeString, Comment: "姓名", Size: 30},
 		{Name: "password", Type: field.TypeString, Comment: "密码"},
 		{Name: "last_signin_at", Type: field.TypeTime, Comment: "最后登录时间", Nullable: true},
+		{Name: "role_id", Type: field.TypeUint64, Nullable: true},
 	}
 	// ManagerTable holds the schema information for the "manager" table.
 	ManagerTable = &schema.Table{
 		Name:       "manager",
 		Columns:    ManagerColumns,
 		PrimaryKey: []*schema.Column{ManagerColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "manager_role_managers",
+				Columns:    []*schema.Column{ManagerColumns[11]},
+				RefColumns: []*schema.Column{RoleColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "manager_created_at",
@@ -1871,6 +1880,33 @@ var (
 				Name:    "riderfollowup_deleted_at",
 				Unique:  false,
 				Columns: []*schema.Column{RiderFollowUpColumns[3]},
+			},
+		},
+	}
+	// RoleColumns holds the columns for the "role" table.
+	RoleColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint64, Increment: true},
+		{Name: "name", Type: field.TypeString, Comment: "角色"},
+		{Name: "permissions", Type: field.TypeJSON, Comment: "权限列表", Nullable: true},
+		{Name: "buildin", Type: field.TypeBool, Comment: "是否内置角色", Default: false},
+		{Name: "super", Type: field.TypeBool, Comment: "是否超级管理员", Default: false},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// RoleTable holds the schema information for the "role" table.
+	RoleTable = &schema.Table{
+		Name:       "role",
+		Columns:    RoleColumns,
+		PrimaryKey: []*schema.Column{RoleColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "role_name",
+				Unique:  false,
+				Columns: []*schema.Column{RoleColumns[1]},
+			},
+			{
+				Name:    "role_buildin",
+				Unique:  false,
+				Columns: []*schema.Column{RoleColumns[3]},
 			},
 		},
 	}
@@ -2394,6 +2430,7 @@ var (
 		PlanTable,
 		RiderTable,
 		RiderFollowUpTable,
+		RoleTable,
 		SettingTable,
 		StockTable,
 		StoreTable,
@@ -2525,6 +2562,7 @@ func init() {
 	InventoryTable.Annotation = &entsql.Annotation{
 		Table: "inventory",
 	}
+	ManagerTable.ForeignKeys[0].RefTable = RoleTable
 	ManagerTable.Annotation = &entsql.Annotation{
 		Table: "manager",
 	}
@@ -2557,6 +2595,9 @@ func init() {
 	RiderFollowUpTable.ForeignKeys[1].RefTable = ManagerTable
 	RiderFollowUpTable.Annotation = &entsql.Annotation{
 		Table: "rider_follow_up",
+	}
+	RoleTable.Annotation = &entsql.Annotation{
+		Table: "role",
 	}
 	SettingTable.Annotation = &entsql.Annotation{
 		Table: "setting",

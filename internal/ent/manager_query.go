@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/role"
 )
 
 // ManagerQuery is the builder for querying Manager entities.
@@ -23,7 +24,9 @@ type ManagerQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.Manager
-	modifiers  []func(*sql.Selector)
+	// eager-loading edges.
+	withRole  *RoleQuery
+	modifiers []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -58,6 +61,28 @@ func (mq *ManagerQuery) Unique(unique bool) *ManagerQuery {
 func (mq *ManagerQuery) Order(o ...OrderFunc) *ManagerQuery {
 	mq.order = append(mq.order, o...)
 	return mq
+}
+
+// QueryRole chains the current query on the "role" edge.
+func (mq *ManagerQuery) QueryRole() *RoleQuery {
+	query := &RoleQuery{config: mq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(manager.Table, manager.FieldID, selector),
+			sqlgraph.To(role.Table, role.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, manager.RoleTable, manager.RoleColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Manager entity from the query.
@@ -241,11 +266,23 @@ func (mq *ManagerQuery) Clone() *ManagerQuery {
 		offset:     mq.offset,
 		order:      append([]OrderFunc{}, mq.order...),
 		predicates: append([]predicate.Manager{}, mq.predicates...),
+		withRole:   mq.withRole.Clone(),
 		// clone intermediate query.
 		sql:    mq.sql.Clone(),
 		path:   mq.path,
 		unique: mq.unique,
 	}
+}
+
+// WithRole tells the query-builder to eager-load the nodes that are connected to
+// the "role" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *ManagerQuery) WithRole(opts ...func(*RoleQuery)) *ManagerQuery {
+	query := &RoleQuery{config: mq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withRole = query
+	return mq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -316,8 +353,11 @@ func (mq *ManagerQuery) prepareQuery(ctx context.Context) error {
 
 func (mq *ManagerQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Manager, error) {
 	var (
-		nodes = []*Manager{}
-		_spec = mq.querySpec()
+		nodes       = []*Manager{}
+		_spec       = mq.querySpec()
+		loadedTypes = [1]bool{
+			mq.withRole != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		return (*Manager).scanValues(nil, columns)
@@ -325,6 +365,7 @@ func (mq *ManagerQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Mana
 	_spec.Assign = func(columns []string, values []interface{}) error {
 		node := &Manager{config: mq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(mq.modifiers) > 0 {
@@ -339,6 +380,36 @@ func (mq *ManagerQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Mana
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+
+	if query := mq.withRole; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Manager)
+		for i := range nodes {
+			if nodes[i].RoleID == nil {
+				continue
+			}
+			fk := *nodes[i].RoleID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(role.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "role_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Role = n
+			}
+		}
+	}
+
 	return nodes, nil
 }
 

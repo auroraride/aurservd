@@ -33,6 +33,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
+	"github.com/auroraride/aurservd/internal/ent/role"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/stock"
 	"github.com/auroraride/aurservd/internal/ent/store"
@@ -48,7 +49,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 35)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 36)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   assistance.Table,
@@ -672,6 +673,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			manager.FieldCreator:      {Type: field.TypeJSON, Column: manager.FieldCreator},
 			manager.FieldLastModifier: {Type: field.TypeJSON, Column: manager.FieldLastModifier},
 			manager.FieldRemark:       {Type: field.TypeString, Column: manager.FieldRemark},
+			manager.FieldRoleID:       {Type: field.TypeUint64, Column: manager.FieldRoleID},
 			manager.FieldPhone:        {Type: field.TypeString, Column: manager.FieldPhone},
 			manager.FieldName:         {Type: field.TypeString, Column: manager.FieldName},
 			manager.FieldPassword:     {Type: field.TypeString, Column: manager.FieldPassword},
@@ -851,6 +853,24 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[29] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
+			Table:   role.Table,
+			Columns: role.Columns,
+			ID: &sqlgraph.FieldSpec{
+				Type:   field.TypeUint64,
+				Column: role.FieldID,
+			},
+		},
+		Type: "Role",
+		Fields: map[string]*sqlgraph.FieldSpec{
+			role.FieldName:        {Type: field.TypeString, Column: role.FieldName},
+			role.FieldPermissions: {Type: field.TypeJSON, Column: role.FieldPermissions},
+			role.FieldBuildin:     {Type: field.TypeBool, Column: role.FieldBuildin},
+			role.FieldSuper:       {Type: field.TypeBool, Column: role.FieldSuper},
+			role.FieldCreatedAt:   {Type: field.TypeTime, Column: role.FieldCreatedAt},
+		},
+	}
+	graph.Nodes[30] = &sqlgraph.Node{
+		NodeSpec: sqlgraph.NodeSpec{
 			Table:   setting.Table,
 			Columns: setting.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -870,7 +890,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			setting.FieldContent:      {Type: field.TypeString, Column: setting.FieldContent},
 		},
 	}
-	graph.Nodes[30] = &sqlgraph.Node{
+	graph.Nodes[31] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   stock.Table,
 			Columns: stock.Columns,
@@ -898,7 +918,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			stock.FieldNum:          {Type: field.TypeInt, Column: stock.FieldNum},
 		},
 	}
-	graph.Nodes[31] = &sqlgraph.Node{
+	graph.Nodes[32] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   store.Table,
 			Columns: store.Columns,
@@ -926,7 +946,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			store.FieldAddress:      {Type: field.TypeString, Column: store.FieldAddress},
 		},
 	}
-	graph.Nodes[32] = &sqlgraph.Node{
+	graph.Nodes[33] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribe.Table,
 			Columns: subscribe.Columns,
@@ -968,7 +988,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldLastBillDate:      {Type: field.TypeTime, Column: subscribe.FieldLastBillDate},
 		},
 	}
-	graph.Nodes[33] = &sqlgraph.Node{
+	graph.Nodes[34] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribealter.Table,
 			Columns: subscribealter.Columns,
@@ -991,7 +1011,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribealter.FieldDays:         {Type: field.TypeInt, Column: subscribealter.FieldDays},
 		},
 	}
-	graph.Nodes[34] = &sqlgraph.Node{
+	graph.Nodes[35] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   subscribepause.Table,
 			Columns: subscribepause.Columns,
@@ -1942,6 +1962,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"Employee",
 	)
 	graph.MustAddE(
+		"role",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   manager.RoleTable,
+			Columns: []string{manager.RoleColumn},
+			Bidi:    false,
+		},
+		"Manager",
+		"Role",
+	)
+	graph.MustAddE(
 		"plan",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -2264,6 +2296,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"RiderFollowUp",
 		"Rider",
+	)
+	graph.MustAddE(
+		"managers",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   role.ManagersTable,
+			Columns: []string{role.ManagersColumn},
+			Bidi:    false,
+		},
+		"Role",
+		"Manager",
 	)
 	graph.MustAddE(
 		"manager",
@@ -6238,6 +6282,11 @@ func (f *ManagerFilter) WhereRemark(p entql.StringP) {
 	f.Where(p.Field(manager.FieldRemark))
 }
 
+// WhereRoleID applies the entql uint64 predicate on the role_id field.
+func (f *ManagerFilter) WhereRoleID(p entql.Uint64P) {
+	f.Where(p.Field(manager.FieldRoleID))
+}
+
 // WherePhone applies the entql string predicate on the phone field.
 func (f *ManagerFilter) WherePhone(p entql.StringP) {
 	f.Where(p.Field(manager.FieldPhone))
@@ -6256,6 +6305,20 @@ func (f *ManagerFilter) WherePassword(p entql.StringP) {
 // WhereLastSigninAt applies the entql time.Time predicate on the last_signin_at field.
 func (f *ManagerFilter) WhereLastSigninAt(p entql.TimeP) {
 	f.Where(p.Field(manager.FieldLastSigninAt))
+}
+
+// WhereHasRole applies a predicate to check if query has an edge role.
+func (f *ManagerFilter) WhereHasRole() {
+	f.Where(entql.HasEdge("role"))
+}
+
+// WhereHasRoleWith applies a predicate to check if query has an edge role with a given conditions (other predicates).
+func (f *ManagerFilter) WhereHasRoleWith(preds ...predicate.Role) {
+	f.Where(entql.HasEdgeWith("role", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
 }
 
 // addPredicate implements the predicateAdder interface.
@@ -7342,6 +7405,85 @@ func (f *RiderFollowUpFilter) WhereHasRiderWith(preds ...predicate.Rider) {
 }
 
 // addPredicate implements the predicateAdder interface.
+func (rq *RoleQuery) addPredicate(pred func(s *sql.Selector)) {
+	rq.predicates = append(rq.predicates, pred)
+}
+
+// Filter returns a Filter implementation to apply filters on the RoleQuery builder.
+func (rq *RoleQuery) Filter() *RoleFilter {
+	return &RoleFilter{rq.config, rq}
+}
+
+// addPredicate implements the predicateAdder interface.
+func (m *RoleMutation) addPredicate(pred func(s *sql.Selector)) {
+	m.predicates = append(m.predicates, pred)
+}
+
+// Filter returns an entql.Where implementation to apply filters on the RoleMutation builder.
+func (m *RoleMutation) Filter() *RoleFilter {
+	return &RoleFilter{m.config, m}
+}
+
+// RoleFilter provides a generic filtering capability at runtime for RoleQuery.
+type RoleFilter struct {
+	config
+	predicateAdder
+}
+
+// Where applies the entql predicate on the query filter.
+func (f *RoleFilter) Where(p entql.P) {
+	f.addPredicate(func(s *sql.Selector) {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[29].Type, p, s); err != nil {
+			s.AddError(err)
+		}
+	})
+}
+
+// WhereID applies the entql uint64 predicate on the id field.
+func (f *RoleFilter) WhereID(p entql.Uint64P) {
+	f.Where(p.Field(role.FieldID))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *RoleFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(role.FieldName))
+}
+
+// WherePermissions applies the entql json.RawMessage predicate on the permissions field.
+func (f *RoleFilter) WherePermissions(p entql.BytesP) {
+	f.Where(p.Field(role.FieldPermissions))
+}
+
+// WhereBuildin applies the entql bool predicate on the buildin field.
+func (f *RoleFilter) WhereBuildin(p entql.BoolP) {
+	f.Where(p.Field(role.FieldBuildin))
+}
+
+// WhereSuper applies the entql bool predicate on the super field.
+func (f *RoleFilter) WhereSuper(p entql.BoolP) {
+	f.Where(p.Field(role.FieldSuper))
+}
+
+// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
+func (f *RoleFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(role.FieldCreatedAt))
+}
+
+// WhereHasManagers applies a predicate to check if query has an edge managers.
+func (f *RoleFilter) WhereHasManagers() {
+	f.Where(entql.HasEdge("managers"))
+}
+
+// WhereHasManagersWith applies a predicate to check if query has an edge managers with a given conditions (other predicates).
+func (f *RoleFilter) WhereHasManagersWith(preds ...predicate.Manager) {
+	f.Where(entql.HasEdgeWith("managers", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// addPredicate implements the predicateAdder interface.
 func (sq *SettingQuery) addPredicate(pred func(s *sql.Selector)) {
 	sq.predicates = append(sq.predicates, pred)
 }
@@ -7370,7 +7512,7 @@ type SettingFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SettingFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[29].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[30].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -7450,7 +7592,7 @@ type StockFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *StockFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[30].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[31].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -7621,7 +7763,7 @@ type StoreFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *StoreFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[31].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[32].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -7820,7 +7962,7 @@ type SubscribeFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[32].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[33].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -8159,7 +8301,7 @@ type SubscribeAlterFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribeAlterFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[33].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[34].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -8291,7 +8433,7 @@ type SubscribePauseFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *SubscribePauseFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[34].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[35].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

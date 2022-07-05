@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/manager"
+	"github.com/auroraride/aurservd/internal/ent/role"
 )
 
 // ManagerCreate is the builder for creating a Manager entity.
@@ -91,6 +92,20 @@ func (mc *ManagerCreate) SetNillableRemark(s *string) *ManagerCreate {
 	return mc
 }
 
+// SetRoleID sets the "role_id" field.
+func (mc *ManagerCreate) SetRoleID(u uint64) *ManagerCreate {
+	mc.mutation.SetRoleID(u)
+	return mc
+}
+
+// SetNillableRoleID sets the "role_id" field if the given value is not nil.
+func (mc *ManagerCreate) SetNillableRoleID(u *uint64) *ManagerCreate {
+	if u != nil {
+		mc.SetRoleID(*u)
+	}
+	return mc
+}
+
 // SetPhone sets the "phone" field.
 func (mc *ManagerCreate) SetPhone(s string) *ManagerCreate {
 	mc.mutation.SetPhone(s)
@@ -121,6 +136,11 @@ func (mc *ManagerCreate) SetNillableLastSigninAt(t *time.Time) *ManagerCreate {
 		mc.SetLastSigninAt(*t)
 	}
 	return mc
+}
+
+// SetRole sets the "role" edge to the Role entity.
+func (mc *ManagerCreate) SetRole(r *Role) *ManagerCreate {
+	return mc.SetRoleID(r.ID)
 }
 
 // Mutation returns the ManagerMutation object of the builder.
@@ -354,6 +374,26 @@ func (mc *ManagerCreate) createSpec() (*Manager, *sqlgraph.CreateSpec) {
 		})
 		_node.LastSigninAt = &value
 	}
+	if nodes := mc.mutation.RoleIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   manager.RoleTable,
+			Columns: []string{manager.RoleColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: role.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.RoleID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -501,6 +541,24 @@ func (u *ManagerUpsert) UpdateRemark() *ManagerUpsert {
 // ClearRemark clears the value of the "remark" field.
 func (u *ManagerUpsert) ClearRemark() *ManagerUpsert {
 	u.SetNull(manager.FieldRemark)
+	return u
+}
+
+// SetRoleID sets the "role_id" field.
+func (u *ManagerUpsert) SetRoleID(v uint64) *ManagerUpsert {
+	u.Set(manager.FieldRoleID, v)
+	return u
+}
+
+// UpdateRoleID sets the "role_id" field to the value that was provided on create.
+func (u *ManagerUpsert) UpdateRoleID() *ManagerUpsert {
+	u.SetExcluded(manager.FieldRoleID)
+	return u
+}
+
+// ClearRoleID clears the value of the "role_id" field.
+func (u *ManagerUpsert) ClearRoleID() *ManagerUpsert {
+	u.SetNull(manager.FieldRoleID)
 	return u
 }
 
@@ -717,6 +775,27 @@ func (u *ManagerUpsertOne) UpdateRemark() *ManagerUpsertOne {
 func (u *ManagerUpsertOne) ClearRemark() *ManagerUpsertOne {
 	return u.Update(func(s *ManagerUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetRoleID sets the "role_id" field.
+func (u *ManagerUpsertOne) SetRoleID(v uint64) *ManagerUpsertOne {
+	return u.Update(func(s *ManagerUpsert) {
+		s.SetRoleID(v)
+	})
+}
+
+// UpdateRoleID sets the "role_id" field to the value that was provided on create.
+func (u *ManagerUpsertOne) UpdateRoleID() *ManagerUpsertOne {
+	return u.Update(func(s *ManagerUpsert) {
+		s.UpdateRoleID()
+	})
+}
+
+// ClearRoleID clears the value of the "role_id" field.
+func (u *ManagerUpsertOne) ClearRoleID() *ManagerUpsertOne {
+	return u.Update(func(s *ManagerUpsert) {
+		s.ClearRoleID()
 	})
 }
 
@@ -1106,6 +1185,27 @@ func (u *ManagerUpsertBulk) UpdateRemark() *ManagerUpsertBulk {
 func (u *ManagerUpsertBulk) ClearRemark() *ManagerUpsertBulk {
 	return u.Update(func(s *ManagerUpsert) {
 		s.ClearRemark()
+	})
+}
+
+// SetRoleID sets the "role_id" field.
+func (u *ManagerUpsertBulk) SetRoleID(v uint64) *ManagerUpsertBulk {
+	return u.Update(func(s *ManagerUpsert) {
+		s.SetRoleID(v)
+	})
+}
+
+// UpdateRoleID sets the "role_id" field to the value that was provided on create.
+func (u *ManagerUpsertBulk) UpdateRoleID() *ManagerUpsertBulk {
+	return u.Update(func(s *ManagerUpsert) {
+		s.UpdateRoleID()
+	})
+}
+
+// ClearRoleID clears the value of the "role_id" field.
+func (u *ManagerUpsertBulk) ClearRoleID() *ManagerUpsertBulk {
+	return u.Update(func(s *ManagerUpsert) {
+		s.ClearRoleID()
 	})
 }
 

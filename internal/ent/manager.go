@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/manager"
+	"github.com/auroraride/aurservd/internal/ent/role"
 )
 
 // Manager is the model entity for the Manager schema.
@@ -33,6 +34,9 @@ type Manager struct {
 	// Remark holds the value of the "remark" field.
 	// 管理员改动原因/备注
 	Remark string `json:"remark,omitempty"`
+	// RoleID holds the value of the "role_id" field.
+	// 角色ID
+	RoleID *uint64 `json:"role_id,omitempty"`
 	// Phone holds the value of the "phone" field.
 	// 账户/手机号
 	Phone string `json:"phone,omitempty"`
@@ -45,6 +49,32 @@ type Manager struct {
 	// LastSigninAt holds the value of the "last_signin_at" field.
 	// 最后登录时间
 	LastSigninAt *time.Time `json:"last_signin_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the ManagerQuery when eager-loading is set.
+	Edges ManagerEdges `json:"edges"`
+}
+
+// ManagerEdges holds the relations/edges for other nodes in the graph.
+type ManagerEdges struct {
+	// Role holds the value of the role edge.
+	Role *Role `json:"role,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// RoleOrErr returns the Role value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ManagerEdges) RoleOrErr() (*Role, error) {
+	if e.loadedTypes[0] {
+		if e.Role == nil {
+			// The edge role was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: role.Label}
+		}
+		return e.Role, nil
+	}
+	return nil, &NotLoadedError{edge: "role"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -54,7 +84,7 @@ func (*Manager) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case manager.FieldCreator, manager.FieldLastModifier:
 			values[i] = new([]byte)
-		case manager.FieldID:
+		case manager.FieldID, manager.FieldRoleID:
 			values[i] = new(sql.NullInt64)
 		case manager.FieldRemark, manager.FieldPhone, manager.FieldName, manager.FieldPassword:
 			values[i] = new(sql.NullString)
@@ -122,6 +152,13 @@ func (m *Manager) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				m.Remark = value.String
 			}
+		case manager.FieldRoleID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field role_id", values[i])
+			} else if value.Valid {
+				m.RoleID = new(uint64)
+				*m.RoleID = uint64(value.Int64)
+			}
 		case manager.FieldPhone:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field phone", values[i])
@@ -150,6 +187,11 @@ func (m *Manager) assignValues(columns []string, values []interface{}) error {
 		}
 	}
 	return nil
+}
+
+// QueryRole queries the "role" edge of the Manager entity.
+func (m *Manager) QueryRole() *RoleQuery {
+	return (&ManagerClient{config: m.config}).QueryRole(m)
 }
 
 // Update returns a builder for updating this Manager.
@@ -189,6 +231,10 @@ func (m *Manager) String() string {
 	builder.WriteString(fmt.Sprintf("%v", m.LastModifier))
 	builder.WriteString(", remark=")
 	builder.WriteString(m.Remark)
+	if v := m.RoleID; v != nil {
+		builder.WriteString(", role_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", phone=")
 	builder.WriteString(m.Phone)
 	builder.WriteString(", name=")

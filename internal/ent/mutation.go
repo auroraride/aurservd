@@ -44,6 +44,7 @@ const (
 	TypePlan                 = "Plan"
 	TypeRider                = "Rider"
 	TypeRiderFollowUp        = "RiderFollowUp"
+	TypeRole                 = "Role"
 	TypeSetting              = "Setting"
 	TypeStock                = "Stock"
 	TypeStore                = "Store"

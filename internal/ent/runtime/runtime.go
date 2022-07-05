@@ -34,6 +34,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/plan"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/riderfollowup"
+	"github.com/auroraride/aurservd/internal/ent/role"
 	"github.com/auroraride/aurservd/internal/ent/schema"
 	"github.com/auroraride/aurservd/internal/ent/setting"
 	"github.com/auroraride/aurservd/internal/ent/stock"
@@ -563,11 +564,11 @@ func init() {
 	// manager.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	manager.UpdateDefaultUpdatedAt = managerDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// managerDescPhone is the schema descriptor for phone field.
-	managerDescPhone := managerFields[0].Descriptor()
+	managerDescPhone := managerFields[1].Descriptor()
 	// manager.PhoneValidator is a validator for the "phone" field. It is called by the builders before save.
 	manager.PhoneValidator = managerDescPhone.Validators[0].(func(string) error)
 	// managerDescName is the schema descriptor for name field.
-	managerDescName := managerFields[1].Descriptor()
+	managerDescName := managerFields[2].Descriptor()
 	// manager.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	manager.NameValidator = managerDescName.Validators[0].(func(string) error)
 	orderMixin := schema.Order{}.Mixin()
@@ -724,6 +725,20 @@ func init() {
 	riderfollowup.DefaultUpdatedAt = riderfollowupDescUpdatedAt.Default.(func() time.Time)
 	// riderfollowup.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	riderfollowup.UpdateDefaultUpdatedAt = riderfollowupDescUpdatedAt.UpdateDefault.(func() time.Time)
+	roleFields := schema.Role{}.Fields()
+	_ = roleFields
+	// roleDescBuildin is the schema descriptor for buildin field.
+	roleDescBuildin := roleFields[2].Descriptor()
+	// role.DefaultBuildin holds the default value on creation for the buildin field.
+	role.DefaultBuildin = roleDescBuildin.Default.(bool)
+	// roleDescSuper is the schema descriptor for super field.
+	roleDescSuper := roleFields[3].Descriptor()
+	// role.DefaultSuper holds the default value on creation for the super field.
+	role.DefaultSuper = roleDescSuper.Default.(bool)
+	// roleDescCreatedAt is the schema descriptor for created_at field.
+	roleDescCreatedAt := roleFields[4].Descriptor()
+	// role.DefaultCreatedAt holds the default value on creation for the created_at field.
+	role.DefaultCreatedAt = roleDescCreatedAt.Default.(func() time.Time)
 	settingMixin := schema.Setting{}.Mixin()
 	settingMixinHooks1 := settingMixin[1].Hooks()
 	setting.Hooks[0] = settingMixinHooks1[0]

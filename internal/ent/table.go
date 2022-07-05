@@ -292,6 +292,16 @@ func (rfu *RiderFollowUp) GetID() uint64 {
 	return rfu.ID
 }
 
+// GetTableName returns table name for Role.
+func (r *Role) GetTableName() string {
+	return "role"
+}
+
+// GetID returns id for Role.
+func (r *Role) GetID() uint64 {
+	return r.ID
+}
+
 // GetTableName returns table name for Setting.
 func (s *Setting) GetTableName() string {
 	return "setting"

@@ -861,6 +861,30 @@ func (f RiderFollowUpMutationRuleFunc) EvalMutation(ctx context.Context, m ent.M
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.RiderFollowUpMutation", m)
 }
 
+// The RoleQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type RoleQueryRuleFunc func(context.Context, *ent.RoleQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f RoleQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.RoleQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.RoleQuery", q)
+}
+
+// The RoleMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type RoleMutationRuleFunc func(context.Context, *ent.RoleMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f RoleMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.RoleMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.RoleMutation", m)
+}
+
 // The SettingQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type SettingQueryRuleFunc func(context.Context, *ent.SettingQuery) error
@@ -1098,6 +1122,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.RiderFollowUpQuery:
 		return q.Filter(), nil
+	case *ent.RoleQuery:
+		return q.Filter(), nil
 	case *ent.SettingQuery:
 		return q.Filter(), nil
 	case *ent.StockQuery:
@@ -1174,6 +1200,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.RiderMutation:
 		return m.Filter(), nil
 	case *ent.RiderFollowUpMutation:
+		return m.Filter(), nil
+	case *ent.RoleMutation:
 		return m.Filter(), nil
 	case *ent.SettingMutation:
 		return m.Filter(), nil
