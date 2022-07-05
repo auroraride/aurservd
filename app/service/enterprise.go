@@ -14,6 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/enterprise"
     "github.com/auroraride/aurservd/internal/ent/enterprisecontract"
+    "github.com/auroraride/aurservd/internal/ent/enterpriseprepayment"
     "github.com/auroraride/aurservd/internal/ent/enterpriseprice"
     "github.com/auroraride/aurservd/internal/ent/enterprisestatement"
     "github.com/auroraride/aurservd/internal/ent/rider"
@@ -154,14 +155,14 @@ func (s *enterpriseService) SaveEnterprise(tx *ent.Tx, e *ent.Enterprise, req *m
 
 // DetailQuery 企业详情查询语句
 func (s *enterpriseService) DetailQuery() *ent.EnterpriseQuery {
-    return s.orm.QueryNotDeleted().WithStatements().WithCity().WithPrices(func(ep *ent.EnterprisePriceQuery) {
+    return s.orm.QueryNotDeleted().WithCity().WithPrices(func(ep *ent.EnterprisePriceQuery) {
         ep.WithCity()
     }).WithContracts(func(ecq *ent.EnterpriseContractQuery) {
         ecq.Order(ent.Desc(enterprisecontract.FieldEnd))
     }).WithRiders(func(erq *ent.RiderQuery) {
         erq.Where(rider.DeletedAtIsNil())
     }).WithStatements(func(esq *ent.EnterpriseStatementQuery) {
-        esq.Where(enterprisestatement.Date(carbon.Now().StartOfDay().Carbon2Time()))
+        esq.Where(enterprisestatement.SettledAtIsNil())
     })
 }
 
@@ -205,9 +206,10 @@ func (s *enterpriseService) List(req *model.EnterpriseListReq) *model.Pagination
 
 // GetDetail 获取企业详情
 func (s *enterpriseService) GetDetail(req *model.IDParamReq) model.EnterpriseRes {
-    item, _ := s.DetailQuery().Where(enterprise.ID(req.ID)).WithStatements(func(esq *ent.EnterpriseStatementQuery) {
-        esq.Where(enterprisestatement.Date(carbon.Now().StartOfDay().Carbon2Time()))
-    }).First(s.ctx)
+    item, _ := s.DetailQuery().Where(enterprise.ID(req.ID)).
+        WithStatements(func(esq *ent.EnterpriseStatementQuery) {
+            esq.Where(enterprisestatement.SettledAtIsNil())
+        }).First(s.ctx)
     if item == nil {
         snag.Panic("未找到有效企业")
     }
@@ -250,7 +252,7 @@ func (s *enterpriseService) Detail(item *ent.Enterprise) (res model.EnterpriseRe
     }
 
     stas := item.Edges.Statements
-    if item.Payment == model.EnterprisePaymentPostPay && stas != nil && len(stas) == 1 {
+    if item.Payment == model.EnterprisePaymentPostPay && len(stas) > 0 {
         res.Unsettlement = stas[0].Days
     }
     return
@@ -265,8 +267,8 @@ func (s *enterpriseService) QueryAllCollaborated() []*ent.Enterprise {
     return items
 }
 
-// QueryAllUsingSubscribe 获取所有待结算骑手团签订阅
-func (s *enterpriseService) QueryAllUsingSubscribe(enterpriseID uint64, args ...any) []*ent.Subscribe {
+// QueryAllBillingSubscribe 获取所有待结算骑手团签订阅
+func (s *enterpriseService) QueryAllBillingSubscribe(enterpriseID uint64, args ...any) []*ent.Subscribe {
     q := ent.Database.Subscribe.QueryNotDeleted().
         Where(
             // 所属企业
@@ -281,12 +283,21 @@ func (s *enterpriseService) QueryAllUsingSubscribe(enterpriseID uint64, args ...
             end = d
         }
     }
+    endDate := carbon.Time2Carbon(end).StartOfDay().Carbon2Time()
     q.Where(
         // 获取未结算订阅: 上次结算日期为空或小于截止日期
         subscribe.Or(
             subscribe.LastBillDateIsNil(),
-            subscribe.LastBillDateLTE(carbon.Time2Carbon(end).StartOfDay().Carbon2Time()),
+            subscribe.LastBillDateLT(endDate),
         ),
+        // subscribe.Or(
+        //     // 或者结算日期为空的
+        //     subscribe.EndAtIsNil(),
+        //     // 或者终止时间晚于上次已结算时间的
+        //     func(selector *sql.Selector) {
+        //         selector.Where(selector.P().ColumnsGTE(selector.C(subscribe.FieldEndAt), selector.C(subscribe.FieldLastBillDate)))
+        //     },
+        // ),
     )
 
     items, _ := q.WithCity().All(s.ctx)
@@ -316,9 +327,14 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
     es = NewEnterpriseStatement().Current(e)
 
     // 获取所有骑手订阅
-    subs := s.QueryAllUsingSubscribe(e.ID, end)
+    subs := s.QueryAllBillingSubscribe(e.ID, end)
     bills = make([]model.StatementBillData, len(subs))
     for i, sub := range subs {
+        // 是否已终止并且终止时间早于结算时间
+        if sub.LastBillDate != nil && sub.EndAt != nil && sub.LastBillDate.After(*sub.EndAt) {
+            continue
+        }
+
         // 计算使用天数
         var used int
 
@@ -373,6 +389,23 @@ func (s *enterpriseService) UpdateStatementByID(id uint64) {
     }
 }
 
+func (s *enterpriseService) Balance(id uint64) float64 {
+    var result []struct {
+        Sum          float64 `json:"sum"`
+        EnterpriseID uint64  `json:"enterprise_id"`
+    }
+    _ = ent.Database.EnterprisePrepayment.
+        QueryNotDeleted().
+        Where(enterpriseprepayment.EnterpriseID(id)).
+        GroupBy(enterpriseprepayment.FieldEnterpriseID).
+        Aggregate(ent.Sum(enterpriseprepayment.FieldAmount)).
+        Scan(s.ctx, &result)
+    if len(result) == 0 {
+        return 0
+    }
+    return result[0].Sum
+}
+
 // UpdateStatement 更新企业账单
 func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
     sta, bills := s.CalculateStatement(e, time.Now())
@@ -392,7 +425,7 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
     switch e.Payment {
     case model.EnterprisePaymentPrepay:
         // 预付费, 计算余额
-        balance = tools.NewDecimal().Sub(sta.Balance, cost)
+        balance = tools.NewDecimal().Sub(s.Balance(e.ID), cost)
         break
     }
 

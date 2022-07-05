@@ -1,5 +1,10 @@
 # 极光出行
 
+## 调试
+```shell
+dlv debug --headless --listen=:2345 --api-version=2 --accept-multiclient attach $PID
+```
+
 ## 待办
 - 从`struct`创建或更新
   - https://github.com/ent/ent/issues/761
