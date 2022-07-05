@@ -409,6 +409,11 @@ func (s *enterpriseService) Balance(id uint64) float64 {
 // UpdateStatement 更新企业账单
 func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
     sta, bills := s.CalculateStatement(e, time.Now())
+    // 如果当天已计算过则跳过
+    if sta.Date.Format(carbon.DateLayout) == time.Now().Format(carbon.DateLayout) {
+        log.Infof("[ENTERPRISE TASK] EntperirseID:[%d] 当天已计算过账单, 跳过", e.ID)
+        return
+    }
 
     // 总天数
     var days int
@@ -425,7 +430,7 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
     switch e.Payment {
     case model.EnterprisePaymentPrepay:
         // 预付费, 计算余额
-        balance = tools.NewDecimal().Sub(s.Balance(e.ID), cost)
+        balance = tools.NewDecimal().Sub(sta.Balance, cost)
         break
     }
 
