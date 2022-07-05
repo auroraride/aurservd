@@ -88,6 +88,8 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
             SetSimDate(tools.NewTime().ParseDateStringX(req.SimDate))
     }
 
+    res = new(model.CabinetItem)
+
     // 查询设置电池型号
     models := NewBattery().QueryModelsX(req.Models)
     for _, bm := range models {
