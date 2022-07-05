@@ -3476,6 +3476,38 @@ definitions:
         description: 总支付金额, 总金额为 amount + deposit
         type: number
     type: object
+  permission.Group:
+    properties:
+      desc:
+        description: 权限分组描述
+        type: string
+      items:
+        description: 权限列表
+        items:
+          $ref: '#/definitions/permission.Item'
+        type: array
+      name:
+        description: 权限分组名称
+        type: string
+    type: object
+  permission.Item:
+    properties:
+      api:
+        description: api请求path
+        type: string
+      desc:
+        description: 接口描述
+        type: string
+      key:
+        description: '权限KEY: MD5(METHOD + PATH)'
+        type: string
+      method:
+        description: api请求method
+        type: string
+      sn:
+        description: 接口编号
+        type: string
+    type: object
 info:
   contact: {}
   description: |-
@@ -6293,6 +6325,29 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M8002 退款审核
+      tags:
+      - '[M]管理接口'
+  /manager/v1/permission:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerPermissionList
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/permission.Group'
+            type: array
+      summary: MD001 权限列表
       tags:
       - '[M]管理接口'
   /manager/v1/plan:

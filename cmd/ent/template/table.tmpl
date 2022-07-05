@@ -13,6 +13,8 @@ Based on ent by liasica, magicrolan@qq.com.
 
 {{ range $n := $.Nodes }}
 
+{{ if ne $n.Name "Permission" }}
+
 {{ $receiver := $n.Receiver }}
 
 // GetTableName returns table name for {{ $n.Name }}.
@@ -25,5 +27,6 @@ func ({{ $receiver }} *{{ $n.Name }}) GetID() uint64 {
     return {{ $receiver }}.ID
 }
 
+{{ end }}
 {{ end }}
 {{ end }}

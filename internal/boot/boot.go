@@ -13,6 +13,8 @@ import (
     "github.com/auroraride/aurservd/pkg/logger"
     "os"
     "time"
+
+    _ "github.com/auroraride/aurservd/app/permission"
 )
 
 func Bootstrap() {

@@ -1,4 +1,16 @@
+## 2022-07-05
 
+#### 接口新增
+
+- [MD001 权限列表](http://localhost:5533/docs#tag/M/operation/ManagerPermissionList)
+
+
+
+
+
+
+
+<br />
 
 ## 2022-07-04
 

@@ -135,4 +135,6 @@ func loadManagerRoutes() {
     g.POST("/assistance/allocate", mapi.Assistance.Allocate)
     g.POST("/assistance/free", mapi.Assistance.Free)
     g.POST("/assistance/refuse", mapi.Assistance.Refuse)
+
+    g.GET("/permission", mapi.Permission.List)
 }

@@ -4163,6 +4163,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/permission": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MD001 权限列表",
+                "operationId": "ManagerPermissionList",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/permission.Group"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/plan": {
             "get": {
                 "consumes": [
@@ -12303,6 +12338,51 @@ const docTemplate = `{
                 "total": {
                     "description": "总支付金额, 总金额为 amount + deposit",
                     "type": "number"
+                }
+            }
+        },
+        "permission.Group": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "description": "权限分组描述",
+                    "type": "string"
+                },
+                "items": {
+                    "description": "权限列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/permission.Item"
+                    }
+                },
+                "name": {
+                    "description": "权限分组名称",
+                    "type": "string"
+                }
+            }
+        },
+        "permission.Item": {
+            "type": "object",
+            "properties": {
+                "api": {
+                    "description": "api请求path",
+                    "type": "string"
+                },
+                "desc": {
+                    "description": "接口描述",
+                    "type": "string"
+                },
+                "key": {
+                    "description": "权限KEY: MD5(METHOD + PATH)",
+                    "type": "string"
+                },
+                "method": {
+                    "description": "api请求method",
+                    "type": "string"
+                },
+                "sn": {
+                    "description": "接口编号",
+                    "type": "string"
                 }
             }
         }
