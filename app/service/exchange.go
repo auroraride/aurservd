@@ -267,7 +267,8 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
     q := s.listBasicQuery(req.ExchangeListReq).
         WithCity().
         WithStore().
-        WithCabinet()
+        WithCabinet().
+        Order(ent.Desc(exchange.FieldCreatedAt))
 
     switch req.Target {
     case 1:
