@@ -251,6 +251,20 @@ func (eu *ExchangeUpdate) SetModel(s string) *ExchangeUpdate {
 	return eu
 }
 
+// SetAlternative sets the "alternative" field.
+func (eu *ExchangeUpdate) SetAlternative(b bool) *ExchangeUpdate {
+	eu.mutation.SetAlternative(b)
+	return eu
+}
+
+// SetNillableAlternative sets the "alternative" field if the given value is not nil.
+func (eu *ExchangeUpdate) SetNillableAlternative(b *bool) *ExchangeUpdate {
+	if b != nil {
+		eu.SetAlternative(*b)
+	}
+	return eu
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (eu *ExchangeUpdate) SetSubscribe(s *Subscribe) *ExchangeUpdate {
 	return eu.SetSubscribeID(s.ID)
@@ -535,6 +549,13 @@ func (eu *ExchangeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: exchange.FieldModel,
+		})
+	}
+	if value, ok := eu.mutation.Alternative(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: exchange.FieldAlternative,
 		})
 	}
 	if eu.mutation.SubscribeCleared() {
@@ -1050,6 +1071,20 @@ func (euo *ExchangeUpdateOne) SetModel(s string) *ExchangeUpdateOne {
 	return euo
 }
 
+// SetAlternative sets the "alternative" field.
+func (euo *ExchangeUpdateOne) SetAlternative(b bool) *ExchangeUpdateOne {
+	euo.mutation.SetAlternative(b)
+	return euo
+}
+
+// SetNillableAlternative sets the "alternative" field if the given value is not nil.
+func (euo *ExchangeUpdateOne) SetNillableAlternative(b *bool) *ExchangeUpdateOne {
+	if b != nil {
+		euo.SetAlternative(*b)
+	}
+	return euo
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (euo *ExchangeUpdateOne) SetSubscribe(s *Subscribe) *ExchangeUpdateOne {
 	return euo.SetSubscribeID(s.ID)
@@ -1364,6 +1399,13 @@ func (euo *ExchangeUpdateOne) sqlSave(ctx context.Context) (_node *Exchange, err
 			Type:   field.TypeString,
 			Value:  value,
 			Column: exchange.FieldModel,
+		})
+	}
+	if value, ok := euo.mutation.Alternative(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: exchange.FieldAlternative,
 		})
 	}
 	if euo.mutation.SubscribeCleared() {

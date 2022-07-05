@@ -238,6 +238,7 @@ func (s *riderCabinetService) ProcessStepEnd() {
         SetNillableEnterpriseID(s.subscribe.EnterpriseID).
         SetNillableStationID(s.subscribe.StationID).
         SetSubscribeID(s.subscribe.ID).
+        SetAlternative(s.alternative).
         Save(s.ctx)
 }
 

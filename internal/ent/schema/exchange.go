@@ -33,6 +33,7 @@ func (Exchange) Fields() []ent.Field {
         field.Bool("success").Default(true).Comment("是否成功"),
         field.JSON("detail", &model.ExchangeCabinet{}).Optional().Comment("电柜换电信息"),
         field.String("model").Comment("电池型号"),
+        field.Bool("alternative").Default(false).Comment("是否备用方案"),
     }
 }
 

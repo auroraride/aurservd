@@ -219,6 +219,20 @@ func (ec *ExchangeCreate) SetModel(s string) *ExchangeCreate {
 	return ec
 }
 
+// SetAlternative sets the "alternative" field.
+func (ec *ExchangeCreate) SetAlternative(b bool) *ExchangeCreate {
+	ec.mutation.SetAlternative(b)
+	return ec
+}
+
+// SetNillableAlternative sets the "alternative" field if the given value is not nil.
+func (ec *ExchangeCreate) SetNillableAlternative(b *bool) *ExchangeCreate {
+	if b != nil {
+		ec.SetAlternative(*b)
+	}
+	return ec
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (ec *ExchangeCreate) SetSubscribe(s *Subscribe) *ExchangeCreate {
 	return ec.SetSubscribeID(s.ID)
@@ -356,6 +370,10 @@ func (ec *ExchangeCreate) defaults() error {
 		v := exchange.DefaultSuccess
 		ec.mutation.SetSuccess(v)
 	}
+	if _, ok := ec.mutation.Alternative(); !ok {
+		v := exchange.DefaultAlternative
+		ec.mutation.SetAlternative(v)
+	}
 	return nil
 }
 
@@ -384,6 +402,9 @@ func (ec *ExchangeCreate) check() error {
 	}
 	if _, ok := ec.mutation.Model(); !ok {
 		return &ValidationError{Name: "model", err: errors.New(`ent: missing required field "Exchange.model"`)}
+	}
+	if _, ok := ec.mutation.Alternative(); !ok {
+		return &ValidationError{Name: "alternative", err: errors.New(`ent: missing required field "Exchange.alternative"`)}
 	}
 	if _, ok := ec.mutation.SubscribeID(); !ok {
 		return &ValidationError{Name: "subscribe", err: errors.New(`ent: missing required edge "Exchange.subscribe"`)}
@@ -501,6 +522,14 @@ func (ec *ExchangeCreate) createSpec() (*Exchange, *sqlgraph.CreateSpec) {
 			Column: exchange.FieldModel,
 		})
 		_node.Model = value
+	}
+	if value, ok := ec.mutation.Alternative(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: exchange.FieldAlternative,
+		})
+		_node.Alternative = value
 	}
 	if nodes := ec.mutation.SubscribeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -992,6 +1021,18 @@ func (u *ExchangeUpsert) UpdateModel() *ExchangeUpsert {
 	return u
 }
 
+// SetAlternative sets the "alternative" field.
+func (u *ExchangeUpsert) SetAlternative(v bool) *ExchangeUpsert {
+	u.Set(exchange.FieldAlternative, v)
+	return u
+}
+
+// UpdateAlternative sets the "alternative" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateAlternative() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldAlternative)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1361,6 +1402,20 @@ func (u *ExchangeUpsertOne) SetModel(v string) *ExchangeUpsertOne {
 func (u *ExchangeUpsertOne) UpdateModel() *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.UpdateModel()
+	})
+}
+
+// SetAlternative sets the "alternative" field.
+func (u *ExchangeUpsertOne) SetAlternative(v bool) *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetAlternative(v)
+	})
+}
+
+// UpdateAlternative sets the "alternative" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateAlternative() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateAlternative()
 	})
 }
 
@@ -1897,6 +1952,20 @@ func (u *ExchangeUpsertBulk) SetModel(v string) *ExchangeUpsertBulk {
 func (u *ExchangeUpsertBulk) UpdateModel() *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.UpdateModel()
+	})
+}
+
+// SetAlternative sets the "alternative" field.
+func (u *ExchangeUpsertBulk) SetAlternative(v bool) *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetAlternative(v)
+	})
+}
+
+// UpdateAlternative sets the "alternative" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateAlternative() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateAlternative()
 	})
 }
 

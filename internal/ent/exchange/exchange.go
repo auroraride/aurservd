@@ -49,6 +49,8 @@ const (
 	FieldDetail = "detail"
 	// FieldModel holds the string denoting the model field in the database.
 	FieldModel = "model"
+	// FieldAlternative holds the string denoting the alternative field in the database.
+	FieldAlternative = "alternative"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
 	// EdgeCity holds the string denoting the city edge name in mutations.
@@ -146,6 +148,7 @@ var Columns = []string{
 	FieldSuccess,
 	FieldDetail,
 	FieldModel,
+	FieldAlternative,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -174,4 +177,6 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultSuccess holds the default value on creation for the "success" field.
 	DefaultSuccess bool
+	// DefaultAlternative holds the default value on creation for the "alternative" field.
+	DefaultAlternative bool
 )

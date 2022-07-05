@@ -198,6 +198,13 @@ func Model(v string) predicate.Exchange {
 	})
 }
 
+// Alternative applies equality check predicate on the "alternative" field. It's identical to AlternativeEQ.
+func Alternative(v bool) predicate.Exchange {
+	return predicate.Exchange(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAlternative), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Exchange {
 	return predicate.Exchange(func(s *sql.Selector) {
@@ -1294,6 +1301,20 @@ func ModelEqualFold(v string) predicate.Exchange {
 func ModelContainsFold(v string) predicate.Exchange {
 	return predicate.Exchange(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldModel), v))
+	})
+}
+
+// AlternativeEQ applies the EQ predicate on the "alternative" field.
+func AlternativeEQ(v bool) predicate.Exchange {
+	return predicate.Exchange(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAlternative), v))
+	})
+}
+
+// AlternativeNEQ applies the NEQ predicate on the "alternative" field.
+func AlternativeNEQ(v bool) predicate.Exchange {
+	return predicate.Exchange(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldAlternative), v))
 	})
 }
 

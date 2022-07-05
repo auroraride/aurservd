@@ -75,6 +75,9 @@ type Exchange struct {
 	// Model holds the value of the "model" field.
 	// 电池型号
 	Model string `json:"model,omitempty"`
+	// Alternative holds the value of the "alternative" field.
+	// 是否备用方案
+	Alternative bool `json:"alternative,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ExchangeQuery when eager-loading is set.
 	Edges ExchangeEdges `json:"edges"`
@@ -222,7 +225,7 @@ func (*Exchange) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case exchange.FieldCreator, exchange.FieldLastModifier, exchange.FieldDetail:
 			values[i] = new([]byte)
-		case exchange.FieldSuccess:
+		case exchange.FieldSuccess, exchange.FieldAlternative:
 			values[i] = new(sql.NullBool)
 		case exchange.FieldID, exchange.FieldSubscribeID, exchange.FieldCityID, exchange.FieldStoreID, exchange.FieldEnterpriseID, exchange.FieldStationID, exchange.FieldRiderID, exchange.FieldEmployeeID, exchange.FieldCabinetID:
 			values[i] = new(sql.NullInt64)
@@ -370,6 +373,12 @@ func (e *Exchange) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				e.Model = value.String
 			}
+		case exchange.FieldAlternative:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field alternative", values[i])
+			} else if value.Valid {
+				e.Alternative = value.Bool
+			}
 		}
 	}
 	return nil
@@ -484,6 +493,8 @@ func (e *Exchange) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.Detail))
 	builder.WriteString(", model=")
 	builder.WriteString(e.Model)
+	builder.WriteString(", alternative=")
+	builder.WriteString(fmt.Sprintf("%v", e.Alternative))
 	builder.WriteByte(')')
 	return builder.String()
 }

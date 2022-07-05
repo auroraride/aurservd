@@ -529,6 +529,10 @@ func init() {
 	exchangeDescSuccess := exchangeFields[4].Descriptor()
 	// exchange.DefaultSuccess holds the default value on creation for the success field.
 	exchange.DefaultSuccess = exchangeDescSuccess.Default.(bool)
+	// exchangeDescAlternative is the schema descriptor for alternative field.
+	exchangeDescAlternative := exchangeFields[7].Descriptor()
+	// exchange.DefaultAlternative holds the default value on creation for the alternative field.
+	exchange.DefaultAlternative = exchangeDescAlternative.Default.(bool)
 	inventoryMixin := schema.Inventory{}.Mixin()
 	inventoryMixinHooks2 := inventoryMixin[2].Hooks()
 	inventory.Hooks[0] = inventoryMixinHooks2[0]

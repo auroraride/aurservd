@@ -32,6 +32,7 @@ type ExchangeMutation struct {
 	success           *bool
 	detail            **model.ExchangeCabinet
 	model             *string
+	alternative       *bool
 	clearedFields     map[string]struct{}
 	subscribe         *uint64
 	clearedsubscribe  bool
@@ -930,6 +931,42 @@ func (m *ExchangeMutation) ResetModel() {
 	m.model = nil
 }
 
+// SetAlternative sets the "alternative" field.
+func (m *ExchangeMutation) SetAlternative(b bool) {
+	m.alternative = &b
+}
+
+// Alternative returns the value of the "alternative" field in the mutation.
+func (m *ExchangeMutation) Alternative() (r bool, exists bool) {
+	v := m.alternative
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAlternative returns the old "alternative" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldAlternative(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAlternative is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAlternative requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAlternative: %w", err)
+	}
+	return oldValue.Alternative, nil
+}
+
+// ResetAlternative resets all changes to the "alternative" field.
+func (m *ExchangeMutation) ResetAlternative() {
+	m.alternative = nil
+}
+
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *ExchangeMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
@@ -1157,7 +1194,7 @@ func (m *ExchangeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ExchangeMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, exchange.FieldCreatedAt)
 	}
@@ -1212,6 +1249,9 @@ func (m *ExchangeMutation) Fields() []string {
 	if m.model != nil {
 		fields = append(fields, exchange.FieldModel)
 	}
+	if m.alternative != nil {
+		fields = append(fields, exchange.FieldAlternative)
+	}
 	return fields
 }
 
@@ -1256,6 +1296,8 @@ func (m *ExchangeMutation) Field(name string) (ent.Value, bool) {
 		return m.Detail()
 	case exchange.FieldModel:
 		return m.Model()
+	case exchange.FieldAlternative:
+		return m.Alternative()
 	}
 	return nil, false
 }
@@ -1301,6 +1343,8 @@ func (m *ExchangeMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldDetail(ctx)
 	case exchange.FieldModel:
 		return m.OldModel(ctx)
+	case exchange.FieldAlternative:
+		return m.OldAlternative(ctx)
 	}
 	return nil, fmt.Errorf("unknown Exchange field %s", name)
 }
@@ -1435,6 +1479,13 @@ func (m *ExchangeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetModel(v)
+		return nil
+	case exchange.FieldAlternative:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAlternative(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Exchange field %s", name)
@@ -1604,6 +1655,9 @@ func (m *ExchangeMutation) ResetField(name string) error {
 		return nil
 	case exchange.FieldModel:
 		m.ResetModel()
+		return nil
+	case exchange.FieldAlternative:
+		m.ResetAlternative()
 		return nil
 	}
 	return fmt.Errorf("unknown Exchange field %s", name)

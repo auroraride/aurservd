@@ -632,6 +632,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			exchange.FieldSuccess:      {Type: field.TypeBool, Column: exchange.FieldSuccess},
 			exchange.FieldDetail:       {Type: field.TypeJSON, Column: exchange.FieldDetail},
 			exchange.FieldModel:        {Type: field.TypeString, Column: exchange.FieldModel},
+			exchange.FieldAlternative:  {Type: field.TypeBool, Column: exchange.FieldAlternative},
 		},
 	}
 	graph.Nodes[21] = &sqlgraph.Node{
@@ -6040,6 +6041,11 @@ func (f *ExchangeFilter) WhereDetail(p entql.BytesP) {
 // WhereModel applies the entql string predicate on the model field.
 func (f *ExchangeFilter) WhereModel(p entql.StringP) {
 	f.Where(p.Field(exchange.FieldModel))
+}
+
+// WhereAlternative applies the entql bool predicate on the alternative field.
+func (f *ExchangeFilter) WhereAlternative(p entql.BoolP) {
+	f.Where(p.Field(exchange.FieldAlternative))
 }
 
 // WhereHasSubscribe applies a predicate to check if query has an edge subscribe.
