@@ -7,6 +7,7 @@ package service
 
 import (
     "context"
+    "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/enterprise"
@@ -94,8 +95,9 @@ func (s *enterpriseStatementService) GetBill(req *model.StatementBillReq) *model
 
     // 查询未结账账单
     es, bills := NewEnterprise().CalculateStatement(e, end)
-    if es.Start.After(end) {
-        snag.Panic("无账单信息")
+    if es.Start.Sub(end).Seconds() > 0 {
+        msg := fmt.Sprintf("无账单信息, 账单开始日期: %s, 所选截止日期: %s", es.Start.Format(carbon.DateLayout), end.Format(carbon.DateLayout))
+        snag.Panic(msg)
     }
 
     uid := uuid.New().String()

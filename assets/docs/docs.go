@@ -3756,7 +3756,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M8003 换电列表",
+                "summary": "M8003 换电记录",
                 "operationId": "ManagerExchangeList",
                 "parameters": [
                     {
@@ -3770,6 +3770,23 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "筛选对象 0:全部 1:个签 2:团签",
                         "name": "aimed",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "换电方案 0:全部 1:满电 2:非满电",
+                        "name": "alternative",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "选择电柜ID",
+                        "name": "cabinetId",
                         "in": "query"
                     },
                     {
@@ -3810,8 +3827,20 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "电柜编号",
+                        "name": "serial",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "开始时间",
                         "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "选择门店ID",
+                        "name": "storeId",
                         "in": "query"
                     },
                     {

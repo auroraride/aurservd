@@ -292,6 +292,7 @@ func (s *enterpriseService) QueryAllBillingSubscribe(enterpriseID uint64, args .
             subscribe.LastBillDateIsNil(),
             subscribe.LastBillDateLT(endDate),
         ),
+        // TODO 如何进行字段对比查询 ??
         // subscribe.Or(
         //     // 或者结算日期为空的
         //     subscribe.EndAtIsNil(),
@@ -330,8 +331,7 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
 
     // 获取所有骑手订阅
     subs := s.QueryAllBillingSubscribe(e.ID, end)
-    bills = make([]model.StatementBillData, len(subs))
-    for i, sub := range subs {
+    for _, sub := range subs {
         // 是否已终止并且终止时间早于结算时间
         if sub.LastBillDate != nil && sub.EndAt != nil && sub.LastBillDate.After(*sub.EndAt) {
             continue
@@ -363,7 +363,7 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
 
         cost, _ := decimal.NewFromFloat(p).Mul(decimal.NewFromInt(int64(used))).Float64()
 
-        bills[i] = model.StatementBillData{
+        bills = append(bills, model.StatementBillData{
             EnterpriseID: *sub.EnterpriseID,
             RiderID:      sub.RiderID,
             SubscribeID:  sub.ID,
@@ -379,7 +379,7 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
             Cost:        cost,
             Price:       p,
             Model:       sub.Model,
-        }
+        })
     }
 
     return

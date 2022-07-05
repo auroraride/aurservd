@@ -68,11 +68,15 @@ type ExchangeEmployeeListRes struct {
 
 type ExchangeManagerListReq struct {
     ExchangeListReq
-    Target   uint8  `json:"target" query:"target"`     // 换电类别 0:全部 1:电柜 2:门店
-    CityID   uint64 `json:"cityId" query:"cityId"`     // 城市
-    Employee string `json:"employee" query:"employee"` // 筛选店员(手机号或姓名)
-    Start    string `json:"start" query:"start"`       // 开始时间
-    End      string `json:"end" query:"end"`           // 结束时间
+    Target      uint8  `json:"target" query:"target"`                         // 换电类别 0:全部 1:电柜 2:门店
+    CityID      uint64 `json:"cityId" query:"cityId"`                         // 城市
+    Employee    string `json:"employee" query:"employee"`                     // 筛选店员(手机号或姓名)
+    Start       string `json:"start" query:"start"`                           // 开始时间
+    End         string `json:"end" query:"end"`                               // 结束时间
+    Alternative uint8  `json:"alternative" query:"alternative" enums:"0,1,2"` // 换电方案 0:全部 1:满电 2:非满电
+    CabinetID   uint64 `json:"cabinetId" query:"cabinetId"`                   // 选择电柜ID
+    StoreID     uint64 `json:"storeId" query:"storeId"`                       // 选择门店ID
+    Serial      string `json:"serial" query:"serial"`                         // 电柜编号
 }
 
 type ExchangeManagerListRes struct {

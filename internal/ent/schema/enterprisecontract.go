@@ -2,7 +2,6 @@ package schema
 
 import (
     "entgo.io/ent"
-    "entgo.io/ent/dialect"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
@@ -27,8 +26,8 @@ func (EnterpriseContract) Annotations() []schema.Annotation {
 func (EnterpriseContract) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("enterprise_id"),
-        field.Time("start").SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("合同开始时间"),
-        field.Time("end").SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("合同结束时间"),
+        field.Time("start").Comment("合同开始时间"),
+        field.Time("end").Comment("合同结束时间"),
         field.String("file").Comment("合同文件"),
     }
 }

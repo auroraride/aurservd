@@ -2,7 +2,6 @@ package schema
 
 import (
     "entgo.io/ent"
-    "entgo.io/ent/dialect"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
@@ -32,7 +31,7 @@ func (Attendance) Fields() []ent.Field {
         field.JSON("inventory", []model.AttendanceInventory{}).Optional().Comment("物资盘点"),
         field.String("photo").Optional().Nillable().Comment("上班照片"),
         field.Bool("duty").Comment("是否上班盘点"),
-        field.Time("date").SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("日期"),
+        field.Time("date").Comment("日期"),
         field.Float("lng").Optional().Nillable().Comment("经度"),
         field.Float("lat").Optional().Nillable().Comment("纬度"),
         field.String("address").Optional().Nillable().Comment("详细地址"),

@@ -2,7 +2,6 @@ package schema
 
 import (
     "entgo.io/ent"
-    "entgo.io/ent/dialect"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
@@ -32,9 +31,9 @@ func (EnterpriseStatement) Fields() []ent.Field {
         field.Time("settled_at").Optional().Nillable().Comment("结账时间"),
         field.Int("days").Default(0).Comment("账期内使用总天数"),
         field.Int("rider_number").Default(0).Comment("账期内使用总人数"),
-        field.Time("date").Optional().Nillable().SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("对账单计算日期(包含当日)"),
-        field.Time("start").SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("账单开始日期"),
-        field.Time("end").Optional().Nillable().SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("账单结束日期"),
+        field.Time("date").Optional().Nillable().Comment("对账单计算日期(包含当日)"),
+        field.Time("start").Comment("账单开始日期"),
+        field.Time("end").Optional().Nillable().Comment("账单结束日期"),
     }
 }
 

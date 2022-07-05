@@ -6077,6 +6077,18 @@ paths:
         in: query
         name: aimed
         type: integer
+      - description: 换电方案 0:全部 1:满电 2:非满电
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: alternative
+        type: integer
+      - description: 选择电柜ID
+        in: query
+        name: cabinetId
+        type: integer
       - description: 城市
         in: query
         name: cityId
@@ -6101,10 +6113,18 @@ paths:
         in: query
         name: pageSize
         type: integer
+      - description: 电柜编号
+        in: query
+        name: serial
+        type: string
       - description: 开始时间
         in: query
         name: start
         type: string
+      - description: 选择门店ID
+        in: query
+        name: storeId
+        type: integer
       - description: 换电类别 0:全部 1:电柜 2:门店
         in: query
         name: target
@@ -6123,7 +6143,7 @@ paths:
                     $ref: '#/definitions/model.ExchangeManagerListRes'
                   type: array
               type: object
-      summary: M8003 换电列表
+      summary: M8003 换电记录
       tags:
       - '[M]管理接口'
   /manager/v1/inventory:

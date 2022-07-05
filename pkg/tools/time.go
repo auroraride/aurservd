@@ -67,7 +67,7 @@ func (*timeTool) ParseDateString(str string) (time.Time, error) {
     if res.Error != nil {
         return time.Time{}, res.Error
     }
-    return res.Carbon2Time(), nil
+    return res.StartOfDay().Carbon2Time(), nil
 }
 
 func (t *timeTool) ParseDateStringX(str string) time.Time {
@@ -80,12 +80,12 @@ func (t *timeTool) ParseDateStringX(str string) time.Time {
 }
 
 // ParseNextDateString 格式化日期字符串到下一天
-func (*timeTool) ParseNextDateString(str string) (time.Time, error) {
+func (t *timeTool) ParseNextDateString(str string) (time.Time, error) {
     res := carbon.ParseByLayout(str, carbon.DateLayout)
     if res.Error != nil {
         return time.Time{}, res.Error
     }
-    return res.AddDay().Carbon2Time(), nil
+    return res.StartOfDay().AddDay().Carbon2Time(), nil
 }
 
 func (t *timeTool) ParseNextDateStringX(str string) time.Time {

@@ -19,7 +19,7 @@ var Exchange = new(exchange)
 // List
 // @ID           ManagerExchangeList
 // @Router       /manager/v1/exchange [GET]
-// @Summary      M8003 换电列表
+// @Summary      M8003 换电记录
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json

@@ -2,7 +2,6 @@ package schema
 
 import (
     "entgo.io/ent"
-    "entgo.io/ent/dialect"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
@@ -28,8 +27,8 @@ func (EnterpriseBill) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("enterprise_id").Comment("企业ID"),
         field.Uint64("statement_id").Comment("账单ID"),
-        field.Time("start").SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("结算开始日期(包含)"),
-        field.Time("end").SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("结算结束日期(包含)"),
+        field.Time("start").Comment("结算开始日期(包含)"),
+        field.Time("end").Comment("结算结束日期(包含)"),
         field.Int("days").Comment("账单日期"),
         field.Float("price").Comment("账单单价"),
         field.Float("cost").Comment("账单金额"),
