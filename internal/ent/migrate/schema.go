@@ -916,6 +916,7 @@ var (
 		{Name: "rider_id", Type: field.TypeUint64},
 		{Name: "subscribe_id", Type: field.TypeUint64},
 		{Name: "city_id", Type: field.TypeUint64},
+		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "statement_id", Type: field.TypeUint64},
 	}
 	// EnterpriseBillTable holds the schema information for the "enterprise_bill" table.
@@ -949,8 +950,14 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "enterprise_bill_enterprise_statement_bills",
+				Symbol:     "enterprise_bill_enterprise_station_station",
 				Columns:    []*schema.Column{EnterpriseBillColumns[17]},
+				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "enterprise_bill_enterprise_statement_bills",
+				Columns:    []*schema.Column{EnterpriseBillColumns[18]},
 				RefColumns: []*schema.Column{EnterpriseStatementColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -2517,7 +2524,8 @@ func init() {
 	EnterpriseBillTable.ForeignKeys[1].RefTable = RiderTable
 	EnterpriseBillTable.ForeignKeys[2].RefTable = SubscribeTable
 	EnterpriseBillTable.ForeignKeys[3].RefTable = CityTable
-	EnterpriseBillTable.ForeignKeys[4].RefTable = EnterpriseStatementTable
+	EnterpriseBillTable.ForeignKeys[4].RefTable = EnterpriseStationTable
+	EnterpriseBillTable.ForeignKeys[5].RefTable = EnterpriseStatementTable
 	EnterpriseBillTable.Annotation = &entsql.Annotation{
 		Table: "enterprise_bill",
 	}

@@ -31,6 +31,8 @@ const (
 	FieldSubscribeID = "subscribe_id"
 	// FieldCityID holds the string denoting the city_id field in the database.
 	FieldCityID = "city_id"
+	// FieldStationID holds the string denoting the station_id field in the database.
+	FieldStationID = "station_id"
 	// FieldEnterpriseID holds the string denoting the enterprise_id field in the database.
 	FieldEnterpriseID = "enterprise_id"
 	// FieldStatementID holds the string denoting the statement_id field in the database.
@@ -53,6 +55,8 @@ const (
 	EdgeSubscribe = "subscribe"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
+	// EdgeStation holds the string denoting the station edge name in mutations.
+	EdgeStation = "station"
 	// EdgeEnterprise holds the string denoting the enterprise edge name in mutations.
 	EdgeEnterprise = "enterprise"
 	// EdgeStatement holds the string denoting the statement edge name in mutations.
@@ -80,6 +84,13 @@ const (
 	CityInverseTable = "city"
 	// CityColumn is the table column denoting the city relation/edge.
 	CityColumn = "city_id"
+	// StationTable is the table that holds the station relation/edge.
+	StationTable = "enterprise_bill"
+	// StationInverseTable is the table name for the EnterpriseStation entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisestation" package.
+	StationInverseTable = "enterprise_station"
+	// StationColumn is the table column denoting the station relation/edge.
+	StationColumn = "station_id"
 	// EnterpriseTable is the table that holds the enterprise relation/edge.
 	EnterpriseTable = "enterprise_bill"
 	// EnterpriseInverseTable is the table name for the Enterprise entity.
@@ -108,6 +119,7 @@ var Columns = []string{
 	FieldRiderID,
 	FieldSubscribeID,
 	FieldCityID,
+	FieldStationID,
 	FieldEnterpriseID,
 	FieldStatementID,
 	FieldStart,

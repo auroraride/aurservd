@@ -2548,6 +2548,22 @@ func (c *EnterpriseBillClient) QueryCity(eb *EnterpriseBill) *CityQuery {
 	return query
 }
 
+// QueryStation queries the station edge of a EnterpriseBill.
+func (c *EnterpriseBillClient) QueryStation(eb *EnterpriseBill) *EnterpriseStationQuery {
+	query := &EnterpriseStationQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := eb.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, id),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebill.StationTable, enterprisebill.StationColumn),
+		)
+		fromV = sqlgraph.Neighbors(eb.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryEnterprise queries the enterprise edge of a EnterpriseBill.
 func (c *EnterpriseBillClient) QueryEnterprise(eb *EnterpriseBill) *EnterpriseQuery {
 	query := &EnterpriseQuery{config: c.config}

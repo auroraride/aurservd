@@ -254,7 +254,9 @@ func (s *enterpriseService) Detail(item *ent.Enterprise) (res model.EnterpriseRe
     stas := item.Edges.Statements
     if item.Payment == model.EnterprisePaymentPostPay && len(stas) > 0 {
         res.Unsettlement = stas[0].Days
+        res.StatementStart = stas[0].Start.Format(carbon.DateLayout)
     }
+
     return
 }
 
@@ -370,6 +372,7 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
                 Name: sub.Edges.City.Name,
             },
             StatementID: es.ID,
+            StationID:   sub.StationID,
             Days:        used,
             End:         end.Format(carbon.DateLayout),
             Start:       from.Format(carbon.DateLayout),

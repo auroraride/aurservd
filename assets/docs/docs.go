@@ -9785,6 +9785,10 @@ const docTemplate = `{
                     "description": "骑手数量",
                     "type": "integer"
                 },
+                "statementStart": {
+                    "description": "账单开始日期",
+                    "type": "string"
+                },
                 "status": {
                     "description": "合作状态 0:未合作 1:已合作 2:已暂停",
                     "type": "integer",
@@ -11580,6 +11584,10 @@ const docTemplate = `{
                 },
                 "statementId": {
                     "description": "账单ID",
+                    "type": "integer"
+                },
+                "stationId": {
+                    "description": "站点ID",
                     "type": "integer"
                 },
                 "subscribeId": {

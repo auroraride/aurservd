@@ -37,17 +37,18 @@ type StatementBillRes struct {
 }
 
 type StatementBillData struct {
-    EnterpriseID uint64  `json:"enterpriseId"` // 企业ID
-    RiderID      uint64  `json:"riderId"`      // 骑手ID
-    SubscribeID  uint64  `json:"subscribeId"`  // 订阅ID
-    StatementID  uint64  `json:"statementId"`  // 账单ID
-    Start        string  `json:"start"`        // 开始日期
-    End          string  `json:"end"`          // 结束日期
-    Days         int     `json:"days"`         // 天数
-    Price        float64 `json:"price"`        // 单价
-    Cost         float64 `json:"cost"`         // 金额小计
-    Model        string  `json:"model"`        // 电池型号
-    City         City    `json:"city"`         // 城市
+    EnterpriseID uint64  `json:"enterpriseId"`        // 企业ID
+    RiderID      uint64  `json:"riderId"`             // 骑手ID
+    SubscribeID  uint64  `json:"subscribeId"`         // 订阅ID
+    StatementID  uint64  `json:"statementId"`         // 账单ID
+    Start        string  `json:"start"`               // 开始日期
+    End          string  `json:"end"`                 // 结束日期
+    Days         int     `json:"days"`                // 天数
+    Price        float64 `json:"price"`               // 单价
+    Cost         float64 `json:"cost"`                // 金额小计
+    Model        string  `json:"model"`               // 电池型号
+    City         City    `json:"city"`                // 城市
+    StationID    *uint64 `json:"stationId,omitempty"` // 站点ID
 }
 
 func (d *StatementBillRes) MarshalBinary() ([]byte, error) {

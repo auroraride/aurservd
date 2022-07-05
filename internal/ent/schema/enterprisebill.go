@@ -54,6 +54,7 @@ func (EnterpriseBill) Mixin() []ent.Mixin {
         RiderMixin{},
         SubscribeMixin{},
         CityMixin{},
+        StationMixin{Optional: true},
     }
 }
 

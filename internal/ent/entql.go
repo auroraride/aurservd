@@ -447,6 +447,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterprisebill.FieldRiderID:      {Type: field.TypeUint64, Column: enterprisebill.FieldRiderID},
 			enterprisebill.FieldSubscribeID:  {Type: field.TypeUint64, Column: enterprisebill.FieldSubscribeID},
 			enterprisebill.FieldCityID:       {Type: field.TypeUint64, Column: enterprisebill.FieldCityID},
+			enterprisebill.FieldStationID:    {Type: field.TypeUint64, Column: enterprisebill.FieldStationID},
 			enterprisebill.FieldEnterpriseID: {Type: field.TypeUint64, Column: enterprisebill.FieldEnterpriseID},
 			enterprisebill.FieldStatementID:  {Type: field.TypeUint64, Column: enterprisebill.FieldStatementID},
 			enterprisebill.FieldStart:        {Type: field.TypeTime, Column: enterprisebill.FieldStart},
@@ -1720,6 +1721,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"EnterpriseBill",
 		"City",
+	)
+	graph.MustAddE(
+		"station",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterprisebill.StationTable,
+			Columns: []string{enterprisebill.StationColumn},
+			Bidi:    false,
+		},
+		"EnterpriseBill",
+		"EnterpriseStation",
 	)
 	graph.MustAddE(
 		"enterprise",
@@ -5055,6 +5068,11 @@ func (f *EnterpriseBillFilter) WhereCityID(p entql.Uint64P) {
 	f.Where(p.Field(enterprisebill.FieldCityID))
 }
 
+// WhereStationID applies the entql uint64 predicate on the station_id field.
+func (f *EnterpriseBillFilter) WhereStationID(p entql.Uint64P) {
+	f.Where(p.Field(enterprisebill.FieldStationID))
+}
+
 // WhereEnterpriseID applies the entql uint64 predicate on the enterprise_id field.
 func (f *EnterpriseBillFilter) WhereEnterpriseID(p entql.Uint64P) {
 	f.Where(p.Field(enterprisebill.FieldEnterpriseID))
@@ -5131,6 +5149,20 @@ func (f *EnterpriseBillFilter) WhereHasCity() {
 // WhereHasCityWith applies a predicate to check if query has an edge city with a given conditions (other predicates).
 func (f *EnterpriseBillFilter) WhereHasCityWith(preds ...predicate.City) {
 	f.Where(entql.HasEdgeWith("city", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasStation applies a predicate to check if query has an edge station.
+func (f *EnterpriseBillFilter) WhereHasStation() {
+	f.Where(entql.HasEdge("station"))
+}
+
+// WhereHasStationWith applies a predicate to check if query has an edge station with a given conditions (other predicates).
+func (f *EnterpriseBillFilter) WhereHasStationWith(preds ...predicate.EnterpriseStation) {
+	f.Where(entql.HasEdgeWith("station", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

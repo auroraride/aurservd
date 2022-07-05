@@ -142,6 +142,13 @@ func CityID(v uint64) predicate.EnterpriseBill {
 	})
 }
 
+// StationID applies equality check predicate on the "station_id" field. It's identical to StationIDEQ.
+func StationID(v uint64) predicate.EnterpriseBill {
+	return predicate.EnterpriseBill(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStationID), v))
+	})
+}
+
 // EnterpriseID applies equality check predicate on the "enterprise_id" field. It's identical to EnterpriseIDEQ.
 func EnterpriseID(v uint64) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
@@ -734,6 +741,68 @@ func CityIDNotIn(vs ...uint64) predicate.EnterpriseBill {
 			return
 		}
 		s.Where(sql.NotIn(s.C(FieldCityID), v...))
+	})
+}
+
+// StationIDEQ applies the EQ predicate on the "station_id" field.
+func StationIDEQ(v uint64) predicate.EnterpriseBill {
+	return predicate.EnterpriseBill(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldStationID), v))
+	})
+}
+
+// StationIDNEQ applies the NEQ predicate on the "station_id" field.
+func StationIDNEQ(v uint64) predicate.EnterpriseBill {
+	return predicate.EnterpriseBill(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldStationID), v))
+	})
+}
+
+// StationIDIn applies the In predicate on the "station_id" field.
+func StationIDIn(vs ...uint64) predicate.EnterpriseBill {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.EnterpriseBill(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldStationID), v...))
+	})
+}
+
+// StationIDNotIn applies the NotIn predicate on the "station_id" field.
+func StationIDNotIn(vs ...uint64) predicate.EnterpriseBill {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.EnterpriseBill(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldStationID), v...))
+	})
+}
+
+// StationIDIsNil applies the IsNil predicate on the "station_id" field.
+func StationIDIsNil() predicate.EnterpriseBill {
+	return predicate.EnterpriseBill(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldStationID)))
+	})
+}
+
+// StationIDNotNil applies the NotNil predicate on the "station_id" field.
+func StationIDNotNil() predicate.EnterpriseBill {
+	return predicate.EnterpriseBill(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldStationID)))
 	})
 }
 
@@ -1399,6 +1468,34 @@ func HasCityWith(preds ...predicate.City) predicate.EnterpriseBill {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(CityInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, CityTable, CityColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasStation applies the HasEdge predicate on the "station" edge.
+func HasStation() predicate.EnterpriseBill {
+	return predicate.EnterpriseBill(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StationTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStationWith applies the HasEdge predicate on the "station" edge with a given conditions (other predicates).
+func HasStationWith(preds ...predicate.EnterpriseStation) predicate.EnterpriseBill {
+	return predicate.EnterpriseBill(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StationInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, StationTable, StationColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

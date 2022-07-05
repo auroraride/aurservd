@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -32,6 +33,7 @@ type EnterpriseBillQuery struct {
 	withRider      *RiderQuery
 	withSubscribe  *SubscribeQuery
 	withCity       *CityQuery
+	withStation    *EnterpriseStationQuery
 	withEnterprise *EnterpriseQuery
 	withStatement  *EnterpriseStatementQuery
 	modifiers      []func(*sql.Selector)
@@ -130,6 +132,28 @@ func (ebq *EnterpriseBillQuery) QueryCity() *CityQuery {
 			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, selector),
 			sqlgraph.To(city.Table, city.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebill.CityTable, enterprisebill.CityColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ebq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStation chains the current query on the "station" edge.
+func (ebq *EnterpriseBillQuery) QueryStation() *EnterpriseStationQuery {
+	query := &EnterpriseStationQuery{config: ebq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ebq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ebq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, selector),
+			sqlgraph.To(enterprisestation.Table, enterprisestation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebill.StationTable, enterprisebill.StationColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ebq.driver.Dialect(), step)
 		return fromU, nil
@@ -365,6 +389,7 @@ func (ebq *EnterpriseBillQuery) Clone() *EnterpriseBillQuery {
 		withRider:      ebq.withRider.Clone(),
 		withSubscribe:  ebq.withSubscribe.Clone(),
 		withCity:       ebq.withCity.Clone(),
+		withStation:    ebq.withStation.Clone(),
 		withEnterprise: ebq.withEnterprise.Clone(),
 		withStatement:  ebq.withStatement.Clone(),
 		// clone intermediate query.
@@ -404,6 +429,17 @@ func (ebq *EnterpriseBillQuery) WithCity(opts ...func(*CityQuery)) *EnterpriseBi
 		opt(query)
 	}
 	ebq.withCity = query
+	return ebq
+}
+
+// WithStation tells the query-builder to eager-load the nodes that are connected to
+// the "station" edge. The optional arguments are used to configure the query builder of the edge.
+func (ebq *EnterpriseBillQuery) WithStation(opts ...func(*EnterpriseStationQuery)) *EnterpriseBillQuery {
+	query := &EnterpriseStationQuery{config: ebq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	ebq.withStation = query
 	return ebq
 }
 
@@ -499,10 +535,11 @@ func (ebq *EnterpriseBillQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 	var (
 		nodes       = []*EnterpriseBill{}
 		_spec       = ebq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			ebq.withRider != nil,
 			ebq.withSubscribe != nil,
 			ebq.withCity != nil,
+			ebq.withStation != nil,
 			ebq.withEnterprise != nil,
 			ebq.withStatement != nil,
 		}
@@ -603,6 +640,35 @@ func (ebq *EnterpriseBillQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 			}
 			for i := range nodes {
 				nodes[i].Edges.City = n
+			}
+		}
+	}
+
+	if query := ebq.withStation; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*EnterpriseBill)
+		for i := range nodes {
+			if nodes[i].StationID == nil {
+				continue
+			}
+			fk := *nodes[i].StationID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(enterprisestation.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "station_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Station = n
 			}
 		}
 	}

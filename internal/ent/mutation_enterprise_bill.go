@@ -44,6 +44,8 @@ type EnterpriseBillMutation struct {
 	clearedsubscribe  bool
 	city              *uint64
 	clearedcity       bool
+	station           *uint64
+	clearedstation    bool
 	enterprise        *uint64
 	clearedenterprise bool
 	statement         *uint64
@@ -527,6 +529,55 @@ func (m *EnterpriseBillMutation) ResetCityID() {
 	m.city = nil
 }
 
+// SetStationID sets the "station_id" field.
+func (m *EnterpriseBillMutation) SetStationID(u uint64) {
+	m.station = &u
+}
+
+// StationID returns the value of the "station_id" field in the mutation.
+func (m *EnterpriseBillMutation) StationID() (r uint64, exists bool) {
+	v := m.station
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStationID returns the old "station_id" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldStationID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStationID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStationID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStationID: %w", err)
+	}
+	return oldValue.StationID, nil
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (m *EnterpriseBillMutation) ClearStationID() {
+	m.station = nil
+	m.clearedFields[enterprisebill.FieldStationID] = struct{}{}
+}
+
+// StationIDCleared returns if the "station_id" field was cleared in this mutation.
+func (m *EnterpriseBillMutation) StationIDCleared() bool {
+	_, ok := m.clearedFields[enterprisebill.FieldStationID]
+	return ok
+}
+
+// ResetStationID resets all changes to the "station_id" field.
+func (m *EnterpriseBillMutation) ResetStationID() {
+	m.station = nil
+	delete(m.clearedFields, enterprisebill.FieldStationID)
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (m *EnterpriseBillMutation) SetEnterpriseID(u uint64) {
 	m.enterprise = &u
@@ -953,6 +1004,32 @@ func (m *EnterpriseBillMutation) ResetCity() {
 	m.clearedcity = false
 }
 
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (m *EnterpriseBillMutation) ClearStation() {
+	m.clearedstation = true
+}
+
+// StationCleared reports if the "station" edge to the EnterpriseStation entity was cleared.
+func (m *EnterpriseBillMutation) StationCleared() bool {
+	return m.StationIDCleared() || m.clearedstation
+}
+
+// StationIDs returns the "station" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// StationID instead. It exists only for internal usage by the builders.
+func (m *EnterpriseBillMutation) StationIDs() (ids []uint64) {
+	if id := m.station; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetStation resets all changes to the "station" edge.
+func (m *EnterpriseBillMutation) ResetStation() {
+	m.station = nil
+	m.clearedstation = false
+}
+
 // ClearEnterprise clears the "enterprise" edge to the Enterprise entity.
 func (m *EnterpriseBillMutation) ClearEnterprise() {
 	m.clearedenterprise = true
@@ -1024,7 +1101,7 @@ func (m *EnterpriseBillMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterpriseBillMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, enterprisebill.FieldCreatedAt)
 	}
@@ -1051,6 +1128,9 @@ func (m *EnterpriseBillMutation) Fields() []string {
 	}
 	if m.city != nil {
 		fields = append(fields, enterprisebill.FieldCityID)
+	}
+	if m.station != nil {
+		fields = append(fields, enterprisebill.FieldStationID)
 	}
 	if m.enterprise != nil {
 		fields = append(fields, enterprisebill.FieldEnterpriseID)
@@ -1102,6 +1182,8 @@ func (m *EnterpriseBillMutation) Field(name string) (ent.Value, bool) {
 		return m.SubscribeID()
 	case enterprisebill.FieldCityID:
 		return m.CityID()
+	case enterprisebill.FieldStationID:
+		return m.StationID()
 	case enterprisebill.FieldEnterpriseID:
 		return m.EnterpriseID()
 	case enterprisebill.FieldStatementID:
@@ -1145,6 +1227,8 @@ func (m *EnterpriseBillMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldSubscribeID(ctx)
 	case enterprisebill.FieldCityID:
 		return m.OldCityID(ctx)
+	case enterprisebill.FieldStationID:
+		return m.OldStationID(ctx)
 	case enterprisebill.FieldEnterpriseID:
 		return m.OldEnterpriseID(ctx)
 	case enterprisebill.FieldStatementID:
@@ -1232,6 +1316,13 @@ func (m *EnterpriseBillMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCityID(v)
+		return nil
+	case enterprisebill.FieldStationID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStationID(v)
 		return nil
 	case enterprisebill.FieldEnterpriseID:
 		v, ok := value.(uint64)
@@ -1370,6 +1461,9 @@ func (m *EnterpriseBillMutation) ClearedFields() []string {
 	if m.FieldCleared(enterprisebill.FieldRemark) {
 		fields = append(fields, enterprisebill.FieldRemark)
 	}
+	if m.FieldCleared(enterprisebill.FieldStationID) {
+		fields = append(fields, enterprisebill.FieldStationID)
+	}
 	return fields
 }
 
@@ -1395,6 +1489,9 @@ func (m *EnterpriseBillMutation) ClearField(name string) error {
 		return nil
 	case enterprisebill.FieldRemark:
 		m.ClearRemark()
+		return nil
+	case enterprisebill.FieldStationID:
+		m.ClearStationID()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterpriseBill nullable field %s", name)
@@ -1431,6 +1528,9 @@ func (m *EnterpriseBillMutation) ResetField(name string) error {
 	case enterprisebill.FieldCityID:
 		m.ResetCityID()
 		return nil
+	case enterprisebill.FieldStationID:
+		m.ResetStationID()
+		return nil
 	case enterprisebill.FieldEnterpriseID:
 		m.ResetEnterpriseID()
 		return nil
@@ -1461,7 +1561,7 @@ func (m *EnterpriseBillMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EnterpriseBillMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.rider != nil {
 		edges = append(edges, enterprisebill.EdgeRider)
 	}
@@ -1470,6 +1570,9 @@ func (m *EnterpriseBillMutation) AddedEdges() []string {
 	}
 	if m.city != nil {
 		edges = append(edges, enterprisebill.EdgeCity)
+	}
+	if m.station != nil {
+		edges = append(edges, enterprisebill.EdgeStation)
 	}
 	if m.enterprise != nil {
 		edges = append(edges, enterprisebill.EdgeEnterprise)
@@ -1496,6 +1599,10 @@ func (m *EnterpriseBillMutation) AddedIDs(name string) []ent.Value {
 		if id := m.city; id != nil {
 			return []ent.Value{*id}
 		}
+	case enterprisebill.EdgeStation:
+		if id := m.station; id != nil {
+			return []ent.Value{*id}
+		}
 	case enterprisebill.EdgeEnterprise:
 		if id := m.enterprise; id != nil {
 			return []ent.Value{*id}
@@ -1510,7 +1617,7 @@ func (m *EnterpriseBillMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EnterpriseBillMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	return edges
 }
 
@@ -1524,7 +1631,7 @@ func (m *EnterpriseBillMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EnterpriseBillMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.clearedrider {
 		edges = append(edges, enterprisebill.EdgeRider)
 	}
@@ -1533,6 +1640,9 @@ func (m *EnterpriseBillMutation) ClearedEdges() []string {
 	}
 	if m.clearedcity {
 		edges = append(edges, enterprisebill.EdgeCity)
+	}
+	if m.clearedstation {
+		edges = append(edges, enterprisebill.EdgeStation)
 	}
 	if m.clearedenterprise {
 		edges = append(edges, enterprisebill.EdgeEnterprise)
@@ -1553,6 +1663,8 @@ func (m *EnterpriseBillMutation) EdgeCleared(name string) bool {
 		return m.clearedsubscribe
 	case enterprisebill.EdgeCity:
 		return m.clearedcity
+	case enterprisebill.EdgeStation:
+		return m.clearedstation
 	case enterprisebill.EdgeEnterprise:
 		return m.clearedenterprise
 	case enterprisebill.EdgeStatement:
@@ -1573,6 +1685,9 @@ func (m *EnterpriseBillMutation) ClearEdge(name string) error {
 		return nil
 	case enterprisebill.EdgeCity:
 		m.ClearCity()
+		return nil
+	case enterprisebill.EdgeStation:
+		m.ClearStation()
 		return nil
 	case enterprisebill.EdgeEnterprise:
 		m.ClearEnterprise()
@@ -1596,6 +1711,9 @@ func (m *EnterpriseBillMutation) ResetEdge(name string) error {
 		return nil
 	case enterprisebill.EdgeCity:
 		m.ResetCity()
+		return nil
+	case enterprisebill.EdgeStation:
+		m.ResetStation()
 		return nil
 	case enterprisebill.EdgeEnterprise:
 		m.ResetEnterprise()

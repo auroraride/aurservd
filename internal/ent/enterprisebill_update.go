@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
@@ -110,6 +111,26 @@ func (ebu *EnterpriseBillUpdate) SetCityID(u uint64) *EnterpriseBillUpdate {
 	return ebu
 }
 
+// SetStationID sets the "station_id" field.
+func (ebu *EnterpriseBillUpdate) SetStationID(u uint64) *EnterpriseBillUpdate {
+	ebu.mutation.SetStationID(u)
+	return ebu
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (ebu *EnterpriseBillUpdate) SetNillableStationID(u *uint64) *EnterpriseBillUpdate {
+	if u != nil {
+		ebu.SetStationID(*u)
+	}
+	return ebu
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (ebu *EnterpriseBillUpdate) ClearStationID() *EnterpriseBillUpdate {
+	ebu.mutation.ClearStationID()
+	return ebu
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (ebu *EnterpriseBillUpdate) SetEnterpriseID(u uint64) *EnterpriseBillUpdate {
 	ebu.mutation.SetEnterpriseID(u)
@@ -194,6 +215,11 @@ func (ebu *EnterpriseBillUpdate) SetCity(c *City) *EnterpriseBillUpdate {
 	return ebu.SetCityID(c.ID)
 }
 
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (ebu *EnterpriseBillUpdate) SetStation(e *EnterpriseStation) *EnterpriseBillUpdate {
+	return ebu.SetStationID(e.ID)
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (ebu *EnterpriseBillUpdate) SetEnterprise(e *Enterprise) *EnterpriseBillUpdate {
 	return ebu.SetEnterpriseID(e.ID)
@@ -224,6 +250,12 @@ func (ebu *EnterpriseBillUpdate) ClearSubscribe() *EnterpriseBillUpdate {
 // ClearCity clears the "city" edge to the City entity.
 func (ebu *EnterpriseBillUpdate) ClearCity() *EnterpriseBillUpdate {
 	ebu.mutation.ClearCity()
+	return ebu
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (ebu *EnterpriseBillUpdate) ClearStation() *EnterpriseBillUpdate {
+	ebu.mutation.ClearStation()
 	return ebu
 }
 
@@ -572,6 +604,41 @@ func (ebu *EnterpriseBillUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ebu.mutation.StationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterprisebill.StationTable,
+			Columns: []string{enterprisebill.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ebu.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterprisebill.StationTable,
+			Columns: []string{enterprisebill.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if ebu.mutation.EnterpriseCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -737,6 +804,26 @@ func (ebuo *EnterpriseBillUpdateOne) SetCityID(u uint64) *EnterpriseBillUpdateOn
 	return ebuo
 }
 
+// SetStationID sets the "station_id" field.
+func (ebuo *EnterpriseBillUpdateOne) SetStationID(u uint64) *EnterpriseBillUpdateOne {
+	ebuo.mutation.SetStationID(u)
+	return ebuo
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (ebuo *EnterpriseBillUpdateOne) SetNillableStationID(u *uint64) *EnterpriseBillUpdateOne {
+	if u != nil {
+		ebuo.SetStationID(*u)
+	}
+	return ebuo
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (ebuo *EnterpriseBillUpdateOne) ClearStationID() *EnterpriseBillUpdateOne {
+	ebuo.mutation.ClearStationID()
+	return ebuo
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (ebuo *EnterpriseBillUpdateOne) SetEnterpriseID(u uint64) *EnterpriseBillUpdateOne {
 	ebuo.mutation.SetEnterpriseID(u)
@@ -821,6 +908,11 @@ func (ebuo *EnterpriseBillUpdateOne) SetCity(c *City) *EnterpriseBillUpdateOne {
 	return ebuo.SetCityID(c.ID)
 }
 
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (ebuo *EnterpriseBillUpdateOne) SetStation(e *EnterpriseStation) *EnterpriseBillUpdateOne {
+	return ebuo.SetStationID(e.ID)
+}
+
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
 func (ebuo *EnterpriseBillUpdateOne) SetEnterprise(e *Enterprise) *EnterpriseBillUpdateOne {
 	return ebuo.SetEnterpriseID(e.ID)
@@ -851,6 +943,12 @@ func (ebuo *EnterpriseBillUpdateOne) ClearSubscribe() *EnterpriseBillUpdateOne {
 // ClearCity clears the "city" edge to the City entity.
 func (ebuo *EnterpriseBillUpdateOne) ClearCity() *EnterpriseBillUpdateOne {
 	ebuo.mutation.ClearCity()
+	return ebuo
+}
+
+// ClearStation clears the "station" edge to the EnterpriseStation entity.
+func (ebuo *EnterpriseBillUpdateOne) ClearStation() *EnterpriseBillUpdateOne {
+	ebuo.mutation.ClearStation()
 	return ebuo
 }
 
@@ -1221,6 +1319,41 @@ func (ebuo *EnterpriseBillUpdateOne) sqlSave(ctx context.Context) (_node *Enterp
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: city.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ebuo.mutation.StationCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterprisebill.StationTable,
+			Columns: []string{enterprisebill.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ebuo.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterprisebill.StationTable,
+			Columns: []string{enterprisebill.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
 				},
 			},
 		}

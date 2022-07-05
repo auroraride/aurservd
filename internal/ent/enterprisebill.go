@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
@@ -46,6 +47,9 @@ type EnterpriseBill struct {
 	// CityID holds the value of the "city_id" field.
 	// 城市ID
 	CityID uint64 `json:"city_id,omitempty"`
+	// StationID holds the value of the "station_id" field.
+	// 站点ID
+	StationID *uint64 `json:"station_id,omitempty"`
 	// EnterpriseID holds the value of the "enterprise_id" field.
 	// 企业ID
 	EnterpriseID uint64 `json:"enterprise_id,omitempty"`
@@ -83,13 +87,15 @@ type EnterpriseBillEdges struct {
 	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// City holds the value of the city edge.
 	City *City `json:"city,omitempty"`
+	// Station holds the value of the station edge.
+	Station *EnterpriseStation `json:"station,omitempty"`
 	// Enterprise holds the value of the enterprise edge.
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// Statement holds the value of the statement edge.
 	Statement *EnterpriseStatement `json:"statement,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // RiderOrErr returns the Rider value or an error if the edge
@@ -134,10 +140,24 @@ func (e EnterpriseBillEdges) CityOrErr() (*City, error) {
 	return nil, &NotLoadedError{edge: "city"}
 }
 
+// StationOrErr returns the Station value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EnterpriseBillEdges) StationOrErr() (*EnterpriseStation, error) {
+	if e.loadedTypes[3] {
+		if e.Station == nil {
+			// The edge station was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: enterprisestation.Label}
+		}
+		return e.Station, nil
+	}
+	return nil, &NotLoadedError{edge: "station"}
+}
+
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterpriseBillEdges) EnterpriseOrErr() (*Enterprise, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		if e.Enterprise == nil {
 			// The edge enterprise was loaded in eager-loading,
 			// but was not found.
@@ -151,7 +171,7 @@ func (e EnterpriseBillEdges) EnterpriseOrErr() (*Enterprise, error) {
 // StatementOrErr returns the Statement value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterpriseBillEdges) StatementOrErr() (*EnterpriseStatement, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		if e.Statement == nil {
 			// The edge statement was loaded in eager-loading,
 			// but was not found.
@@ -171,7 +191,7 @@ func (*EnterpriseBill) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case enterprisebill.FieldPrice, enterprisebill.FieldCost:
 			values[i] = new(sql.NullFloat64)
-		case enterprisebill.FieldID, enterprisebill.FieldRiderID, enterprisebill.FieldSubscribeID, enterprisebill.FieldCityID, enterprisebill.FieldEnterpriseID, enterprisebill.FieldStatementID, enterprisebill.FieldDays:
+		case enterprisebill.FieldID, enterprisebill.FieldRiderID, enterprisebill.FieldSubscribeID, enterprisebill.FieldCityID, enterprisebill.FieldStationID, enterprisebill.FieldEnterpriseID, enterprisebill.FieldStatementID, enterprisebill.FieldDays:
 			values[i] = new(sql.NullInt64)
 		case enterprisebill.FieldRemark, enterprisebill.FieldModel:
 			values[i] = new(sql.NullString)
@@ -257,6 +277,13 @@ func (eb *EnterpriseBill) assignValues(columns []string, values []interface{}) e
 			} else if value.Valid {
 				eb.CityID = uint64(value.Int64)
 			}
+		case enterprisebill.FieldStationID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field station_id", values[i])
+			} else if value.Valid {
+				eb.StationID = new(uint64)
+				*eb.StationID = uint64(value.Int64)
+			}
 		case enterprisebill.FieldEnterpriseID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field enterprise_id", values[i])
@@ -325,6 +352,11 @@ func (eb *EnterpriseBill) QueryCity() *CityQuery {
 	return (&EnterpriseBillClient{config: eb.config}).QueryCity(eb)
 }
 
+// QueryStation queries the "station" edge of the EnterpriseBill entity.
+func (eb *EnterpriseBill) QueryStation() *EnterpriseStationQuery {
+	return (&EnterpriseBillClient{config: eb.config}).QueryStation(eb)
+}
+
 // QueryEnterprise queries the "enterprise" edge of the EnterpriseBill entity.
 func (eb *EnterpriseBill) QueryEnterprise() *EnterpriseQuery {
 	return (&EnterpriseBillClient{config: eb.config}).QueryEnterprise(eb)
@@ -378,6 +410,10 @@ func (eb *EnterpriseBill) String() string {
 	builder.WriteString(fmt.Sprintf("%v", eb.SubscribeID))
 	builder.WriteString(", city_id=")
 	builder.WriteString(fmt.Sprintf("%v", eb.CityID))
+	if v := eb.StationID; v != nil {
+		builder.WriteString(", station_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteString(", enterprise_id=")
 	builder.WriteString(fmt.Sprintf("%v", eb.EnterpriseID))
 	builder.WriteString(", statement_id=")

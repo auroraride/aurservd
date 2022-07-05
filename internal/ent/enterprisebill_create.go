@@ -16,6 +16,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
 	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestatement"
+	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/rider"
 	"github.com/auroraride/aurservd/internal/ent/subscribe"
 )
@@ -114,6 +115,20 @@ func (ebc *EnterpriseBillCreate) SetCityID(u uint64) *EnterpriseBillCreate {
 	return ebc
 }
 
+// SetStationID sets the "station_id" field.
+func (ebc *EnterpriseBillCreate) SetStationID(u uint64) *EnterpriseBillCreate {
+	ebc.mutation.SetStationID(u)
+	return ebc
+}
+
+// SetNillableStationID sets the "station_id" field if the given value is not nil.
+func (ebc *EnterpriseBillCreate) SetNillableStationID(u *uint64) *EnterpriseBillCreate {
+	if u != nil {
+		ebc.SetStationID(*u)
+	}
+	return ebc
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (ebc *EnterpriseBillCreate) SetEnterpriseID(u uint64) *EnterpriseBillCreate {
 	ebc.mutation.SetEnterpriseID(u)
@@ -175,6 +190,11 @@ func (ebc *EnterpriseBillCreate) SetSubscribe(s *Subscribe) *EnterpriseBillCreat
 // SetCity sets the "city" edge to the City entity.
 func (ebc *EnterpriseBillCreate) SetCity(c *City) *EnterpriseBillCreate {
 	return ebc.SetCityID(c.ID)
+}
+
+// SetStation sets the "station" edge to the EnterpriseStation entity.
+func (ebc *EnterpriseBillCreate) SetStation(e *EnterpriseStation) *EnterpriseBillCreate {
+	return ebc.SetStationID(e.ID)
 }
 
 // SetEnterprise sets the "enterprise" edge to the Enterprise entity.
@@ -523,6 +543,26 @@ func (ebc *EnterpriseBillCreate) createSpec() (*EnterpriseBill, *sqlgraph.Create
 		_node.CityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := ebc.mutation.StationIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   enterprisebill.StationTable,
+			Columns: []string{enterprisebill.StationColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisestation.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.StationID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := ebc.mutation.EnterpriseIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -746,6 +786,24 @@ func (u *EnterpriseBillUpsert) SetCityID(v uint64) *EnterpriseBillUpsert {
 // UpdateCityID sets the "city_id" field to the value that was provided on create.
 func (u *EnterpriseBillUpsert) UpdateCityID() *EnterpriseBillUpsert {
 	u.SetExcluded(enterprisebill.FieldCityID)
+	return u
+}
+
+// SetStationID sets the "station_id" field.
+func (u *EnterpriseBillUpsert) SetStationID(v uint64) *EnterpriseBillUpsert {
+	u.Set(enterprisebill.FieldStationID, v)
+	return u
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *EnterpriseBillUpsert) UpdateStationID() *EnterpriseBillUpsert {
+	u.SetExcluded(enterprisebill.FieldStationID)
+	return u
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *EnterpriseBillUpsert) ClearStationID() *EnterpriseBillUpsert {
+	u.SetNull(enterprisebill.FieldStationID)
 	return u
 }
 
@@ -1064,6 +1122,27 @@ func (u *EnterpriseBillUpsertOne) SetCityID(v uint64) *EnterpriseBillUpsertOne {
 func (u *EnterpriseBillUpsertOne) UpdateCityID() *EnterpriseBillUpsertOne {
 	return u.Update(func(s *EnterpriseBillUpsert) {
 		s.UpdateCityID()
+	})
+}
+
+// SetStationID sets the "station_id" field.
+func (u *EnterpriseBillUpsertOne) SetStationID(v uint64) *EnterpriseBillUpsertOne {
+	return u.Update(func(s *EnterpriseBillUpsert) {
+		s.SetStationID(v)
+	})
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *EnterpriseBillUpsertOne) UpdateStationID() *EnterpriseBillUpsertOne {
+	return u.Update(func(s *EnterpriseBillUpsert) {
+		s.UpdateStationID()
+	})
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *EnterpriseBillUpsertOne) ClearStationID() *EnterpriseBillUpsertOne {
+	return u.Update(func(s *EnterpriseBillUpsert) {
+		s.ClearStationID()
 	})
 }
 
@@ -1565,6 +1644,27 @@ func (u *EnterpriseBillUpsertBulk) SetCityID(v uint64) *EnterpriseBillUpsertBulk
 func (u *EnterpriseBillUpsertBulk) UpdateCityID() *EnterpriseBillUpsertBulk {
 	return u.Update(func(s *EnterpriseBillUpsert) {
 		s.UpdateCityID()
+	})
+}
+
+// SetStationID sets the "station_id" field.
+func (u *EnterpriseBillUpsertBulk) SetStationID(v uint64) *EnterpriseBillUpsertBulk {
+	return u.Update(func(s *EnterpriseBillUpsert) {
+		s.SetStationID(v)
+	})
+}
+
+// UpdateStationID sets the "station_id" field to the value that was provided on create.
+func (u *EnterpriseBillUpsertBulk) UpdateStationID() *EnterpriseBillUpsertBulk {
+	return u.Update(func(s *EnterpriseBillUpsert) {
+		s.UpdateStationID()
+	})
+}
+
+// ClearStationID clears the value of the "station_id" field.
+func (u *EnterpriseBillUpsertBulk) ClearStationID() *EnterpriseBillUpsertBulk {
+	return u.Update(func(s *EnterpriseBillUpsert) {
+		s.ClearStationID()
 	})
 }
 

@@ -74,21 +74,22 @@ type EnterpriseListReq struct {
 }
 
 type EnterpriseRes struct {
-    ID           uint64                    `json:"id"`                    // 企业ID
-    Balance      float64                   `json:"balance"`               // 可用余额
-    Unsettlement int                       `json:"unsettlement"`          // 未结算天数, 预付费企业此字段强制为0
-    Name         string                    `json:"name"`                  // 企业名称
-    Status       uint8                     `json:"status" enums:"0,1,2" ` // 合作状态 0:未合作 1:已合作 2:已暂停
-    ContactName  string                    `json:"contactName"`           // 联系人
-    ContactPhone string                    `json:"contactPhone"`          // 联系电话
-    IdcardNumber string                    `json:"idcardNumber"`          // 身份证号
-    Address      string                    `json:"address"`               // 企业地址
-    Payment      uint8                     `json:"payment"`               // 付费方式 1:预付费 2:后付费
-    Deposit      float64                   `json:"deposit"`               // 押金
-    Riders       int                       `json:"riders"`                // 骑手数量
-    Contracts    []EnterpriseContract      `json:"contracts,omitempty"`   // 合同
-    Prices       []EnterprisePriceWithCity `json:"prices,omitempty"`      // 价格列表
-    City         City                      `json:"city"`                  // 城市
+    ID             uint64                    `json:"id"`                       // 企业ID
+    Balance        float64                   `json:"balance"`                  // 可用余额
+    Unsettlement   int                       `json:"unsettlement"`             // 未结算天数, 预付费企业此字段强制为0
+    Name           string                    `json:"name"`                     // 企业名称
+    Status         uint8                     `json:"status" enums:"0,1,2" `    // 合作状态 0:未合作 1:已合作 2:已暂停
+    ContactName    string                    `json:"contactName"`              // 联系人
+    ContactPhone   string                    `json:"contactPhone"`             // 联系电话
+    IdcardNumber   string                    `json:"idcardNumber"`             // 身份证号
+    Address        string                    `json:"address"`                  // 企业地址
+    Payment        uint8                     `json:"payment"`                  // 付费方式 1:预付费 2:后付费
+    Deposit        float64                   `json:"deposit"`                  // 押金
+    Riders         int                       `json:"riders"`                   // 骑手数量
+    Contracts      []EnterpriseContract      `json:"contracts,omitempty"`      // 合同
+    Prices         []EnterprisePriceWithCity `json:"prices,omitempty"`         // 价格列表
+    City           City                      `json:"city"`                     // 城市
+    StatementStart string                    `json:"statementStart,omitempty"` // 账单开始日期
 }
 
 type EnterprisePrepaymentReq struct {

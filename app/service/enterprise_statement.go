@@ -94,6 +94,9 @@ func (s *enterpriseStatementService) GetBill(req *model.StatementBillReq) *model
 
     // 查询未结账账单
     es, bills := NewEnterprise().CalculateStatement(e, end)
+    if es.Start.After(end) {
+        snag.Panic("无账单信息")
+    }
 
     uid := uuid.New().String()
 
@@ -162,14 +165,25 @@ func (s *enterpriseStatementService) Bill(req *model.StatementClearBillReq) {
         return
     }
 
-    es, _ := s.orm.QueryNotDeleted().Where(enterprisestatement.ID(br.StatementID)).First(s.ctx)
+    start := tools.NewTime().ParseDateStringX(br.Start)
+    end := tools.NewTime().ParseDateStringX(br.End)
+
+    if start.After(end) {
+        snag.Panic("账单信息错误")
+    }
+
+    es, _ := s.orm.QueryNotDeleted().
+        Where(
+            enterprisestatement.ID(br.StatementID),
+            enterprisestatement.SettledAtIsNil(),
+        ).
+        First(s.ctx)
     if es == nil {
         snag.Panic("未找到账单信息")
     }
 
-    end := tools.NewTime().ParseDateStringX(br.End)
     // 下个账单开始日
-    start := carbon.Time2Carbon(end).StartOfDay().AddDay().Carbon2Time()
+    next := carbon.Time2Carbon(end).StartOfDay().AddDay().Carbon2Time()
 
     tx, _ := ent.Database.Tx(s.ctx)
     _, err = tx.EnterpriseStatement.
@@ -190,15 +204,32 @@ func (s *enterpriseStatementService) Bill(req *model.StatementClearBillReq) {
         sub, err = tx.Subscribe.UpdateOneID(bill.SubscribeID).SetLastBillDate(end).Save(s.ctx)
         snag.PanicIfErrorX(err, tx.Rollback)
 
-        if sub.EndAt == nil || !sub.EndAt.Before(start) {
+        if sub.EndAt == nil || !sub.EndAt.Before(next) {
             riders += 1
         }
+
+        // 保存账单
+        _, err = tx.EnterpriseBill.Create().
+            SetEnterpriseID(es.EnterpriseID).
+            SetStatementID(es.ID).
+            SetStart(start).
+            SetEnd(end).
+            SetDays(bill.Days).
+            SetPrice(bill.Price).
+            SetCost(bill.Cost).
+            SetCityID(bill.City.ID).
+            SetNillableStationID(bill.StationID).
+            SetRiderID(bill.RiderID).
+            SetSubscribeID(bill.SubscribeID).
+            SetModel(bill.Model).
+            Save(s.ctx)
+        snag.PanicIfErrorX(err, tx.Rollback)
     }
 
     // 创建新账单
     _, err = tx.EnterpriseStatement.Create().
         SetEnterpriseID(es.EnterpriseID).
-        SetStart(start).
+        SetStart(next).
         SetCost(tools.NewDecimal().Sub(es.Cost, br.Cost)).
         SetDays(es.Days - br.Days).
         SetRiderNumber(riders).
