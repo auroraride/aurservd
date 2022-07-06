@@ -226,7 +226,7 @@ func (s *orderService) CreateFee(riderID uint64, payway uint8) *model.OrderCreat
         snag.Panic("未找到逾期骑士卡信息")
     }
 
-    fee, _, o := NewSubscribe().OverdueFee(riderID, sub.Remaining)
+    fee, _, o := NewSubscribe().OverdueFee(riderID, sub)
     // TODO DEBUG 模式支付一分钱
     mode := ar.Config.App.Mode
     if mode == "debug" || mode == "next" {
@@ -243,11 +243,14 @@ func (s *orderService) CreateFee(riderID uint64, payway uint8) *model.OrderCreat
             Amount:      fee,
             RiderID:     riderID,
             PlanID:      *sub.PlanID,
-            OrderID:     o.ID,
             SubscribeID: sub.ID,
             CityID:      sub.CityID,
             Payway:      payway,
         },
+    }
+
+    if o != nil {
+        prepay.OverDueFee.OrderID = o.ID
     }
 
     s.Prepay(payway, no, prepay, result)

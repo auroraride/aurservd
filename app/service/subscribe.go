@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/order"
+    "github.com/auroraride/aurservd/internal/ent/plan"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/pkg/cache"
@@ -352,13 +353,19 @@ func (s *subscribeService) PausedDays(start time.Time, end time.Time) int {
 }
 
 // OverdueFee 计算逾期费用
-func (s *subscribeService) OverdueFee(riderID uint64, remaining int) (fee float64, formula string, o *ent.Order) {
+func (s *subscribeService) OverdueFee(riderID uint64, sub *ent.Subscribe) (fee float64, formula string, o *ent.Order) {
+    remaining := sub.Remaining
     if remaining > 0 {
         return
     }
 
     o, _ = NewOrder().RencentSubscribeOrder(riderID)
-    p := o.Edges.Plan
+    var p *ent.Plan
+    if o != nil {
+        p = o.Edges.Plan
+    } else if sub.PlanID != nil {
+        p, _ = ent.Database.Plan.Query().Where(plan.ID(*sub.PlanID)).First(s.ctx)
+    }
     if p == nil {
         snag.Panic("上次购买骑士卡获取失败")
     }
