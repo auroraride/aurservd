@@ -9,19 +9,21 @@ import (
     "context"
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/permission"
     "github.com/auroraride/aurservd/app/service"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
+    "strings"
 )
 
 // ManagerMiddleware 后台中间件
 func ManagerMiddleware() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
-            url := c.Request().URL.Path
-            if url == "/manager/v1/user/signin" {
+            p := c.Path()
+            if p == "/manager/v1/user/signin" {
                 return next(c)
             }
 
@@ -40,6 +42,10 @@ func ManagerMiddleware() echo.MiddlewareFunc {
 
             // 延长token有效期
             s.ExtendTokenTime(m.ID, token)
+
+            if !permission.Contains(strings.ToUpper(c.Request().Method), p, s.GetPermissions(m)) {
+                snag.Panic(snag.StatusForbidden)
+            }
 
             // 重载context
             return next(app.NewManagerContext(c, m, &model.Modifier{

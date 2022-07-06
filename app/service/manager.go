@@ -80,28 +80,32 @@ func (s *managerService) Signin(req *model.ManagerSigninReq) (res *model.Manager
     // 设置登录token，更新最后登录时间
     s.ExtendTokenTime(u.ID, token)
 
-    res = &model.ManagerSigninRes{
-        ID:    u.ID,
-        Token: token,
-        Name:  u.Name,
-        Phone: u.Phone,
-    }
+    return &model.ManagerSigninRes{
+        ID:          u.ID,
+        Token:       token,
+        Name:        u.Name,
+        Phone:       u.Phone,
+        Permissions: s.GetPermissions(u),
+    }, err
+}
 
+func (s *managerService) GetPermissions(u *ent.Manager) (perms []string) {
     r := u.Edges.Role
     if r != nil {
         if r.Super {
-            res.Permissions = permission.Keys
+            return permission.Keys
         } else {
-            res.Permissions = r.Permissions
+            return r.Permissions
         }
     }
-    return res, err
+    return
 }
 
 // GetManagerById 根据ID获取管理员
 func (s *managerService) GetManagerById(id uint64) (u *ent.Manager, err error) {
     return s.orm.
         QueryNotDeleted().
+        WithRole().
         Where(manager.ID(id)).
         Only(context.Background())
 }

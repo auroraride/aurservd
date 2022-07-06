@@ -10,6 +10,7 @@ import (
     "github.com/fsnotify/fsnotify"
     log "github.com/sirupsen/logrus"
     "github.com/spf13/viper"
+    "golang.org/x/exp/slices"
     "gopkg.in/yaml.v3"
     "os"
 )
@@ -53,6 +54,17 @@ func init() {
 
 func GetKey(method, api string) string {
     return utils.Md5String(method + api)
+}
+
+func Contains(method, api string, perms []string) bool {
+    key := GetKey(method, api)
+
+    // 无需校验的时候直接返回true
+    if _, ok := Items[key]; !ok {
+        return true
+    }
+
+    return slices.Contains(perms, key)
 }
 
 func read() error {
