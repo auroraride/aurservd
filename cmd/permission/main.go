@@ -7,7 +7,6 @@ package main
 
 import (
     "github.com/auroraride/aurservd/app/permission"
-    "github.com/auroraride/aurservd/pkg/utils"
     "io/ioutil"
     "os"
     "path/filepath"
@@ -17,8 +16,11 @@ import (
 )
 
 var (
-    skipper = map[string]bool{
+    nameSkipper = map[string]bool{
         "selection": true,
+    }
+    apiSkipper = map[string]bool{
+        "/manager/v1/user/signin": true,
     }
 )
 
@@ -31,7 +33,7 @@ func main() {
             continue
         }
         name := strings.TrimSuffix(f.Name(), filepath.Ext(f.Name()))
-        if skipper[name] {
+        if nameSkipper[name] {
             continue
         }
 
@@ -54,11 +56,14 @@ func main() {
         bs := re.FindAllStringSubmatch(string(doc), -1)
         for _, sub := range bs {
             api := sub[1]
+            if apiSkipper[api] {
+                continue
+            }
             method := sub[2]
             sn := sub[3]
             desc := sub[4]
             pg.Permissions = append(pg.Permissions, permission.Item{
-                Key:    utils.Md5String(method + api),
+                Key:    permission.GetKey(method, api),
                 Method: method,
                 Api:    api,
                 Desc:   desc,

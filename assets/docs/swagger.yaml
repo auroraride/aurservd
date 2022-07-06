@@ -2885,6 +2885,44 @@ definitions:
     - smsCode
     - smsId
     type: object
+  model.Role:
+    properties:
+      builtin:
+        description: 是否内置角色, 内置角色无法编辑
+        type: boolean
+      id:
+        type: integer
+      name:
+        description: 角色名称
+        type: string
+      permissions:
+        description: 允许的权限列表 (权限key), 未分配权限的无此字段
+        items:
+          type: string
+        type: array
+      super:
+        description: 是否超级管理员, 超级管理员权限无法编辑且拥有全部权限
+        type: boolean
+    type: object
+  model.RoleCreateReq:
+    properties:
+      name:
+        description: '角色名称 '
+        type: string
+    required:
+    - name
+    type: object
+  model.RoleModifyReq:
+    properties:
+      name:
+        description: 角色名称
+        type: string
+      permissions:
+        description: 权限列表
+        items:
+          type: string
+        type: array
+    type: object
   model.SelectOption:
     properties:
       label:
@@ -6389,6 +6427,87 @@ paths:
               $ref: '#/definitions/permission.Group'
             type: array
       summary: MD001 权限列表
+      tags:
+      - '[M]管理接口'
+  /manager/v1/permission/role:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerPermissionListRole
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.Role'
+            type: array
+      summary: MD002 角色列表
+      tags:
+      - '[M]管理接口'
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerPermissionCreateRole
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 角色字段
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RoleCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.Role'
+      summary: MD003 创建角色
+      tags:
+      - '[M]管理接口'
+  /manager/v1/permission/role/{id}:
+    put:
+      consumes:
+      - application/json
+      operationId: ManagerPermissionModifyRole
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 角色详情
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.RoleModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.Role'
+      summary: MD004 修改角色
       tags:
       - '[M]管理接口'
   /manager/v1/plan:

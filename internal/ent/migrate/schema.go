@@ -1894,7 +1894,7 @@ var (
 	// RoleColumns holds the columns for the "role" table.
 	RoleColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint64, Increment: true},
-		{Name: "name", Type: field.TypeString, Comment: "角色"},
+		{Name: "name", Type: field.TypeString, Unique: true, Comment: "角色"},
 		{Name: "permissions", Type: field.TypeJSON, Comment: "权限列表", Nullable: true},
 		{Name: "buildin", Type: field.TypeBool, Comment: "是否内置角色", Default: false},
 		{Name: "super", Type: field.TypeBool, Comment: "是否超级管理员", Default: false},

@@ -57,7 +57,7 @@ func (*selection) Rider(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.CascaderOptionLevel2  "请求成功"
 func (*selection) Store(c echo.Context) (err error) {
-    ctx := app.Context(c)
+    ctx := app.ContextX[app.ManagerContext](c)
     return ctx.SendResponse(service.NewSelection().Store())
 }
 
@@ -71,7 +71,7 @@ func (*selection) Store(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.CascaderOptionLevel2  "请求成功"
 func (*selection) Employee(c echo.Context) (err error) {
-    ctx := app.Context(c)
+    ctx := app.ContextX[app.ManagerContext](c)
     return ctx.SendResponse(service.NewSelection().Employee())
 }
 
@@ -85,7 +85,7 @@ func (*selection) Employee(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.CascaderOptionLevel2  "请求成功"
 func (*selection) City(c echo.Context) (err error) {
-    ctx := app.Context(c)
+    ctx := app.ContextX[app.ManagerContext](c)
     return ctx.SendResponse(service.NewSelection().City())
 }
 
@@ -99,7 +99,7 @@ func (*selection) City(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.CascaderOptionLevel2  "请求成功"
 func (*selection) Branch(c echo.Context) (err error) {
-    ctx := app.Context(c)
+    ctx := app.ContextX[app.ManagerContext](c)
     return ctx.SendResponse(service.NewSelection().Branch())
 }
 
@@ -113,7 +113,7 @@ func (*selection) Branch(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.CascaderOptionLevel2  "请求成功"
 func (*selection) Enterprise(c echo.Context) (err error) {
-    ctx := app.Context(c)
+    ctx := app.ContextX[app.ManagerContext](c)
     return ctx.SendResponse(service.NewSelection().Enterprise())
 }
 
@@ -127,6 +127,6 @@ func (*selection) Enterprise(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.CascaderOptionLevel2  "请求成功"
 func (*selection) Cabinet(c echo.Context) (err error) {
-    ctx := app.Context(c)
+    ctx := app.ContextX[app.ManagerContext](c)
     return ctx.SendResponse(service.NewSelection().Cabinet())
 }

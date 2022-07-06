@@ -42,7 +42,7 @@ func (*branch) List(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  model.ItemListRes{items=[]model.BranchSampleItem}  "请求成功"
 func (*branch) Selector(c echo.Context) (err error) {
-    ctx := app.Context(c)
+    ctx := app.ContextX[app.ManagerContext](c)
     return ctx.SendResponse(service.NewBranch().Selector())
 }
 

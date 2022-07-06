@@ -32,5 +32,5 @@ func (*csc) IvrShiguangju(c echo.Context) (err error) {
         snag.Panic(err)
     }
 
-    return app.Context(c).SendResponse(service.NewCSC().ParseNameListShiguangju(file))
+    return app.ContextX[app.ManagerContext](c).SendResponse(service.NewCSC().ParseNameListShiguangju(file))
 }

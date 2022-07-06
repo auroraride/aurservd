@@ -25,7 +25,7 @@ func (Role) Annotations() []schema.Annotation {
 // Fields of the Role.
 func (Role) Fields() []ent.Field {
     return []ent.Field{
-        field.String("name").Comment("角色"),
+        field.String("name").Unique().Comment("角色"),
         field.Strings("permissions").Optional().Comment("权限列表"),
         field.Bool("buildin").Default(false).Comment("是否内置角色"),
         field.Bool("super").Default(false).Comment("是否超级管理员"),

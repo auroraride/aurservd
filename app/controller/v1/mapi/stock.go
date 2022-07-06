@@ -57,6 +57,6 @@ func (*stock) List(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  model.StockOverview  "请求成功"
 func (*stock) Overview(c echo.Context) (err error) {
-    ctx := app.Context(c)
+    ctx := app.ContextX[app.ManagerContext](c)
     return ctx.SendResponse(service.NewStock().Overview())
 }

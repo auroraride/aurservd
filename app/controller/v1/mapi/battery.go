@@ -26,7 +26,7 @@ var Battery = new(battery)
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  model.ItemListRes{items=[]model.BatteryModel}  "请求成功"
 func (*battery) ListModels(c echo.Context) (err error) {
-    ctx := app.Context(c)
+    ctx := app.ContextX[app.ManagerContext](c)
     return ctx.SendResponse(service.NewBattery().List())
 }
 

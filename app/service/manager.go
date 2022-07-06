@@ -109,7 +109,7 @@ func (s *managerService) ExtendTokenTime(id uint64, token string) {
 
 // List 列举管理员
 func (s *managerService) List(req *model.ManagerListReq) *model.PaginationRes {
-    q := s.orm.QueryNotDeleted().Order(ent.Desc(manager.FieldCreatedAt))
+    q := s.orm.QueryNotDeleted().Order(ent.Desc(manager.FieldCreatedAt)).WithRole()
     if req.Keyword != nil {
         q.Where(
             manager.Or(
@@ -122,15 +122,23 @@ func (s *managerService) List(req *model.ManagerListReq) *model.PaginationRes {
         q,
         req.PaginationReq,
         func(item *ent.Manager) model.ManagerListRes {
-            return model.ManagerListRes{
+            res := model.ManagerListRes{
                 ID:    item.ID,
                 Name:  item.Name,
                 Phone: item.Phone,
                 Role: model.Role{
                     ID:   1,
-                    Name: "超级管理员",
+                    Name: "无角色人员",
                 },
             }
+            r := item.Edges.Role
+            if r != nil {
+                res.Role = model.Role{
+                    ID:   r.ID,
+                    Name: r.Name,
+                }
+            }
+            return res
         },
     )
 }

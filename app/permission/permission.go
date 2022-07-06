@@ -50,6 +50,10 @@ func init() {
     v.WatchConfig()
 }
 
+func GetKey(method, api string) string {
+    return utils.Md5String(method + api)
+}
+
 func read() error {
     // 读取权限
     err := v.ReadInConfig()

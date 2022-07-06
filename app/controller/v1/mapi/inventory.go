@@ -42,7 +42,7 @@ func (*inventory) CreateOrModify(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  model.Inventory  "请求成功"
 func (*inventory) List(c echo.Context) (err error) {
-    ctx := app.Context(c)
+    ctx := app.ContextX[app.ManagerContext](c)
     return ctx.SendResponse(service.NewInventory().List())
 }
 
@@ -72,6 +72,6 @@ func (*inventory) Delete(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.InventoryItem  "请求成功"
 func (*inventory) Transferable(c echo.Context) (err error) {
-    ctx := app.Context(c)
+    ctx := app.ContextX[app.ManagerContext](c)
     return ctx.SendResponse(service.NewInventory().ListInventory(model.InventoryListReq{Transfer: true}))
 }

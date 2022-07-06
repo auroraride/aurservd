@@ -26,7 +26,7 @@ var Setting = new(setting)
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []model.SettingReq  "请求成功"
 func (*setting) List(c echo.Context) (err error) {
-    ctx := app.Context(c)
+    ctx := app.ContextX[app.ManagerContext](c)
 
     return ctx.SendResponse(service.NewSetting().List())
 }
