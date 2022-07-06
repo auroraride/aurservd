@@ -93,4 +93,5 @@ type ExchangeManagerListRes struct {
     Success     bool              `json:"success"`              // 是否成功
     Full        string            `json:"full,omitempty"`       // 满电仓位信息, 门店换电不存在
     Empty       string            `json:"empty,omitempty"`      // 空仓位信息, 门店换电不存在
+    Error       string            `json:"error,omitempty"`      // 换电失败原因
 }

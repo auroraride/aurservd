@@ -10142,6 +10142,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "error": {
+                    "description": "换电失败原因",
+                    "type": "string"
+                },
                 "full": {
                     "description": "满电仓位信息, 门店换电不存在",
                     "type": "string"

@@ -365,6 +365,9 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
         if item.Detail != nil && item.Detail.Info != nil {
             res.Full = fmt.Sprintf("%d号仓, %.2f%%", item.Detail.Info.FullIndex+1, item.Detail.Info.Electricity)
             res.Empty = fmt.Sprintf("%d号仓, %.2f%%", item.Detail.Info.EmptyIndex+1, item.Detail.Info.RiderElectricity)
+            if !res.Success {
+                res.Error = item.Detail.Result.Message
+            }
         }
         return res
     })

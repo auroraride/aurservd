@@ -300,7 +300,16 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus() (ds model.CabinetBinDoo
     ds = NewCabinet().DoorOpenStatus(s.cabinet, index, true)
     bin := s.cabinet.Bin[index]
 
-    log.Infof(`[换电步骤 - 仓门检测]: {step:%s} %s - %d, 仓门Index: %d, 仓门状态: %s, 是否有电池: %t, 当前电压: %.2fV, 当前电量: %.2fAH`,
+    // 放入电池电量检测
+    ebin := s.cabinet.Bin[s.operating.EmptyIndex]
+    ee := ebin.Electricity
+    if s.operating.RiderElectricity != 0 {
+        ee = s.operating.RiderElectricity
+    } else {
+        s.operating.RiderElectricity = ee
+    }
+
+    log.Infof(`[换电步骤 - 仓门检测]: {step:%s} %s - %d, 仓门Index: %d, 仓门状态: %s, 是否有电池: %t, 当前电压: %.2fV, 当前电量: %.2f%%, 放入电池电量: %.2f%%`,
         s.step,
         s.cabinet.Serial,
         index,
@@ -309,6 +318,7 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus() (ds model.CabinetBinDoo
         bin.Battery,
         bin.Voltage,
         bin.Electricity,
+        ee,
     )
 
     // 当仓门未关闭时跳过
@@ -355,6 +365,12 @@ func (s *riderCabinetService) ProcessDoor() (res *model.RiderCabinetOperateRes) 
     for {
         // 检测仓门/电池
         ds := s.ProcessDoorBatteryStatus()
+        if ds == model.CabinetBinDoorStatusClose {
+            // 强制睡眠两秒: 原因是有可能柜门会晃动导致似关非关, 延时来获取正确状态
+            time.Sleep(2 * time.Second)
+            ds = s.ProcessDoorBatteryStatus()
+        }
+
         switch ds {
         case model.CabinetBinDoorStatusClose:
             res.Status = model.RiderCabinetOperateStatusSuccess

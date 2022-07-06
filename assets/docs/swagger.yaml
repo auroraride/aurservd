@@ -1932,6 +1932,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.EnterpriseBasic'
         description: 团签企业, 个签无此字段
+      error:
+        description: 换电失败原因
+        type: string
       full:
         description: 满电仓位信息, 门店换电不存在
         type: string
