@@ -20,6 +20,7 @@ const (
 
 var Groups map[string]*Group
 var Items map[string]Item
+var Keys []string
 
 type Group struct {
     Name        string `json:"name"`  // 权限分组名称
@@ -63,9 +64,11 @@ func read() error {
     Groups = make(map[string]*Group)
     err = v.Unmarshal(&Groups)
     Items = make(map[string]Item)
+    Keys = make([]string, 0)
     for _, group := range Groups {
         for _, permission := range group.Permissions {
             Items[permission.Key] = permission
+            Keys = append(Keys, permission.Key)
         }
     }
     return err

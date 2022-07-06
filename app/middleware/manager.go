@@ -21,7 +21,7 @@ func ManagerMiddleware() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
             url := c.Request().URL.Path
-            if url == "/manager/signin" {
+            if url == "/manager/v1/user/signin" {
                 return next(c)
             }
 

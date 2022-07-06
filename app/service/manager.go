@@ -10,6 +10,7 @@ import (
     "errors"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/permission"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/manager"
@@ -56,7 +57,7 @@ func (s *managerService) Create(req *model.ManagerCreateReq) error {
 // Signin 管理员登录
 func (s *managerService) Signin(req *model.ManagerSigninReq) (res *model.ManagerSigninRes, err error) {
     var u *ent.Manager
-    u, err = s.orm.QueryNotDeleted().Where(manager.Phone(req.Phone)).Only(s.ctx)
+    u, err = s.orm.QueryNotDeleted().Where(manager.Phone(req.Phone)).WithRole().Only(s.ctx)
     if err != nil {
         log.Errorf("[M] 管理员查询失败: %v", err)
         return nil, errors.New(ar.UserNotFound)
@@ -79,12 +80,22 @@ func (s *managerService) Signin(req *model.ManagerSigninReq) (res *model.Manager
     // 设置登录token，更新最后登录时间
     s.ExtendTokenTime(u.ID, token)
 
-    return &model.ManagerSigninRes{
+    res = &model.ManagerSigninRes{
         ID:    u.ID,
         Token: token,
         Name:  u.Name,
         Phone: u.Phone,
-    }, err
+    }
+
+    r := u.Edges.Role
+    if r != nil {
+        if r.Super {
+            res.Permissions = permission.Keys
+        } else {
+            res.Permissions = r.Permissions
+        }
+    }
+    return res, err
 }
 
 // GetManagerById 根据ID获取管理员

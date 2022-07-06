@@ -2127,6 +2127,10 @@ definitions:
         type: integer
       name:
         type: string
+      permissions:
+        items:
+          type: string
+        type: array
       phone:
         type: string
       token:

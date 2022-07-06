@@ -10550,6 +10550,12 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "phone": {
                     "type": "string"
                 },
