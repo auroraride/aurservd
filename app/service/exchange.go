@@ -307,13 +307,28 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
         q.Where(exchange.HasCabinetWith(cabinet.Serial(req.Serial)))
     }
 
+    // 是否备用方案 1是 2否
+    if req.Alternative != 0 {
+        q.Where(exchange.Alternative(req.Alternative == 2))
+    }
+
+    if req.CabinetID != 0 {
+        q.Where(exchange.CabinetID(req.CabinetID))
+    }
+
+    if req.StoreID != 0 {
+        q.Where(exchange.StoreID(req.StoreID))
+    }
+
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Exchange) model.ExchangeManagerListRes {
         res := model.ExchangeManagerListRes{
-            ID:    item.ID,
-            Name:  item.Edges.Rider.Edges.Person.Name,
-            Phone: item.Edges.Rider.Phone,
-            Time:  item.CreatedAt.Format(carbon.DateTimeLayout),
-            Model: item.Model,
+            ID:          item.ID,
+            Name:        item.Edges.Rider.Edges.Person.Name,
+            Phone:       item.Edges.Rider.Phone,
+            Time:        item.CreatedAt.Format(carbon.DateTimeLayout),
+            Model:       item.Model,
+            Alternative: item.Alternative,
+            Success:     item.Success,
         }
 
         e := item.Edges.Enterprise
@@ -345,6 +360,11 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
                 Serial: cab.Serial,
                 Name:   cab.Name,
             }
+        }
+
+        if item.Detail != nil && item.Detail.Info != nil {
+            res.Full = fmt.Sprintf("%d号仓, %.2f%%", item.Detail.Info.FullIndex+1, item.Detail.Info.Electricity)
+            res.Empty = fmt.Sprintf("%d号仓, %.2f%%", item.Detail.Info.EmptyIndex+1, item.Detail.Info.RiderElectricity)
         }
         return res
     })

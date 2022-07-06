@@ -300,7 +300,7 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus() (ds model.CabinetBinDoo
     ds = NewCabinet().DoorOpenStatus(s.cabinet, index, true)
     bin := s.cabinet.Bin[index]
 
-    log.Infof(`[换电步骤 - 仓门检测]: {step:%s} %s - %d, 仓门Index: %d, 仓门状态: %s, 是否有电池: %t, 当前电压: %.2fV`,
+    log.Infof(`[换电步骤 - 仓门检测]: {step:%s} %s - %d, 仓门Index: %d, 仓门状态: %s, 是否有电池: %t, 当前电压: %.2fV, 当前电量: %.2fAH`,
         s.step,
         s.cabinet.Serial,
         index,
@@ -308,6 +308,7 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus() (ds model.CabinetBinDoo
         ds,
         bin.Battery,
         bin.Voltage,
+        bin.Electricity,
     )
 
     // 当仓门未关闭时跳过
@@ -327,6 +328,9 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus() (ds model.CabinetBinDoo
             s.putInElectricity = bin.Electricity
             return model.CabinetBinDoorStatusClose
         }
+
+        // 骑手放入电池电量
+        s.operating.RiderElectricity = bin.Electricity
         return model.CabinetBinDoorStatusBatteryEmpty
     }
 

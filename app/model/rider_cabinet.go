@@ -85,13 +85,14 @@ type RiderCabinetOperateReq struct {
 
 // RiderCabinetOperating 电柜处理
 type RiderCabinetOperating struct {
-    UUID        string             `json:"uuid"`
-    Serial      string             `json:"serial"`
-    Model       string             `json:"model"`       // 电池型号
-    ID          uint64             `json:"id"`          // 电柜ID
-    EmptyIndex  int                `json:"emptyIndex"`  // 空店仓
-    FullIndex   int                `json:"fullIndex"`   // 满电仓
-    Electricity BatteryElectricity `json:"electricity"` // 满电电池电量
+    UUID             string             `json:"uuid"`
+    Serial           string             `json:"serial"`
+    Model            string             `json:"model"`            // 电池型号
+    ID               uint64             `json:"id"`               // 电柜ID
+    EmptyIndex       int                `json:"emptyIndex"`       // 空店仓
+    FullIndex        int                `json:"fullIndex"`        // 满电仓
+    Electricity      BatteryElectricity `json:"electricity"`      // 满电电池电量
+    RiderElectricity BatteryElectricity `json:"riderElectricity"` // 骑手放入电池电量
 }
 
 type RiderCabinetOperateStatus uint8

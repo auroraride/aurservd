@@ -10110,6 +10110,10 @@ const docTemplate = `{
         "model.ExchangeManagerListRes": {
             "type": "object",
             "properties": {
+                "alternative": {
+                    "description": "换电方案 ` + "`" + `true` + "`" + `非满电 ` + "`" + `false` + "`" + `满电, 只有` + "`" + `true` + "`" + `的时候才显示为` + "`" + `非满电` + "`" + `",
+                    "type": "boolean"
+                },
                 "cabinet": {
                     "description": "电柜, 门店换电无此字段",
                     "allOf": [
@@ -10126,6 +10130,10 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "empty": {
+                    "description": "空仓位信息, 门店换电不存在",
+                    "type": "string"
+                },
                 "enterprise": {
                     "description": "团签企业, 个签无此字段",
                     "allOf": [
@@ -10133,6 +10141,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.EnterpriseBasic"
                         }
                     ]
+                },
+                "full": {
+                    "description": "满电仓位信息, 门店换电不存在",
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
@@ -10156,6 +10168,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.Store"
                         }
                     ]
+                },
+                "success": {
+                    "description": "是否成功",
+                    "type": "boolean"
                 },
                 "time": {
                     "description": "换电时间",
