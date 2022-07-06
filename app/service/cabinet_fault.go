@@ -91,7 +91,8 @@ func (s *cabinetFaultService) List(req *model.CabinetFaultListReq) (res *model.P
             rq.WithPerson()
         }).
         WithCity().
-        WithCabinet()
+        WithCabinet().
+        Order(ent.Asc(cabinetfault.FieldStatus), ent.Desc(cabinetfault.FieldCreatedAt))
     if req.CityID != nil {
         q.Where(cabinetfault.CityID(*req.CityID))
     }

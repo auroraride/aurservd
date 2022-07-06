@@ -524,10 +524,10 @@ func (s *cabinetService) Data(req *model.CabinetDataReq) *model.PaginationRes {
     q := s.orm.QueryNotDeleted().WithBms()
     switch req.Status {
     case 1:
-        q.Where(cabinet.Status(model.CabinetHealthStatusOnline))
+        q.Where(cabinet.Health(model.CabinetHealthStatusOnline))
         break
     case 2:
-        q.Where(cabinet.Status(model.CabinetHealthStatusOffline))
+        q.Where(cabinet.Health(model.CabinetHealthStatusOffline))
         break
     case 3:
         q.Modify(func(sel *sql.Selector) {
