@@ -413,7 +413,7 @@ func (s *enterpriseService) Balance(id uint64) float64 {
 func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
     sta, bills := s.CalculateStatement(e, time.Now())
     // 如果当天已计算过则跳过
-    if sta.Date.Format(carbon.DateLayout) == time.Now().Format(carbon.DateLayout) {
+    if sta.Date != nil && sta.Date.Format(carbon.DateLayout) == time.Now().Format(carbon.DateLayout) {
         log.Infof("[ENTERPRISE TASK] EntperirseID:[%d] 当天已计算过账单, 跳过", e.ID)
         return
     }
