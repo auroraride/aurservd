@@ -9,6 +9,7 @@ import (
     "context"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/manager"
     "github.com/auroraride/aurservd/internal/ent/role"
     "github.com/auroraride/aurservd/pkg/snag"
 )
@@ -105,4 +106,15 @@ func (s *roleService) List() []model.Role {
         }
     }
     return res
+}
+
+func (s *roleService) Delete(req *model.IDParamReq) {
+    // 查找是否有用户
+    if e, _ := ent.Database.Manager.QueryNotDeleted().Where(manager.RoleID(req.ID)).Exist(s.ctx); e {
+        snag.Panic("角色存在用户, 无法删除")
+    }
+    err := s.orm.DeleteOneID(req.ID).Exec(s.ctx)
+    if err != nil {
+        snag.Panic("角色删除失败")
+    }
 }

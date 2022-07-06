@@ -88,3 +88,19 @@ func (*permission) ModifyRole(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.RoleModifyReq](c)
     return ctx.SendResponse(service.NewRoleWithModifier(ctx.Modifier).Modify(req))
 }
+
+// DeleteRole
+// @ID           ManagerPermissionDeleteRole
+// @Router       /manager/v1/permission/role/{id} [DELETE]
+// @Summary      MD005 删除角色
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        id  path  uint64  true  "角色ID"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*permission) DeleteRole(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+    service.NewRoleWithModifier(ctx.Modifier).Delete(req)
+    return ctx.SendResponse()
+}

@@ -137,8 +137,10 @@ func loadManagerRoutes() {
     g.POST("/assistance/free", mapi.Assistance.Free)
     g.POST("/assistance/refuse", mapi.Assistance.Refuse)
 
+    // 角色权限
     g.GET("/permission", mapi.Permission.List)
     g.GET("/permission/role", mapi.Permission.ListRole)
     g.POST("/permission/role", mapi.Permission.CreateRole)
     g.PUT("/permission/role/:id", mapi.Permission.ModifyRole)
+    g.DELETE("/permission/role/:id", mapi.Permission.DeleteRole)
 }

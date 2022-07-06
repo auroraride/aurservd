@@ -6488,6 +6488,31 @@ paths:
       tags:
       - '[M]管理接口'
   /manager/v1/permission/role/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: ManagerPermissionDeleteRole
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 角色ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: MD005 删除角色
+      tags:
+      - '[M]管理接口'
     put:
       consumes:
       - application/json

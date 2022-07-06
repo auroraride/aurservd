@@ -6,6 +6,7 @@
 - [MD002 角色列表](http://localhost:5533/docs#tag/M/operation/ManagerPermissionListRole)
 - [MD003 创建角色](http://localhost:5533/docs#tag/M/operation/ManagerPermissionCreateRole)
 - [MD004 修改角色](http://localhost:5533/docs#tag/M/operation/ManagerPermissionModifyRole)
+- [MD005 删除角色](http://localhost:5533/docs#tag/M/operation/ManagerPermissionDeleteRole)
 
 
 
