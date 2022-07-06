@@ -14,7 +14,8 @@ type Role struct {
 }
 
 type RoleCreateReq struct {
-    Name string `json:"name" validate:"required" trans:"角色名称"`
+    Name        string   `json:"name" validate:"required" trans:"角色名称"`
+    Permissions []string `json:"permissions,omitempty"` // 权限列表, 可以创建之后编辑再添加权限
 }
 
 type RoleModifyReq struct {

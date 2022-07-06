@@ -2913,6 +2913,11 @@ definitions:
       name:
         description: '角色名称 '
         type: string
+      permissions:
+        description: 权限列表, 可以创建之后编辑再添加权限
+        items:
+          type: string
+        type: array
     required:
     - name
     type: object

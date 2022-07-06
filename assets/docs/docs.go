@@ -11704,6 +11704,13 @@ const docTemplate = `{
                 "name": {
                     "description": "角色名称 ",
                     "type": "string"
+                },
+                "permissions": {
+                    "description": "权限列表, 可以创建之后编辑再添加权限",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

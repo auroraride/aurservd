@@ -50,10 +50,23 @@ func (s *roleService) Create(req *model.RoleCreateReq) model.Role {
     if e, _ := s.orm.Query().Where(role.Name(req.Name)).Exist(s.ctx); e {
         snag.Panic("角色已存在")
     }
-    r := s.orm.Create().SetName(req.Name).SaveX(s.ctx)
+
+    q := s.orm.Create().SetName(req.Name)
+    if len(req.Permissions) > 0 {
+        q.SetPermissions(req.Permissions)
+    }
+
+    r := q.SaveX(s.ctx)
+
+    perms := make([]string, 0)
+    if len(r.Permissions) > 0 {
+        perms = r.Permissions
+    }
+
     return model.Role{
-        ID:   r.ID,
-        Name: r.Name,
+        ID:          r.ID,
+        Name:        r.Name,
+        Permissions: perms,
     }
 }
 
