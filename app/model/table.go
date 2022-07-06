@@ -9,3 +9,19 @@ type Table interface {
     GetTableName() string
     GetID() uint64
 }
+
+type IDName interface {
+    GetName() string
+    GetID() uint64
+}
+
+type NilIDName struct {
+}
+
+func (d *NilIDName) GetID() uint64 {
+    return 0
+}
+
+func (d *NilIDName) GetName() string {
+    return ""
+}

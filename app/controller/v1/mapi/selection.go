@@ -116,3 +116,17 @@ func (*selection) Enterprise(c echo.Context) (err error) {
     ctx := app.Context(c)
     return ctx.SendResponse(service.NewSelection().Enterprise())
 }
+
+// Cabinet
+// @ID           ManagerSelectionCabinet
+// @Router       /manager/v1/selection/cabinet [GET]
+// @Summary      MB008 筛选电柜
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Success      200  {object}  []model.CascaderOptionLevel2  "请求成功"
+func (*selection) Cabinet(c echo.Context) (err error) {
+    ctx := app.Context(c)
+    return ctx.SendResponse(service.NewSelection().Cabinet())
+}

@@ -27,6 +27,12 @@ func ({{ $receiver }} *{{ $n.Name }}) GetID() uint64 {
     return {{ $receiver }}.ID
 }
 
+{{ if containsField $n.Fields "name" }}
+func ({{ $receiver }} *{{ $n.Name }}) GetName() string {
+    return {{ $receiver }}.Name
+}
+{{ end }}
+
 {{ end }}
 {{ end }}
 {{ end }}

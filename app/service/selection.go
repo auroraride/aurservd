@@ -137,92 +137,6 @@ func (s *selectionService) Rider(req *model.RiderSelectionReq) (items []model.Se
     return
 }
 
-func (s *selectionService) Store() (items []*model.CascaderOptionLevel2) {
-    res, _ := ent.Database.Store.QueryNotDeleted().WithCity().All(s.ctx)
-
-    smap := make(map[uint64]*model.CascaderOptionLevel2)
-
-    for _, r := range res {
-        c := r.Edges.City
-        var cid uint64
-        var cname string
-        if c == nil {
-            cid = 99999999
-            cname = "未选择网点"
-        } else {
-            cid = c.ID
-            cname = c.Name
-        }
-
-        ol, ok := smap[cid]
-        if !ok {
-            ol = &model.CascaderOptionLevel2{
-                SelectOption: model.SelectOption{
-                    Value: cid,
-                    Label: cname,
-                },
-                Children: make([]model.SelectOption, 0),
-            }
-            smap[cid] = ol
-        }
-
-        ol.Children = append(ol.Children, model.SelectOption{
-            Value: r.ID,
-            Label: r.Name,
-        })
-    }
-
-    items = make([]*model.CascaderOptionLevel2, 0)
-    for _, m := range smap {
-        items = append(items, m)
-    }
-
-    sort.Slice(items, func(i, j int) bool {
-        return items[i].Value < items[j].Value
-    })
-    return
-}
-
-func (s *selectionService) Employee() (items []*model.CascaderOptionLevel2) {
-    res, _ := ent.Database.Employee.QueryNotDeleted().WithCity().All(s.ctx)
-
-    smap := make(map[uint64]*model.CascaderOptionLevel2)
-
-    for _, r := range res {
-        c := r.Edges.City
-        cid := c.ID
-        cname := c.Name
-
-        ol, ok := smap[cid]
-        if !ok {
-            ol = &model.CascaderOptionLevel2{
-                SelectOption: model.SelectOption{
-                    Value: cid,
-                    Label: cname,
-                },
-                Children: make([]model.SelectOption, 0),
-            }
-            smap[cid] = ol
-        }
-
-        ol.Children = append(ol.Children, model.SelectOption{
-            Value: r.ID,
-            Label: fmt.Sprintf("%s - %s", r.Name, r.Phone),
-        })
-    }
-
-    items = make([]*model.CascaderOptionLevel2, 0)
-    for _, m := range smap {
-        items = append(items, m)
-    }
-
-    sort.Slice(items, func(i, j int) bool {
-        return items[i].Value < items[j].Value
-    })
-
-    return
-}
-
 func (s *selectionService) City() (items []*model.CascaderOptionLevel2) {
     res, _ := ent.Database.City.QueryNotDeleted().WithChildren(func(cq *ent.CityQuery) {
         cq.Where(city.Open(true))
@@ -255,32 +169,23 @@ func (s *selectionService) City() (items []*model.CascaderOptionLevel2) {
     return
 }
 
-func (s *selectionService) Branch() (items []*model.CascaderOptionLevel2) {
-    res, _ := ent.Database.Branch.QueryNotDeleted().WithCity().All(s.ctx)
+type cascader[T any] func(data T) (parent model.SelectOption, item model.SelectOption)
 
+func cascaderLevel2[T any](res []T, cb cascader[T], params ...any) (items []*model.CascaderOptionLevel2) {
     smap := make(map[uint64]*model.CascaderOptionLevel2)
-
     for _, r := range res {
-        c := r.Edges.City
-        cid := c.ID
-        cname := c.Name
+        p, c := cb(r)
 
-        ol, ok := smap[cid]
+        ol, ok := smap[p.Value]
         if !ok {
             ol = &model.CascaderOptionLevel2{
-                SelectOption: model.SelectOption{
-                    Value: cid,
-                    Label: cname,
-                },
-                Children: make([]model.SelectOption, 0),
+                SelectOption: p,
+                Children:     make([]model.SelectOption, 0),
             }
-            smap[cid] = ol
+            smap[p.Value] = ol
         }
 
-        ol.Children = append(ol.Children, model.SelectOption{
-            Value: r.ID,
-            Label: fmt.Sprintf("%s ", r.Name),
-        })
+        ol.Children = append(ol.Children, c)
     }
 
     items = make([]*model.CascaderOptionLevel2, 0)
@@ -288,49 +193,85 @@ func (s *selectionService) Branch() (items []*model.CascaderOptionLevel2) {
         items = append(items, m)
     }
 
-    sort.Slice(items, func(i, j int) bool {
-        return items[i].Value < items[j].Value
-    })
+    if len(params) > 0 && params[0].(bool) {
+        sort.Slice(items, func(i, j int) bool {
+            return items[i].Value < items[j].Value
+        })
+    }
 
     return
+}
+
+func selectOptionIDName[T model.IDName, K model.IDName](r T, pb func(r T) K, message string) (p model.SelectOption, c model.SelectOption) {
+    parent := pb(r)
+    if parent.GetID() == 0 {
+        p = model.SelectOption{
+            Value: 0,
+            Label: message,
+        }
+    } else {
+        p = model.SelectOption{
+            Value: parent.GetID(),
+            Label: parent.GetName(),
+        }
+    }
+    c = model.SelectOption{
+        Value: r.GetID(),
+        Label: r.GetName(),
+    }
+    return
+}
+
+func cascaderLevel2IDName[T model.IDName, K model.IDName](res []T, pb func(r T) K, message string, params ...any) (items []*model.CascaderOptionLevel2) {
+    cb := func(r T) (model.SelectOption, model.SelectOption) {
+        return selectOptionIDName(r, pb, message)
+    }
+    return cascaderLevel2(res, cb, params...)
+}
+
+func (s *selectionService) nilableCity(item *ent.City) model.IDName {
+    if item == nil {
+        return new(model.NilIDName)
+    }
+    return item
+}
+
+func (s *selectionService) Store() (items []*model.CascaderOptionLevel2) {
+    res, _ := ent.Database.Store.QueryNotDeleted().WithCity().All(s.ctx)
+
+    return cascaderLevel2IDName(res, func(r *ent.Store) model.IDName {
+        return s.nilableCity(r.Edges.City)
+    }, "未选择网点", true)
+}
+
+func (s *selectionService) Employee() (items []*model.CascaderOptionLevel2) {
+    res, _ := ent.Database.Employee.QueryNotDeleted().WithCity().All(s.ctx)
+
+    return cascaderLevel2IDName(res, func(r *ent.Employee) model.IDName {
+        return s.nilableCity(r.Edges.City)
+    }, "未选择城市", true)
+}
+
+func (s *selectionService) Branch() (items []*model.CascaderOptionLevel2) {
+    res, _ := ent.Database.Branch.QueryNotDeleted().WithCity().All(s.ctx)
+
+    return cascaderLevel2IDName(res, func(r *ent.Branch) model.IDName {
+        return s.nilableCity(r.Edges.City)
+    }, "未选择网点", true)
 }
 
 func (s *selectionService) Enterprise() (items []*model.CascaderOptionLevel2) {
     res, _ := ent.Database.Enterprise.QueryNotDeleted().WithCity().All(s.ctx)
 
-    smap := make(map[uint64]*model.CascaderOptionLevel2)
+    return cascaderLevel2IDName(res, func(r *ent.Enterprise) model.IDName {
+        return s.nilableCity(r.Edges.City)
+    }, "未选择城市", true)
+}
 
-    for _, r := range res {
-        c := r.Edges.City
-        cid := c.ID
-        cname := c.Name
+func (s *selectionService) Cabinet() (items []*model.CascaderOptionLevel2) {
+    res, _ := ent.Database.Cabinet.QueryNotDeleted().WithCity().All(s.ctx)
 
-        ol, ok := smap[cid]
-        if !ok {
-            ol = &model.CascaderOptionLevel2{
-                SelectOption: model.SelectOption{
-                    Value: cid,
-                    Label: cname,
-                },
-                Children: make([]model.SelectOption, 0),
-            }
-            smap[cid] = ol
-        }
-
-        ol.Children = append(ol.Children, model.SelectOption{
-            Value: r.ID,
-            Label: fmt.Sprintf("%s ", r.Name),
-        })
-    }
-
-    items = make([]*model.CascaderOptionLevel2, 0)
-    for _, m := range smap {
-        items = append(items, m)
-    }
-
-    sort.Slice(items, func(i, j int) bool {
-        return items[i].Value < items[j].Value
-    })
-
-    return
+    return cascaderLevel2IDName(res, func(r *ent.Cabinet) model.IDName {
+        return s.nilableCity(r.Edges.City)
+    }, "未选择网点", true)
 }

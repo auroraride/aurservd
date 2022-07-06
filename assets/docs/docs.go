@@ -4957,6 +4957,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/selection/cabinet": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MB008 筛选电柜",
+                "operationId": "ManagerSelectionCabinet",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CascaderOptionLevel2"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/selection/city": {
             "get": {
                 "consumes": [
@@ -5338,7 +5373,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "门店ID",
-                        "name": "storeID",
+                        "name": "storeId",
                         "in": "query"
                     }
                 ],

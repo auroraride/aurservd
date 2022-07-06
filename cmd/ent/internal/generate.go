@@ -17,6 +17,17 @@ import (
     "strings"
 )
 
+func init() {
+    gen.Funcs["containsField"] = func(fields []*gen.Field, name string) bool {
+        for _, f := range fields {
+            if name == f.Name {
+                return true
+            }
+        }
+        return false
+    }
+}
+
 // IDType is a custom ID implementation for pflag.
 type IDType field.Type
 

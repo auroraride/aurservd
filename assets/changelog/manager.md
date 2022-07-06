@@ -1,3 +1,17 @@
+## 2022-07-07
+
+#### 接口新增
+
+- [MB008 筛选电柜](http://localhost:5533/docs#tag/M/operation/ManagerSelectionCabinet)
+
+
+
+
+
+
+
+<br />
+
 ## 2022-07-05
 
 #### 接口新增

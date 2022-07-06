@@ -127,6 +127,7 @@ func loadManagerRoutes() {
     g.GET("/selection/city", mapi.Selection.City)
     g.GET("/selection/branch", mapi.Selection.Branch)
     g.GET("/selection/enterprise", mapi.Selection.Enterprise)
+    g.GET("/selection/cabinet", mapi.Selection.Cabinet)
 
     // 救援
     g.GET("/assistance", mapi.Assistance.List)

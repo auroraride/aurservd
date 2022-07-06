@@ -42,6 +42,10 @@ func (b *Branch) GetID() uint64 {
 	return b.ID
 }
 
+func (b *Branch) GetName() string {
+	return b.Name
+}
+
 // GetTableName returns table name for BranchContract.
 func (bc *BranchContract) GetTableName() string {
 	return "branch_contract"
@@ -72,6 +76,10 @@ func (c *Cabinet) GetID() uint64 {
 	return c.ID
 }
 
+func (c *Cabinet) GetName() string {
+	return c.Name
+}
+
 // GetTableName returns table name for CabinetFault.
 func (cf *CabinetFault) GetTableName() string {
 	return "cabinet_fault"
@@ -90,6 +98,10 @@ func (c *City) GetTableName() string {
 // GetID returns id for City.
 func (c *City) GetID() uint64 {
 	return c.ID
+}
+
+func (c *City) GetName() string {
+	return c.Name
 }
 
 // GetTableName returns table name for Commission.
@@ -122,6 +134,10 @@ func (e *Employee) GetID() uint64 {
 	return e.ID
 }
 
+func (e *Employee) GetName() string {
+	return e.Name
+}
+
 // GetTableName returns table name for Enterprise.
 func (e *Enterprise) GetTableName() string {
 	return "enterprise"
@@ -130,6 +146,10 @@ func (e *Enterprise) GetTableName() string {
 // GetID returns id for Enterprise.
 func (e *Enterprise) GetID() uint64 {
 	return e.ID
+}
+
+func (e *Enterprise) GetName() string {
+	return e.Name
 }
 
 // GetTableName returns table name for EnterpriseBill.
@@ -192,6 +212,10 @@ func (es *EnterpriseStation) GetID() uint64 {
 	return es.ID
 }
 
+func (es *EnterpriseStation) GetName() string {
+	return es.Name
+}
+
 // GetTableName returns table name for Exception.
 func (e *Exception) GetTableName() string {
 	return "exception"
@@ -200,6 +224,10 @@ func (e *Exception) GetTableName() string {
 // GetID returns id for Exception.
 func (e *Exception) GetID() uint64 {
 	return e.ID
+}
+
+func (e *Exception) GetName() string {
+	return e.Name
 }
 
 // GetTableName returns table name for Exchange.
@@ -222,6 +250,10 @@ func (i *Inventory) GetID() uint64 {
 	return i.ID
 }
 
+func (i *Inventory) GetName() string {
+	return i.Name
+}
+
 // GetTableName returns table name for Manager.
 func (m *Manager) GetTableName() string {
 	return "manager"
@@ -230,6 +262,10 @@ func (m *Manager) GetTableName() string {
 // GetID returns id for Manager.
 func (m *Manager) GetID() uint64 {
 	return m.ID
+}
+
+func (m *Manager) GetName() string {
+	return m.Name
 }
 
 // GetTableName returns table name for Order.
@@ -262,6 +298,10 @@ func (pe *Person) GetID() uint64 {
 	return pe.ID
 }
 
+func (pe *Person) GetName() string {
+	return pe.Name
+}
+
 // GetTableName returns table name for Plan.
 func (pl *Plan) GetTableName() string {
 	return "plan"
@@ -270,6 +310,10 @@ func (pl *Plan) GetTableName() string {
 // GetID returns id for Plan.
 func (pl *Plan) GetID() uint64 {
 	return pl.ID
+}
+
+func (pl *Plan) GetName() string {
+	return pl.Name
 }
 
 // GetTableName returns table name for Rider.
@@ -302,6 +346,10 @@ func (r *Role) GetID() uint64 {
 	return r.ID
 }
 
+func (r *Role) GetName() string {
+	return r.Name
+}
+
 // GetTableName returns table name for Setting.
 func (s *Setting) GetTableName() string {
 	return "setting"
@@ -322,6 +370,10 @@ func (s *Stock) GetID() uint64 {
 	return s.ID
 }
 
+func (s *Stock) GetName() string {
+	return s.Name
+}
+
 // GetTableName returns table name for Store.
 func (s *Store) GetTableName() string {
 	return "store"
@@ -330,6 +382,10 @@ func (s *Store) GetTableName() string {
 // GetID returns id for Store.
 func (s *Store) GetID() uint64 {
 	return s.ID
+}
+
+func (s *Store) GetName() string {
+	return s.Name
 }
 
 // GetTableName returns table name for Subscribe.

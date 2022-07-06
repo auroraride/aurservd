@@ -40,7 +40,7 @@ type StockListReq struct {
     CityID  *uint64 `json:"cityId" query:"cityId"`   // 城市ID
     Start   *string `json:"start" query:"start"`     // 开始时间
     End     *string `json:"end" query:"end"`         // 结束时间
-    StoreID *uint64 `json:"storeID" query:"storeID"` // 门店ID
+    StoreID *uint64 `json:"storeId" query:"storeId"` // 门店ID
 }
 
 type StockMaterial struct {

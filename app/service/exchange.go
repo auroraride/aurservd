@@ -10,6 +10,7 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/internal/ent/person"
@@ -300,6 +301,10 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
     }
     if req.End != "" {
         q.Where(exchange.CreatedAtLT(tt.ParseNextDateStringX(req.End)))
+    }
+
+    if req.Serial != "" {
+        q.Where(exchange.HasCabinetWith(cabinet.Serial(req.Serial)))
     }
 
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Exchange) model.ExchangeManagerListRes {

@@ -6855,6 +6855,29 @@ paths:
       summary: MB006 筛选网点
       tags:
       - '[M]管理接口'
+  /manager/v1/selection/cabinet:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionCabinet
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.CascaderOptionLevel2'
+            type: array
+      summary: MB008 筛选电柜
+      tags:
+      - '[M]管理接口'
   /manager/v1/selection/city:
     get:
       consumes:
@@ -7105,7 +7128,7 @@ paths:
         type: string
       - description: 门店ID
         in: query
-        name: storeID
+        name: storeId
         type: integer
       produces:
       - application/json
