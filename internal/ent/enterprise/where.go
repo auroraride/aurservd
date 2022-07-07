@@ -191,6 +191,13 @@ func Balance(v float64) predicate.Enterprise {
 	})
 }
 
+// PrepaymentTotal applies equality check predicate on the "prepayment_total" field. It's identical to PrepaymentTotalEQ.
+func PrepaymentTotal(v float64) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPrepaymentTotal), v))
+	})
+}
+
 // SuspensedAt applies equality check predicate on the "suspensed_at" field. It's identical to SuspensedAtEQ.
 func SuspensedAt(v time.Time) predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
@@ -1497,6 +1504,82 @@ func BalanceLT(v float64) predicate.Enterprise {
 func BalanceLTE(v float64) predicate.Enterprise {
 	return predicate.Enterprise(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldBalance), v))
+	})
+}
+
+// PrepaymentTotalEQ applies the EQ predicate on the "prepayment_total" field.
+func PrepaymentTotalEQ(v float64) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPrepaymentTotal), v))
+	})
+}
+
+// PrepaymentTotalNEQ applies the NEQ predicate on the "prepayment_total" field.
+func PrepaymentTotalNEQ(v float64) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPrepaymentTotal), v))
+	})
+}
+
+// PrepaymentTotalIn applies the In predicate on the "prepayment_total" field.
+func PrepaymentTotalIn(vs ...float64) predicate.Enterprise {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Enterprise(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldPrepaymentTotal), v...))
+	})
+}
+
+// PrepaymentTotalNotIn applies the NotIn predicate on the "prepayment_total" field.
+func PrepaymentTotalNotIn(vs ...float64) predicate.Enterprise {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Enterprise(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldPrepaymentTotal), v...))
+	})
+}
+
+// PrepaymentTotalGT applies the GT predicate on the "prepayment_total" field.
+func PrepaymentTotalGT(v float64) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPrepaymentTotal), v))
+	})
+}
+
+// PrepaymentTotalGTE applies the GTE predicate on the "prepayment_total" field.
+func PrepaymentTotalGTE(v float64) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPrepaymentTotal), v))
+	})
+}
+
+// PrepaymentTotalLT applies the LT predicate on the "prepayment_total" field.
+func PrepaymentTotalLT(v float64) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPrepaymentTotal), v))
+	})
+}
+
+// PrepaymentTotalLTE applies the LTE predicate on the "prepayment_total" field.
+func PrepaymentTotalLTE(v float64) predicate.Enterprise {
+	return predicate.Enterprise(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPrepaymentTotal), v))
 	})
 }
 

@@ -63,3 +63,19 @@ type StatementClearBillReq struct {
     UUID   string  `json:"uuid"`   // 账单编码
     Remark *string `json:"remark"` // 备注信息
 }
+
+type StatementBillHistoryListReq struct {
+    PaginationReq
+    EnterpriseID uint64 `json:"enterpriseId" query:"enterpriseId" validate:"required" trans:"企业ID"`
+}
+
+type StatementBillHistoryListRes struct {
+    ID        uint64    `json:"id"`
+    Cost      float64   `json:"cost"`      // 账单费用
+    Remark    string    `json:"remark"`    // 结账备注
+    Creator   *Modifier `json:"creator"`   // 结账人
+    Days      int       `json:"days"`      // 使用日期
+    Start     string    `json:"start"`     // 账单开始日期
+    End       string    `json:"end"`       // 账单结束日期
+    SettledAt string    `json:"settledAt"` // 结账时间
+}

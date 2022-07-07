@@ -7,6 +7,7 @@ package service
 
 import (
     "context"
+    "entgo.io/ent/dialect/sql"
     "errors"
     "fmt"
     "github.com/auroraride/aurservd/app/logging"
@@ -87,14 +88,16 @@ func (s *enterpriseService) Create(req *model.EnterpriseDetail) uint64 {
 }
 
 // Modify 修改企业
+// TODO 后付费转为预付费, 预付费转为后付费
 func (s *enterpriseService) Modify(req *model.EnterpriseDetailWithID) {
     e := s.QueryX(req.ID)
     // 判定付费方式是否允许改变
     if *req.Payment != e.Payment {
-        set := NewEnterpriseStatementWithModifier(s.modifier).Current(e)
-        if set.Cost > 0 {
-            snag.Panic("企业已产生费用, 无法修改支付方式")
-        }
+        // set := NewEnterpriseStatementWithModifier(s.modifier).Current(e)
+        // if set.Cost > 0 {
+        //     snag.Panic("企业已产生费用, 无法修改支付方式")
+        // }
+        snag.Panic("无法转换支付方式")
     }
 
     tx, err := ent.Database.Tx(s.ctx)
@@ -269,9 +272,31 @@ func (s *enterpriseService) QueryAllCollaborated() []*ent.Enterprise {
     return items
 }
 
+// QueryAllSubscribe 获取企业所有订阅
+func (s *enterpriseService) QueryAllSubscribe(enterpriseID uint64, args ...string) []*ent.Subscribe {
+    q := ent.Database.Subscribe.
+        QueryNotDeleted().
+        WithCity().
+        Where(
+            // 所属企业
+            subscribe.EnterpriseID(enterpriseID),
+            // 已开始使用
+            subscribe.StartAtNotNil(),
+        )
+    if len(args) > 0 {
+        q.Where(subscribe.StartAtGTE(tools.NewTime().ParseDateStringX(args[0])))
+    }
+    if len(args) > 1 {
+        q.Where(subscribe.StartAtLT(tools.NewTime().ParseNextDateStringX(args[1])))
+    }
+    items, _ := q.All(s.ctx)
+    return items
+}
+
 // QueryAllBillingSubscribe 获取所有待结算骑手团签订阅
 func (s *enterpriseService) QueryAllBillingSubscribe(enterpriseID uint64, args ...any) []*ent.Subscribe {
     q := ent.Database.Subscribe.QueryNotDeleted().
+        WithCity().
         Where(
             // 所属企业
             subscribe.EnterpriseID(enterpriseID),
@@ -286,24 +311,25 @@ func (s *enterpriseService) QueryAllBillingSubscribe(enterpriseID uint64, args .
         }
     }
     endDate := carbon.Time2Carbon(end).StartOfDay().Carbon2Time()
+    // 获取未结算订阅
     q.Where(
-        // 获取未结算订阅: 上次结算日期为空或小于截止日期
         subscribe.Or(
+            // 或上次结算日期为空
             subscribe.LastBillDateIsNil(),
+            // 或小于截止日期
             subscribe.LastBillDateLT(endDate),
         ),
-        // TODO 如何进行字段对比查询 ??
-        // subscribe.Or(
-        //     // 或者结算日期为空的
-        //     subscribe.EndAtIsNil(),
-        //     // 或者终止时间晚于上次已结算时间的
-        //     func(selector *sql.Selector) {
-        //         selector.Where(selector.P().ColumnsGTE(selector.C(subscribe.FieldEndAt), selector.C(subscribe.FieldLastBillDate)))
-        //     },
-        // ),
+        subscribe.Or(
+            // 或者结算日期为空的
+            subscribe.EndAtIsNil(),
+            // 或者终止时间晚于上次已结算时间的
+            func(selector *sql.Selector) {
+                selector.Where(sql.ColumnsGTE(selector.C(subscribe.FieldEndAt), selector.C(subscribe.FieldLastBillDate)))
+            },
+        ),
     )
 
-    items, _ := q.WithCity().All(s.ctx)
+    items, _ := q.All(s.ctx)
     return items
 }
 
@@ -330,25 +356,35 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
     es = NewEnterpriseStatement().Current(e)
 
     // 获取所有骑手订阅
-    subs := s.QueryAllBillingSubscribe(e.ID, end)
+    var subs []*ent.Subscribe
+    isPostPayment := e.Payment == model.EnterprisePaymentPostPay
+    if isPostPayment {
+        // 后付费企业获取未结算订阅
+        subs = s.QueryAllBillingSubscribe(e.ID, end)
+    } else {
+        // 预付费企业获取所有订阅
+        subs = s.QueryAllSubscribe(e.ID)
+    }
     for _, sub := range subs {
         // 是否已终止并且终止时间早于结算时间
         if sub.LastBillDate != nil && sub.EndAt != nil && sub.LastBillDate.After(*sub.EndAt) {
             continue
         }
 
-        // 计算使用天数
+        // 使用天数
         var used int
 
-        // 判定是否退订
-        // 上次结算日期存在则从上次结算日次日开始计算
+        // 开始时间
         from := carbon.Time2Carbon(*sub.StartAt).StartOfDay().Carbon2Time()
-        to := end
-        if sub.LastBillDate != nil {
+
+        // 后付费企业: 上次结算日期存在则从上次结算日次日开始计算
+        if isPostPayment && sub.LastBillDate != nil {
             from = carbon.Time2Carbon(*sub.LastBillDate).StartOfDay().AddDay().Carbon2Time()
         }
 
-        // 是否已结束
+        // 结束时间
+        to := end
+        // 判定是否退订
         if sub.EndAt != nil && sub.EndAt.Before(end) {
             to = carbon.Time2Carbon(*sub.EndAt).StartOfDay().Carbon2Time()
         }
@@ -412,11 +448,6 @@ func (s *enterpriseService) Balance(id uint64) float64 {
 // UpdateStatement 更新企业账单
 func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
     sta, bills := s.CalculateStatement(e, time.Now())
-    // 如果当天已计算过则跳过
-    if sta.Date != nil && sta.Date.Format(carbon.DateLayout) == time.Now().Format(carbon.DateLayout) {
-        log.Infof("[ENTERPRISE TASK] EntperirseID:[%d] 当天已计算过账单, 跳过", e.ID)
-        return
-    }
 
     // 总天数
     var days int
@@ -433,7 +464,7 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
     switch e.Payment {
     case model.EnterprisePaymentPrepay:
         // 预付费, 计算余额
-        balance = tools.NewDecimal().Sub(sta.Balance, cost)
+        balance = tools.NewDecimal().Sub(e.PrepaymentTotal, cost)
         break
     }
 
@@ -490,7 +521,7 @@ func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float
     snag.PanicIfErrorX(err, tx.Rollback)
 
     // 更新企业表
-    _, err = tx.Enterprise.UpdateOne(e).SetBalance(balance).Save(s.ctx)
+    _, err = tx.Enterprise.UpdateOne(e).SetBalance(balance).AddPrepaymentTotal(req.Amount).Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
 
     // 记录日志

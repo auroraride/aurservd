@@ -175,6 +175,20 @@ func (ec *EnterpriseCreate) SetNillableBalance(f *float64) *EnterpriseCreate {
 	return ec
 }
 
+// SetPrepaymentTotal sets the "prepayment_total" field.
+func (ec *EnterpriseCreate) SetPrepaymentTotal(f float64) *EnterpriseCreate {
+	ec.mutation.SetPrepaymentTotal(f)
+	return ec
+}
+
+// SetNillablePrepaymentTotal sets the "prepayment_total" field if the given value is not nil.
+func (ec *EnterpriseCreate) SetNillablePrepaymentTotal(f *float64) *EnterpriseCreate {
+	if f != nil {
+		ec.SetPrepaymentTotal(*f)
+	}
+	return ec
+}
+
 // SetSuspensedAt sets the "suspensed_at" field.
 func (ec *EnterpriseCreate) SetSuspensedAt(t time.Time) *EnterpriseCreate {
 	ec.mutation.SetSuspensedAt(t)
@@ -400,6 +414,10 @@ func (ec *EnterpriseCreate) defaults() error {
 		v := enterprise.DefaultBalance
 		ec.mutation.SetBalance(v)
 	}
+	if _, ok := ec.mutation.PrepaymentTotal(); !ok {
+		v := enterprise.DefaultPrepaymentTotal
+		ec.mutation.SetPrepaymentTotal(v)
+	}
 	return nil
 }
 
@@ -440,6 +458,9 @@ func (ec *EnterpriseCreate) check() error {
 	}
 	if _, ok := ec.mutation.Balance(); !ok {
 		return &ValidationError{Name: "balance", err: errors.New(`ent: missing required field "Enterprise.balance"`)}
+	}
+	if _, ok := ec.mutation.PrepaymentTotal(); !ok {
+		return &ValidationError{Name: "prepayment_total", err: errors.New(`ent: missing required field "Enterprise.prepayment_total"`)}
 	}
 	if _, ok := ec.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "Enterprise.city"`)}
@@ -591,6 +612,14 @@ func (ec *EnterpriseCreate) createSpec() (*Enterprise, *sqlgraph.CreateSpec) {
 			Column: enterprise.FieldBalance,
 		})
 		_node.Balance = value
+	}
+	if value, ok := ec.mutation.PrepaymentTotal(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldPrepaymentTotal,
+		})
+		_node.PrepaymentTotal = value
 	}
 	if value, ok := ec.mutation.SuspensedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -1047,6 +1076,24 @@ func (u *EnterpriseUpsert) AddBalance(v float64) *EnterpriseUpsert {
 	return u
 }
 
+// SetPrepaymentTotal sets the "prepayment_total" field.
+func (u *EnterpriseUpsert) SetPrepaymentTotal(v float64) *EnterpriseUpsert {
+	u.Set(enterprise.FieldPrepaymentTotal, v)
+	return u
+}
+
+// UpdatePrepaymentTotal sets the "prepayment_total" field to the value that was provided on create.
+func (u *EnterpriseUpsert) UpdatePrepaymentTotal() *EnterpriseUpsert {
+	u.SetExcluded(enterprise.FieldPrepaymentTotal)
+	return u
+}
+
+// AddPrepaymentTotal adds v to the "prepayment_total" field.
+func (u *EnterpriseUpsert) AddPrepaymentTotal(v float64) *EnterpriseUpsert {
+	u.Add(enterprise.FieldPrepaymentTotal, v)
+	return u
+}
+
 // SetSuspensedAt sets the "suspensed_at" field.
 func (u *EnterpriseUpsert) SetSuspensedAt(v time.Time) *EnterpriseUpsert {
 	u.Set(enterprise.FieldSuspensedAt, v)
@@ -1392,6 +1439,27 @@ func (u *EnterpriseUpsertOne) AddBalance(v float64) *EnterpriseUpsertOne {
 func (u *EnterpriseUpsertOne) UpdateBalance() *EnterpriseUpsertOne {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.UpdateBalance()
+	})
+}
+
+// SetPrepaymentTotal sets the "prepayment_total" field.
+func (u *EnterpriseUpsertOne) SetPrepaymentTotal(v float64) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetPrepaymentTotal(v)
+	})
+}
+
+// AddPrepaymentTotal adds v to the "prepayment_total" field.
+func (u *EnterpriseUpsertOne) AddPrepaymentTotal(v float64) *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.AddPrepaymentTotal(v)
+	})
+}
+
+// UpdatePrepaymentTotal sets the "prepayment_total" field to the value that was provided on create.
+func (u *EnterpriseUpsertOne) UpdatePrepaymentTotal() *EnterpriseUpsertOne {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdatePrepaymentTotal()
 	})
 }
 
@@ -1907,6 +1975,27 @@ func (u *EnterpriseUpsertBulk) AddBalance(v float64) *EnterpriseUpsertBulk {
 func (u *EnterpriseUpsertBulk) UpdateBalance() *EnterpriseUpsertBulk {
 	return u.Update(func(s *EnterpriseUpsert) {
 		s.UpdateBalance()
+	})
+}
+
+// SetPrepaymentTotal sets the "prepayment_total" field.
+func (u *EnterpriseUpsertBulk) SetPrepaymentTotal(v float64) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.SetPrepaymentTotal(v)
+	})
+}
+
+// AddPrepaymentTotal adds v to the "prepayment_total" field.
+func (u *EnterpriseUpsertBulk) AddPrepaymentTotal(v float64) *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.AddPrepaymentTotal(v)
+	})
+}
+
+// UpdatePrepaymentTotal sets the "prepayment_total" field to the value that was provided on create.
+func (u *EnterpriseUpsertBulk) UpdatePrepaymentTotal() *EnterpriseUpsertBulk {
+	return u.Update(func(s *EnterpriseUpsert) {
+		s.UpdatePrepaymentTotal()
 	})
 }
 

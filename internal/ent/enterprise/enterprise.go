@@ -45,6 +45,8 @@ const (
 	FieldDeposit = "deposit"
 	// FieldBalance holds the string denoting the balance field in the database.
 	FieldBalance = "balance"
+	// FieldPrepaymentTotal holds the string denoting the prepayment_total field in the database.
+	FieldPrepaymentTotal = "prepayment_total"
 	// FieldSuspensedAt holds the string denoting the suspensed_at field in the database.
 	FieldSuspensedAt = "suspensed_at"
 	// EdgeCity holds the string denoting the city edge name in mutations.
@@ -142,6 +144,7 @@ var Columns = []string{
 	FieldPayment,
 	FieldDeposit,
 	FieldBalance,
+	FieldPrepaymentTotal,
 	FieldSuspensedAt,
 }
 
@@ -173,4 +176,6 @@ var (
 	DefaultDeposit float64
 	// DefaultBalance holds the default value on creation for the "balance" field.
 	DefaultBalance float64
+	// DefaultPrepaymentTotal holds the default value on creation for the "prepayment_total" field.
+	DefaultPrepaymentTotal float64
 )

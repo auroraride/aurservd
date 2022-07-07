@@ -19,56 +19,58 @@ import (
 // EnterpriseMutation represents an operation that mutates the Enterprise nodes in the graph.
 type EnterpriseMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *uint64
-	created_at        *time.Time
-	updated_at        *time.Time
-	deleted_at        *time.Time
-	creator           **model.Modifier
-	last_modifier     **model.Modifier
-	remark            *string
-	name              *string
-	status            *uint8
-	addstatus         *int8
-	contact_name      *string
-	contact_phone     *string
-	idcard_number     *string
-	address           *string
-	payment           *uint8
-	addpayment        *int8
-	deposit           *float64
-	adddeposit        *float64
-	balance           *float64
-	addbalance        *float64
-	suspensed_at      *time.Time
-	clearedFields     map[string]struct{}
-	city              *uint64
-	clearedcity       bool
-	riders            map[uint64]struct{}
-	removedriders     map[uint64]struct{}
-	clearedriders     bool
-	contracts         map[uint64]struct{}
-	removedcontracts  map[uint64]struct{}
-	clearedcontracts  bool
-	prices            map[uint64]struct{}
-	removedprices     map[uint64]struct{}
-	clearedprices     bool
-	subscribes        map[uint64]struct{}
-	removedsubscribes map[uint64]struct{}
-	clearedsubscribes bool
-	statements        map[uint64]struct{}
-	removedstatements map[uint64]struct{}
-	clearedstatements bool
-	stations          map[uint64]struct{}
-	removedstations   map[uint64]struct{}
-	clearedstations   bool
-	bills             map[uint64]struct{}
-	removedbills      map[uint64]struct{}
-	clearedbills      bool
-	done              bool
-	oldValue          func(context.Context) (*Enterprise, error)
-	predicates        []predicate.Enterprise
+	op                  Op
+	typ                 string
+	id                  *uint64
+	created_at          *time.Time
+	updated_at          *time.Time
+	deleted_at          *time.Time
+	creator             **model.Modifier
+	last_modifier       **model.Modifier
+	remark              *string
+	name                *string
+	status              *uint8
+	addstatus           *int8
+	contact_name        *string
+	contact_phone       *string
+	idcard_number       *string
+	address             *string
+	payment             *uint8
+	addpayment          *int8
+	deposit             *float64
+	adddeposit          *float64
+	balance             *float64
+	addbalance          *float64
+	prepayment_total    *float64
+	addprepayment_total *float64
+	suspensed_at        *time.Time
+	clearedFields       map[string]struct{}
+	city                *uint64
+	clearedcity         bool
+	riders              map[uint64]struct{}
+	removedriders       map[uint64]struct{}
+	clearedriders       bool
+	contracts           map[uint64]struct{}
+	removedcontracts    map[uint64]struct{}
+	clearedcontracts    bool
+	prices              map[uint64]struct{}
+	removedprices       map[uint64]struct{}
+	clearedprices       bool
+	subscribes          map[uint64]struct{}
+	removedsubscribes   map[uint64]struct{}
+	clearedsubscribes   bool
+	statements          map[uint64]struct{}
+	removedstatements   map[uint64]struct{}
+	clearedstatements   bool
+	stations            map[uint64]struct{}
+	removedstations     map[uint64]struct{}
+	clearedstations     bool
+	bills               map[uint64]struct{}
+	removedbills        map[uint64]struct{}
+	clearedbills        bool
+	done                bool
+	oldValue            func(context.Context) (*Enterprise, error)
+	predicates          []predicate.Enterprise
 }
 
 var _ ent.Mutation = (*EnterpriseMutation)(nil)
@@ -877,6 +879,62 @@ func (m *EnterpriseMutation) ResetBalance() {
 	m.addbalance = nil
 }
 
+// SetPrepaymentTotal sets the "prepayment_total" field.
+func (m *EnterpriseMutation) SetPrepaymentTotal(f float64) {
+	m.prepayment_total = &f
+	m.addprepayment_total = nil
+}
+
+// PrepaymentTotal returns the value of the "prepayment_total" field in the mutation.
+func (m *EnterpriseMutation) PrepaymentTotal() (r float64, exists bool) {
+	v := m.prepayment_total
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPrepaymentTotal returns the old "prepayment_total" field's value of the Enterprise entity.
+// If the Enterprise object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseMutation) OldPrepaymentTotal(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPrepaymentTotal is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPrepaymentTotal requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPrepaymentTotal: %w", err)
+	}
+	return oldValue.PrepaymentTotal, nil
+}
+
+// AddPrepaymentTotal adds f to the "prepayment_total" field.
+func (m *EnterpriseMutation) AddPrepaymentTotal(f float64) {
+	if m.addprepayment_total != nil {
+		*m.addprepayment_total += f
+	} else {
+		m.addprepayment_total = &f
+	}
+}
+
+// AddedPrepaymentTotal returns the value that was added to the "prepayment_total" field in this mutation.
+func (m *EnterpriseMutation) AddedPrepaymentTotal() (r float64, exists bool) {
+	v := m.addprepayment_total
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPrepaymentTotal resets all changes to the "prepayment_total" field.
+func (m *EnterpriseMutation) ResetPrepaymentTotal() {
+	m.prepayment_total = nil
+	m.addprepayment_total = nil
+}
+
 // SetSuspensedAt sets the "suspensed_at" field.
 func (m *EnterpriseMutation) SetSuspensedAt(t time.Time) {
 	m.suspensed_at = &t
@@ -1349,7 +1407,7 @@ func (m *EnterpriseMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EnterpriseMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 18)
 	if m.created_at != nil {
 		fields = append(fields, enterprise.FieldCreatedAt)
 	}
@@ -1398,6 +1456,9 @@ func (m *EnterpriseMutation) Fields() []string {
 	if m.balance != nil {
 		fields = append(fields, enterprise.FieldBalance)
 	}
+	if m.prepayment_total != nil {
+		fields = append(fields, enterprise.FieldPrepaymentTotal)
+	}
 	if m.suspensed_at != nil {
 		fields = append(fields, enterprise.FieldSuspensedAt)
 	}
@@ -1441,6 +1502,8 @@ func (m *EnterpriseMutation) Field(name string) (ent.Value, bool) {
 		return m.Deposit()
 	case enterprise.FieldBalance:
 		return m.Balance()
+	case enterprise.FieldPrepaymentTotal:
+		return m.PrepaymentTotal()
 	case enterprise.FieldSuspensedAt:
 		return m.SuspensedAt()
 	}
@@ -1484,6 +1547,8 @@ func (m *EnterpriseMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldDeposit(ctx)
 	case enterprise.FieldBalance:
 		return m.OldBalance(ctx)
+	case enterprise.FieldPrepaymentTotal:
+		return m.OldPrepaymentTotal(ctx)
 	case enterprise.FieldSuspensedAt:
 		return m.OldSuspensedAt(ctx)
 	}
@@ -1607,6 +1672,13 @@ func (m *EnterpriseMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetBalance(v)
 		return nil
+	case enterprise.FieldPrepaymentTotal:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPrepaymentTotal(v)
+		return nil
 	case enterprise.FieldSuspensedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -1634,6 +1706,9 @@ func (m *EnterpriseMutation) AddedFields() []string {
 	if m.addbalance != nil {
 		fields = append(fields, enterprise.FieldBalance)
 	}
+	if m.addprepayment_total != nil {
+		fields = append(fields, enterprise.FieldPrepaymentTotal)
+	}
 	return fields
 }
 
@@ -1650,6 +1725,8 @@ func (m *EnterpriseMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedDeposit()
 	case enterprise.FieldBalance:
 		return m.AddedBalance()
+	case enterprise.FieldPrepaymentTotal:
+		return m.AddedPrepaymentTotal()
 	}
 	return nil, false
 }
@@ -1686,6 +1763,13 @@ func (m *EnterpriseMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddBalance(v)
+		return nil
+	case enterprise.FieldPrepaymentTotal:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPrepaymentTotal(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Enterprise numeric field %s", name)
@@ -1794,6 +1878,9 @@ func (m *EnterpriseMutation) ResetField(name string) error {
 		return nil
 	case enterprise.FieldBalance:
 		m.ResetBalance()
+		return nil
+	case enterprise.FieldPrepaymentTotal:
+		m.ResetPrepaymentTotal()
 		return nil
 	case enterprise.FieldSuspensedAt:
 		m.ResetSuspensedAt()

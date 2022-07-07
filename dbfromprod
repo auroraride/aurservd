@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+ssh root@39.106.77.239 "pg_dump -U postgres -d auroraride -f /root/auroraride.sql"
+scp root@39.106.77.239:/root/auroraride.sql ~/Downloads/_sql/
+dropdb -U liasica auroraride-prod
+createdb auroraride-prod
+psql -d auroraride-prod -U liasica -c "SET timezone = 'Asia/Shanghai'; CREATE EXTENSION postgis; CREATE EXTENSION pg_trgm; CREATE EXTENSION btree_gin;"
+psql -d auroraride-prod -U liasica -f ~/Downloads/_sql/auroraride.sql
+rm -rf ~/Downloads/_sql/auroraride.sql

@@ -282,11 +282,14 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
     if sub == nil {
         snag.Panic("订阅不存在")
     }
-    if req.Days+sub.Remaining < 0 {
-        snag.Panic("不能将剩余时间调整为负值")
-    }
+    // 2022-07-07 和博文沟通后把时间限制又给取消了
+    // if req.Days+sub.Remaining < 0 {
+    //     snag.Panic("不能将剩余时间调整为负值")
+    // }
 
     before := sub.Remaining
+    after := sub.Remaining + req.Days
+    status := sub.Status
 
     tx, err := ent.Database.Tx(s.ctx)
     if err != nil {
@@ -310,10 +313,18 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
     }
 
     // 更新订阅
+    if after > 0 && status == model.SubscribeStatusOverdue {
+        status = model.SubscribeStatusUsing
+    }
+    if after < 0 {
+        status = model.SubscribeStatusOverdue
+    }
+
     sub, err = tx.Subscribe.
         UpdateOneID(sub.ID).
         AddAlterDays(req.Days).
         AddRemaining(req.Days).
+        SetStatus(status).
         Save(s.ctx)
     if err != nil {
         log.Error(err)

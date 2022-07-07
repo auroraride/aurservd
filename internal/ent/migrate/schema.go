@@ -818,6 +818,7 @@ var (
 		{Name: "payment", Type: field.TypeUint8, Comment: "付费方式 1预付费 2后付费"},
 		{Name: "deposit", Type: field.TypeFloat64, Comment: "押金", Default: 0},
 		{Name: "balance", Type: field.TypeFloat64, Comment: "账户余额", Default: 0},
+		{Name: "prepayment_total", Type: field.TypeFloat64, Comment: "总储值金额", Default: 0},
 		{Name: "suspensed_at", Type: field.TypeTime, Comment: "暂停合作时间", Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64},
 	}
@@ -829,7 +830,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "enterprise_city_city",
-				Columns:    []*schema.Column{EnterpriseColumns[17]},
+				Columns:    []*schema.Column{EnterpriseColumns[18]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

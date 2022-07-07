@@ -1755,6 +1755,9 @@ definitions:
       days:
         description: 总天数
         type: integer
+      deletedAt:
+        description: 删除时间, 已被删除的用户才会有此字段
+        type: string
       id:
         type: integer
       model:
@@ -1770,6 +1773,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.EnterpriseStation'
         description: 站点
+      subscribeStatus:
+        description: 订阅状态
+        type: integer
       unsettled:
         description: 未结算天数
         type: integer
@@ -3028,6 +3034,33 @@ definitions:
       subscribeId:
         description: 订阅ID
         type: integer
+    type: object
+  model.StatementBillHistoryListRes:
+    properties:
+      cost:
+        description: 账单费用
+        type: number
+      creator:
+        allOf:
+        - $ref: '#/definitions/model.Modifier'
+        description: 结账人
+      days:
+        description: 使用日期
+        type: integer
+      end:
+        description: 账单结束日期
+        type: string
+      id:
+        type: integer
+      remark:
+        description: 结账备注
+        type: string
+      settledAt:
+        description: 结账时间
+        type: string
+      start:
+        description: 账单开始日期
+        type: string
     type: object
   model.StatementBillRes:
     properties:
@@ -5961,6 +5994,47 @@ paths:
       summary: M9012 结账
       tags:
       - '[M]管理接口'
+  /manager/v1/enterprise/bill/historical:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerStatementHistorical
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: '企业ID '
+        in: query
+        name: enterpriseId
+        required: true
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.PaginationRes'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.StatementBillHistoryListRes'
+                  type: array
+              type: object
+      summary: M9013 历史账单
+      tags:
+      - '[M]管理接口'
   /manager/v1/enterprise/rider:
     get:
       consumes:
@@ -5975,6 +6049,14 @@ paths:
       - description: 当前页, 从1开始, 默认1
         in: query
         name: current
+        type: integer
+      - description: 筛选删除 0:全部 1:已删除 2:未删除
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: deleted
         type: integer
       - description: 使用结束时间
         in: query
@@ -5997,6 +6079,15 @@ paths:
         in: query
         name: start
         type: string
+      - description: 筛选订阅状态 0:全部 1:计费中 2:已退租 3:未激活
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        in: query
+        name: subscribe
+        type: integer
       produces:
       - application/json
       responses:

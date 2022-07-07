@@ -408,23 +408,24 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Enterprise",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			enterprise.FieldCreatedAt:    {Type: field.TypeTime, Column: enterprise.FieldCreatedAt},
-			enterprise.FieldUpdatedAt:    {Type: field.TypeTime, Column: enterprise.FieldUpdatedAt},
-			enterprise.FieldDeletedAt:    {Type: field.TypeTime, Column: enterprise.FieldDeletedAt},
-			enterprise.FieldCreator:      {Type: field.TypeJSON, Column: enterprise.FieldCreator},
-			enterprise.FieldLastModifier: {Type: field.TypeJSON, Column: enterprise.FieldLastModifier},
-			enterprise.FieldRemark:       {Type: field.TypeString, Column: enterprise.FieldRemark},
-			enterprise.FieldCityID:       {Type: field.TypeUint64, Column: enterprise.FieldCityID},
-			enterprise.FieldName:         {Type: field.TypeString, Column: enterprise.FieldName},
-			enterprise.FieldStatus:       {Type: field.TypeUint8, Column: enterprise.FieldStatus},
-			enterprise.FieldContactName:  {Type: field.TypeString, Column: enterprise.FieldContactName},
-			enterprise.FieldContactPhone: {Type: field.TypeString, Column: enterprise.FieldContactPhone},
-			enterprise.FieldIdcardNumber: {Type: field.TypeString, Column: enterprise.FieldIdcardNumber},
-			enterprise.FieldAddress:      {Type: field.TypeString, Column: enterprise.FieldAddress},
-			enterprise.FieldPayment:      {Type: field.TypeUint8, Column: enterprise.FieldPayment},
-			enterprise.FieldDeposit:      {Type: field.TypeFloat64, Column: enterprise.FieldDeposit},
-			enterprise.FieldBalance:      {Type: field.TypeFloat64, Column: enterprise.FieldBalance},
-			enterprise.FieldSuspensedAt:  {Type: field.TypeTime, Column: enterprise.FieldSuspensedAt},
+			enterprise.FieldCreatedAt:       {Type: field.TypeTime, Column: enterprise.FieldCreatedAt},
+			enterprise.FieldUpdatedAt:       {Type: field.TypeTime, Column: enterprise.FieldUpdatedAt},
+			enterprise.FieldDeletedAt:       {Type: field.TypeTime, Column: enterprise.FieldDeletedAt},
+			enterprise.FieldCreator:         {Type: field.TypeJSON, Column: enterprise.FieldCreator},
+			enterprise.FieldLastModifier:    {Type: field.TypeJSON, Column: enterprise.FieldLastModifier},
+			enterprise.FieldRemark:          {Type: field.TypeString, Column: enterprise.FieldRemark},
+			enterprise.FieldCityID:          {Type: field.TypeUint64, Column: enterprise.FieldCityID},
+			enterprise.FieldName:            {Type: field.TypeString, Column: enterprise.FieldName},
+			enterprise.FieldStatus:          {Type: field.TypeUint8, Column: enterprise.FieldStatus},
+			enterprise.FieldContactName:     {Type: field.TypeString, Column: enterprise.FieldContactName},
+			enterprise.FieldContactPhone:    {Type: field.TypeString, Column: enterprise.FieldContactPhone},
+			enterprise.FieldIdcardNumber:    {Type: field.TypeString, Column: enterprise.FieldIdcardNumber},
+			enterprise.FieldAddress:         {Type: field.TypeString, Column: enterprise.FieldAddress},
+			enterprise.FieldPayment:         {Type: field.TypeUint8, Column: enterprise.FieldPayment},
+			enterprise.FieldDeposit:         {Type: field.TypeFloat64, Column: enterprise.FieldDeposit},
+			enterprise.FieldBalance:         {Type: field.TypeFloat64, Column: enterprise.FieldBalance},
+			enterprise.FieldPrepaymentTotal: {Type: field.TypeFloat64, Column: enterprise.FieldPrepaymentTotal},
+			enterprise.FieldSuspensedAt:     {Type: field.TypeTime, Column: enterprise.FieldSuspensedAt},
 		},
 	}
 	graph.Nodes[13] = &sqlgraph.Node{
@@ -4865,6 +4866,11 @@ func (f *EnterpriseFilter) WhereDeposit(p entql.Float64P) {
 // WhereBalance applies the entql float64 predicate on the balance field.
 func (f *EnterpriseFilter) WhereBalance(p entql.Float64P) {
 	f.Where(p.Field(enterprise.FieldBalance))
+}
+
+// WherePrepaymentTotal applies the entql float64 predicate on the prepayment_total field.
+func (f *EnterpriseFilter) WherePrepaymentTotal(p entql.Float64P) {
+	f.Where(p.Field(enterprise.FieldPrepaymentTotal))
 }
 
 // WhereSuspensedAt applies the entql time.Time predicate on the suspensed_at field.

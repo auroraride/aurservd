@@ -199,6 +199,27 @@ func (eu *EnterpriseUpdate) AddBalance(f float64) *EnterpriseUpdate {
 	return eu
 }
 
+// SetPrepaymentTotal sets the "prepayment_total" field.
+func (eu *EnterpriseUpdate) SetPrepaymentTotal(f float64) *EnterpriseUpdate {
+	eu.mutation.ResetPrepaymentTotal()
+	eu.mutation.SetPrepaymentTotal(f)
+	return eu
+}
+
+// SetNillablePrepaymentTotal sets the "prepayment_total" field if the given value is not nil.
+func (eu *EnterpriseUpdate) SetNillablePrepaymentTotal(f *float64) *EnterpriseUpdate {
+	if f != nil {
+		eu.SetPrepaymentTotal(*f)
+	}
+	return eu
+}
+
+// AddPrepaymentTotal adds f to the "prepayment_total" field.
+func (eu *EnterpriseUpdate) AddPrepaymentTotal(f float64) *EnterpriseUpdate {
+	eu.mutation.AddPrepaymentTotal(f)
+	return eu
+}
+
 // SetSuspensedAt sets the "suspensed_at" field.
 func (eu *EnterpriseUpdate) SetSuspensedAt(t time.Time) *EnterpriseUpdate {
 	eu.mutation.SetSuspensedAt(t)
@@ -729,6 +750,20 @@ func (eu *EnterpriseUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: enterprise.FieldBalance,
+		})
+	}
+	if value, ok := eu.mutation.PrepaymentTotal(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldPrepaymentTotal,
+		})
+	}
+	if value, ok := eu.mutation.AddedPrepaymentTotal(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldPrepaymentTotal,
 		})
 	}
 	if value, ok := eu.mutation.SuspensedAt(); ok {
@@ -1338,6 +1373,27 @@ func (euo *EnterpriseUpdateOne) AddBalance(f float64) *EnterpriseUpdateOne {
 	return euo
 }
 
+// SetPrepaymentTotal sets the "prepayment_total" field.
+func (euo *EnterpriseUpdateOne) SetPrepaymentTotal(f float64) *EnterpriseUpdateOne {
+	euo.mutation.ResetPrepaymentTotal()
+	euo.mutation.SetPrepaymentTotal(f)
+	return euo
+}
+
+// SetNillablePrepaymentTotal sets the "prepayment_total" field if the given value is not nil.
+func (euo *EnterpriseUpdateOne) SetNillablePrepaymentTotal(f *float64) *EnterpriseUpdateOne {
+	if f != nil {
+		euo.SetPrepaymentTotal(*f)
+	}
+	return euo
+}
+
+// AddPrepaymentTotal adds f to the "prepayment_total" field.
+func (euo *EnterpriseUpdateOne) AddPrepaymentTotal(f float64) *EnterpriseUpdateOne {
+	euo.mutation.AddPrepaymentTotal(f)
+	return euo
+}
+
 // SetSuspensedAt sets the "suspensed_at" field.
 func (euo *EnterpriseUpdateOne) SetSuspensedAt(t time.Time) *EnterpriseUpdateOne {
 	euo.mutation.SetSuspensedAt(t)
@@ -1898,6 +1954,20 @@ func (euo *EnterpriseUpdateOne) sqlSave(ctx context.Context) (_node *Enterprise,
 			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: enterprise.FieldBalance,
+		})
+	}
+	if value, ok := euo.mutation.PrepaymentTotal(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldPrepaymentTotal,
+		})
+	}
+	if value, ok := euo.mutation.AddedPrepaymentTotal(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeFloat64,
+			Value:  value,
+			Column: enterprise.FieldPrepaymentTotal,
 		})
 	}
 	if value, ok := euo.mutation.SuspensedAt(); ok {

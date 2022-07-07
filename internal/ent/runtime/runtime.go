@@ -369,6 +369,10 @@ func init() {
 	enterpriseDescBalance := enterpriseFields[8].Descriptor()
 	// enterprise.DefaultBalance holds the default value on creation for the balance field.
 	enterprise.DefaultBalance = enterpriseDescBalance.Default.(float64)
+	// enterpriseDescPrepaymentTotal is the schema descriptor for prepayment_total field.
+	enterpriseDescPrepaymentTotal := enterpriseFields[9].Descriptor()
+	// enterprise.DefaultPrepaymentTotal holds the default value on creation for the prepayment_total field.
+	enterprise.DefaultPrepaymentTotal = enterpriseDescPrepaymentTotal.Default.(float64)
 	enterprisebillMixin := schema.EnterpriseBill{}.Mixin()
 	enterprisebillMixinHooks2 := enterprisebillMixin[2].Hooks()
 	enterprisebill.Hooks[0] = enterprisebillMixinHooks2[0]

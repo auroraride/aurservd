@@ -243,3 +243,29 @@ func (s *enterpriseStatementService) Bill(req *model.StatementClearBillReq) {
 
     cache.Del(s.ctx, req.UUID)
 }
+
+// Historical 获取企业结账历史
+func (s *enterpriseStatementService) Historical(req *model.StatementBillHistoryListReq) *model.PaginationRes {
+    q := s.orm.QueryNotDeleted().
+        Where(
+            enterprisestatement.EnterpriseID(req.EnterpriseID),
+            enterprisestatement.SettledAtNotNil(),
+        ).Order(ent.Desc(enterprisestatement.FieldSettledAt))
+
+    return model.ParsePaginationResponse(
+        q,
+        req.PaginationReq,
+        func(item *ent.EnterpriseStatement) model.StatementBillHistoryListRes {
+            return model.StatementBillHistoryListRes{
+                ID:        item.ID,
+                Cost:      item.Cost,
+                Remark:    item.Remark,
+                Creator:   item.Creator,
+                Days:      item.Days,
+                Start:     item.Start.Format(carbon.DateLayout),
+                End:       item.End.Format(carbon.DateLayout),
+                SettledAt: item.SettledAt.Format(carbon.DateTimeLayout),
+            }
+        },
+    )
+}

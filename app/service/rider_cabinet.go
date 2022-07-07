@@ -309,10 +309,11 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus() (ds model.CabinetBinDoo
         s.operating.RiderElectricity = ee
     }
 
-    log.Infof(`[换电步骤 - 仓门检测]: {step:%s} %s - %d, 仓门Index: %d, 仓门状态: %s, 是否有电池: %t, 当前电压: %.2fV, 当前电量: %.2f%%, 放入电池电量: %.2f%%`,
+    log.Infof(`[换电步骤 - 仓门检测]: {step:%s} %s - %d, 用户电话: %s, 仓门Index: %d, 仓门状态: %s, 是否有电池: %t, 当前电压: %.2fV, 当前电量: %.2f%%, 放入电池电量: %.2f%%`,
         s.step,
         s.cabinet.Serial,
         index,
+        s.rider.Phone,
         bin.Index,
         ds,
         bin.Battery,
@@ -444,11 +445,12 @@ func (s *riderCabinetService) ProcessOpenBin() (res *model.RiderCabinetOperateRe
         }
     }
 
-    log.Infof(`[换电步骤 - 仓门检测]: {step:%s} %d, 仓门Index: %d, 操作反馈: %t`,
+    log.Infof(`[换电步骤 - 仓门检测]: {step:%s} %d, 仓门Index: %d, 操作反馈: %t, 用户电话: %s`,
         s.step,
         id,
         index,
         status,
+        s.rider.Phone,
     )
 
     if status {

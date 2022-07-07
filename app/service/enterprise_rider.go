@@ -91,13 +91,14 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
 // List 列举骑手
 func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.PaginationRes {
     q := ent.Database.Rider.
-        QueryNotDeleted().
+        Query().
         WithPerson().
         WithSubscribes(func(sq *ent.SubscribeQuery) {
             sq.Where(subscribe.StartAtNotNil()).Order(ent.Desc(subscribe.FieldCreatedAt))
         }).
         WithStation().
-        Where(rider.EnterpriseID(req.EnterpriseID))
+        Where(rider.EnterpriseID(req.EnterpriseID)).
+        Order(ent.Desc(rider.FieldCreatedAt))
     if req.Keyword != nil {
         q.Where(
             rider.Or(
@@ -105,6 +106,34 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
                 rider.PhoneContainsFold(*req.Keyword),
             ),
         )
+    }
+
+    // 筛选删除状态
+    switch req.Deleted {
+    case 1:
+        q.Where(rider.DeletedAtNotNil())
+        break
+    case 2:
+        q.Where(rider.DeletedAtIsNil())
+        break
+    }
+
+    // 筛选订阅状态
+    switch req.Subscribe {
+    case 1:
+        q.Where(rider.HasSubscribesWith(subscribe.Status(model.SubscribeStatusUsing)))
+        break
+    case 2:
+        q.Where(rider.HasSubscribesWith(subscribe.Status(model.SubscribeStatusUnSubscribed)))
+        break
+    case 3:
+        q.Where(
+            rider.Or(
+                rider.HasSubscribesWith(subscribe.Status(model.SubscribeStatusInactive)),
+                rider.Not(rider.HasSubscribes()),
+            ),
+        )
+        break
     }
     tt := tools.NewTime()
     var rs, re time.Time
@@ -137,6 +166,7 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
                 for i, sub := range item.Edges.Subscribes {
                     var days int
                     if i == 0 {
+                        res.SubscribeStatus = sub.Status
                         res.Model = sub.Model
                     }
                     if sub.StartAt == nil {
@@ -172,6 +202,10 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
                         res.Unsettled += tt.UsedDaysToNow(carbon.Time2Carbon(*sub.LastBillDate).StartOfDay().AddDay().Carbon2Time())
                     }
                 }
+            }
+            // 已被删除
+            if item.DeletedAt != nil {
+                res.DeletedAt = item.DeletedAt.Format(carbon.DateTimeLayout)
             }
             return res
         },

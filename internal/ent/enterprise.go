@@ -64,6 +64,9 @@ type Enterprise struct {
 	// Balance holds the value of the "balance" field.
 	// 账户余额
 	Balance float64 `json:"balance,omitempty"`
+	// PrepaymentTotal holds the value of the "prepayment_total" field.
+	// 总储值金额
+	PrepaymentTotal float64 `json:"prepayment_total,omitempty"`
 	// SuspensedAt holds the value of the "suspensed_at" field.
 	// 暂停合作时间
 	SuspensedAt *time.Time `json:"suspensed_at,omitempty"`
@@ -179,7 +182,7 @@ func (*Enterprise) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case enterprise.FieldCreator, enterprise.FieldLastModifier:
 			values[i] = new([]byte)
-		case enterprise.FieldDeposit, enterprise.FieldBalance:
+		case enterprise.FieldDeposit, enterprise.FieldBalance, enterprise.FieldPrepaymentTotal:
 			values[i] = new(sql.NullFloat64)
 		case enterprise.FieldID, enterprise.FieldCityID, enterprise.FieldStatus, enterprise.FieldPayment:
 			values[i] = new(sql.NullInt64)
@@ -309,6 +312,12 @@ func (e *Enterprise) assignValues(columns []string, values []interface{}) error 
 			} else if value.Valid {
 				e.Balance = value.Float64
 			}
+		case enterprise.FieldPrepaymentTotal:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field prepayment_total", values[i])
+			} else if value.Valid {
+				e.PrepaymentTotal = value.Float64
+			}
 		case enterprise.FieldSuspensedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field suspensed_at", values[i])
@@ -418,6 +427,8 @@ func (e *Enterprise) String() string {
 	builder.WriteString(fmt.Sprintf("%v", e.Deposit))
 	builder.WriteString(", balance=")
 	builder.WriteString(fmt.Sprintf("%v", e.Balance))
+	builder.WriteString(", prepayment_total=")
+	builder.WriteString(fmt.Sprintf("%v", e.PrepaymentTotal))
 	if v := e.SuspensedAt; v != nil {
 		builder.WriteString(", suspensed_at=")
 		builder.WriteString(v.Format(time.ANSIC))

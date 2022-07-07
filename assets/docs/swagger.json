@@ -3369,6 +3369,72 @@
                 }
             }
         },
+        "/manager/v1/enterprise/bill/historical": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9013 历史账单",
+                "operationId": "ManagerStatementHistorical",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "企业ID ",
+                        "name": "enterpriseId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.PaginationRes"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.StatementBillHistoryListRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/enterprise/rider": {
             "get": {
                 "consumes": [
@@ -3394,6 +3460,17 @@
                         "type": "integer",
                         "description": "当前页, 从1开始, 默认1",
                         "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "筛选删除 0:全部 1:已删除 2:未删除",
+                        "name": "deleted",
                         "in": "query"
                     },
                     {
@@ -3425,6 +3502,18 @@
                         "type": "string",
                         "description": "使用开始时间",
                         "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                        ],
+                        "type": "integer",
+                        "description": "筛选订阅状态 0:全部 1:计费中 2:已退租 3:未激活",
+                        "name": "subscribe",
                         "in": "query"
                     }
                 ],
@@ -10030,6 +10119,10 @@
                     "description": "总天数",
                     "type": "integer"
                 },
+                "deletedAt": {
+                    "description": "删除时间, 已被删除的用户才会有此字段",
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -10052,6 +10145,10 @@
                             "$ref": "#/definitions/model.EnterpriseStation"
                         }
                     ]
+                },
+                "subscribeStatus": {
+                    "description": "订阅状态",
+                    "type": "integer"
                 },
                 "unsettled": {
                     "description": "未结算天数",
@@ -11896,6 +11993,46 @@
                 "subscribeId": {
                     "description": "订阅ID",
                     "type": "integer"
+                }
+            }
+        },
+        "model.StatementBillHistoryListRes": {
+            "type": "object",
+            "properties": {
+                "cost": {
+                    "description": "账单费用",
+                    "type": "number"
+                },
+                "creator": {
+                    "description": "结账人",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.Modifier"
+                        }
+                    ]
+                },
+                "days": {
+                    "description": "使用日期",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "账单结束日期",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "remark": {
+                    "description": "结账备注",
+                    "type": "string"
+                },
+                "settledAt": {
+                    "description": "结账时间",
+                    "type": "string"
+                },
+                "start": {
+                    "description": "账单开始日期",
+                    "type": "string"
                 }
             }
         },
