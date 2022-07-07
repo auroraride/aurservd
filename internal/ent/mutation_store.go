@@ -723,24 +723,10 @@ func (m *StoreMutation) AddedLng() (r float64, exists bool) {
 	return *v, true
 }
 
-// ClearLng clears the value of the "lng" field.
-func (m *StoreMutation) ClearLng() {
-	m.lng = nil
-	m.addlng = nil
-	m.clearedFields[store.FieldLng] = struct{}{}
-}
-
-// LngCleared returns if the "lng" field was cleared in this mutation.
-func (m *StoreMutation) LngCleared() bool {
-	_, ok := m.clearedFields[store.FieldLng]
-	return ok
-}
-
 // ResetLng resets all changes to the "lng" field.
 func (m *StoreMutation) ResetLng() {
 	m.lng = nil
 	m.addlng = nil
-	delete(m.clearedFields, store.FieldLng)
 }
 
 // SetLat sets the "lat" field.
@@ -793,24 +779,10 @@ func (m *StoreMutation) AddedLat() (r float64, exists bool) {
 	return *v, true
 }
 
-// ClearLat clears the value of the "lat" field.
-func (m *StoreMutation) ClearLat() {
-	m.lat = nil
-	m.addlat = nil
-	m.clearedFields[store.FieldLat] = struct{}{}
-}
-
-// LatCleared returns if the "lat" field was cleared in this mutation.
-func (m *StoreMutation) LatCleared() bool {
-	_, ok := m.clearedFields[store.FieldLat]
-	return ok
-}
-
 // ResetLat resets all changes to the "lat" field.
 func (m *StoreMutation) ResetLat() {
 	m.lat = nil
 	m.addlat = nil
-	delete(m.clearedFields, store.FieldLat)
 }
 
 // SetAddress sets the "address" field.
@@ -844,22 +816,9 @@ func (m *StoreMutation) OldAddress(ctx context.Context) (v string, err error) {
 	return oldValue.Address, nil
 }
 
-// ClearAddress clears the value of the "address" field.
-func (m *StoreMutation) ClearAddress() {
-	m.address = nil
-	m.clearedFields[store.FieldAddress] = struct{}{}
-}
-
-// AddressCleared returns if the "address" field was cleared in this mutation.
-func (m *StoreMutation) AddressCleared() bool {
-	_, ok := m.clearedFields[store.FieldAddress]
-	return ok
-}
-
 // ResetAddress resets all changes to the "address" field.
 func (m *StoreMutation) ResetAddress() {
 	m.address = nil
-	delete(m.clearedFields, store.FieldAddress)
 }
 
 // ClearCity clears the "city" edge to the City entity.
@@ -1442,15 +1401,6 @@ func (m *StoreMutation) ClearedFields() []string {
 	if m.FieldCleared(store.FieldEmployeeID) {
 		fields = append(fields, store.FieldEmployeeID)
 	}
-	if m.FieldCleared(store.FieldLng) {
-		fields = append(fields, store.FieldLng)
-	}
-	if m.FieldCleared(store.FieldLat) {
-		fields = append(fields, store.FieldLat)
-	}
-	if m.FieldCleared(store.FieldAddress) {
-		fields = append(fields, store.FieldAddress)
-	}
 	return fields
 }
 
@@ -1479,15 +1429,6 @@ func (m *StoreMutation) ClearField(name string) error {
 		return nil
 	case store.FieldEmployeeID:
 		m.ClearEmployeeID()
-		return nil
-	case store.FieldLng:
-		m.ClearLng()
-		return nil
-	case store.FieldLat:
-		m.ClearLat()
-		return nil
-	case store.FieldAddress:
-		m.ClearAddress()
 		return nil
 	}
 	return fmt.Errorf("unknown Store nullable field %s", name)

@@ -101,7 +101,8 @@ func (s *assistanceService) List(req *model.AssistanceListReq) *model.Pagination
                 model.AssistanceStatusSuccess,
             )))
         }).
-        Unique(false)
+        Unique(false).
+        Order(ent.Desc(assistance.FieldCreatedAt))
     tt := tools.NewTime()
     if req.Start != "" {
         q.Where(assistance.CreatedAtGTE(tt.ParseDateStringX(req.Start)))

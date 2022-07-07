@@ -1111,20 +1111,6 @@ func LngLTE(v float64) predicate.Store {
 	})
 }
 
-// LngIsNil applies the IsNil predicate on the "lng" field.
-func LngIsNil() predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLng)))
-	})
-}
-
-// LngNotNil applies the NotNil predicate on the "lng" field.
-func LngNotNil() predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLng)))
-	})
-}
-
 // LatEQ applies the EQ predicate on the "lat" field.
 func LatEQ(v float64) predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
@@ -1198,20 +1184,6 @@ func LatLT(v float64) predicate.Store {
 func LatLTE(v float64) predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldLat), v))
-	})
-}
-
-// LatIsNil applies the IsNil predicate on the "lat" field.
-func LatIsNil() predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldLat)))
-	})
-}
-
-// LatNotNil applies the NotNil predicate on the "lat" field.
-func LatNotNil() predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldLat)))
 	})
 }
 
@@ -1309,20 +1281,6 @@ func AddressHasPrefix(v string) predicate.Store {
 func AddressHasSuffix(v string) predicate.Store {
 	return predicate.Store(func(s *sql.Selector) {
 		s.Where(sql.HasSuffix(s.C(FieldAddress), v))
-	})
-}
-
-// AddressIsNil applies the IsNil predicate on the "address" field.
-func AddressIsNil() predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldAddress)))
-	})
-}
-
-// AddressNotNil applies the NotNil predicate on the "address" field.
-func AddressNotNil() predicate.Store {
-	return predicate.Store(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldAddress)))
 	})
 }
 
