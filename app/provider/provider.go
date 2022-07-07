@@ -24,6 +24,7 @@ type Provider interface {
     Cabinets() ([]*ent.Cabinet, error)
     Brand() string
     Logger() *Logger
+    // UpdateStatus TODO 遇到错误处理方式
     UpdateStatus(item *ent.Cabinet, params ...any) error
     DoorOperate(code, serial, operation string, door int) bool
     Reboot(code string, serial string) bool
