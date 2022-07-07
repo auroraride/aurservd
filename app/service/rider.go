@@ -721,6 +721,7 @@ func (s *riderService) GetLogs(req *model.RiderLogReq) *model.PaginationRes {
 }
 
 func (s *riderService) Delete(req *model.IDParamReq) {
+    u := s.Query(req.ID)
     sub, _ := ent.Database.Subscribe.QueryNotDeleted().Where(
         subscribe.RiderID(req.ID),
         subscribe.StatusNotIn(model.SubscribeStatusUnSubscribed, model.SubscribeStatusCanceled),
@@ -729,6 +730,7 @@ func (s *riderService) Delete(req *model.IDParamReq) {
         snag.Panic("骑手当前有订阅")
     }
     _, err := s.orm.SoftDeleteOneID(req.ID).Save(s.ctx)
+    s.Signout(u)
     if err != nil {
         snag.Panic(err)
     }
