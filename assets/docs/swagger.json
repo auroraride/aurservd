@@ -3424,12 +3424,57 @@
                                         "items": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/model.StatementBillHistoryListRes"
+                                                "$ref": "#/definitions/model.StatementBillHistoricalListRes"
                                             }
                                         }
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/bill/statement": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9014 结账明细",
+                "operationId": "ManagerStatementStatement",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否导出为Excel, 导出Excel的时候不会返回数据",
+                        "name": "export",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "账单ID ",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatementBillDetailRes"
                         }
                     }
                 }
@@ -11996,7 +12041,52 @@
                 }
             }
         },
-        "model.StatementBillHistoryListRes": {
+        "model.StatementBillDetailRes": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "cost": {
+                    "description": "费用",
+                    "type": "number"
+                },
+                "days": {
+                    "description": "使用天数",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "结束日期",
+                    "type": "string"
+                },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
+                "price": {
+                    "description": "日单价",
+                    "type": "number"
+                },
+                "rider": {
+                    "description": "骑手信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderBasic"
+                        }
+                    ]
+                },
+                "start": {
+                    "description": "开始日期",
+                    "type": "string"
+                }
+            }
+        },
+        "model.StatementBillHistoricalListRes": {
             "type": "object",
             "properties": {
                 "cost": {

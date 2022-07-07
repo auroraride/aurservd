@@ -64,12 +64,12 @@ type StatementClearBillReq struct {
     Remark *string `json:"remark"` // 备注信息
 }
 
-type StatementBillHistoryListReq struct {
+type StatementBillHistoricalListReq struct {
     PaginationReq
     EnterpriseID uint64 `json:"enterpriseId" query:"enterpriseId" validate:"required" trans:"企业ID"`
 }
 
-type StatementBillHistoryListRes struct {
+type StatementBillHistoricalListRes struct {
     ID        uint64    `json:"id"`
     Cost      float64   `json:"cost"`      // 账单费用
     Remark    string    `json:"remark"`    // 结账备注
@@ -78,4 +78,20 @@ type StatementBillHistoryListRes struct {
     Start     string    `json:"start"`     // 账单开始日期
     End       string    `json:"end"`       // 账单结束日期
     SettledAt string    `json:"settledAt"` // 结账时间
+}
+
+type StatementBillDetailReq struct {
+    ID     uint64 `json:"id" query:"id" validate:"required" trans:"账单ID"`
+    Export bool   `json:"export" query:"export"` // 是否导出为Excel, 导出Excel的时候直接下载文件
+}
+
+type StatementBillDetailRes struct {
+    Rider RiderBasic `json:"rider"` // 骑手信息
+    City  City       `json:"city"`  // 城市
+    Start string     `json:"start"` // 开始日期
+    End   string     `json:"end"`   // 结束日期
+    Days  int        `json:"days"`  // 使用天数
+    Model string     `json:"model"` // 电池型号
+    Price float64    `json:"price"` // 日单价
+    Cost  float64    `json:"cost"`  // 费用
 }

@@ -9,6 +9,14 @@
 
 
 
+#### 接口新增
+
+- [M9013 历史账单](http://localhost:5533/docs#tag/M/operation/ManagerStatementHistorical)
+- [M9014 结账明细](http://localhost:5533/docs#tag/M/operation/ManagerStatementStatement)
+- 
+
+
+
 
 
 

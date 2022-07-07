@@ -11,14 +11,17 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/enterprise"
+    "github.com/auroraride/aurservd/internal/ent/enterprisebill"
     "github.com/auroraride/aurservd/internal/ent/enterprisestatement"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     "github.com/google/uuid"
+    "github.com/labstack/echo/v4"
     log "github.com/sirupsen/logrus"
     "math"
+    "path/filepath"
     "time"
 )
 
@@ -245,7 +248,7 @@ func (s *enterpriseStatementService) Bill(req *model.StatementClearBillReq) {
 }
 
 // Historical 获取企业结账历史
-func (s *enterpriseStatementService) Historical(req *model.StatementBillHistoryListReq) *model.PaginationRes {
+func (s *enterpriseStatementService) Historical(req *model.StatementBillHistoricalListReq) *model.PaginationRes {
     q := s.orm.QueryNotDeleted().
         Where(
             enterprisestatement.EnterpriseID(req.EnterpriseID),
@@ -255,8 +258,8 @@ func (s *enterpriseStatementService) Historical(req *model.StatementBillHistoryL
     return model.ParsePaginationResponse(
         q,
         req.PaginationReq,
-        func(item *ent.EnterpriseStatement) model.StatementBillHistoryListRes {
-            return model.StatementBillHistoryListRes{
+        func(item *ent.EnterpriseStatement) model.StatementBillHistoricalListRes {
+            return model.StatementBillHistoricalListRes{
                 ID:        item.ID,
                 Cost:      item.Cost,
                 Remark:    item.Remark,
@@ -268,4 +271,87 @@ func (s *enterpriseStatementService) Historical(req *model.StatementBillHistoryL
             }
         },
     )
+}
+
+// Statement 账单详情
+func (s *enterpriseStatementService) Statement(req *model.StatementBillDetailReq, w echo.Context) []model.StatementBillDetailRes {
+    es, _ := ent.Database.EnterpriseStatement.QueryNotDeleted().
+        Where(
+            enterprisestatement.ID(req.ID),
+            enterprisestatement.SettledAtNotNil(),
+        ).
+        WithEnterprise().
+        First(s.ctx)
+    if es == nil {
+        snag.Panic("未找到账单")
+    }
+
+    e := es.Edges.Enterprise
+
+    items, _ := ent.Database.EnterpriseBill.
+        QueryNotDeleted().
+        WithRider(func(query *ent.RiderQuery) {
+            query.WithPerson()
+        }).
+        WithCity().
+        Where(enterprisebill.StatementID(req.ID)).
+        All(s.ctx)
+
+    res := make([]model.StatementBillDetailRes, len(items))
+    for i, item := range items {
+        r := item.Edges.Rider
+        p := item.Edges.Rider.Edges.Person
+        c := item.Edges.City
+        res[i] = model.StatementBillDetailRes{
+            Rider: model.RiderBasic{
+                ID:    r.ID,
+                Phone: r.Phone,
+                Name:  p.Name,
+            },
+            City: model.City{
+                ID:   c.ID,
+                Name: c.Name,
+            },
+            Start: item.Start.Format(carbon.DateLayout),
+            End:   item.End.Format(carbon.DateLayout),
+            Days:  item.Days,
+            Model: item.Model,
+            Price: item.Price,
+            Cost:  item.Cost,
+        }
+    }
+
+    if req.Export {
+        if len(items) == 0 {
+            snag.Panic("无详细账单信息")
+        }
+        sheet := fmt.Sprintf("%s-%s", es.Start.Format(carbon.ShortDateLayout), es.End.Format(carbon.ShortDateLayout))
+        fp := filepath.Join("runtime/export/statement", fmt.Sprintf("%s%s账单明细.xlsx", e.Name, sheet))
+        ex := tools.NewExcelExistsExport(w, fp, sheet)
+        if ex == nil {
+            return nil
+        }
+
+        // 设置数据
+        var rows [][]any
+        rows = append(rows, []any{"姓名", "电话", "城市", "开始日期", "结束日期", "使用天数", "电池型号", "日单价", "费用"})
+        for _, x := range res {
+            rows = append(rows, []any{
+                x.Rider.Name,
+                x.Rider.Phone,
+                x.City.Name,
+                x.Start,
+                x.End,
+                x.Days,
+                x.Model,
+                fmt.Sprintf("%.2f", x.Price),
+                fmt.Sprintf("%.2f", x.Cost),
+            })
+        }
+
+        ex.AddValues(rows).Done().Export()
+        return nil
+    }
+
+    return res
 }

@@ -55,9 +55,24 @@ func (*statement) Bill(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        query  query   model.StatementBillHistoryListReq  true  "请求数据"
-// @Success      200  {object}  model.PaginationRes{items=[]model.StatementBillHistoryListRes}  "请求成功"
+// @Param        query  query   model.StatementBillHistoricalListReq  true  "请求数据"
+// @Success      200  {object}  model.PaginationRes{items=[]model.StatementBillHistoricalListRes}  "请求成功"
 func (*statement) Historical(c echo.Context) (err error) {
-    ctx, req := app.ManagerContextAndBinding[model.StatementBillHistoryListReq](c)
+    ctx, req := app.ManagerContextAndBinding[model.StatementBillHistoricalListReq](c)
     return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).Historical(req))
+}
+
+// Statement
+// @ID           ManagerStatementStatement
+// @Router       /manager/v1/enterprise/bill/statement [GET]
+// @Summary      M9014 结账明细
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query   model.StatementBillDetailReq  true  "请求详情"
+// @Success      200  {object}  model.StatementBillDetailRes  "请求成功"
+func (*statement) Statement(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.StatementBillDetailReq](c)
+    return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).Statement(req, c))
 }

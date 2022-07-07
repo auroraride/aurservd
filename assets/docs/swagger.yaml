@@ -3035,7 +3035,36 @@ definitions:
         description: 订阅ID
         type: integer
     type: object
-  model.StatementBillHistoryListRes:
+  model.StatementBillDetailRes:
+    properties:
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      cost:
+        description: 费用
+        type: number
+      days:
+        description: 使用天数
+        type: integer
+      end:
+        description: 结束日期
+        type: string
+      model:
+        description: 电池型号
+        type: string
+      price:
+        description: 日单价
+        type: number
+      rider:
+        allOf:
+        - $ref: '#/definitions/model.RiderBasic'
+        description: 骑手信息
+      start:
+        description: 开始日期
+        type: string
+    type: object
+  model.StatementBillHistoricalListRes:
     properties:
       cost:
         description: 账单费用
@@ -6029,10 +6058,40 @@ paths:
             - properties:
                 items:
                   items:
-                    $ref: '#/definitions/model.StatementBillHistoryListRes'
+                    $ref: '#/definitions/model.StatementBillHistoricalListRes'
                   type: array
               type: object
       summary: M9013 历史账单
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/bill/statement:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerStatementStatement
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 是否导出为Excel, 导出Excel的时候不会返回数据
+        in: query
+        name: export
+        type: boolean
+      - description: '账单ID '
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatementBillDetailRes'
+      summary: M9014 结账明细
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/rider:
