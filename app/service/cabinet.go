@@ -277,6 +277,11 @@ func (s *cabinetService) UpdateStatus(item *ent.Cabinet, params ...any) {
     } else {
         prov = provider.NewYundong()
     }
+    err := prov.UpdateStatus(item, params...)
+    // 如果返回失败, 则延迟2秒后重新请求一次
+    if err != nil {
+        time.Sleep(2 * time.Second)
+    }
     _ = prov.UpdateStatus(item, params...)
 }
 
