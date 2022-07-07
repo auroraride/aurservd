@@ -3466,7 +3466,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "boolean",
-                        "description": "是否导出为Excel, 导出Excel的时候不会返回数据",
+                        "description": "是否导出为Excel, 导出Excel的时候直接下载文件",
                         "name": "export",
                         "in": "query"
                     },
