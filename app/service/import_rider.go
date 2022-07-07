@@ -74,18 +74,27 @@ func (s *importRiderService) ParseCSV(path string) {
             continue
         }
 
-        arr := strings.Split(strings.TrimSpace(record[7]), "/")
-        var end string
-        for i, str := range arr {
-            if i == 0 {
-                continue
-            }
-            if len(str) != 2 {
-                str = "0" + str
-            }
-            arr[i] = str
+        if record[0] == "" {
+            continue
         }
-        end = strings.Join(arr, "-")
+
+        t := strings.TrimSpace(record[7])
+        var end string
+        if strings.Contains(t, "/") {
+            arr := strings.Split(t, "/")
+            for i, str := range arr {
+                if i == 0 {
+                    continue
+                }
+                if len(str) != 2 {
+                    str = "0" + str
+                }
+                arr[i] = str
+            }
+            end = strings.Join(arr, "-")
+        }
+
+        end = tools.NewTime().ParseDateStringX(end).Format(carbon.DateLayout)
 
         items = append(items, riderCsvData{
             Name:  strings.TrimSpace(record[0]),
@@ -124,6 +133,10 @@ func (s *importRiderService) insert(items []riderCsvData) {
 
         // 查找门店
         qs := ent.Database.Store.QueryNotDeleted().Where(store.Name(item.Store)).FirstX(s.ctx)
+        if qs == nil {
+            fmt.Printf("未找到门店: %s\n", item.Store)
+            return
+        }
 
         // 查找城市
         qc := ent.Database.City.QueryNotDeleted().Where(city.Name(item.City)).FirstX(s.ctx)
