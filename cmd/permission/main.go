@@ -22,7 +22,8 @@ var (
         "selection": true,
     }
     apiSkipper = map[string]bool{
-        "/manager/v1/user/signin": true,
+        "/manager/v1/user/signin":   true,
+        "/manager/v1/battery/model": true,
     }
 )
 
