@@ -71,8 +71,14 @@ func (*statement) Historical(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        query  query   model.StatementBillDetailReq  true  "请求详情"
-// @Success      200  {object}  model.StatementBillDetailRes  "请求成功"
+// @Success      200  {object}  model.StatementDetail  "请求成功"
 func (*statement) Statement(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.StatementBillDetailReq](c)
     return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).Statement(req, c))
+}
+
+func (*statement) Usage(c echo.Context) (err error) {
+    ctx := app.Context(c)
+    
+    return ctx.SendResponse()
 }

@@ -85,13 +85,27 @@ type StatementBillDetailReq struct {
     Export bool   `json:"export" query:"export"` // 是否导出为Excel, 导出Excel的时候直接下载文件
 }
 
-type StatementBillDetailRes struct {
-    Rider RiderBasic `json:"rider"` // 骑手信息
-    City  City       `json:"city"`  // 城市
-    Start string     `json:"start"` // 开始日期
-    End   string     `json:"end"`   // 结束日期
-    Days  int        `json:"days"`  // 使用天数
-    Model string     `json:"model"` // 电池型号
-    Price float64    `json:"price"` // 日单价
-    Cost  float64    `json:"cost"`  // 费用
+type StatementDetail struct {
+    Rider   RiderBasic         `json:"rider"`             // 骑手信息
+    City    City               `json:"city"`              // 城市
+    Start   string             `json:"start"`             // 开始日期
+    End     string             `json:"end"`               // 结束日期
+    Days    int                `json:"days"`              // 使用天数
+    Model   string             `json:"model"`             // 电池型号
+    Price   float64            `json:"price"`             // 日单价
+    Cost    float64            `json:"cost"`              // 费用
+    Station *EnterpriseStation `json:"station,omitempty"` // 站点, 可能为空
+}
+
+type StatementUsageReq struct {
+    ID     uint64 `json:"id" query:"id" validate:"required" trans:"企业ID"`
+    Export bool   `json:"export" query:"export"` // 是否导出为Excel, 导出Excel的时候直接下载文件
+    Start  string `json:"start"`                 // 筛选开始时间
+    End    string `json:"end"`                   // 筛选结束时间
+}
+
+type StatementUsageRes struct {
+    StatementDetail
+    Status    string `json:"status"`    // 骑手状态 计费中,已退租
+    DeletedAt string `json:"deletedAt"` // 删除时间
 }

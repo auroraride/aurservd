@@ -3482,7 +3482,7 @@ const docTemplate = `{
                     "200": {
                         "description": "请求成功",
                         "schema": {
-                            "$ref": "#/definitions/model.StatementBillDetailRes"
+                            "$ref": "#/definitions/model.StatementDetail"
                         }
                     }
                 }
@@ -12156,51 +12156,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.StatementBillDetailRes": {
-            "type": "object",
-            "properties": {
-                "city": {
-                    "description": "城市",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.City"
-                        }
-                    ]
-                },
-                "cost": {
-                    "description": "费用",
-                    "type": "number"
-                },
-                "days": {
-                    "description": "使用天数",
-                    "type": "integer"
-                },
-                "end": {
-                    "description": "结束日期",
-                    "type": "string"
-                },
-                "model": {
-                    "description": "电池型号",
-                    "type": "string"
-                },
-                "price": {
-                    "description": "日单价",
-                    "type": "number"
-                },
-                "rider": {
-                    "description": "骑手信息",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/model.RiderBasic"
-                        }
-                    ]
-                },
-                "start": {
-                    "description": "开始日期",
-                    "type": "string"
-                }
-            }
-        },
         "model.StatementBillHistoricalListRes": {
             "type": "object",
             "properties": {
@@ -12314,6 +12269,59 @@ const docTemplate = `{
                 "uuid": {
                     "description": "账单编码",
                     "type": "string"
+                }
+            }
+        },
+        "model.StatementDetail": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "cost": {
+                    "description": "费用",
+                    "type": "number"
+                },
+                "days": {
+                    "description": "使用天数",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "结束日期",
+                    "type": "string"
+                },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
+                "price": {
+                    "description": "日单价",
+                    "type": "number"
+                },
+                "rider": {
+                    "description": "骑手信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderBasic"
+                        }
+                    ]
+                },
+                "start": {
+                    "description": "开始日期",
+                    "type": "string"
+                },
+                "station": {
+                    "description": "站点, 可能为空",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseStation"
+                        }
+                    ]
                 }
             }
         },

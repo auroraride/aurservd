@@ -18,6 +18,7 @@ const (
     StatusLocked                                     // 0x700 需要验证 (更换设备需要人脸验证)
     StatusRequireContact                             // 0x800 需要联系人
     StatusRequestTimeout                             // 0x900 请求过期
+    StatusRequireSign                                // 0x1000 需要签约
 )
 
 type Error struct {
@@ -56,6 +57,9 @@ func (e Error) Error() (message string) {
             break
         case StatusRequestTimeout:
             message = "请求过期"
+            break
+        case StatusRequireSign:
+            message = "需要签约"
             break
         default:
             message = "请求失败"

@@ -59,7 +59,7 @@ type Order struct {
 	// 订单状态 0未支付 1已支付 2申请退款 3已退款
 	Status uint8 `json:"status,omitempty"`
 	// Payway holds the value of the "payway" field.
-	// 支付方式 1支付宝 2微信
+	// 支付方式 0手动 1支付宝 2微信
 	Payway uint8 `json:"payway,omitempty"`
 	// Type holds the value of the "type" field.
 	// 订单类型 1新签 2续签 3重签 4更改电池 5救援 6滞纳金 7押金

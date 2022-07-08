@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/enterprise"
     "github.com/auroraride/aurservd/internal/ent/enterprisebill"
     "github.com/auroraride/aurservd/internal/ent/enterprisestatement"
+    "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
@@ -274,7 +275,7 @@ func (s *enterpriseStatementService) Historical(req *model.StatementBillHistoric
 }
 
 // Statement 账单详情
-func (s *enterpriseStatementService) Statement(req *model.StatementBillDetailReq, w echo.Context) []model.StatementBillDetailRes {
+func (s *enterpriseStatementService) Statement(req *model.StatementBillDetailReq, w echo.Context) []model.StatementDetail {
     es, _ := ent.Database.EnterpriseStatement.QueryNotDeleted().
         Where(
             enterprisestatement.ID(req.ID),
@@ -294,15 +295,17 @@ func (s *enterpriseStatementService) Statement(req *model.StatementBillDetailReq
             query.WithPerson()
         }).
         WithCity().
+        WithStation().
         Where(enterprisebill.StatementID(req.ID)).
         All(s.ctx)
 
-    res := make([]model.StatementBillDetailRes, len(items))
+    res := make([]model.StatementDetail, len(items))
     for i, item := range items {
         r := item.Edges.Rider
         p := item.Edges.Rider.Edges.Person
         c := item.Edges.City
-        res[i] = model.StatementBillDetailRes{
+        t := item.Edges.Station
+        res[i] = model.StatementDetail{
             Rider: model.RiderBasic{
                 ID:    r.ID,
                 Phone: r.Phone,
@@ -319,6 +322,12 @@ func (s *enterpriseStatementService) Statement(req *model.StatementBillDetailReq
             Price: item.Price,
             Cost:  item.Cost,
         }
+        if t != nil {
+            res[i].Station = &model.EnterpriseStation{
+                ID:   t.ID,
+                Name: t.Name,
+            }
+        }
     }
 
     if req.Export {
@@ -334,12 +343,17 @@ func (s *enterpriseStatementService) Statement(req *model.StatementBillDetailReq
 
         // 设置数据
         var rows [][]any
-        rows = append(rows, []any{"姓名", "电话", "城市", "开始日期", "结束日期", "使用天数", "电池型号", "日单价", "费用"})
+        rows = append(rows, []any{"姓名", "电话", "城市", "站点", "开始日期", "结束日期", "使用天数", "电池型号", "日单价", "费用"})
         for _, x := range res {
+            so := ""
+            if x.Station != nil {
+                so = x.Station.Name
+            }
             rows = append(rows, []any{
                 x.Rider.Name,
                 x.Rider.Phone,
                 x.City.Name,
+                so,
                 x.Start,
                 x.End,
                 x.Days,
@@ -354,4 +368,22 @@ func (s *enterpriseStatementService) Statement(req *model.StatementBillDetailReq
     }
 
     return res
+}
+
+func (s *enterpriseStatementService) Usage(req *model.StatementUsageReq) {
+    q := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.EnterpriseID(req.ID)).Order(ent.Desc(subscribe.FieldCreatedAt)).WithRider().WithCity().WithStation()
+
+    if req.Start != "" {
+        q.Where(subscribe.StartAtGTE(tools.NewTime().ParseDateStringX(req.Start)))
+    }
+    if req.End != "" {
+        next := tools.NewTime().ParseNextDateStringX(req.End)
+        q.Where(
+            subscribe.StartAtLT(next),
+            subscribe.Or(
+                subscribe.EndAtIsNil(),
+                subscribe.EndAtLT(next),
+            ),
+        )
+    }
 }

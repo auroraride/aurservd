@@ -146,9 +146,7 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
         }
     }
 
-    startAt := time.Now()
     if sub.StartAt != nil {
-        startAt = *sub.StartAt
         res.StartAt = sub.StartAt.Format(carbon.DateLayout)
     } else {
         res.StartAt = "-"
@@ -157,7 +155,7 @@ func (s *subscribeService) Detail(sub *ent.Subscribe) *model.Subscribe {
     if sub.EndAt != nil {
         res.EndAt = sub.EndAt.Format(carbon.DateLayout)
     } else {
-        res.EndAt = startAt.AddDate(0, 0, sub.Remaining).Format(carbon.DateLayout)
+        res.EndAt = "-"
     }
 
     // 已取消(退款)不显示到期日期

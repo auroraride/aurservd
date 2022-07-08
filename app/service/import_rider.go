@@ -120,6 +120,7 @@ func (s *importRiderService) insert(items []riderCsvData) {
     for _, item := range items {
         var p *ent.Person
         var r *ent.Rider
+        var o *ent.Order
         var sub *ent.Subscribe
         var err error
 
@@ -151,8 +152,8 @@ func (s *importRiderService) insert(items []riderCsvData) {
         p, err = tx.Person.Create().SetName(item.Name).Save(s.ctx)
         snag.PanicIfErrorX(err, tx.Rollback)
 
-        // 创建骑手
-        r, err = tx.Rider.Create().SetPhone(item.Phone).SetPerson(p).Save(s.ctx)
+        // 创建骑手并设置为不需要签约
+        r, err = tx.Rider.Create().SetPhone(item.Phone).SetPerson(p).SetContractual(false).Save(s.ctx)
         snag.PanicIfErrorX(err, tx.Rollback)
 
         // 添加订阅
@@ -169,6 +170,28 @@ func (s *importRiderService) insert(items []riderCsvData) {
             SetModel(item.Model).
             SetRemaining(tools.NewTime().DiffDays(end.Carbon2Time(), time.Now())).
             Save(s.ctx)
+        snag.PanicIfErrorX(err, tx.Rollback)
+
+        // 创建订单
+        o, err = tx.Order.
+            Create().
+            SetRiderID(r.ID).
+            SetSubscribeID(sub.ID).
+            SetStatus(model.OrderStatusPaid).
+            SetRemark("导入数据").
+            SetPayway(model.OrderPaywayManual).
+            SetOutTradeNo(tools.NewUnique().NewSonyflakeID()).
+            SetType(model.OrderTypeNewly).
+            SetTradeNo(tools.NewUnique().NewSonyflakeID()).
+            SetAmount(0).
+            SetTotal(0).
+            SetInitialDays(sub.InitialDays).
+            SetCityID(sub.CityID).
+            SetNillablePlanID(sub.PlanID).
+            Save(s.ctx)
+        snag.PanicIfErrorX(err, tx.Rollback)
+
+        sub, err = tx.Subscribe.UpdateOneID(sub.ID).SetInitialOrderID(o.ID).Save(s.ctx)
         snag.PanicIfErrorX(err, tx.Rollback)
 
         log.Printf("[添加完成] %#v", item)
