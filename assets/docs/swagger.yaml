@@ -1,5 +1,114 @@
 basePath: /
 definitions:
+  controller.CrmCustomerCreate:
+    properties:
+      address:
+        description: 常住地址
+        type: string
+      amount:
+        description: 贷款需求(万元)
+        type: number
+      branch:
+        description: 办理分行
+        type: string
+      channel:
+        description: 渠道
+        type: string
+      channel_contact:
+        description: 渠道联系人
+        type: string
+      channel_phone:
+        description: 渠道手机号
+        type: string
+      credit:
+        description: '征信情况: 正常 / 连三累六 / 当月逾期 / 五类观察 / 其他'
+        type: string
+      delivery_date:
+        description: 交件日期
+        type: string
+      district_id:
+        description: 区域ID
+        type: integer
+      driving_photos:
+        description: 行驶证
+        items:
+          type: string
+        type: array
+      employee:
+        description: 业务员
+        type: string
+      face_date:
+        description: 面签日期
+        type: string
+      gender:
+        description: 性别 1:男 2:女
+        type: integer
+      house_info:
+        description: 房屋信息
+        type: string
+      house_price:
+        description: 房屋估价(万元)
+        type: string
+      id_card_number:
+        description: 身份证号
+        type: string
+      id_card_photos:
+        description: 身份证照片
+        items:
+          type: string
+        type: array
+      income:
+        description: 年收入
+        type: number
+      industry_photos:
+        description: 产调表
+        items:
+          type: string
+        type: array
+      loan_amount:
+        description: 审批额度(万元)
+        type: number
+      loan_date:
+        description: 放款日期
+        type: string
+      loan_years:
+        description: 贷款年限
+        type: integer
+      manager:
+        description: 客户经理
+        type: string
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 手机号
+        type: string
+      real_amount:
+        description: 实际放款(万元)
+        type: number
+      secondary_mortgage:
+        description: 是否二抵
+        type: boolean
+      status:
+        description: '状态: 交件 / 签约 / 审批 / 放款 / 被拒'
+        type: string
+      type:
+        description: '贷款类型: 房车贷 / 房产保贷 / 抵押贷 / 优客贷 / 随心智贷 / 中银消费 / 法拍按揭'
+        type: string
+    required:
+    - address
+    - amount
+    - channel
+    - channel_contact
+    - channel_phone
+    - district_id
+    - employee
+    - gender
+    - id_card_number
+    - name
+    - phone
+    - type
+    type: object
   model.AliyunOssStsRes:
     properties:
       accessKeyId:
@@ -3834,6 +3943,28 @@ paths:
       summary: C3 获取阿里云oss临时凭证
       tags:
       - '[C]公共接口'
+  /crm/customer:
+    post:
+      consumes:
+      - application/json
+      operationId: FJJ01
+      parameters:
+      - description: desc
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.CrmCustomerCreate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: F01添加客户
+      tags:
+      - '[F]房金聚接口'
   /employee/v1/assistance:
     get:
       consumes:
