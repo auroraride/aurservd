@@ -17,7 +17,8 @@ type ManagerSigninRes struct {
     Name        string   `json:"name,omitempty"`
     Token       string   `json:"token,omitempty"`
     Phone       string   `json:"phone,omitempty"`
-    Permissions []string `json:"permissions"`
+    Permissions []string `json:"permissions"` // 权限列表
+    Super       bool     `json:"super"`       // 是否超级管理员
 }
 
 // ManagerCreateReq 管理员新增

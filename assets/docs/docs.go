@@ -11286,6 +11286,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "permissions": {
+                    "description": "权限列表",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -11293,6 +11294,10 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string"
+                },
+                "super": {
+                    "description": "是否超级管理员",
+                    "type": "boolean"
                 },
                 "token": {
                     "type": "string"

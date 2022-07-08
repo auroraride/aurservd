@@ -104,25 +104,28 @@ func (s *managerService) Signin(req *model.ManagerSigninReq) (res *model.Manager
     // 设置登录token，更新最后登录时间
     s.ExtendTokenTime(u.ID, token)
 
+    perms, super := s.GetPermissions(u)
+
     return &model.ManagerSigninRes{
         ID:          u.ID,
         Token:       token,
         Name:        u.Name,
         Phone:       u.Phone,
-        Permissions: s.GetPermissions(u),
+        Permissions: perms,
+        Super:       super,
     }, err
 }
 
-func (s *managerService) GetPermissions(u *ent.Manager) (perms []string) {
+func (s *managerService) GetPermissions(u *ent.Manager) (perms []string, super bool) {
     r := u.Edges.Role
     if r != nil {
         if r.Super {
-            return permission.Keys
+            return permission.Keys, r.Super
         } else {
-            return r.Permissions
+            return r.Permissions, r.Super
         }
     }
-    return
+    return make([]string, 0), false
 }
 
 // GetManagerById 根据ID获取管理员

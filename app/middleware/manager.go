@@ -43,7 +43,8 @@ func ManagerMiddleware() echo.MiddlewareFunc {
             // 延长token有效期
             s.ExtendTokenTime(m.ID, token)
 
-            if !permission.Contains(strings.ToUpper(c.Request().Method), p, s.GetPermissions(m)) {
+            perms, _ := s.GetPermissions(m)
+            if !permission.Contains(strings.ToUpper(c.Request().Method), p, perms) {
                 snag.Panic(snag.StatusForbidden)
             }
 

@@ -2404,11 +2404,15 @@ definitions:
       name:
         type: string
       permissions:
+        description: 权限列表
         items:
           type: string
         type: array
       phone:
         type: string
+      super:
+        description: 是否超级管理员
+        type: boolean
       token:
         type: string
     type: object
