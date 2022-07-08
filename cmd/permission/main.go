@@ -6,7 +6,9 @@
 package main
 
 import (
+    "fmt"
     "github.com/auroraride/aurservd/app/permission"
+    "github.com/povsister/scp"
     "io/ioutil"
     "os"
     "path/filepath"
@@ -77,4 +79,31 @@ func main() {
     }
 
     permission.Save(m)
+
+    upload()
+}
+
+func upload() {
+    privPEM, err := ioutil.ReadFile("/Users/liasica/.ssh/id_rsa")
+    sshConf, _ := scp.NewSSHConfigFromPrivateKey("root", privPEM)
+    client, err := scp.NewClient("39.106.77.239", sshConf, &scp.ClientOption{})
+    if err != nil {
+        fmt.Println("ssh connect error ", err)
+        return
+    }
+    defer func(client *scp.Client) {
+        _ = client.Close()
+    }(client)
+
+    err = client.CopyFileToRemote(permission.PermFile, "/var/www/api.auroraride.com/config/permission.yaml", &scp.FileTransferOption{})
+    if err != nil {
+        fmt.Println("[api] Error while copying file ", err)
+        return
+    }
+
+    err = client.CopyFileToRemote(permission.PermFile, "/var/www/next-api.auroraride.com/config/permission.yaml", &scp.FileTransferOption{})
+    if err != nil {
+        fmt.Println("[next-api] Error while copying file ", err)
+        return
+    }
 }

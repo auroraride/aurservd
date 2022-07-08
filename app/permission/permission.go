@@ -16,7 +16,7 @@ import (
 )
 
 const (
-    permFile = "config/permission.yaml"
+    PermFile = "config/permission.yaml"
 )
 
 var Groups map[string]*Group
@@ -41,7 +41,7 @@ var v *viper.Viper
 
 func init() {
     v = viper.New()
-    v.SetConfigFile(permFile)
+    v.SetConfigFile(PermFile)
 
     load()
 
@@ -88,14 +88,14 @@ func read() error {
 
 func load() {
     // 判断文件是否存在
-    f := utils.NewFile(permFile)
+    f := utils.NewFile(PermFile)
     if !f.IsExist() {
         err := f.CreateDirectoryIfNotExist()
         if err != nil {
             log.Fatalf("权限目录创建失败: %v", err)
             return
         }
-        err = os.WriteFile(permFile, []byte(""), 0644)
+        err = os.WriteFile(PermFile, []byte(""), 0644)
         if err != nil {
             log.Fatalf("默认权限保存失败: %v", err)
             return
@@ -113,5 +113,5 @@ func Save(m map[string]*Group) {
     if err != nil {
         log.Fatalf("权限配置保存失败: %#v", err)
     }
-    _ = os.WriteFile(permFile, b, 0644)
+    _ = os.WriteFile(PermFile, b, 0644)
 }
