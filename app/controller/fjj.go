@@ -8,17 +8,56 @@ package controller
 // FJJ01
 // @ID           FJJ01
 // @Router       /crm/customer [POST]
-// @Summary      F01添加客户
+// @Summary      F01 添加客户
 // @Tags         [F]房金聚接口
 // @Accept       json
 // @Produce      json
-// @Param        body  body     CrmCustomerCreate  true  "desc"
+// @Param        body  body     CrmCustomer  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
-func FJJ01() {
+func FJJ01() {}
 
+// FJJ02
+// @ID           ManagerFjjFJJ02
+// @Router       /manager/crm/customer [GET]
+// @Summary      F02 获取客户列表「需要认证」
+// @Tags         [F]房金聚接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body     CrmCustomerListReq  false  "筛选条件"
+// @Success      200  {object}  model.StatusResponse{items=[]CrmCustomerWithID}  "请求成功"
+func FJJ02() {}
+
+// FJJ03
+// @ID           ManagerFjjFJJ03
+// @Router       /manager/crm/customer/{id} [PUT]
+// @Summary      F03 修改客户
+// @Tags         [F]房金聚接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body     CrmCustomerWithID  true  "修改数据"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func FJJ03() {}
+
+type CrmCustomerWithID struct {
+    ID uint64 `json:"id" param:"id" validate:"required" trans:"客户ID"`
+    CrmCustomer
 }
 
-type CrmCustomerCreate struct {
+type CrmCustomerListReq struct {
+    Page int `json:"page" query:"page"` // 分页数据, 从0开始
+
+    Name     string `json:"name" query:"name"`         // 姓名
+    Phone    string `json:"phone" query:"phone"`       // 手机号
+    Status   string `json:"status" query:"status"`     // [选择]状态: 交件 / 签约 / 审批 / 放款 / 被拒
+    Sn       string `json:"sn" query:"sn"`             // 客户编号
+    Type     string `json:"type" query:"type"`         // [选择]贷款类型: 房车贷 / 房产保贷 / 抵押贷 / 优客贷 / 随心智贷 / 中银消费 / 法拍按揭
+    Channel  string `json:"channel" query:"channel"`   // 渠道
+    Employee string `json:"employee" query:"employee"` // 业务员
+    Branch   string `json:"branch" query:"branch"`     // 办理分行
+    Manager  string `json:"manager" query:"manager"`   // 客户经理
+}
+
+type CrmCustomer struct {
     Name           *string  `json:"name" validate:"required"`            // 姓名
     Gender         *uint8   `json:"gender" validate:"required"`          // 性别 1:男 2:女
     Phone          *string  `json:"phone" validate:"required"`           // 手机号
