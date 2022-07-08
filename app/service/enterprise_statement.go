@@ -370,13 +370,59 @@ func (s *enterpriseStatementService) Statement(req *model.StatementBillDetailReq
     return res
 }
 
-func (s *enterpriseStatementService) Usage(req *model.StatementUsageReq) {
-    q := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.EnterpriseID(req.ID)).Order(ent.Desc(subscribe.FieldCreatedAt)).WithRider().WithCity().WithStation()
+func (s *enterpriseStatementService) usageItem(item *ent.Subscribe, end time.Time) model.StatementUsageRes {
+    r := item.Edges.Rider
+    c := item.Edges.City
+    p := r.Edges.Person
+    if item.EndAt != nil {
+        end = *item.EndAt
+    }
+    del := ""
+    if r.DeletedAt != nil {
+        del = r.DeletedAt.Format(carbon.DateTimeLayout)
+    }
+    res := model.StatementUsageRes{
+        StatementDetail: model.StatementDetail{
+            Start:   item.StartAt.Format(carbon.DateLayout),
+            End:     end.Format(carbon.DateLayout),
+            Days:    tools.NewTime().UsedDays(end, *item.StartAt),
+            Model:   item.Model,
+            Station: nil,
+            City: model.City{
+                ID:   c.ID,
+                Name: c.Name,
+            },
+            Rider: model.RiderBasic{
+                ID:    r.ID,
+                Phone: r.Phone,
+                Name:  p.Name,
+            },
+        },
+        Status:    model.SubscribeStatusText(item.Status),
+        DeletedAt: del,
+    }
+    a := item.Edges.Station
+    if a != nil {
+        res.Station = &model.EnterpriseStation{
+            ID:   a.ID,
+            Name: a.Name,
+        }
+    }
+    return res
+}
+
+func (s *enterpriseStatementService) Usage(req *model.StatementUsageReq) *model.PaginationRes {
+    q := ent.Database.Subscribe.QueryNotDeleted().
+        WithRider().WithCity().WithStation().
+        Where(subscribe.EnterpriseID(req.ID), subscribe.StartAtNotNil()).
+        Order(ent.Desc(subscribe.FieldCreatedAt))
 
     if req.Start != "" {
         q.Where(subscribe.StartAtGTE(tools.NewTime().ParseDateStringX(req.Start)))
     }
+    end := carbon.Now().StartOfDay().Carbon2Time()
     if req.End != "" {
+        end = tools.NewTime().ParseDateStringX(req.End)
         next := tools.NewTime().ParseNextDateStringX(req.End)
         q.Where(
             subscribe.StartAtLT(next),
@@ -386,4 +432,8 @@ func (s *enterpriseStatementService) Usage(req *model.StatementUsageReq) {
             ),
         )
     }
+
+    return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Subscribe) model.StatementUsageRes {
+        return s.usageItem(item, end)
+    })
 }

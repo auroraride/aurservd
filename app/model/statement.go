@@ -98,6 +98,8 @@ type StatementDetail struct {
 }
 
 type StatementUsageReq struct {
+    PaginationReq
+
     ID     uint64 `json:"id" query:"id" validate:"required" trans:"企业ID"`
     Export bool   `json:"export" query:"export"` // 是否导出为Excel, 导出Excel的时候直接下载文件
     Start  string `json:"start"`                 // 筛选开始时间
