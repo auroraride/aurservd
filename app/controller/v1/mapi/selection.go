@@ -130,3 +130,17 @@ func (*selection) Cabinet(c echo.Context) (err error) {
     ctx := app.ContextX[app.ManagerContext](c)
     return ctx.SendResponse(service.NewSelection().Cabinet())
 }
+
+// Role
+// @ID           ManagerSelectionRole
+// @Router       /manager/v1/selection/role [GET]
+// @Summary      MB009 筛选角色
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Success      200  {object}  []model.SelectOption  "请求成功"
+func (*selection) Role(c echo.Context) (err error) {
+    ctx := app.Context(c)
+    return ctx.SendResponse(service.NewSelection().Role())
+}

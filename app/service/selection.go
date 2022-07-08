@@ -137,6 +137,17 @@ func (s *selectionService) Rider(req *model.RiderSelectionReq) (items []model.Se
     return
 }
 
+func (s *selectionService) Role() (items []model.SelectOption) {
+    roles, _ := ent.Database.Role.Query().All(s.ctx)
+    for _, role := range roles {
+        items = append(items, model.SelectOption{
+            Value: role.ID,
+            Label: role.Name,
+        })
+    }
+    return
+}
+
 func (s *selectionService) City() (items []*model.CascaderOptionLevel2) {
     res, _ := ent.Database.City.QueryNotDeleted().WithChildren(func(cq *ent.CityQuery) {
         cq.Where(city.Open(true))

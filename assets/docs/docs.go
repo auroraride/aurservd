@@ -5488,6 +5488,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/selection/role": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MB009 筛选角色",
+                "operationId": "ManagerSelectionRole",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SelectOption"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/selection/store": {
             "get": {
                 "consumes": [
@@ -6239,6 +6274,52 @@ const docTemplate = `{
             }
         },
         "/manager/v1/user/{id}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M1005 编辑管理员",
+                "operationId": "ManagerModify",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "管理员ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "编辑属性",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ManagerModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            },
             "delete": {
                 "consumes": [
                     "application/json"
@@ -10703,7 +10784,8 @@ const docTemplate = `{
             "required": [
                 "name",
                 "password",
-                "phone"
+                "phone",
+                "roleId"
             ],
             "properties": {
                 "name": {
@@ -10717,6 +10799,31 @@ const docTemplate = `{
                 "phone": {
                     "description": "手机号 ",
                     "type": "string"
+                },
+                "roleId": {
+                    "description": "角色ID ",
+                    "type": "integer"
+                }
+            }
+        },
+        "model.ManagerModifyReq": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                },
+                "roleId": {
+                    "description": "角色ID",
+                    "type": "integer"
                 }
             }
         },

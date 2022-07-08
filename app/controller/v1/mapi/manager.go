@@ -87,3 +87,20 @@ func (*manager) Delete(c echo.Context) (err error) {
     service.NewManagerWithModifier(ctx.Modifier).Delete(req)
     return ctx.SendResponse()
 }
+
+// Modify
+// @ID           ManagerModify
+// @Router       /manager/v1/user/{id} [PUT]
+// @Summary      M1005 编辑管理员
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        id  path       uint64  true  "管理员ID"
+// @Param        body  body     model.ManagerModifyReq  true  "编辑属性"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*manager) Modify(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.ManagerModifyReq](c)
+    service.NewManagerWithModifier(ctx.Modifier).Modify(req)
+    return ctx.SendResponse()
+}

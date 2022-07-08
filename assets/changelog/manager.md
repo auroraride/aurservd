@@ -1,3 +1,18 @@
+## 2022-07-08
+
+#### 接口新增
+
+- [MB009 筛选角色](http://localhost:5533/docs#tag/M/operation/ManagerSelectionRole)
+- [M1005 编辑管理员](http://localhost:5533/docs#tag/M/operation/ManagerModify)
+
+
+
+
+
+
+
+<br />
+
 ## 2022-07-07
 
 #### 接口调整
@@ -13,7 +28,6 @@
 
 - [M9013 历史账单](http://localhost:5533/docs#tag/M/operation/ManagerStatementHistorical)
 - [M9014 结账明细](http://localhost:5533/docs#tag/M/operation/ManagerStatementStatement)
-- 
 
 
 

@@ -51,7 +51,31 @@ func (s *managerService) Create(req *model.ManagerCreateReq) error {
         return errors.New("用户已存在")
     }
     password, _ := utils.PasswordGenerate(req.Password)
-    return s.orm.Create().SetName(req.Name).SetPhone(req.Phone).SetPassword(password).Exec(s.ctx)
+    return s.orm.Create().SetName(req.Name).SetPhone(req.Phone).SetPassword(password).SetRoleID(req.RoleID).Exec(s.ctx)
+}
+
+func (s *managerService) Modify(req *model.ManagerModifyReq) {
+    m := s.Query(req.ID)
+    u := m.Update()
+    if req.Phone != "" {
+        u.SetPhone(req.Phone)
+    }
+    if req.Name != "" {
+        u.SetName(req.Name)
+    }
+    if req.RoleID != 0 {
+        u.SetRoleID(req.RoleID)
+    }
+    if req.Password != "" {
+        password, _ := utils.PasswordGenerate(req.Password)
+        u.SetPassword(password)
+    }
+
+    err := u.Exec(s.ctx)
+    if err != nil {
+        snag.Panic("管理员编辑失败")
+        return
+    }
 }
 
 // Signin 管理员登录
@@ -143,7 +167,7 @@ func (s *managerService) List(req *model.ManagerListReq) *model.PaginationRes {
                 Phone: item.Phone,
                 Role: model.Role{
                     ID:   1,
-                    Name: "无角色人员",
+                    Name: "无角色",
                 },
             }
             r := item.Edges.Role

@@ -23,7 +23,8 @@ type ManagerSigninRes struct {
 // ManagerCreateReq 管理员新增
 type ManagerCreateReq struct {
     ManagerSigninReq
-    Name string `json:"name" validate:"required" trans:"姓名"`
+    Name   string `json:"name" validate:"required" trans:"姓名"`
+    RoleID uint64 `json:"roleId" validate:"required" trans:"角色ID"`
 }
 
 type ManagerListReq struct {
@@ -36,4 +37,12 @@ type ManagerListRes struct {
     Name  string `json:"name"`  // 姓名
     Phone string `json:"phone"` // 手机号
     Role  Role   `json:"role"`  // 角色
+}
+
+type ManagerModifyReq struct {
+    IDParamReq
+    Password string `json:"password"` // 密码
+    RoleID   uint64 `json:"roleId"`   // 角色ID
+    Phone    string `json:"phone"`    // 电话
+    Name     string `json:"name"`     // 姓名
 }

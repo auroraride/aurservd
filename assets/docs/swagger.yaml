@@ -2122,10 +2122,29 @@ definitions:
       phone:
         description: '手机号 '
         type: string
+      roleId:
+        description: '角色ID '
+        type: integer
     required:
     - name
     - password
     - phone
+    - roleId
+    type: object
+  model.ManagerModifyReq:
+    properties:
+      name:
+        description: 姓名
+        type: string
+      password:
+        description: 密码
+        type: string
+      phone:
+        description: 电话
+        type: string
+      roleId:
+        description: 角色ID
+        type: integer
     type: object
   model.ManagerSigninRes:
     properties:
@@ -7331,6 +7350,29 @@ paths:
       summary: MB002 筛选骑手
       tags:
       - '[M]管理接口'
+  /manager/v1/selection/role:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionRole
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.SelectOption'
+            type: array
+      summary: MB009 筛选角色
+      tags:
+      - '[M]管理接口'
   /manager/v1/selection/store:
     get:
       consumes:
@@ -7831,6 +7873,37 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M1004 删除管理员
+      tags:
+      - '[M]管理接口'
+    put:
+      consumes:
+      - application/json
+      operationId: ManagerModify
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 管理员ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 编辑属性
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ManagerModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M1005 编辑管理员
       tags:
       - '[M]管理接口'
   /manager/v1/user/signin:

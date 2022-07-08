@@ -19,6 +19,7 @@ func loadManagerRoutes() {
     g.POST("/user", mapi.Manager.Create)
     g.GET("/user", mapi.Manager.List)
     g.DELETE("/user/:id", mapi.Manager.Delete)
+    g.PUT("/user/:id", mapi.Manager.Modify)
 
     // 设置
     g.GET("/setting", mapi.Setting.List)
@@ -130,6 +131,7 @@ func loadManagerRoutes() {
     g.GET("/selection/branch", mapi.Selection.Branch)
     g.GET("/selection/enterprise", mapi.Selection.Enterprise)
     g.GET("/selection/cabinet", mapi.Selection.Cabinet)
+    g.GET("/selection/role", mapi.Selection.Role)
 
     // 救援
     g.GET("/assistance", mapi.Assistance.List)
