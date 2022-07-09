@@ -24,8 +24,10 @@ import (
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     "github.com/jinzhu/copier"
+    "github.com/r3labs/diff/v3"
     "github.com/shopspring/decimal"
     log "github.com/sirupsen/logrus"
+    "reflect"
     "time"
 )
 
@@ -71,19 +73,12 @@ func (s *enterpriseService) QueryX(id uint64) *ent.Enterprise {
 
 // Create 创建企业
 func (s *enterpriseService) Create(req *model.EnterpriseDetail) uint64 {
-
-    tx, err := ent.Database.Tx(s.ctx)
-    if err != nil {
-        snag.Panic(err)
-    }
-
+    var err error
     e := &ent.Enterprise{}
-    e, err = ent.EntitySetAttributes[ent.EnterpriseCreate, ent.Enterprise](tx.Enterprise.Create(), e, req).Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
-
-    s.SaveEnterprise(tx, e, req)
-    _ = tx.Commit()
-
+    e, err = ent.EntitySetAttributes(s.orm.Create(), e, req).Save(s.ctx)
+    if err != nil {
+        snag.Panic("企业创建失败")
+    }
     return e.ID
 }
 
@@ -100,60 +95,16 @@ func (s *enterpriseService) Modify(req *model.EnterpriseDetailWithID) {
         snag.Panic("无法转换支付方式")
     }
 
-    tx, err := ent.Database.Tx(s.ctx)
+    var err error
+    e, err = s.orm.ModifyOne(e, req.EnterpriseDetail).Save(s.ctx)
     if err != nil {
-        snag.Panic(err)
+        snag.Panic("企业修改失败")
     }
-
-    e, err = tx.Enterprise.ModifyOne(e, req.EnterpriseDetail).Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
-
-    _, err = tx.EnterprisePrice.Delete().Where(enterpriseprice.EnterpriseID(e.ID)).Exec(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
-
-    _, err = tx.EnterpriseContract.Delete().Where(enterprisecontract.EnterpriseID(e.ID)).Exec(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
-
-    s.SaveEnterprise(tx, e, req.EnterpriseDetail)
-    _ = tx.Commit()
 }
 
 // PriceKey 获取企业价格key (城市id-电池型号)
 func (s *enterpriseService) PriceKey(cityID uint64, model string) string {
     return fmt.Sprintf("%d-%s", cityID, model)
-}
-
-// SaveEnterprise 保存企业信息
-func (s *enterpriseService) SaveEnterprise(tx *ent.Tx, e *ent.Enterprise, req *model.EnterpriseDetail) {
-    var err error
-    // 存储价格信息
-    cvm := make(map[string]struct{})
-    for _, rp := range req.Prices {
-        // 判断价格是否重复
-        k := s.PriceKey(rp.CityID, rp.Model)
-        if _, ok := cvm[k]; ok {
-            snag.PanicCallbackX(tx.Rollback, "价格重复")
-        }
-        _, err = tx.EnterprisePrice.Create().SetPrice(rp.Price).SetCityID(rp.CityID).SetModel(rp.Model).SetEnterprise(e).Save(s.ctx)
-        snag.PanicIfErrorX(err, tx.Rollback)
-        cvm[k] = struct{}{}
-    }
-
-    // 存储合同
-    tt := tools.NewTime()
-    var dates [][]int64
-    for _, rc := range req.Contracts {
-        rcs := tt.ParseDateStringX(rc.Start)
-        rce := tt.ParseDateStringX(rc.End)
-        for _, r := range dates {
-            if rcs.Unix() <= r[0] && rce.Unix() >= r[1] {
-                snag.PanicCallbackX(tx.Rollback, "日期重叠")
-            }
-        }
-        _, err = tx.EnterpriseContract.Create().SetFile(rc.File).SetStart(rcs).SetEnd(rce).SetEnterprise(e).Save(s.ctx)
-        snag.PanicIfErrorX(err, tx.Rollback)
-        dates = append(dates, []int64{rcs.Unix(), rce.Unix()})
-    }
 }
 
 // DetailQuery 企业详情查询语句
@@ -232,6 +183,7 @@ func (s *enterpriseService) Detail(item *ent.Enterprise) (res model.EnterpriseRe
         res.Contracts = make([]model.EnterpriseContract, len(contracts))
         for i, ec := range contracts {
             res.Contracts[i] = model.EnterpriseContract{
+                ID:    ec.ID,
                 Start: ec.Start.Format(carbon.DateLayout),
                 End:   ec.End.Format(carbon.DateLayout),
                 File:  ec.File,
@@ -244,6 +196,7 @@ func (s *enterpriseService) Detail(item *ent.Enterprise) (res model.EnterpriseRe
         res.Prices = make([]model.EnterprisePriceWithCity, len(prices))
         for i, ep := range prices {
             res.Prices[i] = model.EnterprisePriceWithCity{
+                ID:    ep.ID,
                 Model: ep.Model,
                 Price: ep.Price,
                 City: model.City{
@@ -333,26 +286,54 @@ func (s *enterpriseService) QueryAllBillingSubscribe(enterpriseID uint64, args .
     return items
 }
 
-// GetPrices 获取企业价格表
-func (s *enterpriseService) GetPrices(item *ent.Enterprise) (res map[string]float64) {
+// DiffPrices 价格修改: 获取价格设定差异
+func (s *enterpriseService) DiffPrices(item *ent.Enterprise, data []model.EnterprisePrice) (changes diff.Changelog) {
+    src := s.GetPriceValues(item)
+    dst := make(map[string]float64)
+    for _, d := range data {
+        dst[s.PriceKey(d.CityID, d.Model)] = d.Price
+    }
+    var err error
+    changes, err = diff.Diff(src, dst, diff.Filter(func(path []string, parent reflect.Type, field reflect.StructField) bool {
+        return path[1] == "Price"
+    }))
+    if err != nil {
+        snag.Panic(fmt.Sprintf("价格对比失败: %s", err))
+    }
+    return
+}
+
+// GetPrices 获取企业费用表
+func (s *enterpriseService) GetPrices(item *ent.Enterprise) map[string]model.EnterprisePrice {
     var items []*ent.EnterprisePrice
     if item.Edges.Prices == nil {
         items, _ = ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.EnterpriseID(item.ID)).All(s.ctx)
     } else {
         items = item.Edges.Prices
     }
-
-    res = make(map[string]float64)
-    for _, ep := range items {
-        res[s.PriceKey(ep.CityID, ep.Model)] = ep.Price
+    res := make(map[string]model.EnterprisePrice)
+    for _, price := range items {
+        res[s.PriceKey(price.CityID, price.Model)] = model.EnterprisePrice{
+            CityID: price.CityID,
+            Model:  price.Model,
+            Price:  price.Price,
+        }
     }
+    return res
+}
 
+// GetPriceValues 获取企业价格表
+func (s *enterpriseService) GetPriceValues(item *ent.Enterprise) (res map[string]float64) {
+    res = make(map[string]float64)
+    for key, price := range s.GetPrices(item) {
+        res[key] = price.Price
+    }
     return res
 }
 
 func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time) (es *ent.EnterpriseStatement, bills []model.StatementBillData) {
     tt := tools.NewTime()
-    prices := s.GetPrices(e)
+    prices := s.GetPriceValues(e)
     es = NewEnterpriseStatement().Current(e)
 
     // 获取所有骑手订阅
@@ -552,4 +533,133 @@ func (s *enterpriseService) Business(e *ent.Enterprise) error {
     }
 
     return nil
+}
+
+// QueryPrice 查找价格设置
+func (s *enterpriseService) QueryPrice(id uint64) *ent.EnterprisePrice {
+    p, _ := ent.Database.EnterprisePrice.QueryNotDeleted().Where(enterpriseprice.ID(id)).First(s.ctx)
+    if p == nil {
+        snag.Panic("未找到价格信息")
+    }
+    return p
+}
+
+// ModifyPrice 修改价格
+func (s *enterpriseService) ModifyPrice(req *model.EnterprisePriceModifyReq) model.EnterprisePriceWithCity {
+    c := NewCity().Query(req.CityID)
+
+    var p *ent.EnterprisePrice
+    var err error
+    if req.ID != 0 {
+        p = s.QueryPrice(req.ID)
+        if p.CityID != req.CityID {
+            snag.Panic("城市无法修改")
+        }
+        if p.Model != req.Model {
+            snag.Panic("电池型号无法修改")
+        }
+        if p.Price != req.Price {
+            // TODO 自动轧账
+            p, err = p.Update().SetPrice(req.Price).Save(s.ctx)
+        }
+    } else {
+        client := ent.Database.EnterprisePrice
+        // 判定价格是否重复
+        if exist, _ := client.QueryNotDeleted().
+            Where(enterpriseprice.EnterpriseID(req.EnterpriseID), enterpriseprice.Model(req.Model), enterpriseprice.CityID(req.CityID)).
+            Exist(s.ctx); exist {
+            snag.Panic("价格设置重复")
+        }
+        p, err = client.
+            Create().
+            SetCityID(req.CityID).
+            SetEnterpriseID(req.EnterpriseID).
+            SetModel(req.Model).
+            SetPrice(req.Price).
+            Save(s.ctx)
+    }
+    if err != nil {
+        snag.Panic("企业价格操作失败")
+    }
+    return model.EnterprisePriceWithCity{
+        ID:    p.ID,
+        Model: p.Model,
+        Price: p.Price,
+        City: model.City{
+            ID:   c.ID,
+            Name: c.Name,
+        },
+    }
+}
+
+// DeletePrice 删除价格
+func (s *enterpriseService) DeletePrice(req *model.IDParamReq) {
+    // 判断是否有进行中的订阅
+    p := s.QueryPrice(req.ID)
+    if exist, _ := ent.Database.Subscribe.QueryNotDeleted().Where(
+        subscribe.EnterpriseID(p.EnterpriseID),
+        subscribe.Status(model.SubscribeStatusUsing),
+        subscribe.CityID(p.CityID),
+        subscribe.Model(p.Model),
+    ).Exist(s.ctx); exist {
+        snag.Panic("计费中, 无法删除")
+    }
+    err := ent.Database.EnterprisePrice.SoftDeleteOne(p).Exec(s.ctx)
+    if err != nil {
+        snag.Panic("价格删除失败")
+    }
+}
+
+// QueryContract 查找合同
+func (s *enterpriseService) QueryContract(contractID uint64) *ent.EnterpriseContract {
+    c, _ := ent.Database.EnterpriseContract.QueryNotDeleted().Where(enterprisecontract.ID(contractID)).First(s.ctx)
+    if c == nil {
+        snag.Panic("未找到合同")
+    }
+    return c
+}
+
+// ModifyContract 编辑企业合同
+func (s *enterpriseService) ModifyContract(req *model.EnterpriseContractModifyReq) {
+    tt := tools.NewTime()
+    start := tt.ParseDateStringX(req.Start)
+    end := tt.ParseDateStringX(req.End)
+    var err error
+    if req.ID != 0 {
+        // 查找合同
+        _, err = s.QueryContract(req.ID).
+            Update().
+            SetStart(start).
+            SetEnd(end).
+            SetFile(req.File).
+            Save(s.ctx)
+    } else {
+        client := ent.Database.EnterpriseContract
+        // 判断合同日期是否重复
+        if exist, _ := client.QueryNotDeleted().Where(
+            enterprisecontract.EnterpriseID(req.EnterpriseID),
+            enterprisecontract.StartLTE(end),
+            enterprisecontract.EndGTE(start),
+        ).Exist(s.ctx); exist {
+            snag.Panic("合同日期段重复")
+        }
+
+        err = client.Create().
+            SetStart(start).
+            SetEnd(end).
+            SetFile(req.File).
+            SetEnterpriseID(req.EnterpriseID).
+            Exec(s.ctx)
+    }
+    if err != nil {
+        snag.Panic("合同操作失败")
+    }
+}
+
+// DeleteContract 删除企业合同
+func (s *enterpriseService) DeleteContract(req *model.IDParamReq) {
+    err := ent.Database.EnterpriseContract.SoftDeleteOne(s.QueryContract(req.ID)).Exec(s.ctx)
+    if err != nil {
+        snag.Panic("合同删除失败")
+    }
 }

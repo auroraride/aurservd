@@ -18,12 +18,19 @@ import (
     "strings"
 )
 
+var (
+    managerSkipper = map[string]bool{
+        "/manager/v1/permission":  true,
+        "/manager/v1/user/signin": true,
+    }
+)
+
 // ManagerMiddleware 后台中间件
 func ManagerMiddleware() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
             p := c.Path()
-            if p == "/manager/v1/user/signin" {
+            if managerSkipper[p] {
                 return next(c)
             }
 

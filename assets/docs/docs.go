@@ -3604,6 +3604,166 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/enterprise/contract": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9017 编辑合同",
+                "operationId": "ManagerEnterpriseModifyContract",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "合同字段",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterpriseContractModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/contract/{id}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9018 删除合同",
+                "operationId": "ManagerEnterpriseDeleteContract",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "合同ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/price": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9015 编辑价格",
+                "operationId": "ManagerEnterpriseModifyPrice",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "价格详情",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterprisePriceModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.EnterprisePriceWithCity"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/v1/enterprise/price/{id}": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9016 删除价格",
+                "operationId": "ManagerEnterpriseDeletePrice",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "价格ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/enterprise/rider": {
             "get": {
                 "consumes": [
@@ -10371,12 +10531,50 @@ const docTemplate = `{
             ],
             "properties": {
                 "end": {
+                    "description": "合同结束日期 ",
                     "type": "string"
                 },
                 "file": {
+                    "description": "合同文件 ",
                     "type": "string"
                 },
+                "id": {
+                    "description": "合同ID, 请求` + "`" + `M9017 编辑合同` + "`" + `时携带此字段为编辑, 不携带为新增",
+                    "type": "integer"
+                },
                 "start": {
+                    "description": "合同开始日期 ",
+                    "type": "string"
+                }
+            }
+        },
+        "model.EnterpriseContractModifyReq": {
+            "type": "object",
+            "required": [
+                "end",
+                "enterpriseId",
+                "file",
+                "start"
+            ],
+            "properties": {
+                "end": {
+                    "description": "合同结束日期 ",
+                    "type": "string"
+                },
+                "enterpriseId": {
+                    "description": "企业ID ",
+                    "type": "integer"
+                },
+                "file": {
+                    "description": "合同文件 ",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "合同ID, 请求` + "`" + `M9017 编辑合同` + "`" + `时携带此字段为编辑, 不携带为新增",
+                    "type": "integer"
+                },
+                "start": {
+                    "description": "合同开始日期 ",
                     "type": "string"
                 }
             }
@@ -10388,12 +10586,10 @@ const docTemplate = `{
                 "cityId",
                 "contactName",
                 "contactPhone",
-                "contracts",
                 "deposit",
                 "idcardNumber",
                 "name",
                 "payment",
-                "prices",
                 "status"
             ],
             "properties": {
@@ -10412,14 +10608,6 @@ const docTemplate = `{
                 "contactPhone": {
                     "description": "联系电话 ",
                     "type": "string"
-                },
-                "contracts": {
-                    "description": "合同 ",
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "$ref": "#/definitions/model.EnterpriseContract"
-                    }
                 },
                 "deposit": {
                     "description": "押金 ",
@@ -10442,14 +10630,6 @@ const docTemplate = `{
                         1,
                         2
                     ]
-                },
-                "prices": {
-                    "description": "价格列表 ",
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "$ref": "#/definitions/model.EnterprisePrice"
-                    }
                 },
                 "status": {
                     "description": "合作状态 0:未合作 1:合作中 2:已暂停",
@@ -10471,12 +10651,10 @@ const docTemplate = `{
                 "cityId",
                 "contactName",
                 "contactPhone",
-                "contracts",
                 "deposit",
                 "idcardNumber",
                 "name",
                 "payment",
-                "prices",
                 "status"
             ],
             "properties": {
@@ -10495,14 +10673,6 @@ const docTemplate = `{
                 "contactPhone": {
                     "description": "联系电话 ",
                     "type": "string"
-                },
-                "contracts": {
-                    "description": "合同 ",
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "$ref": "#/definitions/model.EnterpriseContract"
-                    }
                 },
                 "deposit": {
                     "description": "押金 ",
@@ -10525,14 +10695,6 @@ const docTemplate = `{
                         1,
                         2
                     ]
-                },
-                "prices": {
-                    "description": "价格列表 ",
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "$ref": "#/definitions/model.EnterprisePrice"
-                    }
                 },
                 "status": {
                     "description": "合作状态 0:未合作 1:合作中 2:已暂停",
@@ -10564,16 +10726,25 @@ const docTemplate = `{
                 }
             }
         },
-        "model.EnterprisePrice": {
+        "model.EnterprisePriceModifyReq": {
             "type": "object",
             "required": [
                 "cityId",
+                "enterpriseId",
                 "model",
                 "price"
             ],
             "properties": {
                 "cityId": {
                     "description": "城市 ",
+                    "type": "integer"
+                },
+                "enterpriseId": {
+                    "description": "企业ID ",
+                    "type": "integer"
+                },
+                "id": {
+                    "description": "价格ID, 请求` + "`" + `M9015 编辑价格` + "`" + `时携带此字段为编辑, 不携带为新增",
                     "type": "integer"
                 },
                 "model": {
@@ -10596,6 +10767,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.City"
                         }
                     ]
+                },
+                "id": {
+                    "description": "价格ID",
+                    "type": "integer"
                 },
                 "model": {
                     "description": "电池型号",

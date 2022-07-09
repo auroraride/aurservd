@@ -23,15 +23,19 @@ func Recover() echo.MiddlewareFunc {
                     switch r.(type) {
                     case *snag.Error:
                         c.Error(r.(*snag.Error))
+                        break
                     case *ent.ValidationError:
                         log.Error(stack)
                         c.Error(r.(*ent.ValidationError).Unwrap())
+                        break
                     case error:
                         log.Error(stack)
                         c.Error(r.(error))
+                        break
                     default:
                         log.Error(stack)
                         _ = mw.Recover()(next)(c)
+                        break
                     }
                 }
             }()

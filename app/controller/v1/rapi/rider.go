@@ -42,10 +42,7 @@ func (*rider) Signin(c echo.Context) (err error) {
     // 注册+登录
     var data *model.RiderSigninRes
     s := service.NewRider()
-    data, err = s.Signin(ctx.Device, req)
-    if err != nil {
-        return
-    }
+    data = s.Signin(ctx.Device, req)
     return ctx.SendResponse(data)
 }
 

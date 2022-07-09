@@ -1757,13 +1757,42 @@ definitions:
   model.EnterpriseContract:
     properties:
       end:
+        description: '合同结束日期 '
         type: string
       file:
+        description: '合同文件 '
         type: string
+      id:
+        description: 合同ID, 请求`M9017 编辑合同`时携带此字段为编辑, 不携带为新增
+        type: integer
       start:
+        description: '合同开始日期 '
         type: string
     required:
     - end
+    - file
+    - start
+    type: object
+  model.EnterpriseContractModifyReq:
+    properties:
+      end:
+        description: '合同结束日期 '
+        type: string
+      enterpriseId:
+        description: '企业ID '
+        type: integer
+      file:
+        description: '合同文件 '
+        type: string
+      id:
+        description: 合同ID, 请求`M9017 编辑合同`时携带此字段为编辑, 不携带为新增
+        type: integer
+      start:
+        description: '合同开始日期 '
+        type: string
+    required:
+    - end
+    - enterpriseId
     - file
     - start
     type: object
@@ -1781,12 +1810,6 @@ definitions:
       contactPhone:
         description: '联系电话 '
         type: string
-      contracts:
-        description: '合同 '
-        items:
-          $ref: '#/definitions/model.EnterpriseContract'
-        minItems: 1
-        type: array
       deposit:
         description: '押金 '
         type: number
@@ -1804,12 +1827,6 @@ definitions:
         maximum: 2
         minimum: 1
         type: integer
-      prices:
-        description: '价格列表 '
-        items:
-          $ref: '#/definitions/model.EnterprisePrice'
-        minItems: 1
-        type: array
       status:
         description: 合作状态 0:未合作 1:合作中 2:已暂停
         enum:
@@ -1824,12 +1841,10 @@ definitions:
     - cityId
     - contactName
     - contactPhone
-    - contracts
     - deposit
     - idcardNumber
     - name
     - payment
-    - prices
     - status
     type: object
   model.EnterpriseDetailWithID:
@@ -1846,12 +1861,6 @@ definitions:
       contactPhone:
         description: '联系电话 '
         type: string
-      contracts:
-        description: '合同 '
-        items:
-          $ref: '#/definitions/model.EnterpriseContract'
-        minItems: 1
-        type: array
       deposit:
         description: '押金 '
         type: number
@@ -1869,12 +1878,6 @@ definitions:
         maximum: 2
         minimum: 1
         type: integer
-      prices:
-        description: '价格列表 '
-        items:
-          $ref: '#/definitions/model.EnterprisePrice'
-        minItems: 1
-        type: array
       status:
         description: 合作状态 0:未合作 1:合作中 2:已暂停
         enum:
@@ -1889,12 +1892,10 @@ definitions:
     - cityId
     - contactName
     - contactPhone
-    - contracts
     - deposit
     - idcardNumber
     - name
     - payment
-    - prices
     - status
     type: object
   model.EnterprisePrepaymentReq:
@@ -1909,10 +1910,16 @@ definitions:
     - amount
     - remark
     type: object
-  model.EnterprisePrice:
+  model.EnterprisePriceModifyReq:
     properties:
       cityId:
         description: '城市 '
+        type: integer
+      enterpriseId:
+        description: '企业ID '
+        type: integer
+      id:
+        description: 价格ID, 请求`M9015 编辑价格`时携带此字段为编辑, 不携带为新增
         type: integer
       model:
         description: '电池型号 '
@@ -1922,6 +1929,7 @@ definitions:
         type: number
     required:
     - cityId
+    - enterpriseId
     - model
     - price
     type: object
@@ -1931,6 +1939,9 @@ definitions:
         allOf:
         - $ref: '#/definitions/model.City'
         description: 城市
+      id:
+        description: 价格ID
+        type: integer
       model:
         description: 电池型号
         type: string
@@ -6442,6 +6453,112 @@ paths:
           schema:
             $ref: '#/definitions/model.StatementDetail'
       summary: M9014 结账明细
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/contract:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseModifyContract
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 合同字段
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnterpriseContractModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M9017 编辑合同
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/contract/{id}:
+    delete:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseDeleteContract
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 合同ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M9018 删除合同
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/price:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseModifyPrice
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 价格详情
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnterprisePriceModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.EnterprisePriceWithCity'
+      summary: M9015 编辑价格
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/price/{id}:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerEnterpriseDeletePrice
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 价格ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M9016 删除价格
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/rider:

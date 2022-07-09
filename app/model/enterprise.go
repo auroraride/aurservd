@@ -17,18 +17,31 @@ const (
 )
 
 type EnterpriseContract struct {
-    Start string `json:"start" validate:"required"`
-    End   string `json:"end" validate:"required"`
-    File  string `json:"file" validate:"required"`
+    ID    uint64 `json:"id,omitempty"` // 合同ID, 请求`M9017 编辑合同`时携带此字段为编辑, 不携带为新增
+    Start string `json:"start" validate:"required" trans:"合同开始日期"`
+    End   string `json:"end" validate:"required" trans:"合同结束日期"`
+    File  string `json:"file" validate:"required" trans:"合同文件"`
 }
 
 type EnterprisePrice struct {
+    ID     uint64  `json:"id,omitempty"` // 价格ID, 请求`M9015 编辑价格`时携带此字段为编辑, 不携带为新增
     CityID uint64  `json:"cityId" validate:"required" trans:"城市"`
     Model  string  `json:"model" validate:"required" trans:"电池型号"`
     Price  float64 `json:"price" validate:"required" trans:"单价(元/天)"`
 }
 
+type EnterpriseContractModifyReq struct {
+    EnterpriseContract
+    EnterpriseID uint64 `json:"enterpriseId" validate:"required" trans:"企业ID"`
+}
+
+type EnterprisePriceModifyReq struct {
+    EnterprisePrice
+    EnterpriseID uint64 `json:"enterpriseId" validate:"required" trans:"企业ID"`
+}
+
 type EnterprisePriceWithCity struct {
+    ID    uint64  `json:"id"`    // 价格ID
     Model string  `json:"model"` // 电池型号
     Price float64 `json:"price"` // 单价(元/天)
     City  City    `json:"city"`  // 城市
@@ -42,17 +55,15 @@ type EnterpriseBasic struct {
 
 // EnterpriseDetail 企业详细字段
 type EnterpriseDetail struct {
-    Name         *string              `json:"name" validate:"required" trans:"企业名称"`
-    Status       *uint8               `json:"status" enums:"0,1,2" validate:"required,min=0,max=2" trans:"合作状态"` // 0:未合作 1:合作中 2:已暂停
-    ContactName  *string              `json:"contactName" validate:"required" trans:"联系人"`
-    ContactPhone *string              `json:"contactPhone" validate:"required" trans:"联系电话"`
-    IdcardNumber *string              `json:"idcardNumber" validate:"required" trans:"身份证号"`
-    CityID       *uint64              `json:"cityId" validate:"required" trans:"所在城市"`
-    Address      *string              `json:"address" validate:"required" trans:"企业地址"`
-    Payment      *uint8               `json:"payment" validate:"required,min=1,max=2" enums:"1,2" trans:"付费方式"` // 1:预付费 2:后付费
-    Deposit      *float64             `json:"deposit" validate:"required" trans:"押金"`
-    Contracts    []EnterpriseContract `json:"contracts,omitempty" validate:"required,min=1" trans:"合同"`
-    Prices       []EnterprisePrice    `json:"prices,omitempty" validate:"required,min=1" trans:"价格列表"`
+    Name         *string  `json:"name" validate:"required" trans:"企业名称"`
+    Status       *uint8   `json:"status" enums:"0,1,2" validate:"required,min=0,max=2" trans:"合作状态"` // 0:未合作 1:合作中 2:已暂停
+    ContactName  *string  `json:"contactName" validate:"required" trans:"联系人"`
+    ContactPhone *string  `json:"contactPhone" validate:"required" trans:"联系电话"`
+    IdcardNumber *string  `json:"idcardNumber" validate:"required" trans:"身份证号"`
+    CityID       *uint64  `json:"cityId" validate:"required" trans:"所在城市"`
+    Address      *string  `json:"address" validate:"required" trans:"企业地址"`
+    Payment      *uint8   `json:"payment" validate:"required,min=1,max=2" enums:"1,2" trans:"付费方式"` // 1:预付费 2:后付费
+    Deposit      *float64 `json:"deposit" validate:"required" trans:"押金"`
 }
 
 type EnterpriseDetailWithID struct {

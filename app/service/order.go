@@ -254,6 +254,7 @@ func (s *orderService) CreateFee(riderID uint64, payway uint8) *model.OrderCreat
     }
 
     s.Prepay(payway, no, prepay, result)
+    result.OutTradeNo = no
 
     return result
 }

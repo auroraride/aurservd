@@ -1,3 +1,25 @@
+## 2022-07-09
+
+#### 接口调整
+
+- `M9003 列举企业`
+  - `contracts / prices` 新增字段 `id` (分别对应合同ID和价格ID)以便修改和删除使用
+
+#### 接口新增
+
+- [M9015 编辑价格](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseModifyPrice)
+- [M9016 删除价格](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseDeletePrice)
+- [M9017 编辑合同](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseModifyContract)
+- [M9018 删除合同](http://localhost:5533/docs#tag/M/operation/ManagerEnterpriseDeleteContract)
+
+
+
+
+
+
+
+<br />
+
 ## 2022-07-08
 
 #### 接口新增

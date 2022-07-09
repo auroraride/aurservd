@@ -12,7 +12,14 @@ import (
 
 // rideRoutes 骑手路由
 func loadRideRoutes() {
-    g := root.Group("rider/v1")
+    g := root.Group("rider/v1", middleware.BodyDumpRawWithInterval(map[string]bool{
+        "/rider/v1/socket": true,
+        "/rider/callback": true,
+        "/rider/callback/esign": true,
+        "/rider/callback/alipay": true,
+        "/rider/callback/wechatpay": true,
+        "/rider/callback/wechatpay/refund": true,
+    }))
 
     // socket
     g.Any("/socket", rapi.Socket.Rider)

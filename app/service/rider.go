@@ -98,10 +98,11 @@ func (s *riderService) IsBlocked(u *ent.Rider) bool {
 }
 
 // Signin 骑手登录
-func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (res *model.RiderSigninRes, err error) {
+func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (res *model.RiderSigninRes) {
     ctx := context.Background()
     orm := ent.Database.Rider
     var u *ent.Rider
+    var err error
 
     u, err = orm.QueryNotDeleted().Where(rider.Phone(req.Phone)).WithPerson().WithEnterprise().Only(ctx)
     if err != nil {
@@ -112,7 +113,7 @@ func (s *riderService) Signin(device *model.Device, req *model.RiderSignupReq) (
             SetDeviceType(device.Type.Raw()).
             Save(ctx)
         if err != nil {
-            return
+            snag.Panic(err)
         }
     }
 

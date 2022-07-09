@@ -39,7 +39,7 @@ func (*enterprise) Create(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body  model.EnterpriseDetailWithID  true  "desc"
+// @Param        body  body     model.EnterpriseDetailWithID  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*enterprise) Modify(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.EnterpriseDetailWithID](c)
@@ -173,4 +173,67 @@ func (*enterprise) CreateRider(c echo.Context) (err error) {
 func (*enterprise) ListRider(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.EnterpriseRiderListReq](c)
     return ctx.SendResponse(service.NewEnterpriseRiderWithModifier(ctx.Modifier).List(req))
+}
+
+// ModifyPrice
+// @ID           ManagerEnterpriseModifyPrice
+// @Router       /manager/v1/enterprise/price [POST]
+// @Summary      M9015 编辑价格
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.EnterprisePriceModifyReq  true  "价格详情"
+// @Success      200  {object}  model.EnterprisePriceWithCity  "请求成功"
+func (*enterprise) ModifyPrice(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.EnterprisePriceModifyReq](c)
+    return ctx.SendResponse(service.NewEnterpriseWithModifier(ctx.Modifier).ModifyPrice(req))
+}
+
+// DeletePrice
+// @ID           ManagerEnterpriseDeletePrice
+// @Router       /manager/v1/enterprise/price/{id} [POST]
+// @Summary      M9016 删除价格
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        id  path  uint64  true  "价格ID"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*enterprise) DeletePrice(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+    service.NewEnterpriseWithModifier(ctx.Modifier).DeletePrice(req)
+    return ctx.SendResponse()
+}
+
+// ModifyContract
+// @ID           ManagerEnterpriseModifyContract
+// @Router       /manager/v1/enterprise/contract [POST]
+// @Summary      M9017 编辑合同
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.EnterpriseContractModifyReq  true  "合同字段"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*enterprise) ModifyContract(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.EnterpriseContractModifyReq](c)
+    service.NewEnterpriseWithModifier(ctx.Modifier).ModifyContract(req)
+    return ctx.SendResponse()
+}
+
+// DeleteContract
+// @ID           ManagerEnterpriseDeleteContract
+// @Router       /manager/v1/enterprise/contract/{id} [DELETE]
+// @Summary      M9018 删除合同
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        id  path  uint64  true  "合同ID"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*enterprise) DeleteContract(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.IDParamReq](c)
+    service.NewEnterpriseWithModifier(ctx.Modifier).DeleteContract(req)
+    return ctx.SendResponse()
 }
