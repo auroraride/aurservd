@@ -74,7 +74,9 @@ func dump(handler bodyDumpHandler) echo.MiddlewareFunc {
             writer := &bodyDumpResponseWriter{Writer: mw, ResponseWriter: c.Response().Writer}
             c.Response().Writer = writer
 
-            err = next(c)
+            if err = next(c); err != nil {
+                resBody.WriteString(err.Error())
+            }
 
             // Callback
             handler(c, reqBody, resBody.Bytes())
@@ -136,6 +138,9 @@ func logBuffer(config BodyDumpConfig, c echo.Context, reqBody, resBody []byte) (
     if len(resBody) > 0 {
         buffer.WriteString("\n[RES] ")
         buffer.Write(resBody)
+    }
+    if buffer.Bytes()[len(buffer.Bytes())-1] != '\n' {
+        buffer.WriteRune('\n')
     }
     buffer.WriteRune('\n')
     return
