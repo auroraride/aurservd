@@ -9,6 +9,7 @@ import (
     "bufio"
     "bytes"
     "fmt"
+    "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/golang-module/carbon/v2"
     "github.com/labstack/echo/v4"
@@ -138,6 +139,9 @@ func logBuffer(config BodyDumpConfig, c echo.Context, reqBody, resBody []byte) (
     if len(resBody) > 0 {
         buffer.WriteString("\n[RES] ")
         buffer.Write(resBody)
+    }
+    if ctx, ok := c.(*app.RiderContext); ok {
+        buffer.WriteString(fmt.Sprintf("[RIDER] ID:%d Phone:%s", ctx.Rider.ID, ctx.Rider.Phone))
     }
     if buffer.Bytes()[len(buffer.Bytes())-1] != '\n' {
         buffer.WriteRune('\n')

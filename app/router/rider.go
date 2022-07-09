@@ -12,14 +12,7 @@ import (
 
 // rideRoutes 骑手路由
 func loadRideRoutes() {
-    g := root.Group("rider/v1", middleware.BodyDumpRawWithInterval(map[string]bool{
-        "/rider/v1/socket": true,
-        "/rider/callback": true,
-        "/rider/callback/esign": true,
-        "/rider/callback/alipay": true,
-        "/rider/callback/wechatpay": true,
-        "/rider/callback/wechatpay/refund": true,
-    }))
+    g := root.Group("rider/v1")
 
     // socket
     g.Any("/socket", rapi.Socket.Rider)
@@ -31,7 +24,14 @@ func loadRideRoutes() {
     g.Any("/callback/wechatpay/refund", rapi.Callback.WechatRefundCallback, middleware.BodyDumpRaw()) // 骑手微信退款回调中心
 
     // 引入骑手api需要的中间件
-    g.Use(middleware.DeviceMiddleware(), middleware.RiderMiddleware())
+    g.Use(middleware.DeviceMiddleware(), middleware.RiderMiddleware(), middleware.BodyDumpRawWithInterval(map[string]bool{
+        "/rider/v1/socket": true,
+        "/rider/callback": true,
+        "/rider/callback/esign": true,
+        "/rider/callback/alipay": true,
+        "/rider/callback/wechatpay": true,
+        "/rider/callback/wechatpay/refund": true,
+    }))
 
     g.POST("/signin", rapi.Rider.Signin)                  // 登录
     g.POST("/authenticator", rapi.Rider.Authenticator)    // 认证
