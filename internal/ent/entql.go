@@ -545,7 +545,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterprisestatement.FieldRemark:       {Type: field.TypeString, Column: enterprisestatement.FieldRemark},
 			enterprisestatement.FieldEnterpriseID: {Type: field.TypeUint64, Column: enterprisestatement.FieldEnterpriseID},
 			enterprisestatement.FieldCost:         {Type: field.TypeFloat64, Column: enterprisestatement.FieldCost},
-			enterprisestatement.FieldBalance:      {Type: field.TypeFloat64, Column: enterprisestatement.FieldBalance},
 			enterprisestatement.FieldSettledAt:    {Type: field.TypeTime, Column: enterprisestatement.FieldSettledAt},
 			enterprisestatement.FieldDays:         {Type: field.TypeInt, Column: enterprisestatement.FieldDays},
 			enterprisestatement.FieldRiderNumber:  {Type: field.TypeInt, Column: enterprisestatement.FieldRiderNumber},
@@ -5598,11 +5597,6 @@ func (f *EnterpriseStatementFilter) WhereEnterpriseID(p entql.Uint64P) {
 // WhereCost applies the entql float64 predicate on the cost field.
 func (f *EnterpriseStatementFilter) WhereCost(p entql.Float64P) {
 	f.Where(p.Field(enterprisestatement.FieldCost))
-}
-
-// WhereBalance applies the entql float64 predicate on the balance field.
-func (f *EnterpriseStatementFilter) WhereBalance(p entql.Float64P) {
-	f.Where(p.Field(enterprisestatement.FieldBalance))
 }
 
 // WhereSettledAt applies the entql time.Time predicate on the settled_at field.

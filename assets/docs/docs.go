@@ -12890,13 +12890,17 @@ const docTemplate = `{
         },
         "model.StatementClearBillReq": {
             "type": "object",
+            "required": [
+                "remark",
+                "uuid"
+            ],
             "properties": {
                 "remark": {
-                    "description": "备注信息",
+                    "description": "备注信息 ",
                     "type": "string"
                 },
                 "uuid": {
-                    "description": "账单编码",
+                    "description": "账单编码 ",
                     "type": "string"
                 }
             }

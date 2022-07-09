@@ -29,8 +29,6 @@ const (
 	FieldEnterpriseID = "enterprise_id"
 	// FieldCost holds the string denoting the cost field in the database.
 	FieldCost = "cost"
-	// FieldBalance holds the string denoting the balance field in the database.
-	FieldBalance = "balance"
 	// FieldSettledAt holds the string denoting the settled_at field in the database.
 	FieldSettledAt = "settled_at"
 	// FieldDays holds the string denoting the days field in the database.
@@ -76,7 +74,6 @@ var Columns = []string{
 	FieldRemark,
 	FieldEnterpriseID,
 	FieldCost,
-	FieldBalance,
 	FieldSettledAt,
 	FieldDays,
 	FieldRiderNumber,
@@ -111,8 +108,6 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// DefaultCost holds the default value on creation for the "cost" field.
 	DefaultCost float64
-	// DefaultBalance holds the default value on creation for the "balance" field.
-	DefaultBalance float64
 	// DefaultDays holds the default value on creation for the "days" field.
 	DefaultDays int
 	// DefaultRiderNumber holds the default value on creation for the "rider_number" field.

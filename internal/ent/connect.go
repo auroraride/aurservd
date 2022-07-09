@@ -11,6 +11,7 @@ import (
     "entgo.io/ent/dialect"
     entsql "entgo.io/ent/dialect/sql"
     "entgo.io/ent/dialect/sql/schema"
+    "fmt"
     "github.com/auroraride/aurservd/internal/ent/migrate"
     log "github.com/sirupsen/logrus"
 
@@ -50,4 +51,27 @@ func autoMigrate(c *Client) {
     ); err != nil {
         log.Fatalf("数据库迁移失败: %v", err)
     }
+}
+
+func WithTx(ctx context.Context, fn func(tx *Tx) error) error {
+    tx, err := Database.Tx(ctx)
+    if err != nil {
+        return err
+    }
+    defer func() {
+        if v := recover(); v != nil {
+            tx.Rollback()
+            panic(v)
+        }
+    }()
+    if err = fn(tx); err != nil {
+        if rerr := tx.Rollback(); rerr != nil {
+            err = fmt.Errorf("rolling back transaction: %w", rerr)
+        }
+        return err
+    }
+    if err = tx.Commit(); err != nil {
+        return fmt.Errorf("committing transaction: %w", err)
+    }
+    return nil
 }

@@ -45,13 +45,6 @@ func NewEnterprise() *enterpriseService {
     }
 }
 
-func NewEnterpriseWithRider(r *ent.Rider) *enterpriseService {
-    s := NewEnterprise()
-    s.ctx = context.WithValue(s.ctx, "rider", r)
-    s.rider = r
-    return s
-}
-
 func NewEnterpriseWithModifier(m *model.Modifier) *enterpriseService {
     s := NewEnterprise()
     s.ctx = context.WithValue(s.ctx, "modifier", m)
@@ -109,15 +102,19 @@ func (s *enterpriseService) PriceKey(cityID uint64, model string) string {
 
 // DetailQuery 企业详情查询语句
 func (s *enterpriseService) DetailQuery() *ent.EnterpriseQuery {
-    return s.orm.QueryNotDeleted().WithCity().WithPrices(func(ep *ent.EnterprisePriceQuery) {
-        ep.WithCity()
-    }).WithContracts(func(ecq *ent.EnterpriseContractQuery) {
-        ecq.Order(ent.Desc(enterprisecontract.FieldEnd))
-    }).WithRiders(func(erq *ent.RiderQuery) {
-        erq.Where(rider.DeletedAtIsNil())
-    }).WithStatements(func(esq *ent.EnterpriseStatementQuery) {
-        esq.Where(enterprisestatement.SettledAtIsNil())
-    })
+    return s.orm.QueryNotDeleted().WithCity().
+        WithPrices(func(ep *ent.EnterprisePriceQuery) {
+            ep.Where(enterpriseprice.DeletedAtIsNil()).WithCity()
+        }).
+        WithContracts(func(ecq *ent.EnterpriseContractQuery) {
+            ecq.Where(enterprisecontract.DeletedAtIsNil()).Order(ent.Desc(enterprisecontract.FieldEnd))
+        }).
+        WithRiders(func(erq *ent.RiderQuery) {
+            erq.Where(rider.DeletedAtIsNil())
+        }).
+        WithStatements(func(esq *ent.EnterpriseStatementQuery) {
+            esq.Where(enterprisestatement.SettledAtIsNil())
+        })
 }
 
 // List 列举企业
@@ -338,14 +335,8 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
 
     // 获取所有骑手订阅
     var subs []*ent.Subscribe
-    isPostPayment := e.Payment == model.EnterprisePaymentPostPay
-    if isPostPayment {
-        // 后付费企业获取未结算订阅
-        subs = s.QueryAllBillingSubscribe(e.ID, end)
-    } else {
-        // 预付费企业获取所有订阅
-        subs = s.QueryAllSubscribe(e.ID)
-    }
+    // 获取未结算订阅
+    subs = s.QueryAllBillingSubscribe(e.ID, end)
     for _, sub := range subs {
         // 是否已终止并且终止时间早于结算时间
         if sub.LastBillDate != nil && sub.EndAt != nil && sub.LastBillDate.After(*sub.EndAt) {
@@ -358,8 +349,8 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
         // 开始时间
         from := carbon.Time2Carbon(*sub.StartAt).StartOfDay().Carbon2Time()
 
-        // 后付费企业: 上次结算日期存在则从上次结算日次日开始计算
-        if isPostPayment && sub.LastBillDate != nil {
+        // 上次结算日期存在则从上次结算日次日开始计算
+        if sub.LastBillDate != nil {
             from = carbon.Time2Carbon(*sub.LastBillDate).StartOfDay().AddDay().Carbon2Time()
         }
 
@@ -405,7 +396,7 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
 func (s *enterpriseService) UpdateStatementByID(id uint64) {
     e, _ := ent.Database.Enterprise.QueryNotDeleted().Where(enterprise.ID(id)).First(s.ctx)
     if e != nil {
-        NewEnterprise().UpdateStatement(e)
+        s.UpdateStatement(e)
     }
 }
 
@@ -457,7 +448,6 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
     now := carbon.Now().StartOfDay().Carbon2Time()
     _, err = sta.Update().
         SetRiderNumber(len(bills)).
-        SetBalance(balance).
         SetDays(days).
         SetCost(cost).
         SetDate(now).
@@ -498,7 +488,7 @@ func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float
     // 更新余额
     // 账单表
     balance := td.Sum(e.Balance, req.Amount)
-    _, err = tx.EnterpriseStatement.UpdateOne(set).SetBalance(balance).Save(s.ctx)
+    _, err = tx.EnterpriseStatement.UpdateOne(set).Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
 
     // 更新企业表
@@ -559,8 +549,21 @@ func (s *enterpriseService) ModifyPrice(req *model.EnterprisePriceModifyReq) mod
             snag.Panic("电池型号无法修改")
         }
         if p.Price != req.Price {
-            // TODO 自动轧账
+            // 自动轧账
+            srv := NewEnterpriseStatementWithModifier(s.modifier)
+            // 获取账单信息
+            info := srv.GetBill(&model.StatementBillReq{
+                End:   carbon.Now().Yesterday().StartOfDay().Format("Y-m-d"),
+                ID:    req.EnterpriseID,
+                Force: true,
+            })
+            // 轧账
+            srv.Bill(&model.StatementClearBillReq{
+                UUID:   info.UUID,
+                Remark: "修改价格自动轧账",
+            })
             p, err = p.Update().SetPrice(req.Price).Save(s.ctx)
+            s.UpdateStatementByID(req.EnterpriseID)
         }
     } else {
         client := ent.Database.EnterprisePrice

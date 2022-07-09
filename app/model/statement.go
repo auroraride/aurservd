@@ -10,6 +10,8 @@ import jsoniter "github.com/json-iterator/go"
 type StatementBillReq struct {
     End string `json:"end" validate:"required,datetime=2006-01-02" query:"end" trans:"账单截止日期"`
     ID  uint64 `json:"id" validate:"required" query:"id" trans:"企业ID"`
+
+    Force bool `json:"-" swaggerignore:"true"`
 }
 
 type BillOverview struct {
@@ -60,8 +62,8 @@ func (d *StatementBillRes) UnmarshalBinary(data []byte) error {
 }
 
 type StatementClearBillReq struct {
-    UUID   string  `json:"uuid"`   // 账单编码
-    Remark *string `json:"remark"` // 备注信息
+    UUID   string `json:"uuid" validate:"required" trans:"账单编码"`
+    Remark string `json:"remark" validate:"required" trans:"备注信息"`
 }
 
 type StatementBillHistoricalListReq struct {

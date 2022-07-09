@@ -65,7 +65,7 @@ type Enterprise struct {
 	// 账户余额
 	Balance float64 `json:"balance,omitempty"`
 	// PrepaymentTotal holds the value of the "prepayment_total" field.
-	// 总储值金额
+	// 总储值金额 = 总金额 - 轧账金额(修改价格后自动轧账)
 	PrepaymentTotal float64 `json:"prepayment_total,omitempty"`
 	// SuspensedAt holds the value of the "suspensed_at" field.
 	// 暂停合作时间

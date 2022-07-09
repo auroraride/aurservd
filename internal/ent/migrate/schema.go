@@ -818,7 +818,7 @@ var (
 		{Name: "payment", Type: field.TypeUint8, Comment: "付费方式 1预付费 2后付费"},
 		{Name: "deposit", Type: field.TypeFloat64, Comment: "押金", Default: 0},
 		{Name: "balance", Type: field.TypeFloat64, Comment: "账户余额", Default: 0},
-		{Name: "prepayment_total", Type: field.TypeFloat64, Comment: "总储值金额", Default: 0},
+		{Name: "prepayment_total", Type: field.TypeFloat64, Comment: "总储值金额 = 总金额 - 轧账金额(修改价格后自动轧账)", Default: 0},
 		{Name: "suspensed_at", Type: field.TypeTime, Comment: "暂停合作时间", Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64},
 	}
@@ -1130,7 +1130,6 @@ var (
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "cost", Type: field.TypeFloat64, Comment: "账单金额", Default: 0},
-		{Name: "balance", Type: field.TypeFloat64, Comment: "预付剩余, 负数是欠费", Default: 0},
 		{Name: "settled_at", Type: field.TypeTime, Comment: "结账时间", Nullable: true},
 		{Name: "days", Type: field.TypeInt, Comment: "账期内使用总天数", Default: 0},
 		{Name: "rider_number", Type: field.TypeInt, Comment: "账期内使用总人数", Default: 0},
@@ -1147,7 +1146,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "enterprise_statement_enterprise_statements",
-				Columns:    []*schema.Column{EnterpriseStatementColumns[15]},
+				Columns:    []*schema.Column{EnterpriseStatementColumns[14]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -1166,12 +1165,12 @@ var (
 			{
 				Name:    "enterprisestatement_date",
 				Unique:  false,
-				Columns: []*schema.Column{EnterpriseStatementColumns[12]},
+				Columns: []*schema.Column{EnterpriseStatementColumns[11]},
 			},
 			{
 				Name:    "enterprisestatement_start_end",
 				Unique:  false,
-				Columns: []*schema.Column{EnterpriseStatementColumns[13], EnterpriseStatementColumns[14]},
+				Columns: []*schema.Column{EnterpriseStatementColumns[12], EnterpriseStatementColumns[13]},
 			},
 		},
 	}

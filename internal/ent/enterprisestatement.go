@@ -40,9 +40,6 @@ type EnterpriseStatement struct {
 	// Cost holds the value of the "cost" field.
 	// 账单金额
 	Cost float64 `json:"cost,omitempty"`
-	// Balance holds the value of the "balance" field.
-	// 预付剩余, 负数是欠费
-	Balance float64 `json:"balance,omitempty"`
 	// SettledAt holds the value of the "settled_at" field.
 	// 结账时间
 	SettledAt *time.Time `json:"settled_at,omitempty"`
@@ -107,7 +104,7 @@ func (*EnterpriseStatement) scanValues(columns []string) ([]interface{}, error) 
 		switch columns[i] {
 		case enterprisestatement.FieldCreator, enterprisestatement.FieldLastModifier:
 			values[i] = new([]byte)
-		case enterprisestatement.FieldCost, enterprisestatement.FieldBalance:
+		case enterprisestatement.FieldCost:
 			values[i] = new(sql.NullFloat64)
 		case enterprisestatement.FieldID, enterprisestatement.FieldEnterpriseID, enterprisestatement.FieldDays, enterprisestatement.FieldRiderNumber:
 			values[i] = new(sql.NullInt64)
@@ -188,12 +185,6 @@ func (es *EnterpriseStatement) assignValues(columns []string, values []interface
 				return fmt.Errorf("unexpected type %T for field cost", values[i])
 			} else if value.Valid {
 				es.Cost = value.Float64
-			}
-		case enterprisestatement.FieldBalance:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field balance", values[i])
-			} else if value.Valid {
-				es.Balance = value.Float64
 			}
 		case enterprisestatement.FieldSettledAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -290,8 +281,6 @@ func (es *EnterpriseStatement) String() string {
 	builder.WriteString(fmt.Sprintf("%v", es.EnterpriseID))
 	builder.WriteString(", cost=")
 	builder.WriteString(fmt.Sprintf("%v", es.Cost))
-	builder.WriteString(", balance=")
-	builder.WriteString(fmt.Sprintf("%v", es.Balance))
 	if v := es.SettledAt; v != nil {
 		builder.WriteString(", settled_at=")
 		builder.WriteString(v.Format(time.ANSIC))

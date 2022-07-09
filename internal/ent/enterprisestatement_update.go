@@ -116,27 +116,6 @@ func (esu *EnterpriseStatementUpdate) AddCost(f float64) *EnterpriseStatementUpd
 	return esu
 }
 
-// SetBalance sets the "balance" field.
-func (esu *EnterpriseStatementUpdate) SetBalance(f float64) *EnterpriseStatementUpdate {
-	esu.mutation.ResetBalance()
-	esu.mutation.SetBalance(f)
-	return esu
-}
-
-// SetNillableBalance sets the "balance" field if the given value is not nil.
-func (esu *EnterpriseStatementUpdate) SetNillableBalance(f *float64) *EnterpriseStatementUpdate {
-	if f != nil {
-		esu.SetBalance(*f)
-	}
-	return esu
-}
-
-// AddBalance adds f to the "balance" field.
-func (esu *EnterpriseStatementUpdate) AddBalance(f float64) *EnterpriseStatementUpdate {
-	esu.mutation.AddBalance(f)
-	return esu
-}
-
 // SetSettledAt sets the "settled_at" field.
 func (esu *EnterpriseStatementUpdate) SetSettledAt(t time.Time) *EnterpriseStatementUpdate {
 	esu.mutation.SetSettledAt(t)
@@ -464,20 +443,6 @@ func (esu *EnterpriseStatementUpdate) sqlSave(ctx context.Context) (n int, err e
 			Column: enterprisestatement.FieldCost,
 		})
 	}
-	if value, ok := esu.mutation.Balance(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisestatement.FieldBalance,
-		})
-	}
-	if value, ok := esu.mutation.AddedBalance(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisestatement.FieldBalance,
-		})
-	}
 	if value, ok := esu.mutation.SettledAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -742,27 +707,6 @@ func (esuo *EnterpriseStatementUpdateOne) SetNillableCost(f *float64) *Enterpris
 // AddCost adds f to the "cost" field.
 func (esuo *EnterpriseStatementUpdateOne) AddCost(f float64) *EnterpriseStatementUpdateOne {
 	esuo.mutation.AddCost(f)
-	return esuo
-}
-
-// SetBalance sets the "balance" field.
-func (esuo *EnterpriseStatementUpdateOne) SetBalance(f float64) *EnterpriseStatementUpdateOne {
-	esuo.mutation.ResetBalance()
-	esuo.mutation.SetBalance(f)
-	return esuo
-}
-
-// SetNillableBalance sets the "balance" field if the given value is not nil.
-func (esuo *EnterpriseStatementUpdateOne) SetNillableBalance(f *float64) *EnterpriseStatementUpdateOne {
-	if f != nil {
-		esuo.SetBalance(*f)
-	}
-	return esuo
-}
-
-// AddBalance adds f to the "balance" field.
-func (esuo *EnterpriseStatementUpdateOne) AddBalance(f float64) *EnterpriseStatementUpdateOne {
-	esuo.mutation.AddBalance(f)
 	return esuo
 }
 
@@ -1121,20 +1065,6 @@ func (esuo *EnterpriseStatementUpdateOne) sqlSave(ctx context.Context) (_node *E
 			Type:   field.TypeFloat64,
 			Value:  value,
 			Column: enterprisestatement.FieldCost,
-		})
-	}
-	if value, ok := esuo.mutation.Balance(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisestatement.FieldBalance,
-		})
-	}
-	if value, ok := esuo.mutation.AddedBalance(); ok {
-		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisestatement.FieldBalance,
 		})
 	}
 	if value, ok := esuo.mutation.SettledAt(); ok {

@@ -462,16 +462,12 @@ func init() {
 	enterprisestatementDescCost := enterprisestatementFields[1].Descriptor()
 	// enterprisestatement.DefaultCost holds the default value on creation for the cost field.
 	enterprisestatement.DefaultCost = enterprisestatementDescCost.Default.(float64)
-	// enterprisestatementDescBalance is the schema descriptor for balance field.
-	enterprisestatementDescBalance := enterprisestatementFields[2].Descriptor()
-	// enterprisestatement.DefaultBalance holds the default value on creation for the balance field.
-	enterprisestatement.DefaultBalance = enterprisestatementDescBalance.Default.(float64)
 	// enterprisestatementDescDays is the schema descriptor for days field.
-	enterprisestatementDescDays := enterprisestatementFields[4].Descriptor()
+	enterprisestatementDescDays := enterprisestatementFields[3].Descriptor()
 	// enterprisestatement.DefaultDays holds the default value on creation for the days field.
 	enterprisestatement.DefaultDays = enterprisestatementDescDays.Default.(int)
 	// enterprisestatementDescRiderNumber is the schema descriptor for rider_number field.
-	enterprisestatementDescRiderNumber := enterprisestatementFields[5].Descriptor()
+	enterprisestatementDescRiderNumber := enterprisestatementFields[4].Descriptor()
 	// enterprisestatement.DefaultRiderNumber holds the default value on creation for the rider_number field.
 	enterprisestatement.DefaultRiderNumber = enterprisestatementDescRiderNumber.Default.(int)
 	enterprisestationMixin := schema.EnterpriseStation{}.Mixin()

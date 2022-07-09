@@ -113,20 +113,6 @@ func (esc *EnterpriseStatementCreate) SetNillableCost(f *float64) *EnterpriseSta
 	return esc
 }
 
-// SetBalance sets the "balance" field.
-func (esc *EnterpriseStatementCreate) SetBalance(f float64) *EnterpriseStatementCreate {
-	esc.mutation.SetBalance(f)
-	return esc
-}
-
-// SetNillableBalance sets the "balance" field if the given value is not nil.
-func (esc *EnterpriseStatementCreate) SetNillableBalance(f *float64) *EnterpriseStatementCreate {
-	if f != nil {
-		esc.SetBalance(*f)
-	}
-	return esc
-}
-
 // SetSettledAt sets the "settled_at" field.
 func (esc *EnterpriseStatementCreate) SetSettledAt(t time.Time) *EnterpriseStatementCreate {
 	esc.mutation.SetSettledAt(t)
@@ -320,10 +306,6 @@ func (esc *EnterpriseStatementCreate) defaults() error {
 		v := enterprisestatement.DefaultCost
 		esc.mutation.SetCost(v)
 	}
-	if _, ok := esc.mutation.Balance(); !ok {
-		v := enterprisestatement.DefaultBalance
-		esc.mutation.SetBalance(v)
-	}
 	if _, ok := esc.mutation.Days(); !ok {
 		v := enterprisestatement.DefaultDays
 		esc.mutation.SetDays(v)
@@ -348,9 +330,6 @@ func (esc *EnterpriseStatementCreate) check() error {
 	}
 	if _, ok := esc.mutation.Cost(); !ok {
 		return &ValidationError{Name: "cost", err: errors.New(`ent: missing required field "EnterpriseStatement.cost"`)}
-	}
-	if _, ok := esc.mutation.Balance(); !ok {
-		return &ValidationError{Name: "balance", err: errors.New(`ent: missing required field "EnterpriseStatement.balance"`)}
 	}
 	if _, ok := esc.mutation.Days(); !ok {
 		return &ValidationError{Name: "days", err: errors.New(`ent: missing required field "EnterpriseStatement.days"`)}
@@ -447,14 +426,6 @@ func (esc *EnterpriseStatementCreate) createSpec() (*EnterpriseStatement, *sqlgr
 			Column: enterprisestatement.FieldCost,
 		})
 		_node.Cost = value
-	}
-	if value, ok := esc.mutation.Balance(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeFloat64,
-			Value:  value,
-			Column: enterprisestatement.FieldBalance,
-		})
-		_node.Balance = value
 	}
 	if value, ok := esc.mutation.SettledAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -720,24 +691,6 @@ func (u *EnterpriseStatementUpsert) UpdateCost() *EnterpriseStatementUpsert {
 // AddCost adds v to the "cost" field.
 func (u *EnterpriseStatementUpsert) AddCost(v float64) *EnterpriseStatementUpsert {
 	u.Add(enterprisestatement.FieldCost, v)
-	return u
-}
-
-// SetBalance sets the "balance" field.
-func (u *EnterpriseStatementUpsert) SetBalance(v float64) *EnterpriseStatementUpsert {
-	u.Set(enterprisestatement.FieldBalance, v)
-	return u
-}
-
-// UpdateBalance sets the "balance" field to the value that was provided on create.
-func (u *EnterpriseStatementUpsert) UpdateBalance() *EnterpriseStatementUpsert {
-	u.SetExcluded(enterprisestatement.FieldBalance)
-	return u
-}
-
-// AddBalance adds v to the "balance" field.
-func (u *EnterpriseStatementUpsert) AddBalance(v float64) *EnterpriseStatementUpsert {
-	u.Add(enterprisestatement.FieldBalance, v)
 	return u
 }
 
@@ -1037,27 +990,6 @@ func (u *EnterpriseStatementUpsertOne) AddCost(v float64) *EnterpriseStatementUp
 func (u *EnterpriseStatementUpsertOne) UpdateCost() *EnterpriseStatementUpsertOne {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
 		s.UpdateCost()
-	})
-}
-
-// SetBalance sets the "balance" field.
-func (u *EnterpriseStatementUpsertOne) SetBalance(v float64) *EnterpriseStatementUpsertOne {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.SetBalance(v)
-	})
-}
-
-// AddBalance adds v to the "balance" field.
-func (u *EnterpriseStatementUpsertOne) AddBalance(v float64) *EnterpriseStatementUpsertOne {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.AddBalance(v)
-	})
-}
-
-// UpdateBalance sets the "balance" field to the value that was provided on create.
-func (u *EnterpriseStatementUpsertOne) UpdateBalance() *EnterpriseStatementUpsertOne {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.UpdateBalance()
 	})
 }
 
@@ -1538,27 +1470,6 @@ func (u *EnterpriseStatementUpsertBulk) AddCost(v float64) *EnterpriseStatementU
 func (u *EnterpriseStatementUpsertBulk) UpdateCost() *EnterpriseStatementUpsertBulk {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
 		s.UpdateCost()
-	})
-}
-
-// SetBalance sets the "balance" field.
-func (u *EnterpriseStatementUpsertBulk) SetBalance(v float64) *EnterpriseStatementUpsertBulk {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.SetBalance(v)
-	})
-}
-
-// AddBalance adds v to the "balance" field.
-func (u *EnterpriseStatementUpsertBulk) AddBalance(v float64) *EnterpriseStatementUpsertBulk {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.AddBalance(v)
-	})
-}
-
-// UpdateBalance sets the "balance" field to the value that was provided on create.
-func (u *EnterpriseStatementUpsertBulk) UpdateBalance() *EnterpriseStatementUpsertBulk {
-	return u.Update(func(s *EnterpriseStatementUpsert) {
-		s.UpdateBalance()
 	})
 }
 

@@ -3394,11 +3394,14 @@ definitions:
   model.StatementClearBillReq:
     properties:
       remark:
-        description: 备注信息
+        description: '备注信息 '
         type: string
       uuid:
-        description: 账单编码
+        description: '账单编码 '
         type: string
+    required:
+    - remark
+    - uuid
     type: object
   model.StatementDetail:
     properties:

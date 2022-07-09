@@ -41,13 +41,6 @@ func NewEnterpriseStatement() *enterpriseStatementService {
     }
 }
 
-func NewEnterpriseStatementWithRider(r *ent.Rider) *enterpriseStatementService {
-    s := NewEnterpriseStatement()
-    s.ctx = context.WithValue(s.ctx, "rider", r)
-    s.rider = r
-    return s
-}
-
 func NewEnterpriseStatementWithModifier(m *model.Modifier) *enterpriseStatementService {
     s := NewEnterpriseStatement()
     s.ctx = context.WithValue(s.ctx, "modifier", m)
@@ -55,11 +48,8 @@ func NewEnterpriseStatementWithModifier(m *model.Modifier) *enterpriseStatementS
     return s
 }
 
-func NewEnterpriseStatementWithEmployee(e *ent.Employee) *enterpriseStatementService {
-    s := NewEnterpriseStatement()
-    s.ctx = context.WithValue(s.ctx, "employee", e)
-    s.employee = e
-    return s
+func (s *enterpriseStatementService) SetContext(ctx context.Context) {
+    s.ctx = ctx
 }
 
 // Current 获取企业当前账单, 若无则新增
@@ -73,7 +63,6 @@ func (s *enterpriseStatementService) Current(e *ent.Enterprise) *ent.EnterpriseS
         log.Infof("%d 未找到账单, 创建新账单", e.ID)
         res, _ = s.orm.Create().
             SetEnterpriseID(e.ID).
-            SetBalance(e.Balance).
             SetStart(carbon.Time2Carbon(e.CreatedAt).StartOfDay().Carbon2Time()).
             Save(s.ctx)
     }
@@ -93,7 +82,7 @@ func (s *enterpriseStatementService) GetBill(req *model.StatementBillReq) *model
         snag.Panic("未找到企业")
     }
 
-    if e.Payment != model.EnterprisePaymentPostPay {
+    if e.Payment != model.EnterprisePaymentPostPay && !req.Force {
         snag.Panic("只有后付费企业才可请求")
     }
 
@@ -199,7 +188,7 @@ func (s *enterpriseStatementService) Bill(req *model.StatementClearBillReq) {
         SetRiderNumber(len(br.Bills)).
         SetDays(br.Days).
         SetCost(br.Cost).
-        SetNillableRemark(req.Remark).
+        SetRemark(req.Remark).
         Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
 
@@ -239,7 +228,6 @@ func (s *enterpriseStatementService) Bill(req *model.StatementClearBillReq) {
         SetCost(tools.NewDecimal().Sub(es.Cost, br.Cost)).
         SetDays(es.Days - br.Days).
         SetRiderNumber(riders).
-        SetBalance(es.Balance).
         Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
 
