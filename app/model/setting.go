@@ -6,15 +6,16 @@
 package model
 
 const (
-    SettingDeposit      = "DEPOSIT"        // 押金
-    SettingRenewal      = "RENEWAL"        // 退订多久后重签计算佣金
-    SettingCabinetFault = "CABINET_FAULT"  // 电柜故障
-    SettingRescueReason = "RESCUE_REASON"  // 救援原因
-    SettingRescueFee    = "RESCUE_FEE"     // 救援费用
-    SettingOverdue      = "OVERDUE"        // 逾期通知
-    SettingBatteryFull  = "BATTERY_FULL"   // 满电电量
-    SettingException    = "EXCEPTION"      // 物资异常
-    SettingPauseMaxDays = "PAUSE_MAX_DAYS" // 最大寄存时间
+    SettingDeposit          = "DEPOSIT"           // 押金
+    SettingRenewal          = "RENEWAL"           // 退订多久后重签计算佣金
+    SettingCabinetFault     = "CABINET_FAULT"     // 电柜故障
+    SettingRescueReason     = "RESCUE_REASON"     // 救援原因
+    SettingRescueFee        = "RESCUE_FEE"        // 救援费用
+    SettingOverdue          = "OVERDUE"           // 逾期通知
+    SettingBatteryFull      = "BATTERY_FULL"      // 满电电量
+    SettingException        = "EXCEPTION"         // 物资异常
+    SettingPauseMaxDays     = "PAUSE_MAX_DAYS"    // 最大寄存时间
+    SettingExchangeInterval = "EXCHANGE_INTERVAL" // 限制换电间隔
 )
 
 type SettingValueConvert func(content string) any
@@ -81,5 +82,9 @@ var Settings = map[string]SettingItem{
     SettingPauseMaxDays: {
         Desc:    "最大寄存时间",
         Default: "31",
+    },
+    SettingExchangeInterval: {
+        Desc:    "限制换电间隔",
+        Default: "20",
     },
 }

@@ -3842,7 +3842,7 @@ const docTemplate = `{
                         ],
                         "type": "integer",
                         "description": "筛选订阅状态 0:全部 1:计费中 2:已退租 3:未激活",
-                        "name": "subscribe",
+                        "name": "subscribeStatus",
                         "in": "query"
                     }
                 ],

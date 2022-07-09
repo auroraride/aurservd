@@ -246,6 +246,20 @@ func (oc *OrderCreate) SetNillableInitialDays(i *int) *OrderCreate {
 	return oc
 }
 
+// SetPastDays sets the "past_days" field.
+func (oc *OrderCreate) SetPastDays(i int) *OrderCreate {
+	oc.mutation.SetPastDays(i)
+	return oc
+}
+
+// SetNillablePastDays sets the "past_days" field if the given value is not nil.
+func (oc *OrderCreate) SetNillablePastDays(i *int) *OrderCreate {
+	if i != nil {
+		oc.SetPastDays(*i)
+	}
+	return oc
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (oc *OrderCreate) SetPlan(p *Plan) *OrderCreate {
 	return oc.SetPlanID(p.ID)
@@ -629,6 +643,14 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 			Column: order.FieldInitialDays,
 		})
 		_node.InitialDays = value
+	}
+	if value, ok := oc.mutation.PastDays(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: order.FieldPastDays,
+		})
+		_node.PastDays = value
 	}
 	if nodes := oc.mutation.PlanIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1196,6 +1218,30 @@ func (u *OrderUpsert) ClearInitialDays() *OrderUpsert {
 	return u
 }
 
+// SetPastDays sets the "past_days" field.
+func (u *OrderUpsert) SetPastDays(v int) *OrderUpsert {
+	u.Set(order.FieldPastDays, v)
+	return u
+}
+
+// UpdatePastDays sets the "past_days" field to the value that was provided on create.
+func (u *OrderUpsert) UpdatePastDays() *OrderUpsert {
+	u.SetExcluded(order.FieldPastDays)
+	return u
+}
+
+// AddPastDays adds v to the "past_days" field.
+func (u *OrderUpsert) AddPastDays(v int) *OrderUpsert {
+	u.Add(order.FieldPastDays, v)
+	return u
+}
+
+// ClearPastDays clears the value of the "past_days" field.
+func (u *OrderUpsert) ClearPastDays() *OrderUpsert {
+	u.SetNull(order.FieldPastDays)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1653,6 +1699,34 @@ func (u *OrderUpsertOne) UpdateInitialDays() *OrderUpsertOne {
 func (u *OrderUpsertOne) ClearInitialDays() *OrderUpsertOne {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearInitialDays()
+	})
+}
+
+// SetPastDays sets the "past_days" field.
+func (u *OrderUpsertOne) SetPastDays(v int) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetPastDays(v)
+	})
+}
+
+// AddPastDays adds v to the "past_days" field.
+func (u *OrderUpsertOne) AddPastDays(v int) *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.AddPastDays(v)
+	})
+}
+
+// UpdatePastDays sets the "past_days" field to the value that was provided on create.
+func (u *OrderUpsertOne) UpdatePastDays() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdatePastDays()
+	})
+}
+
+// ClearPastDays clears the value of the "past_days" field.
+func (u *OrderUpsertOne) ClearPastDays() *OrderUpsertOne {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearPastDays()
 	})
 }
 
@@ -2277,6 +2351,34 @@ func (u *OrderUpsertBulk) UpdateInitialDays() *OrderUpsertBulk {
 func (u *OrderUpsertBulk) ClearInitialDays() *OrderUpsertBulk {
 	return u.Update(func(s *OrderUpsert) {
 		s.ClearInitialDays()
+	})
+}
+
+// SetPastDays sets the "past_days" field.
+func (u *OrderUpsertBulk) SetPastDays(v int) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.SetPastDays(v)
+	})
+}
+
+// AddPastDays adds v to the "past_days" field.
+func (u *OrderUpsertBulk) AddPastDays(v int) *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.AddPastDays(v)
+	})
+}
+
+// UpdatePastDays sets the "past_days" field to the value that was provided on create.
+func (u *OrderUpsertBulk) UpdatePastDays() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.UpdatePastDays()
+	})
+}
+
+// ClearPastDays clears the value of the "past_days" field.
+func (u *OrderUpsertBulk) ClearPastDays() *OrderUpsertBulk {
+	return u.Update(func(s *OrderUpsert) {
+		s.ClearPastDays()
 	})
 }
 

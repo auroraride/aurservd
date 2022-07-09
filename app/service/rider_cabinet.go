@@ -12,6 +12,7 @@ import (
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/exchange"
     "github.com/auroraride/aurservd/pkg/cache"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
@@ -57,15 +58,18 @@ func NewRiderCabinetWithRider(rider *ent.Rider) *riderCabinetService {
     return s
 }
 
-func NewRiderCabinetWithModifier(m *model.Modifier) *riderCabinetService {
-    s := NewRiderCabinet()
-    s.ctx = context.WithValue(s.ctx, "modifier", m)
-    s.modifier = m
-    return s
-}
-
 // GetProcess 获取待换电信息
 func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) *model.RiderCabinetInfo {
+    // 检查用户换电间隔
+    iv := cache.Int(model.SettingExchangeInterval)
+    ml := time.Now().Add(time.Duration(iv) * time.Minute)
+    if exist, _ := ent.Database.Exchange.QueryNotDeleted().Where(
+        exchange.RiderID(s.rider.ID),
+        exchange.Success(true),
+        exchange.CreatedAtGTE(ml),
+    ).Exist(s.ctx); exist {
+        snag.Panic(fmt.Sprintf("换电过于频繁, %d分钟可再次换电", iv))
+    }
     // 检查用户是否可以办理业务
     NewRiderPermissionWithRider(s.rider).BusinessX()
 

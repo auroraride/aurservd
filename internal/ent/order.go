@@ -82,6 +82,9 @@ type Order struct {
 	// InitialDays holds the value of the "initial_days" field.
 	// 所购骑士卡天数(也可能为补缴欠费天数)
 	InitialDays int `json:"initial_days,omitempty"`
+	// PastDays holds the value of the "past_days" field.
+	// 距上次退订天数
+	PastDays int `json:"past_days,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrderQuery when eager-loading is set.
 	Edges OrderEdges `json:"edges"`
@@ -242,7 +245,7 @@ func (*Order) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case order.FieldAmount, order.FieldTotal:
 			values[i] = new(sql.NullFloat64)
-		case order.FieldID, order.FieldPlanID, order.FieldCityID, order.FieldRiderID, order.FieldParentID, order.FieldSubscribeID, order.FieldStatus, order.FieldPayway, order.FieldType, order.FieldInitialDays:
+		case order.FieldID, order.FieldPlanID, order.FieldCityID, order.FieldRiderID, order.FieldParentID, order.FieldSubscribeID, order.FieldStatus, order.FieldPayway, order.FieldType, order.FieldInitialDays, order.FieldPastDays:
 			values[i] = new(sql.NullInt64)
 		case order.FieldRemark, order.FieldOutTradeNo, order.FieldTradeNo:
 			values[i] = new(sql.NullString)
@@ -397,6 +400,12 @@ func (o *Order) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				o.InitialDays = int(value.Int64)
 			}
+		case order.FieldPastDays:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field past_days", values[i])
+			} else if value.Valid {
+				o.PastDays = int(value.Int64)
+			}
 		}
 	}
 	return nil
@@ -518,6 +527,8 @@ func (o *Order) String() string {
 	}
 	builder.WriteString(", initial_days=")
 	builder.WriteString(fmt.Sprintf("%v", o.InitialDays))
+	builder.WriteString(", past_days=")
+	builder.WriteString(fmt.Sprintf("%v", o.PastDays))
 	builder.WriteByte(')')
 	return builder.String()
 }

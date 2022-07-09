@@ -248,6 +248,33 @@ func (ou *OrderUpdate) ClearInitialDays() *OrderUpdate {
 	return ou
 }
 
+// SetPastDays sets the "past_days" field.
+func (ou *OrderUpdate) SetPastDays(i int) *OrderUpdate {
+	ou.mutation.ResetPastDays()
+	ou.mutation.SetPastDays(i)
+	return ou
+}
+
+// SetNillablePastDays sets the "past_days" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillablePastDays(i *int) *OrderUpdate {
+	if i != nil {
+		ou.SetPastDays(*i)
+	}
+	return ou
+}
+
+// AddPastDays adds i to the "past_days" field.
+func (ou *OrderUpdate) AddPastDays(i int) *OrderUpdate {
+	ou.mutation.AddPastDays(i)
+	return ou
+}
+
+// ClearPastDays clears the value of the "past_days" field.
+func (ou *OrderUpdate) ClearPastDays() *OrderUpdate {
+	ou.mutation.ClearPastDays()
+	return ou
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (ou *OrderUpdate) SetPlan(p *Plan) *OrderUpdate {
 	return ou.SetPlanID(p.ID)
@@ -617,6 +644,26 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Column: order.FieldInitialDays,
+		})
+	}
+	if value, ok := ou.mutation.PastDays(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: order.FieldPastDays,
+		})
+	}
+	if value, ok := ou.mutation.AddedPastDays(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: order.FieldPastDays,
+		})
+	}
+	if ou.mutation.PastDaysCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Column: order.FieldPastDays,
 		})
 	}
 	if ou.mutation.PlanCleared() {
@@ -1184,6 +1231,33 @@ func (ouo *OrderUpdateOne) ClearInitialDays() *OrderUpdateOne {
 	return ouo
 }
 
+// SetPastDays sets the "past_days" field.
+func (ouo *OrderUpdateOne) SetPastDays(i int) *OrderUpdateOne {
+	ouo.mutation.ResetPastDays()
+	ouo.mutation.SetPastDays(i)
+	return ouo
+}
+
+// SetNillablePastDays sets the "past_days" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillablePastDays(i *int) *OrderUpdateOne {
+	if i != nil {
+		ouo.SetPastDays(*i)
+	}
+	return ouo
+}
+
+// AddPastDays adds i to the "past_days" field.
+func (ouo *OrderUpdateOne) AddPastDays(i int) *OrderUpdateOne {
+	ouo.mutation.AddPastDays(i)
+	return ouo
+}
+
+// ClearPastDays clears the value of the "past_days" field.
+func (ouo *OrderUpdateOne) ClearPastDays() *OrderUpdateOne {
+	ouo.mutation.ClearPastDays()
+	return ouo
+}
+
 // SetPlan sets the "plan" edge to the Plan entity.
 func (ouo *OrderUpdateOne) SetPlan(p *Plan) *OrderUpdateOne {
 	return ouo.SetPlanID(p.ID)
@@ -1583,6 +1657,26 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeInt,
 			Column: order.FieldInitialDays,
+		})
+	}
+	if value, ok := ouo.mutation.PastDays(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: order.FieldPastDays,
+		})
+	}
+	if value, ok := ouo.mutation.AddedPastDays(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: order.FieldPastDays,
+		})
+	}
+	if ouo.mutation.PastDaysCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Column: order.FieldPastDays,
 		})
 	}
 	if ouo.mutation.PlanCleared() {

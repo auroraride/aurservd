@@ -43,6 +43,8 @@ type OrderMutation struct {
 	refund_at         *time.Time
 	initial_days      *int
 	addinitial_days   *int
+	past_days         *int
+	addpast_days      *int
 	clearedFields     map[string]struct{}
 	plan              *uint64
 	clearedplan       bool
@@ -1137,6 +1139,76 @@ func (m *OrderMutation) ResetInitialDays() {
 	delete(m.clearedFields, order.FieldInitialDays)
 }
 
+// SetPastDays sets the "past_days" field.
+func (m *OrderMutation) SetPastDays(i int) {
+	m.past_days = &i
+	m.addpast_days = nil
+}
+
+// PastDays returns the value of the "past_days" field in the mutation.
+func (m *OrderMutation) PastDays() (r int, exists bool) {
+	v := m.past_days
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPastDays returns the old "past_days" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldPastDays(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPastDays is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPastDays requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPastDays: %w", err)
+	}
+	return oldValue.PastDays, nil
+}
+
+// AddPastDays adds i to the "past_days" field.
+func (m *OrderMutation) AddPastDays(i int) {
+	if m.addpast_days != nil {
+		*m.addpast_days += i
+	} else {
+		m.addpast_days = &i
+	}
+}
+
+// AddedPastDays returns the value that was added to the "past_days" field in this mutation.
+func (m *OrderMutation) AddedPastDays() (r int, exists bool) {
+	v := m.addpast_days
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearPastDays clears the value of the "past_days" field.
+func (m *OrderMutation) ClearPastDays() {
+	m.past_days = nil
+	m.addpast_days = nil
+	m.clearedFields[order.FieldPastDays] = struct{}{}
+}
+
+// PastDaysCleared returns if the "past_days" field was cleared in this mutation.
+func (m *OrderMutation) PastDaysCleared() bool {
+	_, ok := m.clearedFields[order.FieldPastDays]
+	return ok
+}
+
+// ResetPastDays resets all changes to the "past_days" field.
+func (m *OrderMutation) ResetPastDays() {
+	m.past_days = nil
+	m.addpast_days = nil
+	delete(m.clearedFields, order.FieldPastDays)
+}
+
 // ClearPlan clears the "plan" edge to the Plan entity.
 func (m *OrderMutation) ClearPlan() {
 	m.clearedplan = true
@@ -1457,7 +1529,7 @@ func (m *OrderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *OrderMutation) Fields() []string {
-	fields := make([]string, 0, 20)
+	fields := make([]string, 0, 21)
 	if m.created_at != nil {
 		fields = append(fields, order.FieldCreatedAt)
 	}
@@ -1518,6 +1590,9 @@ func (m *OrderMutation) Fields() []string {
 	if m.initial_days != nil {
 		fields = append(fields, order.FieldInitialDays)
 	}
+	if m.past_days != nil {
+		fields = append(fields, order.FieldPastDays)
+	}
 	return fields
 }
 
@@ -1566,6 +1641,8 @@ func (m *OrderMutation) Field(name string) (ent.Value, bool) {
 		return m.RefundAt()
 	case order.FieldInitialDays:
 		return m.InitialDays()
+	case order.FieldPastDays:
+		return m.PastDays()
 	}
 	return nil, false
 }
@@ -1615,6 +1692,8 @@ func (m *OrderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldRefundAt(ctx)
 	case order.FieldInitialDays:
 		return m.OldInitialDays(ctx)
+	case order.FieldPastDays:
+		return m.OldPastDays(ctx)
 	}
 	return nil, fmt.Errorf("unknown Order field %s", name)
 }
@@ -1764,6 +1843,13 @@ func (m *OrderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetInitialDays(v)
 		return nil
+	case order.FieldPastDays:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPastDays(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Order field %s", name)
 }
@@ -1790,6 +1876,9 @@ func (m *OrderMutation) AddedFields() []string {
 	if m.addinitial_days != nil {
 		fields = append(fields, order.FieldInitialDays)
 	}
+	if m.addpast_days != nil {
+		fields = append(fields, order.FieldPastDays)
+	}
 	return fields
 }
 
@@ -1810,6 +1899,8 @@ func (m *OrderMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedTotal()
 	case order.FieldInitialDays:
 		return m.AddedInitialDays()
+	case order.FieldPastDays:
+		return m.AddedPastDays()
 	}
 	return nil, false
 }
@@ -1861,6 +1952,13 @@ func (m *OrderMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddInitialDays(v)
 		return nil
+	case order.FieldPastDays:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPastDays(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Order numeric field %s", name)
 }
@@ -1898,6 +1996,9 @@ func (m *OrderMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(order.FieldInitialDays) {
 		fields = append(fields, order.FieldInitialDays)
+	}
+	if m.FieldCleared(order.FieldPastDays) {
+		fields = append(fields, order.FieldPastDays)
 	}
 	return fields
 }
@@ -1942,6 +2043,9 @@ func (m *OrderMutation) ClearField(name string) error {
 		return nil
 	case order.FieldInitialDays:
 		m.ClearInitialDays()
+		return nil
+	case order.FieldPastDays:
+		m.ClearPastDays()
 		return nil
 	}
 	return fmt.Errorf("unknown Order nullable field %s", name)
@@ -2010,6 +2114,9 @@ func (m *OrderMutation) ResetField(name string) error {
 		return nil
 	case order.FieldInitialDays:
 		m.ResetInitialDays()
+		return nil
+	case order.FieldPastDays:
+		m.ResetPastDays()
 		return nil
 	}
 	return fmt.Errorf("unknown Order field %s", name)

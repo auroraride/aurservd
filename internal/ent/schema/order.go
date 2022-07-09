@@ -37,6 +37,7 @@ func (Order) Fields() []ent.Field {
         field.Float("total").Immutable().Default(0).Comment("此次支付总金额(包含所有子订单的总支付)"),
         field.Time("refund_at").Optional().Nillable().Comment("退款时间"),
         field.Int("initial_days").Optional().Comment("所购骑士卡天数(也可能为补缴欠费天数)"),
+        field.Int("past_days").Optional().Comment("距上次退订天数"),
     }
 }
 

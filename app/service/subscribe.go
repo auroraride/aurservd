@@ -13,6 +13,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/internal/ent/plan"
+    "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/internal/ent/subscribepause"
     "github.com/auroraride/aurservd/pkg/cache"
@@ -86,9 +87,9 @@ func (s *subscribeService) QueryAndDetailX(id uint64) (sub *ent.Subscribe, detai
 }
 
 // Recent 查询骑手最近的订阅
-func (s *subscribeService) Recent(riderID uint64) *ent.Subscribe {
-    sub, _ := s.orm.QueryNotDeleted().
-        Where(subscribe.RiderID(riderID)).
+func (s *subscribeService) Recent(riderID uint64, params ...uint64) *ent.Subscribe {
+    q := s.orm.QueryNotDeleted().
+        Where(subscribe.StatusNotIn(model.SubscribeStatusCanceled)).
         Order(ent.Desc(subscribe.FieldCreatedAt)).
         WithPlan(func(pq *ent.PlanQuery) {
             pq.WithPms()
@@ -100,8 +101,15 @@ func (s *subscribeService) Recent(riderID uint64) *ent.Subscribe {
                 doq.Where(order.Type(model.OrderTypeDeposit))
             })
         }).
-        WithEnterprise().
-        First(s.ctx)
+        WithEnterprise()
+    if len(params) == 0 {
+        q.Where(subscribe.RiderID(riderID))
+    } else {
+        ids, _ := ent.Database.Rider.Query().Where(rider.PersonID(params[0]), rider.IDNotIn(riderID)).IDs(s.ctx)
+        ids = append(ids, riderID)
+        q.Where(subscribe.RiderIDIn(ids...))
+    }
+    sub, _ := q.First(s.ctx)
 
     return sub
 }

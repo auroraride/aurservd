@@ -29,7 +29,7 @@ type PaymentSubscribe struct {
     TradeNo     string  `json:"tradeNo,omitempty"` // 平台单号
     PlanID      uint64  `json:"planId"`            // 骑士卡ID
     Deposit     float64 `json:"deposit"`           // 附带押金
-    PastDays    int     `json:"pastDays"`          // 距离上次退订天数
+    PastDays    *int    `json:"pastDays"`          // 距离上次退订天数
     Commission  float64 `json:"commission"`        // 提成金额
     Model       string  `json:"model"`             // 可用电池型号
     Days        uint    `json:"days"`              // 骑士卡天数

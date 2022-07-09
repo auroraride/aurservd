@@ -219,6 +219,13 @@ func InitialDays(v int) predicate.Order {
 	})
 }
 
+// PastDays applies equality check predicate on the "past_days" field. It's identical to PastDaysEQ.
+func PastDays(v int) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPastDays), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
@@ -1689,6 +1696,96 @@ func InitialDaysIsNil() predicate.Order {
 func InitialDaysNotNil() predicate.Order {
 	return predicate.Order(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldInitialDays)))
+	})
+}
+
+// PastDaysEQ applies the EQ predicate on the "past_days" field.
+func PastDaysEQ(v int) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldPastDays), v))
+	})
+}
+
+// PastDaysNEQ applies the NEQ predicate on the "past_days" field.
+func PastDaysNEQ(v int) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldPastDays), v))
+	})
+}
+
+// PastDaysIn applies the In predicate on the "past_days" field.
+func PastDaysIn(vs ...int) predicate.Order {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldPastDays), v...))
+	})
+}
+
+// PastDaysNotIn applies the NotIn predicate on the "past_days" field.
+func PastDaysNotIn(vs ...int) predicate.Order {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Order(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldPastDays), v...))
+	})
+}
+
+// PastDaysGT applies the GT predicate on the "past_days" field.
+func PastDaysGT(v int) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldPastDays), v))
+	})
+}
+
+// PastDaysGTE applies the GTE predicate on the "past_days" field.
+func PastDaysGTE(v int) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldPastDays), v))
+	})
+}
+
+// PastDaysLT applies the LT predicate on the "past_days" field.
+func PastDaysLT(v int) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldPastDays), v))
+	})
+}
+
+// PastDaysLTE applies the LTE predicate on the "past_days" field.
+func PastDaysLTE(v int) predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldPastDays), v))
+	})
+}
+
+// PastDaysIsNil applies the IsNil predicate on the "past_days" field.
+func PastDaysIsNil() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPastDays)))
+	})
+}
+
+// PastDaysNotNil applies the NotNil predicate on the "past_days" field.
+func PastDaysNotNil() predicate.Order {
+	return predicate.Order(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPastDays)))
 	})
 }
 

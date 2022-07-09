@@ -44,6 +44,11 @@ func (*pointer) UInt64(i uint64) *uint64 {
     return &i
 }
 
+// Int 复制 int 对象，并返回复制体的指针
+func (*pointer) Int(i int) *int {
+    return &i
+}
+
 // Int64 复制 int64 对象，并返回复制体的指针
 func (*pointer) Int64(i int64) *int64 {
     return &i

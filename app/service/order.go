@@ -59,13 +59,6 @@ func NewOrderWithModifier(m *model.Modifier) *orderService {
     return s
 }
 
-func NewOrderWithEmployee(e *ent.Employee) *orderService {
-    s := NewOrder()
-    s.ctx = context.WithValue(s.ctx, "employee", e)
-    s.employee = e
-    return s
-}
-
 // RencentSubscribeOrder 获取骑手最近的骑士卡订单
 func (s *orderService) RencentSubscribeOrder(riderID uint64) (*ent.Order, error) {
     return s.orm.QueryNotDeleted().
@@ -81,27 +74,34 @@ func (s *orderService) RencentSubscribeOrder(riderID uint64) (*ent.Order, error)
 
 // PreconditionNewly 新签订单前置条件判定
 // 返回值为最终判定的订单类型(有可能是重签)
-func (s *orderService) PreconditionNewly(sub *model.Subscribe) (state uint) {
+func (s *orderService) PreconditionNewly(sub *ent.Subscribe) (state uint, past *int) {
     if sub == nil {
-        return model.OrderTypeNewly
+        return model.OrderTypeNewly, nil
     }
     switch sub.Status {
     case model.SubscribeStatusInactive:
         snag.Panic("当前有未激活的骑士卡")
         break
-    case model.SubscribeStatusCanceled:
-        return model.OrderTypeNewly
     case model.SubscribeStatusUnSubscribed:
-        return model.OrderTypeAgain
+        state = model.OrderTypeAgain
+        break
     default:
         snag.Panic("不满足新签条件")
         break
     }
-    return model.OrderTypeNewly
+    // 距离上次订阅过去的时间(从退订的第二天0点开始计算,不满一天算0天)
+    if sub.EndAt != nil {
+        past = tools.NewPointer().Int(int(carbon.Time2Carbon(*sub.EndAt).AddDay().DiffInDays(carbon.Now())))
+    }
+    // 判定退订时间是否超出设置天数
+    if model.NewRecentSubscribePastDays(*past).Commission() {
+        state = model.OrderTypeNewly
+    }
+    return
 }
 
 // PreconditionRenewal 是否满足续签条件
-func (s *orderService) PreconditionRenewal(sub *model.Subscribe) {
+func (s *orderService) PreconditionRenewal(sub *ent.Subscribe) {
     if sub == nil ||
         sub.Status == model.SubscribeStatusInactive ||
         sub.Status == model.SubscribeStatusUnSubscribed ||
@@ -134,28 +134,29 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
     // 查询是否有退款中的押金
     if exists, _ := ent.Database.Order.QueryNotDeleted().Where(
         order.RiderID(s.rider.ID),
-        // order.Type(model.OrderTypeDeposit),
         order.Status(model.OrderStatusRefundPending),
     ).Exist(s.ctx); exists {
         snag.Panic("当前有退款中的订单")
     }
 
-    subd, sub := NewSubscribe().RecentDetail(s.rider.ID)
+    var past *int
+    sub := NewSubscribe().Recent(s.rider.ID, *s.rider.PersonID)
     // 判定类型条件
     var subID, orderID *uint64
     otype := req.OrderType
     switch otype {
     case model.OrderTypeNewly:
-        // 新签判定
-        otype = s.PreconditionNewly(subd)
+    case model.OrderTypeAgain:
+        // 新签/重签判定
         if req.Model == "" || req.CityID == 0 {
             snag.Panic("请求参数错误")
         }
+        otype, past = s.PreconditionNewly(sub)
         break
     case model.OrderTypeRenewal:
         // 续签判定
-        s.PreconditionRenewal(subd)
-        if subd.Remaining < 0 && int(op.Days)+subd.Remaining < 0 {
+        s.PreconditionRenewal(sub)
+        if sub.Remaining < 0 && int(op.Days)+sub.Remaining < 0 {
             snag.Panic("无法继续, 逾期天数大于套餐天数")
         }
         subID = tools.NewPointer().UInt64(sub.ID)
@@ -166,12 +167,6 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
     default:
         snag.Panic("未知的支付请求")
         break
-    }
-
-    // 距离上次订阅过去的时间(从退订的第二天0点开始计算,不满一天算0天)
-    var pastDays int
-    if otype == model.OrderTypeAgain {
-        pastDays = int(carbon.Parse(subd.EndAt).AddDay().DiffInDays(carbon.Now()))
     }
 
     // 判定用户是否需要缴纳押金
@@ -204,7 +199,7 @@ func (s *orderService) Create(req *model.OrderCreateReq) (result *model.OrderCre
             Payway:      req.Payway,
             PlanID:      op.ID,
             Deposit:     deposit,
-            PastDays:    pastDays,
+            PastDays:    past,
             Commission:  op.Commission,
             Model:       req.Model,
             Days:        op.Days,
@@ -392,7 +387,8 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
         SetCityID(trade.CityID).
         SetInitialDays(int(trade.Days)).
         SetNillableParentID(trade.OrderID).
-        SetNillableSubscribeID(trade.SubscribeID)
+        SetNillableSubscribeID(trade.SubscribeID).
+        SetNillablePastDays(trade.PastDays)
     o, err := oc.Save(s.ctx)
     if err != nil {
         log.Errorf("[ORDER PAID %s ERROR]: %s", trade.OutTradeNo, err.Error())
@@ -463,7 +459,7 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
     }
 
     // 当新签和重签的时候有提成
-    if trade.OrderType == model.OrderTypeNewly || (trade.OrderType == model.OrderTypeAgain && model.NewRecentSubscribePastDays(trade.PastDays).Commission()) {
+    if trade.OrderType == model.OrderTypeNewly {
         // 创建提成
         _, err = tx.Commission.Create().SetOrderID(o.ID).SetAmount(trade.Commission).SetStatus(model.CommissionStatusPending).Save(s.ctx)
         if err != nil {

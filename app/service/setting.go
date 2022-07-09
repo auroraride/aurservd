@@ -33,13 +33,6 @@ func NewSetting() *settingService {
     }
 }
 
-func NewSettingWithRider(rider *ent.Rider) *orderService {
-    s := NewOrder()
-    s.ctx = context.WithValue(s.ctx, "rider", rider)
-    s.rider = rider
-    return s
-}
-
 func NewSettingWithModifier(m *model.Modifier) *settingService {
     s := NewSetting()
     s.ctx = context.WithValue(s.ctx, "modifier", m)
@@ -54,7 +47,7 @@ func (s *settingService) ParseKey(key string) string {
 // CacheSettings 缓存设置
 func (s *settingService) CacheSettings(sm *ent.Setting) {
     switch sm.Key {
-    case model.SettingBatteryFull, model.SettingDeposit, model.SettingRenewal, model.SettingPauseMaxDays:
+    case model.SettingBatteryFull, model.SettingDeposit, model.SettingRenewal, model.SettingPauseMaxDays, model.SettingExchangeInterval:
         f, err := strconv.ParseFloat(strings.ReplaceAll(sm.Content, `"`, ""), 10)
         if err == nil {
             cache.Set(s.ctx, sm.Key, f, 0)

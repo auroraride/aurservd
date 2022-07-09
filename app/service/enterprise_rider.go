@@ -119,7 +119,7 @@ func (s *enterpriseRiderService) List(req *model.EnterpriseRiderListReq) *model.
     }
 
     // 筛选订阅状态
-    switch req.Subscribe {
+    switch req.SubscribeStatus {
     case 1:
         q.Where(rider.HasSubscribesWith(subscribe.Status(model.SubscribeStatusUsing)))
         break

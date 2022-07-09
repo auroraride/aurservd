@@ -6615,7 +6615,7 @@ paths:
         - 2
         - 3
         in: query
-        name: subscribe
+        name: subscribeStatus
         type: integer
       produces:
       - application/json

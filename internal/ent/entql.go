@@ -713,6 +713,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			order.FieldTotal:        {Type: field.TypeFloat64, Column: order.FieldTotal},
 			order.FieldRefundAt:     {Type: field.TypeTime, Column: order.FieldRefundAt},
 			order.FieldInitialDays:  {Type: field.TypeInt, Column: order.FieldInitialDays},
+			order.FieldPastDays:     {Type: field.TypeInt, Column: order.FieldPastDays},
 		},
 	}
 	graph.Nodes[24] = &sqlgraph.Node{
@@ -6497,6 +6498,11 @@ func (f *OrderFilter) WhereRefundAt(p entql.TimeP) {
 // WhereInitialDays applies the entql int predicate on the initial_days field.
 func (f *OrderFilter) WhereInitialDays(p entql.IntP) {
 	f.Where(p.Field(order.FieldInitialDays))
+}
+
+// WherePastDays applies the entql int predicate on the past_days field.
+func (f *OrderFilter) WherePastDays(p entql.IntP) {
+	f.Where(p.Field(order.FieldPastDays))
 }
 
 // WhereHasPlan applies a predicate to check if query has an edge plan.

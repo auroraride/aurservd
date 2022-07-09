@@ -53,6 +53,8 @@ const (
 	FieldRefundAt = "refund_at"
 	// FieldInitialDays holds the string denoting the initial_days field in the database.
 	FieldInitialDays = "initial_days"
+	// FieldPastDays holds the string denoting the past_days field in the database.
+	FieldPastDays = "past_days"
 	// EdgePlan holds the string denoting the plan edge name in mutations.
 	EdgePlan = "plan"
 	// EdgeCity holds the string denoting the city edge name in mutations.
@@ -155,6 +157,7 @@ var Columns = []string{
 	FieldTotal,
 	FieldRefundAt,
 	FieldInitialDays,
+	FieldPastDays,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
