@@ -178,7 +178,7 @@ func (*enterprise) ListRider(c echo.Context) (err error) {
 // ModifyPrice
 // @ID           ManagerEnterpriseModifyPrice
 // @Router       /manager/v1/enterprise/price [POST]
-// @Summary      M9015 编辑价格
+// @Summary      M9016 编辑价格
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -193,7 +193,7 @@ func (*enterprise) ModifyPrice(c echo.Context) (err error) {
 // DeletePrice
 // @ID           ManagerEnterpriseDeletePrice
 // @Router       /manager/v1/enterprise/price/{id} [POST]
-// @Summary      M9016 删除价格
+// @Summary      M9017 删除价格
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -209,7 +209,7 @@ func (*enterprise) DeletePrice(c echo.Context) (err error) {
 // ModifyContract
 // @ID           ManagerEnterpriseModifyContract
 // @Router       /manager/v1/enterprise/contract [POST]
-// @Summary      M9017 编辑合同
+// @Summary      M9018 编辑合同
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
@@ -225,7 +225,7 @@ func (*enterprise) ModifyContract(c echo.Context) (err error) {
 // DeleteContract
 // @ID           ManagerEnterpriseDeleteContract
 // @Router       /manager/v1/enterprise/contract/{id} [DELETE]
-// @Summary      M9018 删除合同
+// @Summary      M9019 删除合同
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json

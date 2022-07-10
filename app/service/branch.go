@@ -332,6 +332,7 @@ func (s *branchService) facility(mp map[string]*model.BranchFacility, info model
         // 合并电柜满电数量
         if info.Type != model.BranchFacilityTypeStore {
             fa.Num += info.Num
+            fa.Total += info.Total
         }
     } else {
         fa = &info

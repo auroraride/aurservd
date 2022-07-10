@@ -1763,7 +1763,7 @@ definitions:
         description: '合同文件 '
         type: string
       id:
-        description: 合同ID, 请求`M9017 编辑合同`时携带此字段为编辑, 不携带为新增
+        description: 合同ID, 请求`M9018 编辑合同`时携带此字段为编辑, 不携带为新增
         type: integer
       start:
         description: '合同开始日期 '
@@ -1785,7 +1785,7 @@ definitions:
         description: '合同文件 '
         type: string
       id:
-        description: 合同ID, 请求`M9017 编辑合同`时携带此字段为编辑, 不携带为新增
+        description: 合同ID, 请求`M9018 编辑合同`时携带此字段为编辑, 不携带为新增
         type: integer
       start:
         description: '合同开始日期 '
@@ -1919,7 +1919,7 @@ definitions:
         description: '企业ID '
         type: integer
       id:
-        description: 价格ID, 请求`M9015 编辑价格`时携带此字段为编辑, 不携带为新增
+        description: 价格ID, 请求`M9016 编辑价格`时携带此字段为编辑, 不携带为新增
         type: integer
       model:
         description: '电池型号 '
@@ -6482,7 +6482,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9017 编辑合同
+      summary: M9018 编辑合同
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/contract/{id}:
@@ -6508,7 +6508,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9018 删除合同
+      summary: M9019 删除合同
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/price:
@@ -6535,7 +6535,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.EnterprisePriceWithCity'
-      summary: M9015 编辑价格
+      summary: M9016 编辑价格
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/price/{id}:
@@ -6561,7 +6561,7 @@ paths:
           description: 请求成功
           schema:
             $ref: '#/definitions/model.StatusResponse'
-      summary: M9016 删除价格
+      summary: M9017 删除价格
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/rider:

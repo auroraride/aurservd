@@ -184,7 +184,7 @@ func (s *enterpriseStatementService) Bill(req *model.StatementClearBillReq) {
     _, err = tx.EnterpriseStatement.
         UpdateOneID(br.StatementID).
         SetSettledAt(time.Now()).
-        SetEnd(end).
+        SetEnd(&end).
         SetRiderNumber(len(br.Bills)).
         SetDays(br.Days).
         SetCost(br.Cost).
@@ -196,7 +196,7 @@ func (s *enterpriseStatementService) Bill(req *model.StatementClearBillReq) {
     riders := 0
     for _, bill := range br.Bills {
         var sub *ent.Subscribe
-        sub, err = tx.Subscribe.UpdateOneID(bill.SubscribeID).SetLastBillDate(end).Save(s.ctx)
+        sub, err = tx.Subscribe.UpdateOneID(bill.SubscribeID).SetLastBillDate(&end).Save(s.ctx)
         snag.PanicIfErrorX(err, tx.Rollback)
 
         if sub.EndAt == nil || !sub.EndAt.Before(next.Time) {
@@ -404,12 +404,13 @@ func (s *enterpriseStatementService) usageItem(item *ent.Subscribe, end time.Tim
 
 func (s *enterpriseStatementService) Usage(req *model.StatementUsageReq) *model.PaginationRes {
     q := ent.Database.Subscribe.QueryNotDeleted().
-        WithRider().WithCity().WithStation().
+        WithRider(func(rq *ent.RiderQuery) {
+            rq.WithPerson()
+        }).WithCity().WithStation().
         Where(subscribe.EnterpriseID(req.ID), subscribe.StartAtNotNil()).
         WithBills(func(bq *ent.EnterpriseBillQuery) {
-            bq.Order(ent.Desc(enterprisebill.FieldEnd))
-        }).
-        Order(ent.Desc(subscribe.FieldCreatedAt))
+            bq.Order(ent.Asc(enterprisebill.FieldEnd))
+        })
 
     if req.Start != "" {
         q.Where(subscribe.StartAtGTE(tools.NewTime().ParseDateStringX(req.Start)))

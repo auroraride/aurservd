@@ -107,6 +107,7 @@ func loadManagerRoutes() {
     g.POST("/enterprise/bill", mapi.Statement.Bill)
     g.GET("/enterprise/bill/historical", mapi.Statement.Historical)
     g.GET("/enterprise/bill/statement", mapi.Statement.Statement)
+    g.GET("/enterprise/bill/usage", mapi.Statement.Usage)
     g.POST("/enterprise/price", mapi.Enterprise.ModifyPrice)
     g.DELETE("/enterprise/price/:id", mapi.Enterprise.DeletePrice)
     g.POST("/enterprise/contract", mapi.Enterprise.ModifyContract)

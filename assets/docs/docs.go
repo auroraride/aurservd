@@ -3615,7 +3615,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M9017 编辑合同",
+                "summary": "M9018 编辑合同",
                 "operationId": "ManagerEnterpriseModifyContract",
                 "parameters": [
                     {
@@ -3656,7 +3656,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M9018 删除合同",
+                "summary": "M9019 删除合同",
                 "operationId": "ManagerEnterpriseDeleteContract",
                 "parameters": [
                     {
@@ -3695,7 +3695,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M9015 编辑价格",
+                "summary": "M9016 编辑价格",
                 "operationId": "ManagerEnterpriseModifyPrice",
                 "parameters": [
                     {
@@ -3736,7 +3736,7 @@ const docTemplate = `{
                 "tags": [
                     "[M]管理接口"
                 ],
-                "summary": "M9016 删除价格",
+                "summary": "M9017 删除价格",
                 "operationId": "ManagerEnterpriseDeletePrice",
                 "parameters": [
                     {
@@ -10539,7 +10539,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "description": "合同ID, 请求` + "`" + `M9017 编辑合同` + "`" + `时携带此字段为编辑, 不携带为新增",
+                    "description": "合同ID, 请求` + "`" + `M9018 编辑合同` + "`" + `时携带此字段为编辑, 不携带为新增",
                     "type": "integer"
                 },
                 "start": {
@@ -10570,7 +10570,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "description": "合同ID, 请求` + "`" + `M9017 编辑合同` + "`" + `时携带此字段为编辑, 不携带为新增",
+                    "description": "合同ID, 请求` + "`" + `M9018 编辑合同` + "`" + `时携带此字段为编辑, 不携带为新增",
                     "type": "integer"
                 },
                 "start": {
@@ -10744,7 +10744,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "id": {
-                    "description": "价格ID, 请求` + "`" + `M9015 编辑价格` + "`" + `时携带此字段为编辑, 不携带为新增",
+                    "description": "价格ID, 请求` + "`" + `M9016 编辑价格` + "`" + `时携带此字段为编辑, 不携带为新增",
                     "type": "integer"
                 },
                 "model": {

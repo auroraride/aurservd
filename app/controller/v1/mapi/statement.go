@@ -78,7 +78,6 @@ func (*statement) Statement(c echo.Context) (err error) {
 }
 
 func (*statement) Usage(c echo.Context) (err error) {
-    ctx := app.Context(c)
-    
-    return ctx.SendResponse()
+    ctx, req := app.ManagerContextAndBinding[model.StatementUsageReq](c)
+    return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).Usage(req))
 }
