@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -386,15 +387,15 @@ func (sc *SubscribeCreate) SetNillableUnsubscribeReason(s *string) *SubscribeCre
 }
 
 // SetLastBillDate sets the "last_bill_date" field.
-func (sc *SubscribeCreate) SetLastBillDate(t time.Time) *SubscribeCreate {
-	sc.mutation.SetLastBillDate(t)
+func (sc *SubscribeCreate) SetLastBillDate(m model.Date) *SubscribeCreate {
+	sc.mutation.SetLastBillDate(m)
 	return sc
 }
 
 // SetNillableLastBillDate sets the "last_bill_date" field if the given value is not nil.
-func (sc *SubscribeCreate) SetNillableLastBillDate(t *time.Time) *SubscribeCreate {
-	if t != nil {
-		sc.SetLastBillDate(*t)
+func (sc *SubscribeCreate) SetNillableLastBillDate(m *model.Date) *SubscribeCreate {
+	if m != nil {
+		sc.SetLastBillDate(*m)
 	}
 	return sc
 }
@@ -482,6 +483,21 @@ func (sc *SubscribeCreate) AddOrders(o ...*Order) *SubscribeCreate {
 // SetInitialOrder sets the "initial_order" edge to the Order entity.
 func (sc *SubscribeCreate) SetInitialOrder(o *Order) *SubscribeCreate {
 	return sc.SetInitialOrderID(o.ID)
+}
+
+// AddBillIDs adds the "bills" edge to the EnterpriseBill entity by IDs.
+func (sc *SubscribeCreate) AddBillIDs(ids ...uint64) *SubscribeCreate {
+	sc.mutation.AddBillIDs(ids...)
+	return sc
+}
+
+// AddBills adds the "bills" edges to the EnterpriseBill entity.
+func (sc *SubscribeCreate) AddBills(e ...*EnterpriseBill) *SubscribeCreate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return sc.AddBillIDs(ids...)
 }
 
 // Mutation returns the SubscribeMutation object of the builder.
@@ -842,7 +858,7 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := sc.mutation.LastBillDate(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Value:  value,
 			Column: subscribe.FieldLastBillDate,
 		})
@@ -1063,6 +1079,25 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.InitialOrderID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.BillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribe.BillsTable,
+			Columns: []string{subscribe.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -1600,7 +1635,7 @@ func (u *SubscribeUpsert) ClearUnsubscribeReason() *SubscribeUpsert {
 }
 
 // SetLastBillDate sets the "last_bill_date" field.
-func (u *SubscribeUpsert) SetLastBillDate(v time.Time) *SubscribeUpsert {
+func (u *SubscribeUpsert) SetLastBillDate(v model.Date) *SubscribeUpsert {
 	u.Set(subscribe.FieldLastBillDate, v)
 	return u
 }
@@ -2231,7 +2266,7 @@ func (u *SubscribeUpsertOne) ClearUnsubscribeReason() *SubscribeUpsertOne {
 }
 
 // SetLastBillDate sets the "last_bill_date" field.
-func (u *SubscribeUpsertOne) SetLastBillDate(v time.Time) *SubscribeUpsertOne {
+func (u *SubscribeUpsertOne) SetLastBillDate(v model.Date) *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.SetLastBillDate(v)
 	})
@@ -3029,7 +3064,7 @@ func (u *SubscribeUpsertBulk) ClearUnsubscribeReason() *SubscribeUpsertBulk {
 }
 
 // SetLastBillDate sets the "last_bill_date" field.
-func (u *SubscribeUpsertBulk) SetLastBillDate(v time.Time) *SubscribeUpsertBulk {
+func (u *SubscribeUpsertBulk) SetLastBillDate(v model.Date) *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.SetLastBillDate(v)
 	})

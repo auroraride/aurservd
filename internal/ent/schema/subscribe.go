@@ -3,6 +3,7 @@ package schema
 import (
     "context"
     "entgo.io/ent"
+    "entgo.io/ent/dialect"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/entc/integration/ent/hook"
     "entgo.io/ent/schema"
@@ -71,7 +72,7 @@ func (Subscribe) Fields() []ent.Field {
         field.Time("end_at").Optional().Nillable().Comment("归还/团签结束时间"),
         field.Time("refund_at").Optional().Nillable().Comment("退款时间"),
         field.String("unsubscribe_reason").Optional().Comment("退租理由"),
-        field.Time("last_bill_date").Optional().Nillable().Comment("上次结算日期(包含该日期)"),
+        field.Other("last_bill_date", model.Date{}).SchemaType(map[string]string{dialect.Postgres: "date"}).Optional().Nillable().Comment("上次结算日期(包含该日期)"),
     }
 }
 
@@ -86,6 +87,8 @@ func (Subscribe) Edges() []ent.Edge {
         edge.To("orders", Order.Type),
 
         edge.To("initial_order", Order.Type).Unique().Field("initial_order_id").Comment("对应初始订单"),
+
+        edge.To("bills", EnterpriseBill.Type),
     }
 }
 

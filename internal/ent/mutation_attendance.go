@@ -31,7 +31,7 @@ type AttendanceMutation struct {
 	inventory       *[]model.AttendanceInventory
 	photo           *string
 	duty            *bool
-	date            *time.Time
+	date            *model.Date
 	lng             *float64
 	addlng          *float64
 	lat             *float64
@@ -622,12 +622,12 @@ func (m *AttendanceMutation) ResetDuty() {
 }
 
 // SetDate sets the "date" field.
-func (m *AttendanceMutation) SetDate(t time.Time) {
-	m.date = &t
+func (m *AttendanceMutation) SetDate(value model.Date) {
+	m.date = &value
 }
 
 // Date returns the value of the "date" field in the mutation.
-func (m *AttendanceMutation) Date() (r time.Time, exists bool) {
+func (m *AttendanceMutation) Date() (r model.Date, exists bool) {
 	v := m.date
 	if v == nil {
 		return
@@ -638,7 +638,7 @@ func (m *AttendanceMutation) Date() (r time.Time, exists bool) {
 // OldDate returns the old "date" field's value of the Attendance entity.
 // If the Attendance object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AttendanceMutation) OldDate(ctx context.Context) (v time.Time, err error) {
+func (m *AttendanceMutation) OldDate(ctx context.Context) (v model.Date, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDate is only allowed on UpdateOne operations")
 	}
@@ -1204,7 +1204,7 @@ func (m *AttendanceMutation) SetField(name string, value ent.Value) error {
 		m.SetDuty(v)
 		return nil
 	case attendance.FieldDate:
-		v, ok := value.(time.Time)
+		v, ok := value.(model.Date)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

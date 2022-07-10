@@ -191,13 +191,6 @@ func LastSigninAt(v time.Time) predicate.Rider {
 	})
 }
 
-// PlanAt applies equality check predicate on the "plan_at" field. It's identical to PlanAtEQ.
-func PlanAt(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPlanAt), v))
-	})
-}
-
 // Blocked applies equality check predicate on the "blocked" field. It's identical to BlockedEQ.
 func Blocked(v bool) predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
@@ -1484,96 +1477,6 @@ func LastSigninAtIsNil() predicate.Rider {
 func LastSigninAtNotNil() predicate.Rider {
 	return predicate.Rider(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldLastSigninAt)))
-	})
-}
-
-// PlanAtEQ applies the EQ predicate on the "plan_at" field.
-func PlanAtEQ(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldPlanAt), v))
-	})
-}
-
-// PlanAtNEQ applies the NEQ predicate on the "plan_at" field.
-func PlanAtNEQ(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldPlanAt), v))
-	})
-}
-
-// PlanAtIn applies the In predicate on the "plan_at" field.
-func PlanAtIn(vs ...time.Time) predicate.Rider {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldPlanAt), v...))
-	})
-}
-
-// PlanAtNotIn applies the NotIn predicate on the "plan_at" field.
-func PlanAtNotIn(vs ...time.Time) predicate.Rider {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Rider(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldPlanAt), v...))
-	})
-}
-
-// PlanAtGT applies the GT predicate on the "plan_at" field.
-func PlanAtGT(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldPlanAt), v))
-	})
-}
-
-// PlanAtGTE applies the GTE predicate on the "plan_at" field.
-func PlanAtGTE(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldPlanAt), v))
-	})
-}
-
-// PlanAtLT applies the LT predicate on the "plan_at" field.
-func PlanAtLT(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldPlanAt), v))
-	})
-}
-
-// PlanAtLTE applies the LTE predicate on the "plan_at" field.
-func PlanAtLTE(v time.Time) predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldPlanAt), v))
-	})
-}
-
-// PlanAtIsNil applies the IsNil predicate on the "plan_at" field.
-func PlanAtIsNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldPlanAt)))
-	})
-}
-
-// PlanAtNotNil applies the NotNil predicate on the "plan_at" field.
-func PlanAtNotNil() predicate.Rider {
-	return predicate.Rider(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldPlanAt)))
 	})
 }
 

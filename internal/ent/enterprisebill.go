@@ -42,14 +42,15 @@ type EnterpriseBill struct {
 	// RiderID holds the value of the "rider_id" field.
 	// 骑手ID
 	RiderID uint64 `json:"rider_id,omitempty"`
-	// SubscribeID holds the value of the "subscribe_id" field.
-	SubscribeID uint64 `json:"subscribe_id,omitempty"`
 	// CityID holds the value of the "city_id" field.
 	// 城市ID
 	CityID uint64 `json:"city_id,omitempty"`
 	// StationID holds the value of the "station_id" field.
 	// 站点ID
 	StationID *uint64 `json:"station_id,omitempty"`
+	// SubscribeID holds the value of the "subscribe_id" field.
+	// 订阅ID
+	SubscribeID uint64 `json:"subscribe_id,omitempty"`
 	// EnterpriseID holds the value of the "enterprise_id" field.
 	// 企业ID
 	EnterpriseID uint64 `json:"enterprise_id,omitempty"`
@@ -58,12 +59,12 @@ type EnterpriseBill struct {
 	StatementID uint64 `json:"statement_id,omitempty"`
 	// Start holds the value of the "start" field.
 	// 结算开始日期(包含)
-	Start time.Time `json:"start,omitempty"`
+	Start model.Date `json:"start,omitempty"`
 	// End holds the value of the "end" field.
 	// 结算结束日期(包含)
-	End time.Time `json:"end,omitempty"`
+	End model.Date `json:"end,omitempty"`
 	// Days holds the value of the "days" field.
-	// 账单日期
+	// 账单天数
 	Days int `json:"days,omitempty"`
 	// Price holds the value of the "price" field.
 	// 账单单价
@@ -83,8 +84,6 @@ type EnterpriseBill struct {
 type EnterpriseBillEdges struct {
 	// Rider holds the value of the rider edge.
 	Rider *Rider `json:"rider,omitempty"`
-	// Subscribe holds the value of the subscribe edge.
-	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// City holds the value of the city edge.
 	City *City `json:"city,omitempty"`
 	// Station holds the value of the station edge.
@@ -93,6 +92,8 @@ type EnterpriseBillEdges struct {
 	Enterprise *Enterprise `json:"enterprise,omitempty"`
 	// Statement holds the value of the statement edge.
 	Statement *EnterpriseStatement `json:"statement,omitempty"`
+	// Subscribe holds the value of the subscribe edge.
+	Subscribe *Subscribe `json:"subscribe,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [6]bool
@@ -112,24 +113,10 @@ func (e EnterpriseBillEdges) RiderOrErr() (*Rider, error) {
 	return nil, &NotLoadedError{edge: "rider"}
 }
 
-// SubscribeOrErr returns the Subscribe value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e EnterpriseBillEdges) SubscribeOrErr() (*Subscribe, error) {
-	if e.loadedTypes[1] {
-		if e.Subscribe == nil {
-			// The edge subscribe was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: subscribe.Label}
-		}
-		return e.Subscribe, nil
-	}
-	return nil, &NotLoadedError{edge: "subscribe"}
-}
-
 // CityOrErr returns the City value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterpriseBillEdges) CityOrErr() (*City, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[1] {
 		if e.City == nil {
 			// The edge city was loaded in eager-loading,
 			// but was not found.
@@ -143,7 +130,7 @@ func (e EnterpriseBillEdges) CityOrErr() (*City, error) {
 // StationOrErr returns the Station value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterpriseBillEdges) StationOrErr() (*EnterpriseStation, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[2] {
 		if e.Station == nil {
 			// The edge station was loaded in eager-loading,
 			// but was not found.
@@ -157,7 +144,7 @@ func (e EnterpriseBillEdges) StationOrErr() (*EnterpriseStation, error) {
 // EnterpriseOrErr returns the Enterprise value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterpriseBillEdges) EnterpriseOrErr() (*Enterprise, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[3] {
 		if e.Enterprise == nil {
 			// The edge enterprise was loaded in eager-loading,
 			// but was not found.
@@ -171,7 +158,7 @@ func (e EnterpriseBillEdges) EnterpriseOrErr() (*Enterprise, error) {
 // StatementOrErr returns the Statement value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e EnterpriseBillEdges) StatementOrErr() (*EnterpriseStatement, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[4] {
 		if e.Statement == nil {
 			// The edge statement was loaded in eager-loading,
 			// but was not found.
@@ -182,6 +169,20 @@ func (e EnterpriseBillEdges) StatementOrErr() (*EnterpriseStatement, error) {
 	return nil, &NotLoadedError{edge: "statement"}
 }
 
+// SubscribeOrErr returns the Subscribe value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EnterpriseBillEdges) SubscribeOrErr() (*Subscribe, error) {
+	if e.loadedTypes[5] {
+		if e.Subscribe == nil {
+			// The edge subscribe was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: subscribe.Label}
+		}
+		return e.Subscribe, nil
+	}
+	return nil, &NotLoadedError{edge: "subscribe"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*EnterpriseBill) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -189,13 +190,15 @@ func (*EnterpriseBill) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case enterprisebill.FieldCreator, enterprisebill.FieldLastModifier:
 			values[i] = new([]byte)
+		case enterprisebill.FieldStart, enterprisebill.FieldEnd:
+			values[i] = new(model.Date)
 		case enterprisebill.FieldPrice, enterprisebill.FieldCost:
 			values[i] = new(sql.NullFloat64)
-		case enterprisebill.FieldID, enterprisebill.FieldRiderID, enterprisebill.FieldSubscribeID, enterprisebill.FieldCityID, enterprisebill.FieldStationID, enterprisebill.FieldEnterpriseID, enterprisebill.FieldStatementID, enterprisebill.FieldDays:
+		case enterprisebill.FieldID, enterprisebill.FieldRiderID, enterprisebill.FieldCityID, enterprisebill.FieldStationID, enterprisebill.FieldSubscribeID, enterprisebill.FieldEnterpriseID, enterprisebill.FieldStatementID, enterprisebill.FieldDays:
 			values[i] = new(sql.NullInt64)
 		case enterprisebill.FieldRemark, enterprisebill.FieldModel:
 			values[i] = new(sql.NullString)
-		case enterprisebill.FieldCreatedAt, enterprisebill.FieldUpdatedAt, enterprisebill.FieldDeletedAt, enterprisebill.FieldStart, enterprisebill.FieldEnd:
+		case enterprisebill.FieldCreatedAt, enterprisebill.FieldUpdatedAt, enterprisebill.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type EnterpriseBill", columns[i])
@@ -265,12 +268,6 @@ func (eb *EnterpriseBill) assignValues(columns []string, values []interface{}) e
 			} else if value.Valid {
 				eb.RiderID = uint64(value.Int64)
 			}
-		case enterprisebill.FieldSubscribeID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field subscribe_id", values[i])
-			} else if value.Valid {
-				eb.SubscribeID = uint64(value.Int64)
-			}
 		case enterprisebill.FieldCityID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field city_id", values[i])
@@ -283,6 +280,12 @@ func (eb *EnterpriseBill) assignValues(columns []string, values []interface{}) e
 			} else if value.Valid {
 				eb.StationID = new(uint64)
 				*eb.StationID = uint64(value.Int64)
+			}
+		case enterprisebill.FieldSubscribeID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field subscribe_id", values[i])
+			} else if value.Valid {
+				eb.SubscribeID = uint64(value.Int64)
 			}
 		case enterprisebill.FieldEnterpriseID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -297,16 +300,16 @@ func (eb *EnterpriseBill) assignValues(columns []string, values []interface{}) e
 				eb.StatementID = uint64(value.Int64)
 			}
 		case enterprisebill.FieldStart:
-			if value, ok := values[i].(*sql.NullTime); !ok {
+			if value, ok := values[i].(*model.Date); !ok {
 				return fmt.Errorf("unexpected type %T for field start", values[i])
-			} else if value.Valid {
-				eb.Start = value.Time
+			} else if value != nil {
+				eb.Start = *value
 			}
 		case enterprisebill.FieldEnd:
-			if value, ok := values[i].(*sql.NullTime); !ok {
+			if value, ok := values[i].(*model.Date); !ok {
 				return fmt.Errorf("unexpected type %T for field end", values[i])
-			} else if value.Valid {
-				eb.End = value.Time
+			} else if value != nil {
+				eb.End = *value
 			}
 		case enterprisebill.FieldDays:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -342,11 +345,6 @@ func (eb *EnterpriseBill) QueryRider() *RiderQuery {
 	return (&EnterpriseBillClient{config: eb.config}).QueryRider(eb)
 }
 
-// QuerySubscribe queries the "subscribe" edge of the EnterpriseBill entity.
-func (eb *EnterpriseBill) QuerySubscribe() *SubscribeQuery {
-	return (&EnterpriseBillClient{config: eb.config}).QuerySubscribe(eb)
-}
-
 // QueryCity queries the "city" edge of the EnterpriseBill entity.
 func (eb *EnterpriseBill) QueryCity() *CityQuery {
 	return (&EnterpriseBillClient{config: eb.config}).QueryCity(eb)
@@ -365,6 +363,11 @@ func (eb *EnterpriseBill) QueryEnterprise() *EnterpriseQuery {
 // QueryStatement queries the "statement" edge of the EnterpriseBill entity.
 func (eb *EnterpriseBill) QueryStatement() *EnterpriseStatementQuery {
 	return (&EnterpriseBillClient{config: eb.config}).QueryStatement(eb)
+}
+
+// QuerySubscribe queries the "subscribe" edge of the EnterpriseBill entity.
+func (eb *EnterpriseBill) QuerySubscribe() *SubscribeQuery {
+	return (&EnterpriseBillClient{config: eb.config}).QuerySubscribe(eb)
 }
 
 // Update returns a builder for updating this EnterpriseBill.
@@ -406,22 +409,22 @@ func (eb *EnterpriseBill) String() string {
 	builder.WriteString(eb.Remark)
 	builder.WriteString(", rider_id=")
 	builder.WriteString(fmt.Sprintf("%v", eb.RiderID))
-	builder.WriteString(", subscribe_id=")
-	builder.WriteString(fmt.Sprintf("%v", eb.SubscribeID))
 	builder.WriteString(", city_id=")
 	builder.WriteString(fmt.Sprintf("%v", eb.CityID))
 	if v := eb.StationID; v != nil {
 		builder.WriteString(", station_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
+	builder.WriteString(", subscribe_id=")
+	builder.WriteString(fmt.Sprintf("%v", eb.SubscribeID))
 	builder.WriteString(", enterprise_id=")
 	builder.WriteString(fmt.Sprintf("%v", eb.EnterpriseID))
 	builder.WriteString(", statement_id=")
 	builder.WriteString(fmt.Sprintf("%v", eb.StatementID))
 	builder.WriteString(", start=")
-	builder.WriteString(eb.Start.Format(time.ANSIC))
+	builder.WriteString(fmt.Sprintf("%v", eb.Start))
 	builder.WriteString(", end=")
-	builder.WriteString(eb.End.Format(time.ANSIC))
+	builder.WriteString(fmt.Sprintf("%v", eb.End))
 	builder.WriteString(", days=")
 	builder.WriteString(fmt.Sprintf("%v", eb.Days))
 	builder.WriteString(", price=")

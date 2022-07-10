@@ -103,12 +103,6 @@ func (ebc *EnterpriseBillCreate) SetRiderID(u uint64) *EnterpriseBillCreate {
 	return ebc
 }
 
-// SetSubscribeID sets the "subscribe_id" field.
-func (ebc *EnterpriseBillCreate) SetSubscribeID(u uint64) *EnterpriseBillCreate {
-	ebc.mutation.SetSubscribeID(u)
-	return ebc
-}
-
 // SetCityID sets the "city_id" field.
 func (ebc *EnterpriseBillCreate) SetCityID(u uint64) *EnterpriseBillCreate {
 	ebc.mutation.SetCityID(u)
@@ -129,6 +123,12 @@ func (ebc *EnterpriseBillCreate) SetNillableStationID(u *uint64) *EnterpriseBill
 	return ebc
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (ebc *EnterpriseBillCreate) SetSubscribeID(u uint64) *EnterpriseBillCreate {
+	ebc.mutation.SetSubscribeID(u)
+	return ebc
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (ebc *EnterpriseBillCreate) SetEnterpriseID(u uint64) *EnterpriseBillCreate {
 	ebc.mutation.SetEnterpriseID(u)
@@ -142,14 +142,14 @@ func (ebc *EnterpriseBillCreate) SetStatementID(u uint64) *EnterpriseBillCreate 
 }
 
 // SetStart sets the "start" field.
-func (ebc *EnterpriseBillCreate) SetStart(t time.Time) *EnterpriseBillCreate {
-	ebc.mutation.SetStart(t)
+func (ebc *EnterpriseBillCreate) SetStart(m model.Date) *EnterpriseBillCreate {
+	ebc.mutation.SetStart(m)
 	return ebc
 }
 
 // SetEnd sets the "end" field.
-func (ebc *EnterpriseBillCreate) SetEnd(t time.Time) *EnterpriseBillCreate {
-	ebc.mutation.SetEnd(t)
+func (ebc *EnterpriseBillCreate) SetEnd(m model.Date) *EnterpriseBillCreate {
+	ebc.mutation.SetEnd(m)
 	return ebc
 }
 
@@ -182,11 +182,6 @@ func (ebc *EnterpriseBillCreate) SetRider(r *Rider) *EnterpriseBillCreate {
 	return ebc.SetRiderID(r.ID)
 }
 
-// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
-func (ebc *EnterpriseBillCreate) SetSubscribe(s *Subscribe) *EnterpriseBillCreate {
-	return ebc.SetSubscribeID(s.ID)
-}
-
 // SetCity sets the "city" edge to the City entity.
 func (ebc *EnterpriseBillCreate) SetCity(c *City) *EnterpriseBillCreate {
 	return ebc.SetCityID(c.ID)
@@ -205,6 +200,11 @@ func (ebc *EnterpriseBillCreate) SetEnterprise(e *Enterprise) *EnterpriseBillCre
 // SetStatement sets the "statement" edge to the EnterpriseStatement entity.
 func (ebc *EnterpriseBillCreate) SetStatement(e *EnterpriseStatement) *EnterpriseBillCreate {
 	return ebc.SetStatementID(e.ID)
+}
+
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (ebc *EnterpriseBillCreate) SetSubscribe(s *Subscribe) *EnterpriseBillCreate {
+	return ebc.SetSubscribeID(s.ID)
 }
 
 // Mutation returns the EnterpriseBillMutation object of the builder.
@@ -314,11 +314,11 @@ func (ebc *EnterpriseBillCreate) check() error {
 	if _, ok := ebc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider_id", err: errors.New(`ent: missing required field "EnterpriseBill.rider_id"`)}
 	}
-	if _, ok := ebc.mutation.SubscribeID(); !ok {
-		return &ValidationError{Name: "subscribe_id", err: errors.New(`ent: missing required field "EnterpriseBill.subscribe_id"`)}
-	}
 	if _, ok := ebc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city_id", err: errors.New(`ent: missing required field "EnterpriseBill.city_id"`)}
+	}
+	if _, ok := ebc.mutation.SubscribeID(); !ok {
+		return &ValidationError{Name: "subscribe_id", err: errors.New(`ent: missing required field "EnterpriseBill.subscribe_id"`)}
 	}
 	if _, ok := ebc.mutation.EnterpriseID(); !ok {
 		return &ValidationError{Name: "enterprise_id", err: errors.New(`ent: missing required field "EnterpriseBill.enterprise_id"`)}
@@ -347,9 +347,6 @@ func (ebc *EnterpriseBillCreate) check() error {
 	if _, ok := ebc.mutation.RiderID(); !ok {
 		return &ValidationError{Name: "rider", err: errors.New(`ent: missing required edge "EnterpriseBill.rider"`)}
 	}
-	if _, ok := ebc.mutation.SubscribeID(); !ok {
-		return &ValidationError{Name: "subscribe", err: errors.New(`ent: missing required edge "EnterpriseBill.subscribe"`)}
-	}
 	if _, ok := ebc.mutation.CityID(); !ok {
 		return &ValidationError{Name: "city", err: errors.New(`ent: missing required edge "EnterpriseBill.city"`)}
 	}
@@ -358,6 +355,9 @@ func (ebc *EnterpriseBillCreate) check() error {
 	}
 	if _, ok := ebc.mutation.StatementID(); !ok {
 		return &ValidationError{Name: "statement", err: errors.New(`ent: missing required edge "EnterpriseBill.statement"`)}
+	}
+	if _, ok := ebc.mutation.SubscribeID(); !ok {
+		return &ValidationError{Name: "subscribe", err: errors.New(`ent: missing required edge "EnterpriseBill.subscribe"`)}
 	}
 	return nil
 }
@@ -437,7 +437,7 @@ func (ebc *EnterpriseBillCreate) createSpec() (*EnterpriseBill, *sqlgraph.Create
 	}
 	if value, ok := ebc.mutation.Start(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Value:  value,
 			Column: enterprisebill.FieldStart,
 		})
@@ -445,7 +445,7 @@ func (ebc *EnterpriseBillCreate) createSpec() (*EnterpriseBill, *sqlgraph.Create
 	}
 	if value, ok := ebc.mutation.End(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Value:  value,
 			Column: enterprisebill.FieldEnd,
 		})
@@ -501,26 +501,6 @@ func (ebc *EnterpriseBillCreate) createSpec() (*EnterpriseBill, *sqlgraph.Create
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.RiderID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ebc.mutation.SubscribeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   enterprisebill.SubscribeTable,
-			Columns: []string{enterprisebill.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.SubscribeID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ebc.mutation.CityIDs(); len(nodes) > 0 {
@@ -601,6 +581,26 @@ func (ebc *EnterpriseBillCreate) createSpec() (*EnterpriseBill, *sqlgraph.Create
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.StatementID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ebc.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   enterprisebill.SubscribeTable,
+			Columns: []string{enterprisebill.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.SubscribeID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -765,18 +765,6 @@ func (u *EnterpriseBillUpsert) UpdateRiderID() *EnterpriseBillUpsert {
 	return u
 }
 
-// SetSubscribeID sets the "subscribe_id" field.
-func (u *EnterpriseBillUpsert) SetSubscribeID(v uint64) *EnterpriseBillUpsert {
-	u.Set(enterprisebill.FieldSubscribeID, v)
-	return u
-}
-
-// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
-func (u *EnterpriseBillUpsert) UpdateSubscribeID() *EnterpriseBillUpsert {
-	u.SetExcluded(enterprisebill.FieldSubscribeID)
-	return u
-}
-
 // SetCityID sets the "city_id" field.
 func (u *EnterpriseBillUpsert) SetCityID(v uint64) *EnterpriseBillUpsert {
 	u.Set(enterprisebill.FieldCityID, v)
@@ -807,6 +795,18 @@ func (u *EnterpriseBillUpsert) ClearStationID() *EnterpriseBillUpsert {
 	return u
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *EnterpriseBillUpsert) SetSubscribeID(v uint64) *EnterpriseBillUpsert {
+	u.Set(enterprisebill.FieldSubscribeID, v)
+	return u
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *EnterpriseBillUpsert) UpdateSubscribeID() *EnterpriseBillUpsert {
+	u.SetExcluded(enterprisebill.FieldSubscribeID)
+	return u
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (u *EnterpriseBillUpsert) SetEnterpriseID(v uint64) *EnterpriseBillUpsert {
 	u.Set(enterprisebill.FieldEnterpriseID, v)
@@ -832,7 +832,7 @@ func (u *EnterpriseBillUpsert) UpdateStatementID() *EnterpriseBillUpsert {
 }
 
 // SetStart sets the "start" field.
-func (u *EnterpriseBillUpsert) SetStart(v time.Time) *EnterpriseBillUpsert {
+func (u *EnterpriseBillUpsert) SetStart(v model.Date) *EnterpriseBillUpsert {
 	u.Set(enterprisebill.FieldStart, v)
 	return u
 }
@@ -844,7 +844,7 @@ func (u *EnterpriseBillUpsert) UpdateStart() *EnterpriseBillUpsert {
 }
 
 // SetEnd sets the "end" field.
-func (u *EnterpriseBillUpsert) SetEnd(v time.Time) *EnterpriseBillUpsert {
+func (u *EnterpriseBillUpsert) SetEnd(v model.Date) *EnterpriseBillUpsert {
 	u.Set(enterprisebill.FieldEnd, v)
 	return u
 }
@@ -1097,20 +1097,6 @@ func (u *EnterpriseBillUpsertOne) UpdateRiderID() *EnterpriseBillUpsertOne {
 	})
 }
 
-// SetSubscribeID sets the "subscribe_id" field.
-func (u *EnterpriseBillUpsertOne) SetSubscribeID(v uint64) *EnterpriseBillUpsertOne {
-	return u.Update(func(s *EnterpriseBillUpsert) {
-		s.SetSubscribeID(v)
-	})
-}
-
-// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
-func (u *EnterpriseBillUpsertOne) UpdateSubscribeID() *EnterpriseBillUpsertOne {
-	return u.Update(func(s *EnterpriseBillUpsert) {
-		s.UpdateSubscribeID()
-	})
-}
-
 // SetCityID sets the "city_id" field.
 func (u *EnterpriseBillUpsertOne) SetCityID(v uint64) *EnterpriseBillUpsertOne {
 	return u.Update(func(s *EnterpriseBillUpsert) {
@@ -1146,6 +1132,20 @@ func (u *EnterpriseBillUpsertOne) ClearStationID() *EnterpriseBillUpsertOne {
 	})
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *EnterpriseBillUpsertOne) SetSubscribeID(v uint64) *EnterpriseBillUpsertOne {
+	return u.Update(func(s *EnterpriseBillUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *EnterpriseBillUpsertOne) UpdateSubscribeID() *EnterpriseBillUpsertOne {
+	return u.Update(func(s *EnterpriseBillUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (u *EnterpriseBillUpsertOne) SetEnterpriseID(v uint64) *EnterpriseBillUpsertOne {
 	return u.Update(func(s *EnterpriseBillUpsert) {
@@ -1175,7 +1175,7 @@ func (u *EnterpriseBillUpsertOne) UpdateStatementID() *EnterpriseBillUpsertOne {
 }
 
 // SetStart sets the "start" field.
-func (u *EnterpriseBillUpsertOne) SetStart(v time.Time) *EnterpriseBillUpsertOne {
+func (u *EnterpriseBillUpsertOne) SetStart(v model.Date) *EnterpriseBillUpsertOne {
 	return u.Update(func(s *EnterpriseBillUpsert) {
 		s.SetStart(v)
 	})
@@ -1189,7 +1189,7 @@ func (u *EnterpriseBillUpsertOne) UpdateStart() *EnterpriseBillUpsertOne {
 }
 
 // SetEnd sets the "end" field.
-func (u *EnterpriseBillUpsertOne) SetEnd(v time.Time) *EnterpriseBillUpsertOne {
+func (u *EnterpriseBillUpsertOne) SetEnd(v model.Date) *EnterpriseBillUpsertOne {
 	return u.Update(func(s *EnterpriseBillUpsert) {
 		s.SetEnd(v)
 	})
@@ -1619,20 +1619,6 @@ func (u *EnterpriseBillUpsertBulk) UpdateRiderID() *EnterpriseBillUpsertBulk {
 	})
 }
 
-// SetSubscribeID sets the "subscribe_id" field.
-func (u *EnterpriseBillUpsertBulk) SetSubscribeID(v uint64) *EnterpriseBillUpsertBulk {
-	return u.Update(func(s *EnterpriseBillUpsert) {
-		s.SetSubscribeID(v)
-	})
-}
-
-// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
-func (u *EnterpriseBillUpsertBulk) UpdateSubscribeID() *EnterpriseBillUpsertBulk {
-	return u.Update(func(s *EnterpriseBillUpsert) {
-		s.UpdateSubscribeID()
-	})
-}
-
 // SetCityID sets the "city_id" field.
 func (u *EnterpriseBillUpsertBulk) SetCityID(v uint64) *EnterpriseBillUpsertBulk {
 	return u.Update(func(s *EnterpriseBillUpsert) {
@@ -1668,6 +1654,20 @@ func (u *EnterpriseBillUpsertBulk) ClearStationID() *EnterpriseBillUpsertBulk {
 	})
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (u *EnterpriseBillUpsertBulk) SetSubscribeID(v uint64) *EnterpriseBillUpsertBulk {
+	return u.Update(func(s *EnterpriseBillUpsert) {
+		s.SetSubscribeID(v)
+	})
+}
+
+// UpdateSubscribeID sets the "subscribe_id" field to the value that was provided on create.
+func (u *EnterpriseBillUpsertBulk) UpdateSubscribeID() *EnterpriseBillUpsertBulk {
+	return u.Update(func(s *EnterpriseBillUpsert) {
+		s.UpdateSubscribeID()
+	})
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (u *EnterpriseBillUpsertBulk) SetEnterpriseID(v uint64) *EnterpriseBillUpsertBulk {
 	return u.Update(func(s *EnterpriseBillUpsert) {
@@ -1697,7 +1697,7 @@ func (u *EnterpriseBillUpsertBulk) UpdateStatementID() *EnterpriseBillUpsertBulk
 }
 
 // SetStart sets the "start" field.
-func (u *EnterpriseBillUpsertBulk) SetStart(v time.Time) *EnterpriseBillUpsertBulk {
+func (u *EnterpriseBillUpsertBulk) SetStart(v model.Date) *EnterpriseBillUpsertBulk {
 	return u.Update(func(s *EnterpriseBillUpsert) {
 		s.SetStart(v)
 	})
@@ -1711,7 +1711,7 @@ func (u *EnterpriseBillUpsertBulk) UpdateStart() *EnterpriseBillUpsertBulk {
 }
 
 // SetEnd sets the "end" field.
-func (u *EnterpriseBillUpsertBulk) SetEnd(v time.Time) *EnterpriseBillUpsertBulk {
+func (u *EnterpriseBillUpsertBulk) SetEnd(v model.Date) *EnterpriseBillUpsertBulk {
 	return u.Update(func(s *EnterpriseBillUpsert) {
 		s.SetEnd(v)
 	})

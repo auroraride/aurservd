@@ -16,7 +16,6 @@ import (
     "github.com/golang-module/carbon/v2"
     log "github.com/sirupsen/logrus"
     "sort"
-    "time"
 )
 
 type planService struct {
@@ -58,7 +57,7 @@ func (s *planService) Query(id uint64) *ent.Plan {
 
 // QueryEffectiveWithID 获取当前生效的骑行卡
 func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
-    now := time.Now()
+    now := model.DateNow()
     item, err := s.orm.QueryNotDeleted().
         Where(
             plan.Enable(true),
@@ -76,7 +75,7 @@ func (s *planService) QueryEffectiveWithID(id uint64) *ent.Plan {
 }
 
 // checkDuplicate 查询骑士卡是否冲突
-func (s *planService) checkDuplicate(cities []uint64, models []string, start, end time.Time, parentID ...uint64) {
+func (s *planService) checkDuplicate(cities []uint64, models []string, start, end model.Date, parentID ...uint64) {
     for _, cityID := range cities {
         for _, rm := range models {
             q := s.orm.QueryNotDeleted().
@@ -120,8 +119,8 @@ func (s *planService) getCitiesAndModels(reqCities []uint64, reqModels []string)
 func (s *planService) Create(req *model.PlanCreateReq) model.PlanWithComplexes {
     cities, pms := s.getCitiesAndModels(req.Cities, req.Models)
 
-    start := carbon.ParseByLayout(req.Start, carbon.DateLayout).Carbon2Time()
-    end := carbon.ParseByLayout(req.End, carbon.DateLayout).Carbon2Time()
+    start := model.DateFromStringX(req.Start)
+    end := model.DateFromStringX(req.End)
 
     // 查询是否重复
     s.checkDuplicate(req.Cities, req.Models, start, end)
@@ -315,7 +314,7 @@ func (s *planService) List(req *model.PlanListReq) *model.PaginationRes {
 
 func (s *planService) CityList(req *model.PlanListRiderReq) map[string]*[]model.RiderPlanItem {
     rmap := make(map[string]*[]model.RiderPlanItem)
-    now := time.Now()
+    now := model.DateNow()
 
     items := s.orm.QueryNotDeleted().
         Where(

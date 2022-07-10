@@ -17,7 +17,6 @@ import (
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     "strings"
-    "time"
 )
 
 type attendanceService struct {
@@ -97,8 +96,8 @@ func (s *attendanceService) QueryDuty(storeID, employeeID uint64, panic ...bool)
 }
 
 // dutyDate 获取上下班日期
-func (s *attendanceService) dutyDate(duty bool, storeID, employeeID uint64) time.Time {
-    now := carbon.Now().StartOfDay().Carbon2Time()
+func (s *attendanceService) dutyDate(duty bool, storeID, employeeID uint64) model.Date {
+    now := model.DateNow()
     // 下班需要计算日期
     if !duty {
         at := s.QueryDuty(storeID, employeeID)

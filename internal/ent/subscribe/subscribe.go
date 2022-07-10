@@ -93,6 +93,8 @@ const (
 	EdgeOrders = "orders"
 	// EdgeInitialOrder holds the string denoting the initial_order edge name in mutations.
 	EdgeInitialOrder = "initial_order"
+	// EdgeBills holds the string denoting the bills edge name in mutations.
+	EdgeBills = "bills"
 	// Table holds the table name of the subscribe in the database.
 	Table = "subscribe"
 	// PlanTable is the table that holds the plan relation/edge.
@@ -172,6 +174,13 @@ const (
 	InitialOrderInverseTable = "order"
 	// InitialOrderColumn is the table column denoting the initial_order relation/edge.
 	InitialOrderColumn = "initial_order_id"
+	// BillsTable is the table that holds the bills relation/edge.
+	BillsTable = "enterprise_bill"
+	// BillsInverseTable is the table name for the EnterpriseBill entity.
+	// It exists in this package in order to avoid circular dependency with the "enterprisebill" package.
+	BillsInverseTable = "enterprise_bill"
+	// BillsColumn is the table column denoting the bills relation/edge.
+	BillsColumn = "subscribe_id"
 )
 
 // Columns holds all SQL columns for subscribe fields.

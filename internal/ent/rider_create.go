@@ -239,20 +239,6 @@ func (rc *RiderCreate) SetNillableLastSigninAt(t *time.Time) *RiderCreate {
 	return rc
 }
 
-// SetPlanAt sets the "plan_at" field.
-func (rc *RiderCreate) SetPlanAt(t time.Time) *RiderCreate {
-	rc.mutation.SetPlanAt(t)
-	return rc
-}
-
-// SetNillablePlanAt sets the "plan_at" field if the given value is not nil.
-func (rc *RiderCreate) SetNillablePlanAt(t *time.Time) *RiderCreate {
-	if t != nil {
-		rc.SetPlanAt(*t)
-	}
-	return rc
-}
-
 // SetBlocked sets the "blocked" field.
 func (rc *RiderCreate) SetBlocked(b bool) *RiderCreate {
 	rc.mutation.SetBlocked(b)
@@ -680,14 +666,6 @@ func (rc *RiderCreate) createSpec() (*Rider, *sqlgraph.CreateSpec) {
 			Column: rider.FieldLastSigninAt,
 		})
 		_node.LastSigninAt = &value
-	}
-	if value, ok := rc.mutation.PlanAt(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: rider.FieldPlanAt,
-		})
-		_node.PlanAt = value
 	}
 	if value, ok := rc.mutation.Blocked(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -1240,24 +1218,6 @@ func (u *RiderUpsert) ClearLastSigninAt() *RiderUpsert {
 	return u
 }
 
-// SetPlanAt sets the "plan_at" field.
-func (u *RiderUpsert) SetPlanAt(v time.Time) *RiderUpsert {
-	u.Set(rider.FieldPlanAt, v)
-	return u
-}
-
-// UpdatePlanAt sets the "plan_at" field to the value that was provided on create.
-func (u *RiderUpsert) UpdatePlanAt() *RiderUpsert {
-	u.SetExcluded(rider.FieldPlanAt)
-	return u
-}
-
-// ClearPlanAt clears the value of the "plan_at" field.
-func (u *RiderUpsert) ClearPlanAt() *RiderUpsert {
-	u.SetNull(rider.FieldPlanAt)
-	return u
-}
-
 // SetBlocked sets the "blocked" field.
 func (u *RiderUpsert) SetBlocked(v bool) *RiderUpsert {
 	u.Set(rider.FieldBlocked, v)
@@ -1671,27 +1631,6 @@ func (u *RiderUpsertOne) UpdateLastSigninAt() *RiderUpsertOne {
 func (u *RiderUpsertOne) ClearLastSigninAt() *RiderUpsertOne {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearLastSigninAt()
-	})
-}
-
-// SetPlanAt sets the "plan_at" field.
-func (u *RiderUpsertOne) SetPlanAt(v time.Time) *RiderUpsertOne {
-	return u.Update(func(s *RiderUpsert) {
-		s.SetPlanAt(v)
-	})
-}
-
-// UpdatePlanAt sets the "plan_at" field to the value that was provided on create.
-func (u *RiderUpsertOne) UpdatePlanAt() *RiderUpsertOne {
-	return u.Update(func(s *RiderUpsert) {
-		s.UpdatePlanAt()
-	})
-}
-
-// ClearPlanAt clears the value of the "plan_at" field.
-func (u *RiderUpsertOne) ClearPlanAt() *RiderUpsertOne {
-	return u.Update(func(s *RiderUpsert) {
-		s.ClearPlanAt()
 	})
 }
 
@@ -2277,27 +2216,6 @@ func (u *RiderUpsertBulk) UpdateLastSigninAt() *RiderUpsertBulk {
 func (u *RiderUpsertBulk) ClearLastSigninAt() *RiderUpsertBulk {
 	return u.Update(func(s *RiderUpsert) {
 		s.ClearLastSigninAt()
-	})
-}
-
-// SetPlanAt sets the "plan_at" field.
-func (u *RiderUpsertBulk) SetPlanAt(v time.Time) *RiderUpsertBulk {
-	return u.Update(func(s *RiderUpsert) {
-		s.SetPlanAt(v)
-	})
-}
-
-// UpdatePlanAt sets the "plan_at" field to the value that was provided on create.
-func (u *RiderUpsertBulk) UpdatePlanAt() *RiderUpsertBulk {
-	return u.Update(func(s *RiderUpsert) {
-		s.UpdatePlanAt()
-	})
-}
-
-// ClearPlanAt clears the value of the "plan_at" field.
-func (u *RiderUpsertBulk) ClearPlanAt() *RiderUpsertBulk {
-	return u.Update(func(s *RiderUpsert) {
-		s.ClearPlanAt()
 	})
 }
 

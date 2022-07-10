@@ -69,9 +69,6 @@ type Rider struct {
 	// LastSigninAt holds the value of the "last_signin_at" field.
 	// 最后登录时间
 	LastSigninAt *time.Time `json:"last_signin_at,omitempty"`
-	// PlanAt holds the value of the "plan_at" field.
-	// 骑行卡到期日期
-	PlanAt time.Time `json:"plan_at,omitempty"`
 	// Blocked holds the value of the "blocked" field.
 	// 是否封禁骑手账号
 	Blocked bool `json:"blocked,omitempty"`
@@ -228,7 +225,7 @@ func (*Rider) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case rider.FieldRemark, rider.FieldPhone, rider.FieldLastDevice, rider.FieldLastFace, rider.FieldPushID:
 			values[i] = new(sql.NullString)
-		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastSigninAt, rider.FieldPlanAt:
+		case rider.FieldCreatedAt, rider.FieldUpdatedAt, rider.FieldDeletedAt, rider.FieldLastSigninAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Rider", columns[i])
@@ -364,12 +361,6 @@ func (r *Rider) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				r.LastSigninAt = new(time.Time)
 				*r.LastSigninAt = value.Time
-			}
-		case rider.FieldPlanAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field plan_at", values[i])
-			} else if value.Valid {
-				r.PlanAt = value.Time
 			}
 		case rider.FieldBlocked:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -507,8 +498,6 @@ func (r *Rider) String() string {
 		builder.WriteString(", last_signin_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	builder.WriteString(", plan_at=")
-	builder.WriteString(r.PlanAt.Format(time.ANSIC))
 	builder.WriteString(", blocked=")
 	builder.WriteString(fmt.Sprintf("%v", r.Blocked))
 	builder.WriteString(", contractual=")

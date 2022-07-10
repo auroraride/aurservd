@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -276,7 +277,7 @@ func UnsubscribeReason(v string) predicate.Subscribe {
 }
 
 // LastBillDate applies equality check predicate on the "last_bill_date" field. It's identical to LastBillDateEQ.
-func LastBillDate(v time.Time) predicate.Subscribe {
+func LastBillDate(v model.Date) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldLastBillDate), v))
 	})
@@ -2364,21 +2365,21 @@ func UnsubscribeReasonContainsFold(v string) predicate.Subscribe {
 }
 
 // LastBillDateEQ applies the EQ predicate on the "last_bill_date" field.
-func LastBillDateEQ(v time.Time) predicate.Subscribe {
+func LastBillDateEQ(v model.Date) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldLastBillDate), v))
 	})
 }
 
 // LastBillDateNEQ applies the NEQ predicate on the "last_bill_date" field.
-func LastBillDateNEQ(v time.Time) predicate.Subscribe {
+func LastBillDateNEQ(v model.Date) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldLastBillDate), v))
 	})
 }
 
 // LastBillDateIn applies the In predicate on the "last_bill_date" field.
-func LastBillDateIn(vs ...time.Time) predicate.Subscribe {
+func LastBillDateIn(vs ...model.Date) predicate.Subscribe {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -2395,7 +2396,7 @@ func LastBillDateIn(vs ...time.Time) predicate.Subscribe {
 }
 
 // LastBillDateNotIn applies the NotIn predicate on the "last_bill_date" field.
-func LastBillDateNotIn(vs ...time.Time) predicate.Subscribe {
+func LastBillDateNotIn(vs ...model.Date) predicate.Subscribe {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -2412,28 +2413,28 @@ func LastBillDateNotIn(vs ...time.Time) predicate.Subscribe {
 }
 
 // LastBillDateGT applies the GT predicate on the "last_bill_date" field.
-func LastBillDateGT(v time.Time) predicate.Subscribe {
+func LastBillDateGT(v model.Date) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldLastBillDate), v))
 	})
 }
 
 // LastBillDateGTE applies the GTE predicate on the "last_bill_date" field.
-func LastBillDateGTE(v time.Time) predicate.Subscribe {
+func LastBillDateGTE(v model.Date) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldLastBillDate), v))
 	})
 }
 
 // LastBillDateLT applies the LT predicate on the "last_bill_date" field.
-func LastBillDateLT(v time.Time) predicate.Subscribe {
+func LastBillDateLT(v model.Date) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldLastBillDate), v))
 	})
 }
 
 // LastBillDateLTE applies the LTE predicate on the "last_bill_date" field.
-func LastBillDateLTE(v time.Time) predicate.Subscribe {
+func LastBillDateLTE(v model.Date) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldLastBillDate), v))
 	})
@@ -2752,6 +2753,34 @@ func HasInitialOrderWith(preds ...predicate.Order) predicate.Subscribe {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(InitialOrderInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, InitialOrderTable, InitialOrderColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasBills applies the HasEdge predicate on the "bills" edge.
+func HasBills() predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(BillsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, BillsTable, BillsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBillsWith applies the HasEdge predicate on the "bills" edge with a given conditions (other predicates).
+func HasBillsWith(preds ...predicate.EnterpriseBill) predicate.Subscribe {
+	return predicate.Subscribe(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(BillsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, BillsTable, BillsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

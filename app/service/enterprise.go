@@ -119,8 +119,6 @@ func (s *enterpriseService) DetailQuery() *ent.EnterpriseQuery {
 
 // List 列举企业
 func (s *enterpriseService) List(req *model.EnterpriseListReq) *model.PaginationRes {
-    tt := tools.NewTime()
-
     q := s.DetailQuery()
     if req.Name != nil {
         q.Where(enterprise.NameContainsFold(*req.Name))
@@ -142,10 +140,10 @@ func (s *enterpriseService) List(req *model.EnterpriseListReq) *model.Pagination
         ))
     }
     if req.Start != nil {
-        q.Where(enterprise.HasContractsWith(enterprisecontract.StartLTE(tt.ParseDateStringX(*req.Start))))
+        q.Where(enterprise.HasContractsWith(enterprisecontract.StartLTE(model.DateFromStringX(*req.Start))))
     }
     if req.End != nil {
-        q.Where(enterprise.HasContractsWith(enterprisecontract.EndGTE(tt.ParseDateStringX(*req.End))))
+        q.Where(enterprise.HasContractsWith(enterprisecontract.EndGTE(model.DateFromStringX(*req.End))))
     }
     return model.ParsePaginationResponse(
         q, req.PaginationReq,
@@ -267,14 +265,16 @@ func (s *enterpriseService) QueryAllBillingSubscribe(enterpriseID uint64, args .
             // 或上次结算日期为空
             subscribe.LastBillDateIsNil(),
             // 或小于截止日期
-            subscribe.LastBillDateLT(endDate),
+            subscribe.LastBillDateLT(model.DateFromTime(endDate)),
         ),
         subscribe.Or(
-            // 或者结算日期为空的
+            // 或上次结算日期为空
+            subscribe.LastBillDateIsNil(),
+            // 或者退租日期为空的
             subscribe.EndAtIsNil(),
             // 或者终止时间晚于上次已结算时间的
             func(selector *sql.Selector) {
-                selector.Where(sql.ColumnsGTE(selector.C(subscribe.FieldEndAt), selector.C(subscribe.FieldLastBillDate)))
+                selector.Where(sql.ColumnsGTE(selector.C(subscribe.FieldEndAt), fmt.Sprintf("%s + INTERVAL '1 day'", selector.C(subscribe.FieldLastBillDate))))
             },
         ),
     )
@@ -351,7 +351,7 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
 
         // 上次结算日期存在则从上次结算日次日开始计算
         if sub.LastBillDate != nil {
-            from = carbon.Time2Carbon(*sub.LastBillDate).StartOfDay().AddDay().Carbon2Time()
+            from = carbon.Time2Carbon(sub.LastBillDate.Time).Tomorrow().AddDay().Carbon2Time()
         }
 
         // 结束时间
@@ -360,6 +360,10 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
         if sub.EndAt != nil && sub.EndAt.Before(end) {
             to = carbon.Time2Carbon(*sub.EndAt).StartOfDay().Carbon2Time()
         }
+        if to.Before(from) {
+            continue
+        }
+
         used = tt.UsedDays(to, from)
 
         // 按城市/型号计算金额
@@ -382,7 +386,7 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
             StatementID: es.ID,
             StationID:   sub.StationID,
             Days:        used,
-            End:         end.Format(carbon.DateLayout),
+            End:         to.Format(carbon.DateLayout),
             Start:       from.Format(carbon.DateLayout),
             Cost:        cost,
             Price:       p,
@@ -445,7 +449,7 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
         log.Errorf("[ENTERPRISE TASK] %d 更新失败: %v", e.ID, err)
     }
 
-    now := carbon.Now().StartOfDay().Carbon2Time()
+    now := model.DateNow()
     _, err = sta.Update().
         SetRiderNumber(len(bills)).
         SetDays(days).
@@ -463,7 +467,7 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
         days,
         cost,
         balance,
-        now.Format(carbon.DateLayout),
+        now,
     )
 }
 
@@ -624,9 +628,8 @@ func (s *enterpriseService) QueryContract(contractID uint64) *ent.EnterpriseCont
 
 // ModifyContract 编辑企业合同
 func (s *enterpriseService) ModifyContract(req *model.EnterpriseContractModifyReq) {
-    tt := tools.NewTime()
-    start := tt.ParseDateStringX(req.Start)
-    end := tt.ParseDateStringX(req.End)
+    start := model.DateFromStringX(req.Start)
+    end := model.DateFromStringX(req.End)
     var err error
     if req.ID != 0 {
         // 查找合同

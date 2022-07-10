@@ -17,7 +17,6 @@ import (
     "github.com/auroraride/aurservd/pkg/tools"
     "sort"
     "strconv"
-    "time"
 )
 
 type selectionService struct {
@@ -42,7 +41,7 @@ func (s *selectionService) Plan(req *model.PlanSelectionReq) (items []model.Casc
         WithPms()
 
     if req.Effect != nil && *req.Effect != 0 {
-        now := time.Now()
+        now := model.DateNow()
         if *req.Effect == 1 {
             q.Where(
                 plan.StartLTE(now),

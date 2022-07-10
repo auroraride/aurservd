@@ -109,7 +109,7 @@ type Subscribe struct {
 	UnsubscribeReason string `json:"unsubscribe_reason,omitempty"`
 	// LastBillDate holds the value of the "last_bill_date" field.
 	// 上次结算日期(包含该日期)
-	LastBillDate *time.Time `json:"last_bill_date,omitempty"`
+	LastBillDate *model.Date `json:"last_bill_date,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeQuery when eager-loading is set.
 	Edges SubscribeEdges `json:"edges"`
@@ -139,9 +139,11 @@ type SubscribeEdges struct {
 	Orders []*Order `json:"orders,omitempty"`
 	// InitialOrder holds the value of the initial_order edge.
 	InitialOrder *Order `json:"initial_order,omitempty"`
+	// Bills holds the value of the bills edge.
+	Bills []*EnterpriseBill `json:"bills,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [11]bool
+	loadedTypes [12]bool
 }
 
 // PlanOrErr returns the Plan value or an error if the edge
@@ -283,18 +285,29 @@ func (e SubscribeEdges) InitialOrderOrErr() (*Order, error) {
 	return nil, &NotLoadedError{edge: "initial_order"}
 }
 
+// BillsOrErr returns the Bills value or an error if the edge
+// was not loaded in eager-loading.
+func (e SubscribeEdges) BillsOrErr() ([]*EnterpriseBill, error) {
+	if e.loadedTypes[11] {
+		return e.Bills, nil
+	}
+	return nil, &NotLoadedError{edge: "bills"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Subscribe) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case subscribe.FieldLastBillDate:
+			values[i] = &sql.NullScanner{S: new(model.Date)}
 		case subscribe.FieldCreator, subscribe.FieldLastModifier:
 			values[i] = new([]byte)
 		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining:
 			values[i] = new(sql.NullInt64)
 		case subscribe.FieldRemark, subscribe.FieldModel, subscribe.FieldUnsubscribeReason:
 			values[i] = new(sql.NullString)
-		case subscribe.FieldCreatedAt, subscribe.FieldUpdatedAt, subscribe.FieldDeletedAt, subscribe.FieldPausedAt, subscribe.FieldStartAt, subscribe.FieldEndAt, subscribe.FieldRefundAt, subscribe.FieldLastBillDate:
+		case subscribe.FieldCreatedAt, subscribe.FieldUpdatedAt, subscribe.FieldDeletedAt, subscribe.FieldPausedAt, subscribe.FieldStartAt, subscribe.FieldEndAt, subscribe.FieldRefundAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Subscribe", columns[i])
@@ -500,11 +513,11 @@ func (s *Subscribe) assignValues(columns []string, values []interface{}) error {
 				s.UnsubscribeReason = value.String
 			}
 		case subscribe.FieldLastBillDate:
-			if value, ok := values[i].(*sql.NullTime); !ok {
+			if value, ok := values[i].(*sql.NullScanner); !ok {
 				return fmt.Errorf("unexpected type %T for field last_bill_date", values[i])
 			} else if value.Valid {
-				s.LastBillDate = new(time.Time)
-				*s.LastBillDate = value.Time
+				s.LastBillDate = new(model.Date)
+				*s.LastBillDate = *value.S.(*model.Date)
 			}
 		}
 	}
@@ -564,6 +577,11 @@ func (s *Subscribe) QueryOrders() *OrderQuery {
 // QueryInitialOrder queries the "initial_order" edge of the Subscribe entity.
 func (s *Subscribe) QueryInitialOrder() *OrderQuery {
 	return (&SubscribeClient{config: s.config}).QueryInitialOrder(s)
+}
+
+// QueryBills queries the "bills" edge of the Subscribe entity.
+func (s *Subscribe) QueryBills() *EnterpriseBillQuery {
+	return (&SubscribeClient{config: s.config}).QueryBills(s)
 }
 
 // Update returns a builder for updating this Subscribe.
@@ -667,7 +685,7 @@ func (s *Subscribe) String() string {
 	builder.WriteString(s.UnsubscribeReason)
 	if v := s.LastBillDate; v != nil {
 		builder.WriteString(", last_bill_date=")
-		builder.WriteString(v.Format(time.ANSIC))
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')
 	return builder.String()

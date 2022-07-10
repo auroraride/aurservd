@@ -15,6 +15,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -489,15 +490,15 @@ func (su *SubscribeUpdate) ClearUnsubscribeReason() *SubscribeUpdate {
 }
 
 // SetLastBillDate sets the "last_bill_date" field.
-func (su *SubscribeUpdate) SetLastBillDate(t time.Time) *SubscribeUpdate {
-	su.mutation.SetLastBillDate(t)
+func (su *SubscribeUpdate) SetLastBillDate(m model.Date) *SubscribeUpdate {
+	su.mutation.SetLastBillDate(m)
 	return su
 }
 
 // SetNillableLastBillDate sets the "last_bill_date" field if the given value is not nil.
-func (su *SubscribeUpdate) SetNillableLastBillDate(t *time.Time) *SubscribeUpdate {
-	if t != nil {
-		su.SetLastBillDate(*t)
+func (su *SubscribeUpdate) SetNillableLastBillDate(m *model.Date) *SubscribeUpdate {
+	if m != nil {
+		su.SetLastBillDate(*m)
 	}
 	return su
 }
@@ -591,6 +592,21 @@ func (su *SubscribeUpdate) AddOrders(o ...*Order) *SubscribeUpdate {
 // SetInitialOrder sets the "initial_order" edge to the Order entity.
 func (su *SubscribeUpdate) SetInitialOrder(o *Order) *SubscribeUpdate {
 	return su.SetInitialOrderID(o.ID)
+}
+
+// AddBillIDs adds the "bills" edge to the EnterpriseBill entity by IDs.
+func (su *SubscribeUpdate) AddBillIDs(ids ...uint64) *SubscribeUpdate {
+	su.mutation.AddBillIDs(ids...)
+	return su
+}
+
+// AddBills adds the "bills" edges to the EnterpriseBill entity.
+func (su *SubscribeUpdate) AddBills(e ...*EnterpriseBill) *SubscribeUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return su.AddBillIDs(ids...)
 }
 
 // Mutation returns the SubscribeMutation object of the builder.
@@ -707,6 +723,27 @@ func (su *SubscribeUpdate) RemoveOrders(o ...*Order) *SubscribeUpdate {
 func (su *SubscribeUpdate) ClearInitialOrder() *SubscribeUpdate {
 	su.mutation.ClearInitialOrder()
 	return su
+}
+
+// ClearBills clears all "bills" edges to the EnterpriseBill entity.
+func (su *SubscribeUpdate) ClearBills() *SubscribeUpdate {
+	su.mutation.ClearBills()
+	return su
+}
+
+// RemoveBillIDs removes the "bills" edge to EnterpriseBill entities by IDs.
+func (su *SubscribeUpdate) RemoveBillIDs(ids ...uint64) *SubscribeUpdate {
+	su.mutation.RemoveBillIDs(ids...)
+	return su
+}
+
+// RemoveBills removes "bills" edges to EnterpriseBill entities.
+func (su *SubscribeUpdate) RemoveBills(e ...*EnterpriseBill) *SubscribeUpdate {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return su.RemoveBillIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1043,14 +1080,14 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := su.mutation.LastBillDate(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Value:  value,
 			Column: subscribe.FieldLastBillDate,
 		})
 	}
 	if su.mutation.LastBillDateCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Column: subscribe.FieldLastBillDate,
 		})
 	}
@@ -1488,6 +1525,60 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if su.mutation.BillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribe.BillsTable,
+			Columns: []string{subscribe.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.RemovedBillsIDs(); len(nodes) > 0 && !su.mutation.BillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribe.BillsTable,
+			Columns: []string{subscribe.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.BillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribe.BillsTable,
+			Columns: []string{subscribe.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
 				},
 			},
 		}
@@ -1965,15 +2056,15 @@ func (suo *SubscribeUpdateOne) ClearUnsubscribeReason() *SubscribeUpdateOne {
 }
 
 // SetLastBillDate sets the "last_bill_date" field.
-func (suo *SubscribeUpdateOne) SetLastBillDate(t time.Time) *SubscribeUpdateOne {
-	suo.mutation.SetLastBillDate(t)
+func (suo *SubscribeUpdateOne) SetLastBillDate(m model.Date) *SubscribeUpdateOne {
+	suo.mutation.SetLastBillDate(m)
 	return suo
 }
 
 // SetNillableLastBillDate sets the "last_bill_date" field if the given value is not nil.
-func (suo *SubscribeUpdateOne) SetNillableLastBillDate(t *time.Time) *SubscribeUpdateOne {
-	if t != nil {
-		suo.SetLastBillDate(*t)
+func (suo *SubscribeUpdateOne) SetNillableLastBillDate(m *model.Date) *SubscribeUpdateOne {
+	if m != nil {
+		suo.SetLastBillDate(*m)
 	}
 	return suo
 }
@@ -2067,6 +2158,21 @@ func (suo *SubscribeUpdateOne) AddOrders(o ...*Order) *SubscribeUpdateOne {
 // SetInitialOrder sets the "initial_order" edge to the Order entity.
 func (suo *SubscribeUpdateOne) SetInitialOrder(o *Order) *SubscribeUpdateOne {
 	return suo.SetInitialOrderID(o.ID)
+}
+
+// AddBillIDs adds the "bills" edge to the EnterpriseBill entity by IDs.
+func (suo *SubscribeUpdateOne) AddBillIDs(ids ...uint64) *SubscribeUpdateOne {
+	suo.mutation.AddBillIDs(ids...)
+	return suo
+}
+
+// AddBills adds the "bills" edges to the EnterpriseBill entity.
+func (suo *SubscribeUpdateOne) AddBills(e ...*EnterpriseBill) *SubscribeUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return suo.AddBillIDs(ids...)
 }
 
 // Mutation returns the SubscribeMutation object of the builder.
@@ -2183,6 +2289,27 @@ func (suo *SubscribeUpdateOne) RemoveOrders(o ...*Order) *SubscribeUpdateOne {
 func (suo *SubscribeUpdateOne) ClearInitialOrder() *SubscribeUpdateOne {
 	suo.mutation.ClearInitialOrder()
 	return suo
+}
+
+// ClearBills clears all "bills" edges to the EnterpriseBill entity.
+func (suo *SubscribeUpdateOne) ClearBills() *SubscribeUpdateOne {
+	suo.mutation.ClearBills()
+	return suo
+}
+
+// RemoveBillIDs removes the "bills" edge to EnterpriseBill entities by IDs.
+func (suo *SubscribeUpdateOne) RemoveBillIDs(ids ...uint64) *SubscribeUpdateOne {
+	suo.mutation.RemoveBillIDs(ids...)
+	return suo
+}
+
+// RemoveBills removes "bills" edges to EnterpriseBill entities.
+func (suo *SubscribeUpdateOne) RemoveBills(e ...*EnterpriseBill) *SubscribeUpdateOne {
+	ids := make([]uint64, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return suo.RemoveBillIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -2549,14 +2676,14 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 	}
 	if value, ok := suo.mutation.LastBillDate(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Value:  value,
 			Column: subscribe.FieldLastBillDate,
 		})
 	}
 	if suo.mutation.LastBillDateCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Column: subscribe.FieldLastBillDate,
 		})
 	}
@@ -2994,6 +3121,60 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: order.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.BillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribe.BillsTable,
+			Columns: []string{subscribe.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.RemovedBillsIDs(); len(nodes) > 0 && !suo.mutation.BillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribe.BillsTable,
+			Columns: []string{subscribe.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.BillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   subscribe.BillsTable,
+			Columns: []string{subscribe.BillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: enterprisebill.FieldID,
 				},
 			},
 		}

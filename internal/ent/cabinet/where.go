@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -227,7 +228,7 @@ func SimSn(v string) predicate.Cabinet {
 }
 
 // SimDate applies equality check predicate on the "sim_date" field. It's identical to SimDateEQ.
-func SimDate(v time.Time) predicate.Cabinet {
+func SimDate(v model.Date) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldSimDate), v))
 	})
@@ -2021,21 +2022,21 @@ func SimSnContainsFold(v string) predicate.Cabinet {
 }
 
 // SimDateEQ applies the EQ predicate on the "sim_date" field.
-func SimDateEQ(v time.Time) predicate.Cabinet {
+func SimDateEQ(v model.Date) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldSimDate), v))
 	})
 }
 
 // SimDateNEQ applies the NEQ predicate on the "sim_date" field.
-func SimDateNEQ(v time.Time) predicate.Cabinet {
+func SimDateNEQ(v model.Date) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldSimDate), v))
 	})
 }
 
 // SimDateIn applies the In predicate on the "sim_date" field.
-func SimDateIn(vs ...time.Time) predicate.Cabinet {
+func SimDateIn(vs ...model.Date) predicate.Cabinet {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -2052,7 +2053,7 @@ func SimDateIn(vs ...time.Time) predicate.Cabinet {
 }
 
 // SimDateNotIn applies the NotIn predicate on the "sim_date" field.
-func SimDateNotIn(vs ...time.Time) predicate.Cabinet {
+func SimDateNotIn(vs ...model.Date) predicate.Cabinet {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -2069,28 +2070,28 @@ func SimDateNotIn(vs ...time.Time) predicate.Cabinet {
 }
 
 // SimDateGT applies the GT predicate on the "sim_date" field.
-func SimDateGT(v time.Time) predicate.Cabinet {
+func SimDateGT(v model.Date) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldSimDate), v))
 	})
 }
 
 // SimDateGTE applies the GTE predicate on the "sim_date" field.
-func SimDateGTE(v time.Time) predicate.Cabinet {
+func SimDateGTE(v model.Date) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldSimDate), v))
 	})
 }
 
 // SimDateLT applies the LT predicate on the "sim_date" field.
-func SimDateLT(v time.Time) predicate.Cabinet {
+func SimDateLT(v model.Date) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldSimDate), v))
 	})
 }
 
 // SimDateLTE applies the LTE predicate on the "sim_date" field.
-func SimDateLTE(v time.Time) predicate.Cabinet {
+func SimDateLTE(v model.Date) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldSimDate), v))
 	})

@@ -41,10 +41,10 @@ type Plan struct {
 	Name string `json:"name,omitempty"`
 	// Start holds the value of the "start" field.
 	// 有效期开始日期
-	Start time.Time `json:"start,omitempty"`
+	Start model.Date `json:"start,omitempty"`
 	// End holds the value of the "end" field.
 	// 有效期结束日期
-	End time.Time `json:"end,omitempty"`
+	End model.Date `json:"end,omitempty"`
 	// Price holds the value of the "price" field.
 	// 骑士卡价格
 	Price float64 `json:"price,omitempty"`
@@ -131,6 +131,8 @@ func (*Plan) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case plan.FieldCreator, plan.FieldLastModifier:
 			values[i] = new([]byte)
+		case plan.FieldStart, plan.FieldEnd:
+			values[i] = new(model.Date)
 		case plan.FieldEnable:
 			values[i] = new(sql.NullBool)
 		case plan.FieldPrice, plan.FieldCommission, plan.FieldOriginal:
@@ -139,7 +141,7 @@ func (*Plan) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case plan.FieldRemark, plan.FieldName, plan.FieldDesc:
 			values[i] = new(sql.NullString)
-		case plan.FieldCreatedAt, plan.FieldUpdatedAt, plan.FieldDeletedAt, plan.FieldStart, plan.FieldEnd:
+		case plan.FieldCreatedAt, plan.FieldUpdatedAt, plan.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Plan", columns[i])
@@ -216,16 +218,16 @@ func (pl *Plan) assignValues(columns []string, values []interface{}) error {
 				pl.Name = value.String
 			}
 		case plan.FieldStart:
-			if value, ok := values[i].(*sql.NullTime); !ok {
+			if value, ok := values[i].(*model.Date); !ok {
 				return fmt.Errorf("unexpected type %T for field start", values[i])
-			} else if value.Valid {
-				pl.Start = value.Time
+			} else if value != nil {
+				pl.Start = *value
 			}
 		case plan.FieldEnd:
-			if value, ok := values[i].(*sql.NullTime); !ok {
+			if value, ok := values[i].(*model.Date); !ok {
 				return fmt.Errorf("unexpected type %T for field end", values[i])
-			} else if value.Valid {
-				pl.End = value.Time
+			} else if value != nil {
+				pl.End = *value
 			}
 		case plan.FieldPrice:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
@@ -331,9 +333,9 @@ func (pl *Plan) String() string {
 	builder.WriteString(", name=")
 	builder.WriteString(pl.Name)
 	builder.WriteString(", start=")
-	builder.WriteString(pl.Start.Format(time.ANSIC))
+	builder.WriteString(fmt.Sprintf("%v", pl.Start))
 	builder.WriteString(", end=")
-	builder.WriteString(pl.End.Format(time.ANSIC))
+	builder.WriteString(fmt.Sprintf("%v", pl.End))
 	builder.WriteString(", price=")
 	builder.WriteString(fmt.Sprintf("%v", pl.Price))
 	builder.WriteString(", days=")

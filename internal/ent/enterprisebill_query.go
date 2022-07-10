@@ -31,11 +31,11 @@ type EnterpriseBillQuery struct {
 	predicates []predicate.EnterpriseBill
 	// eager-loading edges.
 	withRider      *RiderQuery
-	withSubscribe  *SubscribeQuery
 	withCity       *CityQuery
 	withStation    *EnterpriseStationQuery
 	withEnterprise *EnterpriseQuery
 	withStatement  *EnterpriseStatementQuery
+	withSubscribe  *SubscribeQuery
 	modifiers      []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -88,28 +88,6 @@ func (ebq *EnterpriseBillQuery) QueryRider() *RiderQuery {
 			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, selector),
 			sqlgraph.To(rider.Table, rider.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebill.RiderTable, enterprisebill.RiderColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(ebq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QuerySubscribe chains the current query on the "subscribe" edge.
-func (ebq *EnterpriseBillQuery) QuerySubscribe() *SubscribeQuery {
-	query := &SubscribeQuery{config: ebq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := ebq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := ebq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, selector),
-			sqlgraph.To(subscribe.Table, subscribe.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebill.SubscribeTable, enterprisebill.SubscribeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ebq.driver.Dialect(), step)
 		return fromU, nil
@@ -198,6 +176,28 @@ func (ebq *EnterpriseBillQuery) QueryStatement() *EnterpriseStatementQuery {
 			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, selector),
 			sqlgraph.To(enterprisestatement.Table, enterprisestatement.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, enterprisebill.StatementTable, enterprisebill.StatementColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ebq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySubscribe chains the current query on the "subscribe" edge.
+func (ebq *EnterpriseBillQuery) QuerySubscribe() *SubscribeQuery {
+	query := &SubscribeQuery{config: ebq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ebq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ebq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, selector),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, enterprisebill.SubscribeTable, enterprisebill.SubscribeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ebq.driver.Dialect(), step)
 		return fromU, nil
@@ -387,11 +387,11 @@ func (ebq *EnterpriseBillQuery) Clone() *EnterpriseBillQuery {
 		order:          append([]OrderFunc{}, ebq.order...),
 		predicates:     append([]predicate.EnterpriseBill{}, ebq.predicates...),
 		withRider:      ebq.withRider.Clone(),
-		withSubscribe:  ebq.withSubscribe.Clone(),
 		withCity:       ebq.withCity.Clone(),
 		withStation:    ebq.withStation.Clone(),
 		withEnterprise: ebq.withEnterprise.Clone(),
 		withStatement:  ebq.withStatement.Clone(),
+		withSubscribe:  ebq.withSubscribe.Clone(),
 		// clone intermediate query.
 		sql:    ebq.sql.Clone(),
 		path:   ebq.path,
@@ -407,17 +407,6 @@ func (ebq *EnterpriseBillQuery) WithRider(opts ...func(*RiderQuery)) *Enterprise
 		opt(query)
 	}
 	ebq.withRider = query
-	return ebq
-}
-
-// WithSubscribe tells the query-builder to eager-load the nodes that are connected to
-// the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
-func (ebq *EnterpriseBillQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *EnterpriseBillQuery {
-	query := &SubscribeQuery{config: ebq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	ebq.withSubscribe = query
 	return ebq
 }
 
@@ -462,6 +451,17 @@ func (ebq *EnterpriseBillQuery) WithStatement(opts ...func(*EnterpriseStatementQ
 		opt(query)
 	}
 	ebq.withStatement = query
+	return ebq
+}
+
+// WithSubscribe tells the query-builder to eager-load the nodes that are connected to
+// the "subscribe" edge. The optional arguments are used to configure the query builder of the edge.
+func (ebq *EnterpriseBillQuery) WithSubscribe(opts ...func(*SubscribeQuery)) *EnterpriseBillQuery {
+	query := &SubscribeQuery{config: ebq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	ebq.withSubscribe = query
 	return ebq
 }
 
@@ -537,11 +537,11 @@ func (ebq *EnterpriseBillQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 		_spec       = ebq.querySpec()
 		loadedTypes = [6]bool{
 			ebq.withRider != nil,
-			ebq.withSubscribe != nil,
 			ebq.withCity != nil,
 			ebq.withStation != nil,
 			ebq.withEnterprise != nil,
 			ebq.withStatement != nil,
+			ebq.withSubscribe != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -588,32 +588,6 @@ func (ebq *EnterpriseBillQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 			}
 			for i := range nodes {
 				nodes[i].Edges.Rider = n
-			}
-		}
-	}
-
-	if query := ebq.withSubscribe; query != nil {
-		ids := make([]uint64, 0, len(nodes))
-		nodeids := make(map[uint64][]*EnterpriseBill)
-		for i := range nodes {
-			fk := nodes[i].SubscribeID
-			if _, ok := nodeids[fk]; !ok {
-				ids = append(ids, fk)
-			}
-			nodeids[fk] = append(nodeids[fk], nodes[i])
-		}
-		query.Where(subscribe.IDIn(ids...))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v`, n.ID)
-			}
-			for i := range nodes {
-				nodes[i].Edges.Subscribe = n
 			}
 		}
 	}
@@ -721,6 +695,32 @@ func (ebq *EnterpriseBillQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 			}
 			for i := range nodes {
 				nodes[i].Edges.Statement = n
+			}
+		}
+	}
+
+	if query := ebq.withSubscribe; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*EnterpriseBill)
+		for i := range nodes {
+			fk := nodes[i].SubscribeID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(subscribe.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Subscribe = n
 			}
 		}
 	}

@@ -140,8 +140,8 @@ func (au *AttendanceUpdate) SetDuty(b bool) *AttendanceUpdate {
 }
 
 // SetDate sets the "date" field.
-func (au *AttendanceUpdate) SetDate(t time.Time) *AttendanceUpdate {
-	au.mutation.SetDate(t)
+func (au *AttendanceUpdate) SetDate(m model.Date) *AttendanceUpdate {
+	au.mutation.SetDate(m)
 	return au
 }
 
@@ -464,7 +464,7 @@ func (au *AttendanceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := au.mutation.Date(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Value:  value,
 			Column: attendance.FieldDate,
 		})
@@ -740,8 +740,8 @@ func (auo *AttendanceUpdateOne) SetDuty(b bool) *AttendanceUpdateOne {
 }
 
 // SetDate sets the "date" field.
-func (auo *AttendanceUpdateOne) SetDate(t time.Time) *AttendanceUpdateOne {
-	auo.mutation.SetDate(t)
+func (auo *AttendanceUpdateOne) SetDate(m model.Date) *AttendanceUpdateOne {
+	auo.mutation.SetDate(m)
 	return auo
 }
 
@@ -1094,7 +1094,7 @@ func (auo *AttendanceUpdateOne) sqlSave(ctx context.Context) (_node *Attendance,
 	}
 	if value, ok := auo.mutation.Date(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Value:  value,
 			Column: attendance.FieldDate,
 		})

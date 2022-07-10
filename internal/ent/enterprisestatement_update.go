@@ -179,15 +179,15 @@ func (esu *EnterpriseStatementUpdate) AddRiderNumber(i int) *EnterpriseStatement
 }
 
 // SetDate sets the "date" field.
-func (esu *EnterpriseStatementUpdate) SetDate(t time.Time) *EnterpriseStatementUpdate {
-	esu.mutation.SetDate(t)
+func (esu *EnterpriseStatementUpdate) SetDate(m model.Date) *EnterpriseStatementUpdate {
+	esu.mutation.SetDate(m)
 	return esu
 }
 
 // SetNillableDate sets the "date" field if the given value is not nil.
-func (esu *EnterpriseStatementUpdate) SetNillableDate(t *time.Time) *EnterpriseStatementUpdate {
-	if t != nil {
-		esu.SetDate(*t)
+func (esu *EnterpriseStatementUpdate) SetNillableDate(m *model.Date) *EnterpriseStatementUpdate {
+	if m != nil {
+		esu.SetDate(*m)
 	}
 	return esu
 }
@@ -199,21 +199,21 @@ func (esu *EnterpriseStatementUpdate) ClearDate() *EnterpriseStatementUpdate {
 }
 
 // SetStart sets the "start" field.
-func (esu *EnterpriseStatementUpdate) SetStart(t time.Time) *EnterpriseStatementUpdate {
-	esu.mutation.SetStart(t)
+func (esu *EnterpriseStatementUpdate) SetStart(m model.Date) *EnterpriseStatementUpdate {
+	esu.mutation.SetStart(m)
 	return esu
 }
 
 // SetEnd sets the "end" field.
-func (esu *EnterpriseStatementUpdate) SetEnd(t time.Time) *EnterpriseStatementUpdate {
-	esu.mutation.SetEnd(t)
+func (esu *EnterpriseStatementUpdate) SetEnd(m model.Date) *EnterpriseStatementUpdate {
+	esu.mutation.SetEnd(m)
 	return esu
 }
 
 // SetNillableEnd sets the "end" field if the given value is not nil.
-func (esu *EnterpriseStatementUpdate) SetNillableEnd(t *time.Time) *EnterpriseStatementUpdate {
-	if t != nil {
-		esu.SetEnd(*t)
+func (esu *EnterpriseStatementUpdate) SetNillableEnd(m *model.Date) *EnterpriseStatementUpdate {
+	if m != nil {
+		esu.SetEnd(*m)
 	}
 	return esu
 }
@@ -486,34 +486,34 @@ func (esu *EnterpriseStatementUpdate) sqlSave(ctx context.Context) (n int, err e
 	}
 	if value, ok := esu.mutation.Date(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Value:  value,
 			Column: enterprisestatement.FieldDate,
 		})
 	}
 	if esu.mutation.DateCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Column: enterprisestatement.FieldDate,
 		})
 	}
 	if value, ok := esu.mutation.Start(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Value:  value,
 			Column: enterprisestatement.FieldStart,
 		})
 	}
 	if value, ok := esu.mutation.End(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Value:  value,
 			Column: enterprisestatement.FieldEnd,
 		})
 	}
 	if esu.mutation.EndCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Column: enterprisestatement.FieldEnd,
 		})
 	}
@@ -773,15 +773,15 @@ func (esuo *EnterpriseStatementUpdateOne) AddRiderNumber(i int) *EnterpriseState
 }
 
 // SetDate sets the "date" field.
-func (esuo *EnterpriseStatementUpdateOne) SetDate(t time.Time) *EnterpriseStatementUpdateOne {
-	esuo.mutation.SetDate(t)
+func (esuo *EnterpriseStatementUpdateOne) SetDate(m model.Date) *EnterpriseStatementUpdateOne {
+	esuo.mutation.SetDate(m)
 	return esuo
 }
 
 // SetNillableDate sets the "date" field if the given value is not nil.
-func (esuo *EnterpriseStatementUpdateOne) SetNillableDate(t *time.Time) *EnterpriseStatementUpdateOne {
-	if t != nil {
-		esuo.SetDate(*t)
+func (esuo *EnterpriseStatementUpdateOne) SetNillableDate(m *model.Date) *EnterpriseStatementUpdateOne {
+	if m != nil {
+		esuo.SetDate(*m)
 	}
 	return esuo
 }
@@ -793,21 +793,21 @@ func (esuo *EnterpriseStatementUpdateOne) ClearDate() *EnterpriseStatementUpdate
 }
 
 // SetStart sets the "start" field.
-func (esuo *EnterpriseStatementUpdateOne) SetStart(t time.Time) *EnterpriseStatementUpdateOne {
-	esuo.mutation.SetStart(t)
+func (esuo *EnterpriseStatementUpdateOne) SetStart(m model.Date) *EnterpriseStatementUpdateOne {
+	esuo.mutation.SetStart(m)
 	return esuo
 }
 
 // SetEnd sets the "end" field.
-func (esuo *EnterpriseStatementUpdateOne) SetEnd(t time.Time) *EnterpriseStatementUpdateOne {
-	esuo.mutation.SetEnd(t)
+func (esuo *EnterpriseStatementUpdateOne) SetEnd(m model.Date) *EnterpriseStatementUpdateOne {
+	esuo.mutation.SetEnd(m)
 	return esuo
 }
 
 // SetNillableEnd sets the "end" field if the given value is not nil.
-func (esuo *EnterpriseStatementUpdateOne) SetNillableEnd(t *time.Time) *EnterpriseStatementUpdateOne {
-	if t != nil {
-		esuo.SetEnd(*t)
+func (esuo *EnterpriseStatementUpdateOne) SetNillableEnd(m *model.Date) *EnterpriseStatementUpdateOne {
+	if m != nil {
+		esuo.SetEnd(*m)
 	}
 	return esuo
 }
@@ -1110,34 +1110,34 @@ func (esuo *EnterpriseStatementUpdateOne) sqlSave(ctx context.Context) (_node *E
 	}
 	if value, ok := esuo.mutation.Date(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Value:  value,
 			Column: enterprisestatement.FieldDate,
 		})
 	}
 	if esuo.mutation.DateCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Column: enterprisestatement.FieldDate,
 		})
 	}
 	if value, ok := esuo.mutation.Start(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Value:  value,
 			Column: enterprisestatement.FieldStart,
 		})
 	}
 	if value, ok := esuo.mutation.End(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Value:  value,
 			Column: enterprisestatement.FieldEnd,
 		})
 	}
 	if esuo.mutation.EndCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Column: enterprisestatement.FieldEnd,
 		})
 	}

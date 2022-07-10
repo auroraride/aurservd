@@ -99,12 +99,6 @@ func (ebu *EnterpriseBillUpdate) SetRiderID(u uint64) *EnterpriseBillUpdate {
 	return ebu
 }
 
-// SetSubscribeID sets the "subscribe_id" field.
-func (ebu *EnterpriseBillUpdate) SetSubscribeID(u uint64) *EnterpriseBillUpdate {
-	ebu.mutation.SetSubscribeID(u)
-	return ebu
-}
-
 // SetCityID sets the "city_id" field.
 func (ebu *EnterpriseBillUpdate) SetCityID(u uint64) *EnterpriseBillUpdate {
 	ebu.mutation.SetCityID(u)
@@ -131,6 +125,12 @@ func (ebu *EnterpriseBillUpdate) ClearStationID() *EnterpriseBillUpdate {
 	return ebu
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (ebu *EnterpriseBillUpdate) SetSubscribeID(u uint64) *EnterpriseBillUpdate {
+	ebu.mutation.SetSubscribeID(u)
+	return ebu
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (ebu *EnterpriseBillUpdate) SetEnterpriseID(u uint64) *EnterpriseBillUpdate {
 	ebu.mutation.SetEnterpriseID(u)
@@ -144,14 +144,14 @@ func (ebu *EnterpriseBillUpdate) SetStatementID(u uint64) *EnterpriseBillUpdate 
 }
 
 // SetStart sets the "start" field.
-func (ebu *EnterpriseBillUpdate) SetStart(t time.Time) *EnterpriseBillUpdate {
-	ebu.mutation.SetStart(t)
+func (ebu *EnterpriseBillUpdate) SetStart(m model.Date) *EnterpriseBillUpdate {
+	ebu.mutation.SetStart(m)
 	return ebu
 }
 
 // SetEnd sets the "end" field.
-func (ebu *EnterpriseBillUpdate) SetEnd(t time.Time) *EnterpriseBillUpdate {
-	ebu.mutation.SetEnd(t)
+func (ebu *EnterpriseBillUpdate) SetEnd(m model.Date) *EnterpriseBillUpdate {
+	ebu.mutation.SetEnd(m)
 	return ebu
 }
 
@@ -205,11 +205,6 @@ func (ebu *EnterpriseBillUpdate) SetRider(r *Rider) *EnterpriseBillUpdate {
 	return ebu.SetRiderID(r.ID)
 }
 
-// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
-func (ebu *EnterpriseBillUpdate) SetSubscribe(s *Subscribe) *EnterpriseBillUpdate {
-	return ebu.SetSubscribeID(s.ID)
-}
-
 // SetCity sets the "city" edge to the City entity.
 func (ebu *EnterpriseBillUpdate) SetCity(c *City) *EnterpriseBillUpdate {
 	return ebu.SetCityID(c.ID)
@@ -230,6 +225,11 @@ func (ebu *EnterpriseBillUpdate) SetStatement(e *EnterpriseStatement) *Enterpris
 	return ebu.SetStatementID(e.ID)
 }
 
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (ebu *EnterpriseBillUpdate) SetSubscribe(s *Subscribe) *EnterpriseBillUpdate {
+	return ebu.SetSubscribeID(s.ID)
+}
+
 // Mutation returns the EnterpriseBillMutation object of the builder.
 func (ebu *EnterpriseBillUpdate) Mutation() *EnterpriseBillMutation {
 	return ebu.mutation
@@ -238,12 +238,6 @@ func (ebu *EnterpriseBillUpdate) Mutation() *EnterpriseBillMutation {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (ebu *EnterpriseBillUpdate) ClearRider() *EnterpriseBillUpdate {
 	ebu.mutation.ClearRider()
-	return ebu
-}
-
-// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
-func (ebu *EnterpriseBillUpdate) ClearSubscribe() *EnterpriseBillUpdate {
-	ebu.mutation.ClearSubscribe()
 	return ebu
 }
 
@@ -268,6 +262,12 @@ func (ebu *EnterpriseBillUpdate) ClearEnterprise() *EnterpriseBillUpdate {
 // ClearStatement clears the "statement" edge to the EnterpriseStatement entity.
 func (ebu *EnterpriseBillUpdate) ClearStatement() *EnterpriseBillUpdate {
 	ebu.mutation.ClearStatement()
+	return ebu
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (ebu *EnterpriseBillUpdate) ClearSubscribe() *EnterpriseBillUpdate {
+	ebu.mutation.ClearSubscribe()
 	return ebu
 }
 
@@ -351,9 +351,6 @@ func (ebu *EnterpriseBillUpdate) check() error {
 	if _, ok := ebu.mutation.RiderID(); ebu.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.rider"`)
 	}
-	if _, ok := ebu.mutation.SubscribeID(); ebu.mutation.SubscribeCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.subscribe"`)
-	}
 	if _, ok := ebu.mutation.CityID(); ebu.mutation.CityCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.city"`)
 	}
@@ -362,6 +359,9 @@ func (ebu *EnterpriseBillUpdate) check() error {
 	}
 	if _, ok := ebu.mutation.StatementID(); ebu.mutation.StatementCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.statement"`)
+	}
+	if _, ok := ebu.mutation.SubscribeID(); ebu.mutation.SubscribeCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.subscribe"`)
 	}
 	return nil
 }
@@ -438,14 +438,14 @@ func (ebu *EnterpriseBillUpdate) sqlSave(ctx context.Context) (n int, err error)
 	}
 	if value, ok := ebu.mutation.Start(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Value:  value,
 			Column: enterprisebill.FieldStart,
 		})
 	}
 	if value, ok := ebu.mutation.End(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Value:  value,
 			Column: enterprisebill.FieldEnd,
 		})
@@ -526,41 +526,6 @@ func (ebu *EnterpriseBillUpdate) sqlSave(ctx context.Context) (n int, err error)
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: rider.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if ebu.mutation.SubscribeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   enterprisebill.SubscribeTable,
-			Columns: []string{enterprisebill.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ebu.mutation.SubscribeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   enterprisebill.SubscribeTable,
-			Columns: []string{enterprisebill.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
 				},
 			},
 		}
@@ -709,6 +674,41 @@ func (ebu *EnterpriseBillUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ebu.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   enterprisebill.SubscribeTable,
+			Columns: []string{enterprisebill.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ebu.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   enterprisebill.SubscribeTable,
+			Columns: []string{enterprisebill.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ebu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{enterprisebill.Label}
@@ -792,12 +792,6 @@ func (ebuo *EnterpriseBillUpdateOne) SetRiderID(u uint64) *EnterpriseBillUpdateO
 	return ebuo
 }
 
-// SetSubscribeID sets the "subscribe_id" field.
-func (ebuo *EnterpriseBillUpdateOne) SetSubscribeID(u uint64) *EnterpriseBillUpdateOne {
-	ebuo.mutation.SetSubscribeID(u)
-	return ebuo
-}
-
 // SetCityID sets the "city_id" field.
 func (ebuo *EnterpriseBillUpdateOne) SetCityID(u uint64) *EnterpriseBillUpdateOne {
 	ebuo.mutation.SetCityID(u)
@@ -824,6 +818,12 @@ func (ebuo *EnterpriseBillUpdateOne) ClearStationID() *EnterpriseBillUpdateOne {
 	return ebuo
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (ebuo *EnterpriseBillUpdateOne) SetSubscribeID(u uint64) *EnterpriseBillUpdateOne {
+	ebuo.mutation.SetSubscribeID(u)
+	return ebuo
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (ebuo *EnterpriseBillUpdateOne) SetEnterpriseID(u uint64) *EnterpriseBillUpdateOne {
 	ebuo.mutation.SetEnterpriseID(u)
@@ -837,14 +837,14 @@ func (ebuo *EnterpriseBillUpdateOne) SetStatementID(u uint64) *EnterpriseBillUpd
 }
 
 // SetStart sets the "start" field.
-func (ebuo *EnterpriseBillUpdateOne) SetStart(t time.Time) *EnterpriseBillUpdateOne {
-	ebuo.mutation.SetStart(t)
+func (ebuo *EnterpriseBillUpdateOne) SetStart(m model.Date) *EnterpriseBillUpdateOne {
+	ebuo.mutation.SetStart(m)
 	return ebuo
 }
 
 // SetEnd sets the "end" field.
-func (ebuo *EnterpriseBillUpdateOne) SetEnd(t time.Time) *EnterpriseBillUpdateOne {
-	ebuo.mutation.SetEnd(t)
+func (ebuo *EnterpriseBillUpdateOne) SetEnd(m model.Date) *EnterpriseBillUpdateOne {
+	ebuo.mutation.SetEnd(m)
 	return ebuo
 }
 
@@ -898,11 +898,6 @@ func (ebuo *EnterpriseBillUpdateOne) SetRider(r *Rider) *EnterpriseBillUpdateOne
 	return ebuo.SetRiderID(r.ID)
 }
 
-// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
-func (ebuo *EnterpriseBillUpdateOne) SetSubscribe(s *Subscribe) *EnterpriseBillUpdateOne {
-	return ebuo.SetSubscribeID(s.ID)
-}
-
 // SetCity sets the "city" edge to the City entity.
 func (ebuo *EnterpriseBillUpdateOne) SetCity(c *City) *EnterpriseBillUpdateOne {
 	return ebuo.SetCityID(c.ID)
@@ -923,6 +918,11 @@ func (ebuo *EnterpriseBillUpdateOne) SetStatement(e *EnterpriseStatement) *Enter
 	return ebuo.SetStatementID(e.ID)
 }
 
+// SetSubscribe sets the "subscribe" edge to the Subscribe entity.
+func (ebuo *EnterpriseBillUpdateOne) SetSubscribe(s *Subscribe) *EnterpriseBillUpdateOne {
+	return ebuo.SetSubscribeID(s.ID)
+}
+
 // Mutation returns the EnterpriseBillMutation object of the builder.
 func (ebuo *EnterpriseBillUpdateOne) Mutation() *EnterpriseBillMutation {
 	return ebuo.mutation
@@ -931,12 +931,6 @@ func (ebuo *EnterpriseBillUpdateOne) Mutation() *EnterpriseBillMutation {
 // ClearRider clears the "rider" edge to the Rider entity.
 func (ebuo *EnterpriseBillUpdateOne) ClearRider() *EnterpriseBillUpdateOne {
 	ebuo.mutation.ClearRider()
-	return ebuo
-}
-
-// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
-func (ebuo *EnterpriseBillUpdateOne) ClearSubscribe() *EnterpriseBillUpdateOne {
-	ebuo.mutation.ClearSubscribe()
 	return ebuo
 }
 
@@ -961,6 +955,12 @@ func (ebuo *EnterpriseBillUpdateOne) ClearEnterprise() *EnterpriseBillUpdateOne 
 // ClearStatement clears the "statement" edge to the EnterpriseStatement entity.
 func (ebuo *EnterpriseBillUpdateOne) ClearStatement() *EnterpriseBillUpdateOne {
 	ebuo.mutation.ClearStatement()
+	return ebuo
+}
+
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (ebuo *EnterpriseBillUpdateOne) ClearSubscribe() *EnterpriseBillUpdateOne {
+	ebuo.mutation.ClearSubscribe()
 	return ebuo
 }
 
@@ -1057,9 +1057,6 @@ func (ebuo *EnterpriseBillUpdateOne) check() error {
 	if _, ok := ebuo.mutation.RiderID(); ebuo.mutation.RiderCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.rider"`)
 	}
-	if _, ok := ebuo.mutation.SubscribeID(); ebuo.mutation.SubscribeCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.subscribe"`)
-	}
 	if _, ok := ebuo.mutation.CityID(); ebuo.mutation.CityCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.city"`)
 	}
@@ -1068,6 +1065,9 @@ func (ebuo *EnterpriseBillUpdateOne) check() error {
 	}
 	if _, ok := ebuo.mutation.StatementID(); ebuo.mutation.StatementCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.statement"`)
+	}
+	if _, ok := ebuo.mutation.SubscribeID(); ebuo.mutation.SubscribeCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "EnterpriseBill.subscribe"`)
 	}
 	return nil
 }
@@ -1161,14 +1161,14 @@ func (ebuo *EnterpriseBillUpdateOne) sqlSave(ctx context.Context) (_node *Enterp
 	}
 	if value, ok := ebuo.mutation.Start(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Value:  value,
 			Column: enterprisebill.FieldStart,
 		})
 	}
 	if value, ok := ebuo.mutation.End(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
+			Type:   field.TypeOther,
 			Value:  value,
 			Column: enterprisebill.FieldEnd,
 		})
@@ -1249,41 +1249,6 @@ func (ebuo *EnterpriseBillUpdateOne) sqlSave(ctx context.Context) (_node *Enterp
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: rider.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if ebuo.mutation.SubscribeCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   enterprisebill.SubscribeTable,
-			Columns: []string{enterprisebill.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ebuo.mutation.SubscribeIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   enterprisebill.SubscribeTable,
-			Columns: []string{enterprisebill.SubscribeColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeUint64,
-					Column: subscribe.FieldID,
 				},
 			},
 		}
@@ -1424,6 +1389,41 @@ func (ebuo *EnterpriseBillUpdateOne) sqlSave(ctx context.Context) (_node *Enterp
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: enterprisestatement.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ebuo.mutation.SubscribeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   enterprisebill.SubscribeTable,
+			Columns: []string{enterprisebill.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ebuo.mutation.SubscribeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   enterprisebill.SubscribeTable,
+			Columns: []string{enterprisebill.SubscribeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: subscribe.FieldID,
 				},
 			},
 		}

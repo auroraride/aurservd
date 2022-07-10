@@ -122,7 +122,7 @@ var (
 		{Name: "inventory", Type: field.TypeJSON, Comment: "物资盘点", Nullable: true},
 		{Name: "photo", Type: field.TypeString, Comment: "上班照片", Nullable: true},
 		{Name: "duty", Type: field.TypeBool, Comment: "是否上班盘点"},
-		{Name: "date", Type: field.TypeTime, Comment: "日期"},
+		{Name: "date", Type: field.TypeOther, Comment: "日期", SchemaType: map[string]string{"postgres": "date"}},
 		{Name: "lng", Type: field.TypeFloat64, Comment: "经度", Nullable: true},
 		{Name: "lat", Type: field.TypeFloat64, Comment: "纬度", Nullable: true},
 		{Name: "address", Type: field.TypeString, Comment: "详细地址", Nullable: true},
@@ -441,7 +441,7 @@ var (
 		{Name: "lat", Type: field.TypeFloat64, Comment: "纬度", Nullable: true},
 		{Name: "address", Type: field.TypeString, Comment: "详细地址", Nullable: true},
 		{Name: "sim_sn", Type: field.TypeString, Comment: "SIM卡号", Nullable: true},
-		{Name: "sim_date", Type: field.TypeTime, Comment: "SIM卡到期日期", Nullable: true},
+		{Name: "sim_date", Type: field.TypeOther, Comment: "SIM卡到期日期", Nullable: true, SchemaType: map[string]string{"postgres": "date"}},
 		{Name: "branch_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "city_id", Type: field.TypeUint64, Nullable: true},
 	}
@@ -907,18 +907,18 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
-		{Name: "start", Type: field.TypeTime, Comment: "结算开始日期(包含)"},
-		{Name: "end", Type: field.TypeTime, Comment: "结算结束日期(包含)"},
-		{Name: "days", Type: field.TypeInt, Comment: "账单日期"},
+		{Name: "start", Type: field.TypeOther, Comment: "结算开始日期(包含)", SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "end", Type: field.TypeOther, Comment: "结算结束日期(包含)", SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "days", Type: field.TypeInt, Comment: "账单天数"},
 		{Name: "price", Type: field.TypeFloat64, Comment: "账单单价"},
 		{Name: "cost", Type: field.TypeFloat64, Comment: "账单金额"},
 		{Name: "model", Type: field.TypeString, Comment: "电池型号"},
 		{Name: "enterprise_id", Type: field.TypeUint64},
 		{Name: "rider_id", Type: field.TypeUint64},
-		{Name: "subscribe_id", Type: field.TypeUint64},
 		{Name: "city_id", Type: field.TypeUint64},
 		{Name: "station_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "statement_id", Type: field.TypeUint64},
+		{Name: "subscribe_id", Type: field.TypeUint64},
 	}
 	// EnterpriseBillTable holds the schema information for the "enterprise_bill" table.
 	EnterpriseBillTable = &schema.Table{
@@ -939,27 +939,27 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "enterprise_bill_subscribe_subscribe",
-				Columns:    []*schema.Column{EnterpriseBillColumns[15]},
-				RefColumns: []*schema.Column{SubscribeColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
 				Symbol:     "enterprise_bill_city_city",
-				Columns:    []*schema.Column{EnterpriseBillColumns[16]},
+				Columns:    []*schema.Column{EnterpriseBillColumns[15]},
 				RefColumns: []*schema.Column{CityColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "enterprise_bill_enterprise_station_station",
-				Columns:    []*schema.Column{EnterpriseBillColumns[17]},
+				Columns:    []*schema.Column{EnterpriseBillColumns[16]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "enterprise_bill_enterprise_statement_bills",
-				Columns:    []*schema.Column{EnterpriseBillColumns[18]},
+				Columns:    []*schema.Column{EnterpriseBillColumns[17]},
 				RefColumns: []*schema.Column{EnterpriseStatementColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "enterprise_bill_subscribe_bills",
+				Columns:    []*schema.Column{EnterpriseBillColumns[18]},
+				RefColumns: []*schema.Column{SubscribeColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 		},
@@ -990,8 +990,8 @@ var (
 		{Name: "creator", Type: field.TypeJSON, Comment: "创建人", Nullable: true},
 		{Name: "last_modifier", Type: field.TypeJSON, Comment: "最后修改人", Nullable: true},
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
-		{Name: "start", Type: field.TypeTime, Comment: "合同开始时间"},
-		{Name: "end", Type: field.TypeTime, Comment: "合同结束时间"},
+		{Name: "start", Type: field.TypeOther, Comment: "合同开始时间", SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "end", Type: field.TypeOther, Comment: "合同结束时间", SchemaType: map[string]string{"postgres": "date"}},
 		{Name: "file", Type: field.TypeString, Comment: "合同文件"},
 		{Name: "enterprise_id", Type: field.TypeUint64},
 	}
@@ -1133,9 +1133,9 @@ var (
 		{Name: "settled_at", Type: field.TypeTime, Comment: "结账时间", Nullable: true},
 		{Name: "days", Type: field.TypeInt, Comment: "账期内使用总天数", Default: 0},
 		{Name: "rider_number", Type: field.TypeInt, Comment: "账期内使用总人数", Default: 0},
-		{Name: "date", Type: field.TypeTime, Comment: "对账单计算日期(包含当日)", Nullable: true},
-		{Name: "start", Type: field.TypeTime, Comment: "账单开始日期"},
-		{Name: "end", Type: field.TypeTime, Comment: "账单结束日期", Nullable: true},
+		{Name: "date", Type: field.TypeOther, Comment: "对账单计算日期(包含当日)", Nullable: true, SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "start", Type: field.TypeOther, Comment: "账单开始日期", SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "end", Type: field.TypeOther, Comment: "账单结束日期", Nullable: true, SchemaType: map[string]string{"postgres": "date"}},
 		{Name: "enterprise_id", Type: field.TypeUint64},
 	}
 	// EnterpriseStatementTable holds the schema information for the "enterprise_statement" table.
@@ -1706,8 +1706,8 @@ var (
 		{Name: "remark", Type: field.TypeString, Comment: "管理员改动原因/备注", Nullable: true},
 		{Name: "enable", Type: field.TypeBool, Comment: "是否启用"},
 		{Name: "name", Type: field.TypeString, Comment: "骑士卡名称"},
-		{Name: "start", Type: field.TypeTime, Comment: "有效期开始日期"},
-		{Name: "end", Type: field.TypeTime, Comment: "有效期结束日期"},
+		{Name: "start", Type: field.TypeOther, Comment: "有效期开始日期", SchemaType: map[string]string{"postgres": "date"}},
+		{Name: "end", Type: field.TypeOther, Comment: "有效期结束日期", SchemaType: map[string]string{"postgres": "date"}},
 		{Name: "price", Type: field.TypeFloat64, Comment: "骑士卡价格"},
 		{Name: "days", Type: field.TypeUint, Comment: "骑士卡天数"},
 		{Name: "commission", Type: field.TypeFloat64, Comment: "提成"},
@@ -1783,7 +1783,6 @@ var (
 		{Name: "last_face", Type: field.TypeString, Comment: "上次登录人脸", Nullable: true},
 		{Name: "push_id", Type: field.TypeString, Comment: "推送ID", Nullable: true, Size: 60},
 		{Name: "last_signin_at", Type: field.TypeTime, Comment: "最后登录时间", Nullable: true},
-		{Name: "plan_at", Type: field.TypeTime, Comment: "骑行卡到期日期", Nullable: true},
 		{Name: "blocked", Type: field.TypeBool, Comment: "是否封禁骑手账号", Default: false},
 		{Name: "contractual", Type: field.TypeBool, Comment: "是否标记为无需签约", Nullable: true, Default: false},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
@@ -1798,19 +1797,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "rider_enterprise_riders",
-				Columns:    []*schema.Column{RiderColumns[18]},
+				Columns:    []*schema.Column{RiderColumns[17]},
 				RefColumns: []*schema.Column{EnterpriseColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_person_rider",
-				Columns:    []*schema.Column{RiderColumns[19]},
+				Columns:    []*schema.Column{RiderColumns[18]},
 				RefColumns: []*schema.Column{PersonColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "rider_enterprise_station_station",
-				Columns:    []*schema.Column{RiderColumns[20]},
+				Columns:    []*schema.Column{RiderColumns[19]},
 				RefColumns: []*schema.Column{EnterpriseStationColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2127,7 +2126,7 @@ var (
 		{Name: "end_at", Type: field.TypeTime, Comment: "归还/团签结束时间", Nullable: true},
 		{Name: "refund_at", Type: field.TypeTime, Comment: "退款时间", Nullable: true},
 		{Name: "unsubscribe_reason", Type: field.TypeString, Comment: "退租理由", Nullable: true},
-		{Name: "last_bill_date", Type: field.TypeTime, Comment: "上次结算日期(包含该日期)", Nullable: true},
+		{Name: "last_bill_date", Type: field.TypeOther, Comment: "上次结算日期(包含该日期)", Nullable: true, SchemaType: map[string]string{"postgres": "date"}},
 		{Name: "enterprise_id", Type: field.TypeUint64, Nullable: true},
 		{Name: "rider_id", Type: field.TypeUint64},
 		{Name: "plan_id", Type: field.TypeUint64, Nullable: true},
@@ -2524,10 +2523,10 @@ func init() {
 	}
 	EnterpriseBillTable.ForeignKeys[0].RefTable = EnterpriseTable
 	EnterpriseBillTable.ForeignKeys[1].RefTable = RiderTable
-	EnterpriseBillTable.ForeignKeys[2].RefTable = SubscribeTable
-	EnterpriseBillTable.ForeignKeys[3].RefTable = CityTable
-	EnterpriseBillTable.ForeignKeys[4].RefTable = EnterpriseStationTable
-	EnterpriseBillTable.ForeignKeys[5].RefTable = EnterpriseStatementTable
+	EnterpriseBillTable.ForeignKeys[2].RefTable = CityTable
+	EnterpriseBillTable.ForeignKeys[3].RefTable = EnterpriseStationTable
+	EnterpriseBillTable.ForeignKeys[4].RefTable = EnterpriseStatementTable
+	EnterpriseBillTable.ForeignKeys[5].RefTable = SubscribeTable
 	EnterpriseBillTable.Annotation = &entsql.Annotation{
 		Table: "enterprise_bill",
 	}

@@ -14,6 +14,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/enterprise"
+	"github.com/auroraride/aurservd/internal/ent/enterprisebill"
 	"github.com/auroraride/aurservd/internal/ent/enterprisestation"
 	"github.com/auroraride/aurservd/internal/ent/order"
 	"github.com/auroraride/aurservd/internal/ent/plan"
@@ -46,6 +47,7 @@ type SubscribeQuery struct {
 	withAlters       *SubscribeAlterQuery
 	withOrders       *OrderQuery
 	withInitialOrder *OrderQuery
+	withBills        *EnterpriseBillQuery
 	modifiers        []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -325,6 +327,28 @@ func (sq *SubscribeQuery) QueryInitialOrder() *OrderQuery {
 	return query
 }
 
+// QueryBills chains the current query on the "bills" edge.
+func (sq *SubscribeQuery) QueryBills() *EnterpriseBillQuery {
+	query := &EnterpriseBillQuery{config: sq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, selector),
+			sqlgraph.To(enterprisebill.Table, enterprisebill.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, subscribe.BillsTable, subscribe.BillsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Subscribe entity from the query.
 // Returns a *NotFoundError when no Subscribe was found.
 func (sq *SubscribeQuery) First(ctx context.Context) (*Subscribe, error) {
@@ -517,6 +541,7 @@ func (sq *SubscribeQuery) Clone() *SubscribeQuery {
 		withAlters:       sq.withAlters.Clone(),
 		withOrders:       sq.withOrders.Clone(),
 		withInitialOrder: sq.withInitialOrder.Clone(),
+		withBills:        sq.withBills.Clone(),
 		// clone intermediate query.
 		sql:    sq.sql.Clone(),
 		path:   sq.path,
@@ -645,6 +670,17 @@ func (sq *SubscribeQuery) WithInitialOrder(opts ...func(*OrderQuery)) *Subscribe
 	return sq
 }
 
+// WithBills tells the query-builder to eager-load the nodes that are connected to
+// the "bills" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *SubscribeQuery) WithBills(opts ...func(*EnterpriseBillQuery)) *SubscribeQuery {
+	query := &EnterpriseBillQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withBills = query
+	return sq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -715,7 +751,7 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 	var (
 		nodes       = []*Subscribe{}
 		_spec       = sq.querySpec()
-		loadedTypes = [11]bool{
+		loadedTypes = [12]bool{
 			sq.withPlan != nil,
 			sq.withEmployee != nil,
 			sq.withCity != nil,
@@ -727,6 +763,7 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 			sq.withAlters != nil,
 			sq.withOrders != nil,
 			sq.withInitialOrder != nil,
+			sq.withBills != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -1046,6 +1083,31 @@ func (sq *SubscribeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Su
 			for i := range nodes {
 				nodes[i].Edges.InitialOrder = n
 			}
+		}
+	}
+
+	if query := sq.withBills; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Subscribe)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Bills = []*EnterpriseBill{}
+		}
+		query.Where(predicate.EnterpriseBill(func(s *sql.Selector) {
+			s.Where(sql.InValues(subscribe.BillsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.SubscribeID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "subscribe_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Bills = append(node.Edges.Bills, n)
 		}
 	}
 

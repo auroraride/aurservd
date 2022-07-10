@@ -47,8 +47,6 @@ const (
 	FieldPushID = "push_id"
 	// FieldLastSigninAt holds the string denoting the last_signin_at field in the database.
 	FieldLastSigninAt = "last_signin_at"
-	// FieldPlanAt holds the string denoting the plan_at field in the database.
-	FieldPlanAt = "plan_at"
 	// FieldBlocked holds the string denoting the blocked field in the database.
 	FieldBlocked = "blocked"
 	// FieldContractual holds the string denoting the contractual field in the database.
@@ -167,7 +165,6 @@ var Columns = []string{
 	FieldLastFace,
 	FieldPushID,
 	FieldLastSigninAt,
-	FieldPlanAt,
 	FieldBlocked,
 	FieldContractual,
 }

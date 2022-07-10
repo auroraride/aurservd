@@ -63,7 +63,7 @@ func (s *enterpriseStatementService) Current(e *ent.Enterprise) *ent.EnterpriseS
         log.Infof("%d 未找到账单, 创建新账单", e.ID)
         res, _ = s.orm.Create().
             SetEnterpriseID(e.ID).
-            SetStart(carbon.Time2Carbon(e.CreatedAt).StartOfDay().Carbon2Time()).
+            SetStart(model.DateFromTime(e.CreatedAt)).
             Save(s.ctx)
     }
     return res
@@ -160,10 +160,10 @@ func (s *enterpriseStatementService) Bill(req *model.StatementClearBillReq) {
         return
     }
 
-    start := tools.NewTime().ParseDateStringX(br.Start)
-    end := tools.NewTime().ParseDateStringX(br.End)
+    start := model.DateFromStringX(br.Start)
+    end := model.DateFromStringX(br.End)
 
-    if start.After(end) {
+    if start.After(end.Time) {
         snag.Panic("账单信息错误")
     }
 
@@ -178,7 +178,7 @@ func (s *enterpriseStatementService) Bill(req *model.StatementClearBillReq) {
     }
 
     // 下个账单开始日
-    next := carbon.Time2Carbon(end).StartOfDay().AddDay().Carbon2Time()
+    next := end.Tomorrow()
 
     tx, _ := ent.Database.Tx(s.ctx)
     _, err = tx.EnterpriseStatement.
@@ -199,7 +199,7 @@ func (s *enterpriseStatementService) Bill(req *model.StatementClearBillReq) {
         sub, err = tx.Subscribe.UpdateOneID(bill.SubscribeID).SetLastBillDate(end).Save(s.ctx)
         snag.PanicIfErrorX(err, tx.Rollback)
 
-        if sub.EndAt == nil || !sub.EndAt.Before(next) {
+        if sub.EndAt == nil || !sub.EndAt.Before(next.Time) {
             riders += 1
         }
 
@@ -207,8 +207,8 @@ func (s *enterpriseStatementService) Bill(req *model.StatementClearBillReq) {
         _, err = tx.EnterpriseBill.Create().
             SetEnterpriseID(es.EnterpriseID).
             SetStatementID(es.ID).
-            SetStart(start).
-            SetEnd(end).
+            SetStart(model.DateFromStringX(bill.Start)).
+            SetEnd(model.DateFromStringX(bill.End)).
             SetDays(bill.Days).
             SetPrice(bill.Price).
             SetCost(bill.Cost).
@@ -365,17 +365,20 @@ func (s *enterpriseStatementService) usageItem(item *ent.Subscribe, end time.Tim
     if item.EndAt != nil {
         end = *item.EndAt
     }
+    start := *item.StartAt
+    if item.LastBillDate != nil && item.LastBillDate.Before(start) {
+        start = item.LastBillDate.Time
+    }
     del := ""
     if r.DeletedAt != nil {
         del = r.DeletedAt.Format(carbon.DateTimeLayout)
     }
     res := model.StatementUsageRes{
         StatementDetail: model.StatementDetail{
-            Start:   item.StartAt.Format(carbon.DateLayout),
-            End:     end.Format(carbon.DateLayout),
-            Days:    tools.NewTime().UsedDays(end, *item.StartAt),
-            Model:   item.Model,
-            Station: nil,
+            Start: item.StartAt.Format(carbon.DateLayout),
+            End:   end.Format(carbon.DateLayout),
+            Days:  tools.NewTime().UsedDays(end, *item.StartAt),
+            Model: item.Model,
             City: model.City{
                 ID:   c.ID,
                 Name: c.Name,
@@ -403,6 +406,9 @@ func (s *enterpriseStatementService) Usage(req *model.StatementUsageReq) *model.
     q := ent.Database.Subscribe.QueryNotDeleted().
         WithRider().WithCity().WithStation().
         Where(subscribe.EnterpriseID(req.ID), subscribe.StartAtNotNil()).
+        WithBills(func(bq *ent.EnterpriseBillQuery) {
+            bq.Order(ent.Desc(enterprisebill.FieldEnd))
+        }).
         Order(ent.Desc(subscribe.FieldCreatedAt))
 
     if req.Start != "" {

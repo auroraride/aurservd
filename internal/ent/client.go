@@ -2516,22 +2516,6 @@ func (c *EnterpriseBillClient) QueryRider(eb *EnterpriseBill) *RiderQuery {
 	return query
 }
 
-// QuerySubscribe queries the subscribe edge of a EnterpriseBill.
-func (c *EnterpriseBillClient) QuerySubscribe(eb *EnterpriseBill) *SubscribeQuery {
-	query := &SubscribeQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := eb.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, id),
-			sqlgraph.To(subscribe.Table, subscribe.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, enterprisebill.SubscribeTable, enterprisebill.SubscribeColumn),
-		)
-		fromV = sqlgraph.Neighbors(eb.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryCity queries the city edge of a EnterpriseBill.
 func (c *EnterpriseBillClient) QueryCity(eb *EnterpriseBill) *CityQuery {
 	query := &CityQuery{config: c.config}
@@ -2589,6 +2573,22 @@ func (c *EnterpriseBillClient) QueryStatement(eb *EnterpriseBill) *EnterpriseSta
 			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, id),
 			sqlgraph.To(enterprisestatement.Table, enterprisestatement.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, enterprisebill.StatementTable, enterprisebill.StatementColumn),
+		)
+		fromV = sqlgraph.Neighbors(eb.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySubscribe queries the subscribe edge of a EnterpriseBill.
+func (c *EnterpriseBillClient) QuerySubscribe(eb *EnterpriseBill) *SubscribeQuery {
+	query := &SubscribeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := eb.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(enterprisebill.Table, enterprisebill.FieldID, id),
+			sqlgraph.To(subscribe.Table, subscribe.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, enterprisebill.SubscribeTable, enterprisebill.SubscribeColumn),
 		)
 		fromV = sqlgraph.Neighbors(eb.driver.Dialect(), step)
 		return fromV, nil
@@ -5496,6 +5496,22 @@ func (c *SubscribeClient) QueryInitialOrder(s *Subscribe) *OrderQuery {
 			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
 			sqlgraph.To(order.Table, order.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, subscribe.InitialOrderTable, subscribe.InitialOrderColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBills queries the bills edge of a Subscribe.
+func (c *SubscribeClient) QueryBills(s *Subscribe) *EnterpriseBillQuery {
+	query := &EnterpriseBillQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(subscribe.Table, subscribe.FieldID, id),
+			sqlgraph.To(enterprisebill.Table, enterprisebill.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, subscribe.BillsTable, subscribe.BillsColumn),
 		)
 		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
 		return fromV, nil

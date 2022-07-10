@@ -37,7 +37,6 @@ type RiderMutation struct {
 	last_face         *string
 	push_id           *string
 	last_signin_at    *time.Time
-	plan_at           *time.Time
 	blocked           *bool
 	contractual       *bool
 	clearedFields     map[string]struct{}
@@ -973,55 +972,6 @@ func (m *RiderMutation) ResetLastSigninAt() {
 	delete(m.clearedFields, rider.FieldLastSigninAt)
 }
 
-// SetPlanAt sets the "plan_at" field.
-func (m *RiderMutation) SetPlanAt(t time.Time) {
-	m.plan_at = &t
-}
-
-// PlanAt returns the value of the "plan_at" field in the mutation.
-func (m *RiderMutation) PlanAt() (r time.Time, exists bool) {
-	v := m.plan_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPlanAt returns the old "plan_at" field's value of the Rider entity.
-// If the Rider object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RiderMutation) OldPlanAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPlanAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPlanAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPlanAt: %w", err)
-	}
-	return oldValue.PlanAt, nil
-}
-
-// ClearPlanAt clears the value of the "plan_at" field.
-func (m *RiderMutation) ClearPlanAt() {
-	m.plan_at = nil
-	m.clearedFields[rider.FieldPlanAt] = struct{}{}
-}
-
-// PlanAtCleared returns if the "plan_at" field was cleared in this mutation.
-func (m *RiderMutation) PlanAtCleared() bool {
-	_, ok := m.clearedFields[rider.FieldPlanAt]
-	return ok
-}
-
-// ResetPlanAt resets all changes to the "plan_at" field.
-func (m *RiderMutation) ResetPlanAt() {
-	m.plan_at = nil
-	delete(m.clearedFields, rider.FieldPlanAt)
-}
-
 // SetBlocked sets the "blocked" field.
 func (m *RiderMutation) SetBlocked(b bool) {
 	m.blocked = &b
@@ -1582,7 +1532,7 @@ func (m *RiderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RiderMutation) Fields() []string {
-	fields := make([]string, 0, 20)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, rider.FieldCreatedAt)
 	}
@@ -1634,9 +1584,6 @@ func (m *RiderMutation) Fields() []string {
 	if m.last_signin_at != nil {
 		fields = append(fields, rider.FieldLastSigninAt)
 	}
-	if m.plan_at != nil {
-		fields = append(fields, rider.FieldPlanAt)
-	}
 	if m.blocked != nil {
 		fields = append(fields, rider.FieldBlocked)
 	}
@@ -1685,8 +1632,6 @@ func (m *RiderMutation) Field(name string) (ent.Value, bool) {
 		return m.PushID()
 	case rider.FieldLastSigninAt:
 		return m.LastSigninAt()
-	case rider.FieldPlanAt:
-		return m.PlanAt()
 	case rider.FieldBlocked:
 		return m.Blocked()
 	case rider.FieldContractual:
@@ -1734,8 +1679,6 @@ func (m *RiderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldPushID(ctx)
 	case rider.FieldLastSigninAt:
 		return m.OldLastSigninAt(ctx)
-	case rider.FieldPlanAt:
-		return m.OldPlanAt(ctx)
 	case rider.FieldBlocked:
 		return m.OldBlocked(ctx)
 	case rider.FieldContractual:
@@ -1868,13 +1811,6 @@ func (m *RiderMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetLastSigninAt(v)
 		return nil
-	case rider.FieldPlanAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPlanAt(v)
-		return nil
 	case rider.FieldBlocked:
 		v, ok := value.(bool)
 		if !ok {
@@ -1973,9 +1909,6 @@ func (m *RiderMutation) ClearedFields() []string {
 	if m.FieldCleared(rider.FieldLastSigninAt) {
 		fields = append(fields, rider.FieldLastSigninAt)
 	}
-	if m.FieldCleared(rider.FieldPlanAt) {
-		fields = append(fields, rider.FieldPlanAt)
-	}
 	if m.FieldCleared(rider.FieldContractual) {
 		fields = append(fields, rider.FieldContractual)
 	}
@@ -2031,9 +1964,6 @@ func (m *RiderMutation) ClearField(name string) error {
 		return nil
 	case rider.FieldLastSigninAt:
 		m.ClearLastSigninAt()
-		return nil
-	case rider.FieldPlanAt:
-		m.ClearPlanAt()
 		return nil
 	case rider.FieldContractual:
 		m.ClearContractual()
@@ -2096,9 +2026,6 @@ func (m *RiderMutation) ResetField(name string) error {
 		return nil
 	case rider.FieldLastSigninAt:
 		m.ResetLastSigninAt()
-		return nil
-	case rider.FieldPlanAt:
-		m.ResetPlanAt()
 		return nil
 	case rider.FieldBlocked:
 		m.ResetBlocked()

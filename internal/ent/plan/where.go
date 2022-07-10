@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -136,14 +137,14 @@ func Name(v string) predicate.Plan {
 }
 
 // Start applies equality check predicate on the "start" field. It's identical to StartEQ.
-func Start(v time.Time) predicate.Plan {
+func Start(v model.Date) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldStart), v))
 	})
 }
 
 // End applies equality check predicate on the "end" field. It's identical to EndEQ.
-func End(v time.Time) predicate.Plan {
+func End(v model.Date) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldEnd), v))
 	})
@@ -712,21 +713,21 @@ func NameContainsFold(v string) predicate.Plan {
 }
 
 // StartEQ applies the EQ predicate on the "start" field.
-func StartEQ(v time.Time) predicate.Plan {
+func StartEQ(v model.Date) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldStart), v))
 	})
 }
 
 // StartNEQ applies the NEQ predicate on the "start" field.
-func StartNEQ(v time.Time) predicate.Plan {
+func StartNEQ(v model.Date) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldStart), v))
 	})
 }
 
 // StartIn applies the In predicate on the "start" field.
-func StartIn(vs ...time.Time) predicate.Plan {
+func StartIn(vs ...model.Date) predicate.Plan {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -743,7 +744,7 @@ func StartIn(vs ...time.Time) predicate.Plan {
 }
 
 // StartNotIn applies the NotIn predicate on the "start" field.
-func StartNotIn(vs ...time.Time) predicate.Plan {
+func StartNotIn(vs ...model.Date) predicate.Plan {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -760,49 +761,49 @@ func StartNotIn(vs ...time.Time) predicate.Plan {
 }
 
 // StartGT applies the GT predicate on the "start" field.
-func StartGT(v time.Time) predicate.Plan {
+func StartGT(v model.Date) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldStart), v))
 	})
 }
 
 // StartGTE applies the GTE predicate on the "start" field.
-func StartGTE(v time.Time) predicate.Plan {
+func StartGTE(v model.Date) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldStart), v))
 	})
 }
 
 // StartLT applies the LT predicate on the "start" field.
-func StartLT(v time.Time) predicate.Plan {
+func StartLT(v model.Date) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldStart), v))
 	})
 }
 
 // StartLTE applies the LTE predicate on the "start" field.
-func StartLTE(v time.Time) predicate.Plan {
+func StartLTE(v model.Date) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldStart), v))
 	})
 }
 
 // EndEQ applies the EQ predicate on the "end" field.
-func EndEQ(v time.Time) predicate.Plan {
+func EndEQ(v model.Date) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldEnd), v))
 	})
 }
 
 // EndNEQ applies the NEQ predicate on the "end" field.
-func EndNEQ(v time.Time) predicate.Plan {
+func EndNEQ(v model.Date) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldEnd), v))
 	})
 }
 
 // EndIn applies the In predicate on the "end" field.
-func EndIn(vs ...time.Time) predicate.Plan {
+func EndIn(vs ...model.Date) predicate.Plan {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -819,7 +820,7 @@ func EndIn(vs ...time.Time) predicate.Plan {
 }
 
 // EndNotIn applies the NotIn predicate on the "end" field.
-func EndNotIn(vs ...time.Time) predicate.Plan {
+func EndNotIn(vs ...model.Date) predicate.Plan {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -836,28 +837,28 @@ func EndNotIn(vs ...time.Time) predicate.Plan {
 }
 
 // EndGT applies the GT predicate on the "end" field.
-func EndGT(v time.Time) predicate.Plan {
+func EndGT(v model.Date) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldEnd), v))
 	})
 }
 
 // EndGTE applies the GTE predicate on the "end" field.
-func EndGTE(v time.Time) predicate.Plan {
+func EndGTE(v model.Date) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldEnd), v))
 	})
 }
 
 // EndLT applies the LT predicate on the "end" field.
-func EndLT(v time.Time) predicate.Plan {
+func EndLT(v model.Date) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldEnd), v))
 	})
 }
 
 // EndLTE applies the LTE predicate on the "end" field.
-func EndLTE(v time.Time) predicate.Plan {
+func EndLTE(v model.Date) predicate.Plan {
 	return predicate.Plan(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldEnd), v))
 	})

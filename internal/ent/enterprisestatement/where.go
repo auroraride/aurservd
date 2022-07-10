@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -157,21 +158,21 @@ func RiderNumber(v int) predicate.EnterpriseStatement {
 }
 
 // Date applies equality check predicate on the "date" field. It's identical to DateEQ.
-func Date(v time.Time) predicate.EnterpriseStatement {
+func Date(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldDate), v))
 	})
 }
 
 // Start applies equality check predicate on the "start" field. It's identical to StartEQ.
-func Start(v time.Time) predicate.EnterpriseStatement {
+func Start(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldStart), v))
 	})
 }
 
 // End applies equality check predicate on the "end" field. It's identical to EndEQ.
-func End(v time.Time) predicate.EnterpriseStatement {
+func End(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldEnd), v))
 	})
@@ -939,21 +940,21 @@ func RiderNumberLTE(v int) predicate.EnterpriseStatement {
 }
 
 // DateEQ applies the EQ predicate on the "date" field.
-func DateEQ(v time.Time) predicate.EnterpriseStatement {
+func DateEQ(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldDate), v))
 	})
 }
 
 // DateNEQ applies the NEQ predicate on the "date" field.
-func DateNEQ(v time.Time) predicate.EnterpriseStatement {
+func DateNEQ(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldDate), v))
 	})
 }
 
 // DateIn applies the In predicate on the "date" field.
-func DateIn(vs ...time.Time) predicate.EnterpriseStatement {
+func DateIn(vs ...model.Date) predicate.EnterpriseStatement {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -970,7 +971,7 @@ func DateIn(vs ...time.Time) predicate.EnterpriseStatement {
 }
 
 // DateNotIn applies the NotIn predicate on the "date" field.
-func DateNotIn(vs ...time.Time) predicate.EnterpriseStatement {
+func DateNotIn(vs ...model.Date) predicate.EnterpriseStatement {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -987,28 +988,28 @@ func DateNotIn(vs ...time.Time) predicate.EnterpriseStatement {
 }
 
 // DateGT applies the GT predicate on the "date" field.
-func DateGT(v time.Time) predicate.EnterpriseStatement {
+func DateGT(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldDate), v))
 	})
 }
 
 // DateGTE applies the GTE predicate on the "date" field.
-func DateGTE(v time.Time) predicate.EnterpriseStatement {
+func DateGTE(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldDate), v))
 	})
 }
 
 // DateLT applies the LT predicate on the "date" field.
-func DateLT(v time.Time) predicate.EnterpriseStatement {
+func DateLT(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldDate), v))
 	})
 }
 
 // DateLTE applies the LTE predicate on the "date" field.
-func DateLTE(v time.Time) predicate.EnterpriseStatement {
+func DateLTE(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldDate), v))
 	})
@@ -1029,21 +1030,21 @@ func DateNotNil() predicate.EnterpriseStatement {
 }
 
 // StartEQ applies the EQ predicate on the "start" field.
-func StartEQ(v time.Time) predicate.EnterpriseStatement {
+func StartEQ(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldStart), v))
 	})
 }
 
 // StartNEQ applies the NEQ predicate on the "start" field.
-func StartNEQ(v time.Time) predicate.EnterpriseStatement {
+func StartNEQ(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldStart), v))
 	})
 }
 
 // StartIn applies the In predicate on the "start" field.
-func StartIn(vs ...time.Time) predicate.EnterpriseStatement {
+func StartIn(vs ...model.Date) predicate.EnterpriseStatement {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1060,7 +1061,7 @@ func StartIn(vs ...time.Time) predicate.EnterpriseStatement {
 }
 
 // StartNotIn applies the NotIn predicate on the "start" field.
-func StartNotIn(vs ...time.Time) predicate.EnterpriseStatement {
+func StartNotIn(vs ...model.Date) predicate.EnterpriseStatement {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1077,49 +1078,49 @@ func StartNotIn(vs ...time.Time) predicate.EnterpriseStatement {
 }
 
 // StartGT applies the GT predicate on the "start" field.
-func StartGT(v time.Time) predicate.EnterpriseStatement {
+func StartGT(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldStart), v))
 	})
 }
 
 // StartGTE applies the GTE predicate on the "start" field.
-func StartGTE(v time.Time) predicate.EnterpriseStatement {
+func StartGTE(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldStart), v))
 	})
 }
 
 // StartLT applies the LT predicate on the "start" field.
-func StartLT(v time.Time) predicate.EnterpriseStatement {
+func StartLT(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldStart), v))
 	})
 }
 
 // StartLTE applies the LTE predicate on the "start" field.
-func StartLTE(v time.Time) predicate.EnterpriseStatement {
+func StartLTE(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldStart), v))
 	})
 }
 
 // EndEQ applies the EQ predicate on the "end" field.
-func EndEQ(v time.Time) predicate.EnterpriseStatement {
+func EndEQ(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldEnd), v))
 	})
 }
 
 // EndNEQ applies the NEQ predicate on the "end" field.
-func EndNEQ(v time.Time) predicate.EnterpriseStatement {
+func EndNEQ(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldEnd), v))
 	})
 }
 
 // EndIn applies the In predicate on the "end" field.
-func EndIn(vs ...time.Time) predicate.EnterpriseStatement {
+func EndIn(vs ...model.Date) predicate.EnterpriseStatement {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1136,7 +1137,7 @@ func EndIn(vs ...time.Time) predicate.EnterpriseStatement {
 }
 
 // EndNotIn applies the NotIn predicate on the "end" field.
-func EndNotIn(vs ...time.Time) predicate.EnterpriseStatement {
+func EndNotIn(vs ...model.Date) predicate.EnterpriseStatement {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1153,28 +1154,28 @@ func EndNotIn(vs ...time.Time) predicate.EnterpriseStatement {
 }
 
 // EndGT applies the GT predicate on the "end" field.
-func EndGT(v time.Time) predicate.EnterpriseStatement {
+func EndGT(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldEnd), v))
 	})
 }
 
 // EndGTE applies the GTE predicate on the "end" field.
-func EndGTE(v time.Time) predicate.EnterpriseStatement {
+func EndGTE(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldEnd), v))
 	})
 }
 
 // EndLT applies the LT predicate on the "end" field.
-func EndLT(v time.Time) predicate.EnterpriseStatement {
+func EndLT(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldEnd), v))
 	})
 }
 
 // EndLTE applies the LTE predicate on the "end" field.
-func EndLTE(v time.Time) predicate.EnterpriseStatement {
+func EndLTE(v model.Date) predicate.EnterpriseStatement {
 	return predicate.EnterpriseStatement(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldEnd), v))
 	})

@@ -28,8 +28,8 @@ type EnterpriseContractMutation struct {
 	creator           **model.Modifier
 	last_modifier     **model.Modifier
 	remark            *string
-	start             *time.Time
-	end               *time.Time
+	start             *model.Date
+	end               *model.Date
 	file              *string
 	clearedFields     map[string]struct{}
 	enterprise        *uint64
@@ -442,12 +442,12 @@ func (m *EnterpriseContractMutation) ResetEnterpriseID() {
 }
 
 // SetStart sets the "start" field.
-func (m *EnterpriseContractMutation) SetStart(t time.Time) {
-	m.start = &t
+func (m *EnterpriseContractMutation) SetStart(value model.Date) {
+	m.start = &value
 }
 
 // Start returns the value of the "start" field in the mutation.
-func (m *EnterpriseContractMutation) Start() (r time.Time, exists bool) {
+func (m *EnterpriseContractMutation) Start() (r model.Date, exists bool) {
 	v := m.start
 	if v == nil {
 		return
@@ -458,7 +458,7 @@ func (m *EnterpriseContractMutation) Start() (r time.Time, exists bool) {
 // OldStart returns the old "start" field's value of the EnterpriseContract entity.
 // If the EnterpriseContract object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EnterpriseContractMutation) OldStart(ctx context.Context) (v time.Time, err error) {
+func (m *EnterpriseContractMutation) OldStart(ctx context.Context) (v model.Date, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldStart is only allowed on UpdateOne operations")
 	}
@@ -478,12 +478,12 @@ func (m *EnterpriseContractMutation) ResetStart() {
 }
 
 // SetEnd sets the "end" field.
-func (m *EnterpriseContractMutation) SetEnd(t time.Time) {
-	m.end = &t
+func (m *EnterpriseContractMutation) SetEnd(value model.Date) {
+	m.end = &value
 }
 
 // End returns the value of the "end" field in the mutation.
-func (m *EnterpriseContractMutation) End() (r time.Time, exists bool) {
+func (m *EnterpriseContractMutation) End() (r model.Date, exists bool) {
 	v := m.end
 	if v == nil {
 		return
@@ -494,7 +494,7 @@ func (m *EnterpriseContractMutation) End() (r time.Time, exists bool) {
 // OldEnd returns the old "end" field's value of the EnterpriseContract entity.
 // If the EnterpriseContract object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EnterpriseContractMutation) OldEnd(ctx context.Context) (v time.Time, err error) {
+func (m *EnterpriseContractMutation) OldEnd(ctx context.Context) (v model.Date, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldEnd is only allowed on UpdateOne operations")
 	}
@@ -741,14 +741,14 @@ func (m *EnterpriseContractMutation) SetField(name string, value ent.Value) erro
 		m.SetEnterpriseID(v)
 		return nil
 	case enterprisecontract.FieldStart:
-		v, ok := value.(time.Time)
+		v, ok := value.(model.Date)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStart(v)
 		return nil
 	case enterprisecontract.FieldEnd:
-		v, ok := value.(time.Time)
+		v, ok := value.(model.Date)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

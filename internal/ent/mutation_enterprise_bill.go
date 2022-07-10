@@ -28,8 +28,8 @@ type EnterpriseBillMutation struct {
 	creator           **model.Modifier
 	last_modifier     **model.Modifier
 	remark            *string
-	start             *time.Time
-	end               *time.Time
+	start             *model.Date
+	end               *model.Date
 	days              *int
 	adddays           *int
 	price             *float64
@@ -40,8 +40,6 @@ type EnterpriseBillMutation struct {
 	clearedFields     map[string]struct{}
 	rider             *uint64
 	clearedrider      bool
-	subscribe         *uint64
-	clearedsubscribe  bool
 	city              *uint64
 	clearedcity       bool
 	station           *uint64
@@ -50,6 +48,8 @@ type EnterpriseBillMutation struct {
 	clearedenterprise bool
 	statement         *uint64
 	clearedstatement  bool
+	subscribe         *uint64
+	clearedsubscribe  bool
 	done              bool
 	oldValue          func(context.Context) (*EnterpriseBill, error)
 	predicates        []predicate.EnterpriseBill
@@ -457,42 +457,6 @@ func (m *EnterpriseBillMutation) ResetRiderID() {
 	m.rider = nil
 }
 
-// SetSubscribeID sets the "subscribe_id" field.
-func (m *EnterpriseBillMutation) SetSubscribeID(u uint64) {
-	m.subscribe = &u
-}
-
-// SubscribeID returns the value of the "subscribe_id" field in the mutation.
-func (m *EnterpriseBillMutation) SubscribeID() (r uint64, exists bool) {
-	v := m.subscribe
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSubscribeID returns the old "subscribe_id" field's value of the EnterpriseBill entity.
-// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EnterpriseBillMutation) OldSubscribeID(ctx context.Context) (v uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSubscribeID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSubscribeID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSubscribeID: %w", err)
-	}
-	return oldValue.SubscribeID, nil
-}
-
-// ResetSubscribeID resets all changes to the "subscribe_id" field.
-func (m *EnterpriseBillMutation) ResetSubscribeID() {
-	m.subscribe = nil
-}
-
 // SetCityID sets the "city_id" field.
 func (m *EnterpriseBillMutation) SetCityID(u uint64) {
 	m.city = &u
@@ -578,6 +542,42 @@ func (m *EnterpriseBillMutation) ResetStationID() {
 	delete(m.clearedFields, enterprisebill.FieldStationID)
 }
 
+// SetSubscribeID sets the "subscribe_id" field.
+func (m *EnterpriseBillMutation) SetSubscribeID(u uint64) {
+	m.subscribe = &u
+}
+
+// SubscribeID returns the value of the "subscribe_id" field in the mutation.
+func (m *EnterpriseBillMutation) SubscribeID() (r uint64, exists bool) {
+	v := m.subscribe
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubscribeID returns the old "subscribe_id" field's value of the EnterpriseBill entity.
+// If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EnterpriseBillMutation) OldSubscribeID(ctx context.Context) (v uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubscribeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubscribeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubscribeID: %w", err)
+	}
+	return oldValue.SubscribeID, nil
+}
+
+// ResetSubscribeID resets all changes to the "subscribe_id" field.
+func (m *EnterpriseBillMutation) ResetSubscribeID() {
+	m.subscribe = nil
+}
+
 // SetEnterpriseID sets the "enterprise_id" field.
 func (m *EnterpriseBillMutation) SetEnterpriseID(u uint64) {
 	m.enterprise = &u
@@ -651,12 +651,12 @@ func (m *EnterpriseBillMutation) ResetStatementID() {
 }
 
 // SetStart sets the "start" field.
-func (m *EnterpriseBillMutation) SetStart(t time.Time) {
-	m.start = &t
+func (m *EnterpriseBillMutation) SetStart(value model.Date) {
+	m.start = &value
 }
 
 // Start returns the value of the "start" field in the mutation.
-func (m *EnterpriseBillMutation) Start() (r time.Time, exists bool) {
+func (m *EnterpriseBillMutation) Start() (r model.Date, exists bool) {
 	v := m.start
 	if v == nil {
 		return
@@ -667,7 +667,7 @@ func (m *EnterpriseBillMutation) Start() (r time.Time, exists bool) {
 // OldStart returns the old "start" field's value of the EnterpriseBill entity.
 // If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EnterpriseBillMutation) OldStart(ctx context.Context) (v time.Time, err error) {
+func (m *EnterpriseBillMutation) OldStart(ctx context.Context) (v model.Date, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldStart is only allowed on UpdateOne operations")
 	}
@@ -687,12 +687,12 @@ func (m *EnterpriseBillMutation) ResetStart() {
 }
 
 // SetEnd sets the "end" field.
-func (m *EnterpriseBillMutation) SetEnd(t time.Time) {
-	m.end = &t
+func (m *EnterpriseBillMutation) SetEnd(value model.Date) {
+	m.end = &value
 }
 
 // End returns the value of the "end" field in the mutation.
-func (m *EnterpriseBillMutation) End() (r time.Time, exists bool) {
+func (m *EnterpriseBillMutation) End() (r model.Date, exists bool) {
 	v := m.end
 	if v == nil {
 		return
@@ -703,7 +703,7 @@ func (m *EnterpriseBillMutation) End() (r time.Time, exists bool) {
 // OldEnd returns the old "end" field's value of the EnterpriseBill entity.
 // If the EnterpriseBill object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EnterpriseBillMutation) OldEnd(ctx context.Context) (v time.Time, err error) {
+func (m *EnterpriseBillMutation) OldEnd(ctx context.Context) (v model.Date, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldEnd is only allowed on UpdateOne operations")
 	}
@@ -952,32 +952,6 @@ func (m *EnterpriseBillMutation) ResetRider() {
 	m.clearedrider = false
 }
 
-// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
-func (m *EnterpriseBillMutation) ClearSubscribe() {
-	m.clearedsubscribe = true
-}
-
-// SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
-func (m *EnterpriseBillMutation) SubscribeCleared() bool {
-	return m.clearedsubscribe
-}
-
-// SubscribeIDs returns the "subscribe" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// SubscribeID instead. It exists only for internal usage by the builders.
-func (m *EnterpriseBillMutation) SubscribeIDs() (ids []uint64) {
-	if id := m.subscribe; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetSubscribe resets all changes to the "subscribe" edge.
-func (m *EnterpriseBillMutation) ResetSubscribe() {
-	m.subscribe = nil
-	m.clearedsubscribe = false
-}
-
 // ClearCity clears the "city" edge to the City entity.
 func (m *EnterpriseBillMutation) ClearCity() {
 	m.clearedcity = true
@@ -1082,6 +1056,32 @@ func (m *EnterpriseBillMutation) ResetStatement() {
 	m.clearedstatement = false
 }
 
+// ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
+func (m *EnterpriseBillMutation) ClearSubscribe() {
+	m.clearedsubscribe = true
+}
+
+// SubscribeCleared reports if the "subscribe" edge to the Subscribe entity was cleared.
+func (m *EnterpriseBillMutation) SubscribeCleared() bool {
+	return m.clearedsubscribe
+}
+
+// SubscribeIDs returns the "subscribe" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// SubscribeID instead. It exists only for internal usage by the builders.
+func (m *EnterpriseBillMutation) SubscribeIDs() (ids []uint64) {
+	if id := m.subscribe; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetSubscribe resets all changes to the "subscribe" edge.
+func (m *EnterpriseBillMutation) ResetSubscribe() {
+	m.subscribe = nil
+	m.clearedsubscribe = false
+}
+
 // Where appends a list predicates to the EnterpriseBillMutation builder.
 func (m *EnterpriseBillMutation) Where(ps ...predicate.EnterpriseBill) {
 	m.predicates = append(m.predicates, ps...)
@@ -1123,14 +1123,14 @@ func (m *EnterpriseBillMutation) Fields() []string {
 	if m.rider != nil {
 		fields = append(fields, enterprisebill.FieldRiderID)
 	}
-	if m.subscribe != nil {
-		fields = append(fields, enterprisebill.FieldSubscribeID)
-	}
 	if m.city != nil {
 		fields = append(fields, enterprisebill.FieldCityID)
 	}
 	if m.station != nil {
 		fields = append(fields, enterprisebill.FieldStationID)
+	}
+	if m.subscribe != nil {
+		fields = append(fields, enterprisebill.FieldSubscribeID)
 	}
 	if m.enterprise != nil {
 		fields = append(fields, enterprisebill.FieldEnterpriseID)
@@ -1178,12 +1178,12 @@ func (m *EnterpriseBillMutation) Field(name string) (ent.Value, bool) {
 		return m.Remark()
 	case enterprisebill.FieldRiderID:
 		return m.RiderID()
-	case enterprisebill.FieldSubscribeID:
-		return m.SubscribeID()
 	case enterprisebill.FieldCityID:
 		return m.CityID()
 	case enterprisebill.FieldStationID:
 		return m.StationID()
+	case enterprisebill.FieldSubscribeID:
+		return m.SubscribeID()
 	case enterprisebill.FieldEnterpriseID:
 		return m.EnterpriseID()
 	case enterprisebill.FieldStatementID:
@@ -1223,12 +1223,12 @@ func (m *EnterpriseBillMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldRemark(ctx)
 	case enterprisebill.FieldRiderID:
 		return m.OldRiderID(ctx)
-	case enterprisebill.FieldSubscribeID:
-		return m.OldSubscribeID(ctx)
 	case enterprisebill.FieldCityID:
 		return m.OldCityID(ctx)
 	case enterprisebill.FieldStationID:
 		return m.OldStationID(ctx)
+	case enterprisebill.FieldSubscribeID:
+		return m.OldSubscribeID(ctx)
 	case enterprisebill.FieldEnterpriseID:
 		return m.OldEnterpriseID(ctx)
 	case enterprisebill.FieldStatementID:
@@ -1303,13 +1303,6 @@ func (m *EnterpriseBillMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRiderID(v)
 		return nil
-	case enterprisebill.FieldSubscribeID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSubscribeID(v)
-		return nil
 	case enterprisebill.FieldCityID:
 		v, ok := value.(uint64)
 		if !ok {
@@ -1323,6 +1316,13 @@ func (m *EnterpriseBillMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStationID(v)
+		return nil
+	case enterprisebill.FieldSubscribeID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubscribeID(v)
 		return nil
 	case enterprisebill.FieldEnterpriseID:
 		v, ok := value.(uint64)
@@ -1339,14 +1339,14 @@ func (m *EnterpriseBillMutation) SetField(name string, value ent.Value) error {
 		m.SetStatementID(v)
 		return nil
 	case enterprisebill.FieldStart:
-		v, ok := value.(time.Time)
+		v, ok := value.(model.Date)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStart(v)
 		return nil
 	case enterprisebill.FieldEnd:
-		v, ok := value.(time.Time)
+		v, ok := value.(model.Date)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1522,14 +1522,14 @@ func (m *EnterpriseBillMutation) ResetField(name string) error {
 	case enterprisebill.FieldRiderID:
 		m.ResetRiderID()
 		return nil
-	case enterprisebill.FieldSubscribeID:
-		m.ResetSubscribeID()
-		return nil
 	case enterprisebill.FieldCityID:
 		m.ResetCityID()
 		return nil
 	case enterprisebill.FieldStationID:
 		m.ResetStationID()
+		return nil
+	case enterprisebill.FieldSubscribeID:
+		m.ResetSubscribeID()
 		return nil
 	case enterprisebill.FieldEnterpriseID:
 		m.ResetEnterpriseID()
@@ -1565,9 +1565,6 @@ func (m *EnterpriseBillMutation) AddedEdges() []string {
 	if m.rider != nil {
 		edges = append(edges, enterprisebill.EdgeRider)
 	}
-	if m.subscribe != nil {
-		edges = append(edges, enterprisebill.EdgeSubscribe)
-	}
 	if m.city != nil {
 		edges = append(edges, enterprisebill.EdgeCity)
 	}
@@ -1580,6 +1577,9 @@ func (m *EnterpriseBillMutation) AddedEdges() []string {
 	if m.statement != nil {
 		edges = append(edges, enterprisebill.EdgeStatement)
 	}
+	if m.subscribe != nil {
+		edges = append(edges, enterprisebill.EdgeSubscribe)
+	}
 	return edges
 }
 
@@ -1589,10 +1589,6 @@ func (m *EnterpriseBillMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case enterprisebill.EdgeRider:
 		if id := m.rider; id != nil {
-			return []ent.Value{*id}
-		}
-	case enterprisebill.EdgeSubscribe:
-		if id := m.subscribe; id != nil {
 			return []ent.Value{*id}
 		}
 	case enterprisebill.EdgeCity:
@@ -1609,6 +1605,10 @@ func (m *EnterpriseBillMutation) AddedIDs(name string) []ent.Value {
 		}
 	case enterprisebill.EdgeStatement:
 		if id := m.statement; id != nil {
+			return []ent.Value{*id}
+		}
+	case enterprisebill.EdgeSubscribe:
+		if id := m.subscribe; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -1635,9 +1635,6 @@ func (m *EnterpriseBillMutation) ClearedEdges() []string {
 	if m.clearedrider {
 		edges = append(edges, enterprisebill.EdgeRider)
 	}
-	if m.clearedsubscribe {
-		edges = append(edges, enterprisebill.EdgeSubscribe)
-	}
 	if m.clearedcity {
 		edges = append(edges, enterprisebill.EdgeCity)
 	}
@@ -1650,6 +1647,9 @@ func (m *EnterpriseBillMutation) ClearedEdges() []string {
 	if m.clearedstatement {
 		edges = append(edges, enterprisebill.EdgeStatement)
 	}
+	if m.clearedsubscribe {
+		edges = append(edges, enterprisebill.EdgeSubscribe)
+	}
 	return edges
 }
 
@@ -1659,8 +1659,6 @@ func (m *EnterpriseBillMutation) EdgeCleared(name string) bool {
 	switch name {
 	case enterprisebill.EdgeRider:
 		return m.clearedrider
-	case enterprisebill.EdgeSubscribe:
-		return m.clearedsubscribe
 	case enterprisebill.EdgeCity:
 		return m.clearedcity
 	case enterprisebill.EdgeStation:
@@ -1669,6 +1667,8 @@ func (m *EnterpriseBillMutation) EdgeCleared(name string) bool {
 		return m.clearedenterprise
 	case enterprisebill.EdgeStatement:
 		return m.clearedstatement
+	case enterprisebill.EdgeSubscribe:
+		return m.clearedsubscribe
 	}
 	return false
 }
@@ -1679,9 +1679,6 @@ func (m *EnterpriseBillMutation) ClearEdge(name string) error {
 	switch name {
 	case enterprisebill.EdgeRider:
 		m.ClearRider()
-		return nil
-	case enterprisebill.EdgeSubscribe:
-		m.ClearSubscribe()
 		return nil
 	case enterprisebill.EdgeCity:
 		m.ClearCity()
@@ -1695,6 +1692,9 @@ func (m *EnterpriseBillMutation) ClearEdge(name string) error {
 	case enterprisebill.EdgeStatement:
 		m.ClearStatement()
 		return nil
+	case enterprisebill.EdgeSubscribe:
+		m.ClearSubscribe()
+		return nil
 	}
 	return fmt.Errorf("unknown EnterpriseBill unique edge %s", name)
 }
@@ -1705,9 +1705,6 @@ func (m *EnterpriseBillMutation) ResetEdge(name string) error {
 	switch name {
 	case enterprisebill.EdgeRider:
 		m.ResetRider()
-		return nil
-	case enterprisebill.EdgeSubscribe:
-		m.ResetSubscribe()
 		return nil
 	case enterprisebill.EdgeCity:
 		m.ResetCity()
@@ -1720,6 +1717,9 @@ func (m *EnterpriseBillMutation) ResetEdge(name string) error {
 		return nil
 	case enterprisebill.EdgeStatement:
 		m.ResetStatement()
+		return nil
+	case enterprisebill.EdgeSubscribe:
+		m.ResetSubscribe()
 		return nil
 	}
 	return fmt.Errorf("unknown EnterpriseBill edge %s", name)

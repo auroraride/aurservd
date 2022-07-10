@@ -11,6 +11,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/payment"
     "github.com/auroraride/aurservd/pkg/logger"
+    "github.com/golang-module/carbon/v2"
     "os"
     "time"
 
@@ -23,6 +24,7 @@ func Bootstrap() {
     _ = os.Setenv("TZ", tz)
     loc, _ := time.LoadLocation(tz)
     time.Local = loc
+    carbon.SetTimezone(tz)
 
     // 载入配置
     ar.LoadConfig()

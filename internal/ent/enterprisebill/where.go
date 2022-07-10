@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -128,13 +129,6 @@ func RiderID(v uint64) predicate.EnterpriseBill {
 	})
 }
 
-// SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
-func SubscribeID(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
-	})
-}
-
 // CityID applies equality check predicate on the "city_id" field. It's identical to CityIDEQ.
 func CityID(v uint64) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
@@ -146,6 +140,13 @@ func CityID(v uint64) predicate.EnterpriseBill {
 func StationID(v uint64) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldStationID), v))
+	})
+}
+
+// SubscribeID applies equality check predicate on the "subscribe_id" field. It's identical to SubscribeIDEQ.
+func SubscribeID(v uint64) predicate.EnterpriseBill {
+	return predicate.EnterpriseBill(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
 	})
 }
 
@@ -164,14 +165,14 @@ func StatementID(v uint64) predicate.EnterpriseBill {
 }
 
 // Start applies equality check predicate on the "start" field. It's identical to StartEQ.
-func Start(v time.Time) predicate.EnterpriseBill {
+func Start(v model.Date) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldStart), v))
 	})
 }
 
 // End applies equality check predicate on the "end" field. It's identical to EndEQ.
-func End(v time.Time) predicate.EnterpriseBill {
+func End(v model.Date) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldEnd), v))
 	})
@@ -648,54 +649,6 @@ func RiderIDNotIn(vs ...uint64) predicate.EnterpriseBill {
 	})
 }
 
-// SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
-func SubscribeIDEQ(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
-	})
-}
-
-// SubscribeIDNEQ applies the NEQ predicate on the "subscribe_id" field.
-func SubscribeIDNEQ(v uint64) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSubscribeID), v))
-	})
-}
-
-// SubscribeIDIn applies the In predicate on the "subscribe_id" field.
-func SubscribeIDIn(vs ...uint64) predicate.EnterpriseBill {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldSubscribeID), v...))
-	})
-}
-
-// SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
-func SubscribeIDNotIn(vs ...uint64) predicate.EnterpriseBill {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldSubscribeID), v...))
-	})
-}
-
 // CityIDEQ applies the EQ predicate on the "city_id" field.
 func CityIDEQ(v uint64) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
@@ -806,6 +759,54 @@ func StationIDNotNil() predicate.EnterpriseBill {
 	})
 }
 
+// SubscribeIDEQ applies the EQ predicate on the "subscribe_id" field.
+func SubscribeIDEQ(v uint64) predicate.EnterpriseBill {
+	return predicate.EnterpriseBill(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSubscribeID), v))
+	})
+}
+
+// SubscribeIDNEQ applies the NEQ predicate on the "subscribe_id" field.
+func SubscribeIDNEQ(v uint64) predicate.EnterpriseBill {
+	return predicate.EnterpriseBill(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldSubscribeID), v))
+	})
+}
+
+// SubscribeIDIn applies the In predicate on the "subscribe_id" field.
+func SubscribeIDIn(vs ...uint64) predicate.EnterpriseBill {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.EnterpriseBill(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldSubscribeID), v...))
+	})
+}
+
+// SubscribeIDNotIn applies the NotIn predicate on the "subscribe_id" field.
+func SubscribeIDNotIn(vs ...uint64) predicate.EnterpriseBill {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.EnterpriseBill(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldSubscribeID), v...))
+	})
+}
+
 // EnterpriseIDEQ applies the EQ predicate on the "enterprise_id" field.
 func EnterpriseIDEQ(v uint64) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
@@ -903,21 +904,21 @@ func StatementIDNotIn(vs ...uint64) predicate.EnterpriseBill {
 }
 
 // StartEQ applies the EQ predicate on the "start" field.
-func StartEQ(v time.Time) predicate.EnterpriseBill {
+func StartEQ(v model.Date) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldStart), v))
 	})
 }
 
 // StartNEQ applies the NEQ predicate on the "start" field.
-func StartNEQ(v time.Time) predicate.EnterpriseBill {
+func StartNEQ(v model.Date) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldStart), v))
 	})
 }
 
 // StartIn applies the In predicate on the "start" field.
-func StartIn(vs ...time.Time) predicate.EnterpriseBill {
+func StartIn(vs ...model.Date) predicate.EnterpriseBill {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -934,7 +935,7 @@ func StartIn(vs ...time.Time) predicate.EnterpriseBill {
 }
 
 // StartNotIn applies the NotIn predicate on the "start" field.
-func StartNotIn(vs ...time.Time) predicate.EnterpriseBill {
+func StartNotIn(vs ...model.Date) predicate.EnterpriseBill {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -951,49 +952,49 @@ func StartNotIn(vs ...time.Time) predicate.EnterpriseBill {
 }
 
 // StartGT applies the GT predicate on the "start" field.
-func StartGT(v time.Time) predicate.EnterpriseBill {
+func StartGT(v model.Date) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldStart), v))
 	})
 }
 
 // StartGTE applies the GTE predicate on the "start" field.
-func StartGTE(v time.Time) predicate.EnterpriseBill {
+func StartGTE(v model.Date) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldStart), v))
 	})
 }
 
 // StartLT applies the LT predicate on the "start" field.
-func StartLT(v time.Time) predicate.EnterpriseBill {
+func StartLT(v model.Date) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldStart), v))
 	})
 }
 
 // StartLTE applies the LTE predicate on the "start" field.
-func StartLTE(v time.Time) predicate.EnterpriseBill {
+func StartLTE(v model.Date) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldStart), v))
 	})
 }
 
 // EndEQ applies the EQ predicate on the "end" field.
-func EndEQ(v time.Time) predicate.EnterpriseBill {
+func EndEQ(v model.Date) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldEnd), v))
 	})
 }
 
 // EndNEQ applies the NEQ predicate on the "end" field.
-func EndNEQ(v time.Time) predicate.EnterpriseBill {
+func EndNEQ(v model.Date) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldEnd), v))
 	})
 }
 
 // EndIn applies the In predicate on the "end" field.
-func EndIn(vs ...time.Time) predicate.EnterpriseBill {
+func EndIn(vs ...model.Date) predicate.EnterpriseBill {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1010,7 +1011,7 @@ func EndIn(vs ...time.Time) predicate.EnterpriseBill {
 }
 
 // EndNotIn applies the NotIn predicate on the "end" field.
-func EndNotIn(vs ...time.Time) predicate.EnterpriseBill {
+func EndNotIn(vs ...model.Date) predicate.EnterpriseBill {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1027,28 +1028,28 @@ func EndNotIn(vs ...time.Time) predicate.EnterpriseBill {
 }
 
 // EndGT applies the GT predicate on the "end" field.
-func EndGT(v time.Time) predicate.EnterpriseBill {
+func EndGT(v model.Date) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldEnd), v))
 	})
 }
 
 // EndGTE applies the GTE predicate on the "end" field.
-func EndGTE(v time.Time) predicate.EnterpriseBill {
+func EndGTE(v model.Date) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldEnd), v))
 	})
 }
 
 // EndLT applies the LT predicate on the "end" field.
-func EndLT(v time.Time) predicate.EnterpriseBill {
+func EndLT(v model.Date) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldEnd), v))
 	})
 }
 
 // EndLTE applies the LTE predicate on the "end" field.
-func EndLTE(v time.Time) predicate.EnterpriseBill {
+func EndLTE(v model.Date) predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldEnd), v))
 	})
@@ -1421,34 +1422,6 @@ func HasRiderWith(preds ...predicate.Rider) predicate.EnterpriseBill {
 	})
 }
 
-// HasSubscribe applies the HasEdge predicate on the "subscribe" edge.
-func HasSubscribe() predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribeTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasSubscribeWith applies the HasEdge predicate on the "subscribe" edge with a given conditions (other predicates).
-func HasSubscribeWith(preds ...predicate.Subscribe) predicate.EnterpriseBill {
-	return predicate.EnterpriseBill(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SubscribeInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, SubscribeTable, SubscribeColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasCity applies the HasEdge predicate on the "city" edge.
 func HasCity() predicate.EnterpriseBill {
 	return predicate.EnterpriseBill(func(s *sql.Selector) {
@@ -1552,6 +1525,34 @@ func HasStatementWith(preds ...predicate.EnterpriseStatement) predicate.Enterpri
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(StatementInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, StatementTable, StatementColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasSubscribe applies the HasEdge predicate on the "subscribe" edge.
+func HasSubscribe() predicate.EnterpriseBill {
+	return predicate.EnterpriseBill(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SubscribeTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, SubscribeTable, SubscribeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSubscribeWith applies the HasEdge predicate on the "subscribe" edge with a given conditions (other predicates).
+func HasSubscribeWith(preds ...predicate.Subscribe) predicate.EnterpriseBill {
+	return predicate.EnterpriseBill(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SubscribeInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, SubscribeTable, SubscribeColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

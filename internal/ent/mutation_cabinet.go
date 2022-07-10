@@ -49,7 +49,7 @@ type CabinetMutation struct {
 	addlat              *float64
 	address             *string
 	sim_sn              *string
-	sim_date            *time.Time
+	sim_date            *model.Date
 	clearedFields       map[string]struct{}
 	city                *uint64
 	clearedcity         bool
@@ -1245,12 +1245,12 @@ func (m *CabinetMutation) ResetSimSn() {
 }
 
 // SetSimDate sets the "sim_date" field.
-func (m *CabinetMutation) SetSimDate(t time.Time) {
-	m.sim_date = &t
+func (m *CabinetMutation) SetSimDate(value model.Date) {
+	m.sim_date = &value
 }
 
 // SimDate returns the value of the "sim_date" field in the mutation.
-func (m *CabinetMutation) SimDate() (r time.Time, exists bool) {
+func (m *CabinetMutation) SimDate() (r model.Date, exists bool) {
 	v := m.sim_date
 	if v == nil {
 		return
@@ -1261,7 +1261,7 @@ func (m *CabinetMutation) SimDate() (r time.Time, exists bool) {
 // OldSimDate returns the old "sim_date" field's value of the Cabinet entity.
 // If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CabinetMutation) OldSimDate(ctx context.Context) (v time.Time, err error) {
+func (m *CabinetMutation) OldSimDate(ctx context.Context) (v model.Date, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldSimDate is only allowed on UpdateOne operations")
 	}
@@ -1869,7 +1869,7 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 		m.SetSimSn(v)
 		return nil
 	case cabinet.FieldSimDate:
-		v, ok := value.(time.Time)
+		v, ok := value.(model.Date)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

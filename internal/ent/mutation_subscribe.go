@@ -50,7 +50,7 @@ type SubscribeMutation struct {
 	end_at               *time.Time
 	refund_at            *time.Time
 	unsubscribe_reason   *string
-	last_bill_date       *time.Time
+	last_bill_date       *model.Date
 	clearedFields        map[string]struct{}
 	plan                 *uint64
 	clearedplan          bool
@@ -77,6 +77,9 @@ type SubscribeMutation struct {
 	clearedorders        bool
 	initial_order        *uint64
 	clearedinitial_order bool
+	bills                map[uint64]struct{}
+	removedbills         map[uint64]struct{}
+	clearedbills         bool
 	done                 bool
 	oldValue             func(context.Context) (*Subscribe, error)
 	predicates           []predicate.Subscribe
@@ -1558,12 +1561,12 @@ func (m *SubscribeMutation) ResetUnsubscribeReason() {
 }
 
 // SetLastBillDate sets the "last_bill_date" field.
-func (m *SubscribeMutation) SetLastBillDate(t time.Time) {
-	m.last_bill_date = &t
+func (m *SubscribeMutation) SetLastBillDate(value model.Date) {
+	m.last_bill_date = &value
 }
 
 // LastBillDate returns the value of the "last_bill_date" field in the mutation.
-func (m *SubscribeMutation) LastBillDate() (r time.Time, exists bool) {
+func (m *SubscribeMutation) LastBillDate() (r model.Date, exists bool) {
 	v := m.last_bill_date
 	if v == nil {
 		return
@@ -1574,7 +1577,7 @@ func (m *SubscribeMutation) LastBillDate() (r time.Time, exists bool) {
 // OldLastBillDate returns the old "last_bill_date" field's value of the Subscribe entity.
 // If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SubscribeMutation) OldLastBillDate(ctx context.Context) (v *time.Time, err error) {
+func (m *SubscribeMutation) OldLastBillDate(ctx context.Context) (v *model.Date, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLastBillDate is only allowed on UpdateOne operations")
 	}
@@ -1974,6 +1977,60 @@ func (m *SubscribeMutation) InitialOrderIDs() (ids []uint64) {
 func (m *SubscribeMutation) ResetInitialOrder() {
 	m.initial_order = nil
 	m.clearedinitial_order = false
+}
+
+// AddBillIDs adds the "bills" edge to the EnterpriseBill entity by ids.
+func (m *SubscribeMutation) AddBillIDs(ids ...uint64) {
+	if m.bills == nil {
+		m.bills = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.bills[ids[i]] = struct{}{}
+	}
+}
+
+// ClearBills clears the "bills" edge to the EnterpriseBill entity.
+func (m *SubscribeMutation) ClearBills() {
+	m.clearedbills = true
+}
+
+// BillsCleared reports if the "bills" edge to the EnterpriseBill entity was cleared.
+func (m *SubscribeMutation) BillsCleared() bool {
+	return m.clearedbills
+}
+
+// RemoveBillIDs removes the "bills" edge to the EnterpriseBill entity by IDs.
+func (m *SubscribeMutation) RemoveBillIDs(ids ...uint64) {
+	if m.removedbills == nil {
+		m.removedbills = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.bills, ids[i])
+		m.removedbills[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedBills returns the removed IDs of the "bills" edge to the EnterpriseBill entity.
+func (m *SubscribeMutation) RemovedBillsIDs() (ids []uint64) {
+	for id := range m.removedbills {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// BillsIDs returns the "bills" edge IDs in the mutation.
+func (m *SubscribeMutation) BillsIDs() (ids []uint64) {
+	for id := range m.bills {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetBills resets all changes to the "bills" edge.
+func (m *SubscribeMutation) ResetBills() {
+	m.bills = nil
+	m.clearedbills = false
+	m.removedbills = nil
 }
 
 // Where appends a list predicates to the SubscribeMutation builder.
@@ -2422,7 +2479,7 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 		m.SetUnsubscribeReason(v)
 		return nil
 	case subscribe.FieldLastBillDate:
-		v, ok := value.(time.Time)
+		v, ok := value.(model.Date)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -2774,7 +2831,7 @@ func (m *SubscribeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SubscribeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.plan != nil {
 		edges = append(edges, subscribe.EdgePlan)
 	}
@@ -2807,6 +2864,9 @@ func (m *SubscribeMutation) AddedEdges() []string {
 	}
 	if m.initial_order != nil {
 		edges = append(edges, subscribe.EdgeInitialOrder)
+	}
+	if m.bills != nil {
+		edges = append(edges, subscribe.EdgeBills)
 	}
 	return edges
 }
@@ -2865,13 +2925,19 @@ func (m *SubscribeMutation) AddedIDs(name string) []ent.Value {
 		if id := m.initial_order; id != nil {
 			return []ent.Value{*id}
 		}
+	case subscribe.EdgeBills:
+		ids := make([]ent.Value, 0, len(m.bills))
+		for id := range m.bills {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SubscribeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.removedpauses != nil {
 		edges = append(edges, subscribe.EdgePauses)
 	}
@@ -2880,6 +2946,9 @@ func (m *SubscribeMutation) RemovedEdges() []string {
 	}
 	if m.removedorders != nil {
 		edges = append(edges, subscribe.EdgeOrders)
+	}
+	if m.removedbills != nil {
+		edges = append(edges, subscribe.EdgeBills)
 	}
 	return edges
 }
@@ -2906,13 +2975,19 @@ func (m *SubscribeMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case subscribe.EdgeBills:
+		ids := make([]ent.Value, 0, len(m.removedbills))
+		for id := range m.removedbills {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SubscribeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.clearedplan {
 		edges = append(edges, subscribe.EdgePlan)
 	}
@@ -2946,6 +3021,9 @@ func (m *SubscribeMutation) ClearedEdges() []string {
 	if m.clearedinitial_order {
 		edges = append(edges, subscribe.EdgeInitialOrder)
 	}
+	if m.clearedbills {
+		edges = append(edges, subscribe.EdgeBills)
+	}
 	return edges
 }
 
@@ -2975,6 +3053,8 @@ func (m *SubscribeMutation) EdgeCleared(name string) bool {
 		return m.clearedorders
 	case subscribe.EdgeInitialOrder:
 		return m.clearedinitial_order
+	case subscribe.EdgeBills:
+		return m.clearedbills
 	}
 	return false
 }
@@ -3047,6 +3127,9 @@ func (m *SubscribeMutation) ResetEdge(name string) error {
 		return nil
 	case subscribe.EdgeInitialOrder:
 		m.ResetInitialOrder()
+		return nil
+	case subscribe.EdgeBills:
+		m.ResetBills()
 		return nil
 	}
 	return fmt.Errorf("unknown Subscribe edge %s", name)

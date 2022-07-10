@@ -9,6 +9,7 @@ import (
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
     "entgo.io/ent/schema/mixin"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -50,8 +51,8 @@ func (Plan) Fields() []ent.Field {
     return []ent.Field{
         field.Bool("enable").Comment("是否启用"),
         field.String("name").Comment("骑士卡名称"),
-        field.Time("start").Comment("有效期开始日期"),
-        field.Time("end").Comment("有效期结束日期"),
+        field.Other("start", model.Date{}).SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("有效期开始日期"),
+        field.Other("end", model.Date{}).SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("有效期结束日期"),
         field.Float("price").Comment("骑士卡价格"),
         field.Uint("days").Comment("骑士卡天数"),
         field.Float("commission").Comment("提成"),
