@@ -77,6 +77,16 @@ func (*statement) Statement(c echo.Context) (err error) {
     return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).Statement(req, c))
 }
 
+// Usage
+// @ID           ManagerStatementUsage
+// @Router       /manager/v1/enterprise/bill/usage [GET]
+// @Summary      M9015 使用明细
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query   model.StatementUsageReq  true  "筛选项"
+// @Success      200  {object}  model.Pagination{items=[]model.StatementUsageRes}  "请求成功"
 func (*statement) Usage(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.StatementUsageReq](c)
     return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).Usage(req))

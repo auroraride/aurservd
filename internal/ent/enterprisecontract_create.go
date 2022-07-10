@@ -99,14 +99,14 @@ func (ecc *EnterpriseContractCreate) SetEnterpriseID(u uint64) *EnterpriseContra
 }
 
 // SetStart sets the "start" field.
-func (ecc *EnterpriseContractCreate) SetStart(m model.Date) *EnterpriseContractCreate {
-	ecc.mutation.SetStart(m)
+func (ecc *EnterpriseContractCreate) SetStart(t time.Time) *EnterpriseContractCreate {
+	ecc.mutation.SetStart(t)
 	return ecc
 }
 
 // SetEnd sets the "end" field.
-func (ecc *EnterpriseContractCreate) SetEnd(m model.Date) *EnterpriseContractCreate {
-	ecc.mutation.SetEnd(m)
+func (ecc *EnterpriseContractCreate) SetEnd(t time.Time) *EnterpriseContractCreate {
+	ecc.mutation.SetEnd(t)
 	return ecc
 }
 
@@ -318,7 +318,7 @@ func (ecc *EnterpriseContractCreate) createSpec() (*EnterpriseContract, *sqlgrap
 	}
 	if value, ok := ecc.mutation.Start(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: enterprisecontract.FieldStart,
 		})
@@ -326,7 +326,7 @@ func (ecc *EnterpriseContractCreate) createSpec() (*EnterpriseContract, *sqlgrap
 	}
 	if value, ok := ecc.mutation.End(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: enterprisecontract.FieldEnd,
 		})
@@ -523,7 +523,7 @@ func (u *EnterpriseContractUpsert) UpdateEnterpriseID() *EnterpriseContractUpser
 }
 
 // SetStart sets the "start" field.
-func (u *EnterpriseContractUpsert) SetStart(v model.Date) *EnterpriseContractUpsert {
+func (u *EnterpriseContractUpsert) SetStart(v time.Time) *EnterpriseContractUpsert {
 	u.Set(enterprisecontract.FieldStart, v)
 	return u
 }
@@ -535,7 +535,7 @@ func (u *EnterpriseContractUpsert) UpdateStart() *EnterpriseContractUpsert {
 }
 
 // SetEnd sets the "end" field.
-func (u *EnterpriseContractUpsert) SetEnd(v model.Date) *EnterpriseContractUpsert {
+func (u *EnterpriseContractUpsert) SetEnd(v time.Time) *EnterpriseContractUpsert {
 	u.Set(enterprisecontract.FieldEnd, v)
 	return u
 }
@@ -735,7 +735,7 @@ func (u *EnterpriseContractUpsertOne) UpdateEnterpriseID() *EnterpriseContractUp
 }
 
 // SetStart sets the "start" field.
-func (u *EnterpriseContractUpsertOne) SetStart(v model.Date) *EnterpriseContractUpsertOne {
+func (u *EnterpriseContractUpsertOne) SetStart(v time.Time) *EnterpriseContractUpsertOne {
 	return u.Update(func(s *EnterpriseContractUpsert) {
 		s.SetStart(v)
 	})
@@ -749,7 +749,7 @@ func (u *EnterpriseContractUpsertOne) UpdateStart() *EnterpriseContractUpsertOne
 }
 
 // SetEnd sets the "end" field.
-func (u *EnterpriseContractUpsertOne) SetEnd(v model.Date) *EnterpriseContractUpsertOne {
+func (u *EnterpriseContractUpsertOne) SetEnd(v time.Time) *EnterpriseContractUpsertOne {
 	return u.Update(func(s *EnterpriseContractUpsert) {
 		s.SetEnd(v)
 	})
@@ -1117,7 +1117,7 @@ func (u *EnterpriseContractUpsertBulk) UpdateEnterpriseID() *EnterpriseContractU
 }
 
 // SetStart sets the "start" field.
-func (u *EnterpriseContractUpsertBulk) SetStart(v model.Date) *EnterpriseContractUpsertBulk {
+func (u *EnterpriseContractUpsertBulk) SetStart(v time.Time) *EnterpriseContractUpsertBulk {
 	return u.Update(func(s *EnterpriseContractUpsert) {
 		s.SetStart(v)
 	})
@@ -1131,7 +1131,7 @@ func (u *EnterpriseContractUpsertBulk) UpdateStart() *EnterpriseContractUpsertBu
 }
 
 // SetEnd sets the "end" field.
-func (u *EnterpriseContractUpsertBulk) SetEnd(v model.Date) *EnterpriseContractUpsertBulk {
+func (u *EnterpriseContractUpsertBulk) SetEnd(v time.Time) *EnterpriseContractUpsertBulk {
 	return u.Update(func(s *EnterpriseContractUpsert) {
 		s.SetEnd(v)
 	})

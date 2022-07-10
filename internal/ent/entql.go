@@ -121,7 +121,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			attendance.FieldInventory:    {Type: field.TypeJSON, Column: attendance.FieldInventory},
 			attendance.FieldPhoto:        {Type: field.TypeString, Column: attendance.FieldPhoto},
 			attendance.FieldDuty:         {Type: field.TypeBool, Column: attendance.FieldDuty},
-			attendance.FieldDate:         {Type: field.TypeOther, Column: attendance.FieldDate},
+			attendance.FieldDate:         {Type: field.TypeTime, Column: attendance.FieldDate},
 			attendance.FieldLng:          {Type: field.TypeFloat64, Column: attendance.FieldLng},
 			attendance.FieldLat:          {Type: field.TypeFloat64, Column: attendance.FieldLat},
 			attendance.FieldAddress:      {Type: field.TypeString, Column: attendance.FieldAddress},
@@ -270,7 +270,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			cabinet.FieldLat:            {Type: field.TypeFloat64, Column: cabinet.FieldLat},
 			cabinet.FieldAddress:        {Type: field.TypeString, Column: cabinet.FieldAddress},
 			cabinet.FieldSimSn:          {Type: field.TypeString, Column: cabinet.FieldSimSn},
-			cabinet.FieldSimDate:        {Type: field.TypeOther, Column: cabinet.FieldSimDate},
+			cabinet.FieldSimDate:        {Type: field.TypeTime, Column: cabinet.FieldSimDate},
 		},
 	}
 	graph.Nodes[7] = &sqlgraph.Node{
@@ -451,8 +451,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterprisebill.FieldSubscribeID:  {Type: field.TypeUint64, Column: enterprisebill.FieldSubscribeID},
 			enterprisebill.FieldEnterpriseID: {Type: field.TypeUint64, Column: enterprisebill.FieldEnterpriseID},
 			enterprisebill.FieldStatementID:  {Type: field.TypeUint64, Column: enterprisebill.FieldStatementID},
-			enterprisebill.FieldStart:        {Type: field.TypeOther, Column: enterprisebill.FieldStart},
-			enterprisebill.FieldEnd:          {Type: field.TypeOther, Column: enterprisebill.FieldEnd},
+			enterprisebill.FieldStart:        {Type: field.TypeTime, Column: enterprisebill.FieldStart},
+			enterprisebill.FieldEnd:          {Type: field.TypeTime, Column: enterprisebill.FieldEnd},
 			enterprisebill.FieldDays:         {Type: field.TypeInt, Column: enterprisebill.FieldDays},
 			enterprisebill.FieldPrice:        {Type: field.TypeFloat64, Column: enterprisebill.FieldPrice},
 			enterprisebill.FieldCost:         {Type: field.TypeFloat64, Column: enterprisebill.FieldCost},
@@ -477,8 +477,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterprisecontract.FieldLastModifier: {Type: field.TypeJSON, Column: enterprisecontract.FieldLastModifier},
 			enterprisecontract.FieldRemark:       {Type: field.TypeString, Column: enterprisecontract.FieldRemark},
 			enterprisecontract.FieldEnterpriseID: {Type: field.TypeUint64, Column: enterprisecontract.FieldEnterpriseID},
-			enterprisecontract.FieldStart:        {Type: field.TypeOther, Column: enterprisecontract.FieldStart},
-			enterprisecontract.FieldEnd:          {Type: field.TypeOther, Column: enterprisecontract.FieldEnd},
+			enterprisecontract.FieldStart:        {Type: field.TypeTime, Column: enterprisecontract.FieldStart},
+			enterprisecontract.FieldEnd:          {Type: field.TypeTime, Column: enterprisecontract.FieldEnd},
 			enterprisecontract.FieldFile:         {Type: field.TypeString, Column: enterprisecontract.FieldFile},
 		},
 	}
@@ -548,9 +548,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			enterprisestatement.FieldSettledAt:    {Type: field.TypeTime, Column: enterprisestatement.FieldSettledAt},
 			enterprisestatement.FieldDays:         {Type: field.TypeInt, Column: enterprisestatement.FieldDays},
 			enterprisestatement.FieldRiderNumber:  {Type: field.TypeInt, Column: enterprisestatement.FieldRiderNumber},
-			enterprisestatement.FieldDate:         {Type: field.TypeOther, Column: enterprisestatement.FieldDate},
-			enterprisestatement.FieldStart:        {Type: field.TypeOther, Column: enterprisestatement.FieldStart},
-			enterprisestatement.FieldEnd:          {Type: field.TypeOther, Column: enterprisestatement.FieldEnd},
+			enterprisestatement.FieldDate:         {Type: field.TypeTime, Column: enterprisestatement.FieldDate},
+			enterprisestatement.FieldStart:        {Type: field.TypeTime, Column: enterprisestatement.FieldStart},
+			enterprisestatement.FieldEnd:          {Type: field.TypeTime, Column: enterprisestatement.FieldEnd},
 		},
 	}
 	graph.Nodes[18] = &sqlgraph.Node{
@@ -790,8 +790,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			plan.FieldRemark:       {Type: field.TypeString, Column: plan.FieldRemark},
 			plan.FieldEnable:       {Type: field.TypeBool, Column: plan.FieldEnable},
 			plan.FieldName:         {Type: field.TypeString, Column: plan.FieldName},
-			plan.FieldStart:        {Type: field.TypeOther, Column: plan.FieldStart},
-			plan.FieldEnd:          {Type: field.TypeOther, Column: plan.FieldEnd},
+			plan.FieldStart:        {Type: field.TypeTime, Column: plan.FieldStart},
+			plan.FieldEnd:          {Type: field.TypeTime, Column: plan.FieldEnd},
 			plan.FieldPrice:        {Type: field.TypeFloat64, Column: plan.FieldPrice},
 			plan.FieldDays:         {Type: field.TypeUint, Column: plan.FieldDays},
 			plan.FieldCommission:   {Type: field.TypeFloat64, Column: plan.FieldCommission},
@@ -987,7 +987,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			subscribe.FieldEndAt:             {Type: field.TypeTime, Column: subscribe.FieldEndAt},
 			subscribe.FieldRefundAt:          {Type: field.TypeTime, Column: subscribe.FieldRefundAt},
 			subscribe.FieldUnsubscribeReason: {Type: field.TypeString, Column: subscribe.FieldUnsubscribeReason},
-			subscribe.FieldLastBillDate:      {Type: field.TypeOther, Column: subscribe.FieldLastBillDate},
+			subscribe.FieldLastBillDate:      {Type: field.TypeTime, Column: subscribe.FieldLastBillDate},
 		},
 	}
 	graph.Nodes[34] = &sqlgraph.Node{
@@ -3079,8 +3079,8 @@ func (f *AttendanceFilter) WhereDuty(p entql.BoolP) {
 	f.Where(p.Field(attendance.FieldDuty))
 }
 
-// WhereDate applies the entql other predicate on the date field.
-func (f *AttendanceFilter) WhereDate(p entql.OtherP) {
+// WhereDate applies the entql time.Time predicate on the date field.
+func (f *AttendanceFilter) WhereDate(p entql.TimeP) {
 	f.Where(p.Field(attendance.FieldDate))
 }
 
@@ -3951,8 +3951,8 @@ func (f *CabinetFilter) WhereSimSn(p entql.StringP) {
 	f.Where(p.Field(cabinet.FieldSimSn))
 }
 
-// WhereSimDate applies the entql other predicate on the sim_date field.
-func (f *CabinetFilter) WhereSimDate(p entql.OtherP) {
+// WhereSimDate applies the entql time.Time predicate on the sim_date field.
+func (f *CabinetFilter) WhereSimDate(p entql.TimeP) {
 	f.Where(p.Field(cabinet.FieldSimDate))
 }
 
@@ -5101,13 +5101,13 @@ func (f *EnterpriseBillFilter) WhereStatementID(p entql.Uint64P) {
 	f.Where(p.Field(enterprisebill.FieldStatementID))
 }
 
-// WhereStart applies the entql other predicate on the start field.
-func (f *EnterpriseBillFilter) WhereStart(p entql.OtherP) {
+// WhereStart applies the entql time.Time predicate on the start field.
+func (f *EnterpriseBillFilter) WhereStart(p entql.TimeP) {
 	f.Where(p.Field(enterprisebill.FieldStart))
 }
 
-// WhereEnd applies the entql other predicate on the end field.
-func (f *EnterpriseBillFilter) WhereEnd(p entql.OtherP) {
+// WhereEnd applies the entql time.Time predicate on the end field.
+func (f *EnterpriseBillFilter) WhereEnd(p entql.TimeP) {
 	f.Where(p.Field(enterprisebill.FieldEnd))
 }
 
@@ -5290,13 +5290,13 @@ func (f *EnterpriseContractFilter) WhereEnterpriseID(p entql.Uint64P) {
 	f.Where(p.Field(enterprisecontract.FieldEnterpriseID))
 }
 
-// WhereStart applies the entql other predicate on the start field.
-func (f *EnterpriseContractFilter) WhereStart(p entql.OtherP) {
+// WhereStart applies the entql time.Time predicate on the start field.
+func (f *EnterpriseContractFilter) WhereStart(p entql.TimeP) {
 	f.Where(p.Field(enterprisecontract.FieldStart))
 }
 
-// WhereEnd applies the entql other predicate on the end field.
-func (f *EnterpriseContractFilter) WhereEnd(p entql.OtherP) {
+// WhereEnd applies the entql time.Time predicate on the end field.
+func (f *EnterpriseContractFilter) WhereEnd(p entql.TimeP) {
 	f.Where(p.Field(enterprisecontract.FieldEnd))
 }
 
@@ -5626,18 +5626,18 @@ func (f *EnterpriseStatementFilter) WhereRiderNumber(p entql.IntP) {
 	f.Where(p.Field(enterprisestatement.FieldRiderNumber))
 }
 
-// WhereDate applies the entql other predicate on the date field.
-func (f *EnterpriseStatementFilter) WhereDate(p entql.OtherP) {
+// WhereDate applies the entql time.Time predicate on the date field.
+func (f *EnterpriseStatementFilter) WhereDate(p entql.TimeP) {
 	f.Where(p.Field(enterprisestatement.FieldDate))
 }
 
-// WhereStart applies the entql other predicate on the start field.
-func (f *EnterpriseStatementFilter) WhereStart(p entql.OtherP) {
+// WhereStart applies the entql time.Time predicate on the start field.
+func (f *EnterpriseStatementFilter) WhereStart(p entql.TimeP) {
 	f.Where(p.Field(enterprisestatement.FieldStart))
 }
 
-// WhereEnd applies the entql other predicate on the end field.
-func (f *EnterpriseStatementFilter) WhereEnd(p entql.OtherP) {
+// WhereEnd applies the entql time.Time predicate on the end field.
+func (f *EnterpriseStatementFilter) WhereEnd(p entql.TimeP) {
 	f.Where(p.Field(enterprisestatement.FieldEnd))
 }
 
@@ -6975,13 +6975,13 @@ func (f *PlanFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(plan.FieldName))
 }
 
-// WhereStart applies the entql other predicate on the start field.
-func (f *PlanFilter) WhereStart(p entql.OtherP) {
+// WhereStart applies the entql time.Time predicate on the start field.
+func (f *PlanFilter) WhereStart(p entql.TimeP) {
 	f.Where(p.Field(plan.FieldStart))
 }
 
-// WhereEnd applies the entql other predicate on the end field.
-func (f *PlanFilter) WhereEnd(p entql.OtherP) {
+// WhereEnd applies the entql time.Time predicate on the end field.
+func (f *PlanFilter) WhereEnd(p entql.TimeP) {
 	f.Where(p.Field(plan.FieldEnd))
 }
 
@@ -8163,8 +8163,8 @@ func (f *SubscribeFilter) WhereUnsubscribeReason(p entql.StringP) {
 	f.Where(p.Field(subscribe.FieldUnsubscribeReason))
 }
 
-// WhereLastBillDate applies the entql other predicate on the last_bill_date field.
-func (f *SubscribeFilter) WhereLastBillDate(p entql.OtherP) {
+// WhereLastBillDate applies the entql time.Time predicate on the last_bill_date field.
+func (f *SubscribeFilter) WhereLastBillDate(p entql.TimeP) {
 	f.Where(p.Field(subscribe.FieldLastBillDate))
 }
 

@@ -23,6 +23,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
     "github.com/jinzhu/copier"
     "github.com/lithammer/shortuuid/v4"
@@ -84,7 +85,7 @@ func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.
     }
     if req.SimSn != "" && req.SimDate != "" {
         q.SetSimSn(req.SimSn).
-            SetSimDate(model.DateFromStringX(req.SimDate))
+            SetSimDate(tools.NewTime().ParseDateStringX(req.SimDate))
     }
 
     res = new(model.CabinetItem)
@@ -213,7 +214,7 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
         q.SetSimSn(*req.SimSn)
     }
     if req.SimDate != nil {
-        q.SetSimDate(model.DateFromStringX(*req.SimDate))
+        q.SetSimDate(tools.NewTime().ParseDateStringX(*req.SimDate))
     }
 
     err = s.checkDeploy(n.Status, n.BranchID)

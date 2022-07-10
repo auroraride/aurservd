@@ -106,14 +106,14 @@ func (pc *PlanCreate) SetName(s string) *PlanCreate {
 }
 
 // SetStart sets the "start" field.
-func (pc *PlanCreate) SetStart(m model.Date) *PlanCreate {
-	pc.mutation.SetStart(m)
+func (pc *PlanCreate) SetStart(t time.Time) *PlanCreate {
+	pc.mutation.SetStart(t)
 	return pc
 }
 
 // SetEnd sets the "end" field.
-func (pc *PlanCreate) SetEnd(m model.Date) *PlanCreate {
-	pc.mutation.SetEnd(m)
+func (pc *PlanCreate) SetEnd(t time.Time) *PlanCreate {
+	pc.mutation.SetEnd(t)
 	return pc
 }
 
@@ -446,7 +446,7 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := pc.mutation.Start(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: plan.FieldStart,
 		})
@@ -454,7 +454,7 @@ func (pc *PlanCreate) createSpec() (*Plan, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := pc.mutation.End(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: plan.FieldEnd,
 		})
@@ -752,7 +752,7 @@ func (u *PlanUpsert) UpdateName() *PlanUpsert {
 }
 
 // SetStart sets the "start" field.
-func (u *PlanUpsert) SetStart(v model.Date) *PlanUpsert {
+func (u *PlanUpsert) SetStart(v time.Time) *PlanUpsert {
 	u.Set(plan.FieldStart, v)
 	return u
 }
@@ -764,7 +764,7 @@ func (u *PlanUpsert) UpdateStart() *PlanUpsert {
 }
 
 // SetEnd sets the "end" field.
-func (u *PlanUpsert) SetEnd(v model.Date) *PlanUpsert {
+func (u *PlanUpsert) SetEnd(v time.Time) *PlanUpsert {
 	u.Set(plan.FieldEnd, v)
 	return u
 }
@@ -1080,7 +1080,7 @@ func (u *PlanUpsertOne) UpdateName() *PlanUpsertOne {
 }
 
 // SetStart sets the "start" field.
-func (u *PlanUpsertOne) SetStart(v model.Date) *PlanUpsertOne {
+func (u *PlanUpsertOne) SetStart(v time.Time) *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.SetStart(v)
 	})
@@ -1094,7 +1094,7 @@ func (u *PlanUpsertOne) UpdateStart() *PlanUpsertOne {
 }
 
 // SetEnd sets the "end" field.
-func (u *PlanUpsertOne) SetEnd(v model.Date) *PlanUpsertOne {
+func (u *PlanUpsertOne) SetEnd(v time.Time) *PlanUpsertOne {
 	return u.Update(func(s *PlanUpsert) {
 		s.SetEnd(v)
 	})
@@ -1595,7 +1595,7 @@ func (u *PlanUpsertBulk) UpdateName() *PlanUpsertBulk {
 }
 
 // SetStart sets the "start" field.
-func (u *PlanUpsertBulk) SetStart(v model.Date) *PlanUpsertBulk {
+func (u *PlanUpsertBulk) SetStart(v time.Time) *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.SetStart(v)
 	})
@@ -1609,7 +1609,7 @@ func (u *PlanUpsertBulk) UpdateStart() *PlanUpsertBulk {
 }
 
 // SetEnd sets the "end" field.
-func (u *PlanUpsertBulk) SetEnd(v model.Date) *PlanUpsertBulk {
+func (u *PlanUpsertBulk) SetEnd(v time.Time) *PlanUpsertBulk {
 	return u.Update(func(s *PlanUpsert) {
 		s.SetEnd(v)
 	})

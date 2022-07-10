@@ -35,9 +35,9 @@ type EnterpriseStatementMutation struct {
 	adddays           *int
 	rider_number      *int
 	addrider_number   *int
-	date              *model.Date
-	start             *model.Date
-	end               *model.Date
+	date              *time.Time
+	start             *time.Time
+	end               *time.Time
 	clearedFields     map[string]struct{}
 	enterprise        *uint64
 	clearedenterprise bool
@@ -669,12 +669,12 @@ func (m *EnterpriseStatementMutation) ResetRiderNumber() {
 }
 
 // SetDate sets the "date" field.
-func (m *EnterpriseStatementMutation) SetDate(value model.Date) {
-	m.date = &value
+func (m *EnterpriseStatementMutation) SetDate(t time.Time) {
+	m.date = &t
 }
 
 // Date returns the value of the "date" field in the mutation.
-func (m *EnterpriseStatementMutation) Date() (r model.Date, exists bool) {
+func (m *EnterpriseStatementMutation) Date() (r time.Time, exists bool) {
 	v := m.date
 	if v == nil {
 		return
@@ -685,7 +685,7 @@ func (m *EnterpriseStatementMutation) Date() (r model.Date, exists bool) {
 // OldDate returns the old "date" field's value of the EnterpriseStatement entity.
 // If the EnterpriseStatement object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EnterpriseStatementMutation) OldDate(ctx context.Context) (v *model.Date, err error) {
+func (m *EnterpriseStatementMutation) OldDate(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDate is only allowed on UpdateOne operations")
 	}
@@ -718,12 +718,12 @@ func (m *EnterpriseStatementMutation) ResetDate() {
 }
 
 // SetStart sets the "start" field.
-func (m *EnterpriseStatementMutation) SetStart(value model.Date) {
-	m.start = &value
+func (m *EnterpriseStatementMutation) SetStart(t time.Time) {
+	m.start = &t
 }
 
 // Start returns the value of the "start" field in the mutation.
-func (m *EnterpriseStatementMutation) Start() (r model.Date, exists bool) {
+func (m *EnterpriseStatementMutation) Start() (r time.Time, exists bool) {
 	v := m.start
 	if v == nil {
 		return
@@ -734,7 +734,7 @@ func (m *EnterpriseStatementMutation) Start() (r model.Date, exists bool) {
 // OldStart returns the old "start" field's value of the EnterpriseStatement entity.
 // If the EnterpriseStatement object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EnterpriseStatementMutation) OldStart(ctx context.Context) (v model.Date, err error) {
+func (m *EnterpriseStatementMutation) OldStart(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldStart is only allowed on UpdateOne operations")
 	}
@@ -754,12 +754,12 @@ func (m *EnterpriseStatementMutation) ResetStart() {
 }
 
 // SetEnd sets the "end" field.
-func (m *EnterpriseStatementMutation) SetEnd(value model.Date) {
-	m.end = &value
+func (m *EnterpriseStatementMutation) SetEnd(t time.Time) {
+	m.end = &t
 }
 
 // End returns the value of the "end" field in the mutation.
-func (m *EnterpriseStatementMutation) End() (r model.Date, exists bool) {
+func (m *EnterpriseStatementMutation) End() (r time.Time, exists bool) {
 	v := m.end
 	if v == nil {
 		return
@@ -770,7 +770,7 @@ func (m *EnterpriseStatementMutation) End() (r model.Date, exists bool) {
 // OldEnd returns the old "end" field's value of the EnterpriseStatement entity.
 // If the EnterpriseStatement object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EnterpriseStatementMutation) OldEnd(ctx context.Context) (v *model.Date, err error) {
+func (m *EnterpriseStatementMutation) OldEnd(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldEnd is only allowed on UpdateOne operations")
 	}
@@ -1104,21 +1104,21 @@ func (m *EnterpriseStatementMutation) SetField(name string, value ent.Value) err
 		m.SetRiderNumber(v)
 		return nil
 	case enterprisestatement.FieldDate:
-		v, ok := value.(model.Date)
+		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDate(v)
 		return nil
 	case enterprisestatement.FieldStart:
-		v, ok := value.(model.Date)
+		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStart(v)
 		return nil
 	case enterprisestatement.FieldEnd:
-		v, ok := value.(model.Date)
+		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

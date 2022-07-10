@@ -38,10 +38,10 @@ type EnterpriseContract struct {
 	EnterpriseID uint64 `json:"enterprise_id,omitempty"`
 	// Start holds the value of the "start" field.
 	// 合同开始时间
-	Start model.Date `json:"start,omitempty"`
+	Start time.Time `json:"start,omitempty"`
 	// End holds the value of the "end" field.
 	// 合同结束时间
-	End model.Date `json:"end,omitempty"`
+	End time.Time `json:"end,omitempty"`
 	// File holds the value of the "file" field.
 	// 合同文件
 	File string `json:"file,omitempty"`
@@ -80,13 +80,11 @@ func (*EnterpriseContract) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case enterprisecontract.FieldCreator, enterprisecontract.FieldLastModifier:
 			values[i] = new([]byte)
-		case enterprisecontract.FieldStart, enterprisecontract.FieldEnd:
-			values[i] = new(model.Date)
 		case enterprisecontract.FieldID, enterprisecontract.FieldEnterpriseID:
 			values[i] = new(sql.NullInt64)
 		case enterprisecontract.FieldRemark, enterprisecontract.FieldFile:
 			values[i] = new(sql.NullString)
-		case enterprisecontract.FieldCreatedAt, enterprisecontract.FieldUpdatedAt, enterprisecontract.FieldDeletedAt:
+		case enterprisecontract.FieldCreatedAt, enterprisecontract.FieldUpdatedAt, enterprisecontract.FieldDeletedAt, enterprisecontract.FieldStart, enterprisecontract.FieldEnd:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type EnterpriseContract", columns[i])
@@ -157,16 +155,16 @@ func (ec *EnterpriseContract) assignValues(columns []string, values []interface{
 				ec.EnterpriseID = uint64(value.Int64)
 			}
 		case enterprisecontract.FieldStart:
-			if value, ok := values[i].(*model.Date); !ok {
+			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field start", values[i])
-			} else if value != nil {
-				ec.Start = *value
+			} else if value.Valid {
+				ec.Start = value.Time
 			}
 		case enterprisecontract.FieldEnd:
-			if value, ok := values[i].(*model.Date); !ok {
+			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field end", values[i])
-			} else if value != nil {
-				ec.End = *value
+			} else if value.Valid {
+				ec.End = value.Time
 			}
 		case enterprisecontract.FieldFile:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -224,9 +222,9 @@ func (ec *EnterpriseContract) String() string {
 	builder.WriteString(", enterprise_id=")
 	builder.WriteString(fmt.Sprintf("%v", ec.EnterpriseID))
 	builder.WriteString(", start=")
-	builder.WriteString(fmt.Sprintf("%v", ec.Start))
+	builder.WriteString(ec.Start.Format(time.ANSIC))
 	builder.WriteString(", end=")
-	builder.WriteString(fmt.Sprintf("%v", ec.End))
+	builder.WriteString(ec.End.Format(time.ANSIC))
 	builder.WriteString(", file=")
 	builder.WriteString(ec.File)
 	builder.WriteByte(')')

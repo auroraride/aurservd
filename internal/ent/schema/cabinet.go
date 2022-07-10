@@ -59,7 +59,7 @@ func (Cabinet) Fields() []ent.Field {
         field.Float("lat").Optional().Comment("纬度"),
         field.String("address").Optional().Comment("详细地址"),
         field.String("sim_sn").Optional().Comment("SIM卡号"),
-        field.Other("sim_date", model.Date{}).SchemaType(map[string]string{dialect.Postgres: "date"}).Optional().Comment("SIM卡到期日期"),
+        field.Time("sim_date").Optional().Comment("SIM卡到期日期"),
     }
 }
 

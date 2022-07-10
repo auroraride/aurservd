@@ -7,7 +7,6 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -277,7 +276,7 @@ func UnsubscribeReason(v string) predicate.Subscribe {
 }
 
 // LastBillDate applies equality check predicate on the "last_bill_date" field. It's identical to LastBillDateEQ.
-func LastBillDate(v model.Date) predicate.Subscribe {
+func LastBillDate(v time.Time) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldLastBillDate), v))
 	})
@@ -2365,21 +2364,21 @@ func UnsubscribeReasonContainsFold(v string) predicate.Subscribe {
 }
 
 // LastBillDateEQ applies the EQ predicate on the "last_bill_date" field.
-func LastBillDateEQ(v model.Date) predicate.Subscribe {
+func LastBillDateEQ(v time.Time) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldLastBillDate), v))
 	})
 }
 
 // LastBillDateNEQ applies the NEQ predicate on the "last_bill_date" field.
-func LastBillDateNEQ(v model.Date) predicate.Subscribe {
+func LastBillDateNEQ(v time.Time) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldLastBillDate), v))
 	})
 }
 
 // LastBillDateIn applies the In predicate on the "last_bill_date" field.
-func LastBillDateIn(vs ...model.Date) predicate.Subscribe {
+func LastBillDateIn(vs ...time.Time) predicate.Subscribe {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -2396,7 +2395,7 @@ func LastBillDateIn(vs ...model.Date) predicate.Subscribe {
 }
 
 // LastBillDateNotIn applies the NotIn predicate on the "last_bill_date" field.
-func LastBillDateNotIn(vs ...model.Date) predicate.Subscribe {
+func LastBillDateNotIn(vs ...time.Time) predicate.Subscribe {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -2413,28 +2412,28 @@ func LastBillDateNotIn(vs ...model.Date) predicate.Subscribe {
 }
 
 // LastBillDateGT applies the GT predicate on the "last_bill_date" field.
-func LastBillDateGT(v model.Date) predicate.Subscribe {
+func LastBillDateGT(v time.Time) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldLastBillDate), v))
 	})
 }
 
 // LastBillDateGTE applies the GTE predicate on the "last_bill_date" field.
-func LastBillDateGTE(v model.Date) predicate.Subscribe {
+func LastBillDateGTE(v time.Time) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldLastBillDate), v))
 	})
 }
 
 // LastBillDateLT applies the LT predicate on the "last_bill_date" field.
-func LastBillDateLT(v model.Date) predicate.Subscribe {
+func LastBillDateLT(v time.Time) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldLastBillDate), v))
 	})
 }
 
 // LastBillDateLTE applies the LTE predicate on the "last_bill_date" field.
-func LastBillDateLTE(v model.Date) predicate.Subscribe {
+func LastBillDateLTE(v time.Time) predicate.Subscribe {
 	return predicate.Subscribe(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldLastBillDate), v))
 	})

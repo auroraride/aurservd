@@ -2,13 +2,11 @@ package schema
 
 import (
     "entgo.io/ent"
-    "entgo.io/ent/dialect"
     "entgo.io/ent/dialect/entsql"
     "entgo.io/ent/schema"
     "entgo.io/ent/schema/edge"
     "entgo.io/ent/schema/field"
     "entgo.io/ent/schema/index"
-    "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent/internal"
 )
 
@@ -28,8 +26,8 @@ func (EnterpriseContract) Annotations() []schema.Annotation {
 func (EnterpriseContract) Fields() []ent.Field {
     return []ent.Field{
         field.Uint64("enterprise_id"),
-        field.Other("start", model.Date{}).SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("合同开始时间"),
-        field.Other("end", model.Date{}).SchemaType(map[string]string{dialect.Postgres: "date"}).Comment("合同结束时间"),
+        field.Time("start").Comment("合同开始时间"),
+        field.Time("end").Comment("合同结束时间"),
         field.String("file").Comment("合同文件"),
     }
 }

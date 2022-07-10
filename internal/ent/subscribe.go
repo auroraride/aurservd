@@ -109,7 +109,7 @@ type Subscribe struct {
 	UnsubscribeReason string `json:"unsubscribe_reason,omitempty"`
 	// LastBillDate holds the value of the "last_bill_date" field.
 	// 上次结算日期(包含该日期)
-	LastBillDate *model.Date `json:"last_bill_date,omitempty"`
+	LastBillDate *time.Time `json:"last_bill_date,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SubscribeQuery when eager-loading is set.
 	Edges SubscribeEdges `json:"edges"`
@@ -299,15 +299,13 @@ func (*Subscribe) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case subscribe.FieldLastBillDate:
-			values[i] = &sql.NullScanner{S: new(model.Date)}
 		case subscribe.FieldCreator, subscribe.FieldLastModifier:
 			values[i] = new([]byte)
 		case subscribe.FieldID, subscribe.FieldPlanID, subscribe.FieldEmployeeID, subscribe.FieldCityID, subscribe.FieldStationID, subscribe.FieldStoreID, subscribe.FieldRiderID, subscribe.FieldInitialOrderID, subscribe.FieldEnterpriseID, subscribe.FieldStatus, subscribe.FieldType, subscribe.FieldInitialDays, subscribe.FieldAlterDays, subscribe.FieldPauseDays, subscribe.FieldRenewalDays, subscribe.FieldOverdueDays, subscribe.FieldRemaining:
 			values[i] = new(sql.NullInt64)
 		case subscribe.FieldRemark, subscribe.FieldModel, subscribe.FieldUnsubscribeReason:
 			values[i] = new(sql.NullString)
-		case subscribe.FieldCreatedAt, subscribe.FieldUpdatedAt, subscribe.FieldDeletedAt, subscribe.FieldPausedAt, subscribe.FieldStartAt, subscribe.FieldEndAt, subscribe.FieldRefundAt:
+		case subscribe.FieldCreatedAt, subscribe.FieldUpdatedAt, subscribe.FieldDeletedAt, subscribe.FieldPausedAt, subscribe.FieldStartAt, subscribe.FieldEndAt, subscribe.FieldRefundAt, subscribe.FieldLastBillDate:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Subscribe", columns[i])
@@ -513,11 +511,11 @@ func (s *Subscribe) assignValues(columns []string, values []interface{}) error {
 				s.UnsubscribeReason = value.String
 			}
 		case subscribe.FieldLastBillDate:
-			if value, ok := values[i].(*sql.NullScanner); !ok {
+			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field last_bill_date", values[i])
 			} else if value.Valid {
-				s.LastBillDate = new(model.Date)
-				*s.LastBillDate = *value.S.(*model.Date)
+				s.LastBillDate = new(time.Time)
+				*s.LastBillDate = value.Time
 			}
 		}
 	}
@@ -685,7 +683,7 @@ func (s *Subscribe) String() string {
 	builder.WriteString(s.UnsubscribeReason)
 	if v := s.LastBillDate; v != nil {
 		builder.WriteString(", last_bill_date=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
+		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteByte(')')
 	return builder.String()

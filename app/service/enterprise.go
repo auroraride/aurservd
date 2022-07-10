@@ -119,6 +119,8 @@ func (s *enterpriseService) DetailQuery() *ent.EnterpriseQuery {
 
 // List 列举企业
 func (s *enterpriseService) List(req *model.EnterpriseListReq) *model.PaginationRes {
+    tt := tools.NewTime()
+
     q := s.DetailQuery()
     if req.Name != nil {
         q.Where(enterprise.NameContainsFold(*req.Name))
@@ -140,10 +142,10 @@ func (s *enterpriseService) List(req *model.EnterpriseListReq) *model.Pagination
         ))
     }
     if req.Start != nil {
-        q.Where(enterprise.HasContractsWith(enterprisecontract.StartLTE(model.DateFromStringX(*req.Start))))
+        q.Where(enterprise.HasContractsWith(enterprisecontract.StartLTE(tt.ParseDateStringX(*req.Start))))
     }
     if req.End != nil {
-        q.Where(enterprise.HasContractsWith(enterprisecontract.EndGTE(model.DateFromStringX(*req.End))))
+        q.Where(enterprise.HasContractsWith(enterprisecontract.EndGTE(tt.ParseDateStringX(*req.End))))
     }
     return model.ParsePaginationResponse(
         q, req.PaginationReq,
@@ -265,7 +267,7 @@ func (s *enterpriseService) QueryAllBillingSubscribe(enterpriseID uint64, args .
             // 或上次结算日期为空
             subscribe.LastBillDateIsNil(),
             // 或小于截止日期
-            subscribe.LastBillDateLT(model.DateFromTime(endDate)),
+            subscribe.LastBillDateLT(endDate),
         ),
         subscribe.Or(
             // 或上次结算日期为空
@@ -351,7 +353,7 @@ func (s *enterpriseService) CalculateStatement(e *ent.Enterprise, end time.Time)
 
         // 上次结算日期存在则从上次结算日次日开始计算
         if sub.LastBillDate != nil {
-            from = carbon.Time2Carbon(sub.LastBillDate.Time).Tomorrow().AddDay().Carbon2Time()
+            from = carbon.Time2Carbon(*sub.LastBillDate).Tomorrow().AddDay().Carbon2Time()
         }
 
         // 结束时间
@@ -449,7 +451,7 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
         log.Errorf("[ENTERPRISE TASK] %d 更新失败: %v", e.ID, err)
     }
 
-    now := model.DateNow()
+    now := carbon.Now().StartOfDay().Carbon2Time()
     _, err = sta.Update().
         SetRiderNumber(len(bills)).
         SetDays(days).
@@ -467,7 +469,7 @@ func (s *enterpriseService) UpdateStatement(e *ent.Enterprise) {
         days,
         cost,
         balance,
-        now,
+        now.Format(carbon.DateLayout),
     )
 }
 
@@ -628,8 +630,9 @@ func (s *enterpriseService) QueryContract(contractID uint64) *ent.EnterpriseCont
 
 // ModifyContract 编辑企业合同
 func (s *enterpriseService) ModifyContract(req *model.EnterpriseContractModifyReq) {
-    start := model.DateFromStringX(req.Start)
-    end := model.DateFromStringX(req.End)
+    tt := tools.NewTime()
+    start := tt.ParseDateStringX(req.Start)
+    end := tt.ParseDateStringX(req.End)
     var err error
     if req.ID != 0 {
         // 查找合同

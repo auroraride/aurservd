@@ -490,15 +490,15 @@ func (su *SubscribeUpdate) ClearUnsubscribeReason() *SubscribeUpdate {
 }
 
 // SetLastBillDate sets the "last_bill_date" field.
-func (su *SubscribeUpdate) SetLastBillDate(m model.Date) *SubscribeUpdate {
-	su.mutation.SetLastBillDate(m)
+func (su *SubscribeUpdate) SetLastBillDate(t time.Time) *SubscribeUpdate {
+	su.mutation.SetLastBillDate(t)
 	return su
 }
 
 // SetNillableLastBillDate sets the "last_bill_date" field if the given value is not nil.
-func (su *SubscribeUpdate) SetNillableLastBillDate(m *model.Date) *SubscribeUpdate {
-	if m != nil {
-		su.SetLastBillDate(*m)
+func (su *SubscribeUpdate) SetNillableLastBillDate(t *time.Time) *SubscribeUpdate {
+	if t != nil {
+		su.SetLastBillDate(*t)
 	}
 	return su
 }
@@ -1080,14 +1080,14 @@ func (su *SubscribeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := su.mutation.LastBillDate(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: subscribe.FieldLastBillDate,
 		})
 	}
 	if su.mutation.LastBillDateCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Column: subscribe.FieldLastBillDate,
 		})
 	}
@@ -2056,15 +2056,15 @@ func (suo *SubscribeUpdateOne) ClearUnsubscribeReason() *SubscribeUpdateOne {
 }
 
 // SetLastBillDate sets the "last_bill_date" field.
-func (suo *SubscribeUpdateOne) SetLastBillDate(m model.Date) *SubscribeUpdateOne {
-	suo.mutation.SetLastBillDate(m)
+func (suo *SubscribeUpdateOne) SetLastBillDate(t time.Time) *SubscribeUpdateOne {
+	suo.mutation.SetLastBillDate(t)
 	return suo
 }
 
 // SetNillableLastBillDate sets the "last_bill_date" field if the given value is not nil.
-func (suo *SubscribeUpdateOne) SetNillableLastBillDate(m *model.Date) *SubscribeUpdateOne {
-	if m != nil {
-		suo.SetLastBillDate(*m)
+func (suo *SubscribeUpdateOne) SetNillableLastBillDate(t *time.Time) *SubscribeUpdateOne {
+	if t != nil {
+		suo.SetLastBillDate(*t)
 	}
 	return suo
 }
@@ -2676,14 +2676,14 @@ func (suo *SubscribeUpdateOne) sqlSave(ctx context.Context) (_node *Subscribe, e
 	}
 	if value, ok := suo.mutation.LastBillDate(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: subscribe.FieldLastBillDate,
 		})
 	}
 	if suo.mutation.LastBillDateCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Column: subscribe.FieldLastBillDate,
 		})
 	}

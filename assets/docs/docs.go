@@ -3604,6 +3604,90 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/enterprise/bill/usage": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M9015 使用明细",
+                "operationId": "ManagerStatementUsage",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前页, 从1开始, 默认1",
+                        "name": "current",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选结束时间",
+                        "name": "end",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "是否导出为Excel, 导出Excel的时候直接下载文件",
+                        "name": "export",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "企业ID ",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数据, 默认20",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "筛选开始时间",
+                        "name": "start",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/model.Pagination"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "items": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.StatementUsageRes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/enterprise/contract": {
             "post": {
                 "consumes": [
@@ -12955,6 +13039,79 @@ const docTemplate = `{
                             "$ref": "#/definitions/model.EnterpriseStation"
                         }
                     ]
+                }
+            }
+        },
+        "model.StatementUsageItem": {
+            "type": "object",
+            "properties": {
+                "cost": {
+                    "description": "费用",
+                    "type": "number"
+                },
+                "days": {
+                    "description": "使用天数",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "结束日期",
+                    "type": "string"
+                },
+                "price": {
+                    "description": "日单价",
+                    "type": "number"
+                },
+                "start": {
+                    "description": "开始日期",
+                    "type": "string"
+                }
+            }
+        },
+        "model.StatementUsageRes": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "description": "城市",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.City"
+                        }
+                    ]
+                },
+                "deletedAt": {
+                    "description": "删除时间",
+                    "type": "string"
+                },
+                "items": {
+                    "description": "使用详情",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.StatementUsageItem"
+                    }
+                },
+                "model": {
+                    "description": "电池型号",
+                    "type": "string"
+                },
+                "rider": {
+                    "description": "骑手信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.RiderBasic"
+                        }
+                    ]
+                },
+                "station": {
+                    "description": "站点, 可能为空",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.EnterpriseStation"
+                        }
+                    ]
+                },
+                "status": {
+                    "description": "骑手状态 计费中,已退租",
+                    "type": "string"
                 }
             }
         },

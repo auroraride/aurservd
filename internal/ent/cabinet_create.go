@@ -265,15 +265,15 @@ func (cc *CabinetCreate) SetNillableSimSn(s *string) *CabinetCreate {
 }
 
 // SetSimDate sets the "sim_date" field.
-func (cc *CabinetCreate) SetSimDate(m model.Date) *CabinetCreate {
-	cc.mutation.SetSimDate(m)
+func (cc *CabinetCreate) SetSimDate(t time.Time) *CabinetCreate {
+	cc.mutation.SetSimDate(t)
 	return cc
 }
 
 // SetNillableSimDate sets the "sim_date" field if the given value is not nil.
-func (cc *CabinetCreate) SetNillableSimDate(m *model.Date) *CabinetCreate {
-	if m != nil {
-		cc.SetSimDate(*m)
+func (cc *CabinetCreate) SetNillableSimDate(t *time.Time) *CabinetCreate {
+	if t != nil {
+		cc.SetSimDate(*t)
 	}
 	return cc
 }
@@ -666,7 +666,7 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := cc.mutation.SimDate(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: cabinet.FieldSimDate,
 		})
@@ -1196,7 +1196,7 @@ func (u *CabinetUpsert) ClearSimSn() *CabinetUpsert {
 }
 
 // SetSimDate sets the "sim_date" field.
-func (u *CabinetUpsert) SetSimDate(v model.Date) *CabinetUpsert {
+func (u *CabinetUpsert) SetSimDate(v time.Time) *CabinetUpsert {
 	u.Set(cabinet.FieldSimDate, v)
 	return u
 }
@@ -1698,7 +1698,7 @@ func (u *CabinetUpsertOne) ClearSimSn() *CabinetUpsertOne {
 }
 
 // SetSimDate sets the "sim_date" field.
-func (u *CabinetUpsertOne) SetSimDate(v model.Date) *CabinetUpsertOne {
+func (u *CabinetUpsertOne) SetSimDate(v time.Time) *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.SetSimDate(v)
 	})
@@ -2367,7 +2367,7 @@ func (u *CabinetUpsertBulk) ClearSimSn() *CabinetUpsertBulk {
 }
 
 // SetSimDate sets the "sim_date" field.
-func (u *CabinetUpsertBulk) SetSimDate(v model.Date) *CabinetUpsertBulk {
+func (u *CabinetUpsertBulk) SetSimDate(v time.Time) *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.SetSimDate(v)
 	})

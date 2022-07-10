@@ -51,13 +51,13 @@ type EnterpriseStatement struct {
 	RiderNumber int `json:"rider_number,omitempty"`
 	// Date holds the value of the "date" field.
 	// 对账单计算日期(包含当日)
-	Date *model.Date `json:"date,omitempty"`
+	Date *time.Time `json:"date,omitempty"`
 	// Start holds the value of the "start" field.
 	// 账单开始日期
-	Start model.Date `json:"start,omitempty"`
+	Start time.Time `json:"start,omitempty"`
 	// End holds the value of the "end" field.
 	// 账单结束日期
-	End *model.Date `json:"end,omitempty"`
+	End *time.Time `json:"end,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EnterpriseStatementQuery when eager-loading is set.
 	Edges EnterpriseStatementEdges `json:"edges"`
@@ -102,19 +102,15 @@ func (*EnterpriseStatement) scanValues(columns []string) ([]interface{}, error) 
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case enterprisestatement.FieldDate, enterprisestatement.FieldEnd:
-			values[i] = &sql.NullScanner{S: new(model.Date)}
 		case enterprisestatement.FieldCreator, enterprisestatement.FieldLastModifier:
 			values[i] = new([]byte)
-		case enterprisestatement.FieldStart:
-			values[i] = new(model.Date)
 		case enterprisestatement.FieldCost:
 			values[i] = new(sql.NullFloat64)
 		case enterprisestatement.FieldID, enterprisestatement.FieldEnterpriseID, enterprisestatement.FieldDays, enterprisestatement.FieldRiderNumber:
 			values[i] = new(sql.NullInt64)
 		case enterprisestatement.FieldRemark:
 			values[i] = new(sql.NullString)
-		case enterprisestatement.FieldCreatedAt, enterprisestatement.FieldUpdatedAt, enterprisestatement.FieldDeletedAt, enterprisestatement.FieldSettledAt:
+		case enterprisestatement.FieldCreatedAt, enterprisestatement.FieldUpdatedAt, enterprisestatement.FieldDeletedAt, enterprisestatement.FieldSettledAt, enterprisestatement.FieldDate, enterprisestatement.FieldStart, enterprisestatement.FieldEnd:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type EnterpriseStatement", columns[i])
@@ -210,24 +206,24 @@ func (es *EnterpriseStatement) assignValues(columns []string, values []interface
 				es.RiderNumber = int(value.Int64)
 			}
 		case enterprisestatement.FieldDate:
-			if value, ok := values[i].(*sql.NullScanner); !ok {
+			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field date", values[i])
 			} else if value.Valid {
-				es.Date = new(model.Date)
-				*es.Date = *value.S.(*model.Date)
+				es.Date = new(time.Time)
+				*es.Date = value.Time
 			}
 		case enterprisestatement.FieldStart:
-			if value, ok := values[i].(*model.Date); !ok {
+			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field start", values[i])
-			} else if value != nil {
-				es.Start = *value
+			} else if value.Valid {
+				es.Start = value.Time
 			}
 		case enterprisestatement.FieldEnd:
-			if value, ok := values[i].(*sql.NullScanner); !ok {
+			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field end", values[i])
 			} else if value.Valid {
-				es.End = new(model.Date)
-				*es.End = *value.S.(*model.Date)
+				es.End = new(time.Time)
+				*es.End = value.Time
 			}
 		}
 	}
@@ -295,13 +291,13 @@ func (es *EnterpriseStatement) String() string {
 	builder.WriteString(fmt.Sprintf("%v", es.RiderNumber))
 	if v := es.Date; v != nil {
 		builder.WriteString(", date=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
+		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", start=")
-	builder.WriteString(fmt.Sprintf("%v", es.Start))
+	builder.WriteString(es.Start.Format(time.ANSIC))
 	if v := es.End; v != nil {
 		builder.WriteString(", end=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
+		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteByte(')')
 	return builder.String()

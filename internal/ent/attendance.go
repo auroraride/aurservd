@@ -52,7 +52,7 @@ type Attendance struct {
 	Duty bool `json:"duty,omitempty"`
 	// Date holds the value of the "date" field.
 	// 日期
-	Date model.Date `json:"date,omitempty"`
+	Date time.Time `json:"date,omitempty"`
 	// Lng holds the value of the "lng" field.
 	// 经度
 	Lng *float64 `json:"lng,omitempty"`
@@ -116,8 +116,6 @@ func (*Attendance) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case attendance.FieldCreator, attendance.FieldLastModifier, attendance.FieldInventory:
 			values[i] = new([]byte)
-		case attendance.FieldDate:
-			values[i] = new(model.Date)
 		case attendance.FieldDuty:
 			values[i] = new(sql.NullBool)
 		case attendance.FieldLng, attendance.FieldLat, attendance.FieldDistance:
@@ -126,7 +124,7 @@ func (*Attendance) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case attendance.FieldRemark, attendance.FieldPhoto, attendance.FieldAddress:
 			values[i] = new(sql.NullString)
-		case attendance.FieldCreatedAt, attendance.FieldUpdatedAt, attendance.FieldDeletedAt:
+		case attendance.FieldCreatedAt, attendance.FieldUpdatedAt, attendance.FieldDeletedAt, attendance.FieldDate:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Attendance", columns[i])
@@ -224,10 +222,10 @@ func (a *Attendance) assignValues(columns []string, values []interface{}) error 
 				a.Duty = value.Bool
 			}
 		case attendance.FieldDate:
-			if value, ok := values[i].(*model.Date); !ok {
+			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field date", values[i])
-			} else if value != nil {
-				a.Date = *value
+			} else if value.Valid {
+				a.Date = value.Time
 			}
 		case attendance.FieldLng:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
@@ -322,7 +320,7 @@ func (a *Attendance) String() string {
 	builder.WriteString(", duty=")
 	builder.WriteString(fmt.Sprintf("%v", a.Duty))
 	builder.WriteString(", date=")
-	builder.WriteString(fmt.Sprintf("%v", a.Date))
+	builder.WriteString(a.Date.Format(time.ANSIC))
 	if v := a.Lng; v != nil {
 		builder.WriteString(", lng=")
 		builder.WriteString(fmt.Sprintf("%v", *v))

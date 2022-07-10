@@ -387,15 +387,15 @@ func (sc *SubscribeCreate) SetNillableUnsubscribeReason(s *string) *SubscribeCre
 }
 
 // SetLastBillDate sets the "last_bill_date" field.
-func (sc *SubscribeCreate) SetLastBillDate(m model.Date) *SubscribeCreate {
-	sc.mutation.SetLastBillDate(m)
+func (sc *SubscribeCreate) SetLastBillDate(t time.Time) *SubscribeCreate {
+	sc.mutation.SetLastBillDate(t)
 	return sc
 }
 
 // SetNillableLastBillDate sets the "last_bill_date" field if the given value is not nil.
-func (sc *SubscribeCreate) SetNillableLastBillDate(m *model.Date) *SubscribeCreate {
-	if m != nil {
-		sc.SetLastBillDate(*m)
+func (sc *SubscribeCreate) SetNillableLastBillDate(t *time.Time) *SubscribeCreate {
+	if t != nil {
+		sc.SetLastBillDate(*t)
 	}
 	return sc
 }
@@ -858,7 +858,7 @@ func (sc *SubscribeCreate) createSpec() (*Subscribe, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := sc.mutation.LastBillDate(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: subscribe.FieldLastBillDate,
 		})
@@ -1635,7 +1635,7 @@ func (u *SubscribeUpsert) ClearUnsubscribeReason() *SubscribeUpsert {
 }
 
 // SetLastBillDate sets the "last_bill_date" field.
-func (u *SubscribeUpsert) SetLastBillDate(v model.Date) *SubscribeUpsert {
+func (u *SubscribeUpsert) SetLastBillDate(v time.Time) *SubscribeUpsert {
 	u.Set(subscribe.FieldLastBillDate, v)
 	return u
 }
@@ -2266,7 +2266,7 @@ func (u *SubscribeUpsertOne) ClearUnsubscribeReason() *SubscribeUpsertOne {
 }
 
 // SetLastBillDate sets the "last_bill_date" field.
-func (u *SubscribeUpsertOne) SetLastBillDate(v model.Date) *SubscribeUpsertOne {
+func (u *SubscribeUpsertOne) SetLastBillDate(v time.Time) *SubscribeUpsertOne {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.SetLastBillDate(v)
 	})
@@ -3064,7 +3064,7 @@ func (u *SubscribeUpsertBulk) ClearUnsubscribeReason() *SubscribeUpsertBulk {
 }
 
 // SetLastBillDate sets the "last_bill_date" field.
-func (u *SubscribeUpsertBulk) SetLastBillDate(v model.Date) *SubscribeUpsertBulk {
+func (u *SubscribeUpsertBulk) SetLastBillDate(v time.Time) *SubscribeUpsertBulk {
 	return u.Update(func(s *SubscribeUpsert) {
 		s.SetLastBillDate(v)
 	})

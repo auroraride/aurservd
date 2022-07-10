@@ -156,35 +156,35 @@ func (esc *EnterpriseStatementCreate) SetNillableRiderNumber(i *int) *Enterprise
 }
 
 // SetDate sets the "date" field.
-func (esc *EnterpriseStatementCreate) SetDate(m model.Date) *EnterpriseStatementCreate {
-	esc.mutation.SetDate(m)
+func (esc *EnterpriseStatementCreate) SetDate(t time.Time) *EnterpriseStatementCreate {
+	esc.mutation.SetDate(t)
 	return esc
 }
 
 // SetNillableDate sets the "date" field if the given value is not nil.
-func (esc *EnterpriseStatementCreate) SetNillableDate(m *model.Date) *EnterpriseStatementCreate {
-	if m != nil {
-		esc.SetDate(*m)
+func (esc *EnterpriseStatementCreate) SetNillableDate(t *time.Time) *EnterpriseStatementCreate {
+	if t != nil {
+		esc.SetDate(*t)
 	}
 	return esc
 }
 
 // SetStart sets the "start" field.
-func (esc *EnterpriseStatementCreate) SetStart(m model.Date) *EnterpriseStatementCreate {
-	esc.mutation.SetStart(m)
+func (esc *EnterpriseStatementCreate) SetStart(t time.Time) *EnterpriseStatementCreate {
+	esc.mutation.SetStart(t)
 	return esc
 }
 
 // SetEnd sets the "end" field.
-func (esc *EnterpriseStatementCreate) SetEnd(m model.Date) *EnterpriseStatementCreate {
-	esc.mutation.SetEnd(m)
+func (esc *EnterpriseStatementCreate) SetEnd(t time.Time) *EnterpriseStatementCreate {
+	esc.mutation.SetEnd(t)
 	return esc
 }
 
 // SetNillableEnd sets the "end" field if the given value is not nil.
-func (esc *EnterpriseStatementCreate) SetNillableEnd(m *model.Date) *EnterpriseStatementCreate {
-	if m != nil {
-		esc.SetEnd(*m)
+func (esc *EnterpriseStatementCreate) SetNillableEnd(t *time.Time) *EnterpriseStatementCreate {
+	if t != nil {
+		esc.SetEnd(*t)
 	}
 	return esc
 }
@@ -453,7 +453,7 @@ func (esc *EnterpriseStatementCreate) createSpec() (*EnterpriseStatement, *sqlgr
 	}
 	if value, ok := esc.mutation.Date(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: enterprisestatement.FieldDate,
 		})
@@ -461,7 +461,7 @@ func (esc *EnterpriseStatementCreate) createSpec() (*EnterpriseStatement, *sqlgr
 	}
 	if value, ok := esc.mutation.Start(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: enterprisestatement.FieldStart,
 		})
@@ -469,7 +469,7 @@ func (esc *EnterpriseStatementCreate) createSpec() (*EnterpriseStatement, *sqlgr
 	}
 	if value, ok := esc.mutation.End(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: enterprisestatement.FieldEnd,
 		})
@@ -749,7 +749,7 @@ func (u *EnterpriseStatementUpsert) AddRiderNumber(v int) *EnterpriseStatementUp
 }
 
 // SetDate sets the "date" field.
-func (u *EnterpriseStatementUpsert) SetDate(v model.Date) *EnterpriseStatementUpsert {
+func (u *EnterpriseStatementUpsert) SetDate(v time.Time) *EnterpriseStatementUpsert {
 	u.Set(enterprisestatement.FieldDate, v)
 	return u
 }
@@ -767,7 +767,7 @@ func (u *EnterpriseStatementUpsert) ClearDate() *EnterpriseStatementUpsert {
 }
 
 // SetStart sets the "start" field.
-func (u *EnterpriseStatementUpsert) SetStart(v model.Date) *EnterpriseStatementUpsert {
+func (u *EnterpriseStatementUpsert) SetStart(v time.Time) *EnterpriseStatementUpsert {
 	u.Set(enterprisestatement.FieldStart, v)
 	return u
 }
@@ -779,7 +779,7 @@ func (u *EnterpriseStatementUpsert) UpdateStart() *EnterpriseStatementUpsert {
 }
 
 // SetEnd sets the "end" field.
-func (u *EnterpriseStatementUpsert) SetEnd(v model.Date) *EnterpriseStatementUpsert {
+func (u *EnterpriseStatementUpsert) SetEnd(v time.Time) *EnterpriseStatementUpsert {
 	u.Set(enterprisestatement.FieldEnd, v)
 	return u
 }
@@ -1057,7 +1057,7 @@ func (u *EnterpriseStatementUpsertOne) UpdateRiderNumber() *EnterpriseStatementU
 }
 
 // SetDate sets the "date" field.
-func (u *EnterpriseStatementUpsertOne) SetDate(v model.Date) *EnterpriseStatementUpsertOne {
+func (u *EnterpriseStatementUpsertOne) SetDate(v time.Time) *EnterpriseStatementUpsertOne {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
 		s.SetDate(v)
 	})
@@ -1078,7 +1078,7 @@ func (u *EnterpriseStatementUpsertOne) ClearDate() *EnterpriseStatementUpsertOne
 }
 
 // SetStart sets the "start" field.
-func (u *EnterpriseStatementUpsertOne) SetStart(v model.Date) *EnterpriseStatementUpsertOne {
+func (u *EnterpriseStatementUpsertOne) SetStart(v time.Time) *EnterpriseStatementUpsertOne {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
 		s.SetStart(v)
 	})
@@ -1092,7 +1092,7 @@ func (u *EnterpriseStatementUpsertOne) UpdateStart() *EnterpriseStatementUpsertO
 }
 
 // SetEnd sets the "end" field.
-func (u *EnterpriseStatementUpsertOne) SetEnd(v model.Date) *EnterpriseStatementUpsertOne {
+func (u *EnterpriseStatementUpsertOne) SetEnd(v time.Time) *EnterpriseStatementUpsertOne {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
 		s.SetEnd(v)
 	})
@@ -1537,7 +1537,7 @@ func (u *EnterpriseStatementUpsertBulk) UpdateRiderNumber() *EnterpriseStatement
 }
 
 // SetDate sets the "date" field.
-func (u *EnterpriseStatementUpsertBulk) SetDate(v model.Date) *EnterpriseStatementUpsertBulk {
+func (u *EnterpriseStatementUpsertBulk) SetDate(v time.Time) *EnterpriseStatementUpsertBulk {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
 		s.SetDate(v)
 	})
@@ -1558,7 +1558,7 @@ func (u *EnterpriseStatementUpsertBulk) ClearDate() *EnterpriseStatementUpsertBu
 }
 
 // SetStart sets the "start" field.
-func (u *EnterpriseStatementUpsertBulk) SetStart(v model.Date) *EnterpriseStatementUpsertBulk {
+func (u *EnterpriseStatementUpsertBulk) SetStart(v time.Time) *EnterpriseStatementUpsertBulk {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
 		s.SetStart(v)
 	})
@@ -1572,7 +1572,7 @@ func (u *EnterpriseStatementUpsertBulk) UpdateStart() *EnterpriseStatementUpsert
 }
 
 // SetEnd sets the "end" field.
-func (u *EnterpriseStatementUpsertBulk) SetEnd(v model.Date) *EnterpriseStatementUpsertBulk {
+func (u *EnterpriseStatementUpsertBulk) SetEnd(v time.Time) *EnterpriseStatementUpsertBulk {
 	return u.Update(func(s *EnterpriseStatementUpsert) {
 		s.SetEnd(v)
 	})

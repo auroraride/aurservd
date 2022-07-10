@@ -352,15 +352,15 @@ func (cu *CabinetUpdate) ClearSimSn() *CabinetUpdate {
 }
 
 // SetSimDate sets the "sim_date" field.
-func (cu *CabinetUpdate) SetSimDate(m model.Date) *CabinetUpdate {
-	cu.mutation.SetSimDate(m)
+func (cu *CabinetUpdate) SetSimDate(t time.Time) *CabinetUpdate {
+	cu.mutation.SetSimDate(t)
 	return cu
 }
 
 // SetNillableSimDate sets the "sim_date" field if the given value is not nil.
-func (cu *CabinetUpdate) SetNillableSimDate(m *model.Date) *CabinetUpdate {
-	if m != nil {
-		cu.SetSimDate(*m)
+func (cu *CabinetUpdate) SetNillableSimDate(t *time.Time) *CabinetUpdate {
+	if t != nil {
+		cu.SetSimDate(*t)
 	}
 	return cu
 }
@@ -824,14 +824,14 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := cu.mutation.SimDate(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: cabinet.FieldSimDate,
 		})
 	}
 	if cu.mutation.SimDateCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Column: cabinet.FieldSimDate,
 		})
 	}
@@ -1404,15 +1404,15 @@ func (cuo *CabinetUpdateOne) ClearSimSn() *CabinetUpdateOne {
 }
 
 // SetSimDate sets the "sim_date" field.
-func (cuo *CabinetUpdateOne) SetSimDate(m model.Date) *CabinetUpdateOne {
-	cuo.mutation.SetSimDate(m)
+func (cuo *CabinetUpdateOne) SetSimDate(t time.Time) *CabinetUpdateOne {
+	cuo.mutation.SetSimDate(t)
 	return cuo
 }
 
 // SetNillableSimDate sets the "sim_date" field if the given value is not nil.
-func (cuo *CabinetUpdateOne) SetNillableSimDate(m *model.Date) *CabinetUpdateOne {
-	if m != nil {
-		cuo.SetSimDate(*m)
+func (cuo *CabinetUpdateOne) SetNillableSimDate(t *time.Time) *CabinetUpdateOne {
+	if t != nil {
+		cuo.SetSimDate(*t)
 	}
 	return cuo
 }
@@ -1906,14 +1906,14 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 	}
 	if value, ok := cuo.mutation.SimDate(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: cabinet.FieldSimDate,
 		})
 	}
 	if cuo.mutation.SimDateCleared() {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Column: cabinet.FieldSimDate,
 		})
 	}

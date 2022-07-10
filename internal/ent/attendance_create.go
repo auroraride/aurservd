@@ -132,8 +132,8 @@ func (ac *AttendanceCreate) SetDuty(b bool) *AttendanceCreate {
 }
 
 // SetDate sets the "date" field.
-func (ac *AttendanceCreate) SetDate(m model.Date) *AttendanceCreate {
-	ac.mutation.SetDate(m)
+func (ac *AttendanceCreate) SetDate(t time.Time) *AttendanceCreate {
+	ac.mutation.SetDate(t)
 	return ac
 }
 
@@ -427,7 +427,7 @@ func (ac *AttendanceCreate) createSpec() (*Attendance, *sqlgraph.CreateSpec) {
 	}
 	if value, ok := ac.mutation.Date(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: attendance.FieldDate,
 		})
@@ -728,7 +728,7 @@ func (u *AttendanceUpsert) UpdateDuty() *AttendanceUpsert {
 }
 
 // SetDate sets the "date" field.
-func (u *AttendanceUpsert) SetDate(v model.Date) *AttendanceUpsert {
+func (u *AttendanceUpsert) SetDate(v time.Time) *AttendanceUpsert {
 	u.Set(attendance.FieldDate, v)
 	return u
 }
@@ -1076,7 +1076,7 @@ func (u *AttendanceUpsertOne) UpdateDuty() *AttendanceUpsertOne {
 }
 
 // SetDate sets the "date" field.
-func (u *AttendanceUpsertOne) SetDate(v model.Date) *AttendanceUpsertOne {
+func (u *AttendanceUpsertOne) SetDate(v time.Time) *AttendanceUpsertOne {
 	return u.Update(func(s *AttendanceUpsert) {
 		s.SetDate(v)
 	})
@@ -1605,7 +1605,7 @@ func (u *AttendanceUpsertBulk) UpdateDuty() *AttendanceUpsertBulk {
 }
 
 // SetDate sets the "date" field.
-func (u *AttendanceUpsertBulk) SetDate(v model.Date) *AttendanceUpsertBulk {
+func (u *AttendanceUpsertBulk) SetDate(v time.Time) *AttendanceUpsertBulk {
 	return u.Update(func(s *AttendanceUpsert) {
 		s.SetDate(v)
 	})

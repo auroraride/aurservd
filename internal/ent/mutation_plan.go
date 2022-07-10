@@ -30,8 +30,8 @@ type PlanMutation struct {
 	remark           *string
 	enable           *bool
 	name             *string
-	start            *model.Date
-	end              *model.Date
+	start            *time.Time
+	end              *time.Time
 	price            *float64
 	addprice         *float64
 	days             *uint
@@ -497,12 +497,12 @@ func (m *PlanMutation) ResetName() {
 }
 
 // SetStart sets the "start" field.
-func (m *PlanMutation) SetStart(value model.Date) {
-	m.start = &value
+func (m *PlanMutation) SetStart(t time.Time) {
+	m.start = &t
 }
 
 // Start returns the value of the "start" field in the mutation.
-func (m *PlanMutation) Start() (r model.Date, exists bool) {
+func (m *PlanMutation) Start() (r time.Time, exists bool) {
 	v := m.start
 	if v == nil {
 		return
@@ -513,7 +513,7 @@ func (m *PlanMutation) Start() (r model.Date, exists bool) {
 // OldStart returns the old "start" field's value of the Plan entity.
 // If the Plan object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PlanMutation) OldStart(ctx context.Context) (v model.Date, err error) {
+func (m *PlanMutation) OldStart(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldStart is only allowed on UpdateOne operations")
 	}
@@ -533,12 +533,12 @@ func (m *PlanMutation) ResetStart() {
 }
 
 // SetEnd sets the "end" field.
-func (m *PlanMutation) SetEnd(value model.Date) {
-	m.end = &value
+func (m *PlanMutation) SetEnd(t time.Time) {
+	m.end = &t
 }
 
 // End returns the value of the "end" field in the mutation.
-func (m *PlanMutation) End() (r model.Date, exists bool) {
+func (m *PlanMutation) End() (r time.Time, exists bool) {
 	v := m.end
 	if v == nil {
 		return
@@ -549,7 +549,7 @@ func (m *PlanMutation) End() (r model.Date, exists bool) {
 // OldEnd returns the old "end" field's value of the Plan entity.
 // If the Plan object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PlanMutation) OldEnd(ctx context.Context) (v model.Date, err error) {
+func (m *PlanMutation) OldEnd(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldEnd is only allowed on UpdateOne operations")
 	}
@@ -1307,14 +1307,14 @@ func (m *PlanMutation) SetField(name string, value ent.Value) error {
 		m.SetName(v)
 		return nil
 	case plan.FieldStart:
-		v, ok := value.(model.Date)
+		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStart(v)
 		return nil
 	case plan.FieldEnd:
-		v, ok := value.(model.Date)
+		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

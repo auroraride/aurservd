@@ -144,14 +144,14 @@ func (ebu *EnterpriseBillUpdate) SetStatementID(u uint64) *EnterpriseBillUpdate 
 }
 
 // SetStart sets the "start" field.
-func (ebu *EnterpriseBillUpdate) SetStart(m model.Date) *EnterpriseBillUpdate {
-	ebu.mutation.SetStart(m)
+func (ebu *EnterpriseBillUpdate) SetStart(t time.Time) *EnterpriseBillUpdate {
+	ebu.mutation.SetStart(t)
 	return ebu
 }
 
 // SetEnd sets the "end" field.
-func (ebu *EnterpriseBillUpdate) SetEnd(m model.Date) *EnterpriseBillUpdate {
-	ebu.mutation.SetEnd(m)
+func (ebu *EnterpriseBillUpdate) SetEnd(t time.Time) *EnterpriseBillUpdate {
+	ebu.mutation.SetEnd(t)
 	return ebu
 }
 
@@ -438,14 +438,14 @@ func (ebu *EnterpriseBillUpdate) sqlSave(ctx context.Context) (n int, err error)
 	}
 	if value, ok := ebu.mutation.Start(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: enterprisebill.FieldStart,
 		})
 	}
 	if value, ok := ebu.mutation.End(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: enterprisebill.FieldEnd,
 		})
@@ -837,14 +837,14 @@ func (ebuo *EnterpriseBillUpdateOne) SetStatementID(u uint64) *EnterpriseBillUpd
 }
 
 // SetStart sets the "start" field.
-func (ebuo *EnterpriseBillUpdateOne) SetStart(m model.Date) *EnterpriseBillUpdateOne {
-	ebuo.mutation.SetStart(m)
+func (ebuo *EnterpriseBillUpdateOne) SetStart(t time.Time) *EnterpriseBillUpdateOne {
+	ebuo.mutation.SetStart(t)
 	return ebuo
 }
 
 // SetEnd sets the "end" field.
-func (ebuo *EnterpriseBillUpdateOne) SetEnd(m model.Date) *EnterpriseBillUpdateOne {
-	ebuo.mutation.SetEnd(m)
+func (ebuo *EnterpriseBillUpdateOne) SetEnd(t time.Time) *EnterpriseBillUpdateOne {
+	ebuo.mutation.SetEnd(t)
 	return ebuo
 }
 
@@ -1161,14 +1161,14 @@ func (ebuo *EnterpriseBillUpdateOne) sqlSave(ctx context.Context) (_node *Enterp
 	}
 	if value, ok := ebuo.mutation.Start(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: enterprisebill.FieldStart,
 		})
 	}
 	if value, ok := ebuo.mutation.End(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: enterprisebill.FieldEnd,
 		})

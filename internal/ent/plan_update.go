@@ -102,14 +102,14 @@ func (pu *PlanUpdate) SetName(s string) *PlanUpdate {
 }
 
 // SetStart sets the "start" field.
-func (pu *PlanUpdate) SetStart(m model.Date) *PlanUpdate {
-	pu.mutation.SetStart(m)
+func (pu *PlanUpdate) SetStart(t time.Time) *PlanUpdate {
+	pu.mutation.SetStart(t)
 	return pu
 }
 
 // SetEnd sets the "end" field.
-func (pu *PlanUpdate) SetEnd(m model.Date) *PlanUpdate {
-	pu.mutation.SetEnd(m)
+func (pu *PlanUpdate) SetEnd(t time.Time) *PlanUpdate {
+	pu.mutation.SetEnd(t)
 	return pu
 }
 
@@ -498,14 +498,14 @@ func (pu *PlanUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := pu.mutation.Start(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: plan.FieldStart,
 		})
 	}
 	if value, ok := pu.mutation.End(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: plan.FieldEnd,
 		})
@@ -872,14 +872,14 @@ func (puo *PlanUpdateOne) SetName(s string) *PlanUpdateOne {
 }
 
 // SetStart sets the "start" field.
-func (puo *PlanUpdateOne) SetStart(m model.Date) *PlanUpdateOne {
-	puo.mutation.SetStart(m)
+func (puo *PlanUpdateOne) SetStart(t time.Time) *PlanUpdateOne {
+	puo.mutation.SetStart(t)
 	return puo
 }
 
 // SetEnd sets the "end" field.
-func (puo *PlanUpdateOne) SetEnd(m model.Date) *PlanUpdateOne {
-	puo.mutation.SetEnd(m)
+func (puo *PlanUpdateOne) SetEnd(t time.Time) *PlanUpdateOne {
+	puo.mutation.SetEnd(t)
 	return puo
 }
 
@@ -1298,14 +1298,14 @@ func (puo *PlanUpdateOne) sqlSave(ctx context.Context) (_node *Plan, err error) 
 	}
 	if value, ok := puo.mutation.Start(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: plan.FieldStart,
 		})
 	}
 	if value, ok := puo.mutation.End(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: plan.FieldEnd,
 		})

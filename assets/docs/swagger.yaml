@@ -3436,6 +3436,53 @@ definitions:
         - $ref: '#/definitions/model.EnterpriseStation'
         description: 站点, 可能为空
     type: object
+  model.StatementUsageItem:
+    properties:
+      cost:
+        description: 费用
+        type: number
+      days:
+        description: 使用天数
+        type: integer
+      end:
+        description: 结束日期
+        type: string
+      price:
+        description: 日单价
+        type: number
+      start:
+        description: 开始日期
+        type: string
+    type: object
+  model.StatementUsageRes:
+    properties:
+      city:
+        allOf:
+        - $ref: '#/definitions/model.City'
+        description: 城市
+      deletedAt:
+        description: 删除时间
+        type: string
+      items:
+        description: 使用详情
+        items:
+          $ref: '#/definitions/model.StatementUsageItem'
+        type: array
+      model:
+        description: 电池型号
+        type: string
+      rider:
+        allOf:
+        - $ref: '#/definitions/model.RiderBasic'
+        description: 骑手信息
+      station:
+        allOf:
+        - $ref: '#/definitions/model.EnterpriseStation'
+        description: 站点, 可能为空
+      status:
+        description: 骑手状态 计费中,已退租
+        type: string
+    type: object
   model.StatusResponse:
     properties:
       status:
@@ -6456,6 +6503,59 @@ paths:
           schema:
             $ref: '#/definitions/model.StatementDetail'
       summary: M9014 结账明细
+      tags:
+      - '[M]管理接口'
+  /manager/v1/enterprise/bill/usage:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerStatementUsage
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 当前页, 从1开始, 默认1
+        in: query
+        name: current
+        type: integer
+      - description: 筛选结束时间
+        in: query
+        name: end
+        type: string
+      - description: 是否导出为Excel, 导出Excel的时候直接下载文件
+        in: query
+        name: export
+        type: boolean
+      - description: '企业ID '
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: 每页数据, 默认20
+        in: query
+        name: pageSize
+        type: integer
+      - description: 筛选开始时间
+        in: query
+        name: start
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            allOf:
+            - $ref: '#/definitions/model.Pagination'
+            - properties:
+                items:
+                  items:
+                    $ref: '#/definitions/model.StatementUsageRes'
+                  type: array
+              type: object
+      summary: M9015 使用明细
       tags:
       - '[M]管理接口'
   /manager/v1/enterprise/contract:

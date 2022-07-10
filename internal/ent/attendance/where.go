@@ -7,7 +7,6 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/auroraride/aurservd/app/model"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
 )
 
@@ -151,7 +150,7 @@ func Duty(v bool) predicate.Attendance {
 }
 
 // Date applies equality check predicate on the "date" field. It's identical to DateEQ.
-func Date(v model.Date) predicate.Attendance {
+func Date(v time.Time) predicate.Attendance {
 	return predicate.Attendance(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldDate), v))
 	})
@@ -830,21 +829,21 @@ func DutyNEQ(v bool) predicate.Attendance {
 }
 
 // DateEQ applies the EQ predicate on the "date" field.
-func DateEQ(v model.Date) predicate.Attendance {
+func DateEQ(v time.Time) predicate.Attendance {
 	return predicate.Attendance(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldDate), v))
 	})
 }
 
 // DateNEQ applies the NEQ predicate on the "date" field.
-func DateNEQ(v model.Date) predicate.Attendance {
+func DateNEQ(v time.Time) predicate.Attendance {
 	return predicate.Attendance(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldDate), v))
 	})
 }
 
 // DateIn applies the In predicate on the "date" field.
-func DateIn(vs ...model.Date) predicate.Attendance {
+func DateIn(vs ...time.Time) predicate.Attendance {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -861,7 +860,7 @@ func DateIn(vs ...model.Date) predicate.Attendance {
 }
 
 // DateNotIn applies the NotIn predicate on the "date" field.
-func DateNotIn(vs ...model.Date) predicate.Attendance {
+func DateNotIn(vs ...time.Time) predicate.Attendance {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -878,28 +877,28 @@ func DateNotIn(vs ...model.Date) predicate.Attendance {
 }
 
 // DateGT applies the GT predicate on the "date" field.
-func DateGT(v model.Date) predicate.Attendance {
+func DateGT(v time.Time) predicate.Attendance {
 	return predicate.Attendance(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldDate), v))
 	})
 }
 
 // DateGTE applies the GTE predicate on the "date" field.
-func DateGTE(v model.Date) predicate.Attendance {
+func DateGTE(v time.Time) predicate.Attendance {
 	return predicate.Attendance(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldDate), v))
 	})
 }
 
 // DateLT applies the LT predicate on the "date" field.
-func DateLT(v model.Date) predicate.Attendance {
+func DateLT(v time.Time) predicate.Attendance {
 	return predicate.Attendance(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldDate), v))
 	})
 }
 
 // DateLTE applies the LTE predicate on the "date" field.
-func DateLTE(v model.Date) predicate.Attendance {
+func DateLTE(v time.Time) predicate.Attendance {
 	return predicate.Attendance(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldDate), v))
 	})

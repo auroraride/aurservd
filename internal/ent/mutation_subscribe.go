@@ -50,7 +50,7 @@ type SubscribeMutation struct {
 	end_at               *time.Time
 	refund_at            *time.Time
 	unsubscribe_reason   *string
-	last_bill_date       *model.Date
+	last_bill_date       *time.Time
 	clearedFields        map[string]struct{}
 	plan                 *uint64
 	clearedplan          bool
@@ -1561,12 +1561,12 @@ func (m *SubscribeMutation) ResetUnsubscribeReason() {
 }
 
 // SetLastBillDate sets the "last_bill_date" field.
-func (m *SubscribeMutation) SetLastBillDate(value model.Date) {
-	m.last_bill_date = &value
+func (m *SubscribeMutation) SetLastBillDate(t time.Time) {
+	m.last_bill_date = &t
 }
 
 // LastBillDate returns the value of the "last_bill_date" field in the mutation.
-func (m *SubscribeMutation) LastBillDate() (r model.Date, exists bool) {
+func (m *SubscribeMutation) LastBillDate() (r time.Time, exists bool) {
 	v := m.last_bill_date
 	if v == nil {
 		return
@@ -1577,7 +1577,7 @@ func (m *SubscribeMutation) LastBillDate() (r model.Date, exists bool) {
 // OldLastBillDate returns the old "last_bill_date" field's value of the Subscribe entity.
 // If the Subscribe object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SubscribeMutation) OldLastBillDate(ctx context.Context) (v *model.Date, err error) {
+func (m *SubscribeMutation) OldLastBillDate(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLastBillDate is only allowed on UpdateOne operations")
 	}
@@ -2479,7 +2479,7 @@ func (m *SubscribeMutation) SetField(name string, value ent.Value) error {
 		m.SetUnsubscribeReason(v)
 		return nil
 	case subscribe.FieldLastBillDate:
-		v, ok := value.(model.Date)
+		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

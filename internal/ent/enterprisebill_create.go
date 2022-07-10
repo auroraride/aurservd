@@ -142,14 +142,14 @@ func (ebc *EnterpriseBillCreate) SetStatementID(u uint64) *EnterpriseBillCreate 
 }
 
 // SetStart sets the "start" field.
-func (ebc *EnterpriseBillCreate) SetStart(m model.Date) *EnterpriseBillCreate {
-	ebc.mutation.SetStart(m)
+func (ebc *EnterpriseBillCreate) SetStart(t time.Time) *EnterpriseBillCreate {
+	ebc.mutation.SetStart(t)
 	return ebc
 }
 
 // SetEnd sets the "end" field.
-func (ebc *EnterpriseBillCreate) SetEnd(m model.Date) *EnterpriseBillCreate {
-	ebc.mutation.SetEnd(m)
+func (ebc *EnterpriseBillCreate) SetEnd(t time.Time) *EnterpriseBillCreate {
+	ebc.mutation.SetEnd(t)
 	return ebc
 }
 
@@ -437,7 +437,7 @@ func (ebc *EnterpriseBillCreate) createSpec() (*EnterpriseBill, *sqlgraph.Create
 	}
 	if value, ok := ebc.mutation.Start(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: enterprisebill.FieldStart,
 		})
@@ -445,7 +445,7 @@ func (ebc *EnterpriseBillCreate) createSpec() (*EnterpriseBill, *sqlgraph.Create
 	}
 	if value, ok := ebc.mutation.End(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: enterprisebill.FieldEnd,
 		})
@@ -832,7 +832,7 @@ func (u *EnterpriseBillUpsert) UpdateStatementID() *EnterpriseBillUpsert {
 }
 
 // SetStart sets the "start" field.
-func (u *EnterpriseBillUpsert) SetStart(v model.Date) *EnterpriseBillUpsert {
+func (u *EnterpriseBillUpsert) SetStart(v time.Time) *EnterpriseBillUpsert {
 	u.Set(enterprisebill.FieldStart, v)
 	return u
 }
@@ -844,7 +844,7 @@ func (u *EnterpriseBillUpsert) UpdateStart() *EnterpriseBillUpsert {
 }
 
 // SetEnd sets the "end" field.
-func (u *EnterpriseBillUpsert) SetEnd(v model.Date) *EnterpriseBillUpsert {
+func (u *EnterpriseBillUpsert) SetEnd(v time.Time) *EnterpriseBillUpsert {
 	u.Set(enterprisebill.FieldEnd, v)
 	return u
 }
@@ -1175,7 +1175,7 @@ func (u *EnterpriseBillUpsertOne) UpdateStatementID() *EnterpriseBillUpsertOne {
 }
 
 // SetStart sets the "start" field.
-func (u *EnterpriseBillUpsertOne) SetStart(v model.Date) *EnterpriseBillUpsertOne {
+func (u *EnterpriseBillUpsertOne) SetStart(v time.Time) *EnterpriseBillUpsertOne {
 	return u.Update(func(s *EnterpriseBillUpsert) {
 		s.SetStart(v)
 	})
@@ -1189,7 +1189,7 @@ func (u *EnterpriseBillUpsertOne) UpdateStart() *EnterpriseBillUpsertOne {
 }
 
 // SetEnd sets the "end" field.
-func (u *EnterpriseBillUpsertOne) SetEnd(v model.Date) *EnterpriseBillUpsertOne {
+func (u *EnterpriseBillUpsertOne) SetEnd(v time.Time) *EnterpriseBillUpsertOne {
 	return u.Update(func(s *EnterpriseBillUpsert) {
 		s.SetEnd(v)
 	})
@@ -1697,7 +1697,7 @@ func (u *EnterpriseBillUpsertBulk) UpdateStatementID() *EnterpriseBillUpsertBulk
 }
 
 // SetStart sets the "start" field.
-func (u *EnterpriseBillUpsertBulk) SetStart(v model.Date) *EnterpriseBillUpsertBulk {
+func (u *EnterpriseBillUpsertBulk) SetStart(v time.Time) *EnterpriseBillUpsertBulk {
 	return u.Update(func(s *EnterpriseBillUpsert) {
 		s.SetStart(v)
 	})
@@ -1711,7 +1711,7 @@ func (u *EnterpriseBillUpsertBulk) UpdateStart() *EnterpriseBillUpsertBulk {
 }
 
 // SetEnd sets the "end" field.
-func (u *EnterpriseBillUpsertBulk) SetEnd(v model.Date) *EnterpriseBillUpsertBulk {
+func (u *EnterpriseBillUpsertBulk) SetEnd(v time.Time) *EnterpriseBillUpsertBulk {
 	return u.Update(func(s *EnterpriseBillUpsert) {
 		s.SetEnd(v)
 	})

@@ -95,14 +95,14 @@ func (ecu *EnterpriseContractUpdate) SetEnterpriseID(u uint64) *EnterpriseContra
 }
 
 // SetStart sets the "start" field.
-func (ecu *EnterpriseContractUpdate) SetStart(m model.Date) *EnterpriseContractUpdate {
-	ecu.mutation.SetStart(m)
+func (ecu *EnterpriseContractUpdate) SetStart(t time.Time) *EnterpriseContractUpdate {
+	ecu.mutation.SetStart(t)
 	return ecu
 }
 
 // SetEnd sets the "end" field.
-func (ecu *EnterpriseContractUpdate) SetEnd(m model.Date) *EnterpriseContractUpdate {
-	ecu.mutation.SetEnd(m)
+func (ecu *EnterpriseContractUpdate) SetEnd(t time.Time) *EnterpriseContractUpdate {
+	ecu.mutation.SetEnd(t)
 	return ecu
 }
 
@@ -283,14 +283,14 @@ func (ecu *EnterpriseContractUpdate) sqlSave(ctx context.Context) (n int, err er
 	}
 	if value, ok := ecu.mutation.Start(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: enterprisecontract.FieldStart,
 		})
 	}
 	if value, ok := ecu.mutation.End(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: enterprisecontract.FieldEnd,
 		})
@@ -421,14 +421,14 @@ func (ecuo *EnterpriseContractUpdateOne) SetEnterpriseID(u uint64) *EnterpriseCo
 }
 
 // SetStart sets the "start" field.
-func (ecuo *EnterpriseContractUpdateOne) SetStart(m model.Date) *EnterpriseContractUpdateOne {
-	ecuo.mutation.SetStart(m)
+func (ecuo *EnterpriseContractUpdateOne) SetStart(t time.Time) *EnterpriseContractUpdateOne {
+	ecuo.mutation.SetStart(t)
 	return ecuo
 }
 
 // SetEnd sets the "end" field.
-func (ecuo *EnterpriseContractUpdateOne) SetEnd(m model.Date) *EnterpriseContractUpdateOne {
-	ecuo.mutation.SetEnd(m)
+func (ecuo *EnterpriseContractUpdateOne) SetEnd(t time.Time) *EnterpriseContractUpdateOne {
+	ecuo.mutation.SetEnd(t)
 	return ecuo
 }
 
@@ -639,14 +639,14 @@ func (ecuo *EnterpriseContractUpdateOne) sqlSave(ctx context.Context) (_node *En
 	}
 	if value, ok := ecuo.mutation.Start(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: enterprisecontract.FieldStart,
 		})
 	}
 	if value, ok := ecuo.mutation.End(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeOther,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: enterprisecontract.FieldEnd,
 		})

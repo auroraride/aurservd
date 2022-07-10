@@ -59,10 +59,10 @@ type EnterpriseBill struct {
 	StatementID uint64 `json:"statement_id,omitempty"`
 	// Start holds the value of the "start" field.
 	// 结算开始日期(包含)
-	Start model.Date `json:"start,omitempty"`
+	Start time.Time `json:"start,omitempty"`
 	// End holds the value of the "end" field.
 	// 结算结束日期(包含)
-	End model.Date `json:"end,omitempty"`
+	End time.Time `json:"end,omitempty"`
 	// Days holds the value of the "days" field.
 	// 账单天数
 	Days int `json:"days,omitempty"`
@@ -190,15 +190,13 @@ func (*EnterpriseBill) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case enterprisebill.FieldCreator, enterprisebill.FieldLastModifier:
 			values[i] = new([]byte)
-		case enterprisebill.FieldStart, enterprisebill.FieldEnd:
-			values[i] = new(model.Date)
 		case enterprisebill.FieldPrice, enterprisebill.FieldCost:
 			values[i] = new(sql.NullFloat64)
 		case enterprisebill.FieldID, enterprisebill.FieldRiderID, enterprisebill.FieldCityID, enterprisebill.FieldStationID, enterprisebill.FieldSubscribeID, enterprisebill.FieldEnterpriseID, enterprisebill.FieldStatementID, enterprisebill.FieldDays:
 			values[i] = new(sql.NullInt64)
 		case enterprisebill.FieldRemark, enterprisebill.FieldModel:
 			values[i] = new(sql.NullString)
-		case enterprisebill.FieldCreatedAt, enterprisebill.FieldUpdatedAt, enterprisebill.FieldDeletedAt:
+		case enterprisebill.FieldCreatedAt, enterprisebill.FieldUpdatedAt, enterprisebill.FieldDeletedAt, enterprisebill.FieldStart, enterprisebill.FieldEnd:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type EnterpriseBill", columns[i])
@@ -300,16 +298,16 @@ func (eb *EnterpriseBill) assignValues(columns []string, values []interface{}) e
 				eb.StatementID = uint64(value.Int64)
 			}
 		case enterprisebill.FieldStart:
-			if value, ok := values[i].(*model.Date); !ok {
+			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field start", values[i])
-			} else if value != nil {
-				eb.Start = *value
+			} else if value.Valid {
+				eb.Start = value.Time
 			}
 		case enterprisebill.FieldEnd:
-			if value, ok := values[i].(*model.Date); !ok {
+			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field end", values[i])
-			} else if value != nil {
-				eb.End = *value
+			} else if value.Valid {
+				eb.End = value.Time
 			}
 		case enterprisebill.FieldDays:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -422,9 +420,9 @@ func (eb *EnterpriseBill) String() string {
 	builder.WriteString(", statement_id=")
 	builder.WriteString(fmt.Sprintf("%v", eb.StatementID))
 	builder.WriteString(", start=")
-	builder.WriteString(fmt.Sprintf("%v", eb.Start))
+	builder.WriteString(eb.Start.Format(time.ANSIC))
 	builder.WriteString(", end=")
-	builder.WriteString(fmt.Sprintf("%v", eb.End))
+	builder.WriteString(eb.End.Format(time.ANSIC))
 	builder.WriteString(", days=")
 	builder.WriteString(fmt.Sprintf("%v", eb.Days))
 	builder.WriteString(", price=")
