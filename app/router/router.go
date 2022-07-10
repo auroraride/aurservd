@@ -80,6 +80,8 @@ func Run() {
     }...)
     corsConfig.ExposeHeaders = append(corsConfig.ExposeHeaders, []string{
         app.HeaderCaptchaID,
+        app.HeaderContentType,
+        app.HeaderDispositionType,
     }...)
     // 加载全局中间件
     root.Use(

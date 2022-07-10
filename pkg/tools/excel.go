@@ -11,7 +11,9 @@ import (
     "github.com/auroraride/aurservd/pkg/utils"
     "github.com/labstack/echo/v4"
     "github.com/xuri/excelize/v2"
+    "net/url"
     "os"
+    "path/filepath"
 )
 
 type excel struct {
@@ -45,13 +47,20 @@ func NewExcel(w echo.Context, fp string, args ...any) *excel {
     }
 }
 
+func sendAttachement(w echo.Context, path string) {
+    // w.Response().Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    // w.Response().Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename*=utf-8''%s`, url.QueryEscape(filepath.Base(path))))
+    // err := w.File(path)
+    err := w.Attachment(path, url.QueryEscape(filepath.Base(path)))
+    if err != nil {
+        snag.Panic(err)
+    }
+}
+
 func NewExcelExistsExport(w echo.Context, fp string, args ...any) (e *excel) {
     _, err := os.Stat(fp)
     if err == nil {
-        err = w.File(fp)
-        if err != nil {
-            snag.Panic(err)
-        }
+        sendAttachement(w, fp)
         return nil
     }
     return NewExcel(w, fp, args...)
@@ -71,7 +80,7 @@ func (e *excel) AddData(row, column int, data any) *excel {
 func (e *excel) AddValues(rows [][]any) *excel {
     for m, columns := range rows {
         for n, column := range columns {
-            e.AddData(m+1, n+1, column)
+            e.AddData(m, n, column)
         }
     }
     return e
@@ -88,8 +97,5 @@ func (e *excel) Done() *excel {
 
 // Export 导出文件
 func (e *excel) Export() {
-    err := e.w.File(e.path)
-    if err != nil {
-        snag.Panic(err)
-    }
+    sendAttachement(e.w, e.path)
 }
