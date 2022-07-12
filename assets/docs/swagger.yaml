@@ -7047,10 +7047,10 @@ paths:
         in: query
         name: days
         type: integer
-      - description: 店员名字
+      - description: 店员ID筛选
         in: query
-        name: employeeName
-        type: string
+        name: employeeId
+        type: integer
       - description: '时间结束, 格式为: 2022-01-01'
         in: query
         name: end

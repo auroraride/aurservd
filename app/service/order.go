@@ -13,7 +13,6 @@ import (
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/commission"
-    "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/order"
     "github.com/auroraride/aurservd/internal/ent/orderrefund"
     "github.com/auroraride/aurservd/internal/ent/person"
@@ -557,8 +556,8 @@ func (s *orderService) List(req *model.OrderListReq) *model.PaginationRes {
     if req.CityID != nil {
         q.Where(order.CityID(*req.CityID))
     }
-    if req.EmployeeName != nil {
-        q.Where(order.HasSubscribeWith(subscribe.HasEmployeeWith(employee.NameContainsFold(*req.EmployeeName))))
+    if req.EmployeeID != 0 {
+        q.Where(order.HasSubscribeWith(subscribe.EmployeeID(req.EmployeeID)))
     }
     if req.StoreName != nil {
         q.Where(order.HasSubscribeWith(subscribe.HasStoreWith(store.NameContainsFold(*req.StoreName))))

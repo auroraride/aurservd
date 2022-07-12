@@ -175,7 +175,7 @@ type RiderExchangeReq struct {
 }
 
 type RiderSelectionReq struct {
-    Keyword *string `json:"keyword"` // 筛选骑手姓名或电话
+    Keyword *string `json:"keyword" query:"keyword"` // 筛选骑手姓名或电话
 }
 
 type RiderPermissionError struct {

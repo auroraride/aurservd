@@ -4554,9 +4554,9 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "type": "string",
-                        "description": "店员名字",
-                        "name": "employeeName",
+                        "type": "integer",
+                        "description": "店员ID筛选",
+                        "name": "employeeId",
                         "in": "query"
                     },
                     {
