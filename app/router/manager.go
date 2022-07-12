@@ -40,6 +40,7 @@ func loadManagerRoutes() {
     g.PUT("/branch/:id", mapi.Branch.Modify)                // 编辑网点
     g.POST("/branch/:id/contract", mapi.Branch.AddContract) // 添加合同
     g.POST("/branch/contract/sheet", mapi.Branch.Sheet)
+    g.GET("/branch/nearby", mapi.Branch.Nearby)
 
     // 门店
     g.GET("/store", mapi.Store.List)

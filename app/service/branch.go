@@ -194,27 +194,22 @@ func (s *branchService) Selector() *model.ItemListRes {
     return res
 }
 
-// ListByDistance 根据距离列出所有网点和电柜
-func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items []*model.BranchWithDistanceRes) {
-    var temps []struct {
-        ID       uint64  `json:"id"`
-        Distance float64 `json:"distance"`
-        Name     string  `json:"name"`
-        Lng      float64 `json:"lng"`
-        Lat      float64 `json:"lat"`
-        Image    string  `json:"image"`
-        Address  string  `json:"address"`
-    }
+type branchListTemp struct {
+    ID       uint64  `json:"id"`
+    Distance float64 `json:"distance"`
+    Name     string  `json:"name"`
+    Lng      float64 `json:"lng"`
+    Lat      float64 `json:"lat"`
+    Image    string  `json:"image"`
+    Address  string  `json:"address"`
+}
+
+func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (temps []branchListTemp, stores []*ent.Store, cabinets []*ent.Cabinet) {
     if req.Distance == nil && req.CityID == nil {
         snag.Panic("距离和城市不能同时为空")
     }
     q := s.orm.QueryNotDeleted().
-        WithCabinets(func(cq *ent.CabinetQuery) {
-            cq.WithBms()
-        }).
-        WithStores().
         Modify(func(sel *sql.Selector) {
-            // sq := sql.Select("*").From()
             bt := sql.Table(branch.Table)
             sel.Select(bt.C(branch.FieldID), bt.C(branch.FieldName), bt.C(branch.FieldAddress), bt.C(branch.FieldLat), bt.C(branch.FieldLng)).
                 AppendSelectExprAs(sql.Raw(fmt.Sprintf(`ST_Distance(%s, ST_GeogFromText('POINT(%f %f)'))`, branch.FieldGeom, *req.Lng, *req.Lat)), "distance").
@@ -234,15 +229,122 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
         q.Where(branch.CityID(*req.CityID))
     }
     err := q.Scan(s.ctx, &temps)
-    items = make([]*model.BranchWithDistanceRes, 0)
-    // 三种设备类别
-    itemsMap := make(map[uint64]*model.BranchWithDistanceRes, len(temps))
     if err != nil || len(temps) == 0 {
         return
     }
     ids := make([]uint64, len(temps))
     for i, temp := range temps {
         ids[i] = temp.ID
+    }
+
+    stores = ent.Database.Store.QueryNotDeleted().Where(store.BranchIDIn(ids...)).AllX(s.ctx)
+    cabinets = ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithBms().AllX(s.ctx)
+    return
+}
+
+func (s *branchService) ListByDistanceManager(req *model.BranchDistanceListReq) (items []*model.BranchDistanceListRes) {
+    items = make([]*model.BranchDistanceListRes, 0)
+    lng := req.Lng
+    if lng == 0 {
+        lng = 108.947713
+    }
+    lat := req.Lat
+    if lat == 0 {
+        lat = 34.231657
+    }
+    distance := req.Distance
+    if distance == 0 {
+        distance = 100000
+    }
+    temps, stores, cabinets := s.ListByDistance(&model.BranchWithDistanceReq{
+        Lng:      &lng,
+        Lat:      &lat,
+        Distance: &distance,
+    })
+    bmap := make(map[uint64]*model.BranchDistanceListRes)
+    for _, temp := range temps {
+        bmap[temp.ID] = &model.BranchDistanceListRes{
+            ID:       temp.ID,
+            Distance: temp.Distance,
+            Name:     temp.Name,
+            Lng:      temp.Lng,
+            Lat:      temp.Lat,
+            Cabinets: make([]model.CabinetListByDistanceRes, 0),
+            Stores:   make([]model.StoreWithStatus, 0),
+        }
+    }
+    if req.Type == 0 || req.Type == 1 {
+        for _, st := range stores {
+            if strings.Contains(st.Name, req.Name) {
+                if b, ok := bmap[st.BranchID]; ok {
+                    b.Stores = append(b.Stores, model.StoreWithStatus{
+                        Store: model.Store{
+                            ID:   st.ID,
+                            Name: st.Name,
+                        },
+                        Status: st.Status,
+                    })
+                }
+            }
+        }
+    }
+    if req.Type == 0 || req.Type > 1 {
+        var mt string
+        if req.Type > 1 {
+            switch req.Type {
+            case 60:
+                mt = "V60"
+                break
+            case 72:
+                mt = "V72"
+                break
+            }
+        }
+        for _, cab := range cabinets {
+            if strings.Contains(cab.Name, req.Name) {
+                var inside bool
+                for _, bm := range cab.Edges.Bms {
+                    if strings.HasPrefix(bm.Model, mt) {
+                        inside = true
+                        break
+                    }
+                }
+                if inside {
+                    if b, ok := bmap[*cab.BranchID]; ok {
+                        b.Cabinets = append(b.Cabinets, model.CabinetListByDistanceRes{
+                            CabinetBasicInfo: model.CabinetBasicInfo{
+                                ID:     cab.ID,
+                                Brand:  model.CabinetBrand(cab.Brand),
+                                Serial: cab.Serial,
+                                Name:   cab.Name,
+                            },
+                            Status: cab.Status,
+                            Health: cab.Health,
+                        })
+                    }
+                }
+            }
+        }
+    }
+    for _, b := range bmap {
+        if len(b.Cabinets) > 0 || len(b.Stores) > 0 {
+            items = append(items, b)
+        }
+    }
+
+    sort.Slice(items, func(i, j int) bool {
+        return items[i].Distance < items[j].Distance
+    })
+    return
+}
+
+// ListByDistanceRider 根据距离列出所有网点和电柜
+func (s *branchService) ListByDistanceRider(req *model.BranchWithDistanceReq) (items []*model.BranchWithDistanceRes) {
+    temps, stores, cabinets := s.ListByDistance(req)
+    items = make([]*model.BranchWithDistanceRes, 0)
+    // 三种设备类别
+    itemsMap := make(map[uint64]*model.BranchWithDistanceRes, len(temps))
+    for _, temp := range temps {
         itemsMap[temp.ID] = &model.BranchWithDistanceRes{
             ID:          temp.ID,
             Distance:    temp.Distance,
@@ -258,7 +360,6 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
 
     // 进行关联查询
     // 门店
-    stores := ent.Database.Store.QueryNotDeleted().Where(store.BranchIDIn(ids...)).AllX(s.ctx)
     for _, es := range stores {
         if es.Status == model.StoreStatusOpen {
             s.facility(itemsMap[es.BranchID].FacilityMap, model.BranchFacility{
@@ -273,7 +374,6 @@ func (s *branchService) ListByDistance(req *model.BranchWithDistanceReq) (items 
     }
 
     // 电柜
-    cabinets := ent.Database.Cabinet.QueryNotDeleted().Where(cabinet.BranchIDIn(ids...)).WithBms().AllX(s.ctx)
     for _, c := range cabinets {
         if c.Status == model.CabinetStatusNormal {
             fa := model.BranchFacility{

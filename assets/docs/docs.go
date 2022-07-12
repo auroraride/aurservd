@@ -2170,6 +2170,77 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/branch/nearby": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M3011 查找附近的网点",
+                "operationId": "ManagerBranchNearby",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "请求距离(米), 默认 ` + "`" + `500000` + "`" + `",
+                        "name": "distance",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "纬度, 默认 ` + "`" + `34.231657` + "`" + `",
+                        "name": "lat",
+                        "in": "query"
+                    },
+                    {
+                        "type": "number",
+                        "description": "经度, 默认 ` + "`" + `108.947713` + "`" + `",
+                        "name": "lng",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "门店或电柜名称",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            0,
+                            1,
+                            2,
+                            3
+                        ],
+                        "type": "integer",
+                        "description": "筛选类别 0:全部 1:门店 2:72电柜 3:60电柜",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.BranchDistanceListRes"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/branch/selector": {
             "get": {
                 "consumes": [
@@ -2444,7 +2515,7 @@ const docTemplate = `{
                             "YUNDONG"
                         ],
                         "type": "string",
-                        "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
+                        "description": "品牌 品牌: KAIXIN(凯信) YUNDONG(云动)",
                         "name": "brand",
                         "in": "query"
                     },
@@ -9727,6 +9798,38 @@ const docTemplate = `{
                 }
             }
         },
+        "model.BranchDistanceListRes": {
+            "type": "object",
+            "properties": {
+                "cabinets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CabinetListByDistanceRes"
+                    }
+                },
+                "distance": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "lat": {
+                    "type": "number"
+                },
+                "lng": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "stores": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.StoreWithStatus"
+                    }
+                }
+            }
+        },
         "model.BranchFacility": {
             "type": "object",
             "properties": {
@@ -9964,7 +10067,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "brand": {
-                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
+                    "description": "品牌: KAIXIN(凯信) YUNDONG(云动)",
                     "type": "string",
                     "enum": [
                         "KAIXIN",
@@ -10067,7 +10170,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
+                    "description": "品牌 品牌: KAIXIN(凯信) YUNDONG(云动)",
                     "type": "string",
                     "enum": [
                         "KAIXIN",
@@ -10211,7 +10314,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
+                    "description": "品牌 品牌: KAIXIN(凯信) YUNDONG(云动)",
                     "type": "string",
                     "enum": [
                         "KAIXIN",
@@ -10459,7 +10562,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
+                    "description": "品牌 品牌: KAIXIN(凯信) YUNDONG(云动)",
                     "type": "string",
                     "enum": [
                         "KAIXIN",
@@ -10529,6 +10632,38 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                }
+            }
+        },
+        "model.CabinetListByDistanceRes": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "description": "品牌: KAIXIN(凯信) YUNDONG(云动)",
+                    "type": "string",
+                    "enum": [
+                        "KAIXIN",
+                        "YUNDONG"
+                    ]
+                },
+                "health": {
+                    "description": "在线状态 0离线 1在线 2故障",
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "电柜名称",
+                    "type": "string"
+                },
+                "serial": {
+                    "description": "电柜编码",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "电柜状态 0未投放 1运营中 2维护中",
+                    "type": "integer"
                 }
             }
         },
@@ -12267,7 +12402,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "brand": {
-                    "description": "品牌 KAIXIN(凯信) YUNDONG(云动)",
+                    "description": "品牌 品牌: KAIXIN(凯信) YUNDONG(云动)",
                     "type": "string"
                 },
                 "cityId": {

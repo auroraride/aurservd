@@ -111,3 +111,18 @@ func (*branch) Sheet(c echo.Context) (err error) {
     service.NewBranchWithModifier(ctx.Modifier).Sheet(req)
     return ctx.SendResponse()
 }
+
+// Nearby
+// @ID           ManagerBranchNearby
+// @Router       /manager/v1/branch/nearby [GET]
+// @Summary      M3011 查找附近的网点
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        query  query   model.BranchDistanceListReq  false  "筛选选项"
+// @Success      200  {object}  []model.BranchDistanceListRes  "请求成功"
+func (*branch) Nearby(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.BranchDistanceListReq](c)
+    return ctx.SendResponse(service.NewBranch().ListByDistanceManager(req))
+}

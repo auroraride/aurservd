@@ -64,6 +64,12 @@ type CabinetBasicInfo struct {
     Name   string       `json:"name"`                         // 电柜名称
 }
 
+type CabinetListByDistanceRes struct {
+    CabinetBasicInfo
+    Status uint8 `json:"status"` // 电柜状态 0未投放 1运营中 2维护中
+    Health uint8 `json:"health"` // 在线状态 0离线 1在线 2故障
+}
+
 // CabinetCreateReq 电柜创建请求
 type CabinetCreateReq struct {
     Cabinet

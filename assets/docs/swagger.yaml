@@ -1006,6 +1006,27 @@ definitions:
     - name
     - photos
     type: object
+  model.BranchDistanceListRes:
+    properties:
+      cabinets:
+        items:
+          $ref: '#/definitions/model.CabinetListByDistanceRes'
+        type: array
+      distance:
+        type: number
+      id:
+        type: integer
+      lat:
+        type: number
+      lng:
+        type: number
+      name:
+        type: string
+      stores:
+        items:
+          $ref: '#/definitions/model.StoreWithStatus'
+        type: array
+    type: object
   model.BranchFacility:
     properties:
       fid:
@@ -1167,7 +1188,7 @@ definitions:
   model.CabinetBasicInfo:
     properties:
       brand:
-        description: 品牌 KAIXIN(凯信) YUNDONG(云动)
+        description: '品牌: KAIXIN(凯信) YUNDONG(云动)'
         enum:
         - KAIXIN
         - YUNDONG
@@ -1237,7 +1258,7 @@ definitions:
         description: 网点
         type: integer
       brand:
-        description: 品牌 KAIXIN(凯信) YUNDONG(云动)
+        description: '品牌 品牌: KAIXIN(凯信) YUNDONG(云动)'
         enum:
         - KAIXIN
         - YUNDONG
@@ -1344,7 +1365,7 @@ definitions:
         description: 网点
         type: integer
       brand:
-        description: 品牌 KAIXIN(凯信) YUNDONG(云动)
+        description: '品牌 品牌: KAIXIN(凯信) YUNDONG(云动)'
         enum:
         - KAIXIN
         - YUNDONG
@@ -1518,7 +1539,7 @@ definitions:
         description: 网点
         type: integer
       brand:
-        description: 品牌 KAIXIN(凯信) YUNDONG(云动)
+        description: '品牌 品牌: KAIXIN(凯信) YUNDONG(云动)'
         enum:
         - KAIXIN
         - YUNDONG
@@ -1573,6 +1594,29 @@ definitions:
     - brand
     - name
     - serial
+    type: object
+  model.CabinetListByDistanceRes:
+    properties:
+      brand:
+        description: '品牌: KAIXIN(凯信) YUNDONG(云动)'
+        enum:
+        - KAIXIN
+        - YUNDONG
+        type: string
+      health:
+        description: 在线状态 0离线 1在线 2故障
+        type: integer
+      id:
+        type: integer
+      name:
+        description: 电柜名称
+        type: string
+      serial:
+        description: 电柜编码
+        type: string
+      status:
+        description: 电柜状态 0未投放 1运营中 2维护中
+        type: integer
     type: object
   model.CascaderOptionLevel2:
     properties:
@@ -2793,7 +2837,7 @@ definitions:
         description: 总电池数
         type: integer
       brand:
-        description: 品牌 KAIXIN(凯信) YUNDONG(云动)
+        description: '品牌 品牌: KAIXIN(凯信) YUNDONG(云动)'
         type: string
       cityId:
         description: 城市ID
@@ -5563,6 +5607,54 @@ paths:
       summary: M3010 修改合同底单
       tags:
       - '[M]管理接口'
+  /manager/v1/branch/nearby:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerBranchNearby
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 请求距离(米), 默认 `500000`
+        in: query
+        name: distance
+        type: number
+      - description: 纬度, 默认 `34.231657`
+        in: query
+        name: lat
+        type: number
+      - description: 经度, 默认 `108.947713`
+        in: query
+        name: lng
+        type: number
+      - description: 门店或电柜名称
+        in: query
+        name: name
+        type: string
+      - description: 筛选类别 0:全部 1:门店 2:72电柜 3:60电柜
+        enum:
+        - 0
+        - 1
+        - 2
+        - 3
+        in: query
+        name: type
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/model.BranchDistanceListRes'
+            type: array
+      summary: M3011 查找附近的网点
+      tags:
+      - '[M]管理接口'
   /manager/v1/branch/selector:
     get:
       consumes:
@@ -5779,7 +5871,7 @@ paths:
         name: X-Manager-Token
         required: true
         type: string
-      - description: 品牌 KAIXIN(凯信) YUNDONG(云动)
+      - description: '品牌 品牌: KAIXIN(凯信) YUNDONG(云动)'
         enum:
         - KAIXIN
         - YUNDONG
