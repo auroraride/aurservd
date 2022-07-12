@@ -158,7 +158,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controller.CrmCustomer"
+                            "$ref": "#/definitions/controller.FJJCrmCustomer"
                         }
                     }
                 ],
@@ -1371,12 +1371,64 @@ const docTemplate = `{
                 "operationId": "ManagerFjjFJJ02",
                 "parameters": [
                     {
-                        "description": "筛选条件",
-                        "name": "body",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/controller.CrmCustomerListReq"
-                        }
+                        "type": "string",
+                        "description": "办理分行",
+                        "name": "branch",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "渠道",
+                        "name": "channel",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "业务员",
+                        "name": "employee",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "客户经理",
+                        "name": "manager",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "姓名",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "分页数据, 从0开始",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "手机号",
+                        "name": "phone",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "客户编号",
+                        "name": "sn",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "[选择]状态: 交件 / 签约 / 审批 / 放款 / 被拒",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "[选择]贷款类型: 房车贷 / 房产保贷 / 抵押贷 / 优客贷 / 随心智贷 / 中银消费 / 法拍按揭",
+                        "name": "type",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1399,6 +1451,73 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/crm/customer/followup": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[F]房金聚接口"
+                ],
+                "summary": "F06 跟进列表",
+                "operationId": "ManagerFjjFJJ06",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "客户ID",
+                        "name": "customerId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/controller.FJJFollowupRes"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[F]房金聚接口"
+                ],
+                "summary": "F07 创建跟进",
+                "operationId": "ManagerFjjFJJ07",
+                "parameters": [
+                    {
+                        "description": "跟进数据",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.FJJFollowupCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
                         }
                     }
                 }
@@ -1433,6 +1552,69 @@ const docTemplate = `{
                         "description": "请求成功",
                         "schema": {
                             "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/manager/user": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[F]房金聚接口"
+                ],
+                "summary": "F04 管理员列表",
+                "operationId": "ManagerFjjFJJ04",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "分页数据",
+                        "name": "page",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.FJJManagerListRes"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[F]房金聚接口"
+                ],
+                "summary": "F05 创建或修改管理员",
+                "operationId": "ManagerFjjFJJ05",
+                "parameters": [
+                    {
+                        "description": "修改请求",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.FJJManagerModifyReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/controller.FJJManagerListRes"
                         }
                     }
                 }
@@ -8115,195 +8297,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "controller.CrmCustomer": {
-            "type": "object",
-            "required": [
-                "address",
-                "amount",
-                "channel",
-                "channel_contact",
-                "channel_phone",
-                "district_id",
-                "employee",
-                "gender",
-                "id_card_number",
-                "name",
-                "phone",
-                "type"
-            ],
-            "properties": {
-                "address": {
-                    "description": "常住地址",
-                    "type": "string"
-                },
-                "amount": {
-                    "description": "贷款需求(万元)",
-                    "type": "number"
-                },
-                "branch": {
-                    "description": "办理分行",
-                    "type": "string"
-                },
-                "channel": {
-                    "description": "渠道",
-                    "type": "string"
-                },
-                "channel_contact": {
-                    "description": "渠道联系人",
-                    "type": "string"
-                },
-                "channel_phone": {
-                    "description": "渠道手机号",
-                    "type": "string"
-                },
-                "credit": {
-                    "description": "征信情况: 正常 / 连三累六 / 当月逾期 / 五类观察 / 其他",
-                    "type": "string"
-                },
-                "delivery_date": {
-                    "description": "交件日期",
-                    "type": "string"
-                },
-                "district_id": {
-                    "description": "区域ID",
-                    "type": "integer"
-                },
-                "driving_photos": {
-                    "description": "行驶证",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "employee": {
-                    "description": "业务员",
-                    "type": "string"
-                },
-                "face_date": {
-                    "description": "面签日期",
-                    "type": "string"
-                },
-                "gender": {
-                    "description": "性别 1:男 2:女",
-                    "type": "integer"
-                },
-                "house_info": {
-                    "description": "房屋信息",
-                    "type": "string"
-                },
-                "house_price": {
-                    "description": "房屋估价(万元)",
-                    "type": "string"
-                },
-                "id_card_number": {
-                    "description": "身份证号",
-                    "type": "string"
-                },
-                "id_card_photos": {
-                    "description": "身份证照片",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "income": {
-                    "description": "年收入",
-                    "type": "number"
-                },
-                "industry_photos": {
-                    "description": "产调表",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "loan_amount": {
-                    "description": "审批额度(万元)",
-                    "type": "number"
-                },
-                "loan_date": {
-                    "description": "放款日期",
-                    "type": "string"
-                },
-                "loan_years": {
-                    "description": "贷款年限",
-                    "type": "integer"
-                },
-                "manager": {
-                    "description": "客户经理",
-                    "type": "string"
-                },
-                "name": {
-                    "description": "姓名",
-                    "type": "string"
-                },
-                "phone": {
-                    "description": "手机号",
-                    "type": "string"
-                },
-                "real_amount": {
-                    "description": "实际放款(万元)",
-                    "type": "number"
-                },
-                "secondary_mortgage": {
-                    "description": "是否二抵",
-                    "type": "boolean"
-                },
-                "status": {
-                    "description": "状态: 交件 / 签约 / 审批 / 放款 / 被拒",
-                    "type": "string"
-                },
-                "type": {
-                    "description": "贷款类型: 房车贷 / 房产保贷 / 抵押贷 / 优客贷 / 随心智贷 / 中银消费 / 法拍按揭",
-                    "type": "string"
-                }
-            }
-        },
-        "controller.CrmCustomerListReq": {
-            "type": "object",
-            "properties": {
-                "branch": {
-                    "description": "办理分行",
-                    "type": "string"
-                },
-                "channel": {
-                    "description": "渠道",
-                    "type": "string"
-                },
-                "employee": {
-                    "description": "业务员",
-                    "type": "string"
-                },
-                "manager": {
-                    "description": "客户经理",
-                    "type": "string"
-                },
-                "name": {
-                    "description": "姓名",
-                    "type": "string"
-                },
-                "page": {
-                    "description": "分页数据, 从0开始",
-                    "type": "integer"
-                },
-                "phone": {
-                    "description": "手机号",
-                    "type": "string"
-                },
-                "sn": {
-                    "description": "客户编号",
-                    "type": "string"
-                },
-                "status": {
-                    "description": "[选择]状态: 交件 / 签约 / 审批 / 放款 / 被拒",
-                    "type": "string"
-                },
-                "type": {
-                    "description": "[选择]贷款类型: 房车贷 / 房产保贷 / 抵押贷 / 优客贷 / 随心智贷 / 中银消费 / 法拍按揭",
-                    "type": "string"
-                }
-            }
-        },
         "controller.CrmCustomerWithID": {
             "type": "object",
             "required": [
@@ -8444,6 +8437,248 @@ const docTemplate = `{
                 },
                 "type": {
                     "description": "贷款类型: 房车贷 / 房产保贷 / 抵押贷 / 优客贷 / 随心智贷 / 中银消费 / 法拍按揭",
+                    "type": "string"
+                }
+            }
+        },
+        "controller.FJJCrmCustomer": {
+            "type": "object",
+            "required": [
+                "address",
+                "amount",
+                "channel",
+                "channel_contact",
+                "channel_phone",
+                "district_id",
+                "employee",
+                "gender",
+                "id_card_number",
+                "name",
+                "phone",
+                "type"
+            ],
+            "properties": {
+                "address": {
+                    "description": "常住地址",
+                    "type": "string"
+                },
+                "amount": {
+                    "description": "贷款需求(万元)",
+                    "type": "number"
+                },
+                "branch": {
+                    "description": "办理分行",
+                    "type": "string"
+                },
+                "channel": {
+                    "description": "渠道",
+                    "type": "string"
+                },
+                "channel_contact": {
+                    "description": "渠道联系人",
+                    "type": "string"
+                },
+                "channel_phone": {
+                    "description": "渠道手机号",
+                    "type": "string"
+                },
+                "credit": {
+                    "description": "征信情况: 正常 / 连三累六 / 当月逾期 / 五类观察 / 其他",
+                    "type": "string"
+                },
+                "delivery_date": {
+                    "description": "交件日期",
+                    "type": "string"
+                },
+                "district_id": {
+                    "description": "区域ID",
+                    "type": "integer"
+                },
+                "driving_photos": {
+                    "description": "行驶证",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "employee": {
+                    "description": "业务员",
+                    "type": "string"
+                },
+                "face_date": {
+                    "description": "面签日期",
+                    "type": "string"
+                },
+                "gender": {
+                    "description": "性别 1:男 2:女",
+                    "type": "integer"
+                },
+                "house_info": {
+                    "description": "房屋信息",
+                    "type": "string"
+                },
+                "house_price": {
+                    "description": "房屋估价(万元)",
+                    "type": "string"
+                },
+                "id_card_number": {
+                    "description": "身份证号",
+                    "type": "string"
+                },
+                "id_card_photos": {
+                    "description": "身份证照片",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "income": {
+                    "description": "年收入",
+                    "type": "number"
+                },
+                "industry_photos": {
+                    "description": "产调表",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "loan_amount": {
+                    "description": "审批额度(万元)",
+                    "type": "number"
+                },
+                "loan_date": {
+                    "description": "放款日期",
+                    "type": "string"
+                },
+                "loan_years": {
+                    "description": "贷款年限",
+                    "type": "integer"
+                },
+                "manager": {
+                    "description": "客户经理",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "手机号",
+                    "type": "string"
+                },
+                "real_amount": {
+                    "description": "实际放款(万元)",
+                    "type": "number"
+                },
+                "secondary_mortgage": {
+                    "description": "是否二抵",
+                    "type": "boolean"
+                },
+                "status": {
+                    "description": "状态: 交件 / 签约 / 审批 / 放款 / 被拒",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "贷款类型: 房车贷 / 房产保贷 / 抵押贷 / 优客贷 / 随心智贷 / 中银消费 / 法拍按揭",
+                    "type": "string"
+                }
+            }
+        },
+        "controller.FJJFollowupCreateReq": {
+            "type": "object",
+            "required": [
+                "content",
+                "customerId"
+            ],
+            "properties": {
+                "content": {
+                    "description": "跟进内容",
+                    "type": "string"
+                },
+                "customerId": {
+                    "description": "客户ID",
+                    "type": "integer"
+                }
+            }
+        },
+        "controller.FJJFollowupRes": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "跟进内容",
+                    "type": "string"
+                },
+                "manager": {
+                    "description": "管理员信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/controller.FJJManager"
+                        }
+                    ]
+                },
+                "time": {
+                    "description": "跟进时间",
+                    "type": "string"
+                }
+            }
+        },
+        "controller.FJJManager": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.FJJManagerListRes": {
+            "type": "object",
+            "properties": {
+                "enable": {
+                    "description": "启用状态",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "管理员ID, 不携带此字段是新增, 携带此字段是修改",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
+                    "type": "string"
+                }
+            }
+        },
+        "controller.FJJManagerModifyReq": {
+            "type": "object",
+            "properties": {
+                "enable": {
+                    "description": "启用状态",
+                    "type": "boolean"
+                },
+                "id": {
+                    "description": "管理员ID, 不携带此字段是新增, 携带此字段是修改",
+                    "type": "integer"
+                },
+                "name": {
+                    "description": "姓名",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "密码",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话",
                     "type": "string"
                 }
             }

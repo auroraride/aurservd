@@ -12,7 +12,7 @@ package controller
 // @Tags         [F]房金聚接口
 // @Accept       json
 // @Produce      json
-// @Param        body  body     CrmCustomer  true  "desc"
+// @Param        body  body     FJJCrmCustomer  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func FJJ01() {}
 
@@ -23,7 +23,7 @@ func FJJ01() {}
 // @Tags         [F]房金聚接口
 // @Accept       json
 // @Produce      json
-// @Param        body  body     CrmCustomerListReq  false  "筛选条件"
+// @Param        query  query   FJJCrmCustomerListReq  false  "筛选条件"
 // @Success      200  {object}  model.StatusResponse{items=[]CrmCustomerWithID}  "请求成功"
 func FJJ02() {}
 
@@ -38,12 +38,89 @@ func FJJ02() {}
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func FJJ03() {}
 
-type CrmCustomerWithID struct {
-    ID uint64 `json:"id" param:"id" validate:"required" trans:"客户ID"`
-    CrmCustomer
+// FJJ04
+// @ID           ManagerFjjFJJ04
+// @Router       /manager/user [GET]
+// @Summary      F04 管理员列表
+// @Tags         [F]房金聚接口
+// @Accept       json
+// @Produce      json
+// @Param        page  query  int  false  "分页数据"
+// @Success      200  {object}  FJJManagerListRes  "请求成功"
+func FJJ04() {
 }
 
-type CrmCustomerListReq struct {
+// FJJ05
+// @ID           ManagerFjjFJJ05
+// @Router       /manager/user [POST]
+// @Summary      F05 创建或修改管理员
+// @Tags         [F]房金聚接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body     FJJManagerModifyReq  true  "修改请求"
+// @Success      200  {object}  FJJManagerListRes  "请求成功"
+func FJJ05() {
+}
+
+// FJJ06
+// @ID           ManagerFjjFJJ06
+// @Router       /manager/crm/customer/followup [GET]
+// @Summary      F06 跟进列表
+// @Tags         [F]房金聚接口
+// @Accept       json
+// @Produce      json
+// @Param        customerId  query  uint64  true  "客户ID"
+// @Success      200  {object}  []FJJFollowupRes  "请求成功"
+func FJJ06() {
+}
+
+// FJJ07
+// @ID           ManagerFjjFJJ07
+// @Router       /manager/crm/customer/followup [POST]
+// @Summary      F07 创建跟进
+// @Tags         [F]房金聚接口
+// @Accept       json
+// @Produce      json
+// @Param        body  body     FJJFollowupCreateReq  true  "跟进数据"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func FJJ07() {
+}
+
+type FJJFollowupCreateReq struct {
+    CustomerID uint64 `json:"customerId" validate:"required"` // 客户ID
+    Content    string `json:"content" validate:"required"`    // 跟进内容
+}
+
+type FJJFollowupRes struct {
+    Manager FJJManager `json:"manager"` // 管理员信息
+    Content string     `json:"content"` // 跟进内容
+    Time    string     `json:"time"`    // 跟进时间
+}
+
+type FJJManager struct {
+    ID    uint64 `json:"id"`
+    Name  string `json:"name"`
+    Phone string `json:"phone"`
+}
+
+type FJJManagerListRes struct {
+    ID     uint64  `json:"id"`     // 管理员ID, 不携带此字段是新增, 携带此字段是修改
+    Enable *bool   `json:"enable"` // 启用状态
+    Name   *string `json:"name"`   // 姓名
+    Phone  *string `json:"phone"`  // 电话
+}
+
+type FJJManagerModifyReq struct {
+    FJJManagerListRes
+    Password *string `json:"password"` // 密码
+}
+
+type CrmCustomerWithID struct {
+    ID uint64 `json:"id" param:"id" validate:"required" trans:"客户ID"`
+    FJJCrmCustomer
+}
+
+type FJJCrmCustomerListReq struct {
     Page int `json:"page" query:"page"` // 分页数据, 从0开始
 
     Name     string `json:"name" query:"name"`         // 姓名
@@ -57,7 +134,7 @@ type CrmCustomerListReq struct {
     Manager  string `json:"manager" query:"manager"`   // 客户经理
 }
 
-type CrmCustomer struct {
+type FJJCrmCustomer struct {
     Name           *string  `json:"name" validate:"required"`            // 姓名
     Gender         *uint8   `json:"gender" validate:"required"`          // 性别 1:男 2:女
     Phone          *string  `json:"phone" validate:"required"`           // 手机号

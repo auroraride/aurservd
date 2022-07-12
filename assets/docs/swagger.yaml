@@ -1,147 +1,5 @@
 basePath: /
 definitions:
-  controller.CrmCustomer:
-    properties:
-      address:
-        description: 常住地址
-        type: string
-      amount:
-        description: 贷款需求(万元)
-        type: number
-      branch:
-        description: 办理分行
-        type: string
-      channel:
-        description: 渠道
-        type: string
-      channel_contact:
-        description: 渠道联系人
-        type: string
-      channel_phone:
-        description: 渠道手机号
-        type: string
-      credit:
-        description: '征信情况: 正常 / 连三累六 / 当月逾期 / 五类观察 / 其他'
-        type: string
-      delivery_date:
-        description: 交件日期
-        type: string
-      district_id:
-        description: 区域ID
-        type: integer
-      driving_photos:
-        description: 行驶证
-        items:
-          type: string
-        type: array
-      employee:
-        description: 业务员
-        type: string
-      face_date:
-        description: 面签日期
-        type: string
-      gender:
-        description: 性别 1:男 2:女
-        type: integer
-      house_info:
-        description: 房屋信息
-        type: string
-      house_price:
-        description: 房屋估价(万元)
-        type: string
-      id_card_number:
-        description: 身份证号
-        type: string
-      id_card_photos:
-        description: 身份证照片
-        items:
-          type: string
-        type: array
-      income:
-        description: 年收入
-        type: number
-      industry_photos:
-        description: 产调表
-        items:
-          type: string
-        type: array
-      loan_amount:
-        description: 审批额度(万元)
-        type: number
-      loan_date:
-        description: 放款日期
-        type: string
-      loan_years:
-        description: 贷款年限
-        type: integer
-      manager:
-        description: 客户经理
-        type: string
-      name:
-        description: 姓名
-        type: string
-      phone:
-        description: 手机号
-        type: string
-      real_amount:
-        description: 实际放款(万元)
-        type: number
-      secondary_mortgage:
-        description: 是否二抵
-        type: boolean
-      status:
-        description: '状态: 交件 / 签约 / 审批 / 放款 / 被拒'
-        type: string
-      type:
-        description: '贷款类型: 房车贷 / 房产保贷 / 抵押贷 / 优客贷 / 随心智贷 / 中银消费 / 法拍按揭'
-        type: string
-    required:
-    - address
-    - amount
-    - channel
-    - channel_contact
-    - channel_phone
-    - district_id
-    - employee
-    - gender
-    - id_card_number
-    - name
-    - phone
-    - type
-    type: object
-  controller.CrmCustomerListReq:
-    properties:
-      branch:
-        description: 办理分行
-        type: string
-      channel:
-        description: 渠道
-        type: string
-      employee:
-        description: 业务员
-        type: string
-      manager:
-        description: 客户经理
-        type: string
-      name:
-        description: 姓名
-        type: string
-      page:
-        description: 分页数据, 从0开始
-        type: integer
-      phone:
-        description: 手机号
-        type: string
-      sn:
-        description: 客户编号
-        type: string
-      status:
-        description: '[选择]状态: 交件 / 签约 / 审批 / 放款 / 被拒'
-        type: string
-      type:
-        description: '[选择]贷款类型: 房车贷 / 房产保贷 / 抵押贷 / 优客贷 / 随心智贷 / 中银消费 / 法拍按揭'
-        type: string
-    type: object
   controller.CrmCustomerWithID:
     properties:
       address:
@@ -250,6 +108,182 @@ definitions:
     - name
     - phone
     - type
+    type: object
+  controller.FJJCrmCustomer:
+    properties:
+      address:
+        description: 常住地址
+        type: string
+      amount:
+        description: 贷款需求(万元)
+        type: number
+      branch:
+        description: 办理分行
+        type: string
+      channel:
+        description: 渠道
+        type: string
+      channel_contact:
+        description: 渠道联系人
+        type: string
+      channel_phone:
+        description: 渠道手机号
+        type: string
+      credit:
+        description: '征信情况: 正常 / 连三累六 / 当月逾期 / 五类观察 / 其他'
+        type: string
+      delivery_date:
+        description: 交件日期
+        type: string
+      district_id:
+        description: 区域ID
+        type: integer
+      driving_photos:
+        description: 行驶证
+        items:
+          type: string
+        type: array
+      employee:
+        description: 业务员
+        type: string
+      face_date:
+        description: 面签日期
+        type: string
+      gender:
+        description: 性别 1:男 2:女
+        type: integer
+      house_info:
+        description: 房屋信息
+        type: string
+      house_price:
+        description: 房屋估价(万元)
+        type: string
+      id_card_number:
+        description: 身份证号
+        type: string
+      id_card_photos:
+        description: 身份证照片
+        items:
+          type: string
+        type: array
+      income:
+        description: 年收入
+        type: number
+      industry_photos:
+        description: 产调表
+        items:
+          type: string
+        type: array
+      loan_amount:
+        description: 审批额度(万元)
+        type: number
+      loan_date:
+        description: 放款日期
+        type: string
+      loan_years:
+        description: 贷款年限
+        type: integer
+      manager:
+        description: 客户经理
+        type: string
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 手机号
+        type: string
+      real_amount:
+        description: 实际放款(万元)
+        type: number
+      secondary_mortgage:
+        description: 是否二抵
+        type: boolean
+      status:
+        description: '状态: 交件 / 签约 / 审批 / 放款 / 被拒'
+        type: string
+      type:
+        description: '贷款类型: 房车贷 / 房产保贷 / 抵押贷 / 优客贷 / 随心智贷 / 中银消费 / 法拍按揭'
+        type: string
+    required:
+    - address
+    - amount
+    - channel
+    - channel_contact
+    - channel_phone
+    - district_id
+    - employee
+    - gender
+    - id_card_number
+    - name
+    - phone
+    - type
+    type: object
+  controller.FJJFollowupCreateReq:
+    properties:
+      content:
+        description: 跟进内容
+        type: string
+      customerId:
+        description: 客户ID
+        type: integer
+    required:
+    - content
+    - customerId
+    type: object
+  controller.FJJFollowupRes:
+    properties:
+      content:
+        description: 跟进内容
+        type: string
+      manager:
+        allOf:
+        - $ref: '#/definitions/controller.FJJManager'
+        description: 管理员信息
+      time:
+        description: 跟进时间
+        type: string
+    type: object
+  controller.FJJManager:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+  controller.FJJManagerListRes:
+    properties:
+      enable:
+        description: 启用状态
+        type: boolean
+      id:
+        description: 管理员ID, 不携带此字段是新增, 携带此字段是修改
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      phone:
+        description: 电话
+        type: string
+    type: object
+  controller.FJJManagerModifyReq:
+    properties:
+      enable:
+        description: 启用状态
+        type: boolean
+      id:
+        description: 管理员ID, 不携带此字段是新增, 携带此字段是修改
+        type: integer
+      name:
+        description: 姓名
+        type: string
+      password:
+        description: 密码
+        type: string
+      phone:
+        description: 电话
+        type: string
     type: object
   model.AliyunOssStsRes:
     properties:
@@ -4161,7 +4195,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/controller.CrmCustomer'
+          $ref: '#/definitions/controller.FJJCrmCustomer'
       produces:
       - application/json
       responses:
@@ -4947,11 +4981,46 @@ paths:
       - application/json
       operationId: ManagerFjjFJJ02
       parameters:
-      - description: 筛选条件
-        in: body
-        name: body
-        schema:
-          $ref: '#/definitions/controller.CrmCustomerListReq'
+      - description: 办理分行
+        in: query
+        name: branch
+        type: string
+      - description: 渠道
+        in: query
+        name: channel
+        type: string
+      - description: 业务员
+        in: query
+        name: employee
+        type: string
+      - description: 客户经理
+        in: query
+        name: manager
+        type: string
+      - description: 姓名
+        in: query
+        name: name
+        type: string
+      - description: 分页数据, 从0开始
+        in: query
+        name: page
+        type: integer
+      - description: 手机号
+        in: query
+        name: phone
+        type: string
+      - description: 客户编号
+        in: query
+        name: sn
+        type: string
+      - description: '[选择]状态: 交件 / 签约 / 审批 / 放款 / 被拒'
+        in: query
+        name: status
+        type: string
+      - description: '[选择]贷款类型: 房车贷 / 房产保贷 / 抵押贷 / 优客贷 / 随心智贷 / 中银消费 / 法拍按揭'
+        in: query
+        name: type
+        type: string
       produces:
       - application/json
       responses:
@@ -4989,6 +5058,91 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: F03 修改客户
+      tags:
+      - '[F]房金聚接口'
+  /manager/crm/customer/followup:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerFjjFJJ06
+      parameters:
+      - description: 客户ID
+        in: query
+        name: customerId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              $ref: '#/definitions/controller.FJJFollowupRes'
+            type: array
+      summary: F06 跟进列表
+      tags:
+      - '[F]房金聚接口'
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerFjjFJJ07
+      parameters:
+      - description: 跟进数据
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.FJJFollowupCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: F07 创建跟进
+      tags:
+      - '[F]房金聚接口'
+  /manager/user:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerFjjFJJ04
+      parameters:
+      - description: 分页数据
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/controller.FJJManagerListRes'
+      summary: F04 管理员列表
+      tags:
+      - '[F]房金聚接口'
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerFjjFJJ05
+      parameters:
+      - description: 修改请求
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.FJJManagerModifyReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/controller.FJJManagerListRes'
+      summary: F05 创建或修改管理员
       tags:
       - '[F]房金聚接口'
   /manager/v1/{id}/contract:
