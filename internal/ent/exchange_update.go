@@ -265,6 +265,73 @@ func (eu *ExchangeUpdate) SetNillableAlternative(b *bool) *ExchangeUpdate {
 	return eu
 }
 
+// SetStartAt sets the "start_at" field.
+func (eu *ExchangeUpdate) SetStartAt(t time.Time) *ExchangeUpdate {
+	eu.mutation.SetStartAt(t)
+	return eu
+}
+
+// SetNillableStartAt sets the "start_at" field if the given value is not nil.
+func (eu *ExchangeUpdate) SetNillableStartAt(t *time.Time) *ExchangeUpdate {
+	if t != nil {
+		eu.SetStartAt(*t)
+	}
+	return eu
+}
+
+// ClearStartAt clears the value of the "start_at" field.
+func (eu *ExchangeUpdate) ClearStartAt() *ExchangeUpdate {
+	eu.mutation.ClearStartAt()
+	return eu
+}
+
+// SetFinishAt sets the "finish_at" field.
+func (eu *ExchangeUpdate) SetFinishAt(t time.Time) *ExchangeUpdate {
+	eu.mutation.SetFinishAt(t)
+	return eu
+}
+
+// SetNillableFinishAt sets the "finish_at" field if the given value is not nil.
+func (eu *ExchangeUpdate) SetNillableFinishAt(t *time.Time) *ExchangeUpdate {
+	if t != nil {
+		eu.SetFinishAt(*t)
+	}
+	return eu
+}
+
+// ClearFinishAt clears the value of the "finish_at" field.
+func (eu *ExchangeUpdate) ClearFinishAt() *ExchangeUpdate {
+	eu.mutation.ClearFinishAt()
+	return eu
+}
+
+// SetDuration sets the "duration" field.
+func (eu *ExchangeUpdate) SetDuration(i int) *ExchangeUpdate {
+	eu.mutation.ResetDuration()
+	eu.mutation.SetDuration(i)
+	return eu
+}
+
+// SetNillableDuration sets the "duration" field if the given value is not nil.
+func (eu *ExchangeUpdate) SetNillableDuration(i *int) *ExchangeUpdate {
+	if i != nil {
+		eu.SetDuration(*i)
+	}
+	return eu
+}
+
+// AddDuration adds i to the "duration" field.
+func (eu *ExchangeUpdate) AddDuration(i int) *ExchangeUpdate {
+	eu.mutation.AddDuration(i)
+	return eu
+}
+
+// ClearDuration clears the value of the "duration" field.
+func (eu *ExchangeUpdate) ClearDuration() *ExchangeUpdate {
+	eu.mutation.ClearDuration()
+	return eu
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (eu *ExchangeUpdate) SetSubscribe(s *Subscribe) *ExchangeUpdate {
 	return eu.SetSubscribeID(s.ID)
@@ -556,6 +623,52 @@ func (eu *ExchangeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: exchange.FieldAlternative,
+		})
+	}
+	if value, ok := eu.mutation.StartAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: exchange.FieldStartAt,
+		})
+	}
+	if eu.mutation.StartAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: exchange.FieldStartAt,
+		})
+	}
+	if value, ok := eu.mutation.FinishAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: exchange.FieldFinishAt,
+		})
+	}
+	if eu.mutation.FinishAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: exchange.FieldFinishAt,
+		})
+	}
+	if value, ok := eu.mutation.Duration(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: exchange.FieldDuration,
+		})
+	}
+	if value, ok := eu.mutation.AddedDuration(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: exchange.FieldDuration,
+		})
+	}
+	if eu.mutation.DurationCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Column: exchange.FieldDuration,
 		})
 	}
 	if eu.mutation.SubscribeCleared() {
@@ -1085,6 +1198,73 @@ func (euo *ExchangeUpdateOne) SetNillableAlternative(b *bool) *ExchangeUpdateOne
 	return euo
 }
 
+// SetStartAt sets the "start_at" field.
+func (euo *ExchangeUpdateOne) SetStartAt(t time.Time) *ExchangeUpdateOne {
+	euo.mutation.SetStartAt(t)
+	return euo
+}
+
+// SetNillableStartAt sets the "start_at" field if the given value is not nil.
+func (euo *ExchangeUpdateOne) SetNillableStartAt(t *time.Time) *ExchangeUpdateOne {
+	if t != nil {
+		euo.SetStartAt(*t)
+	}
+	return euo
+}
+
+// ClearStartAt clears the value of the "start_at" field.
+func (euo *ExchangeUpdateOne) ClearStartAt() *ExchangeUpdateOne {
+	euo.mutation.ClearStartAt()
+	return euo
+}
+
+// SetFinishAt sets the "finish_at" field.
+func (euo *ExchangeUpdateOne) SetFinishAt(t time.Time) *ExchangeUpdateOne {
+	euo.mutation.SetFinishAt(t)
+	return euo
+}
+
+// SetNillableFinishAt sets the "finish_at" field if the given value is not nil.
+func (euo *ExchangeUpdateOne) SetNillableFinishAt(t *time.Time) *ExchangeUpdateOne {
+	if t != nil {
+		euo.SetFinishAt(*t)
+	}
+	return euo
+}
+
+// ClearFinishAt clears the value of the "finish_at" field.
+func (euo *ExchangeUpdateOne) ClearFinishAt() *ExchangeUpdateOne {
+	euo.mutation.ClearFinishAt()
+	return euo
+}
+
+// SetDuration sets the "duration" field.
+func (euo *ExchangeUpdateOne) SetDuration(i int) *ExchangeUpdateOne {
+	euo.mutation.ResetDuration()
+	euo.mutation.SetDuration(i)
+	return euo
+}
+
+// SetNillableDuration sets the "duration" field if the given value is not nil.
+func (euo *ExchangeUpdateOne) SetNillableDuration(i *int) *ExchangeUpdateOne {
+	if i != nil {
+		euo.SetDuration(*i)
+	}
+	return euo
+}
+
+// AddDuration adds i to the "duration" field.
+func (euo *ExchangeUpdateOne) AddDuration(i int) *ExchangeUpdateOne {
+	euo.mutation.AddDuration(i)
+	return euo
+}
+
+// ClearDuration clears the value of the "duration" field.
+func (euo *ExchangeUpdateOne) ClearDuration() *ExchangeUpdateOne {
+	euo.mutation.ClearDuration()
+	return euo
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (euo *ExchangeUpdateOne) SetSubscribe(s *Subscribe) *ExchangeUpdateOne {
 	return euo.SetSubscribeID(s.ID)
@@ -1406,6 +1586,52 @@ func (euo *ExchangeUpdateOne) sqlSave(ctx context.Context) (_node *Exchange, err
 			Type:   field.TypeBool,
 			Value:  value,
 			Column: exchange.FieldAlternative,
+		})
+	}
+	if value, ok := euo.mutation.StartAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: exchange.FieldStartAt,
+		})
+	}
+	if euo.mutation.StartAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: exchange.FieldStartAt,
+		})
+	}
+	if value, ok := euo.mutation.FinishAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: exchange.FieldFinishAt,
+		})
+	}
+	if euo.mutation.FinishAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: exchange.FieldFinishAt,
+		})
+	}
+	if value, ok := euo.mutation.Duration(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: exchange.FieldDuration,
+		})
+	}
+	if value, ok := euo.mutation.AddedDuration(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: exchange.FieldDuration,
+		})
+	}
+	if euo.mutation.DurationCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Column: exchange.FieldDuration,
 		})
 	}
 	if euo.mutation.SubscribeCleared() {

@@ -51,6 +51,12 @@ const (
 	FieldModel = "model"
 	// FieldAlternative holds the string denoting the alternative field in the database.
 	FieldAlternative = "alternative"
+	// FieldStartAt holds the string denoting the start_at field in the database.
+	FieldStartAt = "start_at"
+	// FieldFinishAt holds the string denoting the finish_at field in the database.
+	FieldFinishAt = "finish_at"
+	// FieldDuration holds the string denoting the duration field in the database.
+	FieldDuration = "duration"
 	// EdgeSubscribe holds the string denoting the subscribe edge name in mutations.
 	EdgeSubscribe = "subscribe"
 	// EdgeCity holds the string denoting the city edge name in mutations.
@@ -149,6 +155,9 @@ var Columns = []string{
 	FieldDetail,
 	FieldModel,
 	FieldAlternative,
+	FieldStartAt,
+	FieldFinishAt,
+	FieldDuration,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

@@ -18,7 +18,7 @@ const (
     RiderCabinetOperateStepOpenEmpty RiderCabinetOperateStep = iota + 1 // 第一步, 开启空电仓
     RiderCabinetOperateStepPutInto                                      // 第二步, 放入旧电池并关闭仓门
     RiderCabinetOperateStepOpenFull                                     // 第三步, 开启满电仓
-    RiderCabinetOperateStepClose                                        // 第四步, 取出新电池并关闭仓门
+    RiderCabinetOperateStepPutOut                                       // 第四步, 取出新电池并关闭仓门
 )
 
 func (ros RiderCabinetOperateStep) String() string {
@@ -29,7 +29,7 @@ func (ros RiderCabinetOperateStep) String() string {
         return "第二步, 放入旧电池并关闭仓门"
     case RiderCabinetOperateStepOpenFull:
         return "第三步, 开启满电仓"
-    case RiderCabinetOperateStepClose:
+    case RiderCabinetOperateStepPutOut:
         return "第四步, 取出新电池并关闭仓门"
     }
     return "未知"
@@ -109,6 +109,8 @@ type RiderCabinetOperateRes struct {
     Status  RiderCabinetOperateStatus `json:"status"`  // 状态 1:处理中 2:成功 3:失败
     Message string                    `json:"message"` // 消息
     Stop    bool                      `json:"stop"`    // 步骤是否终止
+    PutIn   bool                      `json:"putIn"`   // 空电仓位是否关闭
+    PutOut  bool                      `json:"putOut"`  // 满电仓位是否关闭
 }
 
 func (c *RiderCabinetOperateRes) MarshalBinary() ([]byte, error) {

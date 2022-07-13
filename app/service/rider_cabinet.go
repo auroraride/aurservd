@@ -41,6 +41,8 @@ type riderCabinetService struct {
 
     subscribe *ent.Subscribe
     debug     bool
+
+    start time.Time
 }
 
 func NewRiderCabinet() *riderCabinetService {
@@ -204,6 +206,8 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
 
     s.updateCabinetExchangeProcess()
 
+    s.start = time.Now()
+
     // 处理换电流程
     go s.ProcessByStep()
 }
@@ -219,6 +223,7 @@ func (s *riderCabinetService) ProcessStepStart() {
 }
 
 // ProcessStepEnd 结束换电流程
+// TODO 换电超时
 func (s *riderCabinetService) ProcessStepEnd() {
     // 释放占用
     cache.Del(s.ctx, s.operating.Serial)
@@ -226,8 +231,11 @@ func (s *riderCabinetService) ProcessStepEnd() {
     res := new(model.RiderCabinetOperateRes)
     _ = cache.Get(s.ctx, s.operating.UUID).Scan(res)
 
+    now := time.Now()
+
     // 保存数据库
-    _, _ = ent.Database.Exchange.Create().
+    _, _ = ent.Database.Exchange.
+        Create().
         SetRiderID(s.rider.ID).
         SetCityID(s.info.CityID).
         SetDetail(&model.ExchangeCabinet{
@@ -237,12 +245,15 @@ func (s *riderCabinetService) ProcessStepEnd() {
         }).
         SetUUID(s.operating.UUID).
         SetCabinetID(s.operating.ID).
-        SetSuccess(res.Status == model.RiderCabinetOperateStatusSuccess && res.Step == model.RiderCabinetOperateStepClose).
+        SetSuccess(res.Status == model.RiderCabinetOperateStatusSuccess && res.Step == model.RiderCabinetOperateStepPutOut).
         SetModel(s.subscribe.Model).
         SetNillableEnterpriseID(s.subscribe.EnterpriseID).
         SetNillableStationID(s.subscribe.StationID).
         SetSubscribeID(s.subscribe.ID).
         SetAlternative(s.alternative).
+        SetStartAt(s.start).
+        SetFinishAt(now).
+        SetDuration(int(now.Sub(s.start).Seconds())).
         Save(s.ctx)
 }
 
@@ -296,7 +307,7 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus() (ds model.CabinetBinDoo
     // 获取仓位index
     index := s.operating.EmptyIndex
     step := s.step
-    if step == model.RiderCabinetOperateStepClose {
+    if step == model.RiderCabinetOperateStepPutOut {
         index = s.operating.FullIndex
     }
 
@@ -350,7 +361,7 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus() (ds model.CabinetBinDoo
     }
 
     // 验证满电电池是否取走
-    if step == model.RiderCabinetOperateStepClose {
+    if step == model.RiderCabinetOperateStepPutOut {
         if bin.Battery {
             return model.CabinetBinDoorStatusBatteryFull
         }
@@ -374,6 +385,14 @@ func (s *riderCabinetService) ProcessDoor() (res *model.RiderCabinetOperateRes) 
             // 强制睡眠两秒: 原因是有可能柜门会晃动导致似关非关, 延时来获取正确状态
             time.Sleep(2 * time.Second)
             ds = s.ProcessDoorBatteryStatus()
+        }
+
+        if s.step == model.RiderCabinetOperateStepPutInto {
+            res.PutIn = ds == model.CabinetBinDoorStatusClose
+        }
+
+        if s.step == model.RiderCabinetOperateStepPutOut {
+            res.PutOut = ds == model.CabinetBinDoorStatusClose
         }
 
         switch ds {
@@ -493,7 +512,7 @@ func (s *riderCabinetService) ProcessStatus(req *model.RiderCabinetOperateStatus
 // ProcessLog 处理步骤日志
 func (s *riderCabinetService) ProcessLog(res *model.RiderCabinetOperateRes) bool {
     res.Step = s.step
-    res.Stop = s.step == model.RiderCabinetOperateStepClose || res.Status == model.RiderCabinetOperateStatusFail
+    res.Stop = s.step == model.RiderCabinetOperateStepPutOut || res.Status == model.RiderCabinetOperateStatusFail
 
     // 前两步是空仓, 后两步是满电仓位
     index := s.operating.EmptyIndex

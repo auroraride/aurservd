@@ -389,9 +389,9 @@ func (s *subscribeService) OverdueFee(riderID uint64, sub *ent.Subscribe) (fee f
 
     price := p.Price
     days := p.Days
-    fee, _ = decimal.NewFromFloat(price).Div(decimal.NewFromInt(int64(days))).Mul(decimal.NewFromInt(int64(remaining)).Neg()).Float64()
+    fee, _ = decimal.NewFromFloat(price).Div(decimal.NewFromInt(int64(days))).Mul(decimal.NewFromInt(int64(remaining)).Neg()).Mul(decimal.NewFromFloat(1.24)).Float64()
     fee = math.Round(fee*100) / 100
 
-    formula = fmt.Sprintf("(上次购买骑士卡价格 %.2f元 ÷ 天数 %d天) × 逾期天数 %d天 = 逾期费用 %.2f元", price, days, remaining, fee)
+    formula = fmt.Sprintf("(上次购买骑士卡价格 %.2f元 ÷ 天数 %d天) × 逾期天数 %d天 × 1.24 = 逾期费用 %.2f元", price, days, remaining, fee)
     return
 }

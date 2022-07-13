@@ -633,6 +633,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			exchange.FieldDetail:       {Type: field.TypeJSON, Column: exchange.FieldDetail},
 			exchange.FieldModel:        {Type: field.TypeString, Column: exchange.FieldModel},
 			exchange.FieldAlternative:  {Type: field.TypeBool, Column: exchange.FieldAlternative},
+			exchange.FieldStartAt:      {Type: field.TypeTime, Column: exchange.FieldStartAt},
+			exchange.FieldFinishAt:     {Type: field.TypeTime, Column: exchange.FieldFinishAt},
+			exchange.FieldDuration:     {Type: field.TypeInt, Column: exchange.FieldDuration},
 		},
 	}
 	graph.Nodes[21] = &sqlgraph.Node{
@@ -6058,6 +6061,21 @@ func (f *ExchangeFilter) WhereModel(p entql.StringP) {
 // WhereAlternative applies the entql bool predicate on the alternative field.
 func (f *ExchangeFilter) WhereAlternative(p entql.BoolP) {
 	f.Where(p.Field(exchange.FieldAlternative))
+}
+
+// WhereStartAt applies the entql time.Time predicate on the start_at field.
+func (f *ExchangeFilter) WhereStartAt(p entql.TimeP) {
+	f.Where(p.Field(exchange.FieldStartAt))
+}
+
+// WhereFinishAt applies the entql time.Time predicate on the finish_at field.
+func (f *ExchangeFilter) WhereFinishAt(p entql.TimeP) {
+	f.Where(p.Field(exchange.FieldFinishAt))
+}
+
+// WhereDuration applies the entql int predicate on the duration field.
+func (f *ExchangeFilter) WhereDuration(p entql.IntP) {
+	f.Where(p.Field(exchange.FieldDuration))
 }
 
 // WhereHasSubscribe applies a predicate to check if query has an edge subscribe.

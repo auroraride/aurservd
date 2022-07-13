@@ -345,7 +345,7 @@ func (s *orderService) FeePaid(trade *model.PaymentOverdueFee) {
         UpdateOneID(trade.SubscribeID).
         SetStatus(model.SubscribeStatusUsing).
         SetRemaining(0).
-        SetOverdueDays(trade.Days).
+        AddOverdueDays(trade.Days).
         Save(ctx)
     if err != nil {
         log.Errorf("[FEE PAID %s SUBSCRIBE(%d) ERROR]: %s", trade.OutTradeNo, trade.SubscribeID, err.Error())

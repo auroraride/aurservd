@@ -78,6 +78,15 @@ type Exchange struct {
 	// Alternative holds the value of the "alternative" field.
 	// 是否备用方案
 	Alternative bool `json:"alternative,omitempty"`
+	// StartAt holds the value of the "start_at" field.
+	// 换电开始时间
+	StartAt time.Time `json:"start_at,omitempty"`
+	// FinishAt holds the value of the "finish_at" field.
+	// 换电结束时间
+	FinishAt time.Time `json:"finish_at,omitempty"`
+	// Duration holds the value of the "duration" field.
+	// 换电耗时(s)
+	Duration int `json:"duration,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ExchangeQuery when eager-loading is set.
 	Edges ExchangeEdges `json:"edges"`
@@ -227,11 +236,11 @@ func (*Exchange) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new([]byte)
 		case exchange.FieldSuccess, exchange.FieldAlternative:
 			values[i] = new(sql.NullBool)
-		case exchange.FieldID, exchange.FieldSubscribeID, exchange.FieldCityID, exchange.FieldStoreID, exchange.FieldEnterpriseID, exchange.FieldStationID, exchange.FieldRiderID, exchange.FieldEmployeeID, exchange.FieldCabinetID:
+		case exchange.FieldID, exchange.FieldSubscribeID, exchange.FieldCityID, exchange.FieldStoreID, exchange.FieldEnterpriseID, exchange.FieldStationID, exchange.FieldRiderID, exchange.FieldEmployeeID, exchange.FieldCabinetID, exchange.FieldDuration:
 			values[i] = new(sql.NullInt64)
 		case exchange.FieldRemark, exchange.FieldUUID, exchange.FieldModel:
 			values[i] = new(sql.NullString)
-		case exchange.FieldCreatedAt, exchange.FieldUpdatedAt, exchange.FieldDeletedAt:
+		case exchange.FieldCreatedAt, exchange.FieldUpdatedAt, exchange.FieldDeletedAt, exchange.FieldStartAt, exchange.FieldFinishAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Exchange", columns[i])
@@ -379,6 +388,24 @@ func (e *Exchange) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				e.Alternative = value.Bool
 			}
+		case exchange.FieldStartAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field start_at", values[i])
+			} else if value.Valid {
+				e.StartAt = value.Time
+			}
+		case exchange.FieldFinishAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field finish_at", values[i])
+			} else if value.Valid {
+				e.FinishAt = value.Time
+			}
+		case exchange.FieldDuration:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field duration", values[i])
+			} else if value.Valid {
+				e.Duration = int(value.Int64)
+			}
 		}
 	}
 	return nil
@@ -495,6 +522,12 @@ func (e *Exchange) String() string {
 	builder.WriteString(e.Model)
 	builder.WriteString(", alternative=")
 	builder.WriteString(fmt.Sprintf("%v", e.Alternative))
+	builder.WriteString(", start_at=")
+	builder.WriteString(e.StartAt.Format(time.ANSIC))
+	builder.WriteString(", finish_at=")
+	builder.WriteString(e.FinishAt.Format(time.ANSIC))
+	builder.WriteString(", duration=")
+	builder.WriteString(fmt.Sprintf("%v", e.Duration))
 	builder.WriteByte(')')
 	return builder.String()
 }

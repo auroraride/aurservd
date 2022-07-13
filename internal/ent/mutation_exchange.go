@@ -33,6 +33,10 @@ type ExchangeMutation struct {
 	detail            **model.ExchangeCabinet
 	model             *string
 	alternative       *bool
+	start_at          *time.Time
+	finish_at         *time.Time
+	duration          *int
+	addduration       *int
 	clearedFields     map[string]struct{}
 	subscribe         *uint64
 	clearedsubscribe  bool
@@ -967,6 +971,174 @@ func (m *ExchangeMutation) ResetAlternative() {
 	m.alternative = nil
 }
 
+// SetStartAt sets the "start_at" field.
+func (m *ExchangeMutation) SetStartAt(t time.Time) {
+	m.start_at = &t
+}
+
+// StartAt returns the value of the "start_at" field in the mutation.
+func (m *ExchangeMutation) StartAt() (r time.Time, exists bool) {
+	v := m.start_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStartAt returns the old "start_at" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldStartAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStartAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStartAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStartAt: %w", err)
+	}
+	return oldValue.StartAt, nil
+}
+
+// ClearStartAt clears the value of the "start_at" field.
+func (m *ExchangeMutation) ClearStartAt() {
+	m.start_at = nil
+	m.clearedFields[exchange.FieldStartAt] = struct{}{}
+}
+
+// StartAtCleared returns if the "start_at" field was cleared in this mutation.
+func (m *ExchangeMutation) StartAtCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldStartAt]
+	return ok
+}
+
+// ResetStartAt resets all changes to the "start_at" field.
+func (m *ExchangeMutation) ResetStartAt() {
+	m.start_at = nil
+	delete(m.clearedFields, exchange.FieldStartAt)
+}
+
+// SetFinishAt sets the "finish_at" field.
+func (m *ExchangeMutation) SetFinishAt(t time.Time) {
+	m.finish_at = &t
+}
+
+// FinishAt returns the value of the "finish_at" field in the mutation.
+func (m *ExchangeMutation) FinishAt() (r time.Time, exists bool) {
+	v := m.finish_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFinishAt returns the old "finish_at" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldFinishAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFinishAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFinishAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFinishAt: %w", err)
+	}
+	return oldValue.FinishAt, nil
+}
+
+// ClearFinishAt clears the value of the "finish_at" field.
+func (m *ExchangeMutation) ClearFinishAt() {
+	m.finish_at = nil
+	m.clearedFields[exchange.FieldFinishAt] = struct{}{}
+}
+
+// FinishAtCleared returns if the "finish_at" field was cleared in this mutation.
+func (m *ExchangeMutation) FinishAtCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldFinishAt]
+	return ok
+}
+
+// ResetFinishAt resets all changes to the "finish_at" field.
+func (m *ExchangeMutation) ResetFinishAt() {
+	m.finish_at = nil
+	delete(m.clearedFields, exchange.FieldFinishAt)
+}
+
+// SetDuration sets the "duration" field.
+func (m *ExchangeMutation) SetDuration(i int) {
+	m.duration = &i
+	m.addduration = nil
+}
+
+// Duration returns the value of the "duration" field in the mutation.
+func (m *ExchangeMutation) Duration() (r int, exists bool) {
+	v := m.duration
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDuration returns the old "duration" field's value of the Exchange entity.
+// If the Exchange object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ExchangeMutation) OldDuration(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDuration is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDuration requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDuration: %w", err)
+	}
+	return oldValue.Duration, nil
+}
+
+// AddDuration adds i to the "duration" field.
+func (m *ExchangeMutation) AddDuration(i int) {
+	if m.addduration != nil {
+		*m.addduration += i
+	} else {
+		m.addduration = &i
+	}
+}
+
+// AddedDuration returns the value that was added to the "duration" field in this mutation.
+func (m *ExchangeMutation) AddedDuration() (r int, exists bool) {
+	v := m.addduration
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDuration clears the value of the "duration" field.
+func (m *ExchangeMutation) ClearDuration() {
+	m.duration = nil
+	m.addduration = nil
+	m.clearedFields[exchange.FieldDuration] = struct{}{}
+}
+
+// DurationCleared returns if the "duration" field was cleared in this mutation.
+func (m *ExchangeMutation) DurationCleared() bool {
+	_, ok := m.clearedFields[exchange.FieldDuration]
+	return ok
+}
+
+// ResetDuration resets all changes to the "duration" field.
+func (m *ExchangeMutation) ResetDuration() {
+	m.duration = nil
+	m.addduration = nil
+	delete(m.clearedFields, exchange.FieldDuration)
+}
+
 // ClearSubscribe clears the "subscribe" edge to the Subscribe entity.
 func (m *ExchangeMutation) ClearSubscribe() {
 	m.clearedsubscribe = true
@@ -1194,7 +1366,7 @@ func (m *ExchangeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ExchangeMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 22)
 	if m.created_at != nil {
 		fields = append(fields, exchange.FieldCreatedAt)
 	}
@@ -1252,6 +1424,15 @@ func (m *ExchangeMutation) Fields() []string {
 	if m.alternative != nil {
 		fields = append(fields, exchange.FieldAlternative)
 	}
+	if m.start_at != nil {
+		fields = append(fields, exchange.FieldStartAt)
+	}
+	if m.finish_at != nil {
+		fields = append(fields, exchange.FieldFinishAt)
+	}
+	if m.duration != nil {
+		fields = append(fields, exchange.FieldDuration)
+	}
 	return fields
 }
 
@@ -1298,6 +1479,12 @@ func (m *ExchangeMutation) Field(name string) (ent.Value, bool) {
 		return m.Model()
 	case exchange.FieldAlternative:
 		return m.Alternative()
+	case exchange.FieldStartAt:
+		return m.StartAt()
+	case exchange.FieldFinishAt:
+		return m.FinishAt()
+	case exchange.FieldDuration:
+		return m.Duration()
 	}
 	return nil, false
 }
@@ -1345,6 +1532,12 @@ func (m *ExchangeMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldModel(ctx)
 	case exchange.FieldAlternative:
 		return m.OldAlternative(ctx)
+	case exchange.FieldStartAt:
+		return m.OldStartAt(ctx)
+	case exchange.FieldFinishAt:
+		return m.OldFinishAt(ctx)
+	case exchange.FieldDuration:
+		return m.OldDuration(ctx)
 	}
 	return nil, fmt.Errorf("unknown Exchange field %s", name)
 }
@@ -1487,6 +1680,27 @@ func (m *ExchangeMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAlternative(v)
 		return nil
+	case exchange.FieldStartAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStartAt(v)
+		return nil
+	case exchange.FieldFinishAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFinishAt(v)
+		return nil
+	case exchange.FieldDuration:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDuration(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Exchange field %s", name)
 }
@@ -1495,6 +1709,9 @@ func (m *ExchangeMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *ExchangeMutation) AddedFields() []string {
 	var fields []string
+	if m.addduration != nil {
+		fields = append(fields, exchange.FieldDuration)
+	}
 	return fields
 }
 
@@ -1503,6 +1720,8 @@ func (m *ExchangeMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *ExchangeMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case exchange.FieldDuration:
+		return m.AddedDuration()
 	}
 	return nil, false
 }
@@ -1512,6 +1731,13 @@ func (m *ExchangeMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *ExchangeMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case exchange.FieldDuration:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDuration(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Exchange numeric field %s", name)
 }
@@ -1549,6 +1775,15 @@ func (m *ExchangeMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(exchange.FieldDetail) {
 		fields = append(fields, exchange.FieldDetail)
+	}
+	if m.FieldCleared(exchange.FieldStartAt) {
+		fields = append(fields, exchange.FieldStartAt)
+	}
+	if m.FieldCleared(exchange.FieldFinishAt) {
+		fields = append(fields, exchange.FieldFinishAt)
+	}
+	if m.FieldCleared(exchange.FieldDuration) {
+		fields = append(fields, exchange.FieldDuration)
 	}
 	return fields
 }
@@ -1593,6 +1828,15 @@ func (m *ExchangeMutation) ClearField(name string) error {
 		return nil
 	case exchange.FieldDetail:
 		m.ClearDetail()
+		return nil
+	case exchange.FieldStartAt:
+		m.ClearStartAt()
+		return nil
+	case exchange.FieldFinishAt:
+		m.ClearFinishAt()
+		return nil
+	case exchange.FieldDuration:
+		m.ClearDuration()
 		return nil
 	}
 	return fmt.Errorf("unknown Exchange nullable field %s", name)
@@ -1658,6 +1902,15 @@ func (m *ExchangeMutation) ResetField(name string) error {
 		return nil
 	case exchange.FieldAlternative:
 		m.ResetAlternative()
+		return nil
+	case exchange.FieldStartAt:
+		m.ResetStartAt()
+		return nil
+	case exchange.FieldFinishAt:
+		m.ResetFinishAt()
+		return nil
+	case exchange.FieldDuration:
+		m.ResetDuration()
 		return nil
 	}
 	return fmt.Errorf("unknown Exchange field %s", name)

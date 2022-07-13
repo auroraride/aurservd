@@ -34,6 +34,9 @@ func (Exchange) Fields() []ent.Field {
         field.JSON("detail", &model.ExchangeCabinet{}).Optional().Comment("电柜换电信息"),
         field.String("model").Comment("电池型号"),
         field.Bool("alternative").Default(false).Comment("是否备用方案"),
+        field.Time("start_at").Optional().Comment("换电开始时间"),
+        field.Time("finish_at").Optional().Comment("换电结束时间"),
+        field.Int("duration").Optional().Comment("换电耗时(s)"),
     }
 }
 

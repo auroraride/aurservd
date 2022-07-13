@@ -233,6 +233,48 @@ func (ec *ExchangeCreate) SetNillableAlternative(b *bool) *ExchangeCreate {
 	return ec
 }
 
+// SetStartAt sets the "start_at" field.
+func (ec *ExchangeCreate) SetStartAt(t time.Time) *ExchangeCreate {
+	ec.mutation.SetStartAt(t)
+	return ec
+}
+
+// SetNillableStartAt sets the "start_at" field if the given value is not nil.
+func (ec *ExchangeCreate) SetNillableStartAt(t *time.Time) *ExchangeCreate {
+	if t != nil {
+		ec.SetStartAt(*t)
+	}
+	return ec
+}
+
+// SetFinishAt sets the "finish_at" field.
+func (ec *ExchangeCreate) SetFinishAt(t time.Time) *ExchangeCreate {
+	ec.mutation.SetFinishAt(t)
+	return ec
+}
+
+// SetNillableFinishAt sets the "finish_at" field if the given value is not nil.
+func (ec *ExchangeCreate) SetNillableFinishAt(t *time.Time) *ExchangeCreate {
+	if t != nil {
+		ec.SetFinishAt(*t)
+	}
+	return ec
+}
+
+// SetDuration sets the "duration" field.
+func (ec *ExchangeCreate) SetDuration(i int) *ExchangeCreate {
+	ec.mutation.SetDuration(i)
+	return ec
+}
+
+// SetNillableDuration sets the "duration" field if the given value is not nil.
+func (ec *ExchangeCreate) SetNillableDuration(i *int) *ExchangeCreate {
+	if i != nil {
+		ec.SetDuration(*i)
+	}
+	return ec
+}
+
 // SetSubscribe sets the "subscribe" edge to the Subscribe entity.
 func (ec *ExchangeCreate) SetSubscribe(s *Subscribe) *ExchangeCreate {
 	return ec.SetSubscribeID(s.ID)
@@ -530,6 +572,30 @@ func (ec *ExchangeCreate) createSpec() (*Exchange, *sqlgraph.CreateSpec) {
 			Column: exchange.FieldAlternative,
 		})
 		_node.Alternative = value
+	}
+	if value, ok := ec.mutation.StartAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: exchange.FieldStartAt,
+		})
+		_node.StartAt = value
+	}
+	if value, ok := ec.mutation.FinishAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: exchange.FieldFinishAt,
+		})
+		_node.FinishAt = value
+	}
+	if value, ok := ec.mutation.Duration(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: exchange.FieldDuration,
+		})
+		_node.Duration = value
 	}
 	if nodes := ec.mutation.SubscribeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1033,6 +1099,66 @@ func (u *ExchangeUpsert) UpdateAlternative() *ExchangeUpsert {
 	return u
 }
 
+// SetStartAt sets the "start_at" field.
+func (u *ExchangeUpsert) SetStartAt(v time.Time) *ExchangeUpsert {
+	u.Set(exchange.FieldStartAt, v)
+	return u
+}
+
+// UpdateStartAt sets the "start_at" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateStartAt() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldStartAt)
+	return u
+}
+
+// ClearStartAt clears the value of the "start_at" field.
+func (u *ExchangeUpsert) ClearStartAt() *ExchangeUpsert {
+	u.SetNull(exchange.FieldStartAt)
+	return u
+}
+
+// SetFinishAt sets the "finish_at" field.
+func (u *ExchangeUpsert) SetFinishAt(v time.Time) *ExchangeUpsert {
+	u.Set(exchange.FieldFinishAt, v)
+	return u
+}
+
+// UpdateFinishAt sets the "finish_at" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateFinishAt() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldFinishAt)
+	return u
+}
+
+// ClearFinishAt clears the value of the "finish_at" field.
+func (u *ExchangeUpsert) ClearFinishAt() *ExchangeUpsert {
+	u.SetNull(exchange.FieldFinishAt)
+	return u
+}
+
+// SetDuration sets the "duration" field.
+func (u *ExchangeUpsert) SetDuration(v int) *ExchangeUpsert {
+	u.Set(exchange.FieldDuration, v)
+	return u
+}
+
+// UpdateDuration sets the "duration" field to the value that was provided on create.
+func (u *ExchangeUpsert) UpdateDuration() *ExchangeUpsert {
+	u.SetExcluded(exchange.FieldDuration)
+	return u
+}
+
+// AddDuration adds v to the "duration" field.
+func (u *ExchangeUpsert) AddDuration(v int) *ExchangeUpsert {
+	u.Add(exchange.FieldDuration, v)
+	return u
+}
+
+// ClearDuration clears the value of the "duration" field.
+func (u *ExchangeUpsert) ClearDuration() *ExchangeUpsert {
+	u.SetNull(exchange.FieldDuration)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1416,6 +1542,76 @@ func (u *ExchangeUpsertOne) SetAlternative(v bool) *ExchangeUpsertOne {
 func (u *ExchangeUpsertOne) UpdateAlternative() *ExchangeUpsertOne {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.UpdateAlternative()
+	})
+}
+
+// SetStartAt sets the "start_at" field.
+func (u *ExchangeUpsertOne) SetStartAt(v time.Time) *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetStartAt(v)
+	})
+}
+
+// UpdateStartAt sets the "start_at" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateStartAt() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateStartAt()
+	})
+}
+
+// ClearStartAt clears the value of the "start_at" field.
+func (u *ExchangeUpsertOne) ClearStartAt() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearStartAt()
+	})
+}
+
+// SetFinishAt sets the "finish_at" field.
+func (u *ExchangeUpsertOne) SetFinishAt(v time.Time) *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetFinishAt(v)
+	})
+}
+
+// UpdateFinishAt sets the "finish_at" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateFinishAt() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateFinishAt()
+	})
+}
+
+// ClearFinishAt clears the value of the "finish_at" field.
+func (u *ExchangeUpsertOne) ClearFinishAt() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearFinishAt()
+	})
+}
+
+// SetDuration sets the "duration" field.
+func (u *ExchangeUpsertOne) SetDuration(v int) *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetDuration(v)
+	})
+}
+
+// AddDuration adds v to the "duration" field.
+func (u *ExchangeUpsertOne) AddDuration(v int) *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.AddDuration(v)
+	})
+}
+
+// UpdateDuration sets the "duration" field to the value that was provided on create.
+func (u *ExchangeUpsertOne) UpdateDuration() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateDuration()
+	})
+}
+
+// ClearDuration clears the value of the "duration" field.
+func (u *ExchangeUpsertOne) ClearDuration() *ExchangeUpsertOne {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearDuration()
 	})
 }
 
@@ -1966,6 +2162,76 @@ func (u *ExchangeUpsertBulk) SetAlternative(v bool) *ExchangeUpsertBulk {
 func (u *ExchangeUpsertBulk) UpdateAlternative() *ExchangeUpsertBulk {
 	return u.Update(func(s *ExchangeUpsert) {
 		s.UpdateAlternative()
+	})
+}
+
+// SetStartAt sets the "start_at" field.
+func (u *ExchangeUpsertBulk) SetStartAt(v time.Time) *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetStartAt(v)
+	})
+}
+
+// UpdateStartAt sets the "start_at" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateStartAt() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateStartAt()
+	})
+}
+
+// ClearStartAt clears the value of the "start_at" field.
+func (u *ExchangeUpsertBulk) ClearStartAt() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearStartAt()
+	})
+}
+
+// SetFinishAt sets the "finish_at" field.
+func (u *ExchangeUpsertBulk) SetFinishAt(v time.Time) *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetFinishAt(v)
+	})
+}
+
+// UpdateFinishAt sets the "finish_at" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateFinishAt() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateFinishAt()
+	})
+}
+
+// ClearFinishAt clears the value of the "finish_at" field.
+func (u *ExchangeUpsertBulk) ClearFinishAt() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearFinishAt()
+	})
+}
+
+// SetDuration sets the "duration" field.
+func (u *ExchangeUpsertBulk) SetDuration(v int) *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.SetDuration(v)
+	})
+}
+
+// AddDuration adds v to the "duration" field.
+func (u *ExchangeUpsertBulk) AddDuration(v int) *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.AddDuration(v)
+	})
+}
+
+// UpdateDuration sets the "duration" field to the value that was provided on create.
+func (u *ExchangeUpsertBulk) UpdateDuration() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.UpdateDuration()
+	})
+}
+
+// ClearDuration clears the value of the "duration" field.
+func (u *ExchangeUpsertBulk) ClearDuration() *ExchangeUpsertBulk {
+	return u.Update(func(s *ExchangeUpsert) {
+		s.ClearDuration()
 	})
 }
 
