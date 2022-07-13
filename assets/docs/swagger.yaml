@@ -2891,12 +2891,6 @@ definitions:
       message:
         description: 消息
         type: string
-      putIn:
-        description: 空电仓位是否关闭
-        type: boolean
-      putOut:
-        description: 满电仓位是否关闭
-        type: boolean
       status:
         description: 状态 1:处理中 2:成功 3:失败
         type: integer

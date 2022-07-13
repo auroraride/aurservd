@@ -388,11 +388,11 @@ func (s *riderCabinetService) ProcessDoor() (res *model.RiderCabinetOperateRes) 
         }
 
         if s.step == model.RiderCabinetOperateStepPutInto {
-            res.PutIn = ds == model.CabinetBinDoorStatusClose
+            s.operating.PutInDoor = ds
         }
 
         if s.step == model.RiderCabinetOperateStepPutOut {
-            res.PutOut = ds == model.CabinetBinDoorStatusClose
+            s.operating.PutOutDoor = ds
         }
 
         switch ds {

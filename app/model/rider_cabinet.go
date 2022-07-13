@@ -85,14 +85,16 @@ type RiderCabinetOperateReq struct {
 
 // RiderCabinetOperating 电柜处理
 type RiderCabinetOperating struct {
-    UUID             string             `json:"uuid"`
-    Serial           string             `json:"serial"`
-    Model            string             `json:"model"`            // 电池型号
-    ID               uint64             `json:"id"`               // 电柜ID
-    EmptyIndex       int                `json:"emptyIndex"`       // 空店仓
-    FullIndex        int                `json:"fullIndex"`        // 满电仓
-    Electricity      BatteryElectricity `json:"electricity"`      // 满电电池电量
-    RiderElectricity BatteryElectricity `json:"riderElectricity"` // 骑手放入电池电量
+    UUID             string               `json:"uuid"`
+    Serial           string               `json:"serial"`
+    Model            string               `json:"model"`            // 电池型号
+    ID               uint64               `json:"id"`               // 电柜ID
+    EmptyIndex       int                  `json:"emptyIndex"`       // 空电仓
+    FullIndex        int                  `json:"fullIndex"`        // 满电仓
+    Electricity      BatteryElectricity   `json:"electricity"`      // 满电电池电量
+    RiderElectricity BatteryElectricity   `json:"riderElectricity"` // 骑手放入电池电量
+    PutInDoor        CabinetBinDoorStatus `json:"putInDoor"`        // 空电仓位状态
+    PutOutDoor       CabinetBinDoorStatus `json:"putOutDoor"`       // 满电仓位状态
 }
 
 type RiderCabinetOperateStatus uint8
@@ -109,8 +111,6 @@ type RiderCabinetOperateRes struct {
     Status  RiderCabinetOperateStatus `json:"status"`  // 状态 1:处理中 2:成功 3:失败
     Message string                    `json:"message"` // 消息
     Stop    bool                      `json:"stop"`    // 步骤是否终止
-    PutIn   bool                      `json:"putIn"`   // 空电仓位是否关闭
-    PutOut  bool                      `json:"putOut"`  // 满电仓位是否关闭
 }
 
 func (c *RiderCabinetOperateRes) MarshalBinary() ([]byte, error) {
