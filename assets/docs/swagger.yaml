@@ -5687,7 +5687,7 @@ paths:
     get:
       consumes:
       - application/json
-      operationId: CabinetQuery
+      operationId: CabinetList
       parameters:
       - description: 管理员校验token
         in: header

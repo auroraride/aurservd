@@ -34,8 +34,8 @@ func (*cabinet) Create(c echo.Context) (err error) {
     )
 }
 
-// Query
-// @ID           CabinetQuery
+// List
+// @ID           CabinetList
 // @Router       /manager/v1/cabinet [GET]
 // @Summary      M5002 查询电柜
 // @Tags         [M]管理接口
@@ -44,7 +44,7 @@ func (*cabinet) Create(c echo.Context) (err error) {
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        query  query   model.CabinetQueryReq  true  "搜索参数"
 // @Success      200  {object}  model.PaginationRes{items=[]model.CabinetItem}  "请求成功"
-func (*cabinet) Query(c echo.Context) (err error) {
+func (*cabinet) List(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetQueryReq](c)
     return ctx.SendResponse(service.NewCabinet().List(req))
 }

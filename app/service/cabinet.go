@@ -223,6 +223,9 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
         snag.Panic(err)
     }
 
+    _, err = q.Save(s.ctx)
+    snag.PanicIfErrorX(err, tx.Rollback)
+
     _ = tx.Commit()
 
     if c.Status == model.CabinetStatusPending && n.Status == model.CabinetStatusNormal {

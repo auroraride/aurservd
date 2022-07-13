@@ -2348,7 +2348,7 @@ const docTemplate = `{
                     "[M]管理接口"
                 ],
                 "summary": "M5002 查询电柜",
-                "operationId": "CabinetQuery",
+                "operationId": "CabinetList",
                 "parameters": [
                     {
                         "type": "string",
