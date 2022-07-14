@@ -140,7 +140,7 @@ func logBuffer(config BodyDumpConfig, c echo.Context, reqBody, resBody []byte) (
         buffer.WriteString("\n[RES] ")
         buffer.Write(resBody)
     }
-    if ctx, ok := c.(*app.RiderContext); ok {
+    if ctx, ok := c.(*app.RiderContext); ok && ctx.Rider != nil {
         buffer.WriteString(fmt.Sprintf("[RIDER] ID:%d Phone:%s", ctx.Rider.ID, ctx.Rider.Phone))
     }
     if buffer.Bytes()[len(buffer.Bytes())-1] != '\n' {

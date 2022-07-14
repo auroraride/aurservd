@@ -26,7 +26,7 @@ var (
 func EmployeeMiddleware() echo.MiddlewareFunc {
     return func(next echo.HandlerFunc) echo.HandlerFunc {
         return func(c echo.Context) error {
-            url := c.Request().URL.Path
+            url := c.Path()
             var emr *ent.Employee
             // 获取employee
             if !employeeAuthSkipper[url] {

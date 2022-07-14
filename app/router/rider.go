@@ -58,9 +58,8 @@ func loadRideRoutes() {
     contract.GET("/:sn", rapi.Contract.SignResult)
 
     // 获取网点
-    branch := g.Group("/branch")
-    branch.GET("", rapi.Branch.List)
-    branch.GET("/riding", rapi.Branch.Riding)
+    g.GET("/branch", rapi.Branch.List)
+    g.GET("/branch/riding", rapi.Branch.Riding)
 
     // 业务
     g.GET("/plan", rapi.Plan.List)
