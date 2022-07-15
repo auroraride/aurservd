@@ -8975,6 +8975,29 @@ paths:
       summary: R2002 网点骑行规划时间
       tags:
       - '[R]骑手接口'
+  /rider/v1/cabinet/fault:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderCabinetFault
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              type: string
+            type: array
+      summary: R4008 电柜故障列表
+      tags:
+      - '[R]骑手接口'
   /rider/v1/cabinet/process:
     post:
       consumes:

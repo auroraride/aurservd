@@ -81,3 +81,17 @@ func (*cabinet) Report(c echo.Context) (err error) {
         model.StatusResponse{Status: service.NewCabinetFault().Report(ctx.Rider, req)},
     )
 }
+
+// Fault
+// @ID           RiderCabinetFault
+// @Router       /rider/v1/cabinet/fault [GET]
+// @Summary      R4008 电柜故障列表
+// @Tags         [R]骑手接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Rider-Token  header  string  true  "骑手校验token"
+// @Success      200 {object}  []string  "请求成功"
+func (*cabinet) Fault(c echo.Context) (err error) {
+    ctx := app.ContextX[app.RiderContext](c)
+    return ctx.SendResponse(service.NewSetting().GetSetting(model.SettingCabinetFault))
+}

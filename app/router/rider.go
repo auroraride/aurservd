@@ -25,11 +25,11 @@ func loadRideRoutes() {
 
     // 引入骑手api需要的中间件
     g.Use(middleware.DeviceMiddleware(), middleware.RiderMiddleware(), middleware.BodyDumpRawWithInterval(map[string]bool{
-        "/rider/v1/socket": true,
-        "/rider/callback": true,
-        "/rider/callback/esign": true,
-        "/rider/callback/alipay": true,
-        "/rider/callback/wechatpay": true,
+        "/rider/v1/socket":                 true,
+        "/rider/callback":                  true,
+        "/rider/callback/esign":            true,
+        "/rider/callback/alipay":           true,
+        "/rider/callback/wechatpay":        true,
         "/rider/callback/wechatpay/refund": true,
     }))
 
@@ -79,6 +79,7 @@ func loadRideRoutes() {
     cabinet.POST("/process", rapi.Cabinet.Process)
     cabinet.GET("/process/status", rapi.Cabinet.ProcessStatus)
     cabinet.POST("/report", rapi.Cabinet.Report)
+    cabinet.POST("/fault", rapi.Cabinet.Fault)
 
     g.POST("/exchange/store", rapi.Exchange.Store)
     g.GET("/exchange/overview", rapi.Exchange.Overview)
