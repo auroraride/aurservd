@@ -25,6 +25,7 @@ var (
         "/manager/v1/permission":    true,
         "/manager/v1/user/signin":   true,
         "/manager/v1/battery/model": true,
+        "/manager/v1/city":          true,
     }
 )
 
