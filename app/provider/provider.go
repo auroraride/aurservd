@@ -14,6 +14,7 @@ import (
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/pkg/cache"
     log "github.com/sirupsen/logrus"
     "math"
@@ -66,6 +67,42 @@ func isOffline(serial string) bool {
     return !t.IsZero() && time.Now().Sub(t).Minutes() > 3
 }
 
+func cabinetCity(cab *ent.Cabinet) string {
+    c := cab.Edges.City
+    if c == nil && cab.CityID != nil {
+        c, _ = ent.Database.City.Query().Where(city.ID(*cab.CityID)).First(context.Background())
+    }
+    return c.Name
+}
+
+// AutoBinFault 自动处理换电仓门操作失败
+// 每次都推送, 超过两次锁仓
+func AutoBinFault(operator model.CabinetDoorOperator, cab *ent.Cabinet, index int, status bool, lock func()) {
+    binKey := fmt.Sprintf("AUTO-BINFAULT-%s-%d", cab.Serial, index)
+    ctx := context.Background()
+    if status {
+        cache.Del(ctx, binKey)
+    } else {
+        // 查询并保存失败次数
+        times, _ := cache.Get(ctx, binKey).Int()
+        times += 1
+        cache.Set(ctx, binKey, times, -1)
+        // 推送消息
+        go func() {
+            _ = workwx.New().ExchangeBinFault(cabinetCity(cab), cab.Name, cab.Serial, fmt.Sprintf("%d号仓", index+1), operator.Name, operator.Phone, times)
+        }()
+        // 锁仓
+        if times > 2 {
+            lock()
+        }
+    }
+}
+
+// delBinFault 删除仓门自动故障
+func delBinFault(serial string, index int) {
+    cache.Del(context.Background(), fmt.Sprintf("AUTO-BINFAULT-%s-%d", serial, index))
+}
+
 // monitor 监控电柜变动
 // bins health num 旧数据
 func monitor(oldBins []model.CabinetBin, oldHealth uint8, oldNum uint, item *ent.Cabinet) {
@@ -73,7 +110,9 @@ func monitor(oldBins []model.CabinetBin, oldHealth uint8, oldNum uint, item *ent
     if oldHealth != item.Health {
         // 电柜在线变动日志
         logging.NewHealthLog(item.Brand, item.Serial, item.UpdatedAt).SetStatus(oldHealth, item.Health).Send()
-        _ = workwx.New().SendCabinetOffline(item.Name, item.Serial)
+        go func() {
+            _ = workwx.New().SendCabinetOffline(item.Name, item.Serial, cabinetCity(item))
+        }()
     }
 
     // 监控电池变化

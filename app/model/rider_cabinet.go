@@ -89,6 +89,7 @@ type RiderCabinetOperating struct {
     Serial           string               `json:"serial"`
     Model            string               `json:"model"`            // 电池型号
     ID               uint64               `json:"id"`               // 电柜ID
+    Name             string               `json:"name"`             // 电柜名称
     EmptyIndex       int                  `json:"emptyIndex"`       // 空电仓
     FullIndex        int                  `json:"fullIndex"`        // 满电仓
     Electricity      BatteryElectricity   `json:"electricity"`      // 满电电池电量

@@ -10,6 +10,7 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/provider"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/exchange"
@@ -189,6 +190,7 @@ func (s *riderCabinetService) Process(req *model.RiderCabinetOperateReq) {
     s.operating = &model.RiderCabinetOperating{
         UUID:        uid,
         ID:          info.ID,
+        Name:        info.Name,
         EmptyIndex:  info.EmptyBin.Index,
         FullIndex:   index,
         Serial:      info.Serial,
@@ -270,7 +272,7 @@ func (s *riderCabinetService) ProcessByStep() {
 
     // 第二步: 长轮询判断仓门是否关闭
     s.step += 1
-    if !s.ProcessLog(s.ProcessDoor()) {
+    if !s.ProcessLog(s.ProcessDoorStatus()) {
         return
     }
 
@@ -284,7 +286,7 @@ func (s *riderCabinetService) ProcessByStep() {
 
     // 第四步: 长轮询判断仓门是否关闭
     s.step += 1
-    if !s.ProcessLog(s.ProcessDoor()) {
+    if !s.ProcessLog(s.ProcessDoorStatus()) {
         return
     }
 }
@@ -371,8 +373,8 @@ func (s *riderCabinetService) ProcessDoorBatteryStatus() (ds model.CabinetBinDoo
     return ds
 }
 
-// ProcessDoor 操作换电中检查柜门并处理状态
-func (s *riderCabinetService) ProcessDoor() (res *model.RiderCabinetOperateRes) {
+// ProcessDoorStatus 操作换电中检查柜门并处理状态
+func (s *riderCabinetService) ProcessDoorStatus() (res *model.RiderCabinetOperateRes) {
     res = &model.RiderCabinetOperateRes{}
 
     s.ProcessStepStart()
@@ -431,9 +433,16 @@ func (s *riderCabinetService) ProcessOpenBin() (res *model.RiderCabinetOperateRe
     var status bool
     var err error
 
+    r := s.rider
+    operator := model.CabinetDoorOperator{
+        ID:    r.ID,
+        Role:  model.CabinetDoorOperatorRoleRider,
+        Name:  r.Edges.Person.Name,
+        Phone: r.Phone,
+    }
+
     if s.debug {
         // DEBUG START
-        log.Println(id, index)
         debug := time.Now()
         for {
             if time.Now().Sub(debug).Seconds() > 2 {
@@ -450,19 +459,13 @@ func (s *riderCabinetService) ProcessOpenBin() (res *model.RiderCabinetOperateRe
         if step == model.RiderCabinetOperateStepOpenFull {
             reason = model.RiderCabinetOperateReasonFull
         }
-        r := s.rider
         operation := model.CabinetDoorOperateOpen
         status, err = NewCabinet().DoorOperate(&model.CabinetDoorOperateReq{
             ID:        &id,
             Index:     &index,
             Remark:    fmt.Sprintf("骑手换电 - %s", reason),
             Operation: &operation,
-        }, model.CabinetDoorOperator{
-            ID:    r.ID,
-            Role:  model.CabinetDoorOperatorRoleRider,
-            Name:  r.Edges.Person.Name,
-            Phone: r.Phone,
-        }, true)
+        }, operator, true)
         if err != nil {
             snag.Panic(err)
         }
@@ -475,6 +478,16 @@ func (s *riderCabinetService) ProcessOpenBin() (res *model.RiderCabinetOperateRe
         status,
         s.rider.Phone,
     )
+
+    provider.AutoBinFault(operator, s.cabinet, index, status, func() {
+        operation := model.CabinetDoorOperateLock
+        _, _ = NewCabinet().DoorOperate(&model.CabinetDoorOperateReq{
+            ID:        &id,
+            Index:     &index,
+            Remark:    fmt.Sprintf("换电仓门处理失败自动锁仓 - %s", s.rider.Phone),
+            Operation: &operation,
+        }, operator, true)
+    })
 
     if status {
         res.Status = model.RiderCabinetOperateStatusSuccess

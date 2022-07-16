@@ -239,6 +239,11 @@ func (p *kaixin) UpdateStatus(item *ent.Cabinet, params ...any) error {
                 bin.Remark = item.Bin[index].Remark
             }
 
+            // 仓门正常清除告警设置
+            if bin.DoorHealth {
+                delBinFault(item.Serial, index)
+            }
+
             bins[index] = bin
         }
 
