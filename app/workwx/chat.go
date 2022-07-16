@@ -7,15 +7,16 @@ package workwx
 
 import (
     "fmt"
+    "github.com/auroraride/aurservd/app/model"
     "github.com/golang-module/carbon/v2"
+    "strings"
     "time"
 )
 
-// MaterialAbnormality # 物资异常
-// BatteryFault # 电池故障
+// InventoryAbnormality # 物资异常
 // ExchangeBinFault # 换电故障
 // CabinetHealth # 电柜离线
-// BatteryAbnormality # 电池异常变动
+// BatteryNumberAbnormality # 电池异常变动
 // SimExpires # SIM卡到期
 // BranchExpires # 场地到期
 
@@ -80,4 +81,27 @@ func (w *Client) ExchangeBinFault(city, name, serial, bin, rider, phone string, 
         time.Now().Format(carbon.DateTimeLayout),
     )
     return w.SendMarkdown("ExchangeBinFault", content)
+}
+
+// SendInventory 发送物资警告
+func (w *Client) SendInventory(duty bool, city, store string, e model.Employee, items []model.AttendanceInventory) error {
+    ds := "下班"
+    if duty {
+        ds = "上班"
+    }
+
+    arr := make([]string, len(items))
+    for i, item := range items {
+        arr[i] = fmt.Sprintf("%s: 库存`%d` 盘点`%d`", item.Name, item.StockNum, item.Num)
+    }
+    content := fmt.Sprintf(`物资异常警告
+>类别: <font color="info">%s</font>
+>城市: %s
+>门店: %s
+>店员: %s
+>电话: %s
+>时间: <font color="comment">%s</font>
+>
+%s`, ds, city, store, e.Name, e.Phone, time.Now().Format(carbon.DateTimeLayout), strings.Join(arr, "\n>    "))
+    return w.SendMarkdown("InventoryAbnormality", content)
 }

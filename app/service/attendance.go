@@ -9,6 +9,7 @@ import (
     "context"
     "github.com/LucaTheHacker/go-haversine"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/workwx"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/attendance"
     "github.com/auroraride/aurservd/internal/ent/employee"
@@ -115,18 +116,38 @@ func (s *attendanceService) Create(req *model.AttendanceCreateReq) {
 
     inventory := make([]model.AttendanceInventory, 0)
     st, distance, items := s.check(req.AttendancePrecheck)
+
+    em := model.Employee{
+        ID:    s.employee.ID,
+        Name:  s.employee.Name,
+        Phone: s.employee.Phone,
+    }
+
+    var noticeItems []model.AttendanceInventory
+
     for _, item := range items {
         n, ok := req.Inventory[item.Name]
         if !ok {
             snag.Panic("请提交全部的物资清单")
         }
 
-        inventory = append(inventory, model.AttendanceInventory{
+        ai := model.AttendanceInventory{
             Name:     item.Name,
             Num:      n,
             StockNum: item.Num,
             Model:    item.Model,
-        })
+        }
+        inventory = append(inventory, ai)
+
+        if n != item.Num {
+            noticeItems = append(noticeItems, ai)
+        }
+    }
+
+    c := NewCity().Query(st.CityID)
+
+    if len(noticeItems) > 0 {
+        go func() { _ = workwx.New().SendInventory(req.Duty, c.Name, st.Name, em, noticeItems) }()
     }
 
     tx, _ := ent.Database.Tx(s.ctx)
