@@ -6,7 +6,6 @@
 package logging
 
 import (
-    "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/golang-module/carbon/v2"
@@ -26,7 +25,6 @@ func (l *HealthLog) GetLogstoreName() string {
 }
 
 func (l *HealthLog) Send() {
-    fmt.Println(l)
     PutLog(l)
 }
 

@@ -161,9 +161,14 @@ func (p *kaixin) UpdateStatus(item *ent.Cabinet, params ...any) error {
     oldBins := item.Bin
     oldNum := item.BatteryNum
 
-    up := item.Update().SetHealth(model.CabinetHealthStatusOffline)
+    up := item.Update()
 
     defer func(up *ent.CabinetUpdateOne, ctx context.Context) {
+        // 离线判定
+        if isOffline(item.Serial) {
+            up.SetHealth(model.CabinetHealthStatusOffline)
+        }
+
         v, _ := up.Save(ctx)
         *item = *v
         monitor(oldBins, oldHealth, oldNum, item)
@@ -250,12 +255,15 @@ func (p *kaixin) UpdateStatus(item *ent.Cabinet, params ...any) error {
             up.SetBatteryNum(num)
         }
 
+        setOfflineTime(item.Serial, false)
         up.SetBatteryFullNum(full).
             SetBin(bins).
             SetHealth(model.CabinetHealthStatusOnline).
             SetDoors(uint(len(doors)))
         return nil
     }
+
+    setOfflineTime(item.Serial, true)
     return errors.New("凯信状态获取失败")
 }
 

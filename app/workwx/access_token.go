@@ -16,7 +16,6 @@ import (
 )
 
 const (
-    tokenAPI            = `/gettoken?corpid=%s&corpsecret=%s`
     cacheKeyAccessToken = "WORKWX_ACCESS_TOKEN"
 )
 

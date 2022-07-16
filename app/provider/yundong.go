@@ -194,6 +194,11 @@ func (p *yundong) UpdateStatus(item *ent.Cabinet, params ...any) error {
     oldNum := item.BatteryNum
 
     defer func(up *ent.CabinetUpdateOne, ctx context.Context) {
+        // 离线判定
+        if isOffline(item.Serial) {
+            up.SetHealth(model.CabinetHealthStatusOffline)
+        }
+
         v, _ := up.Save(ctx)
         *item = *v
         monitor(oldBins, oldHealth, oldNum, item)
@@ -264,12 +269,14 @@ func (p *yundong) UpdateStatus(item *ent.Cabinet, params ...any) error {
             up.SetBatteryNum(num)
         }
 
+        setOfflineTime(item.Serial, false)
         up.SetBin(bins).
             SetBatteryFullNum(full).
             SetHealth(uint8(res.Data.Isonline)).
             SetDoors(uint(len(doors)))
         return nil
     }
+    setOfflineTime(item.Serial, true)
     return errors.New("云动状态获取失败")
 }
 

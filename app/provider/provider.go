@@ -6,12 +6,15 @@
 package provider
 
 import (
+    "context"
     "fmt"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/workwx"
     "github.com/auroraride/aurservd/internal/ali"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
+    "github.com/auroraride/aurservd/pkg/cache"
     log "github.com/sirupsen/logrus"
     "math"
     "time"
@@ -24,7 +27,6 @@ type Provider interface {
     Cabinets() ([]*ent.Cabinet, error)
     Brand() string
     Logger() *Logger
-    // UpdateStatus TODO 遇到错误处理方式
     UpdateStatus(item *ent.Cabinet, params ...any) error
     DoorOperate(code, serial, operation string, door int) bool
     Reboot(code string, serial string) bool
@@ -38,12 +40,40 @@ func Run() {
     }
 }
 
+// getOfflineTime 获取离线时间
+func getOfflineTime(serial string) time.Time {
+    t, _ := cache.Get(context.Background(), fmt.Sprintf("OFFLINE-%s", serial)).Time()
+    return t
+}
+
+// setOfflineTime 设置离线时间
+func setOfflineTime(serial string, offline bool) {
+    key := fmt.Sprintf("OFFLINE-%s", serial)
+    if offline {
+        t := getOfflineTime(serial)
+        if t.IsZero() {
+            cache.Set(context.Background(), key, time.Now(), -1)
+        }
+    } else {
+        // 在线则删除
+        cache.Del(context.Background(), key)
+    }
+}
+
+// isOffline 判定电柜是否离线, 3分钟以上算作离线
+func isOffline(serial string) bool {
+    t := getOfflineTime(serial)
+    return !t.IsZero() && time.Now().Sub(t).Minutes() > 3
+}
+
 // monitor 监控电柜变动
 // bins health num 旧数据
 func monitor(oldBins []model.CabinetBin, oldHealth uint8, oldNum uint, item *ent.Cabinet) {
     // 监控在线变化
     if oldHealth != item.Health {
+        // 电柜在线变动日志
         logging.NewHealthLog(item.Brand, item.Serial, item.UpdatedAt).SetStatus(oldHealth, item.Health).Send()
+        _ = workwx.New().SendCabinetOffline(item.Name, item.Serial)
     }
 
     // 监控电池变化
@@ -89,7 +119,7 @@ func StartCabinetProvider(providers ...Provider) {
                         continue
                     }
 
-                    // 未获取到电柜状态设置为离线
+                    // 更新电柜信息
                     err = provider.UpdateStatus(item)
 
                     if err == nil {
