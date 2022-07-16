@@ -144,3 +144,17 @@ func (*selection) Role(c echo.Context) (err error) {
     ctx := app.Context(c)
     return ctx.SendResponse(service.NewSelection().Role())
 }
+
+// WxEmployees
+// @ID           ManagerSelectionWxEmployees
+// @Router       /manager/v1/selection/wxemployees [GET]
+// @Summary      MB010 筛选企业微信成员
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Success      200  {object}  []map[string]interface{}  "请求成功"
+func (*selection) WxEmployees(c echo.Context) (err error) {
+    ctx := app.Context(c)
+    return ctx.SendResponse(service.NewSelection().WorkwxEmployees())
+}

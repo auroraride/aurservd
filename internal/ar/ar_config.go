@@ -197,6 +197,11 @@ type config struct {
     }
     RiderApp    AppVersion
     EmployeeApp AppVersion
+    WxWork      struct {
+        AgentID    int64  `mapstructure:"agentID"`
+        CorpID     string `mapstructure:"corpID"`
+        CorpSecret string `mapstructure:"corpSecret"`
+    }
 }
 
 func readConfig() error {

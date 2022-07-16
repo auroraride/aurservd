@@ -9,11 +9,14 @@ import (
     "context"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/workwx"
+    "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/city"
     "github.com/auroraride/aurservd/internal/ent/person"
     "github.com/auroraride/aurservd/internal/ent/plan"
     "github.com/auroraride/aurservd/internal/ent/rider"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "sort"
     "strconv"
@@ -285,4 +288,24 @@ func (s *selectionService) Cabinet() (items []*model.CascaderOptionLevel2) {
     return cascaderLevel2IDName(res, func(r *ent.Cabinet) model.IDName {
         return s.nilableCity(r.Edges.City)
     }, "未选择网点", true)
+}
+
+func (s *selectionService) WorkwxEmployees() (items []any) {
+    cfg := ar.Config.WxWork
+    wx := workwx.New(cfg.AgentID, cfg.CorpID, cfg.CorpSecret)
+    userlist, err := wx.UserSimpleList(1)
+
+    if err != nil {
+        snag.Panic(err)
+    }
+
+    items = make([]any, len(userlist.Userlist))
+
+    for i, u := range userlist.Userlist {
+        items[i] = ar.Map{
+            "value": u.Userid,
+            "label": u.Name,
+        }
+    }
+    return
 }

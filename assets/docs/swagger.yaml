@@ -8193,6 +8193,30 @@ paths:
       summary: MB003 筛选门店
       tags:
       - '[M]管理接口'
+  /manager/v1/selection/wxemployees:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionWxEmployees
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      summary: MB010 筛选企业微信成员
+      tags:
+      - '[M]管理接口'
   /manager/v1/setting:
     get:
       consumes:
