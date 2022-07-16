@@ -4585,6 +4585,17 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            0,
+                            1,
+                            2
+                        ],
+                        "type": "integer",
+                        "description": "换电状态 0:全部 1:成功 2:失败",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "选择门店ID",
                         "name": "storeId",

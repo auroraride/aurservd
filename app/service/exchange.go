@@ -303,6 +303,10 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
         q.Where(exchange.CreatedAtLT(tt.ParseNextDateStringX(req.End)))
     }
 
+    if req.Status != 0 {
+        q.Where(exchange.Success(req.Status == 1))
+    }
+
     if req.Serial != "" {
         q.Where(exchange.HasCabinetWith(cabinet.Serial(req.Serial)))
     }

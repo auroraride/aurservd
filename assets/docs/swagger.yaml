@@ -7149,6 +7149,14 @@ paths:
         in: query
         name: start
         type: string
+      - description: 换电状态 0:全部 1:成功 2:失败
+        enum:
+        - 0
+        - 1
+        - 2
+        in: query
+        name: status
+        type: integer
       - description: 选择门店ID
         in: query
         name: storeId

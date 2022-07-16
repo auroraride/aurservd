@@ -77,6 +77,7 @@ type ExchangeManagerListReq struct {
     CabinetID   uint64 `json:"cabinetId" query:"cabinetId"`                   // 选择电柜ID
     StoreID     uint64 `json:"storeId" query:"storeId"`                       // 选择门店ID
     Serial      string `json:"serial" query:"serial"`                         // 电柜编号
+    Status      uint8  `json:"status" query:"status" enums:"0,1,2"`           // 换电状态 0:全部 1:成功 2:失败
 }
 
 type ExchangeManagerListRes struct {
