@@ -129,6 +129,11 @@ func monitor(oldBins []model.CabinetBin, oldHealth uint8, oldNum uint, item *ent
                 SetExchangeProcess(info).
                 SetBin(oldBins, item.Bin).
                 Send()
+
+            // 推送消息
+            go func() {
+                _ = workwx.New().SendBatteryAbnormality(cabinetCity(item), item.Serial, item.Name, oldNum, item.BatteryNum, diff)
+            }()
         }
     }
 }

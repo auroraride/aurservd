@@ -105,3 +105,24 @@ func (w *Client) SendInventory(duty bool, city, store string, e model.Employee, 
 %s`, ds, city, store, e.Name, e.Phone, time.Now().Format(carbon.DateTimeLayout), strings.Join(arr, "\n>    "))
     return w.SendMarkdown("InventoryAbnormality", content)
 }
+
+// SendBatteryAbnormality 发送电池异常变动警告
+func (w *Client) SendBatteryAbnormality(city, serial, name string, from, to uint, diff int) error {
+    content := fmt.Sprintf(`电池异常变动警告
+>差值: <font color="warning">%d</font>
+>城市: %s
+>电柜: %s
+>编号: %s
+>前值: %d
+>后值: %d
+>时间: <font color="comment">%s</font>`,
+        diff,
+        city,
+        name,
+        serial,
+        from,
+        to,
+        time.Now().Format(carbon.DateTimeLayout),
+    )
+    return w.SendMarkdown("BatteryNumberAbnormality", content)
+}
