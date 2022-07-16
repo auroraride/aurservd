@@ -24,3 +24,28 @@ func (w *Client) CreateGroup(name, owner, chatid string, users []string) error {
         "chatid":   chatid,
     }, &res)
 }
+
+type ChatMessage struct {
+    Chatid  string `json:"chatid"`
+    Msgtype string `json:"msgtype"`
+}
+
+type ChatContent struct {
+    Content string `json:"content"`
+}
+
+type ChatMarkdown struct {
+    ChatMessage
+    Markdown ChatContent `json:"markdown"`
+}
+
+func (w *Client) SendMarkdown(chatid string, content string) error {
+    var res baseResponse
+    return w.RequestPost("/appchat/send", ChatMarkdown{
+        ChatMessage: ChatMessage{
+            Chatid:  chatid,
+            Msgtype: "markdown",
+        },
+        Markdown: ChatContent{Content: content},
+    }, &res)
+}

@@ -5,6 +5,8 @@
 
 package workwx
 
+import "github.com/auroraride/aurservd/internal/ar"
+
 type Client struct {
     agentID    int64
     corpID     string
@@ -26,11 +28,13 @@ type baseResponse struct {
     Errmsg  string `json:"errmsg"`
 }
 
-func New(agentID int64, corpID, corpSecret string) (w *Client) {
+func New() (w *Client) {
+    cfg := ar.Config.WxWork
+
     w = &Client{
-        agentID:    agentID,
-        corpID:     corpID,
-        corpSecret: corpSecret,
+        agentID:    cfg.AgentID,
+        corpID:     cfg.CorpID,
+        corpSecret: cfg.CorpSecret,
     }
     return
 }

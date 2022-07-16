@@ -8,7 +8,6 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/workwx"
-    "github.com/auroraride/aurservd/internal/ar"
 )
 
 type wxworkService struct {
@@ -20,9 +19,8 @@ type wxworkService struct {
 }
 
 func NewWxwork() *wxworkService {
-    cfg := ar.Config.WxWork
     return &wxworkService{
         ctx:    context.Background(),
-        client: workwx.New(cfg.AgentID, cfg.CorpID, cfg.CorpSecret),
+        client: workwx.New(),
     }
 }

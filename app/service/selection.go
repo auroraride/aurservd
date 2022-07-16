@@ -291,8 +291,7 @@ func (s *selectionService) Cabinet() (items []*model.CascaderOptionLevel2) {
 }
 
 func (s *selectionService) WorkwxEmployees() (items []any) {
-    cfg := ar.Config.WxWork
-    wx := workwx.New(cfg.AgentID, cfg.CorpID, cfg.CorpSecret)
+    wx := workwx.New()
     userlist, err := wx.UserSimpleList(1)
 
     if err != nil {
