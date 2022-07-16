@@ -84,6 +84,11 @@ func StartCabinetProvider(providers ...Provider) {
                 }
 
                 for _, item := range items {
+                    // 换电过程不查询状态
+                    if model.CabinetBusying(item.Serial) {
+                        continue
+                    }
+
                     // 未获取到电柜状态设置为离线
                     err = provider.UpdateStatus(item)
 
