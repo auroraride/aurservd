@@ -35,8 +35,8 @@ func (BranchContract) Fields() []ent.Field {
         field.Float("electricity_pledge").Comment("电费押金"),
         field.Float("electricity").Comment("电费单价"),
         field.Float("area").Comment("网点面积"),
-        field.String("start_time").Comment("租期开始时间"),
-        field.String("end_time").Comment("租期结束时间"),
+        field.Time("start_time").Comment("租期开始时间"),
+        field.Time("end_time").Comment("租期结束时间"),
         field.String("file").Comment("合同文件"),
         field.Strings("sheets").Comment("底单"),
     }
@@ -62,5 +62,7 @@ func (BranchContract) Mixin() []ent.Mixin {
 }
 
 func (BranchContract) Indexes() []ent.Index {
-    return nil
+    return []ent.Index{
+        // index.Fields("end_time"),
+    }
 }

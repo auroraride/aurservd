@@ -197,14 +197,14 @@ func (bcu *BranchContractUpdate) AddArea(f float64) *BranchContractUpdate {
 }
 
 // SetStartTime sets the "start_time" field.
-func (bcu *BranchContractUpdate) SetStartTime(s string) *BranchContractUpdate {
-	bcu.mutation.SetStartTime(s)
+func (bcu *BranchContractUpdate) SetStartTime(t time.Time) *BranchContractUpdate {
+	bcu.mutation.SetStartTime(t)
 	return bcu
 }
 
 // SetEndTime sets the "end_time" field.
-func (bcu *BranchContractUpdate) SetEndTime(s string) *BranchContractUpdate {
-	bcu.mutation.SetEndTime(s)
+func (bcu *BranchContractUpdate) SetEndTime(t time.Time) *BranchContractUpdate {
+	bcu.mutation.SetEndTime(t)
 	return bcu
 }
 
@@ -503,14 +503,14 @@ func (bcu *BranchContractUpdate) sqlSave(ctx context.Context) (n int, err error)
 	}
 	if value, ok := bcu.mutation.StartTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: branchcontract.FieldStartTime,
 		})
 	}
 	if value, ok := bcu.mutation.EndTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: branchcontract.FieldEndTime,
 		})
@@ -750,14 +750,14 @@ func (bcuo *BranchContractUpdateOne) AddArea(f float64) *BranchContractUpdateOne
 }
 
 // SetStartTime sets the "start_time" field.
-func (bcuo *BranchContractUpdateOne) SetStartTime(s string) *BranchContractUpdateOne {
-	bcuo.mutation.SetStartTime(s)
+func (bcuo *BranchContractUpdateOne) SetStartTime(t time.Time) *BranchContractUpdateOne {
+	bcuo.mutation.SetStartTime(t)
 	return bcuo
 }
 
 // SetEndTime sets the "end_time" field.
-func (bcuo *BranchContractUpdateOne) SetEndTime(s string) *BranchContractUpdateOne {
-	bcuo.mutation.SetEndTime(s)
+func (bcuo *BranchContractUpdateOne) SetEndTime(t time.Time) *BranchContractUpdateOne {
+	bcuo.mutation.SetEndTime(t)
 	return bcuo
 }
 
@@ -1086,14 +1086,14 @@ func (bcuo *BranchContractUpdateOne) sqlSave(ctx context.Context) (_node *Branch
 	}
 	if value, ok := bcuo.mutation.StartTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: branchcontract.FieldStartTime,
 		})
 	}
 	if value, ok := bcuo.mutation.EndTime(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: branchcontract.FieldEndTime,
 		})

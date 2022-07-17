@@ -105,5 +105,6 @@ func (Cabinet) Indexes() []ent.Index {
                 dialect.Postgres: "GIN",
             }),
         ),
+        index.Fields("sim_date"),
     }
 }

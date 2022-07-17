@@ -328,3 +328,11 @@ type CabinetDataRes struct {
     FullNum    int              `json:"fullNum"`    // 满电数
     Bins       []CabinetDataBin `json:"bins"`       // 仓位信息
 }
+
+type CabinetSimNotice struct {
+    Serial string `json:"serial"`
+    Name   string `json:"name"`
+    City   string `json:"city"`
+    Sim    string `json:"sim"`
+    End    string `json:"end"`
+}

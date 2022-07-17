@@ -159,14 +159,14 @@ func (bcc *BranchContractCreate) SetArea(f float64) *BranchContractCreate {
 }
 
 // SetStartTime sets the "start_time" field.
-func (bcc *BranchContractCreate) SetStartTime(s string) *BranchContractCreate {
-	bcc.mutation.SetStartTime(s)
+func (bcc *BranchContractCreate) SetStartTime(t time.Time) *BranchContractCreate {
+	bcc.mutation.SetStartTime(t)
 	return bcc
 }
 
 // SetEndTime sets the "end_time" field.
-func (bcc *BranchContractCreate) SetEndTime(s string) *BranchContractCreate {
-	bcc.mutation.SetEndTime(s)
+func (bcc *BranchContractCreate) SetEndTime(t time.Time) *BranchContractCreate {
+	bcc.mutation.SetEndTime(t)
 	return bcc
 }
 
@@ -497,7 +497,7 @@ func (bcc *BranchContractCreate) createSpec() (*BranchContract, *sqlgraph.Create
 	}
 	if value, ok := bcc.mutation.StartTime(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: branchcontract.FieldStartTime,
 		})
@@ -505,7 +505,7 @@ func (bcc *BranchContractCreate) createSpec() (*BranchContract, *sqlgraph.Create
 	}
 	if value, ok := bcc.mutation.EndTime(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
+			Type:   field.TypeTime,
 			Value:  value,
 			Column: branchcontract.FieldEndTime,
 		})
@@ -866,7 +866,7 @@ func (u *BranchContractUpsert) AddArea(v float64) *BranchContractUpsert {
 }
 
 // SetStartTime sets the "start_time" field.
-func (u *BranchContractUpsert) SetStartTime(v string) *BranchContractUpsert {
+func (u *BranchContractUpsert) SetStartTime(v time.Time) *BranchContractUpsert {
 	u.Set(branchcontract.FieldStartTime, v)
 	return u
 }
@@ -878,7 +878,7 @@ func (u *BranchContractUpsert) UpdateStartTime() *BranchContractUpsert {
 }
 
 // SetEndTime sets the "end_time" field.
-func (u *BranchContractUpsert) SetEndTime(v string) *BranchContractUpsert {
+func (u *BranchContractUpsert) SetEndTime(v time.Time) *BranchContractUpsert {
 	u.Set(branchcontract.FieldEndTime, v)
 	return u
 }
@@ -1272,7 +1272,7 @@ func (u *BranchContractUpsertOne) UpdateArea() *BranchContractUpsertOne {
 }
 
 // SetStartTime sets the "start_time" field.
-func (u *BranchContractUpsertOne) SetStartTime(v string) *BranchContractUpsertOne {
+func (u *BranchContractUpsertOne) SetStartTime(v time.Time) *BranchContractUpsertOne {
 	return u.Update(func(s *BranchContractUpsert) {
 		s.SetStartTime(v)
 	})
@@ -1286,7 +1286,7 @@ func (u *BranchContractUpsertOne) UpdateStartTime() *BranchContractUpsertOne {
 }
 
 // SetEndTime sets the "end_time" field.
-func (u *BranchContractUpsertOne) SetEndTime(v string) *BranchContractUpsertOne {
+func (u *BranchContractUpsertOne) SetEndTime(v time.Time) *BranchContractUpsertOne {
 	return u.Update(func(s *BranchContractUpsert) {
 		s.SetEndTime(v)
 	})
@@ -1850,7 +1850,7 @@ func (u *BranchContractUpsertBulk) UpdateArea() *BranchContractUpsertBulk {
 }
 
 // SetStartTime sets the "start_time" field.
-func (u *BranchContractUpsertBulk) SetStartTime(v string) *BranchContractUpsertBulk {
+func (u *BranchContractUpsertBulk) SetStartTime(v time.Time) *BranchContractUpsertBulk {
 	return u.Update(func(s *BranchContractUpsert) {
 		s.SetStartTime(v)
 	})
@@ -1864,7 +1864,7 @@ func (u *BranchContractUpsertBulk) UpdateStartTime() *BranchContractUpsertBulk {
 }
 
 // SetEndTime sets the "end_time" field.
-func (u *BranchContractUpsertBulk) SetEndTime(v string) *BranchContractUpsertBulk {
+func (u *BranchContractUpsertBulk) SetEndTime(v time.Time) *BranchContractUpsertBulk {
 	return u.Update(func(s *BranchContractUpsert) {
 		s.SetEndTime(v)
 	})

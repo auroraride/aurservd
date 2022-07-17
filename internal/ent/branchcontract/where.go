@@ -199,14 +199,14 @@ func Area(v float64) predicate.BranchContract {
 }
 
 // StartTime applies equality check predicate on the "start_time" field. It's identical to StartTimeEQ.
-func StartTime(v string) predicate.BranchContract {
+func StartTime(v time.Time) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldStartTime), v))
 	})
 }
 
 // EndTime applies equality check predicate on the "end_time" field. It's identical to EndTimeEQ.
-func EndTime(v string) predicate.BranchContract {
+func EndTime(v time.Time) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldEndTime), v))
 	})
@@ -1563,21 +1563,21 @@ func AreaLTE(v float64) predicate.BranchContract {
 }
 
 // StartTimeEQ applies the EQ predicate on the "start_time" field.
-func StartTimeEQ(v string) predicate.BranchContract {
+func StartTimeEQ(v time.Time) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldStartTime), v))
 	})
 }
 
 // StartTimeNEQ applies the NEQ predicate on the "start_time" field.
-func StartTimeNEQ(v string) predicate.BranchContract {
+func StartTimeNEQ(v time.Time) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldStartTime), v))
 	})
 }
 
 // StartTimeIn applies the In predicate on the "start_time" field.
-func StartTimeIn(vs ...string) predicate.BranchContract {
+func StartTimeIn(vs ...time.Time) predicate.BranchContract {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1594,7 +1594,7 @@ func StartTimeIn(vs ...string) predicate.BranchContract {
 }
 
 // StartTimeNotIn applies the NotIn predicate on the "start_time" field.
-func StartTimeNotIn(vs ...string) predicate.BranchContract {
+func StartTimeNotIn(vs ...time.Time) predicate.BranchContract {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1611,84 +1611,49 @@ func StartTimeNotIn(vs ...string) predicate.BranchContract {
 }
 
 // StartTimeGT applies the GT predicate on the "start_time" field.
-func StartTimeGT(v string) predicate.BranchContract {
+func StartTimeGT(v time.Time) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldStartTime), v))
 	})
 }
 
 // StartTimeGTE applies the GTE predicate on the "start_time" field.
-func StartTimeGTE(v string) predicate.BranchContract {
+func StartTimeGTE(v time.Time) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldStartTime), v))
 	})
 }
 
 // StartTimeLT applies the LT predicate on the "start_time" field.
-func StartTimeLT(v string) predicate.BranchContract {
+func StartTimeLT(v time.Time) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldStartTime), v))
 	})
 }
 
 // StartTimeLTE applies the LTE predicate on the "start_time" field.
-func StartTimeLTE(v string) predicate.BranchContract {
+func StartTimeLTE(v time.Time) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldStartTime), v))
 	})
 }
 
-// StartTimeContains applies the Contains predicate on the "start_time" field.
-func StartTimeContains(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldStartTime), v))
-	})
-}
-
-// StartTimeHasPrefix applies the HasPrefix predicate on the "start_time" field.
-func StartTimeHasPrefix(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldStartTime), v))
-	})
-}
-
-// StartTimeHasSuffix applies the HasSuffix predicate on the "start_time" field.
-func StartTimeHasSuffix(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldStartTime), v))
-	})
-}
-
-// StartTimeEqualFold applies the EqualFold predicate on the "start_time" field.
-func StartTimeEqualFold(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldStartTime), v))
-	})
-}
-
-// StartTimeContainsFold applies the ContainsFold predicate on the "start_time" field.
-func StartTimeContainsFold(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldStartTime), v))
-	})
-}
-
 // EndTimeEQ applies the EQ predicate on the "end_time" field.
-func EndTimeEQ(v string) predicate.BranchContract {
+func EndTimeEQ(v time.Time) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldEndTime), v))
 	})
 }
 
 // EndTimeNEQ applies the NEQ predicate on the "end_time" field.
-func EndTimeNEQ(v string) predicate.BranchContract {
+func EndTimeNEQ(v time.Time) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldEndTime), v))
 	})
 }
 
 // EndTimeIn applies the In predicate on the "end_time" field.
-func EndTimeIn(vs ...string) predicate.BranchContract {
+func EndTimeIn(vs ...time.Time) predicate.BranchContract {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1705,7 +1670,7 @@ func EndTimeIn(vs ...string) predicate.BranchContract {
 }
 
 // EndTimeNotIn applies the NotIn predicate on the "end_time" field.
-func EndTimeNotIn(vs ...string) predicate.BranchContract {
+func EndTimeNotIn(vs ...time.Time) predicate.BranchContract {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -1722,65 +1687,30 @@ func EndTimeNotIn(vs ...string) predicate.BranchContract {
 }
 
 // EndTimeGT applies the GT predicate on the "end_time" field.
-func EndTimeGT(v string) predicate.BranchContract {
+func EndTimeGT(v time.Time) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.GT(s.C(FieldEndTime), v))
 	})
 }
 
 // EndTimeGTE applies the GTE predicate on the "end_time" field.
-func EndTimeGTE(v string) predicate.BranchContract {
+func EndTimeGTE(v time.Time) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.GTE(s.C(FieldEndTime), v))
 	})
 }
 
 // EndTimeLT applies the LT predicate on the "end_time" field.
-func EndTimeLT(v string) predicate.BranchContract {
+func EndTimeLT(v time.Time) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.LT(s.C(FieldEndTime), v))
 	})
 }
 
 // EndTimeLTE applies the LTE predicate on the "end_time" field.
-func EndTimeLTE(v string) predicate.BranchContract {
+func EndTimeLTE(v time.Time) predicate.BranchContract {
 	return predicate.BranchContract(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldEndTime), v))
-	})
-}
-
-// EndTimeContains applies the Contains predicate on the "end_time" field.
-func EndTimeContains(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldEndTime), v))
-	})
-}
-
-// EndTimeHasPrefix applies the HasPrefix predicate on the "end_time" field.
-func EndTimeHasPrefix(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldEndTime), v))
-	})
-}
-
-// EndTimeHasSuffix applies the HasSuffix predicate on the "end_time" field.
-func EndTimeHasSuffix(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldEndTime), v))
-	})
-}
-
-// EndTimeEqualFold applies the EqualFold predicate on the "end_time" field.
-func EndTimeEqualFold(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldEndTime), v))
-	})
-}
-
-// EndTimeContainsFold applies the ContainsFold predicate on the "end_time" field.
-func EndTimeContainsFold(v string) predicate.BranchContract {
-	return predicate.BranchContract(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldEndTime), v))
 	})
 }
 

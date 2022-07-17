@@ -294,8 +294,8 @@ var (
 		{Name: "electricity_pledge", Type: field.TypeFloat64, Comment: "电费押金"},
 		{Name: "electricity", Type: field.TypeFloat64, Comment: "电费单价"},
 		{Name: "area", Type: field.TypeFloat64, Comment: "网点面积"},
-		{Name: "start_time", Type: field.TypeString, Comment: "租期开始时间"},
-		{Name: "end_time", Type: field.TypeString, Comment: "租期结束时间"},
+		{Name: "start_time", Type: field.TypeTime, Comment: "租期开始时间"},
+		{Name: "end_time", Type: field.TypeTime, Comment: "租期结束时间"},
 		{Name: "file", Type: field.TypeString, Comment: "合同文件"},
 		{Name: "sheets", Type: field.TypeJSON, Comment: "底单"},
 		{Name: "branch_id", Type: field.TypeUint64},
@@ -514,6 +514,11 @@ var (
 						"postgres": "GIN",
 					},
 				},
+			},
+			{
+				Name:    "cabinet_sim_date",
+				Unique:  false,
+				Columns: []*schema.Column{CabinetColumns[21]},
 			},
 		},
 	}

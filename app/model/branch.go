@@ -155,3 +155,9 @@ type BranchRidingReq struct {
 type BranchRidingRes struct {
     Minutes float64 `json:"minutes"` // 骑行规划时间(分钟)
 }
+
+type BranchExpriesNotice struct {
+    City string `json:"city"`
+    Name string `json:"name"`
+    End  string `json:"end"`
+}

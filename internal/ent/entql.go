@@ -203,8 +203,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			branchcontract.FieldElectricityPledge: {Type: field.TypeFloat64, Column: branchcontract.FieldElectricityPledge},
 			branchcontract.FieldElectricity:       {Type: field.TypeFloat64, Column: branchcontract.FieldElectricity},
 			branchcontract.FieldArea:              {Type: field.TypeFloat64, Column: branchcontract.FieldArea},
-			branchcontract.FieldStartTime:         {Type: field.TypeString, Column: branchcontract.FieldStartTime},
-			branchcontract.FieldEndTime:           {Type: field.TypeString, Column: branchcontract.FieldEndTime},
+			branchcontract.FieldStartTime:         {Type: field.TypeTime, Column: branchcontract.FieldStartTime},
+			branchcontract.FieldEndTime:           {Type: field.TypeTime, Column: branchcontract.FieldEndTime},
 			branchcontract.FieldFile:              {Type: field.TypeString, Column: branchcontract.FieldFile},
 			branchcontract.FieldSheets:            {Type: field.TypeJSON, Column: branchcontract.FieldSheets},
 		},
@@ -3543,13 +3543,13 @@ func (f *BranchContractFilter) WhereArea(p entql.Float64P) {
 	f.Where(p.Field(branchcontract.FieldArea))
 }
 
-// WhereStartTime applies the entql string predicate on the start_time field.
-func (f *BranchContractFilter) WhereStartTime(p entql.StringP) {
+// WhereStartTime applies the entql time.Time predicate on the start_time field.
+func (f *BranchContractFilter) WhereStartTime(p entql.TimeP) {
 	f.Where(p.Field(branchcontract.FieldStartTime))
 }
 
-// WhereEndTime applies the entql string predicate on the end_time field.
-func (f *BranchContractFilter) WhereEndTime(p entql.StringP) {
+// WhereEndTime applies the entql time.Time predicate on the end_time field.
+func (f *BranchContractFilter) WhereEndTime(p entql.TimeP) {
 	f.Where(p.Field(branchcontract.FieldEndTime))
 }
 

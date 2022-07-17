@@ -214,7 +214,11 @@ func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
         q.SetSimSn(*req.SimSn)
     }
     if req.SimDate != nil {
-        q.SetSimDate(tools.NewTime().ParseDateStringX(*req.SimDate))
+        end := tools.NewTime().ParseDateStringX(*req.SimDate)
+        if time.Now().After(end) {
+            snag.Panic("sim卡到期日期不能早于现在")
+        }
+        q.SetSimDate(end)
     }
 
     err = s.checkDeploy(n.Status, n.BranchID)

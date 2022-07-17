@@ -126,3 +126,39 @@ func (w *Client) SendBatteryAbnormality(city, serial, name string, from, to uint
     )
     return w.SendMarkdown("BatteryNumberAbnormality", content)
 }
+
+// SendSimExpires 发送SIM卡到期警告
+func (w *Client) SendSimExpires(data model.CabinetSimNotice) error {
+    c := ""
+    if data.City != "" {
+        c = fmt.Sprintf(">城市: %s", data.City)
+    }
+    content := fmt.Sprintf(`SIM卡到期警告
+%s
+>电柜: %s
+>编号: %s
+>卡号: %s
+>到期: <font color="comment">%s</font>`,
+        c,
+        data.Name,
+        data.Serial,
+        data.Sim,
+        data.End)
+    return w.SendMarkdown("SimExpires", content)
+}
+
+// SendBranchExpires 发送场地到期警告
+func (w *Client) SendBranchExpires(data model.BranchExpriesNotice) error {
+    c := ""
+    if data.City != "" {
+        c = fmt.Sprintf(">城市: %s", data.City)
+    }
+    content := fmt.Sprintf(`场地到期警告
+%s
+>场地: %s
+>到期: <font color="comment">%s</font>`,
+        c,
+        data.Name,
+        data.End)
+    return w.SendMarkdown("BranchExpires", content)
+}

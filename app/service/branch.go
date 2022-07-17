@@ -16,6 +16,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/pkg/snag"
+    "github.com/auroraride/aurservd/pkg/tools"
     "github.com/jinzhu/copier"
     "github.com/lithammer/shortuuid/v4"
     "sort"
@@ -94,8 +95,8 @@ func (s *branchService) AddContract(id uint64, req *model.BranchContract) *ent.B
         SetElectricityPledge(req.ElectricityPledge).
         SetElectricity(req.Electricity).
         SetArea(req.Area).
-        SetStartTime(req.StartTime).
-        SetEndTime(req.EndTime).
+        SetStartTime(tools.NewTime().ParseDateStringX(req.StartTime)).
+        SetEndTime(tools.NewTime().ParseDateStringX(req.EndTime)).
         SetFile(req.File).
         SetSheets(req.Sheets).
         SaveX(s.ctx)

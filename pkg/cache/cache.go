@@ -18,6 +18,9 @@ var (
     Set    func(ctx context.Context, key string, value interface{}, expiration time.Duration) *redis.StatusCmd
     Get    func(ctx context.Context, key string) *redis.StringCmd
     Del    func(ctx context.Context, keys ...string) *redis.IntCmd
+    SAdd   func(ctx context.Context, key string, members ...interface{}) *redis.IntCmd
+    SCard  func(ctx context.Context, key string) *redis.IntCmd
+    SRem   func(ctx context.Context, key string, members ...interface{}) *redis.IntCmd
 )
 
 func CreateClient(addr, password string, db int) {

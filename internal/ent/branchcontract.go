@@ -69,10 +69,10 @@ type BranchContract struct {
 	Area float64 `json:"area,omitempty"`
 	// StartTime holds the value of the "start_time" field.
 	// 租期开始时间
-	StartTime string `json:"start_time,omitempty"`
+	StartTime time.Time `json:"start_time,omitempty"`
 	// EndTime holds the value of the "end_time" field.
 	// 租期结束时间
-	EndTime string `json:"end_time,omitempty"`
+	EndTime time.Time `json:"end_time,omitempty"`
 	// File holds the value of the "file" field.
 	// 合同文件
 	File string `json:"file,omitempty"`
@@ -118,9 +118,9 @@ func (*BranchContract) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullFloat64)
 		case branchcontract.FieldID, branchcontract.FieldBranchID, branchcontract.FieldLease:
 			values[i] = new(sql.NullInt64)
-		case branchcontract.FieldRemark, branchcontract.FieldLandlordName, branchcontract.FieldIDCardNumber, branchcontract.FieldPhone, branchcontract.FieldBankNumber, branchcontract.FieldStartTime, branchcontract.FieldEndTime, branchcontract.FieldFile:
+		case branchcontract.FieldRemark, branchcontract.FieldLandlordName, branchcontract.FieldIDCardNumber, branchcontract.FieldPhone, branchcontract.FieldBankNumber, branchcontract.FieldFile:
 			values[i] = new(sql.NullString)
-		case branchcontract.FieldCreatedAt, branchcontract.FieldUpdatedAt, branchcontract.FieldDeletedAt:
+		case branchcontract.FieldCreatedAt, branchcontract.FieldUpdatedAt, branchcontract.FieldDeletedAt, branchcontract.FieldStartTime, branchcontract.FieldEndTime:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type BranchContract", columns[i])
@@ -251,16 +251,16 @@ func (bc *BranchContract) assignValues(columns []string, values []interface{}) e
 				bc.Area = value.Float64
 			}
 		case branchcontract.FieldStartTime:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field start_time", values[i])
 			} else if value.Valid {
-				bc.StartTime = value.String
+				bc.StartTime = value.Time
 			}
 		case branchcontract.FieldEndTime:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field end_time", values[i])
 			} else if value.Valid {
-				bc.EndTime = value.String
+				bc.EndTime = value.Time
 			}
 		case branchcontract.FieldFile:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -346,9 +346,9 @@ func (bc *BranchContract) String() string {
 	builder.WriteString(", area=")
 	builder.WriteString(fmt.Sprintf("%v", bc.Area))
 	builder.WriteString(", start_time=")
-	builder.WriteString(bc.StartTime)
+	builder.WriteString(bc.StartTime.Format(time.ANSIC))
 	builder.WriteString(", end_time=")
-	builder.WriteString(bc.EndTime)
+	builder.WriteString(bc.EndTime.Format(time.ANSIC))
 	builder.WriteString(", file=")
 	builder.WriteString(bc.File)
 	builder.WriteString(", sheets=")

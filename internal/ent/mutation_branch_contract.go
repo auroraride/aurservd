@@ -44,8 +44,8 @@ type BranchContractMutation struct {
 	addelectricity        *float64
 	area                  *float64
 	addarea               *float64
-	start_time            *string
-	end_time              *string
+	start_time            *time.Time
+	end_time              *time.Time
 	file                  *string
 	sheets                *[]string
 	clearedFields         map[string]struct{}
@@ -939,12 +939,12 @@ func (m *BranchContractMutation) ResetArea() {
 }
 
 // SetStartTime sets the "start_time" field.
-func (m *BranchContractMutation) SetStartTime(s string) {
-	m.start_time = &s
+func (m *BranchContractMutation) SetStartTime(t time.Time) {
+	m.start_time = &t
 }
 
 // StartTime returns the value of the "start_time" field in the mutation.
-func (m *BranchContractMutation) StartTime() (r string, exists bool) {
+func (m *BranchContractMutation) StartTime() (r time.Time, exists bool) {
 	v := m.start_time
 	if v == nil {
 		return
@@ -955,7 +955,7 @@ func (m *BranchContractMutation) StartTime() (r string, exists bool) {
 // OldStartTime returns the old "start_time" field's value of the BranchContract entity.
 // If the BranchContract object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BranchContractMutation) OldStartTime(ctx context.Context) (v string, err error) {
+func (m *BranchContractMutation) OldStartTime(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldStartTime is only allowed on UpdateOne operations")
 	}
@@ -975,12 +975,12 @@ func (m *BranchContractMutation) ResetStartTime() {
 }
 
 // SetEndTime sets the "end_time" field.
-func (m *BranchContractMutation) SetEndTime(s string) {
-	m.end_time = &s
+func (m *BranchContractMutation) SetEndTime(t time.Time) {
+	m.end_time = &t
 }
 
 // EndTime returns the value of the "end_time" field in the mutation.
-func (m *BranchContractMutation) EndTime() (r string, exists bool) {
+func (m *BranchContractMutation) EndTime() (r time.Time, exists bool) {
 	v := m.end_time
 	if v == nil {
 		return
@@ -991,7 +991,7 @@ func (m *BranchContractMutation) EndTime() (r string, exists bool) {
 // OldEndTime returns the old "end_time" field's value of the BranchContract entity.
 // If the BranchContract object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BranchContractMutation) OldEndTime(ctx context.Context) (v string, err error) {
+func (m *BranchContractMutation) OldEndTime(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldEndTime is only allowed on UpdateOne operations")
 	}
@@ -1421,14 +1421,14 @@ func (m *BranchContractMutation) SetField(name string, value ent.Value) error {
 		m.SetArea(v)
 		return nil
 	case branchcontract.FieldStartTime:
-		v, ok := value.(string)
+		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStartTime(v)
 		return nil
 	case branchcontract.FieldEndTime:
-		v, ok := value.(string)
+		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

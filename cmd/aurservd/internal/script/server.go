@@ -25,11 +25,17 @@ func serverCommand() *cobra.Command {
             // 启动电柜服务
             go pvd.Run()
 
-            // 启动subscribe task
+            // 启动 subscribe task
             go task.NewSubscribe().Start()
 
-            // 启动enterprise task
+            // 启动 enterprise task
             go task.NewEnterprise().Start()
+
+            // 启动 cabinet task
+            go task.NewCabinetTask().Start()
+
+            // 启动 branch task
+            go task.NewBranchTask().Start()
 
             // 启动服务器
             router.Run()
