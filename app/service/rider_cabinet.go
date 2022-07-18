@@ -65,11 +65,11 @@ func NewRiderCabinetWithRider(rider *ent.Rider) *riderCabinetService {
 func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) *model.RiderCabinetInfo {
     // 检查用户换电间隔
     iv := cache.Int(model.SettingExchangeInterval)
-    ml := time.Now().Add(time.Duration(iv) * time.Minute)
+    ml := time.Now().Add(-time.Duration(iv) * time.Minute)
     if exist, _ := ent.Database.Exchange.QueryNotDeleted().Where(
         exchange.RiderID(s.rider.ID),
         exchange.Success(true),
-        exchange.CreatedAtLTE(ml),
+        exchange.CreatedAtGTE(ml),
     ).Exist(s.ctx); exist {
         snag.Panic(fmt.Sprintf("换电过于频繁, %d分钟可再次换电", iv))
     }
