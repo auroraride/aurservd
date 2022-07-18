@@ -69,7 +69,7 @@ func (s *riderCabinetService) GetProcess(req *model.RiderCabinetOperateInfoReq) 
     if exist, _ := ent.Database.Exchange.QueryNotDeleted().Where(
         exchange.RiderID(s.rider.ID),
         exchange.Success(true),
-        exchange.CreatedAtGTE(ml),
+        exchange.CreatedAtLTE(ml),
     ).Exist(s.ctx); exist {
         snag.Panic(fmt.Sprintf("换电过于频繁, %d分钟可再次换电", iv))
     }
