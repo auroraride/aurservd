@@ -628,7 +628,7 @@ func (s *assistanceService) Process(req *model.AssistanceProcessReq) (res model.
         var cost, price float64
 
         if req.Pay {
-            price, _ = strconv.ParseFloat(NewSetting().GetSetting("RESCUE_FEE").(string), 10)
+            price = cache.Float64(model.SettingRescueFee)
             cost = tools.NewDecimal().Mul(price, ass.Distance/1000.0)
         }
 

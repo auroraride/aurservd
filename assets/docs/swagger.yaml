@@ -3318,6 +3318,12 @@ definitions:
     required:
     - content
     type: object
+  model.SettingRiderApp:
+    properties:
+      assistanceFee:
+        description: 救援费用
+        type: number
+    type: object
   model.ShiguangjuIVRItem:
     properties:
       name:
@@ -9632,6 +9638,27 @@ paths:
           schema:
             $ref: '#/definitions/model.RiderSigninRes'
       summary: R1006 获取个人信息
+      tags:
+      - '[R]骑手接口'
+  /rider/v1/setting/app:
+    get:
+      consumes:
+      - application/json
+      operationId: RiderSettingApp
+      parameters:
+      - description: 骑手校验token
+        in: header
+        name: X-Rider-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.SettingRiderApp'
+      summary: R6001 获取APP设置
       tags:
       - '[R]骑手接口'
   /rider/v1/signin:

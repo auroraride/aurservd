@@ -8414,6 +8414,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/rider/v1/setting/app": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[R]骑手接口"
+                ],
+                "summary": "R6001 获取APP设置",
+                "operationId": "RiderSettingApp",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "骑手校验token",
+                        "name": "X-Rider-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.SettingRiderApp"
+                        }
+                    }
+                }
+            }
+        },
         "/rider/v1/signin": {
             "post": {
                 "consumes": [
@@ -13203,6 +13235,15 @@ const docTemplate = `{
                 "content": {
                     "description": "值 ",
                     "type": "string"
+                }
+            }
+        },
+        "model.SettingRiderApp": {
+            "type": "object",
+            "properties": {
+                "assistanceFee": {
+                    "description": "救援费用",
+                    "type": "number"
                 }
             }
         },

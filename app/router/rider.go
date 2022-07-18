@@ -91,4 +91,7 @@ func loadRideRoutes() {
     g.POST("/assistance/cancel", rapi.Assistance.Cancel)
     g.GET("/assistance/current", rapi.Assistance.Current)
     g.GET("/assistance", rapi.Assistance.List)
+
+    // 设定
+    g.GET("/setting/app", rapi.Setting.App)
 }

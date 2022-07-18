@@ -88,3 +88,7 @@ var Settings = map[string]SettingItem{
         Default: "20",
     },
 }
+
+type SettingRiderApp struct {
+    AssistanceFee float64 `json:"assistanceFee"` // 救援费用
+}

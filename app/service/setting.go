@@ -47,7 +47,12 @@ func (s *settingService) ParseKey(key string) string {
 // CacheSettings 缓存设置
 func (s *settingService) CacheSettings(sm *ent.Setting) {
     switch sm.Key {
-    case model.SettingBatteryFull, model.SettingDeposit, model.SettingRenewal, model.SettingPauseMaxDays, model.SettingExchangeInterval:
+    case model.SettingBatteryFull,
+        model.SettingDeposit,
+        model.SettingRenewal,
+        model.SettingPauseMaxDays,
+        model.SettingExchangeInterval,
+        model.SettingRescueFee:
         f, err := strconv.ParseFloat(strings.ReplaceAll(sm.Content, `"`, ""), 10)
         if err == nil {
             cache.Set(s.ctx, sm.Key, f, 0)
