@@ -89,7 +89,7 @@ func AutoBinFault(operator model.CabinetDoorOperator, cab *ent.Cabinet, index in
         cache.Set(ctx, binKey, times, -1)
         // 推送消息
         go func() {
-            _ = workwx.New().ExchangeBinFault(cabinetCity(cab), cab.Name, cab.Serial, fmt.Sprintf("%d号仓", index+1), operator.Name, operator.Phone, times)
+            workwx.New().ExchangeBinFault(cabinetCity(cab), cab.Name, cab.Serial, fmt.Sprintf("%d号仓", index+1), operator.Name, operator.Phone, times)
         }()
         // 锁仓
         if times > 2 {
@@ -111,7 +111,7 @@ func monitor(oldBins []model.CabinetBin, oldHealth uint8, oldNum uint, item *ent
         // 电柜在线变动日志
         logging.NewHealthLog(item.Brand, item.Serial, item.UpdatedAt).SetStatus(oldHealth, item.Health).Send()
         go func() {
-            _ = workwx.New().SendCabinetOffline(item.Name, item.Serial, cabinetCity(item))
+            workwx.New().SendCabinetOffline(item.Name, item.Serial, cabinetCity(item))
         }()
     }
 
@@ -132,7 +132,7 @@ func monitor(oldBins []model.CabinetBin, oldHealth uint8, oldNum uint, item *ent
 
             // 推送消息
             go func() {
-                _ = workwx.New().SendBatteryAbnormality(cabinetCity(item), item.Serial, item.Name, oldNum, item.BatteryNum, diff)
+                workwx.New().SendBatteryAbnormality(cabinetCity(item), item.Serial, item.Name, oldNum, item.BatteryNum, diff)
             }()
         }
     }

@@ -147,7 +147,7 @@ func (s *attendanceService) Create(req *model.AttendanceCreateReq) {
     c := NewCity().Query(st.CityID)
 
     if len(noticeItems) > 0 {
-        go func() { _ = workwx.New().SendInventory(req.Duty, c.Name, st.Name, em, noticeItems) }()
+        go func() { workwx.New().SendInventory(req.Duty, c.Name, st.Name, em, noticeItems) }()
     }
 
     tx, _ := ent.Database.Tx(s.ctx)

@@ -9,6 +9,7 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/golang-module/carbon/v2"
+    log "github.com/sirupsen/logrus"
     "strings"
     "time"
 )
@@ -34,30 +35,33 @@ type ChatMarkdown struct {
     Markdown ChatContent `json:"markdown"`
 }
 
-func (w *Client) SendMarkdown(chatid string, content string) error {
+func (w *Client) SendMarkdown(chatid string, content string) {
     var res baseResponse
-    return w.RequestPost("/appchat/send", ChatMarkdown{
+    err := w.RequestPost("/appchat/send", ChatMarkdown{
         ChatMessage: ChatMessage{
             Chatid:  chatid,
             Msgtype: "markdown",
         },
         Markdown: ChatContent{Content: content},
     }, &res)
+    if err != nil {
+        log.Errorf("[%s]消息发送失败: %s, %s", chatid, err, content)
+    }
 }
 
-// SendCabinetOffline 换电柜离线
-func (w *Client) SendCabinetOffline(name, serial, city string) error {
+// SendCabinetOffline 电柜离线警告
+func (w *Client) SendCabinetOffline(name, serial, city string) {
     content := fmt.Sprintf(`电柜离线警告
 >状态: <font color="warning">离线</font>
 >城市: %s
 >电柜: %s
 >编号: %s
 >时间: <font color="comment">%s</font>`, city, name, serial, time.Now().Format(carbon.DateTimeLayout))
-    return w.SendMarkdown("CabinetHealth", content)
+    w.SendMarkdown("CabinetHealth", content)
 }
 
-// ExchangeBinFault 换电故障报警
-func (w *Client) ExchangeBinFault(city, name, serial, bin, rider, phone string, times int) error {
+// ExchangeBinFault 换电仓位处理失败警告
+func (w *Client) ExchangeBinFault(city, name, serial, bin, rider, phone string, times int) {
     state := "处理失败"
     if times >= 2 {
         state += ", 已锁仓"
@@ -80,11 +84,11 @@ func (w *Client) ExchangeBinFault(city, name, serial, bin, rider, phone string, 
         phone,
         time.Now().Format(carbon.DateTimeLayout),
     )
-    return w.SendMarkdown("ExchangeBinFault", content)
+    w.SendMarkdown("ExchangeBinFault", content)
 }
 
 // SendInventory 发送物资警告
-func (w *Client) SendInventory(duty bool, city, store string, e model.Employee, items []model.AttendanceInventory) error {
+func (w *Client) SendInventory(duty bool, city, store string, e model.Employee, items []model.AttendanceInventory) {
     ds := "下班"
     if duty {
         ds = "上班"
@@ -103,11 +107,11 @@ func (w *Client) SendInventory(duty bool, city, store string, e model.Employee, 
 >时间: <font color="comment">%s</font>
 >
 %s`, ds, city, store, e.Name, e.Phone, time.Now().Format(carbon.DateTimeLayout), strings.Join(arr, "\n>    "))
-    return w.SendMarkdown("InventoryAbnormality", content)
+    w.SendMarkdown("InventoryAbnormality", content)
 }
 
-// SendBatteryAbnormality 发送电池异常变动警告
-func (w *Client) SendBatteryAbnormality(city, serial, name string, from, to uint, diff int) error {
+// SendBatteryAbnormality 电池异常变动警告
+func (w *Client) SendBatteryAbnormality(city, serial, name string, from, to uint, diff int) {
     content := fmt.Sprintf(`电池异常变动警告
 >差值: <font color="warning">%d</font>
 >城市: %s
@@ -124,11 +128,11 @@ func (w *Client) SendBatteryAbnormality(city, serial, name string, from, to uint
         to,
         time.Now().Format(carbon.DateTimeLayout),
     )
-    return w.SendMarkdown("BatteryNumberAbnormality", content)
+    w.SendMarkdown("BatteryNumberAbnormality", content)
 }
 
-// SendSimExpires 发送SIM卡到期警告
-func (w *Client) SendSimExpires(data model.CabinetSimNotice) error {
+// SendSimExpires SIM卡到期警告
+func (w *Client) SendSimExpires(data model.CabinetSimNotice) {
     c := ""
     if data.City != "" {
         c = fmt.Sprintf(">城市: %s", data.City)
@@ -144,11 +148,11 @@ func (w *Client) SendSimExpires(data model.CabinetSimNotice) error {
         data.Serial,
         data.Sim,
         data.End)
-    return w.SendMarkdown("SimExpires", content)
+    w.SendMarkdown("SimExpires", content)
 }
 
-// SendBranchExpires 发送场地到期警告
-func (w *Client) SendBranchExpires(data model.BranchExpriesNotice) error {
+// SendBranchExpires 场地到期警告
+func (w *Client) SendBranchExpires(data model.BranchExpriesNotice) {
     c := ""
     if data.City != "" {
         c = fmt.Sprintf(">城市: %s", data.City)
@@ -160,5 +164,5 @@ func (w *Client) SendBranchExpires(data model.BranchExpriesNotice) error {
         c,
         data.Name,
         data.End)
-    return w.SendMarkdown("BranchExpires", content)
+    w.SendMarkdown("BranchExpires", content)
 }

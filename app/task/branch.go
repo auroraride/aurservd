@@ -59,7 +59,7 @@ func (*branchTask) Do() {
             data.City = c.Name
         }
         go func() {
-            _ = workwx.New().SendBranchExpires(data)
+            workwx.New().SendBranchExpires(data)
         }()
     }
 }

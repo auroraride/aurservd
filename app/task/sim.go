@@ -60,7 +60,7 @@ func (*simTask) Do() {
             data.City = c.Name
         }
         go func() {
-            _ = workwx.New().SendSimExpires(data)
+            workwx.New().SendSimExpires(data)
         }()
     }
 }
