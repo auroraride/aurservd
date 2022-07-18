@@ -154,4 +154,7 @@ func loadManagerRoutes() {
     g.POST("/permission/role", mapi.Permission.CreateRole)
     g.PUT("/permission/role/:id", mapi.Permission.ModifyRole)
     g.DELETE("/permission/role/:id", mapi.Permission.DeleteRole)
+
+    // 导入数据
+    g.POST("/import/rider", mapi.Import.Rider)
 }

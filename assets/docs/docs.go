@@ -4633,6 +4633,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/import/rider": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "ME001 导入骑手",
+                "operationId": "ManagerImportRider",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "骑手信息",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ImportRiderReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/inventory": {
             "get": {
                 "consumes": [
@@ -11860,6 +11901,57 @@ const docTemplate = `{
             "properties": {
                 "id": {
                     "type": "integer"
+                }
+            }
+        },
+        "model.ImportRiderReq": {
+            "type": "object",
+            "required": [
+                "city",
+                "days",
+                "end",
+                "model",
+                "name",
+                "phone",
+                "plan",
+                "store"
+            ],
+            "properties": {
+                "city": {
+                    "description": "城市 ",
+                    "type": "string"
+                },
+                "days": {
+                    "description": "订阅天数 ",
+                    "type": "string"
+                },
+                "employeeId": {
+                    "description": "选择店员ID",
+                    "type": "integer"
+                },
+                "end": {
+                    "description": "结束日期 ",
+                    "type": "string"
+                },
+                "model": {
+                    "description": "电池型号 ",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "姓名 ",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "电话 ",
+                    "type": "string"
+                },
+                "plan": {
+                    "description": "订阅 ",
+                    "type": "string"
+                },
+                "store": {
+                    "description": "激活门店 ",
+                    "type": "string"
                 }
             }
         },

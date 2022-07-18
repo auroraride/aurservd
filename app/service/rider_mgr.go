@@ -270,7 +270,10 @@ func (s *riderMgrService) UnSubscribe(subscribeID uint64) {
         SetStatus(model.SubscribeStatusUnSubscribed).
         SetUnsubscribeReason(reason).
         Save(s.ctx)
+    snag.PanicIfErrorX(err, tx.Rollback)
 
+    // 标记需要签约
+    _, err = tx.Rider.UpdateOneID(sub.RiderID).SetContractual(false).Save(s.ctx)
     snag.PanicIfErrorX(err, tx.Rollback)
 
     // 电池入库

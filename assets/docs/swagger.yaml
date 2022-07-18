@@ -2376,6 +2376,45 @@ definitions:
     required:
     - id
     type: object
+  model.ImportRiderReq:
+    properties:
+      city:
+        description: '城市 '
+        type: string
+      days:
+        description: '订阅天数 '
+        type: string
+      employeeId:
+        description: 选择店员ID
+        type: integer
+      end:
+        description: '结束日期 '
+        type: string
+      model:
+        description: '电池型号 '
+        type: string
+      name:
+        description: '姓名 '
+        type: string
+      phone:
+        description: '电话 '
+        type: string
+      plan:
+        description: '订阅 '
+        type: string
+      store:
+        description: '激活门店 '
+        type: string
+    required:
+    - city
+    - days
+    - end
+    - model
+    - name
+    - phone
+    - plan
+    - store
+    type: object
   model.Inventory:
     properties:
       count:
@@ -7186,6 +7225,33 @@ paths:
                   type: array
               type: object
       summary: M8003 换电记录
+      tags:
+      - '[M]管理接口'
+  /manager/v1/import/rider:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerImportRider
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 骑手信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ImportRiderReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: ME001 导入骑手
       tags:
       - '[M]管理接口'
   /manager/v1/inventory:

@@ -8,6 +8,7 @@ package service
 import (
     "context"
     "encoding/csv"
+    "errors"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
@@ -19,8 +20,8 @@ import (
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
+    log "github.com/sirupsen/logrus"
     "io"
-    "log"
     "os"
     "strconv"
     "strings"
@@ -28,24 +29,21 @@ import (
 )
 
 type importRiderService struct {
-    ctx context.Context
-}
-
-type riderCsvData struct {
-    Name  string
-    Phone string
-    Plan  string
-    Days  string
-    Model string
-    City  string
-    Store string
-    End   string
+    modifier *model.Modifier
+    ctx      context.Context
 }
 
 func NewImportRider() *importRiderService {
     return &importRiderService{
         ctx: context.Background(),
     }
+}
+
+func NewImportRiderWithModifier(m *model.Modifier) *importRiderService {
+    s := NewImportRider()
+    s.ctx = context.WithValue(s.ctx, "modifier", m)
+    s.modifier = m
+    return s
 }
 
 func (s *importRiderService) ParseCSV(path string) {
@@ -58,7 +56,7 @@ func (s *importRiderService) ParseCSV(path string) {
     r := csv.NewReader(csvfile)
 
     i := 0
-    var items []riderCsvData
+    var items []*model.ImportRiderReq
 
     for {
         record, err := r.Read()
@@ -96,7 +94,7 @@ func (s *importRiderService) ParseCSV(path string) {
 
         end = tools.NewTime().ParseDateStringX(end).Format(carbon.DateLayout)
 
-        items = append(items, riderCsvData{
+        items = append(items, &model.ImportRiderReq{
             Name:  strings.TrimSpace(record[0]),
             Phone: strings.TrimSpace(record[1]),
             Plan:  strings.TrimSpace(record[2]),
@@ -111,18 +109,30 @@ func (s *importRiderService) ParseCSV(path string) {
     s.insert(items)
 }
 
-func (s *importRiderService) insert(items []riderCsvData) {
-    qe := ent.Database.Employee.QueryNotDeleted().Where(employee.Name("曹博文")).FirstX(s.ctx)
-
-    var subs []*ent.Subscribe
-
-    tx, _ := ent.Database.Tx(s.ctx)
+func (s *importRiderService) insert(items []*model.ImportRiderReq) {
     for _, item := range items {
+        err := s.Create(item)
+        if err != nil {
+            log.Errorf("[%s] 添加失败: %s", item, err)
+        }
+    }
+}
+
+func (s *importRiderService) Create(item *model.ImportRiderReq) error {
+    var emp *ent.Employee
+    if item.EmployeeID != 0 {
+        emp = ent.Database.Employee.Query().Where(employee.ID(item.EmployeeID)).FirstX(s.ctx)
+    } else {
+        emp = ent.Database.Employee.QueryNotDeleted().Where(employee.Name("曹博文")).FirstX(s.ctx)
+    }
+    if emp == nil {
+        return errors.New("未找到店员")
+    }
+    return ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
         var p *ent.Person
         var r *ent.Rider
         var o *ent.Order
         var sub *ent.Subscribe
-        var err error
 
         if exists, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(item.Phone)).Exist(s.ctx); exists {
             snag.Panic(fmt.Sprintf("%s已存在", item.Phone))
@@ -135,8 +145,7 @@ func (s *importRiderService) insert(items []riderCsvData) {
         // 查找门店
         qs := ent.Database.Store.QueryNotDeleted().Where(store.Name(item.Store)).FirstX(s.ctx)
         if qs == nil {
-            fmt.Printf("未找到门店: %s\n", item.Store)
-            return
+            return fmt.Errorf("未找到门店: %s", item.Store)
         }
 
         // 查找城市
@@ -150,15 +159,19 @@ func (s *importRiderService) insert(items []riderCsvData) {
 
         // 创建用户
         p, err = tx.Person.Create().SetName(item.Name).Save(s.ctx)
-        snag.PanicIfErrorX(err, tx.Rollback)
+        if err != nil {
+            return
+        }
 
         // 创建骑手并设置为不需要签约
-        r, err = tx.Rider.Create().SetPhone(item.Phone).SetPerson(p).SetContractual(false).Save(s.ctx)
-        snag.PanicIfErrorX(err, tx.Rollback)
+        r, err = tx.Rider.Create().SetPhone(item.Phone).SetPerson(p).SetContractual(true).Save(s.ctx)
+        if err != nil {
+            return
+        }
 
         // 添加订阅
         sub, err = tx.Subscribe.Create().
-            SetEmployeeID(qe.ID).
+            SetEmployeeID(emp.ID).
             SetRider(r).
             SetInitialDays(days).
             SetType(model.OrderTypeNewly).
@@ -170,7 +183,9 @@ func (s *importRiderService) insert(items []riderCsvData) {
             SetModel(item.Model).
             SetRemaining(tools.NewTime().DiffDays(end.Carbon2Time(), time.Now())).
             Save(s.ctx)
-        snag.PanicIfErrorX(err, tx.Rollback)
+        if err != nil {
+            return
+        }
 
         // 创建订单
         o, err = tx.Order.
@@ -189,15 +204,14 @@ func (s *importRiderService) insert(items []riderCsvData) {
             SetCityID(sub.CityID).
             SetNillablePlanID(sub.PlanID).
             Save(s.ctx)
-        snag.PanicIfErrorX(err, tx.Rollback)
+        if err != nil {
+            return
+        }
 
         sub, err = tx.Subscribe.UpdateOneID(sub.ID).SetInitialOrderID(o.ID).Save(s.ctx)
-        snag.PanicIfErrorX(err, tx.Rollback)
-
-        log.Printf("[添加完成] %#v", item)
-
-        subs = append(subs, sub)
-    }
-
-    _ = tx.Commit()
+        if err != nil {
+            return
+        }
+        return nil
+    })
 }
