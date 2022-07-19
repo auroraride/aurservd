@@ -4660,7 +4660,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.ImportRiderReq"
+                            "$ref": "#/definitions/model.ImportRiderCreateReq"
                         }
                     }
                 ],
@@ -6112,6 +6112,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/selection/planmodel": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "MB011 筛选骑行卡电池",
+                "operationId": "ManagerSelectionPlanModel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "电池型号列表",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/selection/rider": {
             "get": {
                 "consumes": [
@@ -6223,7 +6258,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/manager/v1/selection/wxemployees": {
+        "/manager/v1/selection/wxemployee": {
             "get": {
                 "consumes": [
                     "application/json"
@@ -6235,7 +6270,7 @@ const docTemplate = `{
                     "[M]管理接口"
                 ],
                 "summary": "MB010 筛选企业微信成员",
-                "operationId": "ManagerSelectionWxEmployees",
+                "operationId": "ManagerSelectionWxEmployee",
                 "parameters": [
                     {
                         "type": "string",
@@ -11904,29 +11939,25 @@ const docTemplate = `{
                 }
             }
         },
-        "model.ImportRiderReq": {
+        "model.ImportRiderCreateReq": {
             "type": "object",
             "required": [
-                "city",
-                "days",
+                "cityId",
+                "employeeId",
                 "end",
                 "model",
                 "name",
                 "phone",
-                "plan",
-                "store"
+                "planId",
+                "storeId"
             ],
             "properties": {
-                "city": {
-                    "description": "城市 ",
-                    "type": "string"
-                },
-                "days": {
-                    "description": "订阅天数 ",
-                    "type": "string"
+                "cityId": {
+                    "description": "城市ID ",
+                    "type": "integer"
                 },
                 "employeeId": {
-                    "description": "选择店员ID",
+                    "description": "店员ID ",
                     "type": "integer"
                 },
                 "end": {
@@ -11945,13 +11976,13 @@ const docTemplate = `{
                     "description": "电话 ",
                     "type": "string"
                 },
-                "plan": {
-                    "description": "订阅 ",
-                    "type": "string"
+                "planId": {
+                    "description": "骑行卡ID ",
+                    "type": "integer"
                 },
-                "store": {
-                    "description": "激活门店 ",
-                    "type": "string"
+                "storeId": {
+                    "description": "门店ID ",
+                    "type": "integer"
                 }
             }
         },

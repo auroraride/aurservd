@@ -8,15 +8,14 @@ package service
 import (
     "context"
     "encoding/csv"
-    "errors"
     "fmt"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/city"
-    "github.com/auroraride/aurservd/internal/ent/employee"
     "github.com/auroraride/aurservd/internal/ent/plan"
     "github.com/auroraride/aurservd/internal/ent/rider"
     "github.com/auroraride/aurservd/internal/ent/store"
+    "github.com/auroraride/aurservd/internal/ent/subscribe"
     "github.com/auroraride/aurservd/pkg/snag"
     "github.com/auroraride/aurservd/pkg/tools"
     "github.com/golang-module/carbon/v2"
@@ -31,6 +30,7 @@ import (
 type importRiderService struct {
     modifier *model.Modifier
     ctx      context.Context
+    plan     *ent.Plan
 }
 
 func NewImportRider() *importRiderService {
@@ -56,7 +56,6 @@ func (s *importRiderService) ParseCSV(path string) {
     r := csv.NewReader(csvfile)
 
     i := 0
-    var items []*model.ImportRiderReq
 
     for {
         record, err := r.Read()
@@ -91,10 +90,9 @@ func (s *importRiderService) ParseCSV(path string) {
             }
             end = strings.Join(arr, "-")
         }
-
         end = tools.NewTime().ParseDateStringX(end).Format(carbon.DateLayout)
 
-        items = append(items, &model.ImportRiderReq{
+        item := &model.ImportRiderFromCsv{
             Name:  strings.TrimSpace(record[0]),
             Phone: strings.TrimSpace(record[1]),
             Plan:  strings.TrimSpace(record[2]),
@@ -103,84 +101,85 @@ func (s *importRiderService) ParseCSV(path string) {
             City:  strings.TrimSpace(record[5]),
             Store: strings.TrimSpace(record[6]),
             End:   end,
+        }
+
+        // 查找骑行卡
+        days, _ := strconv.Atoi(item.Days)
+        s.plan = ent.Database.Plan.QueryNotDeleted().Where(plan.Name(item.Plan), plan.Days(uint(days))).FirstX(s.ctx)
+
+        // 查找门店
+        qs := ent.Database.Store.QueryNotDeleted().Where(store.Name(item.Store)).FirstX(s.ctx)
+        if qs == nil {
+            snag.Panic(fmt.Sprintf("未找到门店: %s", item.Store))
+        }
+
+        // 查找城市
+        qc := ent.Database.City.QueryNotDeleted().Where(city.Name(item.City)).FirstX(s.ctx)
+        err = s.Create(&model.ImportRiderCreateReq{
+            Name:       item.Name,
+            Phone:      item.Phone,
+            PlanID:     s.plan.ID,
+            CityID:     qc.ID,
+            StoreID:    qs.ID,
+            EmployeeID: 38654705685,
+            End:        end,
+            Model:      item.Model,
         })
-    }
-
-    s.insert(items)
-}
-
-func (s *importRiderService) insert(items []*model.ImportRiderReq) {
-    for _, item := range items {
-        err := s.Create(item)
         if err != nil {
             log.Errorf("[%s] 添加失败: %s", item, err)
         }
     }
 }
 
-func (s *importRiderService) Create(item *model.ImportRiderReq) error {
-    var emp *ent.Employee
-    if item.EmployeeID != 0 {
-        emp = ent.Database.Employee.Query().Where(employee.ID(item.EmployeeID)).FirstX(s.ctx)
-    } else {
-        emp = ent.Database.Employee.QueryNotDeleted().Where(employee.Name("曹博文")).FirstX(s.ctx)
-    }
-    if emp == nil {
-        return errors.New("未找到店员")
-    }
+// Create 手动添加骑手
+func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
     return ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
         var p *ent.Person
         var r *ent.Rider
         var o *ent.Order
         var sub *ent.Subscribe
 
-        if exists, _ := ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(item.Phone)).Exist(s.ctx); exists {
-            snag.Panic(fmt.Sprintf("%s已存在", item.Phone))
+        if r, _ = ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).First(s.ctx); r != nil {
+            if exist, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.RiderID(r.ID)).Exist(s.ctx); exist {
+                snag.Panic(fmt.Sprintf("%s:%s 已存在", req.Phone, req.Name))
+            }
         }
-
-        // 查找骑行卡
-        days, _ := strconv.Atoi(item.Days)
-        qp := ent.Database.Plan.QueryNotDeleted().Where(plan.Name(item.Plan), plan.Days(uint(days))).FirstX(s.ctx)
-
-        // 查找门店
-        qs := ent.Database.Store.QueryNotDeleted().Where(store.Name(item.Store)).FirstX(s.ctx)
-        if qs == nil {
-            return fmt.Errorf("未找到门店: %s", item.Store)
-        }
-
-        // 查找城市
-        qc := ent.Database.City.QueryNotDeleted().Where(city.Name(item.City)).FirstX(s.ctx)
 
         // 结束时间
-        end := carbon.Parse(item.End)
+        end := carbon.Parse(req.End)
+
+        // 查询plan
+        if s.plan == nil {
+            s.plan = ent.Database.Plan.QueryNotDeleted().Where(plan.ID(req.PlanID)).FirstX(s.ctx)
+        }
 
         // 计算开始时间
-        start := end.SubDays(days).Carbon2Time()
+        start := end.SubDays(int(s.plan.Days)).Carbon2Time()
 
         // 创建用户
-        p, err = tx.Person.Create().SetName(item.Name).Save(s.ctx)
+        p, err = tx.Person.Create().SetName(req.Name).Save(s.ctx)
         if err != nil {
             return
         }
 
         // 创建骑手并设置为不需要签约
-        r, err = tx.Rider.Create().SetPhone(item.Phone).SetPerson(p).SetContractual(true).Save(s.ctx)
+        r, err = tx.Rider.Create().SetPhone(req.Phone).SetPerson(p).SetContractual(true).Save(s.ctx)
         if err != nil {
             return
         }
 
         // 添加订阅
         sub, err = tx.Subscribe.Create().
-            SetEmployeeID(emp.ID).
+            SetEmployeeID(req.EmployeeID).
             SetRider(r).
-            SetInitialDays(days).
+            SetInitialDays(int(s.plan.Days)).
             SetType(model.OrderTypeNewly).
             SetStatus(model.SubscribeStatusUsing).
             SetStartAt(start).
-            SetStore(qs).
-            SetPlan(qp).
-            SetCity(qc).
-            SetModel(item.Model).
+            SetStoreID(req.StoreID).
+            SetPlanID(req.PlanID).
+            SetCityID(req.CityID).
+            SetModel(req.Model).
             SetRemaining(tools.NewTime().DiffDays(end.Carbon2Time(), time.Now())).
             Save(s.ctx)
         if err != nil {

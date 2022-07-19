@@ -3,6 +3,8 @@
 #### 接口新增
 
 - [ME001 导入骑手](http://localhost:5533/docs#tag/M/operation/ManagerImportRider)
+  - `model`电池型号筛选参考`MB011 筛选骑行卡电池`
+- [MB011 筛选骑行卡电池](http://localhost:5533/docs#tag/M/operation/ManagerSelectionPlanModel)
 
 
 

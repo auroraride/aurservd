@@ -11,6 +11,9 @@ node {
         echo '完成Development环境部署'
     }
     stage('Production') {
+        timeout (time: 1, unit: 'HOURS' )  {
+            input 'Deploy to Production?'
+        }
         if (TAG == 'latest' || TAG == 'prod') {
             echo '开始部署Production环境'
             sshagent (credentials: ['Jenkins']) {

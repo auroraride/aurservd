@@ -35,6 +35,7 @@ func NewSelection() *selectionService {
     }
 }
 
+// Plan 筛选骑行卡
 func (s *selectionService) Plan(req *model.PlanSelectionReq) (items []model.CascaderOptionLevel3) {
     q := ent.Database.Plan.QueryNotDeleted().
         Where(plan.ParentIDIsNil()).
@@ -113,6 +114,7 @@ func (s *selectionService) Plan(req *model.PlanSelectionReq) (items []model.Casc
     return
 }
 
+// Rider 筛选骑手
 func (s *selectionService) Rider(req *model.RiderSelectionReq) (items []model.SelectOption) {
     q := ent.Database.Rider.QueryNotDeleted().WithPerson()
     if req.Keyword != nil {
@@ -140,6 +142,7 @@ func (s *selectionService) Rider(req *model.RiderSelectionReq) (items []model.Se
     return
 }
 
+// Role 筛选角色
 func (s *selectionService) Role() (items []model.SelectOption) {
     roles, _ := ent.Database.Role.Query().All(s.ctx)
     for _, role := range roles {
@@ -151,6 +154,7 @@ func (s *selectionService) Role() (items []model.SelectOption) {
     return
 }
 
+// City 筛选城市
 func (s *selectionService) City() (items []*model.CascaderOptionLevel2) {
     res, _ := ent.Database.City.QueryNotDeleted().WithChildren(func(cq *ent.CityQuery) {
         cq.Where(city.Open(true))
@@ -250,6 +254,7 @@ func (s *selectionService) nilableCity(item *ent.City) model.IDName {
     return item
 }
 
+// Store 筛选门店
 func (s *selectionService) Store() (items []*model.CascaderOptionLevel2) {
     res, _ := ent.Database.Store.QueryNotDeleted().WithCity().All(s.ctx)
 
@@ -258,6 +263,7 @@ func (s *selectionService) Store() (items []*model.CascaderOptionLevel2) {
     }, "未选择网点", true)
 }
 
+// Employee 筛选店员
 func (s *selectionService) Employee() (items []*model.CascaderOptionLevel2) {
     res, _ := ent.Database.Employee.QueryNotDeleted().WithCity().All(s.ctx)
 
@@ -266,6 +272,7 @@ func (s *selectionService) Employee() (items []*model.CascaderOptionLevel2) {
     }, "未选择城市", true)
 }
 
+// Branch 筛选网点
 func (s *selectionService) Branch() (items []*model.CascaderOptionLevel2) {
     res, _ := ent.Database.Branch.QueryNotDeleted().WithCity().All(s.ctx)
 
@@ -274,6 +281,7 @@ func (s *selectionService) Branch() (items []*model.CascaderOptionLevel2) {
     }, "未选择网点", true)
 }
 
+// Enterprise 筛选企业
 func (s *selectionService) Enterprise() (items []*model.CascaderOptionLevel2) {
     res, _ := ent.Database.Enterprise.QueryNotDeleted().WithCity().All(s.ctx)
 
@@ -282,6 +290,7 @@ func (s *selectionService) Enterprise() (items []*model.CascaderOptionLevel2) {
     }, "未选择城市", true)
 }
 
+// Cabinet 筛选电柜
 func (s *selectionService) Cabinet() (items []*model.CascaderOptionLevel2) {
     res, _ := ent.Database.Cabinet.QueryNotDeleted().WithCity().All(s.ctx)
 
@@ -290,7 +299,8 @@ func (s *selectionService) Cabinet() (items []*model.CascaderOptionLevel2) {
     }, "未选择网点", true)
 }
 
-func (s *selectionService) WorkwxEmployees() (items []any) {
+// WorkwxEmployee 筛选企业微信成员
+func (s *selectionService) WorkwxEmployee() (items []any) {
     wx := workwx.New()
     userlist, err := wx.UserSimpleList(1)
 
@@ -307,4 +317,14 @@ func (s *selectionService) WorkwxEmployees() (items []any) {
         }
     }
     return
+}
+
+// PlanModel 筛选骑行卡电池型号
+func (s *selectionService) PlanModel(req *model.SelectionPlanModelReq) []string {
+    p, _ := ent.Database.Plan.QueryNotDeleted().Where(plan.ID(req.PlanID)).WithPms().First(s.ctx)
+    items := make([]string, len(p.Edges.Pms))
+    for i, pm := range p.Edges.Pms {
+        items[i] = pm.Model
+    }
+    return items
 }

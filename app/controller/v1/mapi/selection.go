@@ -145,16 +145,30 @@ func (*selection) Role(c echo.Context) (err error) {
     return ctx.SendResponse(service.NewSelection().Role())
 }
 
-// WxEmployees
-// @ID           ManagerSelectionWxEmployees
-// @Router       /manager/v1/selection/wxemployees [GET]
+// WxEmployee
+// @ID           ManagerSelectionWxEmployee
+// @Router       /manager/v1/selection/wxemployee [GET]
 // @Summary      MB010 筛选企业微信成员
 // @Tags         [M]管理接口
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Success      200  {object}  []map[string]interface{}  "请求成功"
-func (*selection) WxEmployees(c echo.Context) (err error) {
+func (*selection) WxEmployee(c echo.Context) (err error) {
     ctx := app.Context(c)
-    return ctx.SendResponse(service.NewSelection().WorkwxEmployees())
+    return ctx.SendResponse(service.NewSelection().WorkwxEmployee())
+}
+
+// PlanModel
+// @ID           ManagerSelectionPlanModel
+// @Router       /manager/v1/selection/planmodel [GET]
+// @Summary      MB011 筛选骑行卡电池
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Success      200  {object}  []string  "电池型号列表"
+func (*selection) PlanModel(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.SelectionPlanModelReq](c)
+    return ctx.SendResponse(service.NewSelection().PlanModel(req))
 }

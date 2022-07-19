@@ -2376,16 +2376,13 @@ definitions:
     required:
     - id
     type: object
-  model.ImportRiderReq:
+  model.ImportRiderCreateReq:
     properties:
-      city:
-        description: '城市 '
-        type: string
-      days:
-        description: '订阅天数 '
-        type: string
+      cityId:
+        description: '城市ID '
+        type: integer
       employeeId:
-        description: 选择店员ID
+        description: '店员ID '
         type: integer
       end:
         description: '结束日期 '
@@ -2399,21 +2396,21 @@ definitions:
       phone:
         description: '电话 '
         type: string
-      plan:
-        description: '订阅 '
-        type: string
-      store:
-        description: '激活门店 '
-        type: string
+      planId:
+        description: '骑行卡ID '
+        type: integer
+      storeId:
+        description: '门店ID '
+        type: integer
     required:
-    - city
-    - days
+    - cityId
+    - employeeId
     - end
     - model
     - name
     - phone
-    - plan
-    - store
+    - planId
+    - storeId
     type: object
   model.Inventory:
     properties:
@@ -7243,7 +7240,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/model.ImportRiderReq'
+          $ref: '#/definitions/model.ImportRiderCreateReq'
       produces:
       - application/json
       responses:
@@ -8200,6 +8197,29 @@ paths:
       summary: MB001 筛选骑士卡
       tags:
       - '[M]管理接口'
+  /manager/v1/selection/planmodel:
+    get:
+      consumes:
+      - application/json
+      operationId: ManagerSelectionPlanModel
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 电池型号列表
+          schema:
+            items:
+              type: string
+            type: array
+      summary: MB011 筛选骑行卡电池
+      tags:
+      - '[M]管理接口'
   /manager/v1/selection/rider:
     get:
       consumes:
@@ -8273,11 +8293,11 @@ paths:
       summary: MB003 筛选门店
       tags:
       - '[M]管理接口'
-  /manager/v1/selection/wxemployees:
+  /manager/v1/selection/wxemployee:
     get:
       consumes:
       - application/json
-      operationId: ManagerSelectionWxEmployees
+      operationId: ManagerSelectionWxEmployee
       parameters:
       - description: 管理员校验token
         in: header
