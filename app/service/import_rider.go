@@ -154,7 +154,7 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
         }
 
         // 计算开始时间
-        start := end.SubDays(int(s.plan.Days)).Carbon2Time()
+        start := end.SubDays(int(s.plan.Days)).Tomorrow().Carbon2Time()
 
         // 创建用户
         if r == nil || r.Edges.Person == nil {
