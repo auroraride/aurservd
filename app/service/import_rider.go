@@ -180,7 +180,7 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
             SetPlanID(req.PlanID).
             SetCityID(req.CityID).
             SetModel(req.Model).
-            SetRemaining(tools.NewTime().DiffDays(end.Carbon2Time(), time.Now())).
+            SetRemaining(tools.NewTime().LastDays(end.Carbon2Time(), time.Now())).
             Save(s.ctx)
         if err != nil {
             return
