@@ -139,7 +139,7 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
         var o *ent.Order
         var sub *ent.Subscribe
 
-        if r, _ = ent.Database.Rider.QueryNotDeleted().Where(rider.Phone(req.Phone)).First(s.ctx); r != nil {
+        if r, _ = ent.Database.Rider.QueryNotDeleted().WithPerson().Where(rider.Phone(req.Phone)).First(s.ctx); r != nil {
             if exist, _ := ent.Database.Subscribe.QueryNotDeleted().Where(subscribe.RiderID(r.ID)).Exist(s.ctx); exist {
                 snag.Panic(fmt.Sprintf("%s:%s 已存在", req.Phone, req.Name))
             }
@@ -157,15 +157,23 @@ func (s *importRiderService) Create(req *model.ImportRiderCreateReq) error {
         start := end.SubDays(int(s.plan.Days)).Carbon2Time()
 
         // 创建用户
-        p, err = tx.Person.Create().SetName(req.Name).Save(s.ctx)
-        if err != nil {
-            return
+        if r == nil || r.Edges.Person == nil {
+            p, err = tx.Person.Create().SetName(req.Name).Save(s.ctx)
+            if err != nil {
+                return
+            }
         }
-
-        // 创建骑手并设置为不需要签约
-        r, err = tx.Rider.Create().SetPhone(req.Phone).SetPerson(p).SetContractual(true).Save(s.ctx)
-        if err != nil {
-            return
+        if r == nil {
+            // 创建骑手并设置为不需要签约
+            r, err = tx.Rider.Create().SetPhone(req.Phone).SetPerson(p).SetContractual(true).Save(s.ctx)
+            if err != nil {
+                return
+            }
+        } else if r.Edges.Person == nil {
+            r, err = tx.Rider.UpdateOne(r).SetPerson(p).SetContractual(true).Save(s.ctx)
+            if err != nil {
+                return
+            }
         }
 
         // 添加订阅
