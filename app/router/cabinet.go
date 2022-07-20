@@ -6,15 +6,15 @@
 package router
 
 import (
-    mw "github.com/auroraride/aurservd/app/middleware"
     "github.com/labstack/echo/v4"
 )
 
 func loadCabinetRoutes() {
-    g := e.Group("cabinet", mw.BodyDumpWithConfig(mw.BodyDumpConfig{
-        WithRequestHeaders:  true,
-        WithResponseHeaders: true,
-    }))
+    // g := e.Group("cabinet", mw.BodyDumpWithConfig(mw.BodyDumpConfig{
+    //     WithRequestHeaders:  true,
+    //     WithResponseHeaders: true,
+    // }))
+    g := e.Group("cabinet")
 
     // 凯信
     g.Any("/kaixin", func(c echo.Context) error {
