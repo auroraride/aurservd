@@ -73,6 +73,7 @@ func (Cabinet) Edges() []ent.Edge {
         edge.To("bms", BatteryModel.Type),
         edge.To("faults", CabinetFault.Type),
         edge.To("exchanges", Exchange.Type),
+        edge.To("stocks", Stock.Type),
     }
 }
 

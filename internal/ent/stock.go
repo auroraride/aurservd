@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -49,6 +50,9 @@ type Stock struct {
 	// StoreID holds the value of the "store_id" field.
 	// 入库至 或 出库自 门店ID
 	StoreID *uint64 `json:"store_id,omitempty"`
+	// CabinetID holds the value of the "cabinet_id" field.
+	// 入库至 或 出库自 电柜ID
+	CabinetID *uint64 `json:"cabinet_id,omitempty"`
 	// RiderID holds the value of the "rider_id" field.
 	// 对应骑手ID
 	RiderID *uint64 `json:"rider_id,omitempty"`
@@ -75,13 +79,15 @@ type StockEdges struct {
 	Manager *Manager `json:"manager,omitempty"`
 	// Store holds the value of the store edge.
 	Store *Store `json:"store,omitempty"`
+	// Cabinet holds the value of the cabinet edge.
+	Cabinet *Cabinet `json:"cabinet,omitempty"`
 	// Rider holds the value of the rider edge.
 	Rider *Rider `json:"rider,omitempty"`
 	// Employee holds the value of the employee edge.
 	Employee *Employee `json:"employee,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 }
 
 // ManagerOrErr returns the Manager value or an error if the edge
@@ -112,10 +118,24 @@ func (e StockEdges) StoreOrErr() (*Store, error) {
 	return nil, &NotLoadedError{edge: "store"}
 }
 
+// CabinetOrErr returns the Cabinet value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e StockEdges) CabinetOrErr() (*Cabinet, error) {
+	if e.loadedTypes[2] {
+		if e.Cabinet == nil {
+			// The edge cabinet was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: cabinet.Label}
+		}
+		return e.Cabinet, nil
+	}
+	return nil, &NotLoadedError{edge: "cabinet"}
+}
+
 // RiderOrErr returns the Rider value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) RiderOrErr() (*Rider, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		if e.Rider == nil {
 			// The edge rider was loaded in eager-loading,
 			// but was not found.
@@ -129,7 +149,7 @@ func (e StockEdges) RiderOrErr() (*Rider, error) {
 // EmployeeOrErr returns the Employee value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e StockEdges) EmployeeOrErr() (*Employee, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		if e.Employee == nil {
 			// The edge employee was loaded in eager-loading,
 			// but was not found.
@@ -147,7 +167,7 @@ func (*Stock) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case stock.FieldCreator, stock.FieldLastModifier:
 			values[i] = new([]byte)
-		case stock.FieldID, stock.FieldManagerID, stock.FieldType, stock.FieldStoreID, stock.FieldRiderID, stock.FieldEmployeeID, stock.FieldNum:
+		case stock.FieldID, stock.FieldManagerID, stock.FieldType, stock.FieldStoreID, stock.FieldCabinetID, stock.FieldRiderID, stock.FieldEmployeeID, stock.FieldNum:
 			values[i] = new(sql.NullInt64)
 		case stock.FieldRemark, stock.FieldSn, stock.FieldName, stock.FieldModel:
 			values[i] = new(sql.NullString)
@@ -241,6 +261,13 @@ func (s *Stock) assignValues(columns []string, values []interface{}) error {
 				s.StoreID = new(uint64)
 				*s.StoreID = uint64(value.Int64)
 			}
+		case stock.FieldCabinetID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field cabinet_id", values[i])
+			} else if value.Valid {
+				s.CabinetID = new(uint64)
+				*s.CabinetID = uint64(value.Int64)
+			}
 		case stock.FieldRiderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field rider_id", values[i])
@@ -287,6 +314,11 @@ func (s *Stock) QueryManager() *ManagerQuery {
 // QueryStore queries the "store" edge of the Stock entity.
 func (s *Stock) QueryStore() *StoreQuery {
 	return (&StockClient{config: s.config}).QueryStore(s)
+}
+
+// QueryCabinet queries the "cabinet" edge of the Stock entity.
+func (s *Stock) QueryCabinet() *CabinetQuery {
+	return (&StockClient{config: s.config}).QueryCabinet(s)
 }
 
 // QueryRider queries the "rider" edge of the Stock entity.
@@ -346,6 +378,10 @@ func (s *Stock) String() string {
 	builder.WriteString(fmt.Sprintf("%v", s.Type))
 	if v := s.StoreID; v != nil {
 		builder.WriteString(", store_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	if v := s.CabinetID; v != nil {
+		builder.WriteString(", cabinet_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	if v := s.RiderID; v != nil {

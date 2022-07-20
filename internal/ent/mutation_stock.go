@@ -40,6 +40,8 @@ type StockMutation struct {
 	clearedmanager  bool
 	store           *uint64
 	clearedstore    bool
+	cabinet         *uint64
+	clearedcabinet  bool
 	rider           *uint64
 	clearedrider    bool
 	employee        *uint64
@@ -605,6 +607,55 @@ func (m *StockMutation) ResetStoreID() {
 	delete(m.clearedFields, stock.FieldStoreID)
 }
 
+// SetCabinetID sets the "cabinet_id" field.
+func (m *StockMutation) SetCabinetID(u uint64) {
+	m.cabinet = &u
+}
+
+// CabinetID returns the value of the "cabinet_id" field in the mutation.
+func (m *StockMutation) CabinetID() (r uint64, exists bool) {
+	v := m.cabinet
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCabinetID returns the old "cabinet_id" field's value of the Stock entity.
+// If the Stock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StockMutation) OldCabinetID(ctx context.Context) (v *uint64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCabinetID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCabinetID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCabinetID: %w", err)
+	}
+	return oldValue.CabinetID, nil
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (m *StockMutation) ClearCabinetID() {
+	m.cabinet = nil
+	m.clearedFields[stock.FieldCabinetID] = struct{}{}
+}
+
+// CabinetIDCleared returns if the "cabinet_id" field was cleared in this mutation.
+func (m *StockMutation) CabinetIDCleared() bool {
+	_, ok := m.clearedFields[stock.FieldCabinetID]
+	return ok
+}
+
+// ResetCabinetID resets all changes to the "cabinet_id" field.
+func (m *StockMutation) ResetCabinetID() {
+	m.cabinet = nil
+	delete(m.clearedFields, stock.FieldCabinetID)
+}
+
 // SetRiderID sets the "rider_id" field.
 func (m *StockMutation) SetRiderID(u uint64) {
 	m.rider = &u
@@ -896,6 +947,32 @@ func (m *StockMutation) ResetStore() {
 	m.clearedstore = false
 }
 
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (m *StockMutation) ClearCabinet() {
+	m.clearedcabinet = true
+}
+
+// CabinetCleared reports if the "cabinet" edge to the Cabinet entity was cleared.
+func (m *StockMutation) CabinetCleared() bool {
+	return m.CabinetIDCleared() || m.clearedcabinet
+}
+
+// CabinetIDs returns the "cabinet" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CabinetID instead. It exists only for internal usage by the builders.
+func (m *StockMutation) CabinetIDs() (ids []uint64) {
+	if id := m.cabinet; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCabinet resets all changes to the "cabinet" edge.
+func (m *StockMutation) ResetCabinet() {
+	m.cabinet = nil
+	m.clearedcabinet = false
+}
+
 // ClearRider clears the "rider" edge to the Rider entity.
 func (m *StockMutation) ClearRider() {
 	m.clearedrider = true
@@ -967,7 +1044,7 @@ func (m *StockMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StockMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 16)
 	if m.created_at != nil {
 		fields = append(fields, stock.FieldCreatedAt)
 	}
@@ -997,6 +1074,9 @@ func (m *StockMutation) Fields() []string {
 	}
 	if m.store != nil {
 		fields = append(fields, stock.FieldStoreID)
+	}
+	if m.cabinet != nil {
+		fields = append(fields, stock.FieldCabinetID)
 	}
 	if m.rider != nil {
 		fields = append(fields, stock.FieldRiderID)
@@ -1041,6 +1121,8 @@ func (m *StockMutation) Field(name string) (ent.Value, bool) {
 		return m.GetType()
 	case stock.FieldStoreID:
 		return m.StoreID()
+	case stock.FieldCabinetID:
+		return m.CabinetID()
 	case stock.FieldRiderID:
 		return m.RiderID()
 	case stock.FieldEmployeeID:
@@ -1080,6 +1162,8 @@ func (m *StockMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldType(ctx)
 	case stock.FieldStoreID:
 		return m.OldStoreID(ctx)
+	case stock.FieldCabinetID:
+		return m.OldCabinetID(ctx)
 	case stock.FieldRiderID:
 		return m.OldRiderID(ctx)
 	case stock.FieldEmployeeID:
@@ -1168,6 +1252,13 @@ func (m *StockMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStoreID(v)
+		return nil
+	case stock.FieldCabinetID:
+		v, ok := value.(uint64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCabinetID(v)
 		return nil
 	case stock.FieldRiderID:
 		v, ok := value.(uint64)
@@ -1279,6 +1370,9 @@ func (m *StockMutation) ClearedFields() []string {
 	if m.FieldCleared(stock.FieldStoreID) {
 		fields = append(fields, stock.FieldStoreID)
 	}
+	if m.FieldCleared(stock.FieldCabinetID) {
+		fields = append(fields, stock.FieldCabinetID)
+	}
 	if m.FieldCleared(stock.FieldRiderID) {
 		fields = append(fields, stock.FieldRiderID)
 	}
@@ -1319,6 +1413,9 @@ func (m *StockMutation) ClearField(name string) error {
 		return nil
 	case stock.FieldStoreID:
 		m.ClearStoreID()
+		return nil
+	case stock.FieldCabinetID:
+		m.ClearCabinetID()
 		return nil
 	case stock.FieldRiderID:
 		m.ClearRiderID()
@@ -1367,6 +1464,9 @@ func (m *StockMutation) ResetField(name string) error {
 	case stock.FieldStoreID:
 		m.ResetStoreID()
 		return nil
+	case stock.FieldCabinetID:
+		m.ResetCabinetID()
+		return nil
 	case stock.FieldRiderID:
 		m.ResetRiderID()
 		return nil
@@ -1388,12 +1488,15 @@ func (m *StockMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *StockMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.manager != nil {
 		edges = append(edges, stock.EdgeManager)
 	}
 	if m.store != nil {
 		edges = append(edges, stock.EdgeStore)
+	}
+	if m.cabinet != nil {
+		edges = append(edges, stock.EdgeCabinet)
 	}
 	if m.rider != nil {
 		edges = append(edges, stock.EdgeRider)
@@ -1416,6 +1519,10 @@ func (m *StockMutation) AddedIDs(name string) []ent.Value {
 		if id := m.store; id != nil {
 			return []ent.Value{*id}
 		}
+	case stock.EdgeCabinet:
+		if id := m.cabinet; id != nil {
+			return []ent.Value{*id}
+		}
 	case stock.EdgeRider:
 		if id := m.rider; id != nil {
 			return []ent.Value{*id}
@@ -1430,7 +1537,7 @@ func (m *StockMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *StockMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	return edges
 }
 
@@ -1444,12 +1551,15 @@ func (m *StockMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *StockMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.clearedmanager {
 		edges = append(edges, stock.EdgeManager)
 	}
 	if m.clearedstore {
 		edges = append(edges, stock.EdgeStore)
+	}
+	if m.clearedcabinet {
+		edges = append(edges, stock.EdgeCabinet)
 	}
 	if m.clearedrider {
 		edges = append(edges, stock.EdgeRider)
@@ -1468,6 +1578,8 @@ func (m *StockMutation) EdgeCleared(name string) bool {
 		return m.clearedmanager
 	case stock.EdgeStore:
 		return m.clearedstore
+	case stock.EdgeCabinet:
+		return m.clearedcabinet
 	case stock.EdgeRider:
 		return m.clearedrider
 	case stock.EdgeEmployee:
@@ -1485,6 +1597,9 @@ func (m *StockMutation) ClearEdge(name string) error {
 		return nil
 	case stock.EdgeStore:
 		m.ClearStore()
+		return nil
+	case stock.EdgeCabinet:
+		m.ClearCabinet()
 		return nil
 	case stock.EdgeRider:
 		m.ClearRider()
@@ -1505,6 +1620,9 @@ func (m *StockMutation) ResetEdge(name string) error {
 		return nil
 	case stock.EdgeStore:
 		m.ResetStore()
+		return nil
+	case stock.EdgeCabinet:
+		m.ResetCabinet()
 		return nil
 	case stock.EdgeRider:
 		m.ResetRider()

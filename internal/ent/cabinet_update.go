@@ -19,6 +19,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 )
 
 // CabinetUpdate is the builder for updating Cabinet entities.
@@ -426,6 +427,21 @@ func (cu *CabinetUpdate) AddExchanges(e ...*Exchange) *CabinetUpdate {
 	return cu.AddExchangeIDs(ids...)
 }
 
+// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
+func (cu *CabinetUpdate) AddStockIDs(ids ...uint64) *CabinetUpdate {
+	cu.mutation.AddStockIDs(ids...)
+	return cu
+}
+
+// AddStocks adds the "stocks" edges to the Stock entity.
+func (cu *CabinetUpdate) AddStocks(s ...*Stock) *CabinetUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return cu.AddStockIDs(ids...)
+}
+
 // Mutation returns the CabinetMutation object of the builder.
 func (cu *CabinetUpdate) Mutation() *CabinetMutation {
 	return cu.mutation
@@ -504,6 +520,27 @@ func (cu *CabinetUpdate) RemoveExchanges(e ...*Exchange) *CabinetUpdate {
 		ids[i] = e[i].ID
 	}
 	return cu.RemoveExchangeIDs(ids...)
+}
+
+// ClearStocks clears all "stocks" edges to the Stock entity.
+func (cu *CabinetUpdate) ClearStocks() *CabinetUpdate {
+	cu.mutation.ClearStocks()
+	return cu
+}
+
+// RemoveStockIDs removes the "stocks" edge to Stock entities by IDs.
+func (cu *CabinetUpdate) RemoveStockIDs(ids ...uint64) *CabinetUpdate {
+	cu.mutation.RemoveStockIDs(ids...)
+	return cu
+}
+
+// RemoveStocks removes "stocks" edges to Stock entities.
+func (cu *CabinetUpdate) RemoveStocks(s ...*Stock) *CabinetUpdate {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return cu.RemoveStockIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1067,6 +1104,60 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if cu.mutation.StocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.StocksTable,
+			Columns: []string{cabinet.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.RemovedStocksIDs(); len(nodes) > 0 && !cu.mutation.StocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.StocksTable,
+			Columns: []string{cabinet.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.StocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.StocksTable,
+			Columns: []string{cabinet.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{cabinet.Label}
@@ -1478,6 +1569,21 @@ func (cuo *CabinetUpdateOne) AddExchanges(e ...*Exchange) *CabinetUpdateOne {
 	return cuo.AddExchangeIDs(ids...)
 }
 
+// AddStockIDs adds the "stocks" edge to the Stock entity by IDs.
+func (cuo *CabinetUpdateOne) AddStockIDs(ids ...uint64) *CabinetUpdateOne {
+	cuo.mutation.AddStockIDs(ids...)
+	return cuo
+}
+
+// AddStocks adds the "stocks" edges to the Stock entity.
+func (cuo *CabinetUpdateOne) AddStocks(s ...*Stock) *CabinetUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return cuo.AddStockIDs(ids...)
+}
+
 // Mutation returns the CabinetMutation object of the builder.
 func (cuo *CabinetUpdateOne) Mutation() *CabinetMutation {
 	return cuo.mutation
@@ -1556,6 +1662,27 @@ func (cuo *CabinetUpdateOne) RemoveExchanges(e ...*Exchange) *CabinetUpdateOne {
 		ids[i] = e[i].ID
 	}
 	return cuo.RemoveExchangeIDs(ids...)
+}
+
+// ClearStocks clears all "stocks" edges to the Stock entity.
+func (cuo *CabinetUpdateOne) ClearStocks() *CabinetUpdateOne {
+	cuo.mutation.ClearStocks()
+	return cuo
+}
+
+// RemoveStockIDs removes the "stocks" edge to Stock entities by IDs.
+func (cuo *CabinetUpdateOne) RemoveStockIDs(ids ...uint64) *CabinetUpdateOne {
+	cuo.mutation.RemoveStockIDs(ids...)
+	return cuo
+}
+
+// RemoveStocks removes "stocks" edges to Stock entities.
+func (cuo *CabinetUpdateOne) RemoveStocks(s ...*Stock) *CabinetUpdateOne {
+	ids := make([]uint64, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return cuo.RemoveStockIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -2141,6 +2268,60 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: exchange.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.StocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.StocksTable,
+			Columns: []string{cabinet.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.RemovedStocksIDs(); len(nodes) > 0 && !cuo.mutation.StocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.StocksTable,
+			Columns: []string{cabinet.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.StocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.StocksTable,
+			Columns: []string{cabinet.StocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: stock.FieldID,
 				},
 			},
 		}

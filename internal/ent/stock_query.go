@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -30,6 +31,7 @@ type StockQuery struct {
 	// eager-loading edges.
 	withManager  *ManagerQuery
 	withStore    *StoreQuery
+	withCabinet  *CabinetQuery
 	withRider    *RiderQuery
 	withEmployee *EmployeeQuery
 	modifiers    []func(*sql.Selector)
@@ -106,6 +108,28 @@ func (sq *StockQuery) QueryStore() *StoreQuery {
 			sqlgraph.From(stock.Table, stock.FieldID, selector),
 			sqlgraph.To(store.Table, store.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, stock.StoreTable, stock.StoreColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCabinet chains the current query on the "cabinet" edge.
+func (sq *StockQuery) QueryCabinet() *CabinetQuery {
+	query := &CabinetQuery{config: sq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(stock.Table, stock.FieldID, selector),
+			sqlgraph.To(cabinet.Table, cabinet.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, stock.CabinetTable, stock.CabinetColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -340,6 +364,7 @@ func (sq *StockQuery) Clone() *StockQuery {
 		predicates:   append([]predicate.Stock{}, sq.predicates...),
 		withManager:  sq.withManager.Clone(),
 		withStore:    sq.withStore.Clone(),
+		withCabinet:  sq.withCabinet.Clone(),
 		withRider:    sq.withRider.Clone(),
 		withEmployee: sq.withEmployee.Clone(),
 		// clone intermediate query.
@@ -368,6 +393,17 @@ func (sq *StockQuery) WithStore(opts ...func(*StoreQuery)) *StockQuery {
 		opt(query)
 	}
 	sq.withStore = query
+	return sq
+}
+
+// WithCabinet tells the query-builder to eager-load the nodes that are connected to
+// the "cabinet" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *StockQuery) WithCabinet(opts ...func(*CabinetQuery)) *StockQuery {
+	query := &CabinetQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withCabinet = query
 	return sq
 }
 
@@ -463,9 +499,10 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 	var (
 		nodes       = []*Stock{}
 		_spec       = sq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			sq.withManager != nil,
 			sq.withStore != nil,
+			sq.withCabinet != nil,
 			sq.withRider != nil,
 			sq.withEmployee != nil,
 		}
@@ -546,6 +583,35 @@ func (sq *StockQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Stock,
 			}
 			for i := range nodes {
 				nodes[i].Edges.Store = n
+			}
+		}
+	}
+
+	if query := sq.withCabinet; query != nil {
+		ids := make([]uint64, 0, len(nodes))
+		nodeids := make(map[uint64][]*Stock)
+		for i := range nodes {
+			if nodes[i].CabinetID == nil {
+				continue
+			}
+			fk := *nodes[i].CabinetID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(cabinet.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Cabinet = n
 			}
 		}
 	}

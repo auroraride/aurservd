@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/rider"
@@ -143,6 +144,20 @@ func (sc *StockCreate) SetNillableStoreID(u *uint64) *StockCreate {
 	return sc
 }
 
+// SetCabinetID sets the "cabinet_id" field.
+func (sc *StockCreate) SetCabinetID(u uint64) *StockCreate {
+	sc.mutation.SetCabinetID(u)
+	return sc
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (sc *StockCreate) SetNillableCabinetID(u *uint64) *StockCreate {
+	if u != nil {
+		sc.SetCabinetID(*u)
+	}
+	return sc
+}
+
 // SetRiderID sets the "rider_id" field.
 func (sc *StockCreate) SetRiderID(u uint64) *StockCreate {
 	sc.mutation.SetRiderID(u)
@@ -205,6 +220,11 @@ func (sc *StockCreate) SetManager(m *Manager) *StockCreate {
 // SetStore sets the "store" edge to the Store entity.
 func (sc *StockCreate) SetStore(s *Store) *StockCreate {
 	return sc.SetStoreID(s.ID)
+}
+
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (sc *StockCreate) SetCabinet(c *Cabinet) *StockCreate {
+	return sc.SetCabinetID(c.ID)
 }
 
 // SetRider sets the "rider" edge to the Rider entity.
@@ -493,6 +513,26 @@ func (sc *StockCreate) createSpec() (*Stock, *sqlgraph.CreateSpec) {
 		_node.StoreID = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := sc.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.CabinetTable,
+			Columns: []string{stock.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CabinetID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := sc.mutation.RiderIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -746,6 +786,24 @@ func (u *StockUpsert) UpdateStoreID() *StockUpsert {
 // ClearStoreID clears the value of the "store_id" field.
 func (u *StockUpsert) ClearStoreID() *StockUpsert {
 	u.SetNull(stock.FieldStoreID)
+	return u
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (u *StockUpsert) SetCabinetID(v uint64) *StockUpsert {
+	u.Set(stock.FieldCabinetID, v)
+	return u
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *StockUpsert) UpdateCabinetID() *StockUpsert {
+	u.SetExcluded(stock.FieldCabinetID)
+	return u
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *StockUpsert) ClearCabinetID() *StockUpsert {
+	u.SetNull(stock.FieldCabinetID)
 	return u
 }
 
@@ -1072,6 +1130,27 @@ func (u *StockUpsertOne) UpdateStoreID() *StockUpsertOne {
 func (u *StockUpsertOne) ClearStoreID() *StockUpsertOne {
 	return u.Update(func(s *StockUpsert) {
 		s.ClearStoreID()
+	})
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (u *StockUpsertOne) SetCabinetID(v uint64) *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.SetCabinetID(v)
+	})
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *StockUpsertOne) UpdateCabinetID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateCabinetID()
+	})
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *StockUpsertOne) ClearCabinetID() *StockUpsertOne {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearCabinetID()
 	})
 }
 
@@ -1576,6 +1655,27 @@ func (u *StockUpsertBulk) UpdateStoreID() *StockUpsertBulk {
 func (u *StockUpsertBulk) ClearStoreID() *StockUpsertBulk {
 	return u.Update(func(s *StockUpsert) {
 		s.ClearStoreID()
+	})
+}
+
+// SetCabinetID sets the "cabinet_id" field.
+func (u *StockUpsertBulk) SetCabinetID(v uint64) *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.SetCabinetID(v)
+	})
+}
+
+// UpdateCabinetID sets the "cabinet_id" field to the value that was provided on create.
+func (u *StockUpsertBulk) UpdateCabinetID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.UpdateCabinetID()
+	})
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (u *StockUpsertBulk) ClearCabinetID() *StockUpsertBulk {
+	return u.Update(func(s *StockUpsert) {
+		s.ClearCabinetID()
 	})
 }
 

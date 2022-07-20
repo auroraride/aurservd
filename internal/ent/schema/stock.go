@@ -32,6 +32,7 @@ func (Stock) Fields() []ent.Field {
         field.String("sn").Comment("调拨编号"),
         field.Uint8("type").Default(0).Comment("类型 0:调拨 1:领取电池 2:寄存电池 3:结束寄存 4:归还电池"),
         field.Uint64("store_id").Optional().Nillable().Comment("入库至 或 出库自 门店ID"),
+        field.Uint64("cabinet_id").Optional().Nillable().Comment("入库至 或 出库自 电柜ID"),
         field.Uint64("rider_id").Optional().Nillable().Comment("对应骑手ID"),
         field.Uint64("employee_id").Optional().Nillable().Comment("操作店员ID"),
         field.String("name").Comment("物资名称"),
@@ -44,6 +45,7 @@ func (Stock) Fields() []ent.Field {
 func (Stock) Edges() []ent.Edge {
     return []ent.Edge{
         edge.From("store", Store.Type).Unique().Ref("stocks").Field("store_id"),
+        edge.From("cabinet", Cabinet.Type).Unique().Ref("stocks").Field("cabinet_id"),
         edge.From("rider", Rider.Type).Unique().Ref("stocks").Field("rider_id"),
         edge.From("employee", Employee.Type).Unique().Ref("stocks").Field("employee_id"),
     }

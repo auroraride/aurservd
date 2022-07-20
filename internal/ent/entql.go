@@ -916,6 +916,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			stock.FieldSn:           {Type: field.TypeString, Column: stock.FieldSn},
 			stock.FieldType:         {Type: field.TypeUint8, Column: stock.FieldType},
 			stock.FieldStoreID:      {Type: field.TypeUint64, Column: stock.FieldStoreID},
+			stock.FieldCabinetID:    {Type: field.TypeUint64, Column: stock.FieldCabinetID},
 			stock.FieldRiderID:      {Type: field.TypeUint64, Column: stock.FieldRiderID},
 			stock.FieldEmployeeID:   {Type: field.TypeUint64, Column: stock.FieldEmployeeID},
 			stock.FieldName:         {Type: field.TypeString, Column: stock.FieldName},
@@ -1389,6 +1390,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Cabinet",
 		"Exchange",
+	)
+	graph.MustAddE(
+		"stocks",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cabinet.StocksTable,
+			Columns: []string{cabinet.StocksColumn},
+			Bidi:    false,
+		},
+		"Cabinet",
+		"Stock",
 	)
 	graph.MustAddE(
 		"city",
@@ -2349,6 +2362,18 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		"Stock",
 		"Store",
+	)
+	graph.MustAddE(
+		"cabinet",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.CabinetTable,
+			Columns: []string{stock.CabinetColumn},
+			Bidi:    false,
+		},
+		"Stock",
+		"Cabinet",
 	)
 	graph.MustAddE(
 		"rider",
@@ -4023,6 +4048,20 @@ func (f *CabinetFilter) WhereHasExchanges() {
 // WhereHasExchangesWith applies a predicate to check if query has an edge exchanges with a given conditions (other predicates).
 func (f *CabinetFilter) WhereHasExchangesWith(preds ...predicate.Exchange) {
 	f.Where(entql.HasEdgeWith("exchanges", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasStocks applies a predicate to check if query has an edge stocks.
+func (f *CabinetFilter) WhereHasStocks() {
+	f.Where(entql.HasEdge("stocks"))
+}
+
+// WhereHasStocksWith applies a predicate to check if query has an edge stocks with a given conditions (other predicates).
+func (f *CabinetFilter) WhereHasStocksWith(preds ...predicate.Stock) {
+	f.Where(entql.HasEdgeWith("stocks", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -7721,6 +7760,11 @@ func (f *StockFilter) WhereStoreID(p entql.Uint64P) {
 	f.Where(p.Field(stock.FieldStoreID))
 }
 
+// WhereCabinetID applies the entql uint64 predicate on the cabinet_id field.
+func (f *StockFilter) WhereCabinetID(p entql.Uint64P) {
+	f.Where(p.Field(stock.FieldCabinetID))
+}
+
 // WhereRiderID applies the entql uint64 predicate on the rider_id field.
 func (f *StockFilter) WhereRiderID(p entql.Uint64P) {
 	f.Where(p.Field(stock.FieldRiderID))
@@ -7768,6 +7812,20 @@ func (f *StockFilter) WhereHasStore() {
 // WhereHasStoreWith applies a predicate to check if query has an edge store with a given conditions (other predicates).
 func (f *StockFilter) WhereHasStoreWith(preds ...predicate.Store) {
 	f.Where(entql.HasEdgeWith("store", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasCabinet applies a predicate to check if query has an edge cabinet.
+func (f *StockFilter) WhereHasCabinet() {
+	f.Where(entql.HasEdge("cabinet"))
+}
+
+// WhereHasCabinetWith applies a predicate to check if query has an edge cabinet with a given conditions (other predicates).
+func (f *StockFilter) WhereHasCabinetWith(preds ...predicate.Cabinet) {
+	f.Where(entql.HasEdgeWith("cabinet", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

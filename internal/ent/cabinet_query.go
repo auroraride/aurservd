@@ -18,6 +18,7 @@ import (
 	"github.com/auroraride/aurservd/internal/ent/city"
 	"github.com/auroraride/aurservd/internal/ent/exchange"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
+	"github.com/auroraride/aurservd/internal/ent/stock"
 )
 
 // CabinetQuery is the builder for querying Cabinet entities.
@@ -35,6 +36,7 @@ type CabinetQuery struct {
 	withBms       *BatteryModelQuery
 	withFaults    *CabinetFaultQuery
 	withExchanges *ExchangeQuery
+	withStocks    *StockQuery
 	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -175,6 +177,28 @@ func (cq *CabinetQuery) QueryExchanges() *ExchangeQuery {
 			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
 			sqlgraph.To(exchange.Table, exchange.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, cabinet.ExchangesTable, cabinet.ExchangesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStocks chains the current query on the "stocks" edge.
+func (cq *CabinetQuery) QueryStocks() *StockQuery {
+	query := &StockQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cabinet.Table, cabinet.FieldID, selector),
+			sqlgraph.To(stock.Table, stock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, cabinet.StocksTable, cabinet.StocksColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -368,6 +392,7 @@ func (cq *CabinetQuery) Clone() *CabinetQuery {
 		withBms:       cq.withBms.Clone(),
 		withFaults:    cq.withFaults.Clone(),
 		withExchanges: cq.withExchanges.Clone(),
+		withStocks:    cq.withStocks.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
@@ -427,6 +452,17 @@ func (cq *CabinetQuery) WithExchanges(opts ...func(*ExchangeQuery)) *CabinetQuer
 		opt(query)
 	}
 	cq.withExchanges = query
+	return cq
+}
+
+// WithStocks tells the query-builder to eager-load the nodes that are connected to
+// the "stocks" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CabinetQuery) WithStocks(opts ...func(*StockQuery)) *CabinetQuery {
+	query := &StockQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withStocks = query
 	return cq
 }
 
@@ -500,12 +536,13 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 	var (
 		nodes       = []*Cabinet{}
 		_spec       = cq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			cq.withCity != nil,
 			cq.withBranch != nil,
 			cq.withBms != nil,
 			cq.withFaults != nil,
 			cq.withExchanges != nil,
+			cq.withStocks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -688,6 +725,34 @@ func (cq *CabinetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cabi
 				return nil, fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Exchanges = append(node.Edges.Exchanges, n)
+		}
+	}
+
+	if query := cq.withStocks; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[uint64]*Cabinet)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Stocks = []*Stock{}
+		}
+		query.Where(predicate.Stock(func(s *sql.Selector) {
+			s.Where(sql.InValues(cabinet.StocksColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.CabinetID
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "cabinet_id" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "cabinet_id" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Stocks = append(node.Edges.Stocks, n)
 		}
 	}
 

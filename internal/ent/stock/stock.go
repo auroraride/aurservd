@@ -33,6 +33,8 @@ const (
 	FieldType = "type"
 	// FieldStoreID holds the string denoting the store_id field in the database.
 	FieldStoreID = "store_id"
+	// FieldCabinetID holds the string denoting the cabinet_id field in the database.
+	FieldCabinetID = "cabinet_id"
 	// FieldRiderID holds the string denoting the rider_id field in the database.
 	FieldRiderID = "rider_id"
 	// FieldEmployeeID holds the string denoting the employee_id field in the database.
@@ -47,6 +49,8 @@ const (
 	EdgeManager = "manager"
 	// EdgeStore holds the string denoting the store edge name in mutations.
 	EdgeStore = "store"
+	// EdgeCabinet holds the string denoting the cabinet edge name in mutations.
+	EdgeCabinet = "cabinet"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// EdgeEmployee holds the string denoting the employee edge name in mutations.
@@ -67,6 +71,13 @@ const (
 	StoreInverseTable = "store"
 	// StoreColumn is the table column denoting the store relation/edge.
 	StoreColumn = "store_id"
+	// CabinetTable is the table that holds the cabinet relation/edge.
+	CabinetTable = "stock"
+	// CabinetInverseTable is the table name for the Cabinet entity.
+	// It exists in this package in order to avoid circular dependency with the "cabinet" package.
+	CabinetInverseTable = "cabinet"
+	// CabinetColumn is the table column denoting the cabinet relation/edge.
+	CabinetColumn = "cabinet_id"
 	// RiderTable is the table that holds the rider relation/edge.
 	RiderTable = "stock"
 	// RiderInverseTable is the table name for the Rider entity.
@@ -96,6 +107,7 @@ var Columns = []string{
 	FieldSn,
 	FieldType,
 	FieldStoreID,
+	FieldCabinetID,
 	FieldRiderID,
 	FieldEmployeeID,
 	FieldName,

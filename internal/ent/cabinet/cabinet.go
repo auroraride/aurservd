@@ -69,6 +69,8 @@ const (
 	EdgeFaults = "faults"
 	// EdgeExchanges holds the string denoting the exchanges edge name in mutations.
 	EdgeExchanges = "exchanges"
+	// EdgeStocks holds the string denoting the stocks edge name in mutations.
+	EdgeStocks = "stocks"
 	// Table holds the table name of the cabinet in the database.
 	Table = "cabinet"
 	// CityTable is the table that holds the city relation/edge.
@@ -104,6 +106,13 @@ const (
 	ExchangesInverseTable = "exchange"
 	// ExchangesColumn is the table column denoting the exchanges relation/edge.
 	ExchangesColumn = "cabinet_id"
+	// StocksTable is the table that holds the stocks relation/edge.
+	StocksTable = "stock"
+	// StocksInverseTable is the table name for the Stock entity.
+	// It exists in this package in order to avoid circular dependency with the "stock" package.
+	StocksInverseTable = "stock"
+	// StocksColumn is the table column denoting the stocks relation/edge.
+	StocksColumn = "cabinet_id"
 )
 
 // Columns holds all SQL columns for cabinet fields.

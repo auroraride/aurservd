@@ -64,6 +64,9 @@ type CabinetMutation struct {
 	exchanges           map[uint64]struct{}
 	removedexchanges    map[uint64]struct{}
 	clearedexchanges    bool
+	stocks              map[uint64]struct{}
+	removedstocks       map[uint64]struct{}
+	clearedstocks       bool
 	done                bool
 	oldValue            func(context.Context) (*Cabinet, error)
 	predicates          []predicate.Cabinet
@@ -1507,6 +1510,60 @@ func (m *CabinetMutation) ResetExchanges() {
 	m.removedexchanges = nil
 }
 
+// AddStockIDs adds the "stocks" edge to the Stock entity by ids.
+func (m *CabinetMutation) AddStockIDs(ids ...uint64) {
+	if m.stocks == nil {
+		m.stocks = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		m.stocks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearStocks clears the "stocks" edge to the Stock entity.
+func (m *CabinetMutation) ClearStocks() {
+	m.clearedstocks = true
+}
+
+// StocksCleared reports if the "stocks" edge to the Stock entity was cleared.
+func (m *CabinetMutation) StocksCleared() bool {
+	return m.clearedstocks
+}
+
+// RemoveStockIDs removes the "stocks" edge to the Stock entity by IDs.
+func (m *CabinetMutation) RemoveStockIDs(ids ...uint64) {
+	if m.removedstocks == nil {
+		m.removedstocks = make(map[uint64]struct{})
+	}
+	for i := range ids {
+		delete(m.stocks, ids[i])
+		m.removedstocks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedStocks returns the removed IDs of the "stocks" edge to the Stock entity.
+func (m *CabinetMutation) RemovedStocksIDs() (ids []uint64) {
+	for id := range m.removedstocks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// StocksIDs returns the "stocks" edge IDs in the mutation.
+func (m *CabinetMutation) StocksIDs() (ids []uint64) {
+	for id := range m.stocks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetStocks resets all changes to the "stocks" edge.
+func (m *CabinetMutation) ResetStocks() {
+	m.stocks = nil
+	m.clearedstocks = false
+	m.removedstocks = nil
+}
+
 // Where appends a list predicates to the CabinetMutation builder.
 func (m *CabinetMutation) Where(ps ...predicate.Cabinet) {
 	m.predicates = append(m.predicates, ps...)
@@ -2161,7 +2218,7 @@ func (m *CabinetMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CabinetMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.city != nil {
 		edges = append(edges, cabinet.EdgeCity)
 	}
@@ -2176,6 +2233,9 @@ func (m *CabinetMutation) AddedEdges() []string {
 	}
 	if m.exchanges != nil {
 		edges = append(edges, cabinet.EdgeExchanges)
+	}
+	if m.stocks != nil {
+		edges = append(edges, cabinet.EdgeStocks)
 	}
 	return edges
 }
@@ -2210,13 +2270,19 @@ func (m *CabinetMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case cabinet.EdgeStocks:
+		ids := make([]ent.Value, 0, len(m.stocks))
+		for id := range m.stocks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CabinetMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.removedbms != nil {
 		edges = append(edges, cabinet.EdgeBms)
 	}
@@ -2225,6 +2291,9 @@ func (m *CabinetMutation) RemovedEdges() []string {
 	}
 	if m.removedexchanges != nil {
 		edges = append(edges, cabinet.EdgeExchanges)
+	}
+	if m.removedstocks != nil {
+		edges = append(edges, cabinet.EdgeStocks)
 	}
 	return edges
 }
@@ -2251,13 +2320,19 @@ func (m *CabinetMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case cabinet.EdgeStocks:
+		ids := make([]ent.Value, 0, len(m.removedstocks))
+		for id := range m.removedstocks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CabinetMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.clearedcity {
 		edges = append(edges, cabinet.EdgeCity)
 	}
@@ -2272,6 +2347,9 @@ func (m *CabinetMutation) ClearedEdges() []string {
 	}
 	if m.clearedexchanges {
 		edges = append(edges, cabinet.EdgeExchanges)
+	}
+	if m.clearedstocks {
+		edges = append(edges, cabinet.EdgeStocks)
 	}
 	return edges
 }
@@ -2290,6 +2368,8 @@ func (m *CabinetMutation) EdgeCleared(name string) bool {
 		return m.clearedfaults
 	case cabinet.EdgeExchanges:
 		return m.clearedexchanges
+	case cabinet.EdgeStocks:
+		return m.clearedstocks
 	}
 	return false
 }
@@ -2326,6 +2406,9 @@ func (m *CabinetMutation) ResetEdge(name string) error {
 		return nil
 	case cabinet.EdgeExchanges:
 		m.ResetExchanges()
+		return nil
+	case cabinet.EdgeStocks:
+		m.ResetStocks()
 		return nil
 	}
 	return fmt.Errorf("unknown Cabinet edge %s", name)

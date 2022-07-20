@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/auroraride/aurservd/app/model"
+	"github.com/auroraride/aurservd/internal/ent/cabinet"
 	"github.com/auroraride/aurservd/internal/ent/employee"
 	"github.com/auroraride/aurservd/internal/ent/manager"
 	"github.com/auroraride/aurservd/internal/ent/predicate"
@@ -158,6 +159,26 @@ func (su *StockUpdate) ClearStoreID() *StockUpdate {
 	return su
 }
 
+// SetCabinetID sets the "cabinet_id" field.
+func (su *StockUpdate) SetCabinetID(u uint64) *StockUpdate {
+	su.mutation.SetCabinetID(u)
+	return su
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (su *StockUpdate) SetNillableCabinetID(u *uint64) *StockUpdate {
+	if u != nil {
+		su.SetCabinetID(*u)
+	}
+	return su
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (su *StockUpdate) ClearCabinetID() *StockUpdate {
+	su.mutation.ClearCabinetID()
+	return su
+}
+
 // SetRiderID sets the "rider_id" field.
 func (su *StockUpdate) SetRiderID(u uint64) *StockUpdate {
 	su.mutation.SetRiderID(u)
@@ -234,6 +255,11 @@ func (su *StockUpdate) SetStore(s *Store) *StockUpdate {
 	return su.SetStoreID(s.ID)
 }
 
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (su *StockUpdate) SetCabinet(c *Cabinet) *StockUpdate {
+	return su.SetCabinetID(c.ID)
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (su *StockUpdate) SetRider(r *Rider) *StockUpdate {
 	return su.SetRiderID(r.ID)
@@ -258,6 +284,12 @@ func (su *StockUpdate) ClearManager() *StockUpdate {
 // ClearStore clears the "store" edge to the Store entity.
 func (su *StockUpdate) ClearStore() *StockUpdate {
 	su.mutation.ClearStore()
+	return su
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (su *StockUpdate) ClearCabinet() *StockUpdate {
+	su.mutation.ClearCabinet()
 	return su
 }
 
@@ -523,6 +555,41 @@ func (su *StockUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if su.mutation.CabinetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.CabinetTable,
+			Columns: []string{stock.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.CabinetTable,
+			Columns: []string{stock.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if su.mutation.RiderCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -737,6 +804,26 @@ func (suo *StockUpdateOne) ClearStoreID() *StockUpdateOne {
 	return suo
 }
 
+// SetCabinetID sets the "cabinet_id" field.
+func (suo *StockUpdateOne) SetCabinetID(u uint64) *StockUpdateOne {
+	suo.mutation.SetCabinetID(u)
+	return suo
+}
+
+// SetNillableCabinetID sets the "cabinet_id" field if the given value is not nil.
+func (suo *StockUpdateOne) SetNillableCabinetID(u *uint64) *StockUpdateOne {
+	if u != nil {
+		suo.SetCabinetID(*u)
+	}
+	return suo
+}
+
+// ClearCabinetID clears the value of the "cabinet_id" field.
+func (suo *StockUpdateOne) ClearCabinetID() *StockUpdateOne {
+	suo.mutation.ClearCabinetID()
+	return suo
+}
+
 // SetRiderID sets the "rider_id" field.
 func (suo *StockUpdateOne) SetRiderID(u uint64) *StockUpdateOne {
 	suo.mutation.SetRiderID(u)
@@ -813,6 +900,11 @@ func (suo *StockUpdateOne) SetStore(s *Store) *StockUpdateOne {
 	return suo.SetStoreID(s.ID)
 }
 
+// SetCabinet sets the "cabinet" edge to the Cabinet entity.
+func (suo *StockUpdateOne) SetCabinet(c *Cabinet) *StockUpdateOne {
+	return suo.SetCabinetID(c.ID)
+}
+
 // SetRider sets the "rider" edge to the Rider entity.
 func (suo *StockUpdateOne) SetRider(r *Rider) *StockUpdateOne {
 	return suo.SetRiderID(r.ID)
@@ -837,6 +929,12 @@ func (suo *StockUpdateOne) ClearManager() *StockUpdateOne {
 // ClearStore clears the "store" edge to the Store entity.
 func (suo *StockUpdateOne) ClearStore() *StockUpdateOne {
 	suo.mutation.ClearStore()
+	return suo
+}
+
+// ClearCabinet clears the "cabinet" edge to the Cabinet entity.
+func (suo *StockUpdateOne) ClearCabinet() *StockUpdateOne {
+	suo.mutation.ClearCabinet()
 	return suo
 }
 
@@ -1124,6 +1222,41 @@ func (suo *StockUpdateOne) sqlSave(ctx context.Context) (_node *Stock, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeUint64,
 					Column: store.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.CabinetCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.CabinetTable,
+			Columns: []string{stock.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.CabinetIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   stock.CabinetTable,
+			Columns: []string{stock.CabinetColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeUint64,
+					Column: cabinet.FieldID,
 				},
 			},
 		}
