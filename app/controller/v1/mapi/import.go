@@ -9,6 +9,7 @@ import (
     "github.com/auroraride/aurservd/app"
     "github.com/auroraride/aurservd/app/model"
     "github.com/auroraride/aurservd/app/service"
+    "github.com/auroraride/aurservd/pkg/snag"
     "github.com/labstack/echo/v4"
 )
 
@@ -28,5 +29,9 @@ var Import = new(importApi)
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*importApi) Rider(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.ImportRiderCreateReq](c)
-    return service.NewImportRiderWithModifier(ctx.Modifier).Create(req)
+    err = service.NewImportRiderWithModifier(ctx.Modifier).Create(req)
+    if err != nil {
+        snag.Panic(err)
+    }
+    return ctx.SendResponse()
 }
