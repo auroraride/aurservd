@@ -419,8 +419,8 @@ func (p *yundong) UpdateBasicInfo(req model.YundongDeployInfo) {
     data := info{
         Type:        "normal",
         CabinetSN:   req.SN,
-        AgentId:     "90",
-        WarehouseId: "10",
+        AgentId:     "9",
+        WarehouseId: "4",
         AreaCode:    req.AreaCode,
         UpdateInfo:  req,
     }
