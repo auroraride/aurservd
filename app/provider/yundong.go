@@ -54,7 +54,7 @@ const (
     yundongControlUrl  Yundongurl = "/cabinet/control"
     yundongOperatedUrl Yundongurl = "/cabinet/operated"
     yundongOperatorlog Yundongurl = "/cabinet/operatorlog"
-    yundongBasicinfo   Yundongurl = "/zhangfei/cabinet/basicinfo"
+    yundongBasicinfo   Yundongurl = "/cabinet/basicinfo"
 )
 
 func NewYundong() *yundong {
