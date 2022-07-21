@@ -14,6 +14,7 @@ import (
     "net/url"
     "os"
     "path/filepath"
+    "reflect"
 )
 
 type excel struct {
@@ -66,10 +67,14 @@ func NewExcelExistsExport(w echo.Context, fp string, args ...any) (e *excel) {
     return NewExcel(w, fp, args...)
 }
 
+func (e *excel) CellString(row, column int) string {
+    return fmt.Sprintf("%s%d", string(rune(65+column)), row+1)
+}
+
 // AddData 添加数据
 // rows, column 从0开始
 func (e *excel) AddData(row, column int, data any) *excel {
-    err := e.SetCellValue(e.sheet, fmt.Sprintf("%s%d", string(rune(65+column)), row+1), data)
+    err := e.SetCellValue(e.sheet, e.CellString(row, column), data)
     if err != nil {
         snag.Panic(err)
     }
@@ -78,9 +83,25 @@ func (e *excel) AddData(row, column int, data any) *excel {
 
 // AddValues 批量添加数据
 func (e *excel) AddValues(rows [][]any) *excel {
-    for m, columns := range rows {
-        for n, column := range columns {
-            e.AddData(m, n, column)
+    for row, data := range rows {
+        for column, v := range data {
+            rt := reflect.TypeOf(v)
+            if rt.Kind() == reflect.Slice {
+                items := v.([]any)
+                for m, subs := range items {
+                    for n, sub := range subs.([]any) {
+                        if m > 0 {
+                            err := e.MergeCell(e.sheet, e.CellString(row, column+n), e.CellString(row+m, column+n))
+                            if err != nil {
+                                snag.Panic(err)
+                            }
+                        }
+                        e.AddData(row+m, column+n, sub)
+                    }
+                }
+            } else {
+                e.AddData(row, column, v)
+            }
         }
     }
     return e

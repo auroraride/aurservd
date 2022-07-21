@@ -89,5 +89,5 @@ func (*statement) Statement(c echo.Context) (err error) {
 // @Success      200  {object}  model.Pagination{items=[]model.StatementUsageRes}  "请求成功"
 func (*statement) Usage(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.StatementUsageReq](c)
-    return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).Usage(req))
+    return ctx.SendResponse(service.NewEnterpriseStatementWithModifier(ctx.Modifier).Usage(req, c))
 }

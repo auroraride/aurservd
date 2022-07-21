@@ -359,7 +359,7 @@ func (s *enterpriseStatementService) Statement(req *model.StatementBillDetailReq
     return res
 }
 
-func (s *enterpriseStatementService) Usage(req *model.StatementUsageReq) *model.PaginationRes {
+func (s *enterpriseStatementService) Usage(req *model.StatementUsageReq, w echo.Context) *model.PaginationRes {
     e := NewEnterprise().QueryX(req.ID)
     prices := NewEnterprise().GetPriceValues(e)
 
@@ -406,42 +406,92 @@ func (s *enterpriseStatementService) Usage(req *model.StatementUsageReq) *model.
         bq.Order(ent.Asc(enterprisebill.FieldEnd))
     })
 
+    if req.Export {
+        s.usageExport(w, q, e.Name, start, end, prices)
+        return nil
+    }
+
     return model.ParsePaginationResponse(q, req.PaginationReq, func(item *ent.Subscribe) model.StatementUsageRes {
-        r := item.Edges.Rider
-        c := item.Edges.City
-        p := r.Edges.Person
-        del := ""
-        if r.DeletedAt != nil {
-            del = r.DeletedAt.Format(carbon.DateTimeLayout)
-        }
-        res := model.StatementUsageRes{
-            Model: item.Model,
-            City: model.City{
-                ID:   c.ID,
-                Name: c.Name,
-            },
-            Rider: model.RiderBasic{
-                ID:    r.ID,
-                Phone: r.Phone,
-                Name:  p.Name,
-            },
-            Status:    model.SubscribeStatusText(item.Status),
-            DeletedAt: del,
-            Items:     s.usageItem(item, start, end, prices),
-        }
-        a := item.Edges.Station
-        if a != nil {
-            res.Station = &model.EnterpriseStation{
-                ID:   a.ID,
-                Name: a.Name,
-            }
-        }
-        return res
+        return s.usageDetail(item, start, end, prices)
     })
 }
 
-// usageItem 计算使用项
-func (s *enterpriseStatementService) usageItem(sub *ent.Subscribe, start time.Time, end time.Time, prices map[string]float64) (items []*model.StatementUsageItem) {
+func (s *enterpriseStatementService) usageExport(w echo.Context, q *ent.SubscribeQuery, ename string, start, end time.Time, prices map[string]float64) {
+    sheet := fmt.Sprintf("%s-%s", start.Format(carbon.ShortDateLayout), end.Format(carbon.ShortDateLayout))
+    fp := filepath.Join("runtime/export/usage", fmt.Sprintf("%s%s使用明细.xlsx", ename, sheet))
+    ex := tools.NewExcelExistsExport(w, fp, sheet)
+
+    items, _ := q.All(s.ctx)
+    var rows [][]any
+    rows = append(rows, []any{"城市", "姓名", "电话", "站点", "型号", "状态", "删除时间", "开始日期", "结束日期", "使用天数", "日单价", "费用"})
+    for _, item := range items {
+        detail := s.usageDetail(item, start, end, prices)
+        sta := ""
+        if detail.Station != nil {
+            sta = detail.Station.Name
+        }
+        row := []any{
+            detail.City.Name,
+            detail.Rider.Name,
+            detail.Rider.Phone,
+            sta,
+            detail.Model,
+            detail.Status,
+            detail.DeletedAt,
+        }
+        var sub []any
+        for _, ui := range detail.Items {
+            sub = append(sub, []any{
+                ui.Start,
+                ui.End,
+                ui.Days,
+                ui.Price,
+                ui.Cost,
+            })
+        }
+        row = append(row, sub)
+
+        rows = append(rows, row)
+    }
+
+    ex.AddValues(rows).Done().Export()
+}
+
+func (s *enterpriseStatementService) usageDetail(item *ent.Subscribe, start, end time.Time, prices map[string]float64) model.StatementUsageRes {
+    r := item.Edges.Rider
+    c := item.Edges.City
+    p := r.Edges.Person
+    del := ""
+    if r.DeletedAt != nil {
+        del = r.DeletedAt.Format(carbon.DateTimeLayout)
+    }
+    res := model.StatementUsageRes{
+        Model: item.Model,
+        City: model.City{
+            ID:   c.ID,
+            Name: c.Name,
+        },
+        Rider: model.RiderBasic{
+            ID:    r.ID,
+            Phone: r.Phone,
+            Name:  p.Name,
+        },
+        Status:    model.SubscribeStatusText(item.Status),
+        DeletedAt: del,
+        Items:     s.usageItems(item, start, end, prices),
+    }
+    a := item.Edges.Station
+    if a != nil {
+        res.Station = &model.EnterpriseStation{
+            ID:   a.ID,
+            Name: a.Name,
+        }
+    }
+    return res
+}
+
+// usageItems 计算使用项
+func (s *enterpriseStatementService) usageItems(sub *ent.Subscribe, start time.Time, end time.Time, prices map[string]float64) (items []*model.StatementUsageItem) {
     if sub.Edges.Bills != nil {
         for _, bill := range sub.Edges.Bills {
             if data := s.usageItemCalculate(start, end, bill.Start, bill.End, bill.Price); data != nil {
