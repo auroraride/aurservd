@@ -183,16 +183,22 @@ func (c *alipayClient) Notification(req *http.Request) *model.PaymentCache {
     case model.PaymentCacheTypePlan:
         if result.TradeStatus == alipay.TradeStatusSuccess {
             pc.Subscribe.TradeNo = result.TradeNo
+        } else {
+            return nil
         }
         return pc
     case model.PaymentCacheTypeOverdueFee:
         if result.TradeStatus == alipay.TradeStatusSuccess {
             pc.OverDueFee.TradeNo = result.TradeNo
+        } else {
+            return nil
         }
         return pc
     case model.PaymentCacheTypeAssistance:
         if result.TradeStatus == alipay.TradeStatusSuccess {
             pc.Assistance.TradeNo = result.TradeNo
+        } else {
+            return nil
         }
         return pc
     case model.PaymentCacheTypeRefund:
