@@ -8,6 +8,7 @@ package service
 import (
     "context"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/workwx"
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/cabinet"
     "github.com/auroraride/aurservd/internal/ent/cabinetfault"
@@ -48,29 +49,30 @@ func (s *cabinetFaultService) Query(id uint64) *ent.CabinetFault {
 // Report 骑手故障上报
 func (s *cabinetFaultService) Report(rider *ent.Rider, req *model.CabinetFaultReportReq) bool {
     // 获取电柜信息
-    ca, _ := ent.Database.Cabinet.QueryNotDeleted().
+    cab, _ := ent.Database.Cabinet.QueryNotDeleted().
         Where(
             cabinet.ID(req.CabinetID),
             cabinet.Status(model.CabinetStatusNormal),
         ).
         WithCity().
+        WithBranch().
         Only(s.ctx)
-    if ca == nil {
+    if cab == nil {
         snag.Panic("未找到运营中的电柜")
     }
     attachments := make([]string, 0)
     if len(req.Attachments) > 0 {
         attachments = req.Attachments
     }
-    city := ca.Edges.City
+    city := cab.Edges.City
     s.orm.Create().
         // SetBrand(ca.Brand).
         // SetCity(model.City{
         //     ID:   city.ID,
         //     Name: city.Name,
         // }).
-        SetCabinetID(ca.ID).
-        SetBranchID(*ca.BranchID).
+        SetCabinetID(cab.ID).
+        SetBranchID(*cab.BranchID).
         SetRiderID(rider.ID).
         SetCityID(city.ID).
         // SetCabinetName(ca.Name).
@@ -80,6 +82,15 @@ func (s *cabinetFaultService) Report(rider *ent.Rider, req *model.CabinetFaultRe
         SetAttachments(attachments).
         SetFault(req.Fault).
         SaveX(s.ctx)
+    go workwx.New().SendCabinetFault(model.CabinetFaultNotice{
+        City:        city.Name,
+        Branch:      cab.Edges.Branch.Name,
+        Name:        cab.Name,
+        Serial:      cab.Serial,
+        Phone:       rider.Phone,
+        Fault:       req.Fault,
+        Description: req.Description,
+    })
     return true
 }
 

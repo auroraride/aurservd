@@ -60,3 +60,13 @@ type CabinetFaultDealReq struct {
     Status *uint8  `json:"status" validate:"required,gte=0,lte=1" enums:"0,1" trans:"故障状态"` // 0未处理 1已处理
     Remark *string `json:"remark" trans:"备注"`
 }
+
+type CabinetFaultNotice struct {
+    City        string `json:"city"`
+    Branch      string `json:"branch"`
+    Name        string `json:"name"`
+    Serial      string `json:"serial"`
+    Phone       string `json:"phone"`
+    Fault       string `json:"fault"`
+    Description string `json:"description"`
+}

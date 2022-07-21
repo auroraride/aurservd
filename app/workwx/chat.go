@@ -184,3 +184,25 @@ func (w *Client) SendAssistance(data model.AssistanceNotice) {
         time.Now().Format(carbon.DateTimeLayout),
     ))
 }
+
+// SendCabinetFault 电柜故障提醒
+func (w *Client) SendCabinetFault(data model.CabinetFaultNotice) {
+    w.SendMarkdown("CabinetFault", fmt.Sprintf(`电柜故障提醒
+>电话: %s
+>城市: %s
+>网点: %s
+>电柜: %s
+>编号: %s
+>故障: <font color="warning">%s</font>
+>描述: %s
+>时间: <font color="comment">%s</font>`,
+        data.Phone,
+        data.City,
+        data.Branch,
+        data.Name,
+        data.Serial,
+        data.Fault,
+        data.Description,
+        time.Now().Format(carbon.DateTimeLayout),
+    ))
+}
