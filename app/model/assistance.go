@@ -192,3 +192,10 @@ type AssistanceEmployeeOverview struct {
     Success  int     `json:"success"`  // 成功次数
     Distance float64 `json:"distance"` // 总里程
 }
+
+type AssistanceNotice struct {
+    Phone         string `json:"phone"`
+    Reason        string `json:"reason"`
+    Address       string `json:"address"`
+    AddressDetail string `json:"addressDetail"`
+}

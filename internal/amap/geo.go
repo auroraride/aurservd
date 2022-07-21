@@ -6,6 +6,8 @@
 package amap
 
 import (
+    "encoding/json"
+    "errors"
     "fmt"
     "github.com/go-resty/resty/v2"
     log "github.com/sirupsen/logrus"
@@ -50,5 +52,66 @@ func (a *amap) Geo(name string) (*Geocode, error) {
         return nil, err
     }
     out := res.Geocodes[0]
+    return &out, nil
+}
+
+type Regeocode struct {
+    AddressComponent struct {
+        City         any    `json:"city,omitempty"`
+        Province     string `json:"province,omitempty"`
+        Adcode       string `json:"adcode,omitempty"`
+        District     string `json:"district,omitempty"`
+        Towncode     string `json:"towncode,omitempty"`
+        StreetNumber struct {
+            Number    string `json:"number,omitempty"`
+            Location  string `json:"location,omitempty"`
+            Direction string `json:"direction,omitempty"`
+            Distance  string `json:"distance,omitempty"`
+            Street    string `json:"street,omitempty"`
+        } `json:"streetNumber,omitempty"`
+        Country       string `json:"country,omitempty"`
+        Township      string `json:"township,omitempty"`
+        BusinessAreas []struct {
+            Location string `json:"location,omitempty"`
+            Name     string `json:"name,omitempty"`
+            Id       string `json:"id,omitempty"`
+        } `json:"businessAreas,omitempty"`
+        Building struct {
+            Name string `json:"name,omitempty"`
+            Type string `json:"type,omitempty"`
+        } `json:"building,omitempty"`
+        Neighborhood struct {
+            Name string `json:"name,omitempty"`
+            Type string `json:"type,omitempty"`
+        } `json:"neighborhood,omitempty"`
+        Citycode string `json:"citycode,omitempty"`
+    } `json:"addressComponent,omitempty"`
+    FormattedAddress string `json:"formatted_address,omitempty"`
+}
+
+type ReGeoRes struct {
+    Status    string    `json:"status,omitempty"`
+    Regeocode Regeocode `json:"regeocode,omitempty"`
+    Info      string    `json:"info,omitempty"`
+    Infocode  string    `json:"infocode,omitempty"`
+}
+
+func (r *ReGeoRes) String() string {
+    b, _ := json.Marshal(r)
+    return string(b)
+}
+
+func (a *amap) ReGeo(lng, lat float64) (*Regeocode, error) {
+    res := new(ReGeoRes)
+    _, err := resty.New().R().SetResult(res).Get(fmt.Sprintf("https://restapi.amap.com/v3/geocode/regeo?key=%s&location=%f,%f&poitype=&radius=&extensions=base&batch=false&roadlevel=0", a.Key, lng, lat))
+    if err != nil {
+        log.Error(err)
+        return nil, err
+    }
+    if res.Infocode != "10000" {
+        log.Error(res)
+        return nil, errors.New(res.Info)
+    }
+    out := res.Regeocode
     return &out, nil
 }

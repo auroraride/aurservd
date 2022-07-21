@@ -11,6 +11,7 @@ import (
     "fmt"
     "github.com/auroraride/aurservd/app/logging"
     "github.com/auroraride/aurservd/app/model"
+    "github.com/auroraride/aurservd/app/workwx"
     "github.com/auroraride/aurservd/internal/amap"
     "github.com/auroraride/aurservd/internal/ar"
     "github.com/auroraride/aurservd/internal/ent"
@@ -271,6 +272,13 @@ func (s *assistanceService) Create(req *model.AssistanceCreateReq) model.Assista
         snag.Panic("当前有进行中的救援订单")
     }
 
+    rg, err := amap.New().ReGeo(req.Lng, req.Lat)
+    if err != nil {
+        snag.Panic("救援发起失败: " + err.Error())
+    }
+    adcode := rg.AddressComponent.Adcode
+    cityId, _ := strconv.ParseUint(adcode[:len(adcode)-2]+"00", 10, 64)
+
     as, _ := s.orm.Create().
         SetStatus(model.AssistanceStatusPending).
         SetLng(req.Lng).
@@ -281,12 +289,19 @@ func (s *assistanceService) Create(req *model.AssistanceCreateReq) model.Assista
         SetBreakdownDesc(req.BreakdownDesc).
         SetRiderID(s.rider.ID).
         SetSubscribeID(sub.ID).
-        SetCityID(sub.CityID).
+        SetCityID(cityId).
         Save(s.ctx)
 
     if as == nil {
         snag.Panic("救援发起失败")
     }
+
+    go workwx.New().SendAssistance(model.AssistanceNotice{
+        Phone:         s.rider.Phone,
+        Reason:        req.Breakdown,
+        Address:       rg.FormattedAddress,
+        AddressDetail: req.Address,
+    })
 
     return model.AssistanceCreateRes{ID: as.ID}
 }

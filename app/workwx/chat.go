@@ -20,6 +20,8 @@ import (
 // BatteryNumberAbnormality # 电池异常变动
 // SimExpires # SIM卡到期
 // BranchExpires # 场地到期
+// Assistance # 救援提醒
+// CabinetFault # 电柜故障提醒
 
 type ChatMessage struct {
     Chatid  string `json:"chatid"`
@@ -165,4 +167,20 @@ func (w *Client) SendBranchExpires(data model.BranchExpriesNotice) {
         data.Name,
         data.End)
     w.SendMarkdown("BranchExpires", content)
+}
+
+// SendAssistance 救援提醒
+func (w *Client) SendAssistance(data model.AssistanceNotice) {
+    w.SendMarkdown("Assistance", fmt.Sprintf(`救援提醒
+>电话: %s
+>原因: %s
+>地址: %s
+>详细: %s
+>时间: <font color="comment">%s</font>`,
+        data.Phone,
+        data.Reason,
+        data.Address,
+        data.AddressDetail,
+        time.Now().Format(carbon.DateTimeLayout),
+    ))
 }
