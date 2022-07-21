@@ -57,33 +57,10 @@ func (a *amap) Geo(name string) (*Geocode, error) {
 
 type Regeocode struct {
     AddressComponent struct {
-        City         any    `json:"city,omitempty"`
-        Province     string `json:"province,omitempty"`
-        Adcode       string `json:"adcode,omitempty"`
-        District     string `json:"district,omitempty"`
-        Towncode     string `json:"towncode,omitempty"`
-        StreetNumber struct {
-            Number    string `json:"number,omitempty"`
-            Location  string `json:"location,omitempty"`
-            Direction string `json:"direction,omitempty"`
-            Distance  string `json:"distance,omitempty"`
-            Street    string `json:"street,omitempty"`
-        } `json:"streetNumber,omitempty"`
-        Country       string `json:"country,omitempty"`
-        Township      string `json:"township,omitempty"`
-        BusinessAreas []struct {
-            Location string `json:"location,omitempty"`
-            Name     string `json:"name,omitempty"`
-            Id       string `json:"id,omitempty"`
-        } `json:"businessAreas,omitempty"`
-        Building struct {
-            Name string `json:"name,omitempty"`
-            Type string `json:"type,omitempty"`
-        } `json:"building,omitempty"`
-        Neighborhood struct {
-            Name string `json:"name,omitempty"`
-            Type string `json:"type,omitempty"`
-        } `json:"neighborhood,omitempty"`
+        City     any    `json:"city,omitempty"`
+        Province string `json:"province,omitempty"`
+        Adcode   string `json:"adcode,omitempty"`
+        District string `json:"district,omitempty"`
         Citycode string `json:"citycode,omitempty"`
     } `json:"addressComponent,omitempty"`
     FormattedAddress string `json:"formatted_address,omitempty"`
