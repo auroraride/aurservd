@@ -225,7 +225,7 @@ func (s *riderService) FaceAuthResult(c *app.RiderContext, token string) (succes
 
     // 上传图片到七牛云
     oss := ali.NewOss()
-    prefix := fmt.Sprintf("%s-%s/", res.IdcardOcrResult.Name, res.IdcardOcrResult.IdCardNumber)
+    prefix := fmt.Sprintf("%s-%s/%s-", res.IdcardOcrResult.Name, res.IdcardOcrResult.IdCardNumber, time.Now().Format(carbon.ShortDateTimeLayout))
     fm := oss.UploadUrlFile(prefix+"face.jpg", res.FaceImg)
     pm := oss.UploadBase64ImageJpeg(prefix+"portrait.jpg", res.IdcardImages.FrontBase64)
     nm := oss.UploadBase64ImageJpeg(prefix+"national.jpg", res.IdcardImages.BackBase64)
