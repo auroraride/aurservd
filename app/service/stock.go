@@ -15,6 +15,7 @@ import (
     "github.com/auroraride/aurservd/internal/ent"
     "github.com/auroraride/aurservd/internal/ent/branch"
     "github.com/auroraride/aurservd/internal/ent/exception"
+    "github.com/auroraride/aurservd/internal/ent/predicate"
     "github.com/auroraride/aurservd/internal/ent/stock"
     "github.com/auroraride/aurservd/internal/ent/store"
     "github.com/auroraride/aurservd/pkg/snag"
@@ -208,20 +209,33 @@ func (s *stockService) calculate(items map[string]*model.StockMaterial, st *ent.
 }
 
 // Fetch 获取门店对应物资库存
-func (s *stockService) Fetch(storeID uint64, name string) int {
+// TODO 电柜调出
+func (s *stockService) Fetch(target uint8, id uint64, name string) int {
     var result []struct {
-        Sum     int    `json:"sum"`
-        StoreID uint64 `json:"store_id"`
+        Sum       int    `json:"sum"`
+        StoreID   uint64 `json:"store_id"`
+        CabinetID uint64 `json:"cabinet_id"`
+    }
+
+    var idw predicate.Stock
+    switch target {
+    case model.StockTargetStore:
+        idw = stock.StoreID(id)
+        break
+    case model.StockTargetCabinet:
+        idw = stock.CabinetID(id)
+        break
     }
     q := s.orm.QueryNotDeleted().
-        Where(stock.Name(name), stock.StoreID(storeID)).
-        GroupBy(stock.FieldStoreID).
+        Where(stock.Name(name), idw).
+        GroupBy(stock.FieldStoreID, stock.FieldCabinetID).
         Aggregate(ent.Sum(stock.FieldNum))
     err := q.Scan(s.ctx, &result)
     if err != nil {
         log.Error(err)
         snag.Panic("物资数量获取失败")
     }
+
     if result == nil || len(result) < 0 {
         return 0
     }
@@ -243,15 +257,13 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
         snag.Panic("平台之间无法调拨物资")
     }
 
-    tx, _ := ent.Database.Tx(s.ctx)
-
-    // 调出检查
     name := req.Name
     if req.Model != "" {
         name = req.Model
     }
 
-    if req.OutboundID > 0 && s.Fetch(req.OutboundID, name) < req.Num {
+    // 调出检查
+    if req.OutboundID > 0 && s.Fetch(req.Target, req.OutboundID, name) < req.Num {
         snag.Panic("操作失败, 调出物资大于库存物资")
     }
 
@@ -272,36 +284,56 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
         v = nil
     }
 
-    // 调出
-    _, err := tx.Stock.Create().
-        SetName(name).
-        SetNillableModel(v).
-        SetNum(-req.Num).
-        SetNillableStoreID(out).
-        SetType(model.StockTypeTransfer).
-        SetSn(sn).
-        Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
+    err := ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
+        // 调出
+        oq := tx.Stock.Create().
+            SetName(name).
+            SetNillableModel(v).
+            SetNum(-req.Num).
+            SetType(model.StockTypeTransfer).
+            SetSn(sn)
 
-    // 调入
-    _, err = tx.Stock.Create().
-        SetName(name).
-        SetNillableModel(v).
-        SetNum(req.Num).
-        SetNillableStoreID(in).
-        SetType(model.StockTypeTransfer).
-        SetSn(sn).
-        Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
+        // 调入
+        iq := tx.Stock.Create().
+            SetName(name).
+            SetNillableModel(v).
+            SetNum(req.Num).
+            SetType(model.StockTypeTransfer).
+            SetSn(sn)
+        switch req.Target {
+        case model.StockTargetStore:
+            oq.SetNillableStoreID(out)
+            iq.SetNillableStoreID(in)
+            break
+        case model.StockTargetCabinet:
+            oq.SetNillableCabinetID(out)
+            iq.SetNillableCabinetID(in)
+            break
+        }
 
-    _ = tx.Commit()
+        // 调出
+        _, err = oq.Save(s.ctx)
+        if err != nil {
+            return
+        }
+
+        // 调入
+        _, err = iq.Save(s.ctx)
+        if err != nil {
+            return
+        }
+        return
+    })
+    if err != nil {
+        snag.Panic(err)
+    }
 }
 
 func (s *stockService) Overview() (res model.StockOverview) {
     rows, err := ent.Database.QueryContext(s.ctx, `SELECT DISTINCT ABS(SUM(num)) AS sum,
-                NOT store_id IS NULL AND num < 0 AS outbound,
-                NOT store_id IS NULL AND num > 0 AS inbound,
-                store_id IS NULL                 AS plaform
+                NOT store_id IS NULL AND NOT cabinet_id IS NULL AND num < 0 AS outbound,
+                NOT store_id IS NULL AND NOT cabinet_id IS NULL AND num > 0 AS inbound,
+                store_id IS NULL AND cabinet_id IS NULL AS plaform
 FROM stock
 WHERE model IS NOT NULL AND deleted_at IS NULL
 GROUP BY outbound, inbound, plaform`)
@@ -340,13 +372,14 @@ GROUP BY outbound, inbound, plaform`)
 }
 
 // BatteryWithRider 和骑手交互电池出入库
+// TODO 电柜
 func (s *stockService) BatteryWithRider(cr *ent.StockCreate, req *model.StockWithRiderReq) error {
     num := model.StockNumberOfRiderBusiness(req.StockType)
 
     // TODO 平台管理员可操作性时处理出入库逻辑
     if req.StoreID != 0 {
         cr.SetStoreID(req.StoreID)
-        if num < 0 && s.Fetch(req.StoreID, req.Model) < int(math.Abs(float64(num))) {
+        if num < 0 && s.Fetch(model.StockTargetStore, req.StoreID, req.Model) < int(math.Abs(float64(num))) {
             return errors.New("电池库存不足")
         }
     }

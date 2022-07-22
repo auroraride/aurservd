@@ -13,6 +13,11 @@ const (
     StockTypeRiderUnSubscribe              // 骑手归还电池 (入库)
 )
 
+const (
+    StockTargetStore   uint8 = iota + 1 // 调拨对象 - 门店
+    StockTargetCabinet                  // 调拨对象 - 电柜
+)
+
 func StockNumberOfRiderBusiness(typ uint8) (num int) {
     switch typ {
     case StockTypeRiderObtain, StockTypeRiderContinue:
@@ -31,6 +36,7 @@ type StockTransferReq struct {
     OutboundID uint64 `json:"outboundId"`      // 调出自 (0:平台)
     InboundID  uint64 `json:"inboundId"`       // 调入至 (0:平台)
     Num        int    `json:"num"`             // 调拨数量
+    Target     uint8  `json:"target"`          // 调拨目标 1:门店(默认) 2:电柜
 }
 
 type StockListReq struct {
