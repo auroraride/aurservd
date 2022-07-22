@@ -793,34 +793,30 @@ func (s *assistanceService) Paid(trade *model.PaymentAssistance) {
         return
     }
 
-    ctx := context.Background()
-    tx, _ := ent.Database.Tx(ctx)
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
+        o, err := tx.Order.Create().
+            SetPayway(trade.Payway).
+            SetAmount(trade.Cost).
+            SetOutTradeNo(trade.OutTradeNo).
+            SetTradeNo(trade.TradeNo).
+            SetTotal(trade.Cost).
+            SetCityID(ass.CityID).
+            SetSubscribeID(ass.SubscribeID).
+            SetType(model.OrderTypeAssistance).
+            SetRiderID(ass.RiderID).
+            Save(s.ctx)
+        if err != nil {
+            log.Errorf("[ASSISTANCE PAID %s ERROR]: %s", trade.OutTradeNo, err.Error())
+            return err
+        }
 
-    o, err := tx.Order.Create().
-        SetPayway(trade.Payway).
-        SetAmount(trade.Cost).
-        SetOutTradeNo(trade.OutTradeNo).
-        SetTradeNo(trade.TradeNo).
-        SetTotal(trade.Cost).
-        SetCityID(ass.CityID).
-        SetSubscribeID(ass.SubscribeID).
-        SetType(model.OrderTypeAssistance).
-        SetRiderID(ass.RiderID).
-        Save(ctx)
-    if err != nil {
-        log.Errorf("[ASSISTANCE PAID %s ERROR]: %s", trade.OutTradeNo, err.Error())
-        _ = tx.Rollback()
-        return
-    }
-
-    _, err = tx.Assistance.UpdateOne(ass).SetStatus(model.AssistanceStatusSuccess).SetPayAt(time.Now()).SetOrderID(o.ID).Save(ctx)
-    if err != nil {
-        log.Errorf("[ASSISTANCE PAID %s ERROR UPDATE %d]: %s", trade.OutTradeNo, ass.ID, err.Error())
-        _ = tx.Rollback()
-        return
-    }
-
-    _ = tx.Commit()
+        _, err = tx.Assistance.UpdateOne(ass).SetStatus(model.AssistanceStatusSuccess).SetPayAt(time.Now()).SetOrderID(o.ID).Save(s.ctx)
+        if err != nil {
+            log.Errorf("[ASSISTANCE PAID %s ERROR UPDATE %d]: %s", trade.OutTradeNo, ass.ID, err.Error())
+            return err
+        }
+        return nil
+    })
 }
 
 // SimpleList 简单列表

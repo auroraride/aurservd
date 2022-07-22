@@ -148,38 +148,45 @@ func (s *employeeSubscribeService) Active(req *model.QRPostReq) {
     info, sub := s.Inactive(req.Qrcode)
     NewBusinessWithEmployee(s.employee).CheckCity(info.City.ID)
 
-    tx, _ := ent.Database.Tx(s.ctx)
     storeID := s.employee.Edges.Store.ID
+    var newsub *ent.Subscribe
 
-    // 激活
-    newsub, err := tx.Subscribe.UpdateOneID(info.ID).
-        SetStatus(model.SubscribeStatusUsing).
-        SetStartAt(time.Now()).
-        SetEmployeeID(s.employee.ID).
-        SetStoreID(storeID).
-        Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+        // 激活
+        newsub, err = tx.Subscribe.UpdateOneID(info.ID).
+            SetStatus(model.SubscribeStatusUsing).
+            SetStartAt(time.Now()).
+            SetEmployeeID(s.employee.ID).
+            SetStoreID(storeID).
+            Save(s.ctx)
+        if err != nil {
+            return
+        }
 
-    // 提成
-    if info.CommissionID != nil {
-        _, err = tx.Commission.UpdateOneID(*info.CommissionID).SetEmployeeID(s.employee.ID).Save(s.ctx)
-        snag.PanicIfErrorX(err, tx.Rollback)
-    }
+        // 提成
+        if info.CommissionID != nil {
+            _, err = tx.Commission.UpdateOneID(*info.CommissionID).SetEmployeeID(s.employee.ID).Save(s.ctx)
+            if err != nil {
+                return
+            }
+        }
 
-    // 调出库存
-    err = NewStockWithEmployee(s.employee).BatteryWithRider(
-        tx.Stock.Create(),
-        &model.StockWithRiderReq{
-            RiderID:    info.Rider.ID,
-            StoreID:    storeID,
-            EmployeeID: s.employee.ID,
-            Model:      info.Model,
-            StockType:  model.StockTypeRiderObtain,
-        },
-    )
-    snag.PanicIfErrorX(err, tx.Rollback)
-
-    _ = tx.Commit()
+        // 调出库存
+        err = NewStockWithEmployee(s.employee).BatteryWithRider(
+            tx.Stock.Create(),
+            &model.StockWithRiderReq{
+                RiderID:    info.Rider.ID,
+                StoreID:    storeID,
+                EmployeeID: s.employee.ID,
+                Model:      info.Model,
+                StockType:  model.StockTypeRiderObtain,
+            },
+        )
+        if err != nil {
+            return
+        }
+        return nil
+    })
 
     if info.EnterpriseID != nil {
         // 更新团签账单

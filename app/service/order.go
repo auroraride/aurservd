@@ -317,43 +317,38 @@ func (s *orderService) FeePaid(trade *model.PaymentOverdueFee) {
     j, _ := json.MarshalIndent(trade, "", "  ")
     log.Infof("[FEE PAID %s] %s", trade.OutTradeNo, j)
 
-    ctx := context.Background()
-    tx, _ := ent.Database.Tx(ctx)
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+        _, err = tx.Order.Create().
+            SetPayway(trade.Payway).
+            SetPlanID(trade.PlanID).
+            SetParentID(trade.OrderID).
+            SetAmount(trade.Amount).
+            SetOutTradeNo(trade.OutTradeNo).
+            SetTradeNo(trade.TradeNo).
+            SetTotal(trade.Amount).
+            SetCityID(trade.CityID).
+            SetSubscribeID(trade.SubscribeID).
+            SetType(trade.OrderType).
+            SetInitialDays(trade.Days).
+            SetRiderID(trade.RiderID).
+            Save(s.ctx)
+        if err != nil {
+            log.Errorf("[FEE PAID %s ERROR]: %s", trade.OutTradeNo, err.Error())
+            return
+        }
 
-    _, err := tx.Order.Create().
-        SetPayway(trade.Payway).
-        SetPlanID(trade.PlanID).
-        SetParentID(trade.OrderID).
-        SetAmount(trade.Amount).
-        SetOutTradeNo(trade.OutTradeNo).
-        SetTradeNo(trade.TradeNo).
-        SetTotal(trade.Amount).
-        SetCityID(trade.CityID).
-        SetSubscribeID(trade.SubscribeID).
-        SetType(trade.OrderType).
-        SetInitialDays(trade.Days).
-        SetRiderID(trade.RiderID).
-        Save(ctx)
-    if err != nil {
-        log.Errorf("[FEE PAID %s ERROR]: %s", trade.OutTradeNo, err.Error())
-        _ = tx.Rollback()
+        // 更新订阅
+        _, err = tx.Subscribe.
+            UpdateOneID(trade.SubscribeID).
+            SetStatus(model.SubscribeStatusUsing).
+            SetRemaining(0).
+            AddOverdueDays(trade.Days).
+            Save(s.ctx)
+        if err != nil {
+            log.Errorf("[FEE PAID %s SUBSCRIBE(%d) ERROR]: %s", trade.OutTradeNo, trade.SubscribeID, err.Error())
+        }
         return
-    }
-
-    // 更新订阅
-    _, err = tx.Subscribe.
-        UpdateOneID(trade.SubscribeID).
-        SetStatus(model.SubscribeStatusUsing).
-        SetRemaining(0).
-        AddOverdueDays(trade.Days).
-        Save(ctx)
-    if err != nil {
-        log.Errorf("[FEE PAID %s SUBSCRIBE(%d) ERROR]: %s", trade.OutTradeNo, trade.SubscribeID, err.Error())
-        _ = tx.Rollback()
-        return
-    }
-
-    _ = tx.Commit()
+    })
 
     // 删除缓存
     cache.Del(context.Background(), trade.OutTradeNo)
@@ -369,110 +364,103 @@ func (s *orderService) OrderPaid(trade *model.PaymentSubscribe) {
     j, _ := json.MarshalIndent(trade, "", "  ")
     log.Infof("[ORDER PAID %s] %s", trade.OutTradeNo, j)
 
-    ctx := context.Background()
-    tx, _ := ent.Database.Tx(ctx)
-
-    // 创建订单
-    oc := tx.Order.Create().
-        SetPayway(trade.Payway).
-        SetPlanID(trade.PlanID).
-        SetRiderID(trade.RiderID).
-        SetAmount(decimal.NewFromFloat(trade.Amount).Sub(decimal.NewFromFloat(trade.Deposit)).InexactFloat64()).
-        SetTotal(trade.Amount).
-        SetOutTradeNo(trade.OutTradeNo).
-        SetTradeNo(trade.TradeNo).
-        SetStatus(model.OrderStatusPaid).
-        SetType(trade.OrderType).
-        SetCityID(trade.CityID).
-        SetInitialDays(int(trade.Days)).
-        SetNillableParentID(trade.OrderID).
-        SetNillableSubscribeID(trade.SubscribeID).
-        SetNillablePastDays(trade.PastDays)
-    o, err := oc.Save(s.ctx)
-    if err != nil {
-        log.Errorf("[ORDER PAID %s ERROR]: %s", trade.OutTradeNo, err.Error())
-        _ = tx.Rollback()
-        return
-    }
-
-    // 如果有押金, 创建押金订单
-    var do *ent.Order
-    if trade.Deposit > 0 {
-        do, err = tx.Order.Create().
-            SetStatus(model.OrderStatusPaid).
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+        var o *ent.Order
+        // 创建订单
+        oc := tx.Order.Create().
             SetPayway(trade.Payway).
-            SetType(model.OrderTypeDeposit).
+            SetPlanID(trade.PlanID).
+            SetRiderID(trade.RiderID).
+            SetAmount(decimal.NewFromFloat(trade.Amount).Sub(decimal.NewFromFloat(trade.Deposit)).InexactFloat64()).
+            SetTotal(trade.Amount).
             SetOutTradeNo(trade.OutTradeNo).
             SetTradeNo(trade.TradeNo).
-            SetAmount(trade.Deposit).
-            SetTotal(trade.Amount).
-            SetCityID(trade.CityID).
-            SetRiderID(trade.RiderID).
-            SetParentID(o.ID).
-            Save(s.ctx)
-        if err != nil {
-            log.Errorf("[ORDER PAID %s DEPOSIT ERROR]: %s", trade.OutTradeNo, err.Error())
-            _ = tx.Rollback()
-            return
-        }
-    }
-
-    // 创建或更新subscribe
-    // 新签或重签
-    if trade.OrderType == model.OrderTypeNewly || trade.OrderType == model.OrderTypeAgain {
-        // 创建subscribe
-        sc := tx.Subscribe.Create().
+            SetStatus(model.OrderStatusPaid).
             SetType(trade.OrderType).
-            SetRiderID(trade.RiderID).
-            SetModel(trade.Model).
-            SetRemaining(int(trade.Days)).
-            SetInitialDays(int(trade.Days)).
-            SetStatus(model.SubscribeStatusInactive).
-            SetPlanID(trade.PlanID).
             SetCityID(trade.CityID).
-            SetInitialOrderID(o.ID).
-            AddOrders(o)
-        if do != nil {
-            sc.AddOrders(do)
-        }
-        _, err = sc.Save(ctx)
+            SetInitialDays(int(trade.Days)).
+            SetNillableParentID(trade.OrderID).
+            SetNillableSubscribeID(trade.SubscribeID).
+            SetNillablePastDays(trade.PastDays)
+        o, err = oc.Save(s.ctx)
         if err != nil {
-            log.Errorf("[ORDER PAID %s SUBSCRIBE(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
-            _ = tx.Rollback()
+            log.Errorf("[ORDER PAID %s ERROR]: %s", trade.OutTradeNo, err.Error())
             return
         }
-    }
 
-    // 续签
-    if trade.OrderType == model.OrderTypeRenewal {
-        _, err = tx.Subscribe.UpdateOneID(*trade.SubscribeID).
-            AddRenewalDays(int(trade.Days)).
-            AddRemaining(int(trade.Days)).
-            SetStatus(model.SubscribeStatusUsing).
-            Save(ctx)
-        if err != nil {
-            log.Errorf("[ORDER PAID %s SUBSCRIBE(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
-            _ = tx.Rollback()
-            return
+        // 如果有押金, 创建押金订单
+        var do *ent.Order
+        if trade.Deposit > 0 {
+            do, err = tx.Order.Create().
+                SetStatus(model.OrderStatusPaid).
+                SetPayway(trade.Payway).
+                SetType(model.OrderTypeDeposit).
+                SetOutTradeNo(trade.OutTradeNo).
+                SetTradeNo(trade.TradeNo).
+                SetAmount(trade.Deposit).
+                SetTotal(trade.Amount).
+                SetCityID(trade.CityID).
+                SetRiderID(trade.RiderID).
+                SetParentID(o.ID).
+                Save(s.ctx)
+            if err != nil {
+                log.Errorf("[ORDER PAID %s DEPOSIT ERROR]: %s", trade.OutTradeNo, err.Error())
+                return
+            }
         }
-    }
 
-    // 当新签和重签的时候有提成
-    if trade.OrderType == model.OrderTypeNewly {
-        // 创建提成
-        _, err = tx.Commission.Create().SetOrderID(o.ID).SetAmount(trade.Commission).SetStatus(model.CommissionStatusPending).Save(s.ctx)
-        if err != nil {
-            log.Errorf("[ORDER PAID %s COMMISSION(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
-            _ = tx.Rollback()
-            return
+        // 创建或更新subscribe
+        // 新签或重签
+        if trade.OrderType == model.OrderTypeNewly || trade.OrderType == model.OrderTypeAgain {
+            // 创建subscribe
+            sc := tx.Subscribe.Create().
+                SetType(trade.OrderType).
+                SetRiderID(trade.RiderID).
+                SetModel(trade.Model).
+                SetRemaining(int(trade.Days)).
+                SetInitialDays(int(trade.Days)).
+                SetStatus(model.SubscribeStatusInactive).
+                SetPlanID(trade.PlanID).
+                SetCityID(trade.CityID).
+                SetInitialOrderID(o.ID).
+                AddOrders(o)
+            if do != nil {
+                sc.AddOrders(do)
+            }
+            _, err = sc.Save(s.ctx)
+            if err != nil {
+                log.Errorf("[ORDER PAID %s SUBSCRIBE(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
+                return
+            }
         }
-    }
+
+        // 续签
+        if trade.OrderType == model.OrderTypeRenewal {
+            _, err = tx.Subscribe.UpdateOneID(*trade.SubscribeID).
+                AddRenewalDays(int(trade.Days)).
+                AddRemaining(int(trade.Days)).
+                SetStatus(model.SubscribeStatusUsing).
+                Save(s.ctx)
+            if err != nil {
+                log.Errorf("[ORDER PAID %s SUBSCRIBE(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
+                return
+            }
+        }
+
+        // 当新签和重签的时候有提成
+        if trade.OrderType == model.OrderTypeNewly {
+            // 创建提成
+            _, err = tx.Commission.Create().SetOrderID(o.ID).SetAmount(trade.Commission).SetStatus(model.CommissionStatusPending).Save(s.ctx)
+            if err != nil {
+                log.Errorf("[ORDER PAID %s COMMISSION(%d) ERROR]: %s", trade.OutTradeNo, o.ID, err.Error())
+                return
+            }
+        }
+        return
+    })
 
     // 删除缓存
     cache.Del(context.Background(), trade.OutTradeNo)
-
-    // 提交事务
-    _ = tx.Commit()
 }
 
 // RefundSuccess 成功退款

@@ -60,64 +60,61 @@ func (s *refundService) Refund(riderID uint64, req *model.RefundReq) (res model.
     }
 
     sub := NewSubscribe().Recent(riderID)
-
-    tx, _ := ent.Database.Tx(s.ctx)
-
-    var id uint64
     no := tools.NewUnique().NewSN28()
-    orc := tx.OrderRefund.Create().SetOutRefundNo(no).SetStatus(model.RefundStatusPending)
-    if req.SubscribeID != nil {
-        if sub.Edges.InitialOrder == nil {
-            snag.Panic("未找到有效订单")
-        }
-        if sub.Edges.InitialOrder.Status != model.OrderStatusPaid {
-            snag.Panic("订单状态错误")
-        }
-        id = sub.Edges.InitialOrder.ID
-        if sub.ID != *req.SubscribeID {
-            snag.Panic("未找到有效骑士卡")
-        }
-        if sub.Status != model.SubscribeStatusInactive {
-            snag.Panic("骑士卡已激活, 无法退款")
-        }
-        orc.SetOrderID(sub.InitialOrderID).
-            SetAmount(sub.Edges.InitialOrder.Amount).
-            SetReason("骑士卡未激活, 用户申请")
-    }
 
-    if req.Deposit != nil {
-        // 押金退款逻辑
-        if sub.Status != model.SubscribeStatusUnSubscribed && sub.Status != model.SubscribeStatusCanceled {
-            snag.Panic("骑士卡正在使用中, 无法退押金")
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+        var id uint64
+        orc := tx.OrderRefund.Create().SetOutRefundNo(no).SetStatus(model.RefundStatusPending)
+        if req.SubscribeID != nil {
+            if sub.Edges.InitialOrder == nil {
+                snag.Panic("未找到有效订单")
+            }
+            if sub.Edges.InitialOrder.Status != model.OrderStatusPaid {
+                snag.Panic("订单状态错误")
+            }
+            id = sub.Edges.InitialOrder.ID
+            if sub.ID != *req.SubscribeID {
+                snag.Panic("未找到有效骑士卡")
+            }
+            if sub.Status != model.SubscribeStatusInactive {
+                snag.Panic("骑士卡已激活, 无法退款")
+            }
+            orc.SetOrderID(sub.InitialOrderID).
+                SetAmount(sub.Edges.InitialOrder.Amount).
+                SetReason("骑士卡未激活, 用户申请")
         }
 
-        // 获取骑手押金订单
-        o := NewRider().DepositOrder(s.rider.ID)
+        if req.Deposit != nil {
+            // 押金退款逻辑
+            if sub.Status != model.SubscribeStatusUnSubscribed && sub.Status != model.SubscribeStatusCanceled {
+                snag.Panic("骑士卡正在使用中, 无法退押金")
+            }
 
-        if o == nil {
-            snag.Panic("未找到押金订单")
+            // 获取骑手押金订单
+            o := NewRider().DepositOrder(s.rider.ID)
+
+            if o == nil {
+                snag.Panic("未找到押金订单")
+            }
+
+            id = o.ID
+            if o.Status != model.OrderStatusPaid {
+                snag.Panic("订单状态错误")
+            }
+
+            orc.SetOrderID(o.ID).SetAmount(o.Amount).SetReason("无使用中的骑士卡, 用户申请退还押金")
         }
 
-        id = o.ID
-        if o.Status != model.OrderStatusPaid {
-            snag.Panic("订单状态错误")
+        _, err = orc.Save(s.ctx)
+        if err != nil {
+            log.Error(err)
+            snag.Panic("退款申请失败")
         }
 
-        orc.SetOrderID(o.ID).SetAmount(o.Amount).SetReason("无使用中的骑士卡, 用户申请退还押金")
-    }
-
-    _, err := orc.Save(s.ctx)
-    if err != nil {
-        log.Error(err)
-        _ = tx.Rollback()
-        snag.Panic("退款申请失败")
-    }
-
-    // 更新订单
-    _, err = tx.Order.UpdateOneID(id).SetStatus(model.OrderStatusRefundPending).Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
-
-    _ = tx.Commit()
+        // 更新订单
+        _, err = tx.Order.UpdateOneID(id).SetStatus(model.OrderStatusRefundPending).Save(s.ctx)
+        return
+    })
 
     return model.RefundRes{OutRefundNo: no}
 }
@@ -195,14 +192,15 @@ func (s *refundService) RefundAudit(req *model.RefundAuditReq) {
     if prepay.Refund.Success {
         NewOrder().RefundSuccess(prepay.Refund)
     } else {
-        tx, _ := ent.Database.Tx(s.ctx)
-        _, err := tx.OrderRefund.UpdateOne(or).SetStatus(status).SetRemark(req.Remark).Save(s.ctx)
-        snag.PanicIfErrorX(err, tx.Rollback)
+        ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+            _, err = tx.OrderRefund.UpdateOne(or).SetStatus(status).SetRemark(req.Remark).Save(s.ctx)
+            if err != nil {
+                return
+            }
 
-        _, err = tx.Order.UpdateOne(o).SetStatus(os).Save(s.ctx)
-        snag.PanicIfErrorX(err, tx.Rollback)
-
-        _ = tx.Commit()
+            _, err = tx.Order.UpdateOne(o).SetStatus(os).Save(s.ctx)
+            return
+        })
     }
 
     // 记录日志

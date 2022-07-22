@@ -67,32 +67,33 @@ func cityInitial() {
         return
     }
 
-    tx, _ := ent.Database.Tx(ctx)
     // 导入城市
     log.Println("导入城市")
     var items []R
     err := jsoniter.Unmarshal(assets.City, &items)
     if err == nil {
-        for _, item := range items {
-            parent, err := tx.City.Create().
-                SetID(item.Adcode).
-                SetName(item.Name).
-                SetCode(item.Code).
-                Save(ctx)
-            snag.PanicIfErrorX(err, tx.Rollback)
-            for _, child := range item.Children {
-                _, err = tx.City.Create().
-                    SetID(child.Adcode).
-                    SetName(child.Name).
-                    SetCode(child.Code).
-                    SetOpen(false).
-                    SetParent(parent).
-                    SetLat(child.Lat).
-                    SetLng(child.Lng).
+        ent.WithTxPanic(ctx, func(tx *ent.Tx) error {
+            for _, item := range items {
+                parent, err := tx.City.Create().
+                    SetID(item.Adcode).
+                    SetName(item.Name).
+                    SetCode(item.Code).
                     Save(ctx)
-                snag.PanicIfErrorX(err, tx.Rollback)
+                snag.PanicIfError(err)
+                for _, child := range item.Children {
+                    _, err = tx.City.Create().
+                        SetID(child.Adcode).
+                        SetName(child.Name).
+                        SetCode(child.Code).
+                        SetOpen(false).
+                        SetParent(parent).
+                        SetLat(child.Lat).
+                        SetLng(child.Lng).
+                        Save(ctx)
+                    snag.PanicIfError(err)
+                }
             }
-        }
+            return nil
+        })
     }
-    _ = tx.Commit()
 }
