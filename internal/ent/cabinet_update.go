@@ -372,6 +372,20 @@ func (cu *CabinetUpdate) ClearSimDate() *CabinetUpdate {
 	return cu
 }
 
+// SetTransferred sets the "transferred" field.
+func (cu *CabinetUpdate) SetTransferred(b bool) *CabinetUpdate {
+	cu.mutation.SetTransferred(b)
+	return cu
+}
+
+// SetNillableTransferred sets the "transferred" field if the given value is not nil.
+func (cu *CabinetUpdate) SetNillableTransferred(b *bool) *CabinetUpdate {
+	if b != nil {
+		cu.SetTransferred(*b)
+	}
+	return cu
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (cu *CabinetUpdate) SetCity(c *City) *CabinetUpdate {
 	return cu.SetCityID(c.ID)
@@ -870,6 +884,13 @@ func (cu *CabinetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: cabinet.FieldSimDate,
+		})
+	}
+	if value, ok := cu.mutation.Transferred(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: cabinet.FieldTransferred,
 		})
 	}
 	if cu.mutation.CityCleared() {
@@ -1514,6 +1535,20 @@ func (cuo *CabinetUpdateOne) ClearSimDate() *CabinetUpdateOne {
 	return cuo
 }
 
+// SetTransferred sets the "transferred" field.
+func (cuo *CabinetUpdateOne) SetTransferred(b bool) *CabinetUpdateOne {
+	cuo.mutation.SetTransferred(b)
+	return cuo
+}
+
+// SetNillableTransferred sets the "transferred" field if the given value is not nil.
+func (cuo *CabinetUpdateOne) SetNillableTransferred(b *bool) *CabinetUpdateOne {
+	if b != nil {
+		cuo.SetTransferred(*b)
+	}
+	return cuo
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (cuo *CabinetUpdateOne) SetCity(c *City) *CabinetUpdateOne {
 	return cuo.SetCityID(c.ID)
@@ -2042,6 +2077,13 @@ func (cuo *CabinetUpdateOne) sqlSave(ctx context.Context) (_node *Cabinet, err e
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: cabinet.FieldSimDate,
+		})
+	}
+	if value, ok := cuo.mutation.Transferred(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: cabinet.FieldTransferred,
 		})
 	}
 	if cuo.mutation.CityCleared() {

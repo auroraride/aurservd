@@ -279,6 +279,20 @@ func (cc *CabinetCreate) SetNillableSimDate(t *time.Time) *CabinetCreate {
 	return cc
 }
 
+// SetTransferred sets the "transferred" field.
+func (cc *CabinetCreate) SetTransferred(b bool) *CabinetCreate {
+	cc.mutation.SetTransferred(b)
+	return cc
+}
+
+// SetNillableTransferred sets the "transferred" field if the given value is not nil.
+func (cc *CabinetCreate) SetNillableTransferred(b *bool) *CabinetCreate {
+	if b != nil {
+		cc.SetTransferred(*b)
+	}
+	return cc
+}
+
 // SetCity sets the "city" edge to the City entity.
 func (cc *CabinetCreate) SetCity(c *City) *CabinetCreate {
 	return cc.SetCityID(c.ID)
@@ -454,6 +468,10 @@ func (cc *CabinetCreate) defaults() error {
 		v := cabinet.DefaultBatteryFullNum
 		cc.mutation.SetBatteryFullNum(v)
 	}
+	if _, ok := cc.mutation.Transferred(); !ok {
+		v := cabinet.DefaultTransferred
+		cc.mutation.SetTransferred(v)
+	}
 	return nil
 }
 
@@ -491,6 +509,9 @@ func (cc *CabinetCreate) check() error {
 	}
 	if _, ok := cc.mutation.BatteryFullNum(); !ok {
 		return &ValidationError{Name: "battery_full_num", err: errors.New(`ent: missing required field "Cabinet.battery_full_num"`)}
+	}
+	if _, ok := cc.mutation.Transferred(); !ok {
+		return &ValidationError{Name: "transferred", err: errors.New(`ent: missing required field "Cabinet.transferred"`)}
 	}
 	return nil
 }
@@ -687,6 +708,14 @@ func (cc *CabinetCreate) createSpec() (*Cabinet, *sqlgraph.CreateSpec) {
 			Column: cabinet.FieldSimDate,
 		})
 		_node.SimDate = value
+	}
+	if value, ok := cc.mutation.Transferred(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: cabinet.FieldTransferred,
+		})
+		_node.Transferred = value
 	}
 	if nodes := cc.mutation.CityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1248,6 +1277,18 @@ func (u *CabinetUpsert) ClearSimDate() *CabinetUpsert {
 	return u
 }
 
+// SetTransferred sets the "transferred" field.
+func (u *CabinetUpsert) SetTransferred(v bool) *CabinetUpsert {
+	u.Set(cabinet.FieldTransferred, v)
+	return u
+}
+
+// UpdateTransferred sets the "transferred" field to the value that was provided on create.
+func (u *CabinetUpsert) UpdateTransferred() *CabinetUpsert {
+	u.SetExcluded(cabinet.FieldTransferred)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -1750,6 +1791,20 @@ func (u *CabinetUpsertOne) UpdateSimDate() *CabinetUpsertOne {
 func (u *CabinetUpsertOne) ClearSimDate() *CabinetUpsertOne {
 	return u.Update(func(s *CabinetUpsert) {
 		s.ClearSimDate()
+	})
+}
+
+// SetTransferred sets the "transferred" field.
+func (u *CabinetUpsertOne) SetTransferred(v bool) *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetTransferred(v)
+	})
+}
+
+// UpdateTransferred sets the "transferred" field to the value that was provided on create.
+func (u *CabinetUpsertOne) UpdateTransferred() *CabinetUpsertOne {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateTransferred()
 	})
 }
 
@@ -2419,6 +2474,20 @@ func (u *CabinetUpsertBulk) UpdateSimDate() *CabinetUpsertBulk {
 func (u *CabinetUpsertBulk) ClearSimDate() *CabinetUpsertBulk {
 	return u.Update(func(s *CabinetUpsert) {
 		s.ClearSimDate()
+	})
+}
+
+// SetTransferred sets the "transferred" field.
+func (u *CabinetUpsertBulk) SetTransferred(v bool) *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.SetTransferred(v)
+	})
+}
+
+// UpdateTransferred sets the "transferred" field to the value that was provided on create.
+func (u *CabinetUpsertBulk) UpdateTransferred() *CabinetUpsertBulk {
+	return u.Update(func(s *CabinetUpsert) {
+		s.UpdateTransferred()
 	})
 }
 

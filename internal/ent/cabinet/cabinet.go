@@ -59,6 +59,8 @@ const (
 	FieldSimSn = "sim_sn"
 	// FieldSimDate holds the string denoting the sim_date field in the database.
 	FieldSimDate = "sim_date"
+	// FieldTransferred holds the string denoting the transferred field in the database.
+	FieldTransferred = "transferred"
 	// EdgeCity holds the string denoting the city edge name in mutations.
 	EdgeCity = "city"
 	// EdgeBranch holds the string denoting the branch edge name in mutations.
@@ -141,6 +143,7 @@ var Columns = []string{
 	FieldAddress,
 	FieldSimSn,
 	FieldSimDate,
+	FieldTransferred,
 }
 
 var (
@@ -179,4 +182,6 @@ var (
 	DefaultBatteryNum uint
 	// DefaultBatteryFullNum holds the default value on creation for the "battery_full_num" field.
 	DefaultBatteryFullNum uint
+	// DefaultTransferred holds the default value on creation for the "transferred" field.
+	DefaultTransferred bool
 )

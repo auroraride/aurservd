@@ -233,6 +233,13 @@ func SimDate(v time.Time) predicate.Cabinet {
 	})
 }
 
+// Transferred applies equality check predicate on the "transferred" field. It's identical to TransferredEQ.
+func Transferred(v bool) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTransferred), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
@@ -2107,6 +2114,20 @@ func SimDateIsNil() predicate.Cabinet {
 func SimDateNotNil() predicate.Cabinet {
 	return predicate.Cabinet(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldSimDate)))
+	})
+}
+
+// TransferredEQ applies the EQ predicate on the "transferred" field.
+func TransferredEQ(v bool) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTransferred), v))
+	})
+}
+
+// TransferredNEQ applies the NEQ predicate on the "transferred" field.
+func TransferredNEQ(v bool) predicate.Cabinet {
+	return predicate.Cabinet(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTransferred), v))
 	})
 }
 

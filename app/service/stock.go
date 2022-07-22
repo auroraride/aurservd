@@ -267,6 +267,11 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
         snag.Panic("操作失败, 调出物资大于库存物资")
     }
 
+    // TODO 检查电柜是否初始化调拨过
+    if req.Target == model.StockTargetCabinet {
+        // cab := NewCabinet().QueryOne(req.OutboundID)
+    }
+
     sn := tools.NewUnique().NewSN()
 
     in := &req.InboundID

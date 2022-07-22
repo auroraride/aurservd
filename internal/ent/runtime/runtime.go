@@ -195,6 +195,10 @@ func init() {
 	cabinetDescBatteryFullNum := cabinetFields[10].Descriptor()
 	// cabinet.DefaultBatteryFullNum holds the default value on creation for the battery_full_num field.
 	cabinet.DefaultBatteryFullNum = cabinetDescBatteryFullNum.Default.(uint)
+	// cabinetDescTransferred is the schema descriptor for transferred field.
+	cabinetDescTransferred := cabinetFields[16].Descriptor()
+	// cabinet.DefaultTransferred holds the default value on creation for the transferred field.
+	cabinet.DefaultTransferred = cabinetDescTransferred.Default.(bool)
 	cabinetfaultMixin := schema.CabinetFault{}.Mixin()
 	cabinetfaultMixinHooks2 := cabinetfaultMixin[2].Hooks()
 	cabinetfault.Hooks[0] = cabinetfaultMixinHooks2[0]

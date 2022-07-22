@@ -50,6 +50,7 @@ type CabinetMutation struct {
 	address             *string
 	sim_sn              *string
 	sim_date            *time.Time
+	transferred         *bool
 	clearedFields       map[string]struct{}
 	city                *uint64
 	clearedcity         bool
@@ -1296,6 +1297,42 @@ func (m *CabinetMutation) ResetSimDate() {
 	delete(m.clearedFields, cabinet.FieldSimDate)
 }
 
+// SetTransferred sets the "transferred" field.
+func (m *CabinetMutation) SetTransferred(b bool) {
+	m.transferred = &b
+}
+
+// Transferred returns the value of the "transferred" field in the mutation.
+func (m *CabinetMutation) Transferred() (r bool, exists bool) {
+	v := m.transferred
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTransferred returns the old "transferred" field's value of the Cabinet entity.
+// If the Cabinet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CabinetMutation) OldTransferred(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTransferred is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTransferred requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTransferred: %w", err)
+	}
+	return oldValue.Transferred, nil
+}
+
+// ResetTransferred resets all changes to the "transferred" field.
+func (m *CabinetMutation) ResetTransferred() {
+	m.transferred = nil
+}
+
 // ClearCity clears the "city" edge to the City entity.
 func (m *CabinetMutation) ClearCity() {
 	m.clearedcity = true
@@ -1583,7 +1620,7 @@ func (m *CabinetMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CabinetMutation) Fields() []string {
-	fields := make([]string, 0, 23)
+	fields := make([]string, 0, 24)
 	if m.created_at != nil {
 		fields = append(fields, cabinet.FieldCreatedAt)
 	}
@@ -1653,6 +1690,9 @@ func (m *CabinetMutation) Fields() []string {
 	if m.sim_date != nil {
 		fields = append(fields, cabinet.FieldSimDate)
 	}
+	if m.transferred != nil {
+		fields = append(fields, cabinet.FieldTransferred)
+	}
 	return fields
 }
 
@@ -1707,6 +1747,8 @@ func (m *CabinetMutation) Field(name string) (ent.Value, bool) {
 		return m.SimSn()
 	case cabinet.FieldSimDate:
 		return m.SimDate()
+	case cabinet.FieldTransferred:
+		return m.Transferred()
 	}
 	return nil, false
 }
@@ -1762,6 +1804,8 @@ func (m *CabinetMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldSimSn(ctx)
 	case cabinet.FieldSimDate:
 		return m.OldSimDate(ctx)
+	case cabinet.FieldTransferred:
+		return m.OldTransferred(ctx)
 	}
 	return nil, fmt.Errorf("unknown Cabinet field %s", name)
 }
@@ -1931,6 +1975,13 @@ func (m *CabinetMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSimDate(v)
+		return nil
+	case cabinet.FieldTransferred:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTransferred(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Cabinet field %s", name)
@@ -2211,6 +2262,9 @@ func (m *CabinetMutation) ResetField(name string) error {
 		return nil
 	case cabinet.FieldSimDate:
 		m.ResetSimDate()
+		return nil
+	case cabinet.FieldTransferred:
+		m.ResetTransferred()
 		return nil
 	}
 	return fmt.Errorf("unknown Cabinet field %s", name)

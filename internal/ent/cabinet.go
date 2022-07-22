@@ -86,6 +86,9 @@ type Cabinet struct {
 	// SimDate holds the value of the "sim_date" field.
 	// SIM卡到期日期
 	SimDate time.Time `json:"sim_date,omitempty"`
+	// Transferred holds the value of the "transferred" field.
+	// 电池是否已调拨
+	Transferred bool `json:"transferred,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CabinetQuery when eager-loading is set.
 	Edges CabinetEdges `json:"edges"`
@@ -181,6 +184,8 @@ func (*Cabinet) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case cabinet.FieldCreator, cabinet.FieldLastModifier, cabinet.FieldBin:
 			values[i] = new([]byte)
+		case cabinet.FieldTransferred:
+			values[i] = new(sql.NullBool)
 		case cabinet.FieldLng, cabinet.FieldLat:
 			values[i] = new(sql.NullFloat64)
 		case cabinet.FieldID, cabinet.FieldCityID, cabinet.FieldBranchID, cabinet.FieldDoors, cabinet.FieldStatus, cabinet.FieldHealth, cabinet.FieldBatteryNum, cabinet.FieldBatteryFullNum:
@@ -357,6 +362,12 @@ func (c *Cabinet) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				c.SimDate = value.Time
 			}
+		case cabinet.FieldTransferred:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field transferred", values[i])
+			} else if value.Valid {
+				c.Transferred = value.Bool
+			}
 		}
 	}
 	return nil
@@ -467,6 +478,8 @@ func (c *Cabinet) String() string {
 	builder.WriteString(c.SimSn)
 	builder.WriteString(", sim_date=")
 	builder.WriteString(c.SimDate.Format(time.ANSIC))
+	builder.WriteString(", transferred=")
+	builder.WriteString(fmt.Sprintf("%v", c.Transferred))
 	builder.WriteByte(')')
 	return builder.String()
 }

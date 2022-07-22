@@ -271,6 +271,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			cabinet.FieldAddress:        {Type: field.TypeString, Column: cabinet.FieldAddress},
 			cabinet.FieldSimSn:          {Type: field.TypeString, Column: cabinet.FieldSimSn},
 			cabinet.FieldSimDate:        {Type: field.TypeTime, Column: cabinet.FieldSimDate},
+			cabinet.FieldTransferred:    {Type: field.TypeBool, Column: cabinet.FieldTransferred},
 		},
 	}
 	graph.Nodes[7] = &sqlgraph.Node{
@@ -3982,6 +3983,11 @@ func (f *CabinetFilter) WhereSimSn(p entql.StringP) {
 // WhereSimDate applies the entql time.Time predicate on the sim_date field.
 func (f *CabinetFilter) WhereSimDate(p entql.TimeP) {
 	f.Where(p.Field(cabinet.FieldSimDate))
+}
+
+// WhereTransferred applies the entql bool predicate on the transferred field.
+func (f *CabinetFilter) WhereTransferred(p entql.BoolP) {
+	f.Where(p.Field(cabinet.FieldTransferred))
 }
 
 // WhereHasCity applies a predicate to check if query has an edge city.
