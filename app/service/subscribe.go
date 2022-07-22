@@ -297,48 +297,41 @@ func (s *subscribeService) AlterDays(req *model.SubscribeAlter) (res model.Rider
     after := sub.Remaining + req.Days
     status := sub.Status
 
-    tx, err := ent.Database.Tx(s.ctx)
-    if err != nil {
-        log.Error(err)
-        snag.Panic("时间修改失败")
-    }
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+        // 插入时间修改
+        _, err = tx.SubscribeAlter.
+            Create().
+            SetRiderID(sub.RiderID).
+            SetManagerID(s.modifier.ID).
+            SetSubscribeID(sub.ID).
+            SetDays(req.Days).
+            SetRemark(req.Reason).
+            Save(s.ctx)
+        if err != nil {
+            log.Error(err)
+            snag.Panic("时间修改失败")
+        }
 
-    // 插入时间修改
-    _, err = tx.SubscribeAlter.
-        Create().
-        SetRiderID(sub.RiderID).
-        SetManagerID(s.modifier.ID).
-        SetSubscribeID(sub.ID).
-        SetDays(req.Days).
-        SetRemark(req.Reason).
-        Save(s.ctx)
-    if err != nil {
-        log.Error(err)
-        _ = tx.Rollback()
-        snag.Panic("时间修改失败")
-    }
+        // 更新订阅
+        if after > 0 && status == model.SubscribeStatusOverdue {
+            status = model.SubscribeStatusUsing
+        }
+        if after < 0 {
+            status = model.SubscribeStatusOverdue
+        }
 
-    // 更新订阅
-    if after > 0 && status == model.SubscribeStatusOverdue {
-        status = model.SubscribeStatusUsing
-    }
-    if after < 0 {
-        status = model.SubscribeStatusOverdue
-    }
-
-    sub, err = tx.Subscribe.
-        UpdateOneID(sub.ID).
-        AddAlterDays(req.Days).
-        AddRemaining(req.Days).
-        SetStatus(status).
-        Save(s.ctx)
-    if err != nil {
-        log.Error(err)
-        _ = tx.Rollback()
-        snag.Panic("时间修改失败")
-    }
-
-    _ = tx.Commit()
+        sub, err = tx.Subscribe.
+            UpdateOneID(sub.ID).
+            AddAlterDays(req.Days).
+            AddRemaining(req.Days).
+            SetStatus(status).
+            Save(s.ctx)
+        if err != nil {
+            log.Error(err)
+            snag.Panic("时间修改失败")
+        }
+        return
+    })
 
     // 记录日志
     go logging.NewOperateLog().

@@ -13,6 +13,7 @@ import (
     "entgo.io/ent/dialect/sql/schema"
     "fmt"
     "github.com/auroraride/aurservd/internal/ent/migrate"
+    "github.com/auroraride/aurservd/pkg/snag"
     log "github.com/sirupsen/logrus"
 
     _ "github.com/auroraride/aurservd/internal/ent/runtime"
@@ -65,8 +66,8 @@ func WithTx(ctx context.Context, fn func(tx *Tx) error) error {
         }
     }()
     if err = fn(tx); err != nil {
-        if rerr := tx.Rollback(); rerr != nil {
-            err = fmt.Errorf("rolling back transaction: %w", rerr)
+        if txErr := tx.Rollback(); txErr != nil {
+            err = fmt.Errorf("rolling back transaction: %w", txErr)
         }
         return err
     }
@@ -74,4 +75,11 @@ func WithTx(ctx context.Context, fn func(tx *Tx) error) error {
         return fmt.Errorf("committing transaction: %w", err)
     }
     return nil
+}
+
+func WithTxPanic(ctx context.Context, fn func(tx *Tx) (err error)) {
+    err := WithTx(ctx, fn)
+    if err != nil {
+        snag.Panic(err)
+    }
 }

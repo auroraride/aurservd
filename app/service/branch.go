@@ -53,32 +53,30 @@ func (s *branchService) Query(id uint64) *ent.Branch {
 
 // Create 新增网点
 func (s *branchService) Create(req *model.BranchCreateReq) {
-    tx, _ := ent.Database.Tx(s.ctx)
-
-    b, err := s.orm.Create().
-        SetName(*req.Name).
-        SetAddress(*req.Address).
-        SetCityID(*req.CityID).
-        SetLng(*req.Lng).
-        SetLat(*req.Lat).
-        SetGeom(&model.Geometry{
-            Lng: *req.Lng,
-            Lat: *req.Lat,
-        }).
-        SetPhotos(req.Photos).
-        Save(s.ctx)
-    if err != nil {
-        _ = tx.Rollback()
-        snag.Panic(err)
-    }
-
-    if len(req.Contracts) > 0 {
-        for _, contract := range req.Contracts {
-            s.AddContract(b.ID, contract)
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
+        b, err := s.orm.Create().
+            SetName(*req.Name).
+            SetAddress(*req.Address).
+            SetCityID(*req.CityID).
+            SetLng(*req.Lng).
+            SetLat(*req.Lat).
+            SetGeom(&model.Geometry{
+                Lng: *req.Lng,
+                Lat: *req.Lat,
+            }).
+            SetPhotos(req.Photos).
+            Save(s.ctx)
+        if err != nil {
+            return err
         }
-    }
 
-    _ = tx.Commit()
+        if len(req.Contracts) > 0 {
+            for _, contract := range req.Contracts {
+                s.AddContract(b.ID, contract)
+            }
+        }
+        return nil
+    })
 }
 
 // AddContract 新增合同

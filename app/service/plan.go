@@ -132,40 +132,44 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanWithComplexes {
     })
 
     // 开始创建
-    tx, _ := ent.Database.Tx(s.ctx)
-    creator := tx.Plan.Create().
-        SetName(req.Name).
-        SetEnable(req.Enable).
-        AddCityIDs(req.Cities...).
-        AddPms(pms...).
-        SetStart(start).
-        SetEnd(end)
-
     var parent *ent.Plan
-    for i, cl := range req.Complexes {
-        c := s.cloneCreator(creator).
-            SetPrice(cl.Price).
-            SetOriginal(cl.Original).
-            SetCommission(cl.Commission).
-            SetDesc(cl.Desc).
-            SetDays(cl.Days)
-        if i > 0 {
-            c.SetParent(parent)
-        }
-        r, err := c.Save(s.ctx)
-        snag.PanicIfErrorX(err, tx.Rollback)
-        if i == 0 {
-            parent = r
-            parent.Edges.Cities = cities
-            parent.Edges.Pms = pms
-            parent.Edges.Complexes = make([]*ent.Plan, len(req.Complexes))
-            parent.Edges.Complexes[i] = r
-        } else {
-            parent.Edges.Complexes[i] = r
-        }
-    }
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
+        creator := tx.Plan.Create().
+            SetName(req.Name).
+            SetEnable(req.Enable).
+            AddCityIDs(req.Cities...).
+            AddPms(pms...).
+            SetStart(start).
+            SetEnd(end)
 
-    _ = tx.Commit()
+        for i, cl := range req.Complexes {
+            c := s.cloneCreator(creator).
+                SetPrice(cl.Price).
+                SetOriginal(cl.Original).
+                SetCommission(cl.Commission).
+                SetDesc(cl.Desc).
+                SetDays(cl.Days)
+            if i > 0 {
+                c.SetParent(parent)
+            }
+
+            // 保存信息
+            r, err := c.Save(s.ctx)
+            snag.PanicIfError(err)
+
+            if i == 0 {
+                parent = r
+                parent.Edges.Cities = cities
+                parent.Edges.Pms = pms
+                parent.Edges.Complexes = make([]*ent.Plan, len(req.Complexes))
+                parent.Edges.Complexes[i] = r
+            } else {
+                parent.Edges.Complexes[i] = r
+            }
+        }
+
+        return nil
+    })
 
     return s.PlanWithComplexes(parent)
 }
@@ -191,15 +195,12 @@ func (s *planService) Create(req *model.PlanCreateReq) model.PlanWithComplexes {
 //         return req.Complexes[i].Days < req.Complexes[j].Days
 //     })
 //
-//     tx, _ := ent.Database.Tx(s.ctx)
-//
 //     var parent *ent.Plan
 //
 //     // 判定父级骑士卡是否改变
 //     first := req.Complexes[0]
 //     if first.ID != old.ID {}
 //
-//     _ = tx.Commit()
 //     return model.PlanWithComplexes{}
 // }
 

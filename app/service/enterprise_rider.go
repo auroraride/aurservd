@@ -63,18 +63,19 @@ func (s *enterpriseRiderService) Create(req *model.EnterpriseRiderCreateReq) mod
     }
 
     stat := NewEnterpriseStation().Query(req.StationID)
-
-    tx, _ := ent.Database.Tx(s.ctx)
-    // 创建person
-    p, err := tx.Person.Create().SetName(req.Name).Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
-
-    // 创建rider
     var r *ent.Rider
-    r, err = tx.Rider.Create().SetPhone(req.Phone).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).SetPerson(p).Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
 
-    _ = tx.Commit()
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
+        // 创建person
+        p, err := tx.Person.Create().SetName(req.Name).Save(s.ctx)
+        if err != nil {
+            return err
+        }
+
+        // 创建rider
+        r, err = tx.Rider.Create().SetPhone(req.Phone).SetEnterpriseID(req.EnterpriseID).SetStationID(req.StationID).SetPerson(p).Save(s.ctx)
+        return err
+    })
 
     return model.EnterpriseRider{
         ID:        r.ID,

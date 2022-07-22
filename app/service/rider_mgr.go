@@ -89,55 +89,53 @@ func (s *riderMgrService) PauseSubscribe(subscribeID uint64) {
         snag.Panic("团签用户无法办理")
     }
 
-    tx, _ := ent.Database.Tx(s.ctx)
-
-    spc := tx.SubscribePause.Create().
-        SetStartAt(time.Now()).
-        SetRiderID(sub.RiderID).
-        SetSubscribeID(sub.ID)
-
-    stockReq := &model.StockWithRiderReq{
-        RiderID:   sub.RiderID,
-        Model:     sub.Model,
-        StockType: model.StockTypeRiderPause,
-    }
-
     lg := logging.NewOperateLog().
         SetRef(sub.Edges.Rider).
         SetOperate(model.OperateSubscribePause).
         SetDiff("计费中", "暂停计费")
 
-    if s.modifier != nil {
-        stockReq.ManagerID = s.modifier.ID
-        lg.SetModifier(s.modifier)
-        bls = NewBusinessLogWithModifier(s.modifier, sub)
-    }
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+        spc := tx.SubscribePause.Create().
+            SetStartAt(time.Now()).
+            SetRiderID(sub.RiderID).
+            SetSubscribeID(sub.ID)
 
-    if s.employee != nil {
-        NewBusinessWithEmployee(s.employee).CheckCity(sub.CityID)
-        spc.SetEmployee(s.employee)
-        stockReq.EmployeeID = s.employee.ID
-        stockReq.StoreID = s.employee.Edges.Store.ID
-        lg.SetEmployee(s.employeeInfo)
-        bls = NewBusinessLogWithEmployee(s.employee, sub)
-    }
+        stockReq := &model.StockWithRiderReq{
+            RiderID:   sub.RiderID,
+            Model:     sub.Model,
+            StockType: model.StockTypeRiderPause,
+        }
 
-    _, err := spc.Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
+        if s.modifier != nil {
+            stockReq.ManagerID = s.modifier.ID
+            lg.SetModifier(s.modifier)
+            bls = NewBusinessLogWithModifier(s.modifier, sub)
+        }
 
-    _, err = tx.Subscribe.UpdateOne(sub).
-        SetPausedAt(time.Now()).
-        SetStatus(model.SubscribeStatusPaused).
-        Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
+        if s.employee != nil {
+            NewBusinessWithEmployee(s.employee).CheckCity(sub.CityID)
+            spc.SetEmployee(s.employee)
+            stockReq.EmployeeID = s.employee.ID
+            stockReq.StoreID = s.employee.Edges.Store.ID
+            lg.SetEmployee(s.employeeInfo)
+            bls = NewBusinessLogWithEmployee(s.employee, sub)
+        }
 
-    // 电池入库
-    snag.PanicIfErrorX(NewStockWithEmployee(s.employee).BatteryWithRider(
-        tx.Stock.Create(),
-        stockReq,
-    ), tx.Rollback)
+        _, err = spc.Save(s.ctx)
+        snag.PanicIfError(err)
 
-    _ = tx.Commit()
+        _, err = tx.Subscribe.UpdateOne(sub).
+            SetPausedAt(time.Now()).
+            SetStatus(model.SubscribeStatusPaused).
+            Save(s.ctx)
+        snag.PanicIfError(err)
+
+        // 电池入库
+        return NewStockWithEmployee(s.employee).BatteryWithRider(
+            tx.Stock.Create(),
+            stockReq,
+        )
+    })
 
     // 记录日志
     go lg.Send()
@@ -161,60 +159,59 @@ func (s *riderMgrService) ContinueSubscribe(subscribeID uint64) {
         snag.Panic("无暂停中的骑士卡")
     }
 
-    tx, _ := ent.Database.Tx(s.ctx)
-
+    // 当前时间
     now := time.Now()
 
     // 已寄存天数
     days := NewSubscribe().PausedDays(sp.StartAt, now)
-
-    spu := tx.SubscribePause.UpdateOne(sp).SetDays(days).SetEndAt(now)
-
-    stockReq := &model.StockWithRiderReq{
-        RiderID:   sub.RiderID,
-        Model:     sub.Model,
-        StockType: model.StockTypeRiderContinue,
-    }
 
     lg := logging.NewOperateLog().
         SetRef(sub.Edges.Rider).
         SetOperate(model.OperateSubscribeContinue).
         SetDiff(fmt.Sprintf("暂停计费 (%s - %s 共%d天)", sp.StartAt.Format(carbon.DateTimeLayout), now.Format(carbon.DateTimeLayout), days), "计费中")
 
-    if s.modifier != nil {
-        stockReq.ManagerID = s.modifier.ID
-        lg.SetModifier(s.modifier)
-        bls = NewBusinessLogWithModifier(s.modifier, sub)
-    }
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+        spu := tx.SubscribePause.UpdateOne(sp).SetDays(days).SetEndAt(now)
 
-    if s.employee != nil {
-        NewBusinessWithEmployee(s.employee).CheckCity(sub.CityID)
+        stockReq := &model.StockWithRiderReq{
+            RiderID:   sub.RiderID,
+            Model:     sub.Model,
+            StockType: model.StockTypeRiderContinue,
+        }
 
-        spu.SetContinueEmployee(s.employee)
-        stockReq.EmployeeID = s.employee.ID
-        stockReq.StoreID = s.employee.Edges.Store.ID
-        lg.SetEmployee(s.employeeInfo)
+        if s.modifier != nil {
+            stockReq.ManagerID = s.modifier.ID
+            lg.SetModifier(s.modifier)
+            bls = NewBusinessLogWithModifier(s.modifier, sub)
+        }
 
-        bls = NewBusinessLogWithEmployee(s.employee, sub)
-    }
+        if s.employee != nil {
+            NewBusinessWithEmployee(s.employee).CheckCity(sub.CityID)
 
-    _, err := spu.Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
+            spu.SetContinueEmployee(s.employee)
+            stockReq.EmployeeID = s.employee.ID
+            stockReq.StoreID = s.employee.Edges.Store.ID
+            lg.SetEmployee(s.employeeInfo)
 
-    // 更新订阅
-    _, err = tx.Subscribe.UpdateOne(sub).
-        SetStatus(model.SubscribeStatusUsing).
-        AddPauseDays(days).
-        ClearPausedAt().Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
+            bls = NewBusinessLogWithEmployee(s.employee, sub)
+        }
 
-    // 电池出库
-    snag.PanicIfErrorX(NewStockWithEmployee(s.employee).BatteryWithRider(
-        tx.Stock.Create(),
-        stockReq,
-    ), tx.Rollback)
+        _, err = spu.Save(s.ctx)
+        snag.PanicIfError(err)
 
-    _ = tx.Commit()
+        // 更新订阅
+        _, err = tx.Subscribe.UpdateOne(sub).
+            SetStatus(model.SubscribeStatusUsing).
+            AddPauseDays(days).
+            ClearPausedAt().Save(s.ctx)
+        snag.PanicIfError(err)
+
+        // 电池出库
+        return NewStockWithEmployee(s.employee).BatteryWithRider(
+            tx.Stock.Create(),
+            stockReq,
+        )
+    })
 
     // 记录日志
     go lg.Send()
@@ -261,28 +258,26 @@ func (s *riderMgrService) UnSubscribe(subscribeID uint64) {
         bls = NewBusinessLogWithEmployee(s.employee, sub)
     }
 
-    tx, _ := ent.Database.Tx(s.ctx)
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+        _, err = tx.Subscribe.
+            UpdateOneID(sub.ID).
+            SetEndAt(time.Now()).
+            SetRemaining(0).
+            SetStatus(model.SubscribeStatusUnSubscribed).
+            SetUnsubscribeReason(reason).
+            Save(s.ctx)
+        snag.PanicIfError(err)
 
-    _, err := tx.Subscribe.
-        UpdateOneID(sub.ID).
-        SetEndAt(time.Now()).
-        SetRemaining(0).
-        SetStatus(model.SubscribeStatusUnSubscribed).
-        SetUnsubscribeReason(reason).
-        Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
+        // 标记需要签约
+        _, err = tx.Rider.UpdateOneID(sub.RiderID).SetContractual(false).Save(s.ctx)
+        snag.PanicIfError(err)
 
-    // 标记需要签约
-    _, err = tx.Rider.UpdateOneID(sub.RiderID).SetContractual(false).Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
-
-    // 电池入库
-    snag.PanicIfErrorX(NewStockWithEmployee(s.employee).BatteryWithRider(
-        tx.Stock.Create(),
-        stockReq,
-    ), tx.Rollback)
-
-    _ = tx.Commit()
+        // 电池入库
+        return NewStockWithEmployee(s.employee).BatteryWithRider(
+            tx.Stock.Create(),
+            stockReq,
+        )
+    })
 
     // 查询并标记用户合同为失效
     _, _ = ent.Database.Contract.Update().Where(contract.RiderID(sub.RiderID)).SetEffective(false).Save(s.ctx)
@@ -322,30 +317,29 @@ func (s *riderMgrService) Deposit(req *model.RiderMgrDepositReq) {
         snag.Panic("用户有实际缴纳的押金订单, 无法继续修改")
     }
 
-    var err error
-    tx, _ := ent.Database.Tx(s.ctx)
-    if o != nil {
-        before = o.Amount
-        _, err = tx.Order.SoftDeleteOne(o).Save(s.ctx)
-        snag.PanicIfErrorX(err, tx.Rollback)
-    }
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+        if o != nil {
+            before = o.Amount
+            _, err = tx.Order.SoftDeleteOne(o).Save(s.ctx)
+            snag.PanicIfError(err)
+        }
 
-    if req.Amount > 0 {
-        _, err = tx.Order.Create().
-            SetRiderID(req.ID).
-            SetType(model.OrderTypeDeposit).
-            SetStatus(model.OrderStatusPaid).
-            SetRemark("管理员修改").
-            SetAmount(req.Amount).
-            SetTotal(req.Amount).
-            SetPayway(model.OrderPaywayManual).
-            SetOutTradeNo(tools.NewUnique().NewSN28()).
-            SetTradeNo(tools.NewUnique().NewSN28()).
-            Save(s.ctx)
-        snag.PanicIfErrorX(err, tx.Rollback)
-    }
-
-    _ = tx.Commit()
+        if req.Amount > 0 {
+            _, err = tx.Order.Create().
+                SetRiderID(req.ID).
+                SetType(model.OrderTypeDeposit).
+                SetStatus(model.OrderStatusPaid).
+                SetRemark("管理员修改").
+                SetAmount(req.Amount).
+                SetTotal(req.Amount).
+                SetPayway(model.OrderPaywayManual).
+                SetOutTradeNo(tools.NewUnique().NewSN28()).
+                SetTradeNo(tools.NewUnique().NewSN28()).
+                Save(s.ctx)
+            snag.PanicIfError(err)
+        }
+        return
+    })
 
     // 记录日志
     go logging.NewOperateLog().
@@ -362,48 +356,46 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
         snag.Panic("参数错误")
     }
 
-    tx, _ := ent.Database.Tx(s.ctx)
-
-    var err error
     r := NewRiderWithModifier(s.modifier).Query(req.ID)
     p := r.Edges.Person
+    var before, after []string
 
     if p == nil && req.AuthStatus != nil {
         snag.Panic("用户还未提交个人信息")
     }
 
-    pu := tx.Person.UpdateOne(p)
-    ru := tx.Rider.UpdateOne(r)
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
+        pu := tx.Person.UpdateOne(p)
+        ru := tx.Rider.UpdateOne(r)
 
-    var before, after []string
-
-    if req.Phone != nil {
-        ru.SetPhone(*req.Phone)
-        before = append(before, fmt.Sprintf("电话: %s", r.Phone))
-        after = append(after, fmt.Sprintf("电话: %s", *req.Phone))
-    }
-
-    if req.Contact != nil {
-        ru.SetContact(req.Contact)
-        if r.Contact == nil {
-            before = append(before, "联系人: 无")
-        } else {
-            before = append(before, fmt.Sprintf("联系人: %s, %s, %s", r.Contact.Relation, r.Contact.Phone, r.Contact.Name))
+        if req.Phone != nil {
+            ru.SetPhone(*req.Phone)
+            before = append(before, fmt.Sprintf("电话: %s", r.Phone))
+            after = append(after, fmt.Sprintf("电话: %s", *req.Phone))
         }
-        after = append(after, fmt.Sprintf("联系人: %s, %s, %s", req.Contact.Relation, req.Contact.Phone, req.Contact.Name))
-    }
 
-    if req.AuthStatus != nil {
-        pu.SetStatus(req.AuthStatus.Raw())
-        before = append(before, fmt.Sprintf("认证状态: %s", model.PersonAuthStatus(p.Status).String()))
-        after = append(after, fmt.Sprintf("认证状态: %s", req.AuthStatus.String()))
-    }
+        if req.Contact != nil {
+            ru.SetContact(req.Contact)
+            if r.Contact == nil {
+                before = append(before, "联系人: 无")
+            } else {
+                before = append(before, fmt.Sprintf("联系人: %s, %s, %s", r.Contact.Relation, r.Contact.Phone, r.Contact.Name))
+            }
+            after = append(after, fmt.Sprintf("联系人: %s, %s, %s", req.Contact.Relation, req.Contact.Phone, req.Contact.Name))
+        }
 
-    _, err = pu.Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
+        if req.AuthStatus != nil {
+            pu.SetStatus(req.AuthStatus.Raw())
+            before = append(before, fmt.Sprintf("认证状态: %s", model.PersonAuthStatus(p.Status).String()))
+            after = append(after, fmt.Sprintf("认证状态: %s", req.AuthStatus.String()))
+        }
 
-    _, err = ru.Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
+        _, err = pu.Save(s.ctx)
+        snag.PanicIfError(err)
+
+        _, err = ru.Save(s.ctx)
+        return
+    })
 
     // 记录日志
     go logging.NewOperateLog().

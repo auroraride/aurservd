@@ -19,9 +19,8 @@ func PanicCallbackX(cb func() error, params ...any) {
     panic(NewError(params...))
 }
 
-func PanicIfError(err error, cb func(), params ...any) {
+func PanicIfError(err error, params ...any) {
     if err != nil {
-        cb()
         panic(NewError(err))
     }
 }

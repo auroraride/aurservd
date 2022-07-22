@@ -483,23 +483,30 @@ func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float
     set := NewEnterpriseStatementWithModifier(s.modifier).Current(e)
 
     before := e.Balance
-    tx, _ := ent.Database.Tx(s.ctx)
+    var balance float64
 
-    // 创建预付费记录
-    _, err := tx.EnterprisePrepayment.Create().SetEnterpriseID(e.ID).SetAmount(req.Amount).SetRemark(req.Remark).Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) (err error) {
 
-    td := tools.NewDecimal()
+        // 创建预付费记录
+        _, err = tx.EnterprisePrepayment.Create().SetEnterpriseID(e.ID).SetAmount(req.Amount).SetRemark(req.Remark).Save(s.ctx)
+        if err != nil {
+            return
+        }
 
-    // 更新余额
-    // 账单表
-    balance := td.Sum(e.Balance, req.Amount)
-    _, err = tx.EnterpriseStatement.UpdateOne(set).Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
+        td := tools.NewDecimal()
 
-    // 更新企业表
-    _, err = tx.Enterprise.UpdateOne(e).SetBalance(balance).AddPrepaymentTotal(req.Amount).Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
+        // 更新余额
+        // 账单表
+        balance = td.Sum(e.Balance, req.Amount)
+        _, err = tx.EnterpriseStatement.UpdateOne(set).Save(s.ctx)
+        if err != nil {
+            return
+        }
+
+        // 更新企业表
+        e, err = tx.Enterprise.UpdateOne(e).SetBalance(balance).AddPrepaymentTotal(req.Amount).Save(s.ctx)
+        return
+    })
 
     // 记录日志
     go logging.NewOperateLog().
@@ -510,7 +517,6 @@ func (s *enterpriseService) Prepayment(req *model.EnterprisePrepaymentReq) float
         SetRemark(req.Remark).
         Send()
 
-    _ = tx.Commit()
     return balance
 }
 

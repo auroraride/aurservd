@@ -150,37 +150,35 @@ func (s *attendanceService) Create(req *model.AttendanceCreateReq) {
         go func() { workwx.New().SendInventory(req.Duty, c.Name, st.Name, em, noticeItems) }()
     }
 
-    tx, _ := ent.Database.Tx(s.ctx)
-    _, err := tx.Attendance.Create().
-        SetEmployee(s.employee).
-        SetStore(st).
-        SetDate(s.dutyDate(req.Duty, st.ID, s.employee.ID)).
-        SetDuty(req.Duty).
-        SetInventory(inventory).
-        SetPhoto(*req.Photo).
-        SetDuty(req.Duty).
-        SetAddress(*req.Address).
-        SetLng(*req.Lng).
-        SetLat(*req.Lat).
-        SetDistance(distance).
-        Save(s.ctx)
+    ent.WithTxPanic(s.ctx, func(tx *ent.Tx) error {
+        _, err := tx.Attendance.Create().
+            SetEmployee(s.employee).
+            SetStore(st).
+            SetDate(s.dutyDate(req.Duty, st.ID, s.employee.ID)).
+            SetDuty(req.Duty).
+            SetInventory(inventory).
+            SetPhoto(*req.Photo).
+            SetDuty(req.Duty).
+            SetAddress(*req.Address).
+            SetLng(*req.Lng).
+            SetLat(*req.Lat).
+            SetDistance(distance).
+            Save(s.ctx)
 
-    if err != nil {
-        _ = tx.Rollback()
-        snag.Panic("考勤打卡失败")
-    }
+        if err != nil {
+            snag.Panic("考勤打卡失败")
+        }
 
-    if req.Duty {
-        _, err = tx.Store.UpdateOneID(st.ID).SetEmployee(s.employee).Save(s.ctx)
-    } else {
-        _, err = tx.Store.UpdateOneID(st.ID).ClearEmployeeID().Save(s.ctx)
-    }
-    if err != nil {
-        _ = tx.Rollback()
-        snag.Panic("考勤打卡失败")
-    }
-
-    _ = tx.Commit()
+        if req.Duty {
+            _, err = tx.Store.UpdateOneID(st.ID).SetEmployee(s.employee).Save(s.ctx)
+        } else {
+            _, err = tx.Store.UpdateOneID(st.ID).ClearEmployeeID().Save(s.ctx)
+        }
+        if err != nil {
+            snag.Panic("考勤打卡失败")
+        }
+        return nil
+    })
 }
 
 func (s *attendanceService) List(req *model.AttendanceListReq) *model.PaginationRes {
