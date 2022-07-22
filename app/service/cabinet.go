@@ -28,9 +28,11 @@ import (
     "github.com/jinzhu/copier"
     "github.com/lithammer/shortuuid/v4"
     log "github.com/sirupsen/logrus"
+    "golang.org/x/exp/slices"
     "regexp"
     "sort"
     "strconv"
+    "strings"
     "time"
 )
 
@@ -56,7 +58,7 @@ func NewCabinetWithModifier(m *model.Modifier) *cabinetService {
 
 // QueryOne 查询单个电柜
 func (s *cabinetService) QueryOne(id uint64) *ent.Cabinet {
-    c := s.orm.QueryNotDeleted().Where(cabinet.ID(id)).OnlyX(s.ctx)
+    c, _ := s.orm.QueryNotDeleted().Where(cabinet.ID(id)).First(s.ctx)
     if c == nil {
         snag.Panic("未找到电柜")
     }
@@ -65,9 +67,8 @@ func (s *cabinetService) QueryOne(id uint64) *ent.Cabinet {
 
 // CreateCabinet 创建电柜
 func (s *cabinetService) CreateCabinet(req *model.CabinetCreateReq) (res *model.CabinetItem) {
-    err := s.checkDeploy(req.Status, req.BranchID)
-    if err != nil {
-        snag.Panic(err)
+    if req.Status == model.CabinetStatusNormal && req.BranchID == nil {
+        snag.Panic("电柜投产必须选择网点")
     }
 
     q := s.orm.Create().
@@ -166,82 +167,89 @@ func (s *cabinetService) List(req *model.CabinetQueryReq) (res *model.Pagination
 
 // Modify 修改电柜
 func (s *cabinetService) Modify(req *model.CabinetModifyReq) {
-    c := s.QueryOne(req.ID)
-    tx, _ := ent.Database.Tx(s.ctx)
-    q := tx.Cabinet.UpdateOne(c)
-    if req.Models != nil {
-        q.ClearBms()
-        // 查询设置电池型号
-        bms := make([]model.BatteryModel, len(*req.Models))
-        models := NewBattery().QueryModelsX(*req.Models)
-        for i, bm := range models {
-            bms[i] = model.BatteryModel{
-                ID:    bm.ID,
-                Model: bm.Model,
+    cab, _ := s.orm.QueryNotDeleted().Where(cabinet.ID(req.ID)).WithBms().First(s.ctx)
+    if cab == nil {
+        snag.Panic("未找到电柜")
+    }
+    willDeploy := cab.Status == model.CabinetStatusPending && req.Status != nil && *req.Status == model.CabinetStatusNormal
+    err := ent.WithTx(s.ctx, func(tx *ent.Tx) (err error) {
+        q := tx.Cabinet.UpdateOne(cab)
+        if req.Models != nil {
+            var models []string
+            for _, bm := range cab.Edges.Bms {
+                models = append(models, bm.Model)
+            }
+            // 排序
+            sort.Slice(models, func(i, j int) bool {
+                return strings.Compare(models[i], models[j]) < 0
+            })
+            rms := *req.Models
+            sort.Slice(rms, func(i, j int) bool {
+                return strings.Compare(rms[i], rms[j]) < 0
+            })
+
+            if slices.Compare(rms, models) != 0 {
+                q.ClearBms()
+                // 查询设置电池型号
+                q.AddBms(NewBattery().QueryModelsX(*req.Models)...)
             }
         }
-        q.AddBms(models...)
-    }
-    if req.BranchID != nil {
-        b := NewBranch().Query(*req.BranchID)
-        q.SetLng(b.Lng).
-            SetLat(b.Lat).
-            SetAddress(b.Address).
-            SetBranchID(*req.BranchID).
-            SetCityID(b.CityID)
-    }
-    if req.Status != nil {
-        q.SetStatus(*req.Status)
-    }
-    if req.Brand != nil {
-        q.SetBrand(req.Brand.Value())
-    }
-    if req.Serial != nil {
-        q.SetSerial(*req.Serial)
-    }
-    if req.Name != nil {
-        q.SetName(*req.Name)
-    }
-    if req.Remark != nil {
-        q.SetRemark(*req.Remark)
-    }
-    n, err := q.Save(s.ctx)
-    if err != nil {
-        _ = tx.Rollback()
-        snag.Panic(err)
-    }
-    if req.SimSn != nil {
-        q.SetSimSn(*req.SimSn)
-    }
-    if req.SimDate != nil {
-        end := tools.NewTime().ParseDateStringX(*req.SimDate)
-        if time.Now().After(end) {
-            snag.Panic("sim卡到期日期不能早于现在")
+        if req.BranchID != nil {
+            b := NewBranch().Query(*req.BranchID)
+            q.SetLng(b.Lng).
+                SetLat(b.Lat).
+                SetAddress(b.Address).
+                SetBranchID(*req.BranchID).
+                SetCityID(b.CityID)
+        } else if cab.BranchID == nil {
+            // 检查网点
+            if cab.Status == model.CabinetStatusNormal || (req.Status != nil && *req.Status == model.CabinetStatusNormal) {
+                return errors.New("电柜投产必须选择网点")
+            }
         }
-        q.SetSimDate(end)
-    }
+        if req.Status != nil {
+            q.SetStatus(*req.Status)
+        }
+        if req.Brand != nil {
+            q.SetBrand(req.Brand.Value())
+        }
+        if req.Serial != nil {
+            q.SetSerial(*req.Serial)
+        }
+        if req.Name != nil {
+            q.SetName(*req.Name)
+        }
+        if req.Remark != nil {
+            q.SetRemark(*req.Remark)
+        }
 
-    err = s.checkDeploy(n.Status, n.BranchID)
+        if req.SimSn != nil {
+            q.SetSimSn(*req.SimSn)
+        }
+
+        if req.SimDate != nil {
+            end := tools.NewTime().ParseDateStringX(*req.SimDate)
+            if time.Now().After(end) {
+                snag.Panic("sim卡到期日期不能早于现在")
+            }
+            q.SetSimDate(end)
+        }
+
+        cab, err = q.Save(s.ctx)
+        if err != nil {
+            return
+        }
+
+        return
+    })
+
     if err != nil {
-        _ = tx.Rollback()
         snag.Panic(err)
     }
 
-    _, err = q.Save(s.ctx)
-    snag.PanicIfErrorX(err, tx.Rollback)
-
-    _ = tx.Commit()
-
-    if c.Status == model.CabinetStatusPending && n.Status == model.CabinetStatusNormal {
-        go s.Deploy(n)
+    if willDeploy {
+        go s.Deploy(cab)
     }
-}
-
-func (s *cabinetService) checkDeploy(status uint8, branchID *uint64) error {
-    if status == model.CabinetStatusNormal && branchID == nil {
-        return errors.New("电柜投产必须选择网点")
-    }
-    return nil
 }
 
 func (s *cabinetService) Deploy(c *ent.Cabinet) {
