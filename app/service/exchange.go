@@ -195,7 +195,7 @@ func (s *exchangeService) listBasicQuery(req model.ExchangeListReq) *ent.Exchang
     }
 
     if req.End != nil {
-        q.Where(exchange.CreatedAtLTE(tt.ParseDateStringX(*req.End)))
+        q.Where(exchange.CreatedAtLTE(tt.ParseNextDateStringX(*req.End)))
     }
 
     if req.Keyword != nil {
@@ -293,14 +293,6 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
                 ),
             ),
         )
-    }
-
-    tt := tools.NewTime()
-    if req.Start != "" {
-        q.Where(exchange.CreatedAtGTE(tt.ParseDateStringX(req.Start)))
-    }
-    if req.End != "" {
-        q.Where(exchange.CreatedAtLT(tt.ParseNextDateStringX(req.End)))
     }
 
     if req.Status != 0 {
