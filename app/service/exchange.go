@@ -303,6 +303,10 @@ func (s *exchangeService) List(req *model.ExchangeManagerListReq) *model.Paginat
         q.Where(exchange.HasCabinetWith(cabinet.Serial(req.Serial)))
     }
 
+    if req.Brand != "" {
+        q.Where(exchange.HasCabinetWith(cabinet.Brand(req.Brand)))
+    }
+
     // 是否备用方案 1是 2否
     if req.Alternative != 0 {
         q.Where(exchange.Alternative(req.Alternative == 2))

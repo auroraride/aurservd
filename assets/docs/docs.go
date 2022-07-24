@@ -4531,6 +4531,16 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            "KAIXIN",
+                            "YUNDONG"
+                        ],
+                        "type": "string",
+                        "description": "电柜类型, KAIXIN(凯信) YUNDONG(云动)",
+                        "name": "brand",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "选择电柜ID",
                         "name": "cabinetId",

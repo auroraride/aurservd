@@ -7155,6 +7155,13 @@ paths:
         in: query
         name: alternative
         type: integer
+      - description: 电柜类型, KAIXIN(凯信) YUNDONG(云动)
+        enum:
+        - KAIXIN
+        - YUNDONG
+        in: query
+        name: brand
+        type: string
       - description: 选择电柜ID
         in: query
         name: cabinetId
