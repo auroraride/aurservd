@@ -473,6 +473,9 @@ func (s *riderService) List(req *model.RiderListReq) *model.PaginationRes {
             q.Where(rider.EnterpriseIDIsNil())
         }
     }
+    if req.CityID != nil {
+        q.Where(rider.HasSubscribesWith(subscribe.CityID(*req.CityID)))
+    }
 
     return model.ParsePaginationResponse[model.RiderItem, ent.Rider](
         q,
