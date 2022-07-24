@@ -755,23 +755,25 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Person",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			person.FieldCreatedAt:      {Type: field.TypeTime, Column: person.FieldCreatedAt},
-			person.FieldUpdatedAt:      {Type: field.TypeTime, Column: person.FieldUpdatedAt},
-			person.FieldDeletedAt:      {Type: field.TypeTime, Column: person.FieldDeletedAt},
-			person.FieldCreator:        {Type: field.TypeJSON, Column: person.FieldCreator},
-			person.FieldLastModifier:   {Type: field.TypeJSON, Column: person.FieldLastModifier},
-			person.FieldRemark:         {Type: field.TypeString, Column: person.FieldRemark},
-			person.FieldStatus:         {Type: field.TypeUint8, Column: person.FieldStatus},
-			person.FieldBanned:         {Type: field.TypeBool, Column: person.FieldBanned},
-			person.FieldName:           {Type: field.TypeString, Column: person.FieldName},
-			person.FieldIDCardNumber:   {Type: field.TypeString, Column: person.FieldIDCardNumber},
-			person.FieldIDCardType:     {Type: field.TypeUint8, Column: person.FieldIDCardType},
-			person.FieldIDCardPortrait: {Type: field.TypeString, Column: person.FieldIDCardPortrait},
-			person.FieldIDCardNational: {Type: field.TypeString, Column: person.FieldIDCardNational},
-			person.FieldAuthFace:       {Type: field.TypeString, Column: person.FieldAuthFace},
-			person.FieldAuthResult:     {Type: field.TypeJSON, Column: person.FieldAuthResult},
-			person.FieldAuthAt:         {Type: field.TypeTime, Column: person.FieldAuthAt},
-			person.FieldEsignAccountID: {Type: field.TypeString, Column: person.FieldEsignAccountID},
+			person.FieldCreatedAt:        {Type: field.TypeTime, Column: person.FieldCreatedAt},
+			person.FieldUpdatedAt:        {Type: field.TypeTime, Column: person.FieldUpdatedAt},
+			person.FieldDeletedAt:        {Type: field.TypeTime, Column: person.FieldDeletedAt},
+			person.FieldCreator:          {Type: field.TypeJSON, Column: person.FieldCreator},
+			person.FieldLastModifier:     {Type: field.TypeJSON, Column: person.FieldLastModifier},
+			person.FieldRemark:           {Type: field.TypeString, Column: person.FieldRemark},
+			person.FieldStatus:           {Type: field.TypeUint8, Column: person.FieldStatus},
+			person.FieldBanned:           {Type: field.TypeBool, Column: person.FieldBanned},
+			person.FieldName:             {Type: field.TypeString, Column: person.FieldName},
+			person.FieldIDCardNumber:     {Type: field.TypeString, Column: person.FieldIDCardNumber},
+			person.FieldIDCardType:       {Type: field.TypeUint8, Column: person.FieldIDCardType},
+			person.FieldIDCardPortrait:   {Type: field.TypeString, Column: person.FieldIDCardPortrait},
+			person.FieldIDCardNational:   {Type: field.TypeString, Column: person.FieldIDCardNational},
+			person.FieldAuthFace:         {Type: field.TypeString, Column: person.FieldAuthFace},
+			person.FieldAuthResult:       {Type: field.TypeJSON, Column: person.FieldAuthResult},
+			person.FieldAuthAt:           {Type: field.TypeTime, Column: person.FieldAuthAt},
+			person.FieldEsignAccountID:   {Type: field.TypeString, Column: person.FieldEsignAccountID},
+			person.FieldBaiduVerifyToken: {Type: field.TypeString, Column: person.FieldBaiduVerifyToken},
+			person.FieldBaiduLogID:       {Type: field.TypeString, Column: person.FieldBaiduLogID},
 		},
 	}
 	graph.Nodes[26] = &sqlgraph.Node{
@@ -6936,6 +6938,16 @@ func (f *PersonFilter) WhereAuthAt(p entql.TimeP) {
 // WhereEsignAccountID applies the entql string predicate on the esign_account_id field.
 func (f *PersonFilter) WhereEsignAccountID(p entql.StringP) {
 	f.Where(p.Field(person.FieldEsignAccountID))
+}
+
+// WhereBaiduVerifyToken applies the entql string predicate on the baidu_verify_token field.
+func (f *PersonFilter) WhereBaiduVerifyToken(p entql.StringP) {
+	f.Where(p.Field(person.FieldBaiduVerifyToken))
+}
+
+// WhereBaiduLogID applies the entql string predicate on the baidu_log_id field.
+func (f *PersonFilter) WhereBaiduLogID(p entql.StringP) {
+	f.Where(p.Field(person.FieldBaiduLogID))
 }
 
 // WhereHasRider applies a predicate to check if query has an edge rider.

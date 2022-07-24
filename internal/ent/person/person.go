@@ -47,6 +47,10 @@ const (
 	FieldAuthAt = "auth_at"
 	// FieldEsignAccountID holds the string denoting the esign_account_id field in the database.
 	FieldEsignAccountID = "esign_account_id"
+	// FieldBaiduVerifyToken holds the string denoting the baidu_verify_token field in the database.
+	FieldBaiduVerifyToken = "baidu_verify_token"
+	// FieldBaiduLogID holds the string denoting the baidu_log_id field in the database.
+	FieldBaiduLogID = "baidu_log_id"
 	// EdgeRider holds the string denoting the rider edge name in mutations.
 	EdgeRider = "rider"
 	// Table holds the table name of the person in the database.
@@ -80,6 +84,8 @@ var Columns = []string{
 	FieldAuthResult,
 	FieldAuthAt,
 	FieldEsignAccountID,
+	FieldBaiduVerifyToken,
+	FieldBaiduLogID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

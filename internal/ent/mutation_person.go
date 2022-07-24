@@ -19,35 +19,37 @@ import (
 // PersonMutation represents an operation that mutates the Person nodes in the graph.
 type PersonMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *uint64
-	created_at       *time.Time
-	updated_at       *time.Time
-	deleted_at       *time.Time
-	creator          **model.Modifier
-	last_modifier    **model.Modifier
-	remark           *string
-	status           *uint8
-	addstatus        *int8
-	banned           *bool
-	name             *string
-	id_card_number   *string
-	id_card_type     *uint8
-	addid_card_type  *int8
-	id_card_portrait *string
-	id_card_national *string
-	auth_face        *string
-	auth_result      **model.FaceVerifyResult
-	auth_at          *time.Time
-	esign_account_id *string
-	clearedFields    map[string]struct{}
-	rider            map[uint64]struct{}
-	removedrider     map[uint64]struct{}
-	clearedrider     bool
-	done             bool
-	oldValue         func(context.Context) (*Person, error)
-	predicates       []predicate.Person
+	op                 Op
+	typ                string
+	id                 *uint64
+	created_at         *time.Time
+	updated_at         *time.Time
+	deleted_at         *time.Time
+	creator            **model.Modifier
+	last_modifier      **model.Modifier
+	remark             *string
+	status             *uint8
+	addstatus          *int8
+	banned             *bool
+	name               *string
+	id_card_number     *string
+	id_card_type       *uint8
+	addid_card_type    *int8
+	id_card_portrait   *string
+	id_card_national   *string
+	auth_face          *string
+	auth_result        **model.FaceVerifyResult
+	auth_at            *time.Time
+	esign_account_id   *string
+	baidu_verify_token *string
+	baidu_log_id       *string
+	clearedFields      map[string]struct{}
+	rider              map[uint64]struct{}
+	removedrider       map[uint64]struct{}
+	clearedrider       bool
+	done               bool
+	oldValue           func(context.Context) (*Person, error)
+	predicates         []predicate.Person
 }
 
 var _ ent.Mutation = (*PersonMutation)(nil)
@@ -943,6 +945,104 @@ func (m *PersonMutation) ResetEsignAccountID() {
 	delete(m.clearedFields, person.FieldEsignAccountID)
 }
 
+// SetBaiduVerifyToken sets the "baidu_verify_token" field.
+func (m *PersonMutation) SetBaiduVerifyToken(s string) {
+	m.baidu_verify_token = &s
+}
+
+// BaiduVerifyToken returns the value of the "baidu_verify_token" field in the mutation.
+func (m *PersonMutation) BaiduVerifyToken() (r string, exists bool) {
+	v := m.baidu_verify_token
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBaiduVerifyToken returns the old "baidu_verify_token" field's value of the Person entity.
+// If the Person object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PersonMutation) OldBaiduVerifyToken(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBaiduVerifyToken is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBaiduVerifyToken requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBaiduVerifyToken: %w", err)
+	}
+	return oldValue.BaiduVerifyToken, nil
+}
+
+// ClearBaiduVerifyToken clears the value of the "baidu_verify_token" field.
+func (m *PersonMutation) ClearBaiduVerifyToken() {
+	m.baidu_verify_token = nil
+	m.clearedFields[person.FieldBaiduVerifyToken] = struct{}{}
+}
+
+// BaiduVerifyTokenCleared returns if the "baidu_verify_token" field was cleared in this mutation.
+func (m *PersonMutation) BaiduVerifyTokenCleared() bool {
+	_, ok := m.clearedFields[person.FieldBaiduVerifyToken]
+	return ok
+}
+
+// ResetBaiduVerifyToken resets all changes to the "baidu_verify_token" field.
+func (m *PersonMutation) ResetBaiduVerifyToken() {
+	m.baidu_verify_token = nil
+	delete(m.clearedFields, person.FieldBaiduVerifyToken)
+}
+
+// SetBaiduLogID sets the "baidu_log_id" field.
+func (m *PersonMutation) SetBaiduLogID(s string) {
+	m.baidu_log_id = &s
+}
+
+// BaiduLogID returns the value of the "baidu_log_id" field in the mutation.
+func (m *PersonMutation) BaiduLogID() (r string, exists bool) {
+	v := m.baidu_log_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBaiduLogID returns the old "baidu_log_id" field's value of the Person entity.
+// If the Person object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PersonMutation) OldBaiduLogID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBaiduLogID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBaiduLogID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBaiduLogID: %w", err)
+	}
+	return oldValue.BaiduLogID, nil
+}
+
+// ClearBaiduLogID clears the value of the "baidu_log_id" field.
+func (m *PersonMutation) ClearBaiduLogID() {
+	m.baidu_log_id = nil
+	m.clearedFields[person.FieldBaiduLogID] = struct{}{}
+}
+
+// BaiduLogIDCleared returns if the "baidu_log_id" field was cleared in this mutation.
+func (m *PersonMutation) BaiduLogIDCleared() bool {
+	_, ok := m.clearedFields[person.FieldBaiduLogID]
+	return ok
+}
+
+// ResetBaiduLogID resets all changes to the "baidu_log_id" field.
+func (m *PersonMutation) ResetBaiduLogID() {
+	m.baidu_log_id = nil
+	delete(m.clearedFields, person.FieldBaiduLogID)
+}
+
 // AddRiderIDs adds the "rider" edge to the Rider entity by ids.
 func (m *PersonMutation) AddRiderIDs(ids ...uint64) {
 	if m.rider == nil {
@@ -1016,7 +1116,7 @@ func (m *PersonMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PersonMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 19)
 	if m.created_at != nil {
 		fields = append(fields, person.FieldCreatedAt)
 	}
@@ -1068,6 +1168,12 @@ func (m *PersonMutation) Fields() []string {
 	if m.esign_account_id != nil {
 		fields = append(fields, person.FieldEsignAccountID)
 	}
+	if m.baidu_verify_token != nil {
+		fields = append(fields, person.FieldBaiduVerifyToken)
+	}
+	if m.baidu_log_id != nil {
+		fields = append(fields, person.FieldBaiduLogID)
+	}
 	return fields
 }
 
@@ -1110,6 +1216,10 @@ func (m *PersonMutation) Field(name string) (ent.Value, bool) {
 		return m.AuthAt()
 	case person.FieldEsignAccountID:
 		return m.EsignAccountID()
+	case person.FieldBaiduVerifyToken:
+		return m.BaiduVerifyToken()
+	case person.FieldBaiduLogID:
+		return m.BaiduLogID()
 	}
 	return nil, false
 }
@@ -1153,6 +1263,10 @@ func (m *PersonMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldAuthAt(ctx)
 	case person.FieldEsignAccountID:
 		return m.OldEsignAccountID(ctx)
+	case person.FieldBaiduVerifyToken:
+		return m.OldBaiduVerifyToken(ctx)
+	case person.FieldBaiduLogID:
+		return m.OldBaiduLogID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Person field %s", name)
 }
@@ -1281,6 +1395,20 @@ func (m *PersonMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetEsignAccountID(v)
 		return nil
+	case person.FieldBaiduVerifyToken:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBaiduVerifyToken(v)
+		return nil
+	case person.FieldBaiduLogID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBaiduLogID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Person field %s", name)
 }
@@ -1371,6 +1499,12 @@ func (m *PersonMutation) ClearedFields() []string {
 	if m.FieldCleared(person.FieldEsignAccountID) {
 		fields = append(fields, person.FieldEsignAccountID)
 	}
+	if m.FieldCleared(person.FieldBaiduVerifyToken) {
+		fields = append(fields, person.FieldBaiduVerifyToken)
+	}
+	if m.FieldCleared(person.FieldBaiduLogID) {
+		fields = append(fields, person.FieldBaiduLogID)
+	}
 	return fields
 }
 
@@ -1417,6 +1551,12 @@ func (m *PersonMutation) ClearField(name string) error {
 		return nil
 	case person.FieldEsignAccountID:
 		m.ClearEsignAccountID()
+		return nil
+	case person.FieldBaiduVerifyToken:
+		m.ClearBaiduVerifyToken()
+		return nil
+	case person.FieldBaiduLogID:
+		m.ClearBaiduLogID()
 		return nil
 	}
 	return fmt.Errorf("unknown Person nullable field %s", name)
@@ -1476,6 +1616,12 @@ func (m *PersonMutation) ResetField(name string) error {
 		return nil
 	case person.FieldEsignAccountID:
 		m.ResetEsignAccountID()
+		return nil
+	case person.FieldBaiduVerifyToken:
+		m.ResetBaiduVerifyToken()
+		return nil
+	case person.FieldBaiduLogID:
+		m.ResetBaiduLogID()
 		return nil
 	}
 	return fmt.Errorf("unknown Person field %s", name)
