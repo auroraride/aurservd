@@ -360,7 +360,7 @@ func (s *riderMgrService) Modify(req *model.RiderMgrModifyReq) {
     p := r.Edges.Person
     var before, after []string
 
-    if p == nil && req.AuthStatus != nil {
+    if (p == nil || p.Name == "" || p.IDCardNumber == "" || p.IDCardPortrait == "" || p.IDCardNational == "") && req.AuthStatus != nil {
         snag.Panic("用户还未提交个人信息")
     }
 
