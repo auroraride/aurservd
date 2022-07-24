@@ -526,9 +526,6 @@ func (s *riderCabinetService) ProcessStatus(req *model.RiderCabinetOperateStatus
 func (s *riderCabinetService) ProcessLog(res *model.RiderCabinetOperateRes) bool {
     res.Step = s.step
     res.Stop = s.step == model.RiderCabinetOperateStepPutOut || res.Status == model.RiderCabinetOperateStatusFail
-    if res.Message != "" {
-        res.Message = fmt.Sprintf("%s [%s]", res.Message, s.step)
-    }
 
     // 前两步是空仓, 后两步是满电仓位
     index := s.operating.EmptyIndex
