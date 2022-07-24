@@ -336,3 +336,8 @@ type CabinetSimNotice struct {
     Sim    string `json:"sim"`
     End    string `json:"end"`
 }
+
+type CabinetTransferReq struct {
+    CabinetID uint64 `json:"cabinetId"` // 电柜ID
+    Model     string `json:"model"`     // 型号
+}

@@ -1647,6 +1647,15 @@ definitions:
         description: 电柜状态 0未投放 1运营中 2维护中
         type: integer
     type: object
+  model.CabinetTransferReq:
+    properties:
+      cabinetId:
+        description: 电柜ID
+        type: integer
+      model:
+        description: 型号
+        type: string
+    type: object
   model.CascaderOptionLevel2:
     properties:
       children:
@@ -3784,7 +3793,10 @@ definitions:
   model.StockTransferReq:
     properties:
       inboundId:
-        description: 调入至 (0:平台)
+        description: 调入至 0:平台
+        type: integer
+      inboundTarget:
+        description: 调入目标 0:平台 1:门店 2:电柜
         type: integer
       model:
         description: 电池型号 (和`物资名称`不能同时存在, 也不能同时为空)
@@ -3795,8 +3807,11 @@ definitions:
       num:
         description: 调拨数量
         type: integer
+      outBoundTarget:
+        description: 调出目标 0:平台 1:门店 2:电柜
+        type: integer
       outboundId:
-        description: 调出自 (0:平台)
+        description: 调出自 0:平台
         type: integer
     type: object
   model.Store:
@@ -6182,6 +6197,33 @@ paths:
           schema:
             $ref: '#/definitions/model.StatusResponse'
       summary: M5007 重启电柜
+      tags:
+      - '[M]管理接口'
+  /manager/v1/cabinet/transfer:
+    post:
+      consumes:
+      - application/json
+      operationId: ManagerCabinetTransfer
+      parameters:
+      - description: 管理员校验token
+        in: header
+        name: X-Manager-Token
+        required: true
+        type: string
+      - description: 调拨数据
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.CabinetTransferReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 请求成功
+          schema:
+            $ref: '#/definitions/model.StatusResponse'
+      summary: M5011 初始化电柜调拨
       tags:
       - '[M]管理接口'
   /manager/v1/cabint/fault/{id}:

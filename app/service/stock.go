@@ -256,6 +256,12 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
     if req.InboundID == 0 && req.OutboundID == 0 {
         snag.Panic("平台之间无法调拨物资")
     }
+    if (req.InboundTarget == model.StockTargetStore && req.InboundID == 0) || (req.InboundTarget == model.StockTargetPlaform && req.InboundID != 0) {
+        snag.Panic("调入参数错误")
+    }
+    if (req.OutBoundTarget == model.StockTargetStore && req.OutboundID == 0) || (req.OutBoundTarget == model.StockTargetPlaform && req.OutboundID != 0) {
+        snag.Panic("调出参数错误")
+    }
 
     name := req.Name
     if req.Model != "" {
@@ -263,13 +269,20 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
     }
 
     // 调出检查
-    if req.OutboundID > 0 && s.Fetch(req.Target, req.OutboundID, name) < req.Num {
+    if req.OutboundID > 0 && s.Fetch(req.OutBoundTarget, req.OutboundID, name) < req.Num {
         snag.Panic("操作失败, 调出物资大于库存物资")
     }
 
-    // TODO 检查电柜是否初始化调拨过
-    if req.Target == model.StockTargetCabinet {
-        // cab := NewCabinet().QueryOne(req.OutboundID)
+    // 检查电柜是否初始化调拨过
+    if !req.Force && req.InboundTarget == model.StockTargetCabinet {
+        if !NewCabinet().QueryOne(req.InboundID).Transferred {
+            snag.Panic("电柜未初始化调拨")
+        }
+    }
+    if !req.Force && req.OutBoundTarget == model.StockTargetCabinet {
+        if !NewCabinet().QueryOne(req.OutboundID).Transferred {
+            snag.Panic("电柜未初始化调拨")
+        }
     }
 
     sn := tools.NewUnique().NewSN()
@@ -298,6 +311,12 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
             SetType(model.StockTypeTransfer).
             SetSn(sn)
 
+        if req.OutBoundTarget == model.StockTargetStore {
+            oq.SetNillableStoreID(out)
+        } else {
+            oq.SetNillableCabinetID(out)
+        }
+
         // 调入
         iq := tx.Stock.Create().
             SetName(name).
@@ -305,15 +324,10 @@ func (s *stockService) Transfer(req *model.StockTransferReq) {
             SetNum(req.Num).
             SetType(model.StockTypeTransfer).
             SetSn(sn)
-        switch req.Target {
-        case model.StockTargetStore:
-            oq.SetNillableStoreID(out)
+        if req.InboundTarget == model.StockTargetStore {
             iq.SetNillableStoreID(in)
-            break
-        case model.StockTargetCabinet:
-            oq.SetNillableCabinetID(out)
+        } else {
             iq.SetNillableCabinetID(in)
-            break
         }
 
         // 调出

@@ -2883,6 +2883,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manager/v1/cabinet/transfer": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "[M]管理接口"
+                ],
+                "summary": "M5011 初始化电柜调拨",
+                "operationId": "ManagerCabinetTransfer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员校验token",
+                        "name": "X-Manager-Token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "调拨数据",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CabinetTransferReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "请求成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/manager/v1/cabinet/{id}": {
             "get": {
                 "consumes": [
@@ -11034,6 +11075,19 @@ const docTemplate = `{
                 }
             }
         },
+        "model.CabinetTransferReq": {
+            "type": "object",
+            "properties": {
+                "cabinetId": {
+                    "description": "电柜ID",
+                    "type": "integer"
+                },
+                "model": {
+                    "description": "型号",
+                    "type": "string"
+                }
+            }
+        },
         "model.CascaderOptionLevel2": {
             "type": "object",
             "properties": {
@@ -14131,7 +14185,11 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "inboundId": {
-                    "description": "调入至 (0:平台)",
+                    "description": "调入至 0:平台",
+                    "type": "integer"
+                },
+                "inboundTarget": {
+                    "description": "调入目标 0:平台 1:门店 2:电柜",
                     "type": "integer"
                 },
                 "model": {
@@ -14146,8 +14204,12 @@ const docTemplate = `{
                     "description": "调拨数量",
                     "type": "integer"
                 },
+                "outBoundTarget": {
+                    "description": "调出目标 0:平台 1:门店 2:电柜",
+                    "type": "integer"
+                },
                 "outboundId": {
-                    "description": "调出自 (0:平台)",
+                    "description": "调出自 0:平台",
                     "type": "integer"
                 }
             }

@@ -14,8 +14,9 @@ const (
 )
 
 const (
-    StockTargetStore   uint8 = iota + 1 // 调拨对象 - 门店
-    StockTargetCabinet                  // 调拨对象 - 电柜
+    StockTargetPlaform uint8 = iota
+    StockTargetStore         // 调拨对象 - 门店
+    StockTargetCabinet       // 调拨对象 - 电柜
 )
 
 func StockNumberOfRiderBusiness(typ uint8) (num int) {
@@ -31,12 +32,16 @@ func StockNumberOfRiderBusiness(typ uint8) (num int) {
 }
 
 type StockTransferReq struct {
-    Model      string `json:"model,omitempty"` // 电池型号 (和`物资名称`不能同时存在, 也不能同时为空)
-    Name       string `json:"name,omitempty"`  // 物资名称 (和`电池型号`不能同时存在, 也不能同时为空)
-    OutboundID uint64 `json:"outboundId"`      // 调出自 (0:平台)
-    InboundID  uint64 `json:"inboundId"`       // 调入至 (0:平台)
-    Num        int    `json:"num"`             // 调拨数量
-    Target     uint8  `json:"target"`          // 调拨目标 1:门店(默认) 2:电柜
+    Model string `json:"model,omitempty"` // 电池型号 (和`物资名称`不能同时存在, 也不能同时为空)
+    Name  string `json:"name,omitempty"`  // 物资名称 (和`电池型号`不能同时存在, 也不能同时为空)
+    Num   int    `json:"num"`             // 调拨数量
+
+    OutboundID     uint64 `json:"outboundId"`     // 调出自 0:平台
+    OutBoundTarget uint8  `json:"outBoundTarget"` // 调出目标 0:平台 1:门店 2:电柜
+    InboundID      uint64 `json:"inboundId"`      // 调入至 0:平台
+    InboundTarget  uint8  `json:"inboundTarget"`  // 调入目标 0:平台 1:门店 2:电柜
+
+    Force bool `swaggerignore:"true"` // 是否强制 (忽略电柜初始化)
 }
 
 type StockListReq struct {

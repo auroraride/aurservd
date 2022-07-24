@@ -131,7 +131,7 @@ func (*cabinet) DoorOperate(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        body  body  model.IDPostReq  true  "重启请求"
+// @Param        body  body     model.IDPostReq  true  "重启请求"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) Reboot(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.IDPostReq](c)
@@ -148,7 +148,7 @@ func (*cabinet) Reboot(c echo.Context) (err error) {
 // @Accept       json
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
-// @Param        query  query  model.CabinetFaultListReq  false  "请求体"
+// @Param        query  query   model.CabinetFaultListReq  false  "请求体"
 // @Success      200  {object}  model.PaginationRes{items=[]model.CabinetFaultItem}  "请求成功"
 func (*cabinet) Fault(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetFaultListReq](c)
@@ -166,7 +166,7 @@ func (*cabinet) Fault(c echo.Context) (err error) {
 // @Produce      json
 // @Param        X-Manager-Token  header  string  true  "管理员校验token"
 // @Param        id    path  int  true  "故障ID"
-// @Param        body  body  model.CabinetFaultDealReq  true  "desc"
+// @Param        body  body     model.CabinetFaultDealReq  true  "desc"
 // @Success      200  {object}  model.StatusResponse  "请求成功"
 func (*cabinet) FaultDeal(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetFaultDealReq](c)
@@ -187,4 +187,20 @@ func (*cabinet) FaultDeal(c echo.Context) (err error) {
 func (*cabinet) Data(c echo.Context) (err error) {
     ctx, req := app.ManagerContextAndBinding[model.CabinetDataReq](c)
     return ctx.SendResponse(service.NewCabinet().Data(req))
+}
+
+// Transfer
+// @ID           ManagerCabinetTransfer
+// @Router       /manager/v1/cabinet/transfer [POST]
+// @Summary      M5011 初始化电柜调拨
+// @Tags         [M]管理接口
+// @Accept       json
+// @Produce      json
+// @Param        X-Manager-Token  header  string  true  "管理员校验token"
+// @Param        body  body     model.CabinetTransferReq  true  "调拨数据"
+// @Success      200  {object}  model.StatusResponse  "请求成功"
+func (*cabinet) Transfer(c echo.Context) (err error) {
+    ctx, req := app.ManagerContextAndBinding[model.CabinetTransferReq](c)
+    service.NewCabinetWithModifier(ctx.Modifier).Transfer(req)
+    return ctx.SendResponse()
 }

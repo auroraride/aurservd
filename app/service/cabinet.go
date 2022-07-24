@@ -621,3 +621,44 @@ func (s *cabinetService) Data(req *model.CabinetDataReq) *model.PaginationRes {
         return res
     })
 }
+
+func (s *cabinetService) Transfer(req *model.CabinetTransferReq) {
+    err := s.transfer(s.QueryOne(req.CabinetID), req.Model)
+    if err != nil {
+        snag.Panic(err)
+    }
+}
+
+// transfer 电柜初始化调拨
+func (s *cabinetService) transfer(cab *ent.Cabinet, m string) (err error) {
+    if cab.Transferred {
+        return errors.New("电柜已初始化过")
+    }
+    if cab.Health != model.CabinetHealthStatusOnline {
+        return errors.New("电柜不在线")
+    }
+    if cab.BatteryNum == 0 {
+        return errors.New("电池数量为0")
+    }
+    defer func() {
+        if v := recover(); v != nil {
+            if data, ok := v.(*snag.Error); ok {
+                err = errors.New(data.Error())
+            } else {
+                panic(v)
+            }
+        }
+        if err == nil {
+            // 更新电柜属性
+            _, _ = cab.Update().SetTransferred(true).Save(s.ctx)
+        }
+    }()
+    NewStockWithModifier(s.modifier).Transfer(&model.StockTransferReq{
+        Model:         m,
+        Num:           int(cab.BatteryNum),
+        InboundID:     cab.ID,
+        InboundTarget: model.StockTargetCabinet,
+        Force:         true,
+    })
+    return
+}
